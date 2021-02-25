@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="53" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="50" column="14" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f" prot="public" static="no" mutable="no">
         <type>char *</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="54" column="10" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="51" column="14" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1acca587483d1cb6776c200b11f518a34c" prot="public" static="no" mutable="no">
         <type>cudaStream_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="55" column="18" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="52" column="22" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="52" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="48" column="12" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="48" bodyend="50"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="46" column="16" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="46" bodyend="47"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -76,7 +76,7 @@
     <detaileddescription>
 <para>Previous allocation ranges and the streams for which synchronization is required </para>
     </detaileddescription>
-    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="47" column="14" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="47" bodyend="56"/>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="45" column="16" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="45" bodyend="53"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>end_</name></member>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Range</scope><name>Range</name></member>

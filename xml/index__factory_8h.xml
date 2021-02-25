@@ -11,13 +11,13 @@
       <node id="9">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="5">
+      <node id="7">
         <label>typeinfo</label>
       </node>
       <node id="4">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="5">
         <label>sstream</label>
       </node>
       <node id="8">
@@ -31,9 +31,9 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -87,13 +87,14 @@
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="17"><highlight class="comment">/**<sp/>Build<sp/>and<sp/>index<sp/>with<sp/>the<sp/>sequence<sp/>of<sp/>processing<sp/>steps<sp/>described<sp/>in</highlight></codeline>
 <codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/>the<sp/>string.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="19"><highlight class="normal">Index<sp/>*<ref refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" kindref="member">index_factory</ref><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*description,</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>);</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal">IndexBinary<sp/>*index_binary_factory<sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*description);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">Index*<sp/><ref refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" kindref="member">index_factory</ref>(</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>description,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>);</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">IndexBinary*<sp/>index_binary_factory(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>description);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/index_factory.h"/>
   </compounddef>

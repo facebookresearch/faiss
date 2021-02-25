@@ -2,12 +2,12 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="StackDeviceMemory_8h" kind="file" language="C++">
     <compoundname>StackDeviceMemory.h</compoundname>
-    <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
     <includes local="no">cuda_runtime.h</includes>
+    <includes refid="GpuResources_8h" local="no">faiss/gpu/GpuResources.h</includes>
     <includes local="no">list</includes>
     <includes local="no">memory</includes>
-    <includes local="no">unordered_map</includes>
     <includes local="no">tuple</includes>
+    <includes local="no">unordered_map</includes>
     <includedby refid="StandardGpuResources_8h" local="no">faiss/gpu/StandardGpuResources.h</includedby>
     <incdepgraph>
       <node id="9">
@@ -18,7 +18,7 @@
         <link refid="StackDeviceMemory_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -29,21 +29,21 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="4">
         <label>cublas_v2.h</label>
       </node>
-      <node id="4">
+      <node id="2">
         <label>cuda_runtime.h</label>
       </node>
-      <node id="3">
+      <node id="5">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -54,7 +54,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
         <label>tuple</label>
       </node>
       <node id="8">
@@ -63,7 +63,7 @@
       <node id="7">
         <label>utility</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>unordered_map</label>
       </node>
       <node id="6">
@@ -105,113 +105,111 @@
 <codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cuda_runtime.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cuda_runtime.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;list&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;list&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;tuple&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;tuple&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="20"><highlight class="comment">///<sp/>Device<sp/>memory<sp/>manager<sp/>that<sp/>provides<sp/>temporary<sp/>memory<sp/>allocations</highlight></codeline>
 <codeline lineno="21"><highlight class="comment">///<sp/>out<sp/>of<sp/>a<sp/>region<sp/>of<sp/>memory,<sp/>for<sp/>a<sp/>single<sp/>device</highlight></codeline>
 <codeline lineno="22" refid="classfaiss_1_1gpu_1_1StackDeviceMemory" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory" kindref="compound">StackDeviceMemory</ref><sp/>{</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="24"><highlight class="comment"><sp/><sp/>///<sp/>Allocate<sp/>a<sp/>new<sp/>region<sp/>of<sp/>memory<sp/>that<sp/>we<sp/>manage</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd" kindref="member">StackDeviceMemory</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>allocPerDevice);</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/><sp/>///<sp/>Manage<sp/>a<sp/>region<sp/>of<sp/>memory<sp/>for<sp/>a<sp/>particular<sp/>device,<sp/>with<sp/>or</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"><sp/><sp/>///<sp/>without<sp/>ownership</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd" kindref="member">StackDeviceMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isOwner);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Allocate<sp/>a<sp/>new<sp/>region<sp/>of<sp/>memory<sp/>that<sp/>we<sp/>manage</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd" kindref="member">StackDeviceMemory</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>allocPerDevice);</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Manage<sp/>a<sp/>region<sp/>of<sp/>memory<sp/>for<sp/>a<sp/>particular<sp/>device,<sp/>with<sp/>or</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>without<sp/>ownership</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd" kindref="member">StackDeviceMemory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>isOwner);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory" kindref="compound">StackDeviceMemory</ref>();</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory" kindref="compound">StackDeviceMemory</ref>();</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/><sp/>///<sp/>All<sp/>allocations<sp/>requested<sp/>should<sp/>be<sp/>a<sp/>multiple<sp/>of<sp/>16<sp/>bytes</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" kindref="member">allocMemory</ref>(cudaStream_t<sp/>stream,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>deallocMemory(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p);</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>getSizeAvailable()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/>std::string<sp/>toString()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"></highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="45"><highlight class="comment"><sp/><sp/>///<sp/>Previous<sp/>allocation<sp/>ranges<sp/>and<sp/>the<sp/>streams<sp/>for<sp/>which</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/><sp/>///<sp/>synchronization<sp/>is<sp/>required</highlight></codeline>
-<codeline lineno="47" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" refkind="compound"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kindref="compound">Range</ref><sp/>{</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kindref="compound">Range</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>s,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>e,<sp/>cudaStream_t<sp/>str)<sp/>:</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_(s),<sp/>end_(e),<sp/>stream_(str)<sp/>{</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>References<sp/>a<sp/>memory<sp/>range<sp/>[start,<sp/>end)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>start_;</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>end_;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream_;</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>allocates<sp/>memory<sp/>via<sp/>cudaMalloc</highlight></codeline>
-<codeline lineno="60"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ab6afe6dad139fe3759c2835e31475e93" kindref="member">Stack</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref>();</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>how<sp/>much<sp/>size<sp/>is<sp/>available<sp/>for<sp/>an<sp/>allocation<sp/>without</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>calling<sp/>cudaMalloc</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c" kindref="member">getSizeAvailable</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Obtains<sp/>an<sp/>allocation;<sp/>all<sp/>allocations<sp/>are<sp/>guaranteed<sp/>to<sp/>be<sp/>16</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>byte<sp/>aligned</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396" kindref="member">getAlloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>getDevice()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>All<sp/>allocations<sp/>requested<sp/>should<sp/>be<sp/>a<sp/>multiple<sp/>of<sp/>16<sp/>bytes</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" kindref="member">allocMemory</ref>(cudaStream_t<sp/>stream,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>deallocMemory(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/>cudaStream_t,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>p);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>getSizeAvailable()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>toString()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Previous<sp/>allocation<sp/>ranges<sp/>and<sp/>the<sp/>streams<sp/>for<sp/>which</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>synchronization<sp/>is<sp/>required</highlight></codeline>
+<codeline lineno="45" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" refkind="compound"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kindref="compound">Range</ref><sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range" kindref="compound">Range</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>s,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>e,<sp/>cudaStream_t<sp/>str)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>start_(s),<sp/>end_(e),<sp/>stream_(str)<sp/>{}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>References<sp/>a<sp/>memory<sp/>range<sp/>[start,<sp/>end)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>start_;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>end_;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream_;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>allocates<sp/>memory<sp/>via<sp/>cudaMalloc</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ab6afe6dad139fe3759c2835e31475e93" kindref="member">Stack</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref>();</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>how<sp/>much<sp/>size<sp/>is<sp/>available<sp/>for<sp/>an<sp/>allocation<sp/>without</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>calling<sp/>cudaMalloc</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c" kindref="member">getSizeAvailable</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Obtains<sp/>an<sp/>allocation;<sp/>all<sp/>allocations<sp/>are<sp/>guaranteed<sp/>to<sp/>be<sp/>16</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>byte<sp/>aligned</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396" kindref="member">getAlloc</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>an<sp/>allocation</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382" kindref="member">returnAlloc</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>an<sp/>allocation</highlight></codeline>
-<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382" kindref="member">returnAlloc</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>p,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>size,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stack<sp/>state</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stack<sp/>state</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d" kindref="member">toString</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>GpuResources<sp/>object</highlight></codeline>
+<codeline lineno="76" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" kindref="member">res_</ref>;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>GpuResources<sp/>object</highlight></codeline>
-<codeline lineno="79" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1" kindref="member">res_</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Device<sp/>this<sp/>allocation<sp/>is<sp/>on</highlight></codeline>
+<codeline lineno="79" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9" kindref="member">device_</ref>;</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Device<sp/>this<sp/>allocation<sp/>is<sp/>on</highlight></codeline>
-<codeline lineno="82" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9" kindref="member">device_</ref>;</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Where<sp/>our<sp/>temporary<sp/>memory<sp/>buffer<sp/>is<sp/>allocated;<sp/>we<sp/>allocate<sp/>starting<sp/>16</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>bytes<sp/>into<sp/>this</highlight></codeline>
-<codeline lineno="86" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" kindref="member">alloc_</ref>;</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Where<sp/>our<sp/>temporary<sp/>memory<sp/>buffer<sp/>is<sp/>allocated;<sp/>we<sp/>allocate<sp/>starting</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>16<sp/>bytes<sp/>into<sp/>this</highlight></codeline>
+<codeline lineno="83" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" kindref="member">alloc_</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Total<sp/>size<sp/>of<sp/>our<sp/>allocation</highlight></codeline>
+<codeline lineno="86" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" kindref="member">allocSize_</ref>;</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Total<sp/>size<sp/>of<sp/>our<sp/>allocation</highlight></codeline>
-<codeline lineno="89" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" kindref="member">allocSize_</ref>;</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>temporary<sp/>memory<sp/>region;<sp/>[start_,<sp/>end_)<sp/>is<sp/>valid</highlight></codeline>
-<codeline lineno="92" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2" kindref="member">start_</ref>;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>end_;</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>temporary<sp/>memory<sp/>region;<sp/>[start_,<sp/>end_)<sp/>is<sp/>valid</highlight></codeline>
+<codeline lineno="89" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2" kindref="member">start_</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>end_;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>Stack<sp/>head<sp/>within<sp/>[start,<sp/>end)</highlight></codeline>
+<codeline lineno="93" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff" kindref="member">head_</ref>;</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Stack<sp/>head<sp/>within<sp/>[start,<sp/>end)</highlight></codeline>
-<codeline lineno="96" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff" kindref="member">head_</ref>;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="98"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>List<sp/>of<sp/>previous<sp/>last<sp/>users<sp/>of<sp/>allocations<sp/>on<sp/>our<sp/>stack,<sp/>for</highlight></codeline>
-<codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>possible<sp/>synchronization<sp/>purposes</highlight></codeline>
-<codeline lineno="100" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::list&lt;Range&gt;<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e" kindref="member">lastUsers_</ref>;</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="102"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>What&apos;s<sp/>the<sp/>high<sp/>water<sp/>mark<sp/>in<sp/>terms<sp/>of<sp/>memory<sp/>used<sp/>from<sp/>the</highlight></codeline>
-<codeline lineno="103"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>temporary<sp/>buffer?</highlight></codeline>
-<codeline lineno="104" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75" kindref="member">highWaterMemoryUsed_</ref>;</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>List<sp/>of<sp/>previous<sp/>last<sp/>users<sp/>of<sp/>allocations<sp/>on<sp/>our<sp/>stack,<sp/>for</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>possible<sp/>synchronization<sp/>purposes</highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::list&lt;Range&gt;<sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e" kindref="member">lastUsers_</ref>;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>What&apos;s<sp/>the<sp/>high<sp/>water<sp/>mark<sp/>in<sp/>terms<sp/>of<sp/>memory<sp/>used<sp/>from<sp/>the</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///<sp/>temporary<sp/>buffer?</highlight></codeline>
+<codeline lineno="101" refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75" kindref="member">highWaterMemoryUsed_</ref>;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>device</highlight></codeline>
+<codeline lineno="105" refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" kindref="member">device_</ref>;</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/><sp/>///<sp/>Our<sp/>device</highlight></codeline>
-<codeline lineno="108" refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875" kindref="member">device_</ref>;</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="110"><highlight class="comment"><sp/><sp/>///<sp/>Memory<sp/>stack</highlight></codeline>
-<codeline lineno="111" refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" kindref="member">stack_</ref>;</highlight></codeline>
-<codeline lineno="112"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal">}<sp/>}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Memory<sp/>stack</highlight></codeline>
+<codeline lineno="108" refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref><sp/><ref refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" kindref="member">stack_</ref>;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/StackDeviceMemory.h"/>
   </compounddef>

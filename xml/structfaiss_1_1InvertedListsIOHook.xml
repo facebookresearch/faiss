@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="29" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="27" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" static="no" mutable="no">
         <type>const std::string</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="30" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="28" column="23" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="32" column="5"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="30" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a0334e4a98a6a2645e6ca9963295f3cf7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="35" column="18"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="33" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a6a3164e33b638f4a9b0103bb19f5bd08" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="38" column="28"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="36" column="27"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1ae4fdbb6eff8075eddda3d3273a0ccd31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedListsIOHook.h" line="46" column="28"/>
+        <location file="faiss/invlists/InvertedListsIOHook.h" line="44" column="27"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListsIOHook_1a9c095acee228154c916db2844443f630" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -249,7 +249,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/invlists/InvertedListsIOHook.h" line="28" column="26" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="28" bodyend="61"/>
+    <location file="faiss/invlists/InvertedListsIOHook.h" line="26" column="26" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="26" bodyend="60"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListsIOHook_1a7852d13afc3e94745f6738c58858098c" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>add_callback</name></member>
       <member refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>classname</name></member>

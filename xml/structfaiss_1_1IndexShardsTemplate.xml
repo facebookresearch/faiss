@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="21" column="3" bodyfile="faiss/IndexShards.h" bodystart="21" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="21" column="5" bodyfile="faiss/IndexShards.h" bodystart="21" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559" prot="public" static="no">
         <type>typename IndexT::component_t</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="22" column="3" bodyfile="faiss/IndexShards.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="22" column="5" bodyfile="faiss/IndexShards.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexShardsTemplate_1a94570791e9f70d2bef77d76564571417" prot="public" static="no">
         <type>typename IndexT::distance_t</type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="23" column="3" bodyfile="faiss/IndexShards.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="23" column="5" bodyfile="faiss/IndexShards.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="82" column="8" bodyfile="faiss/IndexShards.h" bodystart="82" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="94" column="10" bodyfile="faiss/IndexShards.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="35" column="12"/>
+        <location file="faiss/IndexShards.h" line="35" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ac278d8f7d54923cb034127a4257c56b7" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="45" column="12"/>
+        <location file="faiss/IndexShards.h" line="46" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a0596f5ca67d6c9bfddae1465c5353b29" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="51" column="12"/>
+        <location file="faiss/IndexShards.h" line="53" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -197,7 +197,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="56" column="8" bodyfile="faiss/IndexShards.h" bodystart="56" bodyend="56"/>
+        <location file="faiss/IndexShards.h" line="59" column="10" bodyfile="faiss/IndexShards.h" bodystart="59" bodyend="61"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -215,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="59" column="8" bodyfile="faiss/IndexShards.h" bodystart="59" bodyend="59"/>
+        <location file="faiss/IndexShards.h" line="64" column="10" bodyfile="faiss/IndexShards.h" bodystart="64" bodyend="66"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -237,7 +237,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="62" column="8"/>
+        <location file="faiss/IndexShards.h" line="69" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a15e0b4a2fd85f9345537d215a331ed91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -269,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="75" column="8"/>
+        <location file="faiss/IndexShards.h" line="82" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ab3698d94a2c039f445115d52c4545640" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="77" column="8"/>
+        <location file="faiss/IndexShards.h" line="85" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -323,7 +323,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="80" column="8"/>
+        <location file="faiss/IndexShards.h" line="92" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -331,13 +331,13 @@
         <argsstring>()</argsstring>
         <name>syncWithSubIndexes</name>
         <briefdescription>
-<para>Synchronize the top-level index (IndexShards) with data in the sub-indices. </para>
         </briefdescription>
         <detaileddescription>
+<para>Synchronize the top-level index (IndexShards) with data in the sub-indices </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="85" column="8"/>
+        <location file="faiss/IndexShards.h" line="98" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
@@ -357,7 +357,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="89" column="8"/>
+        <location file="faiss/IndexShards.h" line="102" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -375,7 +375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="92" column="8"/>
+        <location file="faiss/IndexShards.h" line="105" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -405,7 +405,7 @@
         <label>ThreadedIndex&lt; IndexT &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexShards.h" line="20" column="48" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="93"/>
+    <location file="faiss/IndexShards.h" line="20" column="48" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="106"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add_shard</name></member>

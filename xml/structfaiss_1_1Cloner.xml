@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="30" column="29"/>
+        <location file="faiss/clone_index.h" line="27" column="29"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="31" column="19"/>
+        <location file="faiss/clone_index.h" line="28" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="32" column="22"/>
+        <location file="faiss/clone_index.h" line="29" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Cloner_1a2931dddcacef11d21a6a26b923fcb990" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="33" column="13" bodyfile="faiss/clone_index.h" bodystart="33" bodyend="33"/>
+        <location file="faiss/clone_index.h" line="30" column="13" bodyfile="faiss/clone_index.h" bodystart="30" bodyend="30"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -101,7 +101,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/clone_index.h" line="29" column="13" bodyfile="faiss/clone_index.h" bodystart="29" bodyend="34"/>
+    <location file="faiss/clone_index.h" line="26" column="13" bodyfile="faiss/clone_index.h" bodystart="26" bodyend="31"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Cloner_1a7ac2ec88faa769d2db29f3cf8625c4e9" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::Cloner</scope><name>clone_IndexIVF</name></member>

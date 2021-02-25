@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="464" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="464" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="478" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="478" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a034efca2fb54bc2c45488259f5e47365" prot="public" static="no" mutable="no">
         <type>int64_t *</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="465" column="11" bodyfile="faiss/utils/hamming-inl.h" bodystart="465" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="479" column="13" bodyfile="faiss/utils/hamming-inl.h" bodystart="479" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1ac8aa41122bfbca508167f6c62f2b8701" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1HammingComputer" kindref="compound">HammingComputer</ref></type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="467" column="19" bodyfile="faiss/utils/hamming-inl.h" bodystart="467" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="481" column="21" bodyfile="faiss/utils/hamming-inl.h" bodystart="481" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1af064903b7159141e0997d00be5790a96" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="468" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="468" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="482" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="482" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="469" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="469" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="483" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="483" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="470" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="470" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="484" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="484" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="471" column="7" bodyfile="faiss/utils/hamming-inl.h" bodystart="471" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="485" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="485" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="473" column="2" bodyfile="faiss/utils/hamming-inl.h" bodystart="473" bodyend="481"/>
+        <location file="faiss/utils/hamming-inl.h" line="487" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="487" bodyend="499"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="483" column="8" bodyfile="faiss/utils/hamming-inl.h" bodystart="483" bodyend="500"/>
+        <location file="faiss/utils/hamming-inl.h" line="501" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="501" bodyend="518"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -182,7 +182,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/hamming-inl.h" line="463" column="20" bodyfile="faiss/utils/hamming-inl.h" bodystart="463" bodyend="501"/>
+    <location file="faiss/utils/hamming-inl.h" line="477" column="20" bodyfile="faiss/utils/hamming-inl.h" bodystart="477" bodyend="519"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>count_eq</name></member>
       <member refid="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732" prot="public" virt="non-virtual"><scope>faiss::HCounterState</scope><name>count_lt</name></member>

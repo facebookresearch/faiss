@@ -63,29 +63,30 @@
 <codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="13"><highlight class="comment">///<sp/>How<sp/>user<sp/>vector<sp/>index<sp/>data<sp/>is<sp/>stored<sp/>on<sp/>the<sp/>GPU</highlight></codeline>
 <codeline lineno="14"><highlight class="comment"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>IndicesOptions<sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="15"><highlight class="comment"><sp/><sp/>///<sp/>The<sp/>user<sp/>indices<sp/>are<sp/>only<sp/>stored<sp/>on<sp/>the<sp/>CPU;<sp/>the<sp/>GPU<sp/>returns</highlight></codeline>
-<codeline lineno="16"><highlight class="comment"><sp/><sp/>///<sp/>(inverted<sp/>list,<sp/>offset)<sp/>to<sp/>the<sp/>CPU<sp/>which<sp/>is<sp/>then<sp/>translated<sp/>to</highlight></codeline>
-<codeline lineno="17"><highlight class="comment"><sp/><sp/>///<sp/>the<sp/>real<sp/>user<sp/>index.</highlight></codeline>
-<codeline lineno="18"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>INDICES_CPU<sp/>=<sp/>0,</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="19"><highlight class="comment"><sp/><sp/>///<sp/>The<sp/>indices<sp/>are<sp/>not<sp/>stored<sp/>at<sp/>all,<sp/>on<sp/>either<sp/>the<sp/>CPU<sp/>or</highlight></codeline>
-<codeline lineno="20"><highlight class="comment"><sp/><sp/>///<sp/>GPU.<sp/>Only<sp/>(inverted<sp/>list,<sp/>offset)<sp/>is<sp/>returned<sp/>to<sp/>the<sp/>user<sp/>as<sp/>the</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"><sp/><sp/>///<sp/>index.</highlight></codeline>
-<codeline lineno="22"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>INDICES_IVF<sp/>=<sp/>1,</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="23"><highlight class="comment"><sp/><sp/>///<sp/>Indices<sp/>are<sp/>stored<sp/>as<sp/>32<sp/>bit<sp/>integers<sp/>on<sp/>the<sp/>GPU,<sp/>but<sp/>returned</highlight></codeline>
-<codeline lineno="24"><highlight class="comment"><sp/><sp/>///<sp/>as<sp/>64<sp/>bit<sp/>integers</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>INDICES_32_BIT<sp/>=<sp/>2,</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/><sp/>///<sp/>Indices<sp/>are<sp/>stored<sp/>as<sp/>64<sp/>bit<sp/>integers<sp/>on<sp/>the<sp/>GPU</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/>INDICES_64_BIT<sp/>=<sp/>3,</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>user<sp/>indices<sp/>are<sp/>only<sp/>stored<sp/>on<sp/>the<sp/>CPU;<sp/>the<sp/>GPU<sp/>returns</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>(inverted<sp/>list,<sp/>offset)<sp/>to<sp/>the<sp/>CPU<sp/>which<sp/>is<sp/>then<sp/>translated<sp/>to</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>real<sp/>user<sp/>index.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>INDICES_CPU<sp/>=<sp/>0,</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>indices<sp/>are<sp/>not<sp/>stored<sp/>at<sp/>all,<sp/>on<sp/>either<sp/>the<sp/>CPU<sp/>or</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>GPU.<sp/>Only<sp/>(inverted<sp/>list,<sp/>offset)<sp/>is<sp/>returned<sp/>to<sp/>the<sp/>user<sp/>as<sp/>the</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>index.</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>INDICES_IVF<sp/>=<sp/>1,</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Indices<sp/>are<sp/>stored<sp/>as<sp/>32<sp/>bit<sp/>integers<sp/>on<sp/>the<sp/>GPU,<sp/>but<sp/>returned</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>as<sp/>64<sp/>bit<sp/>integers</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>INDICES_32_BIT<sp/>=<sp/>2,</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Indices<sp/>are<sp/>stored<sp/>as<sp/>64<sp/>bit<sp/>integers<sp/>on<sp/>the<sp/>GPU</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>INDICES_64_BIT<sp/>=<sp/>3,</highlight></codeline>
 <codeline lineno="28"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal">}<sp/>}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/GpuIndicesOptions.h"/>
   </compounddef>

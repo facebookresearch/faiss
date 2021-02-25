@@ -59,8 +59,8 @@
     <member refid="structfaiss_1_1gpu_1_1AllocRequest_1a9089e476b1b39c6fdb5d262e511ebef5" kind="function"><name>toString</name></member>
   </compound>
   <compound refid="structfaiss_1_1ArrayInvertedLists" kind="struct"><name>faiss::ArrayInvertedLists</name>
-    <member refid="structfaiss_1_1ArrayInvertedLists_1acdab4726f7509cb1653beef13f3f4da1" kind="variable"><name>codes</name></member>
-    <member refid="structfaiss_1_1ArrayInvertedLists_1a48563a58d3bbfbb4334f3afdf2c9ba7a" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1ArrayInvertedLists_1ae37d5d660a7a2db9e77601d34dc48d0f" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1ArrayInvertedLists_1a21a0d006e81634353792aae0adab4a58" kind="variable"><name>ids</name></member>
     <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kind="variable"><name>nlist</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1ArrayInvertedLists_1afae7ba66af56f43cabf089674ebc965d" kind="function"><name>ArrayInvertedLists</name></member>
@@ -1105,7 +1105,7 @@
     <member refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kind="function"><name>per_line_extrema</name></member>
   </compound>
   <compound refid="structfaiss_1_1HStackInvertedLists" kind="struct"><name>faiss::HStackInvertedLists</name>
-    <member refid="structfaiss_1_1HStackInvertedLists_1a5a9185e8f0c6b07083960dd2ebdefda9" kind="variable"><name>ils</name></member>
+    <member refid="structfaiss_1_1HStackInvertedLists_1a1e13f4a3dd344dbaf679d5f40fd328d6" kind="variable"><name>ils</name></member>
     <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kind="variable"><name>nlist</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1HStackInvertedLists_1a882d2fde7902129f3ee2473efc4442da" kind="function"><name>HStackInvertedLists</name></member>
@@ -2575,7 +2575,7 @@
     <member refid="structfaiss_1_1IndexPQStats_1a06a463f2381c1f7edf526e916b679fe3" kind="function"><name>reset</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexPreTransform" kind="struct"><name>faiss::IndexPreTransform</name>
-    <member refid="structfaiss_1_1IndexPreTransform_1a6f893af74172736d7874a2d66e359ded" kind="variable"><name>chain</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1a3bd3d13fc346d1a42d5607c0b34ab79e" kind="variable"><name>chain</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1aee3cbbe7915ec9ed13d59ca9276bdefc" kind="variable"><name>index</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1ae5ec3f184eb211e7d6e204082b52c8c0" kind="variable"><name>own_fields</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -3876,7 +3876,7 @@
     <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" kind="function"><name>~VectorTransform</name></member>
   </compound>
   <compound refid="structfaiss_1_1VStackInvertedLists" kind="struct"><name>faiss::VStackInvertedLists</name>
-    <member refid="structfaiss_1_1VStackInvertedLists_1a7ed923c2a52b86ae6012ac058d2d2388" kind="variable"><name>ils</name></member>
+    <member refid="structfaiss_1_1VStackInvertedLists_1a656f22a259d1aa602b6efde620cb4300" kind="variable"><name>ils</name></member>
     <member refid="structfaiss_1_1VStackInvertedLists_1ad9c47fdc34b29918bfc07ea2a16d50e6" kind="variable"><name>cumsz</name></member>
     <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kind="variable"><name>nlist</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744" kind="variable"><name>code_size</name></member>

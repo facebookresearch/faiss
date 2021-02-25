@@ -36,7 +36,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="34" column="6" declfile="faiss/utils/quantize_lut.h" declline="34" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="32" column="6" declfile="faiss/utils/quantize_lut.h" declline="32" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1aaca4bcc4d17e5c66dbc07a7f93cad911" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="45" column="6" declfile="faiss/utils/quantize_lut.h" declline="45" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="43" column="6" declfile="faiss/utils/quantize_lut.h" declline="43" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/quantize_lut.h" line="65" column="6" declfile="faiss/utils/quantize_lut.h" declline="65" declcolumn="6"/>
+        <location file="faiss/utils/quantize_lut.h" line="67" column="6" declfile="faiss/utils/quantize_lut.h" declline="67" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -156,6 +156,6 @@
 </verbatim></para>
 <para>The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </para>
     </detaileddescription>
-    <location file="faiss/utils/quantize_lut.h" line="28" column="22"/>
+    <location file="faiss/utils/quantize_lut.h" line="26" column="22"/>
   </compounddef>
 </doxygen>

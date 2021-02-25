@@ -213,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="57"/>
+        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="61"/>
       </memberdef>
       <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
         <type></type>
@@ -240,9 +240,9 @@
           <name>Unified</name>
           <initializer>= 2</initializer>
           <briefdescription>
-<para>Managed using cudaMallocManaged/cudaFree (typical Unified CPU/GPU memory) </para>
           </briefdescription>
           <detaileddescription>
+<para>Managed using cudaMallocManaged/cudaFree (typical Unified CPU/GPU memory) </para>
           </detaileddescription>
         </enumvalue>
         <briefdescription>
@@ -252,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="63" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="63" bodyend="74"/>
+        <location file="faiss/gpu/GpuResources.h" line="67" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="67" bodyend="79"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -272,7 +272,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="65" column="15" declfile="faiss/gpu/GpuCloner.h" declline="65" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="68" column="14" declfile="faiss/gpu/GpuCloner.h" declline="68" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -303,7 +303,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="68" column="15" declfile="faiss/gpu/GpuCloner.h" declline="68" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="71" column="14" declfile="faiss/gpu/GpuCloner.h" declline="71" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
@@ -333,7 +333,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuCloner.h" line="73" column="15" declfile="faiss/gpu/GpuCloner.h" declline="73" declcolumn="15"/>
+        <location file="faiss/gpu/GpuCloner.h" line="77" column="14" declfile="faiss/gpu/GpuCloner.h" declline="77" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -357,7 +357,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="127" column="6" declfile="faiss/gpu/GpuDistance.h" declline="127" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="126" column="6" declfile="faiss/gpu/GpuDistance.h" declline="126" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -419,7 +419,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="130" column="6" declfile="faiss/gpu/GpuDistance.h" declline="130" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="129" column="6" declfile="faiss/gpu/GpuDistance.h" declline="129" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -437,7 +437,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="60" column="13" declfile="faiss/gpu/GpuResources.h" declline="60" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="64" column="13" declfile="faiss/gpu/GpuResources.h" declline="64" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a26325bc7abaa18271fbe76c2bfbf1c64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -455,7 +455,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="77" column="13" declfile="faiss/gpu/GpuResources.h" declline="77" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="82" column="13" declfile="faiss/gpu/GpuResources.h" declline="82" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a899d29db52c5400a548baa534667f1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -477,7 +477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="122" column="11" declfile="faiss/gpu/GpuResources.h" declline="122" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="119" column="11" declfile="faiss/gpu/GpuResources.h" declline="119" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a25ba473fa8b757298399a9898435424a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -499,7 +499,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="125" column="11" declfile="faiss/gpu/GpuResources.h" declline="125" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="122" column="11" declfile="faiss/gpu/GpuResources.h" declline="122" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1acc39275d82143dd1663807a635e59cf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -525,7 +525,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="128" column="11" declfile="faiss/gpu/GpuResources.h" declline="128" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="125" column="11" declfile="faiss/gpu/GpuResources.h" declline="125" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -792,7 +792,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="76" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="76" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="79" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="79" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a4b17f759af26a756aab5035ddf5b53c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -861,7 +861,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="85" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="85" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="91" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="91" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a589a55d85f293c1ed9905e5aac936776" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -891,7 +891,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="98" column="6" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="98" bodyend="124"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="108" column="6" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="108" bodyend="139"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a18ddaf734a629ded5ad2a2f235937298" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1201,7 +1201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="150" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="150" bodyend="170"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="157" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="157" bodyend="177"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1228,7 +1228,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="175" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="175" bodyend="178"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="182" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="182" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1254,7 +1254,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="181" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="181" bodyend="184"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="187" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="187" bodyend="189"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1275,13 +1275,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="186" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="186" bodyend="189"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="191" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="191" bodyend="195"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuAutoTune.h" line="13" column="27"/>
+    <location file="faiss/gpu/GpuAutoTune.h" line="14" column="13"/>
   </compounddef>
 </doxygen>

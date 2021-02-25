@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="23" column="7" bodyfile="faiss/gpu/GpuIndex.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="20" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="28" column="15" bodyfile="faiss/gpu/GpuIndex.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="25" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -61,7 +61,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexBinaryFlat.h" line="19" column="53" bodyfile="faiss/gpu/GpuIndexBinaryFlat.h" bodystart="19" bodyend="20"/>
+    <location file="faiss/gpu/GpuIndexBinaryFlat.h" line="20" column="53" bodyfile="faiss/gpu/GpuIndexBinaryFlat.h" bodystart="20" bodyend="20"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>GpuIndexConfig</name></member>

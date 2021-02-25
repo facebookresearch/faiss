@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="33" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="33" column="17" bodyfile="faiss/gpu/utils/Timer.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a53028f1e94f1f092208a6df69893b73f" prot="private" static="no" mutable="no">
         <type>cudaEvent_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="34" column="15" bodyfile="faiss/gpu/utils/Timer.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="34" column="17" bodyfile="faiss/gpu/utils/Timer.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1aac90fea6973d68d2b12149d5fb928da8" prot="private" static="no" mutable="no">
         <type>cudaStream_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="35" column="16" bodyfile="faiss/gpu/utils/Timer.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="35" column="18" bodyfile="faiss/gpu/utils/Timer.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1KernelTimer_1a7582d3003da51096c5740c8773d9c3ec" prot="private" static="no" mutable="no">
         <type>bool</type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="36" column="8" bodyfile="faiss/gpu/utils/Timer.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/gpu/utils/Timer.h" line="36" column="10" bodyfile="faiss/gpu/utils/Timer.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="21" column="3"/>
+        <location file="faiss/gpu/utils/Timer.h" line="21" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -89,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="24" column="3"/>
+        <location file="faiss/gpu/utils/Timer.h" line="24" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/Timer.h" line="30" column="9"/>
+        <location file="faiss/gpu/utils/Timer.h" line="30" column="11"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

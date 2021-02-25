@@ -17,13 +17,13 @@
       <node id="9">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="5">
+      <node id="7">
         <label>typeinfo</label>
       </node>
       <node id="4">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="5">
         <label>sstream</label>
       </node>
       <node id="8">
@@ -37,9 +37,9 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -117,67 +117,73 @@
 <codeline lineno="19"><highlight class="comment">///<sp/>Each<sp/>index<sp/>is<sp/>managed<sp/>by<sp/>a<sp/>separate<sp/>CPU<sp/>thread.</highlight></codeline>
 <codeline lineno="20"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT&gt;</highlight></codeline>
 <codeline lineno="21" refid="classfaiss_1_1IndexReplicasTemplate" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>ThreadedIndex&lt;IndexT&gt;<sp/>{</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>idx_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::idx_t;</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>component_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::component_t;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>distance_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::distance_t;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>idx_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::idx_t;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>component_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::component_t;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>distance_t<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT::distance_t;</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/>///<sp/>The<sp/>dimension<sp/>that<sp/>all<sp/>sub-indices<sp/>must<sp/>share<sp/>will<sp/>be<sp/>the<sp/>dimension<sp/>of<sp/>the</highlight></codeline>
-<codeline lineno="28"><highlight class="comment"><sp/><sp/>///<sp/>first<sp/>sub-index<sp/>added</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/><sp/>///<sp/>@param<sp/>threaded<sp/>do<sp/>we<sp/>use<sp/>one<sp/>thread<sp/>per<sp/>sub-index<sp/>or<sp/>do<sp/>queries</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"><sp/><sp/>///<sp/>sequentially?</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>dimension<sp/>that<sp/>all<sp/>sub-indices<sp/>must<sp/>share<sp/>will<sp/>be<sp/>the<sp/>dimension<sp/>of</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>first<sp/>sub-index<sp/>added</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>threaded<sp/>do<sp/>we<sp/>use<sp/>one<sp/>thread<sp/>per<sp/>sub-index<sp/>or<sp/>do<sp/>queries</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>sequentially?</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/><sp/>///<sp/>@param<sp/>d<sp/>the<sp/>dimension<sp/>that<sp/>all<sp/>sub-indices<sp/>must<sp/>share</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/><sp/>///<sp/>@param<sp/>threaded<sp/>do<sp/>we<sp/>use<sp/>one<sp/>thread<sp/>per<sp/>sub<sp/>index<sp/>or<sp/>do<sp/>queries</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/><sp/>///<sp/>sequentially?</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(idx_t<sp/>d,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>d<sp/>the<sp/>dimension<sp/>that<sp/>all<sp/>sub-indices<sp/>must<sp/>share</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>@param<sp/>threaded<sp/>do<sp/>we<sp/>use<sp/>one<sp/>thread<sp/>per<sp/>sub<sp/>index<sp/>or<sp/>do<sp/>queries</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>sequentially?</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(idx_t<sp/>d,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="38"><highlight class="comment"><sp/><sp/>///<sp/>int<sp/>version<sp/>due<sp/>to<sp/>the<sp/>implicit<sp/>bool<sp/>conversion<sp/>ambiguity<sp/>of<sp/>int<sp/>as</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/><sp/>///<sp/>dimension</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>int<sp/>version<sp/>due<sp/>to<sp/>the<sp/>implicit<sp/>bool<sp/>conversion<sp/>ambiguity<sp/>of<sp/>int<sp/>as</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>dimension</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae" kindref="member">IndexReplicasTemplate</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="42"><highlight class="comment"><sp/><sp/>///<sp/>Alias<sp/>for<sp/>addIndex()</highlight></codeline>
-<codeline lineno="43" refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" kindref="member">add_replica</ref>(IndexT*<sp/>index)<sp/>{<sp/>this-&gt;addIndex(index);<sp/>}</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="45"><highlight class="comment"><sp/><sp/>///<sp/>Alias<sp/>for<sp/>removeIndex()</highlight></codeline>
-<codeline lineno="46" refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" kindref="member">remove_replica</ref>(IndexT*<sp/>index)<sp/>{<sp/>this-&gt;removeIndex(index);<sp/>}</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="48"><highlight class="comment"><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"><sp/><sp/>///<sp/>All<sp/>indices<sp/>receive<sp/>the<sp/>same<sp/>call</highlight></codeline>
-<codeline lineno="50"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a5cdb2a340a3b4f45ec244d5398a29005" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Alias<sp/>for<sp/>addIndex()</highlight></codeline>
+<codeline lineno="43" refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" kindref="member">add_replica</ref>(IndexT*<sp/>index)<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;addIndex(index);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Alias<sp/>for<sp/>removeIndex()</highlight></codeline>
+<codeline lineno="48" refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" kindref="member">remove_replica</ref>(IndexT*<sp/>index)<sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;removeIndex(index);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/><sp/>///<sp/>All<sp/>indices<sp/>receive<sp/>the<sp/>same<sp/>call</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" kindref="member">add</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>All<sp/>indices<sp/>receive<sp/>the<sp/>same<sp/>call</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a5cdb2a340a3b4f45ec244d5398a29005" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/><sp/>///<sp/>Query<sp/>is<sp/>partitioned<sp/>into<sp/>a<sp/>slice<sp/>for<sp/>each<sp/>sub-index</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/><sp/>///<sp/>split<sp/>by<sp/>ceil(n<sp/>/<sp/>#indices)<sp/>for<sp/>our<sp/>sub-indices</highlight></codeline>
-<codeline lineno="59"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1ad6382e3ebaaca61607ad90fc80cdbd3c" kindref="member">search</ref>(idx_t<sp/>n,</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x,</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>k,</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distance_t*<sp/>distances,</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t*<sp/>labels)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/><sp/>///<sp/>reconstructs<sp/>from<sp/>the<sp/>first<sp/>index</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" kindref="member">reconstruct</ref>(idx_t,<sp/>component_t<sp/>*v)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/><sp/>///<sp/>Synchronize<sp/>the<sp/>top-level<sp/>index<sp/>(IndexShards)<sp/>with<sp/>data<sp/>in<sp/>the<sp/>sub-indices</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" kindref="member">syncWithSubIndexes</ref>();</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="72"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>added</highlight></codeline>
-<codeline lineno="73"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a4fd98a5ba105391bfb3e490d84d26b27" kindref="member">onAfterAddIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="75"><highlight class="comment"><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>removed</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" kindref="member">onAfterRemoveIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;Index&gt;;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexBinaryReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;IndexBinary&gt;;</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>All<sp/>indices<sp/>receive<sp/>the<sp/>same<sp/>call</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" kindref="member">add</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Query<sp/>is<sp/>partitioned<sp/>into<sp/>a<sp/>slice<sp/>for<sp/>each<sp/>sub-index</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>split<sp/>by<sp/>ceil(n<sp/>/<sp/>#indices)<sp/>for<sp/>our<sp/>sub-indices</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1ad6382e3ebaaca61607ad90fc80cdbd3c" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>n,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>component_t*<sp/>x,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>k,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distance_t*<sp/>distances,</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t*<sp/>labels)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reconstructs<sp/>from<sp/>the<sp/>first<sp/>index</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" kindref="member">reconstruct</ref>(idx_t,<sp/>component_t*<sp/>v)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="73"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Synchronize<sp/>the<sp/>top-level<sp/>index<sp/>(IndexShards)<sp/>with<sp/>data<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>sub-indices</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" kindref="member">syncWithSubIndexes</ref>();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>added</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a4fd98a5ba105391bfb3e490d84d26b27" kindref="member">onAfterAddIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>removed</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" kindref="member">onAfterRemoveIndex</ref>(IndexT*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;Index&gt;;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>IndexBinaryReplicas<sp/>=<sp/>IndexReplicasTemplate&lt;IndexBinary&gt;;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/IndexReplicas.h"/>
   </compounddef>

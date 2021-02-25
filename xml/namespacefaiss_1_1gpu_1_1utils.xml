@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="22" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="22" bodyend="24"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="23" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="23" bodyend="25"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1a91e56461afb8b046dba4fdd8000e95af" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="27" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="27" bodyend="29"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="28" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="28" bodyend="30"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1afbb2f1d0a5843abf8c3a836bfb387ab4" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="32" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="32" bodyend="34"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="33" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="33" bodyend="35"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1a1f24706c84852e436a8b5dcad7d9f252" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -117,7 +117,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="37" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="37" bodyend="39"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="38" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="38" bodyend="40"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1a1f3e4845c081c122a447cc5f520b7a93" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -143,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="42" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="42" bodyend="44"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="43" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="43" bodyend="45"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1aa90afbafb948f4fa36a2414120ff208c" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="47" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="47" bodyend="49"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="48" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="48" bodyend="50"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1aee56435daf563a79585c93c44e5375db" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="54" column="35" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="54" bodyend="56"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="55" column="35" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="55" bodyend="57"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1a4d2f892d9242bffb150b3743b95eac33" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -214,7 +214,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="63" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="63" bodyend="65"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="64" column="36" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="64" bodyend="66"/>
       </memberdef>
       <memberdef kind="function" id="StaticUtils_8h_1ab55ab9059fa19bc3270a50dfe239a077" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -236,13 +236,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StaticUtils.h" line="71" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="71" bodyend="73"/>
+        <location file="faiss/gpu/utils/StaticUtils.h" line="72" column="33" bodyfile="faiss/gpu/utils/StaticUtils.h" bodystart="72" bodyend="74"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/StaticUtils.h" line="19" column="41"/>
+    <location file="faiss/gpu/utils/StaticUtils.h" line="20" column="15"/>
   </compounddef>
 </doxygen>

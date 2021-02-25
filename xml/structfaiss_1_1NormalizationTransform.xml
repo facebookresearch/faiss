@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="287" column="11" bodyfile="faiss/VectorTransform.h" bodystart="287" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="264" column="11" bodyfile="faiss/VectorTransform.h" bodystart="264" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="31" column="9" bodyfile="faiss/VectorTransform.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="28" column="9" bodyfile="faiss/VectorTransform.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -43,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="32" column="9" bodyfile="faiss/VectorTransform.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="29" column="9" bodyfile="faiss/VectorTransform.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="41" column="10" bodyfile="faiss/VectorTransform.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="36" column="10" bodyfile="faiss/VectorTransform.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -81,7 +81,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="289" column="14"/>
+        <location file="faiss/VectorTransform.h" line="266" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormalizationTransform_1a0b81cf1bcc8fd322b54c25b8e1d67a37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="290" column="5"/>
+        <location file="faiss/VectorTransform.h" line="267" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -121,7 +121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="292" column="10"/>
+        <location file="faiss/VectorTransform.h" line="269" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="295" column="10"/>
+        <location file="faiss/VectorTransform.h" line="272" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -194,7 +194,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="50" column="18"/>
+        <location file="faiss/VectorTransform.h" line="44" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
@@ -227,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="56" column="11"/>
+        <location file="faiss/VectorTransform.h" line="50" column="11"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -242,7 +242,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="29" column="26" bodyfile="faiss/VectorTransform.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="26" column="26" bodyfile="faiss/VectorTransform.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -274,7 +274,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="286" column="45" bodyfile="faiss/VectorTransform.h" bodystart="286" bodyend="296"/>
+    <location file="faiss/VectorTransform.h" line="263" column="45" bodyfile="faiss/VectorTransform.h" bodystart="263" bodyend="273"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd" prot="public" virt="virtual"><scope>faiss::NormalizationTransform</scope><name>apply_noalloc</name></member>

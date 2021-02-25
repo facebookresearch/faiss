@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="108" column="7" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="105" column="9" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29" prot="protected" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kindref="compound">Stack</ref></type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="111" column="9" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="111" bodyend="-1"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="108" column="11" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="25" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="25" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1afd7a84b8cd1f747d873cdd1ab07e8a4b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="31" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="29" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab9c08b79317d9d2dae9208b41dba7826" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="33" column="3"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="31" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab4d6a319417fb80e56cce4d28124ea89" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="35" column="7"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="33" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void *</type>
@@ -138,7 +138,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="38" column="8"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="36" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -166,7 +166,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="39" column="8"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="37" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a58431176d97b990ab8144bb30d7c2bd5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="41" column="10"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="39" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1adc327179a0f60e889bad08dfb0ad5b0d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="42" column="15"/>
+        <location file="faiss/gpu/utils/StackDeviceMemory.h" line="40" column="17"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -220,7 +220,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="22" column="24" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="22" bodyend="112"/>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="22" column="24" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="22" bodyend="109"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>allocMemory</name></member>
       <member refid="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory</scope><name>deallocMemory</name></member>

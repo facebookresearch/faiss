@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="49" column="22" bodyfile="faiss/IVFlib.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="48" column="22" bodyfile="faiss/IVFlib.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="35" column="17" declfile="faiss/IVFlib.h" declline="35" declcolumn="17"/>
+        <location file="faiss/IVFlib.h" line="34" column="16" declfile="faiss/IVFlib.h" declline="34" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a99619f17a07b9a29193d1c796a390b54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="36" column="11" declfile="faiss/IVFlib.h" declline="36" declcolumn="11"/>
+        <location file="faiss/IVFlib.h" line="35" column="10" declfile="faiss/IVFlib.h" declline="35" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a6fff1114be38812ecd9a5afa41f7c329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="39" column="17" declfile="faiss/IVFlib.h" declline="39" declcolumn="17"/>
+        <location file="faiss/IVFlib.h" line="38" column="16" declfile="faiss/IVFlib.h" declline="38" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a5905b16993db13ef518648936e63b251" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> *</type>
@@ -110,7 +110,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="40" column="11" declfile="faiss/IVFlib.h" declline="40" declcolumn="11"/>
+        <location file="faiss/IVFlib.h" line="39" column="10" declfile="faiss/IVFlib.h" declline="39" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a342382b7b7a6c4e769a9b6bbfe8becaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="47" column="6" declfile="faiss/IVFlib.h" declline="47" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="46" column="6" declfile="faiss/IVFlib.h" declline="46" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1ad23c0309490017e0a4f7bf50eb873ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -175,7 +175,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="60" column="6" declfile="faiss/IVFlib.h" declline="60" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="59" column="6" declfile="faiss/IVFlib.h" declline="59" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a739f3822af902e9b9fb8104415dc0ef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="74" column="6" declfile="faiss/IVFlib.h" declline="74" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="71" column="6" declfile="faiss/IVFlib.h" declline="71" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aaa9a8f346bd0ff551667de679f231bf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -246,7 +246,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="116" column="21" declfile="faiss/IVFlib.h" declline="116" declcolumn="21"/>
+        <location file="faiss/IVFlib.h" line="111" column="20" declfile="faiss/IVFlib.h" declline="111" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a01332806047c09400a8c73f1fd400699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -276,7 +276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="120" column="6" declfile="faiss/IVFlib.h" declline="120" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="114" column="6" declfile="faiss/IVFlib.h" declline="114" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a113970d7b83b793fe22b2cf2bb73a78b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -333,7 +333,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="133" column="6" declfile="faiss/IVFlib.h" declline="133" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="126" column="6" declfile="faiss/IVFlib.h" declline="126" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -381,13 +381,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="142" column="6" declfile="faiss/IVFlib.h" declline="142" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="138" column="6" declfile="faiss/IVFlib.h" declline="138" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IVFlib.h" line="22" column="30"/>
+    <location file="faiss/IVFlib.h" line="23" column="16"/>
   </compounddef>
 </doxygen>

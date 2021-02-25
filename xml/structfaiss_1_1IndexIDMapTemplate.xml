@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="28" column="13" bodyfile="faiss/MetaIndexes.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/MetaIndexes.h" line="28" column="12" bodyfile="faiss/MetaIndexes.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIDMapTemplate_1a6312303b535755beee7b487c99b07df1" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -167,7 +167,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="38" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="39" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1aa81597506b85759ce5b5d291a3bc631d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -200,7 +200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="40" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="41" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a6b9a5e978a69c99d93b6b8b2a3324f34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -221,7 +221,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="45" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="48" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a31821431b6a6b960ecb18b8c2ac46372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -234,7 +234,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="47" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="50" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1afd6b245850e0d0d8019772e6a3eda069" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -252,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="50" column="12"/>
+        <location file="faiss/MetaIndexes.h" line="53" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1aa38b6bb7586c783aa33ab3d00ce8484a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -281,7 +281,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="52" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="55" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a07bd2e93b6d9ad135f2c60acc38e3341" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -294,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="55" column="5"/>
+        <location file="faiss/MetaIndexes.h" line="61" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1adcc8e05b7bd4061f05a4fdde86a4c136" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -307,7 +307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="56" column="5" bodyfile="faiss/MetaIndexes.h" bodystart="56" bodyend="56"/>
+        <location file="faiss/MetaIndexes.h" line="62" column="5" bodyfile="faiss/MetaIndexes.h" bodystart="62" bodyend="65"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -343,7 +343,7 @@
         <label>IndexT</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/MetaIndexes.h" line="23" column="32" bodyfile="faiss/MetaIndexes.h" bodystart="23" bodyend="57"/>
+    <location file="faiss/MetaIndexes.h" line="23" column="32" bodyfile="faiss/MetaIndexes.h" bodystart="23" bodyend="66"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a79498bca09342333e351bb6a4da8984d" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a4cc8ae99154bf436d1cbe70a4205bfcd" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add_with_ids</name></member>

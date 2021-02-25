@@ -9,7 +9,7 @@
     <includes refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includes>
     <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
     <incdepgraph>
-      <node id="16">
+      <node id="14">
         <label>cublas_v2.h</label>
       </node>
       <node id="9">
@@ -28,7 +28,7 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="16">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
       <node id="13">
@@ -47,7 +47,7 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="8">
         <label>typeinfo</label>
       </node>
       <node id="5">
@@ -63,7 +63,7 @@
       <node id="18">
         <label>utility</label>
       </node>
-      <node id="8">
+      <node id="6">
         <label>sstream</label>
       </node>
       <node id="3">
@@ -139,70 +139,73 @@
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndex.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GpuResourcesProvider;</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="22"><highlight class="comment">///<sp/>Cloner<sp/>specialized<sp/>for<sp/>GPU<sp/>-&gt;<sp/>CPU</highlight></codeline>
-<codeline lineno="23" refid="structfaiss_1_1gpu_1_1ToCPUCloner" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToCPUCloner" kindref="compound">ToCPUCloner</ref>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref><sp/>{</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>merge_index(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*dst,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*src,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>successive_ids);</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*clone_Index(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="26"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GpuResourcesProvider;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="23"><highlight class="comment">///<sp/>Cloner<sp/>specialized<sp/>for<sp/>GPU<sp/>-&gt;<sp/>CPU</highlight></codeline>
+<codeline lineno="24" refid="structfaiss_1_1gpu_1_1ToCPUCloner" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToCPUCloner" kindref="compound">ToCPUCloner</ref><sp/>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref><sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>merge_index(<ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>dst,<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>src,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>successive_ids);</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>clone_Index(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="29"><highlight class="comment">///<sp/>Cloner<sp/>specialized<sp/>for<sp/>CPU<sp/>-&gt;<sp/>1<sp/>GPU</highlight></codeline>
-<codeline lineno="30" refid="structfaiss_1_1gpu_1_1ToGpuCloner" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref>,<sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref><sp/>{</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>*provider;</highlight></codeline>
+<codeline lineno="30" refid="structfaiss_1_1gpu_1_1ToGpuCloner" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref><sp/>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref>,<sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref><sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>provider;</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref>(<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>*prov,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref><sp/>&amp;options);</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*clone_Index(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuCloner" kindref="compound">ToGpuCloner</ref>(</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>prov,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref>&amp;<sp/>options);</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
-<codeline lineno="39"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="41"><highlight class="comment">///<sp/>Cloner<sp/>specialized<sp/>for<sp/>CPU<sp/>-&gt;<sp/>multiple<sp/>GPUs</highlight></codeline>
-<codeline lineno="42" refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref>,<sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>{</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;ToGpuCloner&gt;<sp/>sub_cloners;</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref>(std::vector&lt;GpuResourcesProvider<sp/>*&gt;<sp/>&amp;<sp/>provider,</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>devices,</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>&amp;options);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;ToGpuCloner&gt;<sp/>&amp;<sp/>sub_cloners,</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>&amp;options);</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copy_ivf_shard<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref><sp/>*index_ivf,<sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref><sp/>*idx2,</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>clone_Index(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="42"><highlight class="comment">///<sp/>Cloner<sp/>specialized<sp/>for<sp/>CPU<sp/>-&gt;<sp/>multiple<sp/>GPUs</highlight></codeline>
+<codeline lineno="43" refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref><sp/>:<sp/><ref refid="structfaiss_1_1Cloner" kindref="compound">faiss::Cloner</ref>,<sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;ToGpuCloner&gt;<sp/>sub_cloners;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref>(</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GpuResourcesProvider*&gt;&amp;<sp/>provider,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>devices,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref>&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kindref="compound">ToGpuClonerMultiple</ref>(</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;ToGpuCloner&gt;&amp;<sp/>sub_cloners,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref>&amp;<sp/>options);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<sp/>clone_Index_to_shards<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index);</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>main<sp/>function</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*<ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" kindref="member">clone_Index</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref><sp/>*index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="59"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>copy_ivf_shard(</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>*<sp/>index_ivf,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>*<sp/>idx2,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i);</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="64"><highlight class="comment">///<sp/>converts<sp/>any<sp/>GPU<sp/>index<sp/>inside<sp/>gpu_index<sp/>to<sp/>a<sp/>CPU<sp/>index</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*<sp/>index_gpu_to_cpu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*gpu_index);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>clone_Index_to_shards(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>main<sp/>function</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" kindref="member">clone_Index</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/>index)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="67"><highlight class="comment">///<sp/>converts<sp/>any<sp/>CPU<sp/>index<sp/>that<sp/>can<sp/>be<sp/>converted<sp/>to<sp/>GPU</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*<sp/>index_cpu_to_gpu(</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>provider,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*index,</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref><sp/>*options<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*<sp/>index_cpu_to_gpu_multiple(</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GpuResourcesProvider*&gt;<sp/>&amp;<sp/>provider,</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/>&amp;devices,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref><sp/>*index,</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>*options<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal">}<sp/>}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="comment">///<sp/>converts<sp/>any<sp/>GPU<sp/>index<sp/>inside<sp/>gpu_index<sp/>to<sp/>a<sp/>CPU<sp/>index</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_gpu_to_cpu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>gpu_index);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="70"><highlight class="comment">///<sp/>converts<sp/>any<sp/>CPU<sp/>index<sp/>that<sp/>can<sp/>be<sp/>converted<sp/>to<sp/>GPU</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_cpu_to_gpu(</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>*<sp/>provider,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>device,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kindref="compound">GpuClonerOptions</ref>*<sp/>options<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index_cpu_to_gpu_multiple(</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GpuResourcesProvider*&gt;&amp;<sp/>provider,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>devices,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref>*<sp/>options<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/GpuCloner.h"/>
   </compounddef>
