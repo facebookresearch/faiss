@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
 #include <faiss/IndexReplicas.h>
@@ -14,26 +13,29 @@
 #include <memory>
 #include <vector>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 // If we want to run multi-GPU, create a proxy to wrap the indices.
 // If we don't want multi-GPU, don't involve the proxy, so it doesn't
 // affect the timings.
 template <typename GpuIndex>
 struct IndexWrapper {
-  std::vector<std::unique_ptr<faiss::gpu::StandardGpuResources>> resources;
-  std::vector<std::unique_ptr<GpuIndex>> subIndex;
-  std::unique_ptr<faiss::IndexReplicas> replicaIndex;
+    std::vector<std::unique_ptr<faiss::gpu::StandardGpuResources>> resources;
+    std::vector<std::unique_ptr<GpuIndex>> subIndex;
+    std::unique_ptr<faiss::IndexReplicas> replicaIndex;
 
-  IndexWrapper(
-    int numGpus,
-    std::function<std::unique_ptr<GpuIndex>(GpuResourcesProvider*, int)> init);
-  faiss::Index* getIndex();
+    IndexWrapper(
+            int numGpus,
+            std::function<std::unique_ptr<GpuIndex>(GpuResourcesProvider*, int)>
+                    init);
+    faiss::Index* getIndex();
 
-  void runOnIndices(std::function<void(GpuIndex*)> f);
-  void setNumProbes(int nprobe);
+    void runOnIndices(std::function<void(GpuIndex*)> f);
+    void setNumProbes(int nprobe);
 };
 
-} }
+} // namespace gpu
+} // namespace faiss
 
 #include <faiss/gpu/perf/IndexWrapper-inl.h>

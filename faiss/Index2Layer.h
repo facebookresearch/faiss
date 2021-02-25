@@ -11,20 +11,20 @@
 
 #include <vector>
 
-#include <faiss/IndexPQ.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexPQ.h>
 
 namespace faiss {
 
 struct IndexIVFPQ;
 
-
-/** Same as an IndexIVFPQ without the inverted lists: codes are stored sequentially
+/** Same as an IndexIVFPQ without the inverted lists: codes are stored
+ * sequentially
  *
  * The class is mainly inteded to store encoded vectors that can be
  * accessed randomly, the search function is not implemented.
  */
-struct Index2Layer: Index {
+struct Index2Layer : Index {
     /// first level quantizer
     Level1Quantizer q1;
 
@@ -43,12 +43,15 @@ struct Index2Layer: Index {
     /// code_size_1 + code_size_2
     size_t code_size;
 
-    Index2Layer (Index * quantizer, size_t nlist,
-                 int M, int nbit = 8,
-                 MetricType metric = METRIC_L2);
+    Index2Layer(
+            Index* quantizer,
+            size_t nlist,
+            int M,
+            int nbit = 8,
+            MetricType metric = METRIC_L2);
 
-    Index2Layer ();
-    ~Index2Layer ();
+    Index2Layer();
+    ~Index2Layer();
 
     void train(idx_t n, const float* x) override;
 
@@ -56,11 +59,11 @@ struct Index2Layer: Index {
 
     /// not implemented
     void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
 
     void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
 
@@ -68,18 +71,15 @@ struct Index2Layer: Index {
 
     void reset() override;
 
-    DistanceComputer * get_distance_computer() const override;
+    DistanceComputer* get_distance_computer() const override;
 
     /// transfer the flat codes to an IVFPQ index
-    void transfer_to_IVFPQ(IndexIVFPQ & other) const;
-
+    void transfer_to_IVFPQ(IndexIVFPQ& other) const;
 
     /* The standalone codec interface */
-    size_t sa_code_size () const override;
-    void sa_encode (idx_t n, const float *x, uint8_t *bytes) const override;
-    void sa_decode (idx_t n, const uint8_t *bytes, float *x) const override;
-
+    size_t sa_code_size() const override;
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
-
 
 } // namespace faiss

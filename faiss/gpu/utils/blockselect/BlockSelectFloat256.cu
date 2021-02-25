@@ -7,9 +7,11 @@
 
 #include <faiss/gpu/utils/blockselect/BlockSelectImpl.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 BLOCK_SELECT_IMPL(float, true, 256, 4);
 BLOCK_SELECT_IMPL(float, false, 256, 4);
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss

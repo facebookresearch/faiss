@@ -9,14 +9,12 @@
 #include <cstdlib>
 
 #include <faiss/Clustering.h>
-#include <faiss/utils/random.h>
-#include <faiss/utils/distances.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
-
+#include <faiss/utils/distances.h>
+#include <faiss/utils/random.h>
 
 namespace {
-
 
 enum WeightedKMeansType {
     WKMT_FlatL2,
@@ -25,35 +23,36 @@ enum WeightedKMeansType {
     WKMT_HNSW,
 };
 
-
-float weighted_kmeans_clustering (size_t d, size_t n, size_t k,
-                                  const float *input,
-                                  const float *weights,
-                                  float *centroids,
-                                  WeightedKMeansType index_num)
-{
+float weighted_kmeans_clustering(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* input,
+        const float* weights,
+        float* centroids,
+        WeightedKMeansType index_num) {
     using namespace faiss;
-    Clustering clus (d, k);
+    Clustering clus(d, k);
     clus.verbose = true;
 
     std::unique_ptr<Index> index;
 
     switch (index_num) {
-    case WKMT_FlatL2:
-        index.reset(new IndexFlatL2 (d));
-        break;
-    case WKMT_FlatIP:
-        index.reset(new IndexFlatIP (d));
-        break;
-    case WKMT_FlatIP_spherical:
-        index.reset(new IndexFlatIP (d));
-        clus.spherical = true;
-        break;
-    case WKMT_HNSW:
-        IndexHNSWFlat *ihnsw = new IndexHNSWFlat (d, 32);
-        ihnsw->hnsw.efSearch = 128;
-        index.reset(ihnsw);
-        break;
+        case WKMT_FlatL2:
+            index.reset(new IndexFlatL2(d));
+            break;
+        case WKMT_FlatIP:
+            index.reset(new IndexFlatIP(d));
+            break;
+        case WKMT_FlatIP_spherical:
+            index.reset(new IndexFlatIP(d));
+            clus.spherical = true;
+            break;
+        case WKMT_HNSW:
+            IndexHNSWFlat* ihnsw = new IndexHNSWFlat(d, 32);
+            ihnsw->hnsw.efSearch = 128;
+            index.reset(ihnsw);
+            break;
     }
 
     clus.train(n, input, *index.get(), weights);
@@ -61,7 +60,6 @@ float weighted_kmeans_clustering (size_t d, size_t n, size_t k,
     memcpy(centroids, clus.centroids.data(), sizeof(*centroids) * d * k);
     return clus.iteration_stats.back().obj;
 }
-
 
 int d = 32;
 float sigma = 0.1;
@@ -81,23 +79,23 @@ int n_small = 10;
 
 int n; // number of training points
 
-void generate_trainset (std::vector<float> & ccent,
-                        std::vector<float> & x,
-                        std::vector<float> & weights)
-{
+void generate_trainset(
+        std::vector<float>& ccent,
+        std::vector<float>& x,
+        std::vector<float>& weights) {
     // same sampling as test_build_blocks.py test_weighted
 
-    ccent.resize (d * 2 * nc);
-    faiss::float_randn (ccent.data(), d * 2 * nc, 123);
-    faiss::fvec_renorm_L2 (d, 2 * nc, ccent.data());
+    ccent.resize(d * 2 * nc);
+    faiss::float_randn(ccent.data(), d * 2 * nc, 123);
+    faiss::fvec_renorm_L2(d, 2 * nc, ccent.data());
     n = nc * n_big + nc * n_small;
     x.resize(d * n);
     weights.resize(n);
-    faiss::float_randn (x.data(), x.size(), 1234);
+    faiss::float_randn(x.data(), x.size(), 1234);
 
-    float *xi = x.data();
-    float *w = weights.data();
-    for (int ci = 0; ci < nc * 2; ci++) { // loop over centroids
+    float* xi = x.data();
+    float* w = weights.data();
+    for (int ci = 0; ci < nc * 2; ci++) {   // loop over centroids
         int np = ci < nc ? n_big : n_small; // nb of points around this centroid
         for (int i = 0; i < np; i++) {
             for (int j = 0; j < d; j++) {
@@ -109,10 +107,9 @@ void generate_trainset (std::vector<float> & ccent,
     }
 }
 
-}
+} // namespace
 
-
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     std::vector<float> ccent;
     std::vector<float> x;
     std::vector<float> weights;
@@ -131,11 +128,7 @@ int main(int argc, char **argv) {
         the_with_weights = atoi(argv[2]);
     }
 
-
-    for (int index_num = WKMT_FlatL2;
-         index_num <= WKMT_HNSW;
-         index_num++) {
-
+    for (int index_num = WKMT_FlatL2; index_num <= WKMT_HNSW; index_num++) {
         if (the_index_num >= 0 && index_num != the_index_num) {
             continue;
         }
@@ -146,39 +139,41 @@ int main(int argc, char **argv) {
             }
 
             printf("=================== index_num=%d Run %s weights\n",
-                   index_num, with_weights ? "with" : "without");
+                   index_num,
+                   with_weights ? "with" : "without");
 
-            weighted_kmeans_clustering (
-                 d, n, nc, x.data(),
-                 with_weights ? weights.data() : nullptr,
-                 centroids.data(), (WeightedKMeansType)index_num
-            );
+            weighted_kmeans_clustering(
+                    d,
+                    n,
+                    nc,
+                    x.data(),
+                    with_weights ? weights.data() : nullptr,
+                    centroids.data(),
+                    (WeightedKMeansType)index_num);
 
             { // compute distance of points to centroids
                 faiss::IndexFlatL2 cent_index(d);
                 cent_index.add(nc, centroids.data());
-                std::vector<float> dis (n);
-                std::vector<faiss::Index::idx_t> idx (n);
+                std::vector<float> dis(n);
+                std::vector<faiss::Index::idx_t> idx(n);
 
-                cent_index.search (nc * 2, ccent.data(), 1,
-                                   dis.data(), idx.data());
+                cent_index.search(
+                        nc * 2, ccent.data(), 1, dis.data(), idx.data());
 
                 float dis1 = 0, dis2 = 0;
-                for (int i = 0; i < nc ; i++) {
+                for (int i = 0; i < nc; i++) {
                     dis1 += dis[i];
                 }
                 printf("average distance of points from big clusters: %g\n",
                        dis1 / nc);
 
-                for (int i = 0; i < nc ; i++) {
+                for (int i = 0; i < nc; i++) {
                     dis2 += dis[i + nc];
                 }
 
                 printf("average distance of points from small clusters: %g\n",
                        dis2 / nc);
-
             }
-
         }
     }
     return 0;

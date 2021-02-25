@@ -58,7 +58,7 @@ class TestIndexFlat(unittest.TestCase):
 
         for i in range(nq):
             l0, l1 = lims[i:i + 2]
-            Dl, Il = D2[l0:l1], I2[l0:l1]
+            _, Il = D2[l0:l1], I2[l0:l1]
             if metric_type == faiss.METRIC_L2:
                 Ilref, = np.where(all_dis[i] < radius)
             else:

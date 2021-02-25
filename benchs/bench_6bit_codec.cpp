@@ -5,19 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
-#include <cstdio>
 #include <omp.h>
+#include <cstdio>
 
 #include <faiss/impl/ScalarQuantizer.h>
-#include <faiss/utils/utils.h>
-#include <faiss/utils/random.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 using namespace faiss;
 
 int main() {
-
     int d = 128;
     int n = 2000;
 
@@ -52,13 +50,14 @@ int main() {
 
     size_t ndiff = 0;
     for (size_t i = 0; i < codes.size(); i++) {
-        if (codes[i] != codes2[i]) ndiff++;
+        if (codes[i] != codes2[i])
+            ndiff++;
     }
 
     printf("ndiff for idempotence: %ld / %ld\n", ndiff, codes.size());
 
-    std::unique_ptr<ScalarQuantizer::SQDistanceComputer>
-        dc(sq.get_distance_computer());
+    std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
+            sq.get_distance_computer());
     dc->codes = codes.data();
     dc->code_size = sq.code_size;
     printf("code size: %ld\n", dc->code_size);
@@ -72,9 +71,8 @@ int main() {
         }
     }
     printf("distances computed in %.3f ms, checksum=%g\n",
-           getmillisecs() - t0, sum_dis);
-
-
+           getmillisecs() - t0,
+           sum_dis);
 
     return 0;
 }

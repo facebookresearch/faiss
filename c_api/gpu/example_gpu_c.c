@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "AutoTune_c.h"
+#include "DeviceUtils_c.h"
+#include "GpuAutoTune_c.h"
+#include "Index_c.h"
+#include "StandardGpuResources_c.h"
 #include "error_c.h"
 #include "index_factory_c.h"
-#include "Index_c.h"
-#include "AutoTune_c.h"
-#include "GpuAutoTune_c.h"
-#include "StandardGpuResources_c.h"
-#include "DeviceUtils_c.h"
 
 #define FAISS_TRY(C)                                       \
     {                                                      \
@@ -41,18 +41,20 @@ int main() {
     printf("%d GPU devices are available\n", gpus);
 
     printf("Generating some data...\n");
-    int d = 128;                           // dimension
-    int nb = 100000;                       // database size
-    int nq = 10000;                        // nb of queries
-    float *xb = malloc(d * nb * sizeof(float));
-    float *xq = malloc(d * nq * sizeof(float));
+    int d = 128;     // dimension
+    int nb = 100000; // database size
+    int nq = 10000;  // nb of queries
+    float* xb = malloc(d * nb * sizeof(float));
+    float* xq = malloc(d * nq * sizeof(float));
 
-    for(int i = 0; i < nb; i++) {
-        for(int j = 0; j < d; j++) xb[d * i + j] = drand();
+    for (int i = 0; i < nb; i++) {
+        for (int j = 0; j < d; j++)
+            xb[d * i + j] = drand();
         xb[d * i] += i / 1000.;
     }
-    for(int i = 0; i < nq; i++) {
-        for(int j = 0; j < d; j++) xq[d * i + j] = drand();
+    for (int i = 0; i < nq; i++) {
+        for (int j = 0; j < d; j++)
+            xq[d * i + j] = drand();
         xq[d * i] += i / 1000.;
     }
 
@@ -62,40 +64,45 @@ int main() {
 
     printf("Building an index...\n");
     FaissIndex* cpu_index = NULL;
-    FAISS_TRY(faiss_index_factory(&cpu_index, d, "Flat", METRIC_L2));  // use factory to create index
+    FAISS_TRY(faiss_index_factory(
+            &cpu_index, d, "Flat", METRIC_L2)); // use factory to create index
 
     printf("Moving index to the GPU...\n");
     FaissGpuIndex* index = NULL;
     FaissGpuClonerOptions* options = NULL;
     FAISS_TRY(faiss_GpuClonerOptions_new(&options));
-    FAISS_TRY(faiss_index_cpu_to_gpu_with_options(gpu_res, 0, cpu_index, options, &index));
+    FAISS_TRY(faiss_index_cpu_to_gpu_with_options(
+            gpu_res, 0, cpu_index, options, &index));
 
-    printf("is_trained = %s\n", faiss_Index_is_trained(index) ? "true" : "false");
-    FAISS_TRY(faiss_Index_add(index, nb, xb));                     // add vectors to the index
+    printf("is_trained = %s\n",
+           faiss_Index_is_trained(index) ? "true" : "false");
+    FAISS_TRY(faiss_Index_add(index, nb, xb)); // add vectors to the index
     printf("ntotal = %ld\n", faiss_Index_ntotal(index));
 
     printf("Searching...\n");
     int k = 5;
 
-    {       // sanity check: search 5 first vectors of xb
-        idx_t *I = malloc(k * 5 * sizeof(idx_t));
-        float *D = malloc(k * 5 * sizeof(float));
+    { // sanity check: search 5 first vectors of xb
+        idx_t* I = malloc(k * 5 * sizeof(idx_t));
+        float* D = malloc(k * 5 * sizeof(float));
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++) printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
             printf("\n");
         }
         free(I);
         free(D);
     }
-    {       // search xq
-        idx_t *I = malloc(k * nq * sizeof(idx_t));
-        float *D = malloc(k * nq * sizeof(float));
+    { // search xq
+        idx_t* I = malloc(k * nq * sizeof(idx_t));
+        float* D = malloc(k * nq * sizeof(float));
         FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
         printf("I=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++) printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5ld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
             printf("\n");
         }
         free(I);

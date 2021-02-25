@@ -5,87 +5,80 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
-#include <faiss/gpu/impl/BinaryFlatIndex.cuh>
-#include <faiss/gpu/impl/BinaryDistance.cuh>
-#include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/impl/BinaryDistance.cuh>
+#include <faiss/gpu/impl/BinaryFlatIndex.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
-BinaryFlatIndex::BinaryFlatIndex(GpuResources* res,
-                                 int dim,
-                                 MemorySpace space) :
-    resources_(res),
-    dim_(dim),
-    num_(0),
-    rawData_(res,
-             makeSpaceAlloc(
-               AllocType::FlatData,
-               space,
-               res->getDefaultStreamCurrentDevice())) {
-  FAISS_ASSERT(dim % 8 == 0);
+BinaryFlatIndex::BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space)
+        : resources_(res),
+          dim_(dim),
+          num_(0),
+          rawData_(
+                  res,
+                  makeSpaceAlloc(
+                          AllocType::FlatData,
+                          space,
+                          res->getDefaultStreamCurrentDevice())) {
+    FAISS_ASSERT(dim % 8 == 0);
 }
 
 /// Returns the number of vectors we contain
 int BinaryFlatIndex::getSize() const {
-  return vectors_.getSize(0);
+    return vectors_.getSize(0);
 }
 
 int BinaryFlatIndex::getDim() const {
-  return vectors_.getSize(1) * 8;
+    return vectors_.getSize(1) * 8;
 }
 
-void
-BinaryFlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
-  rawData_.reserve(numVecs * (dim_ / 8) * sizeof(unsigned int), stream);
+void BinaryFlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+    rawData_.reserve(numVecs * (dim_ / 8) * sizeof(unsigned int), stream);
 }
 
-Tensor<unsigned char, 2, true>&
-BinaryFlatIndex::getVectorsRef() {
-  return vectors_;
+Tensor<unsigned char, 2, true>& BinaryFlatIndex::getVectorsRef() {
+    return vectors_;
 }
 
-void
-BinaryFlatIndex::query(Tensor<unsigned char, 2, true>& input,
-                       int k,
-                       Tensor<int, 2, true>& outDistances,
-                       Tensor<int, 2, true>& outIndices) {
-  auto stream = resources_->getDefaultStreamCurrentDevice();
+void BinaryFlatIndex::query(
+        Tensor<unsigned char, 2, true>& input,
+        int k,
+        Tensor<int, 2, true>& outDistances,
+        Tensor<int, 2, true>& outIndices) {
+    auto stream = resources_->getDefaultStreamCurrentDevice();
 
-  runBinaryDistance(vectors_,
-                    input,
-                    outDistances,
-                    outIndices,
-                    k,
-                    stream);
+    runBinaryDistance(vectors_, input, outDistances, outIndices, k, stream);
 }
 
-void
-BinaryFlatIndex::add(const unsigned char* data,
-                     int numVecs,
-                     cudaStream_t stream) {
-  if (numVecs == 0) {
-    return;
-  }
+void BinaryFlatIndex::add(
+        const unsigned char* data,
+        int numVecs,
+        cudaStream_t stream) {
+    if (numVecs == 0) {
+        return;
+    }
 
-  rawData_.append((char*) data,
-                  (size_t) (dim_ / 8) * numVecs * sizeof(unsigned char),
-                  stream,
-                  true /* reserve exactly */);
+    rawData_.append(
+            (char*)data,
+            (size_t)(dim_ / 8) * numVecs * sizeof(unsigned char),
+            stream,
+            true /* reserve exactly */);
 
-  num_ += numVecs;
+    num_ += numVecs;
 
-  DeviceTensor<unsigned char, 2, true> vectors(
-    (unsigned char*) rawData_.data(), {(int) num_, (dim_ / 8)});
-  vectors_ = std::move(vectors);
+    DeviceTensor<unsigned char, 2, true> vectors(
+            (unsigned char*)rawData_.data(), {(int)num_, (dim_ / 8)});
+    vectors_ = std::move(vectors);
 }
 
-void
-BinaryFlatIndex::reset() {
-  rawData_.clear();
-  vectors_ = DeviceTensor<unsigned char, 2, true>();
-  num_ = 0;
+void BinaryFlatIndex::reset() {
+    rawData_.clear();
+    vectors_ = DeviceTensor<unsigned char, 2, true>();
+    num_ = 0;
 }
 
-} }
+} // namespace gpu
+} // namespace faiss

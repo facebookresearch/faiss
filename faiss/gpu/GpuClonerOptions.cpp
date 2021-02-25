@@ -7,22 +7,20 @@
 
 #include <faiss/gpu/GpuClonerOptions.h>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 GpuClonerOptions::GpuClonerOptions()
-    : indicesOptions(INDICES_64_BIT),
-      useFloat16CoarseQuantizer(false),
-      useFloat16(false),
-      usePrecomputed(false),
-      reserveVecs(0),
-      storeTransposed(false),
-      verbose(false) {
-}
+        : indicesOptions(INDICES_64_BIT),
+          useFloat16CoarseQuantizer(false),
+          useFloat16(false),
+          usePrecomputed(false),
+          reserveVecs(0),
+          storeTransposed(false),
+          verbose(false) {}
 
 GpuMultipleClonerOptions::GpuMultipleClonerOptions()
-    : shard(false),
-      shard_type(1)
-{
-}
+        : shard(false), shard_type(1) {}
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss

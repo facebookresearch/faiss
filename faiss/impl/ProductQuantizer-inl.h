@@ -7,20 +7,18 @@
 
 namespace faiss {
 
-inline
-PQEncoderGeneric::PQEncoderGeneric(uint8_t *code, int nbits,
-                                                     uint8_t offset)
-    : code(code), offset(offset), nbits(nbits), reg(0)
-{
+inline PQEncoderGeneric::PQEncoderGeneric(
+        uint8_t* code,
+        int nbits,
+        uint8_t offset)
+        : code(code), offset(offset), nbits(nbits), reg(0) {
     assert(nbits <= 64);
     if (offset > 0) {
         reg = (*code & ((1 << offset) - 1));
     }
 }
 
-inline
-void PQEncoderGeneric::encode(uint64_t x)
-{
+inline void PQEncoderGeneric::encode(uint64_t x) {
     reg |= (uint8_t)(x << offset);
     x >>= (8 - offset);
     if (offset + nbits >= 8) {
@@ -39,51 +37,39 @@ void PQEncoderGeneric::encode(uint64_t x)
     }
 }
 
-inline
-PQEncoderGeneric::~PQEncoderGeneric()
-{
+inline PQEncoderGeneric::~PQEncoderGeneric() {
     if (offset > 0) {
         *code = reg;
     }
 }
 
-
-inline
-PQEncoder8::PQEncoder8(uint8_t *code, int nbits)
-    : code(code) {
+inline PQEncoder8::PQEncoder8(uint8_t* code, int nbits) : code(code) {
     assert(8 == nbits);
 }
 
-inline
-void PQEncoder8::encode(uint64_t x) {
+inline void PQEncoder8::encode(uint64_t x) {
     *code++ = (uint8_t)x;
 }
 
-inline
-PQEncoder16::PQEncoder16(uint8_t *code, int nbits)
-    : code((uint16_t *)code) {
+inline PQEncoder16::PQEncoder16(uint8_t* code, int nbits)
+        : code((uint16_t*)code) {
     assert(16 == nbits);
 }
 
-inline
-void PQEncoder16::encode(uint64_t x) {
+inline void PQEncoder16::encode(uint64_t x) {
     *code++ = (uint16_t)x;
 }
 
-
-inline
-PQDecoderGeneric::PQDecoderGeneric(const uint8_t *code,
-                                                     int nbits)
-    : code(code),
-      offset(0),
-      nbits(nbits),
-      mask((1ull << nbits) - 1),
-      reg(0) {
+inline PQDecoderGeneric::PQDecoderGeneric(const uint8_t* code, int nbits)
+        : code(code),
+          offset(0),
+          nbits(nbits),
+          mask((1ull << nbits) - 1),
+          reg(0) {
     assert(nbits <= 64);
 }
 
-inline
-uint64_t PQDecoderGeneric::decode() {
+inline uint64_t PQDecoderGeneric::decode() {
     if (offset == 0) {
         reg = *code;
     }
@@ -110,27 +96,20 @@ uint64_t PQDecoderGeneric::decode() {
     return c & mask;
 }
 
-
-inline
-PQDecoder8::PQDecoder8(const uint8_t *code, int nbits_in)
-    : code(code) {
+inline PQDecoder8::PQDecoder8(const uint8_t* code, int nbits_in) : code(code) {
     assert(8 == nbits_in);
 }
 
-inline
-uint64_t PQDecoder8::decode() {
+inline uint64_t PQDecoder8::decode() {
     return (uint64_t)(*code++);
 }
 
-
-inline
-PQDecoder16::PQDecoder16(const uint8_t *code, int nbits_in)
-    : code((uint16_t *)code) {
-     assert(16 == nbits_in);
+inline PQDecoder16::PQDecoder16(const uint8_t* code, int nbits_in)
+        : code((uint16_t*)code) {
+    assert(16 == nbits_in);
 }
 
-inline
-uint64_t PQDecoder16::decode() {
+inline uint64_t PQDecoder16::decode() {
     return (uint64_t)(*code++);
 }
 

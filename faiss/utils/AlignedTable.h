@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <cstdlib>
-#include <cassert>
 #include <cstring>
 
 #include <algorithm>
@@ -19,33 +18,34 @@
 
 namespace faiss {
 
-template<int A=32>
-inline bool is_aligned_pointer(const void* x)
-{
+template <int A = 32>
+inline bool is_aligned_pointer(const void* x) {
     size_t xi = (size_t)x;
     return xi % A == 0;
 }
 
 // class that manages suitably aligned arrays for SIMD
 // T should be a POV type. The default alignment is 32 for AVX
-template<class T, int A=32>
+template <class T, int A = 32>
 struct AlignedTableTightAlloc {
-    T * ptr;
+    T* ptr;
     size_t numel;
 
-    AlignedTableTightAlloc(): ptr(nullptr), numel(0)
-    { }
+    AlignedTableTightAlloc() : ptr(nullptr), numel(0) {}
 
-    explicit AlignedTableTightAlloc(size_t n): ptr(nullptr), numel(0)
-    { resize(n); }
+    explicit AlignedTableTightAlloc(size_t n) : ptr(nullptr), numel(0) {
+        resize(n);
+    }
 
-    size_t itemsize() const {return sizeof(T); }
+    size_t itemsize() const {
+        return sizeof(T);
+    }
 
     void resize(size_t n) {
         if (numel == n) {
             return;
         }
-        T * new_ptr;
+        T* new_ptr;
         if (n > 0) {
             int ret = posix_memalign((void**)&new_ptr, A, n * sizeof(T));
             if (ret != 0) {
@@ -62,35 +62,54 @@ struct AlignedTableTightAlloc {
         ptr = new_ptr;
     }
 
-    void clear() {memset(ptr, 0, nbytes()); }
-    size_t size() const {return numel; }
-    size_t nbytes() const {return numel * sizeof(T); }
+    void clear() {
+        memset(ptr, 0, nbytes());
+    }
+    size_t size() const {
+        return numel;
+    }
+    size_t nbytes() const {
+        return numel * sizeof(T);
+    }
 
-    T * get() {return ptr; }
-    const T * get() const {return ptr; }
-    T * data() {return ptr; }
-    const T * data() const {return ptr; }
-    T & operator [] (size_t i)  {return ptr[i]; }
-    T operator [] (size_t i) const {return ptr[i]; }
+    T* get() {
+        return ptr;
+    }
+    const T* get() const {
+        return ptr;
+    }
+    T* data() {
+        return ptr;
+    }
+    const T* data() const {
+        return ptr;
+    }
+    T& operator[](size_t i) {
+        return ptr[i];
+    }
+    T operator[](size_t i) const {
+        return ptr[i];
+    }
 
-    ~AlignedTableTightAlloc() {posix_memalign_free(ptr); }
+    ~AlignedTableTightAlloc() {
+        posix_memalign_free(ptr);
+    }
 
-    AlignedTableTightAlloc<T, A> & operator =
-            (const AlignedTableTightAlloc<T, A> & other) {
+    AlignedTableTightAlloc<T, A>& operator=(
+            const AlignedTableTightAlloc<T, A>& other) {
         resize(other.numel);
         memcpy(ptr, other.ptr, sizeof(T) * numel);
         return *this;
     }
 
-    AlignedTableTightAlloc(const AlignedTableTightAlloc<T, A> & other):
-      ptr(nullptr), numel(0) {
+    AlignedTableTightAlloc(const AlignedTableTightAlloc<T, A>& other)
+            : ptr(nullptr), numel(0) {
         *this = other;
     }
-
 };
 
 // same as AlignedTableTightAlloc, but with geometric re-allocation
-template<class T, int A=32>
+template <class T, int A = 32>
 struct AlignedTable {
     AlignedTableTightAlloc<T, A> tab;
     size_t numel = 0;
@@ -111,32 +130,47 @@ struct AlignedTable {
 
     AlignedTable() {}
 
-    explicit AlignedTable(size_t n):
-        tab(round_capacity(n)),
-        numel(n)
-    { }
+    explicit AlignedTable(size_t n) : tab(round_capacity(n)), numel(n) {}
 
-    size_t itemsize() const {return sizeof(T); }
+    size_t itemsize() const {
+        return sizeof(T);
+    }
 
     void resize(size_t n) {
         tab.resize(round_capacity(n));
         numel = n;
     }
 
-    void clear() { tab.clear(); }
-    size_t size() const {return numel; }
-    size_t nbytes() const {return numel * sizeof(T); }
+    void clear() {
+        tab.clear();
+    }
+    size_t size() const {
+        return numel;
+    }
+    size_t nbytes() const {
+        return numel * sizeof(T);
+    }
 
-    T * get() {return tab.get(); }
-    const T * get() const {return tab.get(); }
-    T * data() {return tab.get(); }
-    const T * data() const {return tab.get(); }
-    T & operator [] (size_t i)  {return tab.ptr[i]; }
-    T operator [] (size_t i) const {return tab.ptr[i]; }
+    T* get() {
+        return tab.get();
+    }
+    const T* get() const {
+        return tab.get();
+    }
+    T* data() {
+        return tab.get();
+    }
+    const T* data() const {
+        return tab.get();
+    }
+    T& operator[](size_t i) {
+        return tab.ptr[i];
+    }
+    T operator[](size_t i) const {
+        return tab.ptr[i];
+    }
 
     // assign and copy constructor should work as expected
-
 };
-
 
 } // namespace faiss

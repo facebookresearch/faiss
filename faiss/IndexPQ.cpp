@@ -10,15 +10,15 @@
 #include <faiss/IndexPQ.h>
 
 #include <cinttypes>
-#include <cstddef>
-#include <cstring>
-#include <cstdio>
 #include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
 
 #include <algorithm>
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
 namespace faiss {
@@ -27,10 +27,8 @@ namespace faiss {
  * IndexPQ implementation
  ********************************************************/
 
-
-IndexPQ::IndexPQ (int d, size_t M, size_t nbits, MetricType metric):
-    Index(d, metric), pq(d, M, nbits)
-{
+IndexPQ::IndexPQ(int d, size_t M, size_t nbits, MetricType metric)
+        : Index(d, metric), pq(d, M, nbits) {
     is_trained = false;
     do_polysemous_training = false;
     polysemous_ht = nbits * M + 1;
@@ -38,8 +36,7 @@ IndexPQ::IndexPQ (int d, size_t M, size_t nbits, MetricType metric):
     encode_signs = false;
 }
 
-IndexPQ::IndexPQ ()
-{
+IndexPQ::IndexPQ() {
     metric_type = METRIC_L2;
     is_trained = false;
     do_polysemous_training = false;
@@ -48,10 +45,8 @@ IndexPQ::IndexPQ ()
     encode_signs = false;
 }
 
-
-void IndexPQ::train (idx_t n, const float *x)
-{
-    if (!do_polysemous_training) {        // standard training
+void IndexPQ::train(idx_t n, const float* x) {
+    if (!do_polysemous_training) { // standard training
         pq.train(n, x);
     } else {
         idx_t ntrain_perm = polysemous_training.ntrain_permutation;
@@ -59,38 +54,38 @@ void IndexPQ::train (idx_t n, const float *x)
         if (ntrain_perm > n / 4)
             ntrain_perm = n / 4;
         if (verbose) {
-            printf ("PQ training on %" PRId64 " points, remains %" PRId64 " points: "
-                    "training polysemous on %s\n",
-                    n - ntrain_perm, ntrain_perm,
-                    ntrain_perm == 0 ? "centroids" : "these");
+            printf("PQ training on %" PRId64 " points, remains %" PRId64
+                   " points: "
+                   "training polysemous on %s\n",
+                   n - ntrain_perm,
+                   ntrain_perm,
+                   ntrain_perm == 0 ? "centroids" : "these");
         }
         pq.train(n - ntrain_perm, x);
 
-        polysemous_training.optimize_pq_for_hamming (
-            pq, ntrain_perm, x + (n - ntrain_perm) * d);
+        polysemous_training.optimize_pq_for_hamming(
+                pq, ntrain_perm, x + (n - ntrain_perm) * d);
     }
     is_trained = true;
 }
 
-
-void IndexPQ::add (idx_t n, const float *x)
-{
-    FAISS_THROW_IF_NOT (is_trained);
-    codes.resize ((n + ntotal) * pq.code_size);
-    pq.compute_codes (x, &codes[ntotal * pq.code_size], n);
+void IndexPQ::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(is_trained);
+    codes.resize((n + ntotal) * pq.code_size);
+    pq.compute_codes(x, &codes[ntotal * pq.code_size], n);
     ntotal += n;
 }
 
-
-size_t IndexPQ::remove_ids (const IDSelector & sel)
-{
+size_t IndexPQ::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member (i)) {
+        if (sel.is_member(i)) {
             // should be removed
         } else {
             if (i > j) {
-                memmove (&codes[pq.code_size * j], &codes[pq.code_size * i], pq.code_size);
+                memmove(&codes[pq.code_size * j],
+                        &codes[pq.code_size * i],
+                        pq.code_size);
             }
             j++;
         }
@@ -98,53 +93,46 @@ size_t IndexPQ::remove_ids (const IDSelector & sel)
     size_t nremove = ntotal - j;
     if (nremove > 0) {
         ntotal = j;
-        codes.resize (ntotal * pq.code_size);
+        codes.resize(ntotal * pq.code_size);
     }
     return nremove;
 }
 
-
-void IndexPQ::reset()
-{
+void IndexPQ::reset() {
     codes.clear();
     ntotal = 0;
 }
 
-void IndexPQ::reconstruct_n (idx_t i0, idx_t ni, float *recons) const
-{
-    FAISS_THROW_IF_NOT (ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
+void IndexPQ::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
+    FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
     for (idx_t i = 0; i < ni; i++) {
-        const uint8_t * code = &codes[(i0 + i) * pq.code_size];
-        pq.decode (code, recons + i * d);
+        const uint8_t* code = &codes[(i0 + i) * pq.code_size];
+        pq.decode(code, recons + i * d);
     }
 }
 
-
-void IndexPQ::reconstruct (idx_t key, float * recons) const
-{
-    FAISS_THROW_IF_NOT (key >= 0 && key < ntotal);
-    pq.decode (&codes[key * pq.code_size], recons);
+void IndexPQ::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
+    pq.decode(&codes[key * pq.code_size], recons);
 }
-
 
 namespace {
 
-template<class PQDecoder>
-struct PQDistanceComputer: DistanceComputer {
+template <class PQDecoder>
+struct PQDistanceComputer : DistanceComputer {
     size_t d;
     MetricType metric;
     Index::idx_t nb;
-    const uint8_t *codes;
+    const uint8_t* codes;
     size_t code_size;
-    const ProductQuantizer & pq;
-    const float *sdc;
+    const ProductQuantizer& pq;
+    const float* sdc;
     std::vector<float> precomputed_table;
     size_t ndis;
 
-    float operator () (idx_t i) override
-    {
-        const uint8_t *code = codes + i * code_size;
-        const float *dt = precomputed_table.data();
+    float operator()(idx_t i) override {
+        const uint8_t* code = codes + i * code_size;
+        const float* dt = precomputed_table.data();
         PQDecoder decoder(code, pq.nbits);
         float accu = 0;
         for (int j = 0; j < pq.M; j++) {
@@ -155,13 +143,12 @@ struct PQDistanceComputer: DistanceComputer {
         return accu;
     }
 
-    float symmetric_dis(idx_t i, idx_t j) override
-    {
+    float symmetric_dis(idx_t i, idx_t j) override {
         FAISS_THROW_IF_NOT(sdc);
-        const float * sdci = sdc;
+        const float* sdci = sdc;
         float accu = 0;
-        PQDecoder codei (codes + i * code_size, pq.nbits);
-        PQDecoder codej (codes + j * code_size, pq.nbits);
+        PQDecoder codei(codes + i * code_size, pq.nbits);
+        PQDecoder codej(codes + j * code_size, pq.nbits);
 
         for (int l = 0; l < pq.M; l++) {
             accu += sdci[codei.decode() + (codej.decode() << codei.nbits)];
@@ -171,8 +158,7 @@ struct PQDistanceComputer: DistanceComputer {
         return accu;
     }
 
-    explicit PQDistanceComputer(const IndexPQ& storage)
-            : pq(storage.pq) {
+    explicit PQDistanceComputer(const IndexPQ& storage) : pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
         d = storage.d;
@@ -187,21 +173,18 @@ struct PQDistanceComputer: DistanceComputer {
         ndis = 0;
     }
 
-    void set_query(const float *x) override {
+    void set_query(const float* x) override {
         if (metric == METRIC_L2) {
             pq.compute_distance_table(x, precomputed_table.data());
         } else {
             pq.compute_inner_prod_table(x, precomputed_table.data());
         }
-
     }
 };
 
+} // namespace
 
-}  // namespace
-
-
-DistanceComputer * IndexPQ::get_distance_computer() const {
+DistanceComputer* IndexPQ::get_distance_computer() const {
     if (pq.nbits == 8) {
         return new PQDistanceComputer<PQDecoder8>(*this);
     } else if (pq.nbits == 16) {
@@ -211,142 +194,140 @@ DistanceComputer * IndexPQ::get_distance_computer() const {
     }
 }
 
-
 /*****************************************
  * IndexPQ polysemous search routines
  ******************************************/
 
-
-
-
-
-void IndexPQ::search (idx_t n, const float *x, idx_t k,
-                           float *distances, idx_t *labels) const
-{
-    FAISS_THROW_IF_NOT (is_trained);
-    if (search_type == ST_PQ) {  // Simple PQ search
+void IndexPQ::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(is_trained);
+    if (search_type == ST_PQ) { // Simple PQ search
 
         if (metric_type == METRIC_L2) {
             float_maxheap_array_t res = {
-                size_t(n), size_t(k), labels, distances };
-            pq.search (x, n, codes.data(), ntotal, &res, true);
+                    size_t(n), size_t(k), labels, distances};
+            pq.search(x, n, codes.data(), ntotal, &res, true);
         } else {
             float_minheap_array_t res = {
-                size_t(n), size_t(k), labels, distances };
-            pq.search_ip (x, n, codes.data(), ntotal, &res, true);
+                    size_t(n), size_t(k), labels, distances};
+            pq.search_ip(x, n, codes.data(), ntotal, &res, true);
         }
         indexPQ_stats.nq += n;
         indexPQ_stats.ncode += n * ntotal;
 
-    } else if (search_type == ST_polysemous ||
-               search_type == ST_polysemous_generalize) {
+    } else if (
+            search_type == ST_polysemous ||
+            search_type == ST_polysemous_generalize) {
+        FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
 
-        FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
-
-        search_core_polysemous (n, x, k, distances, labels);
+        search_core_polysemous(n, x, k, distances, labels);
 
     } else { // code-to-code distances
 
-        uint8_t * q_codes = new uint8_t [n * pq.code_size];
-        ScopeDeleter<uint8_t> del (q_codes);
-
+        uint8_t* q_codes = new uint8_t[n * pq.code_size];
+        ScopeDeleter<uint8_t> del(q_codes);
 
         if (!encode_signs) {
-            pq.compute_codes (x, q_codes, n);
+            pq.compute_codes(x, q_codes, n);
         } else {
-            FAISS_THROW_IF_NOT (d == pq.nbits * pq.M);
-            memset (q_codes, 0, n * pq.code_size);
+            FAISS_THROW_IF_NOT(d == pq.nbits * pq.M);
+            memset(q_codes, 0, n * pq.code_size);
             for (size_t i = 0; i < n; i++) {
-                const float *xi = x + i * d;
-                uint8_t *code = q_codes + i * pq.code_size;
+                const float* xi = x + i * d;
+                uint8_t* code = q_codes + i * pq.code_size;
                 for (int j = 0; j < d; j++)
-                    if (xi[j] > 0) code [j>>3] |= 1 << (j & 7);
+                    if (xi[j] > 0)
+                        code[j >> 3] |= 1 << (j & 7);
             }
         }
 
-        if (search_type == ST_SDC)  {
-
+        if (search_type == ST_SDC) {
             float_maxheap_array_t res = {
-                size_t(n),  size_t(k), labels, distances};
+                    size_t(n), size_t(k), labels, distances};
 
-            pq.search_sdc (q_codes, n, codes.data(), ntotal, &res, true);
+            pq.search_sdc(q_codes, n, codes.data(), ntotal, &res, true);
 
         } else {
-            int * idistances = new int [n * k];
-            ScopeDeleter<int> del (idistances);
+            int* idistances = new int[n * k];
+            ScopeDeleter<int> del(idistances);
 
             int_maxheap_array_t res = {
-                size_t (n), size_t (k), labels, idistances};
+                    size_t(n), size_t(k), labels, idistances};
 
             if (search_type == ST_HE) {
-
-                hammings_knn_hc (&res, q_codes, codes.data(),
-                                 ntotal, pq.code_size, true);
+                hammings_knn_hc(
+                        &res,
+                        q_codes,
+                        codes.data(),
+                        ntotal,
+                        pq.code_size,
+                        true);
 
             } else if (search_type == ST_generalized_HE) {
-
-                generalized_hammings_knn_hc (&res, q_codes, codes.data(),
-                                             ntotal, pq.code_size, true);
+                generalized_hammings_knn_hc(
+                        &res,
+                        q_codes,
+                        codes.data(),
+                        ntotal,
+                        pq.code_size,
+                        true);
             }
 
             // convert distances to floats
             for (int i = 0; i < k * n; i++)
                 distances[i] = idistances[i];
-
         }
-
 
         indexPQ_stats.nq += n;
         indexPQ_stats.ncode += n * ntotal;
     }
 }
 
-
-
-
-
-void IndexPQStats::reset()
-{
+void IndexPQStats::reset() {
     nq = ncode = n_hamming_pass = 0;
 }
 
 IndexPQStats indexPQ_stats;
 
-
 template <class HammingComputer>
-static size_t polysemous_inner_loop (
-        const IndexPQ & index,
-        const float *dis_table_qi, const uint8_t *q_code,
-        size_t k, float *heap_dis, int64_t *heap_ids)
-{
-
+static size_t polysemous_inner_loop(
+        const IndexPQ& index,
+        const float* dis_table_qi,
+        const uint8_t* q_code,
+        size_t k,
+        float* heap_dis,
+        int64_t* heap_ids) {
     int M = index.pq.M;
     int code_size = index.pq.code_size;
     int ksub = index.pq.ksub;
     size_t ntotal = index.ntotal;
     int ht = index.polysemous_ht;
 
-    const uint8_t *b_code = index.codes.data();
+    const uint8_t* b_code = index.codes.data();
 
     size_t n_pass_i = 0;
 
-    HammingComputer hc (q_code, code_size);
+    HammingComputer hc(q_code, code_size);
 
     for (int64_t bi = 0; bi < ntotal; bi++) {
-        int hd = hc.hamming (b_code);
+        int hd = hc.hamming(b_code);
 
         if (hd < ht) {
-            n_pass_i ++;
+            n_pass_i++;
 
             float dis = 0;
-            const float * dis_table = dis_table_qi;
+            const float* dis_table = dis_table_qi;
             for (int m = 0; m < M; m++) {
-                dis += dis_table [b_code[m]];
+                dis += dis_table[b_code[m]];
                 dis_table += ksub;
             }
 
             if (dis < heap_dis[0]) {
-                maxheap_replace_top (k, heap_dis, heap_ids, dis, bi);
+                maxheap_replace_top(k, heap_dis, heap_ids, dis, bi);
             }
         }
         b_code += code_size;
@@ -354,198 +335,202 @@ static size_t polysemous_inner_loop (
     return n_pass_i;
 }
 
-
-void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
-                                          float *distances, idx_t *labels) const
-{
-    FAISS_THROW_IF_NOT (pq.nbits == 8);
+void IndexPQ::search_core_polysemous(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(pq.nbits == 8);
 
     // PQ distance tables
-    float * dis_tables = new float [n * pq.ksub * pq.M];
-    ScopeDeleter<float> del (dis_tables);
-    pq.compute_distance_tables (n, x, dis_tables);
+    float* dis_tables = new float[n * pq.ksub * pq.M];
+    ScopeDeleter<float> del(dis_tables);
+    pq.compute_distance_tables(n, x, dis_tables);
 
     // Hamming embedding queries
-    uint8_t * q_codes = new uint8_t [n * pq.code_size];
-    ScopeDeleter<uint8_t> del2 (q_codes);
+    uint8_t* q_codes = new uint8_t[n * pq.code_size];
+    ScopeDeleter<uint8_t> del2(q_codes);
 
     if (false) {
-        pq.compute_codes (x, q_codes, n);
+        pq.compute_codes(x, q_codes, n);
     } else {
 #pragma omp parallel for
         for (idx_t qi = 0; qi < n; qi++) {
-            pq.compute_code_from_distance_table
-                (dis_tables + qi * pq.M * pq.ksub,
-                 q_codes + qi * pq.code_size);
+            pq.compute_code_from_distance_table(
+                    dis_tables + qi * pq.M * pq.ksub,
+                    q_codes + qi * pq.code_size);
         }
     }
 
     size_t n_pass = 0;
 
-#pragma omp parallel for reduction (+: n_pass)
+#pragma omp parallel for reduction(+ : n_pass)
     for (idx_t qi = 0; qi < n; qi++) {
-        const uint8_t * q_code = q_codes + qi * pq.code_size;
+        const uint8_t* q_code = q_codes + qi * pq.code_size;
 
-        const float * dis_table_qi = dis_tables + qi * pq.M * pq.ksub;
+        const float* dis_table_qi = dis_tables + qi * pq.M * pq.ksub;
 
-        int64_t * heap_ids = labels + qi * k;
-        float *heap_dis = distances + qi * k;
-        maxheap_heapify (k, heap_dis, heap_ids);
+        int64_t* heap_ids = labels + qi * k;
+        float* heap_dis = distances + qi * k;
+        maxheap_heapify(k, heap_dis, heap_ids);
 
         if (search_type == ST_polysemous) {
-
             switch (pq.code_size) {
-            case 4:
-                n_pass += polysemous_inner_loop<HammingComputer4>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 8:
-                n_pass += polysemous_inner_loop<HammingComputer8>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 16:
-                n_pass += polysemous_inner_loop<HammingComputer16>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 32:
-                n_pass += polysemous_inner_loop<HammingComputer32>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 20:
-                n_pass += polysemous_inner_loop<HammingComputer20>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            default:
-                if (pq.code_size % 4 == 0) {
-                    n_pass += polysemous_inner_loop<HammingComputerDefault>
-                        (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                } else {
-                    FAISS_THROW_FMT(
-                         "code size %zd not supported for polysemous",
-                         pq.code_size);
-                }
-                break;
+                case 4:
+                    n_pass += polysemous_inner_loop<HammingComputer4>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 8:
+                    n_pass += polysemous_inner_loop<HammingComputer8>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 16:
+                    n_pass += polysemous_inner_loop<HammingComputer16>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 32:
+                    n_pass += polysemous_inner_loop<HammingComputer32>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 20:
+                    n_pass += polysemous_inner_loop<HammingComputer20>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                default:
+                    if (pq.code_size % 4 == 0) {
+                        n_pass += polysemous_inner_loop<HammingComputerDefault>(
+                                *this,
+                                dis_table_qi,
+                                q_code,
+                                k,
+                                heap_dis,
+                                heap_ids);
+                    } else {
+                        FAISS_THROW_FMT(
+                                "code size %zd not supported for polysemous",
+                                pq.code_size);
+                    }
+                    break;
             }
         } else {
             switch (pq.code_size) {
-            case 8:
-                n_pass += polysemous_inner_loop<GenHammingComputer8>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 16:
-                n_pass += polysemous_inner_loop<GenHammingComputer16>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            case 32:
-                n_pass += polysemous_inner_loop<GenHammingComputer32>
-                    (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                break;
-            default:
-                if (pq.code_size % 8 == 0) {
-                    n_pass += polysemous_inner_loop<GenHammingComputerM8>
-                        (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
-                } else {
-                    FAISS_THROW_FMT(
-                         "code size %zd not supported for polysemous",
-                         pq.code_size);
-                }
-                break;
+                case 8:
+                    n_pass += polysemous_inner_loop<GenHammingComputer8>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 16:
+                    n_pass += polysemous_inner_loop<GenHammingComputer16>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                case 32:
+                    n_pass += polysemous_inner_loop<GenHammingComputer32>(
+                            *this, dis_table_qi, q_code, k, heap_dis, heap_ids);
+                    break;
+                default:
+                    if (pq.code_size % 8 == 0) {
+                        n_pass += polysemous_inner_loop<GenHammingComputerM8>(
+                                *this,
+                                dis_table_qi,
+                                q_code,
+                                k,
+                                heap_dis,
+                                heap_ids);
+                    } else {
+                        FAISS_THROW_FMT(
+                                "code size %zd not supported for polysemous",
+                                pq.code_size);
+                    }
+                    break;
             }
         }
-        maxheap_reorder (k, heap_dis, heap_ids);
+        maxheap_reorder(k, heap_dis, heap_ids);
     }
 
     indexPQ_stats.nq += n;
     indexPQ_stats.ncode += n * ntotal;
     indexPQ_stats.n_hamming_pass += n_pass;
-
-
 }
 
-
 /* The standalone codec interface (just remaps to the PQ functions) */
-size_t IndexPQ::sa_code_size () const
-{
+size_t IndexPQ::sa_code_size() const {
     return pq.code_size;
 }
 
-void IndexPQ::sa_encode (idx_t n, const float *x, uint8_t *bytes) const
-{
-    pq.compute_codes (x, bytes, n);
+void IndexPQ::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
+    pq.compute_codes(x, bytes, n);
 }
 
-void IndexPQ::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
-{
-    pq.decode (bytes, x, n);
+void IndexPQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
+    pq.decode(bytes, x, n);
 }
-
-
-
 
 /*****************************************
  * Stats of IndexPQ codes
  ******************************************/
 
+void IndexPQ::hamming_distance_table(idx_t n, const float* x, int32_t* dis)
+        const {
+    uint8_t* q_codes = new uint8_t[n * pq.code_size];
+    ScopeDeleter<uint8_t> del(q_codes);
 
+    pq.compute_codes(x, q_codes, n);
 
-
-void IndexPQ::hamming_distance_table (idx_t n, const float *x,
-                                      int32_t *dis) const
-{
-    uint8_t * q_codes = new uint8_t [n * pq.code_size];
-    ScopeDeleter<uint8_t> del (q_codes);
-
-    pq.compute_codes (x, q_codes, n);
-
-    hammings (q_codes, codes.data(), n, ntotal, pq.code_size, dis);
+    hammings(q_codes, codes.data(), n, ntotal, pq.code_size, dis);
 }
 
-
-void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
-                                          idx_t nb, const float *xb,
-                                          int64_t *hist)
-{
-    FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
-    FAISS_THROW_IF_NOT (pq.code_size % 8 == 0);
-    FAISS_THROW_IF_NOT (pq.nbits == 8);
+void IndexPQ::hamming_distance_histogram(
+        idx_t n,
+        const float* x,
+        idx_t nb,
+        const float* xb,
+        int64_t* hist) {
+    FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
+    FAISS_THROW_IF_NOT(pq.code_size % 8 == 0);
+    FAISS_THROW_IF_NOT(pq.nbits == 8);
 
     // Hamming embedding queries
-    uint8_t * q_codes = new uint8_t [n * pq.code_size];
-    ScopeDeleter <uint8_t> del (q_codes);
-    pq.compute_codes (x, q_codes, n);
+    uint8_t* q_codes = new uint8_t[n * pq.code_size];
+    ScopeDeleter<uint8_t> del(q_codes);
+    pq.compute_codes(x, q_codes, n);
 
-    uint8_t * b_codes ;
-    ScopeDeleter <uint8_t> del_b_codes;
+    uint8_t* b_codes;
+    ScopeDeleter<uint8_t> del_b_codes;
 
     if (xb) {
-        b_codes = new uint8_t [nb * pq.code_size];
-        del_b_codes.set (b_codes);
-        pq.compute_codes (xb, b_codes, nb);
+        b_codes = new uint8_t[nb * pq.code_size];
+        del_b_codes.set(b_codes);
+        pq.compute_codes(xb, b_codes, nb);
     } else {
         nb = ntotal;
         b_codes = codes.data();
     }
     int nbits = pq.M * pq.nbits;
-    memset (hist, 0, sizeof(*hist) * (nbits + 1));
+    memset(hist, 0, sizeof(*hist) * (nbits + 1));
     size_t bs = 256;
 
 #pragma omp parallel
     {
-        std::vector<int64_t> histi (nbits + 1);
-        hamdis_t *distances = new hamdis_t [nb * bs];
-        ScopeDeleter<hamdis_t> del (distances);
+        std::vector<int64_t> histi(nbits + 1);
+        hamdis_t* distances = new hamdis_t[nb * bs];
+        ScopeDeleter<hamdis_t> del(distances);
 #pragma omp for
         for (idx_t q0 = 0; q0 < n; q0 += bs) {
             // printf ("dis stats: %zd/%zd\n", q0, n);
             size_t q1 = q0 + bs;
-            if (q1 > n) q1 = n;
+            if (q1 > n)
+                q1 = n;
 
-            hammings (q_codes + q0 * pq.code_size, b_codes,
-                      q1 - q0, nb,
-                      pq.code_size, distances);
+            hammings(
+                    q_codes + q0 * pq.code_size,
+                    b_codes,
+                    q1 - q0,
+                    nb,
+                    pq.code_size,
+                    distances);
 
             for (size_t i = 0; i < nb * (q1 - q0); i++)
-                histi [distances [i]]++;
+                histi[distances[i]]++;
         }
 #pragma omp critical
         {
@@ -553,27 +538,7 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
                 hist[i] += histi[i];
         }
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*****************************************
  * MultiIndexQuantizer
@@ -583,90 +548,87 @@ namespace {
 
 template <typename T>
 struct PreSortedArray {
-
-    const T * x;
+    const T* x;
     int N;
 
-    explicit PreSortedArray (int N): N(N) {
-    }
-    void init (const T*x) {
+    explicit PreSortedArray(int N) : N(N) {}
+    void init(const T* x) {
         this->x = x;
     }
     // get smallest value
-    T get_0 () {
+    T get_0() {
         return x[0];
     }
 
     // get delta between n-smallest and n-1 -smallest
-    T get_diff (int n) {
+    T get_diff(int n) {
         return x[n] - x[n - 1];
     }
 
     // remap orders counted from smallest to indices in array
-    int get_ord (int n) {
+    int get_ord(int n) {
         return n;
     }
-
 };
 
 template <typename T>
 struct ArgSort {
-    const T * x;
-    bool operator() (size_t i, size_t j) {
+    const T* x;
+    bool operator()(size_t i, size_t j) {
         return x[i] < x[j];
     }
 };
-
 
 /** Array that maintains a permutation of its elements so that the
  *  array's elements are sorted
  */
 template <typename T>
 struct SortedArray {
-    const T * x;
+    const T* x;
     int N;
     std::vector<int> perm;
 
-    explicit SortedArray (int N) {
+    explicit SortedArray(int N) {
         this->N = N;
-        perm.resize (N);
+        perm.resize(N);
     }
 
-    void init (const T*x) {
+    void init(const T* x) {
         this->x = x;
         for (int n = 0; n < N; n++)
             perm[n] = n;
-        ArgSort<T> cmp = {x };
-        std::sort (perm.begin(), perm.end(), cmp);
+        ArgSort<T> cmp = {x};
+        std::sort(perm.begin(), perm.end(), cmp);
     }
 
     // get smallest value
-    T get_0 () {
+    T get_0() {
         return x[perm[0]];
     }
 
     // get delta between n-smallest and n-1 -smallest
-    T get_diff (int n) {
+    T get_diff(int n) {
         return x[perm[n]] - x[perm[n - 1]];
     }
 
     // remap orders counted from smallest to indices in array
-    int get_ord (int n) {
+    int get_ord(int n) {
         return perm[n];
     }
 };
-
-
 
 /** Array has n values. Sort the k first ones and copy the other ones
  *  into elements k..n-1
  */
 template <class C>
-void partial_sort (int k, int n,
-                   const typename C::T * vals, typename C::TI * perm) {
+void partial_sort(
+        int k,
+        int n,
+        const typename C::T* vals,
+        typename C::TI* perm) {
     // insert first k elts in heap
     for (int i = 1; i < k; i++) {
-        indirect_heap_push<C> (i + 1, vals, perm, perm[i]);
+        indirect_heap_push<C>(i + 1, vals, perm, perm[i]);
     }
 
     // insert next n - k elts in heap
@@ -675,8 +637,8 @@ void partial_sort (int k, int n,
         typename C::TI top = perm[0];
 
         if (C::cmp(vals[top], vals[id])) {
-            indirect_heap_pop<C> (k, vals, perm);
-            indirect_heap_push<C> (k, vals, perm, id);
+            indirect_heap_pop<C>(k, vals, perm);
+            indirect_heap_push<C>(k, vals, perm, id);
             perm[i] = top;
         } else {
             // nothing, elt at i is good where it is.
@@ -686,7 +648,7 @@ void partial_sort (int k, int n,
     // order the k first elements in heap
     for (int i = k - 1; i > 0; i--) {
         typename C::TI top = perm[0];
-        indirect_heap_pop<C> (i + 1, vals, perm);
+        indirect_heap_pop<C>(i + 1, vals, perm);
         perm[i] = top;
     }
 }
@@ -694,68 +656,66 @@ void partial_sort (int k, int n,
 /** same as SortedArray, but only the k first elements are sorted */
 template <typename T>
 struct SemiSortedArray {
-    const T * x;
+    const T* x;
     int N;
 
     // type of the heap: CMax = sort ascending
     typedef CMax<T, int> HC;
     std::vector<int> perm;
 
-    int k;  // k elements are sorted
+    int k; // k elements are sorted
 
     int initial_k, k_factor;
 
-    explicit SemiSortedArray (int N) {
+    explicit SemiSortedArray(int N) {
         this->N = N;
-        perm.resize (N);
-        perm.resize (N);
+        perm.resize(N);
+        perm.resize(N);
         initial_k = 3;
         k_factor = 4;
     }
 
-    void init (const T*x) {
+    void init(const T* x) {
         this->x = x;
         for (int n = 0; n < N; n++)
             perm[n] = n;
         k = 0;
-        grow (initial_k);
+        grow(initial_k);
     }
 
     /// grow the sorted part of the array to size next_k
-    void grow (int next_k) {
+    void grow(int next_k) {
         if (next_k < N) {
-            partial_sort<HC> (next_k - k, N - k, x, &perm[k]);
+            partial_sort<HC>(next_k - k, N - k, x, &perm[k]);
             k = next_k;
         } else { // full sort of remainder of array
-            ArgSort<T> cmp = {x };
-            std::sort (perm.begin() + k, perm.end(), cmp);
+            ArgSort<T> cmp = {x};
+            std::sort(perm.begin() + k, perm.end(), cmp);
             k = N;
         }
     }
 
     // get smallest value
-    T get_0 () {
+    T get_0() {
         return x[perm[0]];
     }
 
     // get delta between n-smallest and n-1 -smallest
-    T get_diff (int n) {
+    T get_diff(int n) {
         if (n >= k) {
             // want to keep powers of 2 - 1
             int next_k = (k + 1) * k_factor - 1;
-            grow (next_k);
+            grow(next_k);
         }
         return x[perm[n]] - x[perm[n - 1]];
     }
 
     // remap orders counted from smallest to indices in array
-    int get_ord (int n) {
-        assert (n < k);
+    int get_ord(int n) {
+        assert(n < k);
         return perm[n];
     }
 };
-
-
 
 /*****************************************
  * Find the k smallest sums of M terms, where each term is taken in a
@@ -785,10 +745,10 @@ struct SemiSortedArray {
  ******************************************/
 template <typename T, class SSA, bool use_seen>
 struct MinSumK {
-    int K;  ///< nb of sums to return
-    int M;  ///< nb of elements to sum up
+    int K;    ///< nb of sums to return
+    int M;    ///< nb of elements to sum up
     int nbit; ///< nb of bits to encode one entry
-    int N;  ///< nb of possible elements for each of the M terms
+    int N;    ///< nb of possible elements for each of the M terms
 
     /** the heap.
      * We use a heap to maintain a queue of sums, with the associated
@@ -796,21 +756,20 @@ struct MinSumK {
      */
     typedef CMin<T, int64_t> HC;
     size_t heap_capacity, heap_size;
-    T *bh_val;
-    int64_t *bh_ids;
+    T* bh_val;
+    int64_t* bh_ids;
 
-    std::vector <SSA> ssx;
+    std::vector<SSA> ssx;
 
     // all results get pushed several times. When there are ties, they
     // are popped interleaved with others, so it is not easy to
     // identify them. Therefore, this bit array just marks elements
     // that were seen before.
-    std::vector <uint8_t> seen;
+    std::vector<uint8_t> seen;
 
-    MinSumK (int K, int M, int nbit, int N):
-        K(K), M(M), nbit(nbit), N(N) {
+    MinSumK(int K, int M, int nbit, int N) : K(K), M(M), nbit(nbit), N(N) {
         heap_capacity = K * M;
-        assert (N <= (1 << nbit));
+        assert(N <= (1 << nbit));
 
         // we'll do k steps, each step pushes at most M vals
         bh_val = new T[heap_capacity];
@@ -818,29 +777,27 @@ struct MinSumK {
 
         if (use_seen) {
             int64_t n_ids = weight(M);
-            seen.resize ((n_ids + 7) / 8);
+            seen.resize((n_ids + 7) / 8);
         }
 
         for (int m = 0; m < M; m++)
-            ssx.push_back (SSA(N));
-
+            ssx.push_back(SSA(N));
     }
 
-    int64_t weight (int i) {
+    int64_t weight(int i) {
         return 1 << (i * nbit);
     }
 
-    bool is_seen (int64_t i) {
+    bool is_seen(int64_t i) {
         return (seen[i >> 3] >> (i & 7)) & 1;
     }
 
-    void mark_seen (int64_t i) {
+    void mark_seen(int64_t i) {
         if (use_seen)
-            seen [i >> 3] |= 1 << (i & 7);
+            seen[i >> 3] |= 1 << (i & 7);
     }
 
-    void run (const T *x, int64_t ldx,
-              T * sums, int64_t * terms) {
+    void run(const T* x, int64_t ldx, T* sums, int64_t* terms) {
         heap_size = 0;
 
         for (int m = 0; m < M; m++) {
@@ -851,38 +808,41 @@ struct MinSumK {
         { // initial result: take min for all elements
             T sum = 0;
             terms[0] = 0;
-            mark_seen (0);
+            mark_seen(0);
             for (int m = 0; m < M; m++) {
                 sum += ssx[m].get_0();
             }
             sums[0] = sum;
             for (int m = 0; m < M; m++) {
-                heap_push<HC> (++heap_size, bh_val, bh_ids,
-                               sum + ssx[m].get_diff(1),
-                               weight(m));
+                heap_push<HC>(
+                        ++heap_size,
+                        bh_val,
+                        bh_ids,
+                        sum + ssx[m].get_diff(1),
+                        weight(m));
             }
         }
 
         for (int k = 1; k < K; k++) {
             // pop smallest value from heap
-            if (use_seen) {// skip already seen elements
-                while (is_seen (bh_ids[0])) {
-                    assert (heap_size > 0);
-                    heap_pop<HC> (heap_size--, bh_val, bh_ids);
+            if (use_seen) { // skip already seen elements
+                while (is_seen(bh_ids[0])) {
+                    assert(heap_size > 0);
+                    heap_pop<HC>(heap_size--, bh_val, bh_ids);
                 }
             }
-            assert (heap_size > 0);
+            assert(heap_size > 0);
 
             T sum = sums[k] = bh_val[0];
             int64_t ti = terms[k] = bh_ids[0];
 
             if (use_seen) {
-                mark_seen (ti);
-                heap_pop<HC> (heap_size--, bh_val, bh_ids);
+                mark_seen(ti);
+                heap_pop<HC>(heap_size--, bh_val, bh_ids);
             } else {
                 do {
-                    heap_pop<HC> (heap_size--, bh_val, bh_ids);
-                }  while (heap_size > 0 && bh_ids[0] == ti);
+                    heap_pop<HC>(heap_size--, bh_val, bh_ids);
+                } while (heap_size > 0 && bh_ids[0] == ti);
             }
 
             // enqueue followers
@@ -890,9 +850,10 @@ struct MinSumK {
             for (int m = 0; m < M; m++) {
                 int64_t n = ii & ((1L << nbit) - 1);
                 ii >>= nbit;
-                if (n + 1 >= N) continue;
+                if (n + 1 >= N)
+                    continue;
 
-                enqueue_follower (ti, m, n, sum);
+                enqueue_follower(ti, m, n, sum);
             }
         }
 
@@ -919,37 +880,29 @@ struct MinSumK {
         }
     }
 
-
-    void enqueue_follower (int64_t ti, int m, int n, T sum) {
+    void enqueue_follower(int64_t ti, int m, int n, T sum) {
         T next_sum = sum + ssx[m].get_diff(n + 1);
         int64_t next_ti = ti + weight(m);
-        heap_push<HC> (++heap_size, bh_val, bh_ids, next_sum, next_ti);
+        heap_push<HC>(++heap_size, bh_val, bh_ids, next_sum, next_ti);
     }
 
-    ~MinSumK () {
-        delete [] bh_ids;
-        delete [] bh_val;
+    ~MinSumK() {
+        delete[] bh_ids;
+        delete[] bh_val;
     }
 };
 
 } // anonymous namespace
 
-
-MultiIndexQuantizer::MultiIndexQuantizer (int d,
-                     size_t M,
-                     size_t nbits):
-    Index(d, METRIC_L2), pq(d, M, nbits)
-{
+MultiIndexQuantizer::MultiIndexQuantizer(int d, size_t M, size_t nbits)
+        : Index(d, METRIC_L2), pq(d, M, nbits) {
     is_trained = false;
     pq.verbose = verbose;
 }
 
-
-
-void MultiIndexQuantizer::train(idx_t n, const float *x)
-{
+void MultiIndexQuantizer::train(idx_t n, const float* x) {
     pq.verbose = verbose;
-    pq.train (n, x);
+    pq.train(n, x);
     is_trained = true;
     // count virtual elements in index
     ntotal = 1;
@@ -957,10 +910,14 @@ void MultiIndexQuantizer::train(idx_t n, const float *x)
         ntotal *= pq.ksub;
 }
 
-
-void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
-                                  float *distances, idx_t *labels) const {
-    if (n == 0) return;
+void MultiIndexQuantizer::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    if (n == 0)
+        return;
 
     // the allocation just below can be severe...
     idx_t bs = 32768;
@@ -968,27 +925,28 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("MultiIndexQuantizer::search: %" PRId64 ":%" PRId64 " / %" PRId64 "\n",
-                       i0, i1, n);
+                printf("MultiIndexQuantizer::search: %" PRId64 ":%" PRId64
+                       " / %" PRId64 "\n",
+                       i0,
+                       i1,
+                       n);
             }
-            search (i1 - i0, x + i0 * d, k,
-                    distances + i0 * k,
-                    labels + i0 * k);
+            search(i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k);
         }
         return;
     }
 
-    float * dis_tables = new float [n * pq.ksub * pq.M];
-    ScopeDeleter<float> del (dis_tables);
+    float* dis_tables = new float[n * pq.ksub * pq.M];
+    ScopeDeleter<float> del(dis_tables);
 
-    pq.compute_distance_tables (n, x, dis_tables);
+    pq.compute_distance_tables(n, x, dis_tables);
 
     if (k == 1) {
         // simple version that just finds the min in each table
 
 #pragma omp parallel for
         for (int i = 0; i < n; i++) {
-            const float * dis_table = dis_tables + i * pq.ksub * pq.M;
+            const float* dis_table = dis_tables + i * pq.ksub * pq.M;
             float dis = 0;
             idx_t label = 0;
 
@@ -1007,32 +965,27 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
                 dis_table += pq.ksub;
             }
 
-            distances [i] = dis;
-            labels [i] = label;
+            distances[i] = dis;
+            labels[i] = label;
         }
 
-
     } else {
-
-#pragma omp parallel if(n > 1)
+#pragma omp parallel if (n > 1)
         {
-            MinSumK <float, SemiSortedArray<float>, false>
-                msk(k, pq.M, pq.nbits, pq.ksub);
+            MinSumK<float, SemiSortedArray<float>, false> msk(
+                    k, pq.M, pq.nbits, pq.ksub);
 #pragma omp for
             for (int i = 0; i < n; i++) {
-                msk.run (dis_tables + i * pq.ksub * pq.M, pq.ksub,
-                         distances + i * k, labels + i * k);
-
+                msk.run(dis_tables + i * pq.ksub * pq.M,
+                        pq.ksub,
+                        distances + i * k,
+                        labels + i * k);
             }
         }
     }
-
 }
 
-
-void MultiIndexQuantizer::reconstruct (idx_t key, float * recons) const
-{
-
+void MultiIndexQuantizer::reconstruct(idx_t key, float* recons) const {
     int64_t jj = key;
     for (int m = 0; m < pq.M; m++) {
         int64_t n = jj & ((1L << pq.nbits) - 1);
@@ -1043,65 +996,53 @@ void MultiIndexQuantizer::reconstruct (idx_t key, float * recons) const
 }
 
 void MultiIndexQuantizer::add(idx_t /*n*/, const float* /*x*/) {
-  FAISS_THROW_MSG(
-      "This index has virtual elements, "
-      "it does not support add");
+    FAISS_THROW_MSG(
+            "This index has virtual elements, "
+            "it does not support add");
 }
 
-void MultiIndexQuantizer::reset ()
-{
-    FAISS_THROW_MSG ( "This index has virtual elements, "
-                      "it does not support reset");
+void MultiIndexQuantizer::reset() {
+    FAISS_THROW_MSG(
+            "This index has virtual elements, "
+            "it does not support reset");
 }
-
-
-
-
-
-
-
-
-
 
 /*****************************************
  * MultiIndexQuantizer2
  ******************************************/
 
-
-
-MultiIndexQuantizer2::MultiIndexQuantizer2 (
-        int d, size_t M, size_t nbits,
-        Index **indexes):
-    MultiIndexQuantizer (d, M, nbits)
-{
-    assign_indexes.resize (M);
+MultiIndexQuantizer2::MultiIndexQuantizer2(
+        int d,
+        size_t M,
+        size_t nbits,
+        Index** indexes)
+        : MultiIndexQuantizer(d, M, nbits) {
+    assign_indexes.resize(M);
     for (int i = 0; i < M; i++) {
         FAISS_THROW_IF_NOT_MSG(
-            indexes[i]->d == pq.dsub,
-            "Provided sub-index has incorrect size");
+                indexes[i]->d == pq.dsub,
+                "Provided sub-index has incorrect size");
         assign_indexes[i] = indexes[i];
     }
     own_fields = false;
 }
 
-MultiIndexQuantizer2::MultiIndexQuantizer2 (
-        int d, size_t nbits,
-        Index *assign_index_0,
-        Index *assign_index_1):
-    MultiIndexQuantizer (d, 2, nbits)
-{
+MultiIndexQuantizer2::MultiIndexQuantizer2(
+        int d,
+        size_t nbits,
+        Index* assign_index_0,
+        Index* assign_index_1)
+        : MultiIndexQuantizer(d, 2, nbits) {
     FAISS_THROW_IF_NOT_MSG(
-            assign_index_0->d == pq.dsub &&
-            assign_index_1->d == pq.dsub,
+            assign_index_0->d == pq.dsub && assign_index_1->d == pq.dsub,
             "Provided sub-index has incorrect size");
-    assign_indexes.resize (2);
-    assign_indexes [0] = assign_index_0;
-    assign_indexes [1] = assign_index_1;
+    assign_indexes.resize(2);
+    assign_indexes[0] = assign_index_0;
+    assign_indexes[1] = assign_index_1;
     own_fields = false;
 }
 
-void MultiIndexQuantizer2::train(idx_t n, const float* x)
-{
+void MultiIndexQuantizer2::train(idx_t n, const float* x) {
     MultiIndexQuantizer::train(n, x);
     // add centroids to sub-indexes
     for (int i = 0; i < pq.M; i++) {
@@ -1109,13 +1050,14 @@ void MultiIndexQuantizer2::train(idx_t n, const float* x)
     }
 }
 
-
 void MultiIndexQuantizer2::search(
-        idx_t n, const float* x, idx_t K,
-        float* distances, idx_t* labels) const
-{
-
-    if (n == 0) return;
+        idx_t n,
+        const float* x,
+        idx_t K,
+        float* distances,
+        idx_t* labels) const {
+    if (n == 0)
+        return;
 
     int k2 = std::min(K, int64_t(pq.ksub));
 
@@ -1128,8 +1070,8 @@ void MultiIndexQuantizer2::search(
     std::vector<float> xsub(n * dsub);
 
     for (int m = 0; m < M; m++) {
-        float *xdest = xsub.data();
-        const float *xsrc = x + m * dsub;
+        float* xdest = xsub.data();
+        const float* xsrc = x + m * dsub;
         for (int j = 0; j < n; j++) {
             memcpy(xdest, xsrc, dsub * sizeof(xdest[0]));
             xsrc += d;
@@ -1137,14 +1079,12 @@ void MultiIndexQuantizer2::search(
         }
 
         assign_indexes[m]->search(
-              n, xsub.data(), k2,
-              &sub_dis[k2 * n * m],
-              &sub_ids[k2 * n * m]);
+                n, xsub.data(), k2, &sub_dis[k2 * n * m], &sub_ids[k2 * n * m]);
     }
 
     if (K == 1) {
         // simple version that just finds the min in each table
-        assert (k2 == 1);
+        assert(k2 == 1);
 
         for (int i = 0; i < n; i++) {
             float dis = 0;
@@ -1156,30 +1096,28 @@ void MultiIndexQuantizer2::search(
                 dis += vmin;
                 label |= lmin << (m * pq.nbits);
             }
-            distances [i] = dis;
-            labels [i] = label;
+            distances[i] = dis;
+            labels[i] = label;
         }
 
     } else {
-
-#pragma omp parallel if(n > 1)
+#pragma omp parallel if (n > 1)
         {
-            MinSumK <float, PreSortedArray<float>, false>
-                msk(K, pq.M, pq.nbits, k2);
+            MinSumK<float, PreSortedArray<float>, false> msk(
+                    K, pq.M, pq.nbits, k2);
 #pragma omp for
             for (int i = 0; i < n; i++) {
-                idx_t *li = labels + i * K;
-                msk.run (&sub_dis[i * k2], k2 * n,
-                         distances + i * K, li);
+                idx_t* li = labels + i * K;
+                msk.run(&sub_dis[i * k2], k2 * n, distances + i * K, li);
 
                 // remap ids
 
-                const idx_t *idmap0 = sub_ids.data() + i * k2;
+                const idx_t* idmap0 = sub_ids.data() + i * k2;
                 int64_t ld_idmap = k2 * n;
                 int64_t mask1 = ksub - 1L;
 
                 for (int k = 0; k < K; k++) {
-                    const idx_t *idmap = idmap0;
+                    const idx_t* idmap = idmap0;
                     int64_t vin = li[k];
                     int64_t vout = 0;
                     int bs = 0;
@@ -1196,6 +1134,5 @@ void MultiIndexQuantizer2::search(
         }
     }
 }
-
 
 } // namespace faiss

@@ -5,15 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
-
 #pragma once
 
 #include <climits>
 #include <cmath>
 
 #include <limits>
-
 
 namespace faiss {
 
@@ -34,8 +31,10 @@ namespace faiss {
 template <typename T_, typename TI_>
 struct CMax;
 
-template<typename T> inline T cmin_nextafter(T x);
-template<typename T> inline T cmax_nextafter(T x);
+template <typename T>
+inline T cmin_nextafter(T x);
+template <typename T>
+inline T cmax_nextafter(T x);
 
 // traits of minheaps = heaps where the minimum value is stored on top
 // useful to find the *max* values of an array
@@ -44,10 +43,10 @@ struct CMin {
     typedef T_ T;
     typedef TI_ TI;
     typedef CMax<T_, TI_> Crev; // reference to reverse comparison
-    inline static bool cmp (T a, T b) {
+    inline static bool cmp(T a, T b) {
         return a < b;
     }
-    inline static T neutral () {
+    inline static T neutral() {
         return std::numeric_limits<T>::lowest();
     }
     static const bool is_max = false;
@@ -57,18 +56,15 @@ struct CMin {
     }
 };
 
-
-
-
 template <typename T_, typename TI_>
 struct CMax {
     typedef T_ T;
     typedef TI_ TI;
     typedef CMin<T_, TI_> Crev;
-    inline static bool cmp (T a, T b) {
+    inline static bool cmp(T a, T b) {
         return a > b;
     }
-    inline static T neutral () {
+    inline static T neutral() {
         return std::numeric_limits<T>::max();
     }
     static const bool is_max = true;
@@ -77,22 +73,24 @@ struct CMax {
     }
 };
 
-
-template<> inline float cmin_nextafter<float>(float x) {
+template <>
+inline float cmin_nextafter<float>(float x) {
     return std::nextafterf(x, -HUGE_VALF);
 }
 
-template<> inline float cmax_nextafter<float>(float x) {
+template <>
+inline float cmax_nextafter<float>(float x) {
     return std::nextafterf(x, HUGE_VALF);
 }
 
-template<> inline uint16_t cmin_nextafter<uint16_t>(uint16_t x) {
+template <>
+inline uint16_t cmin_nextafter<uint16_t>(uint16_t x) {
     return x - 1;
 }
 
-template<> inline uint16_t cmax_nextafter<uint16_t>(uint16_t x) {
+template <>
+inline uint16_t cmax_nextafter<uint16_t>(uint16_t x) {
     return x + 1;
 }
-
 
 } // namespace faiss

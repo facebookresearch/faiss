@@ -9,52 +9,48 @@
 #include <cstdlib>
 #include <random>
 
-#include <unistd.h>
 #include <omp.h>
+#include <unistd.h>
 
-#include <unordered_map>
 #include <pthread.h>
+#include <unordered_map>
 
 #include <gtest/gtest.h>
 
-#include <faiss/invlists/OnDiskInvertedLists.h>
-#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexFlat.h>
-#include <faiss/utils/random.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/index_io.h>
-
+#include <faiss/invlists/OnDiskInvertedLists.h>
+#include <faiss/utils/random.h>
 
 namespace {
 
 struct Tempfilename {
-
     static pthread_mutex_t mutex;
 
     std::string filename = "faiss_tmp_XXXXXX";
 
-    Tempfilename () {
-        pthread_mutex_lock (&mutex);
-        int fd = mkstemp (&filename[0]);
+    Tempfilename() {
+        pthread_mutex_lock(&mutex);
+        int fd = mkstemp(&filename[0]);
         close(fd);
-        pthread_mutex_unlock (&mutex);
+        pthread_mutex_unlock(&mutex);
     }
 
-    ~Tempfilename () {
-        if (access (filename.c_str(), F_OK)) {
-            unlink (filename.c_str());
+    ~Tempfilename() {
+        if (access(filename.c_str(), F_OK)) {
+            unlink(filename.c_str());
         }
     }
 
-    const char *c_str() {
+    const char* c_str() {
         return filename.c_str();
     }
-
 };
 
 pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
 
-}  // namespace
-
+} // namespace
 
 TEST(ONDISK, make_invlists) {
     int nlist = 100;
@@ -64,9 +60,7 @@ TEST(ONDISK, make_invlists) {
 
     Tempfilename filename;
 
-    faiss::OnDiskInvertedLists ivf (
-                nlist, code_size,
-                filename.c_str());
+    faiss::OnDiskInvertedLists ivf(nlist, code_size, filename.c_str());
 
     {
         std::vector<uint8_t> code(32);
@@ -75,10 +69,10 @@ TEST(ONDISK, make_invlists) {
         for (int i = 0; i < nadd; i++) {
             double d = distrib(rng);
             int list_no = int(nlist * d * d); // skewed distribution
-            int * ar = (int*)code.data();
+            int* ar = (int*)code.data();
             ar[0] = i;
             ar[1] = list_no;
-            ivf.add_entry (list_no, i, code.data());
+            ivf.add_entry(list_no, i, code.data());
             listnos[i] = list_no;
         }
     }
@@ -86,20 +80,19 @@ TEST(ONDISK, make_invlists) {
     int ntot = 0;
     for (int i = 0; i < nlist; i++) {
         int size = ivf.list_size(i);
-        const faiss::Index::idx_t *ids = ivf.get_ids (i);
-        const uint8_t *codes = ivf.get_codes (i);
+        const faiss::Index::idx_t* ids = ivf.get_ids(i);
+        const uint8_t* codes = ivf.get_codes(i);
         for (int j = 0; j < size; j++) {
             faiss::Index::idx_t id = ids[j];
-            const int * ar = (const int*)&codes[code_size * j];
-            EXPECT_EQ (ar[0], id);
-            EXPECT_EQ (ar[1], i);
-            EXPECT_EQ (listnos[id], i);
-            ntot ++;
+            const int* ar = (const int*)&codes[code_size * j];
+            EXPECT_EQ(ar[0], id);
+            EXPECT_EQ(ar[1], i);
+            EXPECT_EQ(listnos[id], i);
+            ntot++;
         }
     }
-    EXPECT_EQ (ntot, nadd);
+    EXPECT_EQ(ntot, nadd);
 };
-
 
 TEST(ONDISK, test_add) {
     int d = 8;
@@ -119,11 +112,10 @@ TEST(ONDISK, test_add) {
     std::vector<float> xq(d * nb);
     faiss::float_rand(xq.data(), d * nq, 34567);
 
-    std::vector<float> ref_D (nq * k);
-    std::vector<faiss::Index::idx_t> ref_I (nq * k);
+    std::vector<float> ref_D(nq * k);
+    std::vector<faiss::Index::idx_t> ref_I(nq * k);
 
-    index.search (nq, xq.data(), k,
-                  ref_D.data(), ref_I.data());
+    index.search(nq, xq.data(), k, ref_D.data(), ref_I.data());
 
     Tempfilename filename, filename2;
 
@@ -131,46 +123,39 @@ TEST(ONDISK, test_add) {
     {
         faiss::IndexIVFFlat index2(&quantizer, d, nlist);
 
-        faiss::OnDiskInvertedLists ivf (
-                index.nlist, index.code_size,
-                filename.c_str());
+        faiss::OnDiskInvertedLists ivf(
+                index.nlist, index.code_size, filename.c_str());
 
         index2.replace_invlists(&ivf);
 
         index2.add(nb, xb.data());
 
-        std::vector<float> new_D (nq * k);
-        std::vector<faiss::Index::idx_t> new_I (nq * k);
+        std::vector<float> new_D(nq * k);
+        std::vector<faiss::Index::idx_t> new_I(nq * k);
 
-        index2.search (nq, xq.data(), k,
-                       new_D.data(), new_I.data());
+        index2.search(nq, xq.data(), k, new_D.data(), new_I.data());
 
-        EXPECT_EQ (ref_D, new_D);
-        EXPECT_EQ (ref_I, new_I);
+        EXPECT_EQ(ref_D, new_D);
+        EXPECT_EQ(ref_I, new_I);
 
         write_index(&index2, filename2.c_str());
-
     }
 
     // test io
     {
-        faiss::Index *index3 = faiss::read_index(filename2.c_str());
+        faiss::Index* index3 = faiss::read_index(filename2.c_str());
 
-        std::vector<float> new_D (nq * k);
-        std::vector<faiss::Index::idx_t> new_I (nq * k);
+        std::vector<float> new_D(nq * k);
+        std::vector<faiss::Index::idx_t> new_I(nq * k);
 
-        index3->search (nq, xq.data(), k,
-                        new_D.data(), new_I.data());
+        index3->search(nq, xq.data(), k, new_D.data(), new_I.data());
 
-        EXPECT_EQ (ref_D, new_D);
-        EXPECT_EQ (ref_I, new_I);
+        EXPECT_EQ(ref_D, new_D);
+        EXPECT_EQ(ref_I, new_I);
 
         delete index3;
     }
-
 };
-
-
 
 // WARN this thest will run multithreaded only in opt mode
 TEST(ONDISK, make_invlists_threaded) {
@@ -180,11 +165,9 @@ TEST(ONDISK, make_invlists_threaded) {
 
     Tempfilename filename;
 
-    faiss::OnDiskInvertedLists ivf (
-                nlist, code_size,
-                filename.c_str());
+    faiss::OnDiskInvertedLists ivf(nlist, code_size, filename.c_str());
 
-    std::vector<int> list_nos (nadd);
+    std::vector<int> list_nos(nadd);
 
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
@@ -199,27 +182,26 @@ TEST(ONDISK, make_invlists_threaded) {
 #pragma omp for
         for (int i = 0; i < nadd; i++) {
             int list_no = list_nos[i];
-            int * ar = (int*)code.data();
+            int* ar = (int*)code.data();
             ar[0] = i;
             ar[1] = list_no;
-            ivf.add_entry (list_no, i, code.data());
+            ivf.add_entry(list_no, i, code.data());
         }
     }
 
     int ntot = 0;
     for (int i = 0; i < nlist; i++) {
         int size = ivf.list_size(i);
-        const faiss::Index::idx_t *ids = ivf.get_ids (i);
-        const uint8_t *codes = ivf.get_codes (i);
+        const faiss::Index::idx_t* ids = ivf.get_ids(i);
+        const uint8_t* codes = ivf.get_codes(i);
         for (int j = 0; j < size; j++) {
             faiss::Index::idx_t id = ids[j];
-            const int * ar = (const int*)&codes[code_size * j];
-            EXPECT_EQ (ar[0], id);
-            EXPECT_EQ (ar[1], i);
-            EXPECT_EQ (list_nos[id], i);
-            ntot ++;
+            const int* ar = (const int*)&codes[code_size * j];
+            EXPECT_EQ(ar[0], id);
+            EXPECT_EQ(ar[1], i);
+            EXPECT_EQ(list_nos[id], i);
+            ntot++;
         }
     }
-    EXPECT_EQ (ntot, nadd);
-
+    EXPECT_EQ(ntot, nadd);
 };

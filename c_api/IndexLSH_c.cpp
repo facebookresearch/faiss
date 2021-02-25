@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <faiss/IndexLSH.h>
 #include "IndexLSH_c.h"
+#include <faiss/IndexLSH.h>
 #include "macros_impl.h"
 
 using faiss::Index;
@@ -26,12 +26,22 @@ DEFINE_GETTER_PERMISSIVE(IndexLSH, int, train_thresholds)
 int faiss_IndexLSH_new(FaissIndexLSH** p_index, idx_t d, int nbits) {
     try {
         *p_index = reinterpret_cast<FaissIndexLSH*>(new IndexLSH(d, nbits));
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
-int faiss_IndexLSH_new_with_options(FaissIndexLSH** p_index, idx_t d, int nbits, int rotate_data, int train_thresholds) {
+int faiss_IndexLSH_new_with_options(
+        FaissIndexLSH** p_index,
+        idx_t d,
+        int nbits,
+        int rotate_data,
+        int train_thresholds) {
     try {
-        *p_index = reinterpret_cast<FaissIndexLSH*>(
-            new IndexLSH(d, nbits, static_cast<bool>(rotate_data), static_cast<bool>(train_thresholds)));
-    } CATCH_AND_HANDLE
+        *p_index = reinterpret_cast<FaissIndexLSH*>(new IndexLSH(
+                d,
+                nbits,
+                static_cast<bool>(rotate_data),
+                static_cast<bool>(train_thresholds)));
+    }
+    CATCH_AND_HANDLE
 }

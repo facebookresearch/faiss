@@ -11,8 +11,8 @@
 #ifndef METAINDEXES_C_H
 #define METAINDEXES_C_H
 
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,14 +25,18 @@ FAISS_DECLARE_GETTER_SETTER(IndexIDMap, int, own_fields)
 
 int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index);
 
-/** get a pointer to the index map's internal ID vector (the `id_map` field). The
- * outputs of this function become invalid after any operation that can modify the index.
- * 
+/** get a pointer to the index map's internal ID vector (the `id_map` field).
+ * The outputs of this function become invalid after any operation that can
+ * modify the index.
+ *
  * @param index   opaque pointer to index object
  * @param p_id_map    output, the pointer to the beginning of `id_map`.
  * @param p_size  output, the current length of `id_map`.
  */
-void faiss_IndexIDMap_id_map(FaissIndexIDMap* index, idx_t** p_id_map, size_t* p_size);
+void faiss_IndexIDMap_id_map(
+        FaissIndexIDMap* index,
+        idx_t** p_id_map,
+        size_t* p_size);
 
 /** same as IndexIDMap but also provides an efficient reconstruction
     implementation via a 2-way index */
