@@ -164,15 +164,16 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
   ntotal = n;
   init_graph(storage, knn_graph);
 
-  // Node *graph = new Node[n * R];
-  nsg::Graph<Node> tmp_graph(n, R);
+  {
+    nsg::Graph<Node> tmp_graph(n, R);
 
-  link(storage, knn_graph, tmp_graph);
+    link(storage, knn_graph, tmp_graph, verbose);
 
-  final_graph = std::make_shared<nsg::Graph<int>>(n, R);
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < R; j++) {
-      final_graph->at(i, j) = tmp_graph.at(i, j).id;
+    final_graph = std::make_shared<nsg::Graph<int>>(n, R);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < R; j++) {
+        final_graph->at(i, j) = tmp_graph.at(i, j).id;
+      }
     }
   }
 
@@ -211,10 +212,10 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
 
   float *center = new float[d];
   float *tmp = new float[d];
+  ScopeDeleter<float> center_del(center);
+  ScopeDeleter<float> tmp_del(tmp);
 
-  for (int i = 0; i < d; i++) {
-    center[i] = 0;
-  }
+  std::fill_n(center, d, 0.0f);
 
   for (int i = 0; i < n; i++) {
     storage->reconstruct(i, tmp);
@@ -241,6 +242,7 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
   // Do not collect the visited nodes
   search_on_graph<false>(knn_graph, *dis, vt, ep, L, retset, tmpset);
 
+  // set enterpoint
   enterpoint = retset[0].id;
 }
 
@@ -298,7 +300,7 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
 
       for (int m = 0; m < graph.K; m++) {
         int id = (int)graph.at(n, m);
-        if (id == EMPTY_ID || vt.get(id)) {
+        if (id < 0 || id > ntotal || vt.get(id)) {
           continue;
         }
         vt.set(id);
@@ -324,12 +326,13 @@ void NSG::search_on_graph(const nsg::Graph<index_t> &graph,
 }
 
 void NSG::link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
-               nsg::Graph<Node> &graph) {
+               nsg::Graph<Node> &graph, bool verbose) {
 
 #pragma omp parallel
   {
     float *vec = new float[storage->d];
-    ScopeDeleter<float> del(vec);
+    ScopeDeleter<float> del_vec(vec);
+
     std::vector<Node> pool;
     std::vector<Neighbor> tmp;
 
@@ -372,7 +375,7 @@ void NSG::sync_prune(int q, std::vector<Node> &pool, DistanceComputer &dis,
 
   for (int i = 0; i < knn_graph.K; i++) {
     int id = knn_graph.at(q, i);
-    if (vt.get(id)) {
+    if (id < 0 || id >= ntotal || vt.get(id)) {
       continue;
     }
 
@@ -573,7 +576,7 @@ void NSG::attach_unlinked(Index *storage, VisitedTable &vt) {
   DistanceComputer *dis = storage_distance_computer(storage);
   ScopeDeleter1<DistanceComputer> del1(dis);
   float *vec = new float[storage->d];
-  ScopeDeleter<float> del(vec);
+  ScopeDeleter<float> vec_del(vec);
 
   storage->reconstruct(id, vec);
   dis->set_query(vec);

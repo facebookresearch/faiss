@@ -612,7 +612,7 @@ class TestNSG(unittest.TestCase):
         _, knn_graph = index.search(self.xb, GK + 1)
         self.knn_graph = knn_graph[:, 1:]
 
-    def test_nsg(self):
+    def test_nsg_L2(self):
         d = self.xq.shape[1]
 
         index = faiss.IndexNSGFlat(d, 16)
@@ -620,7 +620,9 @@ class TestNSG(unittest.TestCase):
         index.build(self.xb, self.knn_graph)
         Dnsg, Insg = index.search(self.xq, 1)
 
-        self.assertGreaterEqual((self.Iref == Insg).sum(), 460)
+        recalls = (self.Iref == Insg).sum()
+        print('nb equal: ', recalls)
+        self.assertGreaterEqual(recalls, 460)
 
     def test_nsg_IP(self):
         d = self.xq.shape[1]
@@ -639,12 +641,39 @@ class TestNSG(unittest.TestCase):
         index.build(self.xb, knn_graph)
         Dnsg, Insg = index.search(self.xq, 1)
 
-        print('nb equal: ', (Iref == Insg).sum())
-
-        self.assertGreaterEqual((Iref == Insg).sum(), 480)
+        recalls = (Iref == Insg).sum()
+        print('nb equal: ', recalls)
+        self.assertGreaterEqual(recalls, 480)
 
         mask = Iref[:, 0] == Insg[:, 0]
         assert np.allclose(Dref[mask, 0], Dnsg[mask, 0])
+
+    def test_nsg_build(self):
+        d = self.xq.shape[1]
+
+        knn_graph = self.knn_graph.copy()
+        knn_graph[:, 5] = -100  # invalid entries
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
+        index.build(self.xb, self.knn_graph)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        recalls = (self.Iref == Insg).sum()
+        print('nb equal: ', recalls)
+        self.assertGreaterEqual(recalls, 450)
+
+    def test_nsg_connectivity(self):
+        d = self.xq.shape[1]
+        nb = self.xb.shape[0]
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
+        index.build(self.xb, self.knn_graph)
+        vt = faiss.VisitedTable(nb)
+        count = index.nsg.dfs(vt, index.nsg.enterpoint)
+
+        self.assertEqual(count, nb)
 
 
 class TestDistancesPositive(unittest.TestCase):

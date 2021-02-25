@@ -155,7 +155,7 @@ struct NSG {
                   nsg::Graph<Node> &graph);
 
   void link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
-            nsg::Graph<Node> &graph);
+            nsg::Graph<Node> &graph, bool verbose);
 
   // make NSG be fully connected
   int tree_grow(Index *storage);

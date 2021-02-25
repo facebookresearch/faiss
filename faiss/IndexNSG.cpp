@@ -102,6 +102,22 @@ void IndexNSG::build(idx_t n, const float *x, idx_t *knn_graph, int GK) {
   ntotal = storage->ntotal;
 
   nsg::Graph<idx_t> knng(knn_graph, n, GK);
+
+  // check the knn graph
+  idx_t count = 0;
+  for (idx_t i = 0; i < n; i++) {
+    for (int j = 0; j < GK; j++) {
+      idx_t id = knng.at(i, j);
+      if (id < 0 || id >= n) {
+        count += 1;
+      }
+    }
+  }
+  if (count > 0) {
+    fprintf(stderr, "WARNING: the input knn graph "
+            "has %ld invalid entries\n", count);
+  }
+
   nsg.build(storage, n, knng, verbose);
   is_built = true;
 }
