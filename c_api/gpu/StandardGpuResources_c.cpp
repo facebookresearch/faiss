@@ -20,35 +20,51 @@ int faiss_StandardGpuResources_new(FaissStandardGpuResources** p_res) {
     try {
         auto p = new StandardGpuResources();
         *p_res = reinterpret_cast<FaissStandardGpuResources*>(p);
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
 int faiss_StandardGpuResources_noTempMemory(FaissStandardGpuResources* res) {
     try {
         reinterpret_cast<StandardGpuResources*>(res)->noTempMemory();
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
-int faiss_StandardGpuResources_setTempMemory(FaissStandardGpuResources* res, size_t size) {
+int faiss_StandardGpuResources_setTempMemory(
+        FaissStandardGpuResources* res,
+        size_t size) {
     try {
         reinterpret_cast<StandardGpuResources*>(res)->setTempMemory(size);
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
-int faiss_StandardGpuResources_setPinnedMemory(FaissStandardGpuResources* res, size_t size) {
+int faiss_StandardGpuResources_setPinnedMemory(
+        FaissStandardGpuResources* res,
+        size_t size) {
     try {
         reinterpret_cast<StandardGpuResources*>(res)->setPinnedMemory(size);
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
-int faiss_StandardGpuResources_setDefaultStream(FaissStandardGpuResources* res, int device, cudaStream_t stream) {
+int faiss_StandardGpuResources_setDefaultStream(
+        FaissStandardGpuResources* res,
+        int device,
+        cudaStream_t stream) {
     try {
-        reinterpret_cast<StandardGpuResources*>(res)->setDefaultStream(device, stream);
-    } CATCH_AND_HANDLE
+        reinterpret_cast<StandardGpuResources*>(res)->setDefaultStream(
+                device, stream);
+    }
+    CATCH_AND_HANDLE
 }
 
-int faiss_StandardGpuResources_setDefaultNullStreamAllDevices(FaissStandardGpuResources* res) {
+int faiss_StandardGpuResources_setDefaultNullStreamAllDevices(
+        FaissStandardGpuResources* res) {
     try {
-        reinterpret_cast<StandardGpuResources*>(res)->setDefaultNullStreamAllDevices();
-    } CATCH_AND_HANDLE
+        reinterpret_cast<StandardGpuResources*>(res)
+                ->setDefaultNullStreamAllDevices();
+    }
+    CATCH_AND_HANDLE
 }

@@ -11,9 +11,9 @@
 #ifndef FAISS_INDEX_IVF_C_H
 #define FAISS_INDEX_IVF_C_H
 
-#include "faiss_c.h"
-#include "Index_c.h"
 #include "Clustering_c.h"
+#include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,7 +60,9 @@ FAISS_DECLARE_GETTER(IndexIVF, int, own_fields)
  * other is empty. add_id is added to all moved ids (for
  * sequential ids, this would be this->ntotal */
 int faiss_IndexIVF_merge_from(
-    FaissIndexIVF* index, FaissIndexIVF* other, idx_t add_id);
+        FaissIndexIVF* index,
+        FaissIndexIVF* other,
+        idx_t add_id);
 
 /** copy a subset of the entries index to the other index
  *
@@ -70,8 +72,11 @@ int faiss_IndexIVF_merge_from(
  *                      elements are left before and a2 elements are after
  */
 int faiss_IndexIVF_copy_subset_to(
-    const FaissIndexIVF* index, FaissIndexIVF* other, int subset_type, idx_t a1,
-    idx_t a2);
+        const FaissIndexIVF* index,
+        FaissIndexIVF* other,
+        int subset_type,
+        idx_t a1,
+        idx_t a2);
 
 /** search a set of vectors, that are pre-quantized by the IVF
  *  quantizer. Fill in the corresponding heaps with the query
@@ -89,43 +94,54 @@ int faiss_IndexIVF_copy_subset_to(
  *                     instead in upper/lower 32 bit of result,
  *                     instead of ids (used for reranking).
  */
-int faiss_IndexIVF_search_preassigned (const FaissIndexIVF* index,
-    idx_t n, const float *x, idx_t k, const idx_t *assign,
-    const float *centroid_dis, float *distances, idx_t *labels,
-    int store_pairs);
+int faiss_IndexIVF_search_preassigned(
+        const FaissIndexIVF* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const idx_t* assign,
+        const float* centroid_dis,
+        float* distances,
+        idx_t* labels,
+        int store_pairs);
 
-size_t faiss_IndexIVF_get_list_size(const FaissIndexIVF* index,
-    size_t list_no);
+size_t faiss_IndexIVF_get_list_size(const FaissIndexIVF* index, size_t list_no);
 
 /** intialize a direct map
  *
  * @param new_maintain_direct_map    if true, create a direct map,
  *                                   else clear it
  */
-int faiss_IndexIVF_make_direct_map(FaissIndexIVF* index,
-    int new_maintain_direct_map);
+int faiss_IndexIVF_make_direct_map(
+        FaissIndexIVF* index,
+        int new_maintain_direct_map);
 
 /** Check the inverted lists' imbalance factor.
  *
  * 1= perfectly balanced, >1: imbalanced
  */
-double faiss_IndexIVF_imbalance_factor (const FaissIndexIVF* index);
+double faiss_IndexIVF_imbalance_factor(const FaissIndexIVF* index);
 
 /// display some stats about the inverted lists of the index
-void faiss_IndexIVF_print_stats (const FaissIndexIVF* index);
+void faiss_IndexIVF_print_stats(const FaissIndexIVF* index);
 
-/// Get the IDs in an inverted list. IDs are written to `invlist`, which must be large enough
+/// Get the IDs in an inverted list. IDs are written to `invlist`, which must be
+/// large enough
 //// to accommodate the full list.
 ///
 /// @param list_no the list ID
-/// @param invlist output pointer to a slice of memory, at least as long as the list's size
-/// @see faiss_IndexIVF_get_list_size(size_t) 
-void faiss_IndexIVF_invlists_get_ids (const FaissIndexIVF* index, size_t list_no, idx_t* invlist);
+/// @param invlist output pointer to a slice of memory, at least as long as the
+/// list's size
+/// @see faiss_IndexIVF_get_list_size(size_t)
+void faiss_IndexIVF_invlists_get_ids(
+        const FaissIndexIVF* index,
+        size_t list_no,
+        idx_t* invlist);
 
 typedef struct FaissIndexIVFStats {
-    size_t nq;       // nb of queries run
-    size_t nlist;    // nb of inverted lists scanned
-    size_t ndis;     // nb of distancs computed
+    size_t nq;    // nb of queries run
+    size_t nlist; // nb of inverted lists scanned
+    size_t ndis;  // nb of distancs computed
 } FaissIndexIVFStats;
 
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats);
@@ -137,6 +153,5 @@ inline void faiss_IndexIVFStats_init(FaissIndexIVFStats* stats) {
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

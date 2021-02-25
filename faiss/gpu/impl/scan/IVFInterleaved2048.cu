@@ -5,13 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/gpu/impl/scan/IVFInterleavedImpl.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 #if GPU_MAX_SELECTION_K >= 2048
 IVF_INTERLEAVED_IMPL(64, 2048, 8)
 #endif
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss

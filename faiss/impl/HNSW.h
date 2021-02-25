@@ -9,21 +9,19 @@
 
 #pragma once
 
-#include <vector>
-#include <unordered_set>
 #include <queue>
+#include <unordered_set>
+#include <vector>
 
 #include <omp.h>
 
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/random.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/impl/platform_macros.h>
-
+#include <faiss/utils/Heap.h>
+#include <faiss/utils/random.h>
 
 namespace faiss {
-
 
 /** Implementation of the Hierarchical Navigable Small World
  * datastructure.
@@ -41,183 +39,194 @@ namespace faiss {
  * IndexHNSW.h for the full index object.
  */
 
-
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
 
 struct HNSW {
-  /// internal storage of vectors (32 bits: this is expensive)
-  typedef int storage_idx_t;
+    /// internal storage of vectors (32 bits: this is expensive)
+    typedef int storage_idx_t;
 
-  /// Faiss results are 64-bit
-  typedef Index::idx_t idx_t;
+    /// Faiss results are 64-bit
+    typedef Index::idx_t idx_t;
 
-  typedef std::pair<float, storage_idx_t> Node;
+    typedef std::pair<float, storage_idx_t> Node;
 
-  /** Heap structure that allows fast
-   */
-  struct MinimaxHeap {
-    int n;
-    int k;
-    int nvalid;
+    /** Heap structure that allows fast
+     */
+    struct MinimaxHeap {
+        int n;
+        int k;
+        int nvalid;
 
-    std::vector<storage_idx_t> ids;
-    std::vector<float> dis;
-    typedef faiss::CMax<float, storage_idx_t> HC;
+        std::vector<storage_idx_t> ids;
+        std::vector<float> dis;
+        typedef faiss::CMax<float, storage_idx_t> HC;
 
-    explicit MinimaxHeap(int n): n(n), k(0), nvalid(0), ids(n), dis(n) {}
+        explicit MinimaxHeap(int n) : n(n), k(0), nvalid(0), ids(n), dis(n) {}
 
-    void push(storage_idx_t i, float v);
+        void push(storage_idx_t i, float v);
 
-    float max() const;
+        float max() const;
 
-    int size() const;
+        int size() const;
 
-    void clear();
+        void clear();
 
-    int pop_min(float *vmin_out = nullptr);
+        int pop_min(float* vmin_out = nullptr);
 
-    int count_below(float thresh);
-  };
+        int count_below(float thresh);
+    };
 
+    /// to sort pairs of (id, distance) from nearest to fathest or the reverse
+    struct NodeDistCloser {
+        float d;
+        int id;
+        NodeDistCloser(float d, int id) : d(d), id(id) {}
+        bool operator<(const NodeDistCloser& obj1) const {
+            return d < obj1.d;
+        }
+    };
 
-  /// to sort pairs of (id, distance) from nearest to fathest or the reverse
-  struct NodeDistCloser {
-    float d;
-    int id;
-    NodeDistCloser(float d, int id): d(d), id(id) {}
-    bool operator < (const NodeDistCloser &obj1) const { return d < obj1.d; }
-  };
+    struct NodeDistFarther {
+        float d;
+        int id;
+        NodeDistFarther(float d, int id) : d(d), id(id) {}
+        bool operator<(const NodeDistFarther& obj1) const {
+            return d > obj1.d;
+        }
+    };
 
-  struct NodeDistFarther {
-    float d;
-    int id;
-    NodeDistFarther(float d, int id): d(d), id(id) {}
-    bool operator < (const NodeDistFarther &obj1) const { return d > obj1.d; }
-  };
+    /// assignment probability to each layer (sum=1)
+    std::vector<double> assign_probas;
 
+    /// number of neighbors stored per layer (cumulative), should not
+    /// be changed after first add
+    std::vector<int> cum_nneighbor_per_level;
 
-  /// assignment probability to each layer (sum=1)
-  std::vector<double> assign_probas;
+    /// level of each vector (base level = 1), size = ntotal
+    std::vector<int> levels;
 
-  /// number of neighbors stored per layer (cumulative), should not
-  /// be changed after first add
-  std::vector<int> cum_nneighbor_per_level;
+    /// offsets[i] is the offset in the neighbors array where vector i is stored
+    /// size ntotal + 1
+    std::vector<size_t> offsets;
 
-  /// level of each vector (base level = 1), size = ntotal
-  std::vector<int> levels;
+    /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
+    /// for all levels. this is where all storage goes.
+    std::vector<storage_idx_t> neighbors;
 
-  /// offsets[i] is the offset in the neighbors array where vector i is stored
-  /// size ntotal + 1
-  std::vector<size_t> offsets;
+    /// entry point in the search structure (one of the points with maximum
+    /// level
+    storage_idx_t entry_point;
 
-  /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
-  /// for all levels. this is where all storage goes.
-  std::vector<storage_idx_t> neighbors;
+    faiss::RandomGenerator rng;
 
-  /// entry point in the search structure (one of the points with maximum level
-  storage_idx_t entry_point;
+    /// maximum level
+    int max_level;
 
-  faiss::RandomGenerator rng;
+    /// expansion factor at construction time
+    int efConstruction;
 
-  /// maximum level
-  int max_level;
+    /// expansion factor at search time
+    int efSearch;
 
-  /// expansion factor at construction time
-  int efConstruction;
+    /// during search: do we check whether the next best distance is good
+    /// enough?
+    bool check_relative_distance = true;
 
-  /// expansion factor at search time
-  int efSearch;
+    /// number of entry points in levels > 0.
+    int upper_beam;
 
-  /// during search: do we check whether the next best distance is good enough?
-  bool check_relative_distance = true;
+    /// use bounded queue during exploration
+    bool search_bounded_queue = true;
 
-  /// number of entry points in levels > 0.
-  int upper_beam;
+    // methods that initialize the tree sizes
 
-  /// use bounded queue during exploration
-  bool search_bounded_queue = true;
+    /// initialize the assign_probas and cum_nneighbor_per_level to
+    /// have 2*M links on level 0 and M links on levels > 0
+    void set_default_probas(int M, float levelMult);
 
-  // methods that initialize the tree sizes
+    /// set nb of neighbors for this level (before adding anything)
+    void set_nb_neighbors(int level_no, int n);
 
-  /// initialize the assign_probas and cum_nneighbor_per_level to
-  /// have 2*M links on level 0 and M links on levels > 0
-  void set_default_probas(int M, float levelMult);
+    // methods that access the tree sizes
 
-  /// set nb of neighbors for this level (before adding anything)
-  void set_nb_neighbors(int level_no, int n);
+    /// nb of neighbors for this level
+    int nb_neighbors(int layer_no) const;
 
-  // methods that access the tree sizes
+    /// cumumlative nb up to (and excluding) this level
+    int cum_nb_neighbors(int layer_no) const;
 
-  /// nb of neighbors for this level
-  int nb_neighbors(int layer_no) const;
+    /// range of entries in the neighbors table of vertex no at layer_no
+    void neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
+            const;
 
-  /// cumumlative nb up to (and excluding) this level
-  int cum_nb_neighbors(int layer_no) const;
+    /// only mandatory parameter: nb of neighbors
+    explicit HNSW(int M = 32);
 
-  /// range of entries in the neighbors table of vertex no at layer_no
-  void neighbor_range(idx_t no, int layer_no,
-                      size_t * begin, size_t * end) const;
+    /// pick a random level for a new point
+    int random_level();
 
-  /// only mandatory parameter: nb of neighbors
-  explicit HNSW(int M = 32);
+    /// add n random levels to table (for debugging...)
+    void fill_with_random_links(size_t n);
 
-  /// pick a random level for a new point
-  int random_level();
+    void add_links_starting_from(
+            DistanceComputer& ptdis,
+            storage_idx_t pt_id,
+            storage_idx_t nearest,
+            float d_nearest,
+            int level,
+            omp_lock_t* locks,
+            VisitedTable& vt);
 
-  /// add n random levels to table (for debugging...)
-  void fill_with_random_links(size_t n);
+    /** add point pt_id on all levels <= pt_level and build the link
+     * structure for them. */
+    void add_with_locks(
+            DistanceComputer& ptdis,
+            int pt_level,
+            int pt_id,
+            std::vector<omp_lock_t>& locks,
+            VisitedTable& vt);
 
-  void add_links_starting_from(DistanceComputer& ptdis,
-                               storage_idx_t pt_id,
-                               storage_idx_t nearest,
-                               float d_nearest,
-                               int level,
-                               omp_lock_t *locks,
-                               VisitedTable &vt);
+    int search_from_candidates(
+            DistanceComputer& qdis,
+            int k,
+            idx_t* I,
+            float* D,
+            MinimaxHeap& candidates,
+            VisitedTable& vt,
+            HNSWStats& stats,
+            int level,
+            int nres_in = 0) const;
 
+    std::priority_queue<Node> search_from_candidate_unbounded(
+            const Node& node,
+            DistanceComputer& qdis,
+            int ef,
+            VisitedTable* vt,
+            HNSWStats& stats) const;
 
-  /** add point pt_id on all levels <= pt_level and build the link
-   * structure for them. */
-  void add_with_locks(DistanceComputer& ptdis, int pt_level, int pt_id,
-                      std::vector<omp_lock_t>& locks,
-                      VisitedTable& vt);
+    /// search interface
+    HNSWStats search(
+            DistanceComputer& qdis,
+            int k,
+            idx_t* I,
+            float* D,
+            VisitedTable& vt) const;
 
-  int search_from_candidates(DistanceComputer& qdis, int k,
-                             idx_t *I, float *D,
-                             MinimaxHeap& candidates,
-                             VisitedTable &vt,
-                             HNSWStats &stats,
-                             int level, int nres_in = 0) const;
+    void reset();
 
-  std::priority_queue<Node> search_from_candidate_unbounded(
-    const Node& node,
-    DistanceComputer& qdis,
-    int ef,
-    VisitedTable *vt,
-    HNSWStats &stats) const;
+    void clear_neighbor_tables(int level);
+    void print_neighbor_stats(int level) const;
 
-  /// search interface
-  HNSWStats search(DistanceComputer& qdis, int k,
-                   idx_t *I, float *D,
-                   VisitedTable &vt) const;
+    int prepare_level_tab(size_t n, bool preset_levels = false);
 
-  void reset();
-
-  void clear_neighbor_tables(int level);
-  void print_neighbor_stats(int level) const;
-
-  int prepare_level_tab(size_t n, bool preset_levels = false);
-
-  static void shrink_neighbor_list(
-    DistanceComputer& qdis,
-    std::priority_queue<NodeDistFarther>& input,
-    std::vector<NodeDistFarther>& output,
-    int max_size);
-
+    static void shrink_neighbor_list(
+            DistanceComputer& qdis,
+            std::priority_queue<NodeDistFarther>& input,
+            std::vector<NodeDistFarther>& output,
+            int max_size);
 };
-
 
 /**************************************************************
  * Auxiliary structures
@@ -225,59 +234,61 @@ struct HNSW {
 
 /// set implementation optimized for fast access.
 struct VisitedTable {
-  std::vector<uint8_t> visited;
-  int visno;
+    std::vector<uint8_t> visited;
+    int visno;
 
-  explicit VisitedTable(int size)
-    : visited(size), visno(1) {}
+    explicit VisitedTable(int size) : visited(size), visno(1) {}
 
-  /// set flog #no to true
-  void set(int no) {
-    visited[no] = visno;
-  }
-
-  /// get flag #no
-  bool get(int no) const {
-    return visited[no] == visno;
-  }
-
-  /// reset all flags to false
-  void advance() {
-    visno++;
-    if (visno == 250) {
-      // 250 rather than 255 because sometimes we use visno and visno+1
-      memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
-      visno = 1;
+    /// set flog #no to true
+    void set(int no) {
+        visited[no] = visno;
     }
-  }
+
+    /// get flag #no
+    bool get(int no) const {
+        return visited[no] == visno;
+    }
+
+    /// reset all flags to false
+    void advance() {
+        visno++;
+        if (visno == 250) {
+            // 250 rather than 255 because sometimes we use visno and visno+1
+            memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
+            visno = 1;
+        }
+    }
 };
 
-
 struct HNSWStats {
-  size_t n1, n2, n3;
-  size_t ndis;
-  size_t nreorder;
+    size_t n1, n2, n3;
+    size_t ndis;
+    size_t nreorder;
 
-  HNSWStats(size_t n1 = 0, size_t n2 = 0, size_t n3 = 0, size_t ndis = 0, size_t nreorder = 0)
-    : n1(n1), n2(n2), n3(n3), ndis(ndis), nreorder(nreorder) {}
+    HNSWStats(
+            size_t n1 = 0,
+            size_t n2 = 0,
+            size_t n3 = 0,
+            size_t ndis = 0,
+            size_t nreorder = 0)
+            : n1(n1), n2(n2), n3(n3), ndis(ndis), nreorder(nreorder) {}
 
-  void reset() {
-    n1 = n2 = n3 = 0;
-    ndis = 0;
-    nreorder = 0;
-  }
+    void reset() {
+        n1 = n2 = n3 = 0;
+        ndis = 0;
+        nreorder = 0;
+    }
 
-  void combine(const HNSWStats& other) {
-    n1 += other.n1;
-    n2 += other.n2;
-    n3 += other.n3;
-    ndis += other.ndis;
-    nreorder += other.nreorder;
-  }
+    void combine(const HNSWStats& other) {
+        n1 += other.n1;
+        n2 += other.n2;
+        n3 += other.n3;
+        ndis += other.ndis;
+        nreorder += other.nreorder;
+    }
 };
 
 // global var that collects them all
 FAISS_API extern HNSWStats hnsw_stats;
 
-
-}  // namespace faiss
+} // namespace faiss

@@ -26,7 +26,10 @@ FAISS_DECLARE_CLASS_INHERITED(IndexFlat, Index)
 
 int faiss_IndexFlat_new(FaissIndexFlat** p_index);
 
-int faiss_IndexFlat_new_with(FaissIndexFlat** p_index, idx_t d, FaissMetricType metric);
+int faiss_IndexFlat_new_with(
+        FaissIndexFlat** p_index,
+        idx_t d,
+        FaissMetricType metric);
 
 /** get a pointer to the index's internal data (the `xb` field). The outputs
  * become invalid after any data addition or removal operation.
@@ -57,12 +60,12 @@ FAISS_DECLARE_DESTRUCTOR(IndexFlat)
  *                corresponding output distances, size n * k
  */
 int faiss_IndexFlat_compute_distance_subset(
-    FaissIndex *index,
-    idx_t n,
-    const float *x,
-    idx_t k,
-    float *distances,
-    const idx_t *labels);
+        FaissIndex* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        const idx_t* labels);
 
 /** Opaque type for IndexFlatIP */
 FAISS_DECLARE_CLASS_INHERITED(IndexFlatIP, Index)
@@ -85,7 +88,9 @@ int faiss_IndexFlatL2_new_with(FaissIndexFlatL2** p_index, idx_t d);
  */
 FAISS_DECLARE_CLASS_INHERITED(IndexRefineFlat, Index)
 
-int faiss_IndexRefineFlat_new(FaissIndexRefineFlat** p_index, FaissIndex* base_index);
+int faiss_IndexRefineFlat_new(
+        FaissIndexRefineFlat** p_index,
+        FaissIndex* base_index);
 
 FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
 
@@ -96,7 +101,9 @@ FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
 FAISS_DECLARE_CLASS_INHERITED(IndexFlat1D, Index)
 
 int faiss_IndexFlat1D_new(FaissIndexFlat1D** p_index);
-int faiss_IndexFlat1D_new_with(FaissIndexFlat1D** p_index, int continuous_update);
+int faiss_IndexFlat1D_new_with(
+        FaissIndexFlat1D** p_index,
+        int continuous_update);
 
 int faiss_IndexFlat1D_update_permutation(FaissIndexFlat1D* index);
 

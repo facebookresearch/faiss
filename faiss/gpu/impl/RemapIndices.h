@@ -5,21 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
 #include <faiss/Index.h>
 #include <vector>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 /// Utility function to translate (list id, offset) to a user index on
 /// the CPU. In a cpp in order to use OpenMP.
 void ivfOffsetToUserIndex(
-  Index::idx_t* indices,
-  int numLists,
-  int queries,
-  int k,
-  const std::vector<std::vector<Index::idx_t>>& listOffsetToUserIndex);
+        Index::idx_t* indices,
+        int numLists,
+        int queries,
+        int k,
+        const std::vector<std::vector<Index::idx_t>>& listOffsetToUserIndex);
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss

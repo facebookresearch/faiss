@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <vector>
 #include <algorithm>
 #include <type_traits>
+#include <vector>
 
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/simdlib.h>
 
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
-#include <faiss/impl/platform_macros.h>
 
 /** This file contains callbacks for kernels that compute distances.
  *
@@ -31,7 +31,6 @@ namespace faiss {
 
 namespace simd_result_handlers {
 
-
 /** Dummy structure that just computes a checksum on results
  * (to avoid the computation to be optimized away) */
 struct DummyResultHandler {
@@ -41,8 +40,7 @@ struct DummyResultHandler {
         cs += q * 123 + b * 789 + d0.get_scalar_0() + d1.get_scalar_0();
     }
 
-    void set_block_origin(size_t, size_t) {
-    }
+    void set_block_origin(size_t, size_t) {}
 };
 
 /** memorize results in a nq-by-nb matrix.
@@ -50,14 +48,12 @@ struct DummyResultHandler {
  * j0 is the current upper-left block of the matrix
  */
 struct StoreResultHandler {
-    uint16_t *data;
+    uint16_t* data;
     size_t ld; // total number of columns
     size_t i0 = 0;
     size_t j0 = 0;
 
-    StoreResultHandler(uint16_t *data, size_t ld):
-        data(data), ld(ld) {
-    }
+    StoreResultHandler(uint16_t* data, size_t ld) : data(data), ld(ld) {}
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         size_t ofs = (q + i0) * ld + j0 + b * 32;
@@ -71,9 +67,8 @@ struct StoreResultHandler {
     }
 };
 
-
 /** stores results in fixed-size matrix. */
-template<int NQ, int BB>
+template <int NQ, int BB>
 struct FixedStorageHandler {
     simd16uint16 dis[NQ][BB];
     int i0 = 0;
@@ -88,47 +83,42 @@ struct FixedStorageHandler {
         assert(j0 == 0);
     }
 
-    template<class OtherResultHandler>
-    void to_other_handler(OtherResultHandler & other) const {
+    template <class OtherResultHandler>
+    void to_other_handler(OtherResultHandler& other) const {
         for (int q = 0; q < NQ; q++) {
-            for(int b = 0; b < BB; b += 2) {
+            for (int b = 0; b < BB; b += 2) {
                 other.handle(q, b / 2, dis[q][b], dis[q][b + 1]);
             }
         }
     }
-
 };
 
-
 /** Record origin of current block  */
-template<class C, bool with_id_map>
+template <class C, bool with_id_map>
 struct SIMDResultHandler {
     using TI = typename C::TI;
 
     bool disable = false;
 
-    int64_t i0 = 0;   // query origin
-    int64_t j0 = 0;   // db origin
-    size_t ntotal;    // ignore excess elements after ntotal
+    int64_t i0 = 0; // query origin
+    int64_t j0 = 0; // db origin
+    size_t ntotal;  // ignore excess elements after ntotal
 
     /// these fields are used mainly for the IVF variants (with_id_map=true)
-    const TI *id_map; // map offset in invlist to vector id
-    const int *q_map; // map q to global query
-    const uint16_t *dbias;   // table of biases to add to each query
+    const TI* id_map;      // map offset in invlist to vector id
+    const int* q_map;      // map q to global query
+    const uint16_t* dbias; // table of biases to add to each query
 
-    explicit SIMDResultHandler(size_t ntotal):
-        ntotal(ntotal), id_map(nullptr), q_map(nullptr), dbias(nullptr)
-    {}
+    explicit SIMDResultHandler(size_t ntotal)
+            : ntotal(ntotal), id_map(nullptr), q_map(nullptr), dbias(nullptr) {}
 
     void set_block_origin(size_t i0, size_t j0) {
         this->i0 = i0;
         this->j0 = j0;
     }
 
-
     // adjust handler data for IVF.
-    void adjust_with_origin(size_t & q, simd16uint16 & d0, simd16uint16 & d1)
-    {
+    void adjust_with_origin(size_t& q, simd16uint16& d0, simd16uint16& d1) {
         q += i0;
 
         if (dbias) {
@@ -154,9 +144,10 @@ struct SIMDResultHandler {
     /// return binary mask of elements below thr in (d0, d1)
     /// inverse_test returns elements above
     uint32_t get_lt_mask(
-            uint16_t thr, size_t b,
-            simd16uint16 d0, simd16uint16 d1
-    ) {
+            uint16_t thr,
+            size_t b,
+            simd16uint16 d0,
+            simd16uint16 d1) {
         simd16uint16 thr16(thr);
         uint32_t lt_mask;
 
@@ -182,18 +173,16 @@ struct SIMDResultHandler {
     }
 
     virtual void to_flat_arrays(
-            float *distances, int64_t *labels,
-            const float *normalizers = nullptr
-    ) = 0;
+            float* distances,
+            int64_t* labels,
+            const float* normalizers = nullptr) = 0;
 
     virtual ~SIMDResultHandler() {}
-
 };
 
-
 /** Special version for k=1 */
-template<class C, bool with_id_map = false>
-struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
+template <class C, bool with_id_map = false>
+struct SingleResultHandler : SIMDResultHandler<C, with_id_map> {
     using T = typename C::T;
     using TI = typename C::TI;
 
@@ -203,9 +192,8 @@ struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
     };
     std::vector<Result> results;
 
-    SingleResultHandler(size_t nq, size_t ntotal):
-        SIMDResultHandler<C, with_id_map>(ntotal), results(nq)
-    {
+    SingleResultHandler(size_t nq, size_t ntotal)
+            : SIMDResultHandler<C, with_id_map>(ntotal), results(nq) {
         for (int i = 0; i < nq; i++) {
             Result res = {C::neutral(), -1};
             results[i] = res;
@@ -213,13 +201,13 @@ struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
     }
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
-        if(this->disable) {
+        if (this->disable) {
             return;
         }
 
         this->adjust_with_origin(q, d0, d1);
 
-        Result & res = results[q];
+        Result& res = results[q];
         uint32_t lt_mask = this->get_lt_mask(res.val, b, d0, d1);
         if (!lt_mask) {
             return;
@@ -242,9 +230,9 @@ struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
     }
 
     void to_flat_arrays(
-            float *distances, int64_t *labels,
-            const float *normalizers = nullptr
-    ) override {
+            float* distances,
+            int64_t* labels,
+            const float* normalizers = nullptr) override {
         for (int q = 0; q < results.size(); q++) {
             if (!normalizers) {
                 distances[q] = results[q].val;
@@ -256,48 +244,50 @@ struct SingleResultHandler: SIMDResultHandler<C, with_id_map> {
             labels[q] = results[q].id;
         }
     }
-
 };
 
 /** Structure that collects results in a min- or max-heap */
-template<class C, bool with_id_map = false>
-struct HeapHandler: SIMDResultHandler<C, with_id_map> {
+template <class C, bool with_id_map = false>
+struct HeapHandler : SIMDResultHandler<C, with_id_map> {
     using T = typename C::T;
     using TI = typename C::TI;
 
     int nq;
-    T *heap_dis_tab;
-    TI *heap_ids_tab;
+    T* heap_dis_tab;
+    TI* heap_ids_tab;
 
-    int64_t k;  // number of results to keep
+    int64_t k; // number of results to keep
 
     HeapHandler(
-        int nq,
-        T * heap_dis_tab, TI * heap_ids_tab,
-        size_t k, size_t ntotal
-    ):
-        SIMDResultHandler<C, with_id_map>(ntotal), nq(nq),
-        heap_dis_tab(heap_dis_tab), heap_ids_tab(heap_ids_tab), k(k)
-    {
-         for (int q = 0; q < nq; q++) {
-            T *heap_dis_in = heap_dis_tab + q * k;
-            TI *heap_ids_in = heap_ids_tab + q * k;
-            heap_heapify<C> (k, heap_dis_in, heap_ids_in);
+            int nq,
+            T* heap_dis_tab,
+            TI* heap_ids_tab,
+            size_t k,
+            size_t ntotal)
+            : SIMDResultHandler<C, with_id_map>(ntotal),
+              nq(nq),
+              heap_dis_tab(heap_dis_tab),
+              heap_ids_tab(heap_ids_tab),
+              k(k) {
+        for (int q = 0; q < nq; q++) {
+            T* heap_dis_in = heap_dis_tab + q * k;
+            TI* heap_ids_in = heap_ids_tab + q * k;
+            heap_heapify<C>(k, heap_dis_in, heap_ids_in);
         }
     }
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
-        if(this->disable) {
+        if (this->disable) {
             return;
         }
 
         this->adjust_with_origin(q, d0, d1);
 
-        T *heap_dis = heap_dis_tab + q * k;
-        TI *heap_ids = heap_ids_tab + q * k;
+        T* heap_dis = heap_dis_tab + q * k;
+        TI* heap_ids = heap_ids_tab + q * k;
 
-        uint16_t cur_thresh = heap_dis[0] < 65536 ? (uint16_t)(heap_dis[0]) :
-            0xffff;
+        uint16_t cur_thresh =
+                heap_dis[0] < 65536 ? (uint16_t)(heap_dis[0]) : 0xffff;
 
         // here we handle the reverse comparison case as well
         uint32_t lt_mask = this->get_lt_mask(cur_thresh, b, d0, d1);
@@ -306,7 +296,7 @@ struct HeapHandler: SIMDResultHandler<C, with_id_map> {
             return;
         }
 
-        ALIGNED(32) uint16_t d32tab[32] ;
+        ALIGNED(32) uint16_t d32tab[32];
         d0.store(d32tab);
         d1.store(d32tab + 16);
 
@@ -321,20 +311,18 @@ struct HeapHandler: SIMDResultHandler<C, with_id_map> {
                 heap_push<C>(k, heap_dis, heap_ids, dis, idx);
             }
         }
-
     }
 
     void to_flat_arrays(
-            float *distances, int64_t *labels,
-            const float *normalizers = nullptr
-    ) override {
-
+            float* distances,
+            int64_t* labels,
+            const float* normalizers = nullptr) override {
         for (int q = 0; q < nq; q++) {
-            T *heap_dis_in = heap_dis_tab + q * k;
-            TI *heap_ids_in = heap_ids_tab + q * k;
-            heap_reorder<C> (k, heap_dis_in, heap_ids_in);
-            int64_t *heap_ids = labels + q * k;
-            float *heap_dis = distances + q * k;
+            T* heap_dis_in = heap_dis_tab + q * k;
+            TI* heap_ids_in = heap_ids_tab + q * k;
+            heap_reorder<C>(k, heap_dis_in, heap_ids_in);
+            int64_t* heap_ids = labels + q * k;
+            float* heap_dis = distances + q * k;
 
             float one_a = 1.0, b = 0.0;
             if (normalizers) {
@@ -347,9 +335,7 @@ struct HeapHandler: SIMDResultHandler<C, with_id_map> {
             }
         }
     }
-
 };
-
 
 /** Simple top-N implementation using a reservoir.
  *
@@ -358,12 +344,10 @@ struct HeapHandler: SIMDResultHandler<C, with_id_map> {
 
 namespace {
 
-uint64_t get_cy () {
-#ifdef  MICRO_BENCHMARK
+uint64_t get_cy() {
+#ifdef MICRO_BENCHMARK
     uint32_t high, low;
-    asm volatile("rdtsc \n\t"
-                 : "=a" (low),
-                   "=d" (high));
+    asm volatile("rdtsc \n\t" : "=a"(low), "=d"(high));
     return ((uint64_t)high << 32) | (low);
 #else
     return 0;
@@ -372,27 +356,23 @@ uint64_t get_cy () {
 
 } // anonymous namespace
 
-template<class C>
+template <class C>
 struct ReservoirTopN {
     using T = typename C::T;
     using TI = typename C::TI;
 
-    T *vals;
-    TI *ids;
+    T* vals;
+    TI* ids;
 
-    size_t i; // number of stored elements
-    size_t n; // number of requested elements
-    size_t capacity;  // size of storage
+    size_t i;        // number of stored elements
+    size_t n;        // number of requested elements
+    size_t capacity; // size of storage
     size_t cycles = 0;
 
     T threshold; // current threshold
 
-    ReservoirTopN(
-        size_t n, size_t capacity,
-        T *vals, TI *ids
-    ):
-        vals(vals), ids(ids),
-        i(0), n(n), capacity(capacity) {
+    ReservoirTopN(size_t n, size_t capacity, T* vals, TI* ids)
+            : vals(vals), ids(ids), i(0), n(n), capacity(capacity) {
         assert(n < capacity);
         threshold = C::neutral();
     }
@@ -411,11 +391,11 @@ struct ReservoirTopN {
     /// shrink number of stored elements to n
     void shrink_xx() {
         uint64_t t0 = get_cy();
-        qselect (vals, ids, i, n);
-        i = n;  // forget all elements above i = n
+        qselect(vals, ids, i, n);
+        i = n; // forget all elements above i = n
         threshold = C::Crev::neutral();
-        for(size_t j = 0; j < n; j++) {
-            if(C::cmp(vals[j], threshold)) {
+        for (size_t j = 0; j < n; j++) {
+            if (C::cmp(vals[j], threshold)) {
                 threshold = vals[j];
             }
         }
@@ -433,16 +413,14 @@ struct ReservoirTopN {
         uint64_t t0 = get_cy();
         assert(i == capacity);
         threshold = partition_fuzzy<C>(
-            vals, ids, capacity, n, (capacity + n) / 2,
-            &i);
+                vals, ids, capacity, n, (capacity + n) / 2, &i);
         cycles += get_cy() - t0;
     }
 };
 
-
 /** Handler built from several ReservoirTopN (one per query) */
-template<class C, bool with_id_map = false>
-struct ReservoirHandler: SIMDResultHandler<C, with_id_map> {
+template <class C, bool with_id_map = false>
+struct ReservoirHandler : SIMDResultHandler<C, with_id_map> {
     using T = typename C::T;
     using TI = typename C::TI;
 
@@ -454,30 +432,30 @@ struct ReservoirHandler: SIMDResultHandler<C, with_id_map> {
 
     uint64_t times[4];
 
-    ReservoirHandler(size_t nq, size_t ntotal, size_t n, size_t capacity_in):
-        SIMDResultHandler<C, with_id_map>(ntotal), capacity((capacity_in + 15) & ~15),
-        all_ids(nq * capacity), all_vals(nq * capacity)
-    {
+    ReservoirHandler(size_t nq, size_t ntotal, size_t n, size_t capacity_in)
+            : SIMDResultHandler<C, with_id_map>(ntotal),
+              capacity((capacity_in + 15) & ~15),
+              all_ids(nq * capacity),
+              all_vals(nq * capacity) {
         assert(capacity % 16 == 0);
         for (size_t i = 0; i < nq; i++) {
             reservoirs.emplace_back(
-                n, capacity,
-                all_vals.get() + i * capacity,
-                all_ids.data() + i * capacity
-            );
+                    n,
+                    capacity,
+                    all_vals.get() + i * capacity,
+                    all_ids.data() + i * capacity);
         }
         times[0] = times[1] = times[2] = times[3] = 0;
     }
 
-
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) {
         uint64_t t0 = get_cy();
-        if(this->disable) {
+        if (this->disable) {
             return;
         }
         this->adjust_with_origin(q, d0, d1);
 
-        ReservoirTopN<C> & res = reservoirs[q];
+        ReservoirTopN<C>& res = reservoirs[q];
         uint32_t lt_mask = this->get_lt_mask(res.threshold, b, d0, d1);
         uint64_t t1 = get_cy();
         times[0] += t1 - t0;
@@ -499,27 +477,27 @@ struct ReservoirHandler: SIMDResultHandler<C, with_id_map> {
         times[1] += get_cy() - t1;
     }
 
-
     void to_flat_arrays(
-            float *distances, int64_t *labels,
-            const float *normalizers = nullptr
-    ) override {
+            float* distances,
+            int64_t* labels,
+            const float* normalizers = nullptr) override {
         using Cf = typename std::conditional<
                 C::is_max,
-                CMax<float, int64_t>, CMin<float, int64_t>>::type;
+                CMax<float, int64_t>,
+                CMin<float, int64_t>>::type;
 
         uint64_t t0 = get_cy();
         uint64_t t3 = 0;
         std::vector<int> perm(reservoirs[0].n);
         for (int q = 0; q < reservoirs.size(); q++) {
-            ReservoirTopN<C> & res = reservoirs[q];
+            ReservoirTopN<C>& res = reservoirs[q];
             size_t n = res.n;
 
             if (res.i > res.n) {
                 res.shrink();
             }
-            int64_t *heap_ids = labels + q * n;
-            float *heap_dis = distances + q * n;
+            int64_t* heap_ids = labels + q * n;
+            float* heap_dis = distances + q * n;
 
             float one_a = 1.0, b = 0.0;
             if (normalizers) {
@@ -530,30 +508,24 @@ struct ReservoirHandler: SIMDResultHandler<C, with_id_map> {
                 perm[i] = i;
             }
             // indirect sort of result arrays
-            std::sort(
-                    perm.begin(), perm.begin() + res.i,
-                    [&res](int i, int j) {
-                        return C::cmp(res.vals[j], res.vals[i]);
-                    }
-            );
+            std::sort(perm.begin(), perm.begin() + res.i, [&res](int i, int j) {
+                return C::cmp(res.vals[j], res.vals[i]);
+            });
             for (int i = 0; i < res.i; i++) {
                 heap_dis[i] = res.vals[perm[i]] * one_a + b;
                 heap_ids[i] = res.ids[perm[i]];
             }
 
             // possibly add empty results
-            heap_heapify<Cf> (n - res.i, heap_dis + res.i, heap_ids + res.i);
+            heap_heapify<Cf>(n - res.i, heap_dis + res.i, heap_ids + res.i);
 
             t3 += res.cycles;
         }
         times[2] += get_cy() - t0;
         times[3] += t3;
     }
-
 };
 
-
 } // namespace simd_result_handlers
-
 
 } // namespace faiss

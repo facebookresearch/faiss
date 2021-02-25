@@ -9,15 +9,16 @@
 // -*- c++ -*-
 // I/O code for indexes
 
-#include <faiss/clone_index.h>
 #include "clone_index_c.h"
+#include <faiss/clone_index.h>
 #include "macros_impl.h"
 
 using faiss::Index;
 
-int faiss_clone_index (const FaissIndex *idx, FaissIndex **p_out) {
+int faiss_clone_index(const FaissIndex* idx, FaissIndex** p_out) {
     try {
         auto out = faiss::clone_index(reinterpret_cast<const Index*>(idx));
         *p_out = reinterpret_cast<FaissIndex*>(out);
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }

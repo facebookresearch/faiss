@@ -5,24 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/IndexPQFastScan.h>
 
+#include <limits.h>
 #include <cassert>
 #include <memory>
-#include <limits.h>
 
 #include <omp.h>
 
-
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/utils.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
+#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/quantize_lut.h>
-#include <faiss/impl/pq4_fast_scan.h>
-
 
 namespace faiss {
 
@@ -33,25 +30,24 @@ inline size_t roundup(size_t a, size_t b) {
 }
 
 IndexPQFastScan::IndexPQFastScan(
-        int d, size_t M, size_t nbits,
+        int d,
+        size_t M,
+        size_t nbits,
         MetricType metric,
-        int bbs):
-    Index(d, metric), pq(d, M, nbits),
-    bbs(bbs), ntotal2(0), M2(roundup(M, 2))
-{
+        int bbs)
+        : Index(d, metric),
+          pq(d, M, nbits),
+          bbs(bbs),
+          ntotal2(0),
+          M2(roundup(M, 2)) {
     FAISS_THROW_IF_NOT(nbits == 4);
     is_trained = false;
 }
 
-IndexPQFastScan::IndexPQFastScan():
-    bbs(0), ntotal2(0), M2(0)
-{}
+IndexPQFastScan::IndexPQFastScan() : bbs(0), ntotal2(0), M2(0) {}
 
-IndexPQFastScan::IndexPQFastScan(const IndexPQ & orig, int bbs):
-    Index(orig.d, orig.metric_type),
-    pq(orig.pq),
-    bbs(bbs)
-{
+IndexPQFastScan::IndexPQFastScan(const IndexPQ& orig, int bbs)
+        : Index(orig.d, orig.metric_type), pq(orig.pq), bbs(bbs) {
     FAISS_THROW_IF_NOT(orig.pq.nbits == 4);
     ntotal = orig.ntotal;
     is_trained = orig.is_trained;
@@ -70,16 +66,10 @@ IndexPQFastScan::IndexPQFastScan(const IndexPQ & orig, int bbs):
     codes.resize(ntotal2 * M2 / 2);
 
     // printf("M=%d M2=%d code_size=%d\n", M, M2, pq.code_size);
-    pq4_pack_codes(
-            orig.codes.data(),
-            ntotal, M,
-            ntotal2, bbs, M2,
-            codes.get()
-    );
+    pq4_pack_codes(orig.codes.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
 }
 
-void IndexPQFastScan::train (idx_t n, const float *x)
-{
+void IndexPQFastScan::train(idx_t n, const float* x) {
     if (is_trained) {
         return;
     }
@@ -87,11 +77,10 @@ void IndexPQFastScan::train (idx_t n, const float *x)
     is_trained = true;
 }
 
-
-void IndexPQFastScan::add (idx_t n, const float *x) {
-    FAISS_THROW_IF_NOT (is_trained);
+void IndexPQFastScan::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(is_trained);
     AlignedTable<uint8_t> tmp_codes(n * pq.code_size);
-    pq.compute_codes (x, tmp_codes.get(), n);
+    pq.compute_codes(x, tmp_codes.get(), n);
     ntotal2 = roundup(ntotal + n, bbs);
     size_t new_size = ntotal2 * M2 / 2;
     size_t old_size = codes.size();
@@ -100,39 +89,35 @@ void IndexPQFastScan::add (idx_t n, const float *x) {
         memset(codes.get() + old_size, 0, new_size - old_size);
     }
     pq4_pack_codes_range(
-        tmp_codes.get(), pq.M, ntotal, ntotal + n,
-        bbs, M2, codes.get()
-    );
+            tmp_codes.get(), pq.M, ntotal, ntotal + n, bbs, M2, codes.get());
     ntotal += n;
 }
 
-void IndexPQFastScan::reset()
-{
+void IndexPQFastScan::reset() {
     codes.resize(0);
     ntotal = 0;
- }
-
-
+}
 
 namespace {
 
 // from impl/ProductQuantizer.cpp
 template <class C, typename dis_t>
 void pq_estimators_from_tables_generic(
-        const ProductQuantizer& pq, size_t nbits,
-        const uint8_t *codes, size_t ncodes,
-        const dis_t *dis_table, size_t k,
-        typename C::T *heap_dis, int64_t *heap_ids)
-{
+        const ProductQuantizer& pq,
+        size_t nbits,
+        const uint8_t* codes,
+        size_t ncodes,
+        const dis_t* dis_table,
+        size_t k,
+        typename C::T* heap_dis,
+        int64_t* heap_ids) {
     using accu_t = typename C::T;
     const size_t M = pq.M;
     const size_t ksub = pq.ksub;
     for (size_t j = 0; j < ncodes; ++j) {
-        PQDecoderGeneric decoder(
-                codes + j * pq.code_size, nbits
-        );
+        PQDecoderGeneric decoder(codes + j * pq.code_size, nbits);
         accu_t dis = 0;
-        const dis_t * __restrict dt = dis_table;
+        const dis_t* __restrict dt = dis_table;
         for (size_t m = 0; m < M; m++) {
             uint64_t c = decoder.decode();
             dis += dt[c];
@@ -146,53 +131,53 @@ void pq_estimators_from_tables_generic(
     }
 }
 
-
 } // anonymous namespace
-
 
 using namespace quantize_lut;
 
 void IndexPQFastScan::compute_quantized_LUT(
-        idx_t n, const float* x,
-        uint8_t *lut, float *normalizers) const
-{
+        idx_t n,
+        const float* x,
+        uint8_t* lut,
+        float* normalizers) const {
     size_t dim12 = pq.ksub * pq.M;
-    std::unique_ptr<float[]> dis_tables(new float [n * dim12]);
+    std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
     if (metric_type == METRIC_L2) {
-        pq.compute_distance_tables (n, x, dis_tables.get());
+        pq.compute_distance_tables(n, x, dis_tables.get());
     } else {
-        pq.compute_inner_prod_tables (n, x, dis_tables.get());
+        pq.compute_inner_prod_tables(n, x, dis_tables.get());
     }
 
-    for(uint64_t i = 0; i < n; i++) {
+    for (uint64_t i = 0; i < n; i++) {
         round_uint8_per_column(
-                dis_tables.get() + i * dim12, pq.M, pq.ksub,
-                &normalizers[2 * i], &normalizers[2 * i + 1]
-        );
+                dis_tables.get() + i * dim12,
+                pq.M,
+                pq.ksub,
+                &normalizers[2 * i],
+                &normalizers[2 * i + 1]);
     }
 
-    for(uint64_t i = 0; i < n; i++) {
-        const float *t_in = dis_tables.get() + i * dim12;
-        uint8_t *t_out = lut + i * M2 * pq.ksub;
+    for (uint64_t i = 0; i < n; i++) {
+        const float* t_in = dis_tables.get() + i * dim12;
+        uint8_t* t_out = lut + i * M2 * pq.ksub;
 
-        for(int j = 0; j < dim12; j++) {
+        for (int j = 0; j < dim12; j++) {
             t_out[j] = int(t_in[j]);
         }
         memset(t_out + dim12, 0, (M2 - pq.M) * pq.ksub);
     }
 }
 
-
-
 /******************************************************************************
  * Search driver routine
  ******************************************************************************/
 
-
 void IndexPQFastScan::search(
-                idx_t n, const float* x, idx_t k,
-                float* distances, idx_t* labels) const
-{
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels);
     } else {
@@ -200,20 +185,20 @@ void IndexPQFastScan::search(
     }
 }
 
-
-template<bool is_max>
+template <bool is_max>
 void IndexPQFastScan::search_dispatch_implem(
-                idx_t n,
-                const float* x,
-                idx_t k,
-                float* distances,
-                idx_t* labels) const
-{
-    using Cfloat = typename std::conditional<is_max,
-        CMax<float, int64_t>, CMin<float, int64_t> >::type;
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    using Cfloat = typename std::conditional<
+            is_max,
+            CMax<float, int64_t>,
+            CMin<float, int64_t>>::type;
 
-    using C = typename std::conditional<is_max,
-        CMax<uint16_t, int>, CMin<uint16_t, int> >::type;
+    using C = typename std::
+            conditional<is_max, CMax<uint16_t, int>, CMin<uint16_t, int>>::type;
 
     if (n == 0) {
         return;
@@ -229,26 +214,24 @@ void IndexPQFastScan::search_dispatch_implem(
             impl = 14;
         }
         if (k > 20) {
-            impl ++;
+            impl++;
         }
     }
-
 
     if (implem == 1) {
         FAISS_THROW_IF_NOT(orig_codes);
         FAISS_THROW_IF_NOT(is_max);
-        float_maxheap_array_t res = {
-            size_t(n), size_t(k), labels, distances };
-        pq.search (x, n, orig_codes, ntotal, &res, true);
+        float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
+        pq.search(x, n, orig_codes, ntotal, &res, true);
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes);
 
         size_t dim12 = pq.ksub * pq.M;
-        std::unique_ptr<float[]> dis_tables(new float [n * dim12]);
+        std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
         if (is_max) {
-            pq.compute_distance_tables (n, x, dis_tables.get());
+            pq.compute_distance_tables(n, x, dis_tables.get());
         } else {
-            pq.compute_inner_prod_tables (n, x, dis_tables.get());
+            pq.compute_inner_prod_tables(n, x, dis_tables.get());
         }
 
         std::vector<float> normalizers(n * 2);
@@ -256,34 +239,39 @@ void IndexPQFastScan::search_dispatch_implem(
         if (implem == 2) {
             // default float
         } else if (implem == 3 || implem == 4) {
-            for(uint64_t i = 0; i < n; i++) {
+            for (uint64_t i = 0; i < n; i++) {
                 round_uint8_per_column(
-                        dis_tables.get() + i * dim12, pq.M,
+                        dis_tables.get() + i * dim12,
+                        pq.M,
                         pq.ksub,
-                        &normalizers[2 * i], &normalizers[2 * i + 1]
-                );
+                        &normalizers[2 * i],
+                        &normalizers[2 * i + 1]);
             }
         }
 
         for (int64_t i = 0; i < n; i++) {
-            int64_t *heap_ids = labels + i * k;
-            float *heap_dis = distances + i * k;
+            int64_t* heap_ids = labels + i * k;
+            float* heap_dis = distances + i * k;
 
-            heap_heapify<Cfloat> (k, heap_dis, heap_ids);
+            heap_heapify<Cfloat>(k, heap_dis, heap_ids);
 
             pq_estimators_from_tables_generic<Cfloat>(
-                pq, pq.nbits, orig_codes, ntotal,
-                dis_tables.get() + i * dim12,
-                k, heap_dis, heap_ids
-            );
+                    pq,
+                    pq.nbits,
+                    orig_codes,
+                    ntotal,
+                    dis_tables.get() + i * dim12,
+                    k,
+                    heap_dis,
+                    heap_ids);
 
-            heap_reorder<Cfloat> (k, heap_dis, heap_ids);
+            heap_reorder<Cfloat>(k, heap_dis, heap_ids);
 
             if (implem == 4) {
                 float a = normalizers[2 * i];
                 float b = normalizers[2 * i + 1];
 
-                for(int j = 0; j < k; j++) {
+                for (int j = 0; j < k; j++) {
                     heap_dis[j] = heap_dis[j] / a + b;
                 }
             }
@@ -303,30 +291,30 @@ void IndexPQFastScan::search_dispatch_implem(
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
-                float *dis_i = distances + i0 * k;
-                idx_t *lab_i = labels + i0 * k;
+                float* dis_i = distances + i0 * k;
+                idx_t* lab_i = labels + i0 * k;
                 if (impl == 12 || impl == 13) {
                     search_implem_12<C>(
-                        i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
                 } else {
                     search_implem_14<C>(
-                        i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
                 }
             }
         }
     } else {
         FAISS_THROW_FMT("invalid implem %d impl=%d", implem, impl);
     }
-
 }
 
-template<class C>
+template <class C>
 void IndexPQFastScan::search_implem_12(
-                idx_t n, const float* x, idx_t k,
-                float* distances, idx_t* labels,
-                int impl) const
-{
-
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        int impl) const {
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -335,23 +323,25 @@ void IndexPQFastScan::search_implem_12(
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
             search_implem_12<C>(
-                    i1 - i0, x + d * i0, k,
-                    distances + i0 * k, labels + i0 * k, impl
-            );
+                    i1 - i0,
+                    x + d * i0,
+                    k,
+                    distances + i0 * k,
+                    labels + i0 * k,
+                    impl);
         }
         return;
     }
 
     size_t dim12 = pq.ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);
-    std::unique_ptr<float []> normalizers(new float[2 * n]);
+    std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
     if (skip & 1) {
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-            n, x, quantized_dis_tables.get(), normalizers.get()
-        );
+                n, x, quantized_dis_tables.get(), normalizers.get());
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
@@ -365,9 +355,8 @@ void IndexPQFastScan::search_implem_12(
         qbs = pq4_preferred_qbs(n);
     }
 
-    int LUT_nq = pq4_pack_LUT_qbs(
-        qbs, M2, quantized_dis_tables.get(), LUT.get()
-    );
+    int LUT_nq =
+            pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
     if (k == 1) {
@@ -377,36 +366,29 @@ void IndexPQFastScan::search_implem_12(
         } else {
             handler.disable = bool(skip & 2);
             pq4_accumulate_loop_qbs(
-                qbs, ntotal2, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
         }
 
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
     } else if (impl == 12) {
-
         std::vector<uint16_t> tmp_dis(n * k);
         std::vector<int32_t> tmp_ids(n * k);
 
         if (skip & 4) {
             // skip
         } else {
-            HeapHandler<C> handler(n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
+            HeapHandler<C> handler(
+                    n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
             handler.disable = bool(skip & 2);
 
             pq4_accumulate_loop_qbs(
-                qbs, ntotal2, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
 
             if (!(skip & 8)) {
                 handler.to_flat_arrays(distances, labels, normalizers.get());
             }
         }
-
 
     } else { // impl == 13
 
@@ -417,10 +399,7 @@ void IndexPQFastScan::search_implem_12(
             // skip
         } else {
             pq4_accumulate_loop_qbs(
-                qbs, ntotal2, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
         }
 
         if (!(skip & 8)) {
@@ -431,18 +410,19 @@ void IndexPQFastScan::search_implem_12(
         FastScan_stats.t1 += handler.times[1];
         FastScan_stats.t2 += handler.times[2];
         FastScan_stats.t3 += handler.times[3];
-
     }
 }
 
 FastScanStats FastScan_stats;
 
-template<class C>
+template <class C>
 void IndexPQFastScan::search_implem_14(
-                idx_t n, const float* x, idx_t k,
-                float* distances, idx_t* labels, int impl) const
-{
-
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        int impl) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     int qbs2 = qbs == 0 ? 4 : qbs;
@@ -452,23 +432,25 @@ void IndexPQFastScan::search_implem_14(
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
             search_implem_14<C>(
-                    i1 - i0, x + d * i0, k,
-                    distances + i0 * k, labels + i0 * k, impl
-            );
+                    i1 - i0,
+                    x + d * i0,
+                    k,
+                    distances + i0 * k,
+                    labels + i0 * k,
+                    impl);
         }
         return;
     }
 
     size_t dim12 = pq.ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);
-    std::unique_ptr<float []> normalizers(new float[2 * n]);
+    std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
     if (skip & 1) {
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-            n, x, quantized_dis_tables.get(), normalizers.get()
-        );
+                n, x, quantized_dis_tables.get(), normalizers.get());
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
@@ -480,36 +462,29 @@ void IndexPQFastScan::search_implem_14(
             // pass
         } else {
             handler.disable = bool(skip & 2);
-            pq4_accumulate_loop (
-                n, ntotal2, bbs, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+            pq4_accumulate_loop(
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
         }
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
     } else if (impl == 14) {
-
         std::vector<uint16_t> tmp_dis(n * k);
         std::vector<int32_t> tmp_ids(n * k);
 
         if (skip & 4) {
             // skip
         } else if (k > 1) {
-            HeapHandler<C> handler(n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
+            HeapHandler<C> handler(
+                    n, tmp_dis.data(), tmp_ids.data(), k, ntotal);
             handler.disable = bool(skip & 2);
 
-            pq4_accumulate_loop (
-                n, ntotal2, bbs, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+            pq4_accumulate_loop(
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
 
             if (!(skip & 8)) {
                 handler.to_flat_arrays(distances, labels, normalizers.get());
             }
         }
-
 
     } else { // impl == 15
 
@@ -519,11 +494,8 @@ void IndexPQFastScan::search_implem_14(
         if (skip & 4) {
             // skip
         } else {
-            pq4_accumulate_loop (
-                n, ntotal2, bbs, M2,
-                codes.get(), LUT.get(),
-                handler
-            );
+            pq4_accumulate_loop(
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
         }
 
         if (!(skip & 8)) {
@@ -531,6 +503,5 @@ void IndexPQFastScan::search_implem_14(
         }
     }
 }
-
 
 } // namespace faiss

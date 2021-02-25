@@ -8,12 +8,10 @@
 #include <faiss/impl/pq4_fast_scan.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/simdlib.h>
 #include <faiss/impl/simd_result_handlers.h>
-
+#include <faiss/utils/simdlib.h>
 
 namespace faiss {
-
 
 using namespace simd_result_handlers;
 
@@ -29,27 +27,25 @@ namespace {
  * writes results in a ResultHandler
  */
 
-template<int NQ, class ResultHandler>
+template <int NQ, class ResultHandler>
 void kernel_accumulate_block(
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
     // distance accumulators
     simd16uint16 accu[NQA][4];
 
-    for(int q = 0; q < NQ; q++) {
-        for(int b = 0; b < 4; b++) {
+    for (int q = 0; q < NQ; q++) {
+        for (int b = 0; b < 4; b++) {
             accu[q][b].clear();
         }
     }
 
     // _mm_prefetch(codes + 768, 0);
-    for(int sq = 0; sq < nsq; sq += 2) {
-
+    for (int sq = 0; sq < nsq; sq += 2) {
         // prefetch
         simd32uint8 c(codes);
         codes += 32;
@@ -59,7 +55,7 @@ void kernel_accumulate_block(
         simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
         simd32uint8 clo = c & mask;
 
-        for(int q = 0; q < NQ; q++) {
+        for (int q = 0; q < NQ; q++) {
             // load LUTs for 2 quantizers
             simd32uint8 lut(LUT);
             LUT += 32;
@@ -75,26 +71,23 @@ void kernel_accumulate_block(
         }
     }
 
-    for(int q = 0; q < NQ; q++) {
+    for (int q = 0; q < NQ; q++) {
         accu[q][0] -= accu[q][1] << 8;
         simd16uint16 dis0 = combine2x2(accu[q][0], accu[q][1]);
         accu[q][2] -= accu[q][3] << 8;
         simd16uint16 dis1 = combine2x2(accu[q][2], accu[q][3]);
         res.handle(q, 0, dis0, dis1);
     }
-
 }
 
 // handle at most 4 blocks of queries
-template<int QBS, class ResultHandler>
+template <int QBS, class ResultHandler>
 void accumulate_q_4step(
         size_t ntotal2,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT0,
-        ResultHandler & res)
-{
-
+        const uint8_t* codes,
+        const uint8_t* LUT0,
+        ResultHandler& res) {
     constexpr int Q1 = QBS & 15;
     constexpr int Q2 = (QBS >> 4) & 15;
     constexpr int Q3 = (QBS >> 8) & 15;
@@ -103,7 +96,7 @@ void accumulate_q_4step(
 
     for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
         FixedStorageHandler<SQ, 2> res2;
-        const uint8_t *LUT = LUT0;
+        const uint8_t* LUT = LUT0;
         kernel_accumulate_block<Q1>(nsq, codes, LUT, res2);
         LUT += Q1 * nsq * 16;
         if (Q2 > 0) {
@@ -126,134 +119,118 @@ void accumulate_q_4step(
     }
 }
 
-
-
-
-template<int NQ, class ResultHandler>
+template <int NQ, class ResultHandler>
 void kernel_accumulate_block_loop(
         size_t ntotal2,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
-
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
         res.set_block_origin(0, j0);
-        kernel_accumulate_block<NQ, ResultHandler>
-            (nsq, codes + j0 * nsq / 2, LUT, res);
+        kernel_accumulate_block<NQ, ResultHandler>(
+                nsq, codes + j0 * nsq / 2, LUT, res);
     }
-
 }
 
 // non-template version of accumulate kernel -- dispatches dynamically
-template<class ResultHandler>
+template <class ResultHandler>
 void accumulate(
         int nq,
         size_t ntotal2,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
-
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT));
 
-#define DISPATCH(NQ)                                       \
-    case NQ:                                                    \
-        kernel_accumulate_block_loop<NQ, ResultHandler>    \
-                (ntotal2, nsq, codes, LUT, res);                \
-    return
+#define DISPATCH(NQ)                                     \
+    case NQ:                                             \
+        kernel_accumulate_block_loop<NQ, ResultHandler>( \
+                ntotal2, nsq, codes, LUT, res);          \
+        return
 
-    switch(nq) {
+    switch (nq) {
         DISPATCH(1);
         DISPATCH(2);
         DISPATCH(3);
         DISPATCH(4);
     }
-    FAISS_THROW_FMT("accumulate nq=%d not instanciated",
-                    nq);
+    FAISS_THROW_FMT("accumulate nq=%d not instanciated", nq);
 
 #undef DISPATCH
 }
 
+} // namespace
 
-} // anonumous namespace
-
-
-
-template<class ResultHandler>
+template <class ResultHandler>
 void pq4_accumulate_loop_qbs(
         int qbs,
         size_t ntotal2,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT0,
-        ResultHandler & res)
-{
-
+        const uint8_t* codes,
+        const uint8_t* LUT0,
+        ResultHandler& res) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT0));
 
     // try out optimized versions
-    switch(qbs) {
-#define DISPATCH(QBS) \
-        case QBS: accumulate_q_4step<QBS>  \
-            (ntotal2, nsq, codes, LUT0, res);  \
+    switch (qbs) {
+#define DISPATCH(QBS)                                            \
+    case QBS:                                                    \
+        accumulate_q_4step<QBS>(ntotal2, nsq, codes, LUT0, res); \
         return;
-            DISPATCH(0x3333);  // 12
-            DISPATCH(0x2333);  // 11
-            DISPATCH(0x2233);  // 10
-            DISPATCH(0x333);   // 9
-            DISPATCH(0x2223);  // 9
-            DISPATCH(0x233);   // 8
-            DISPATCH(0x1223);  // 8
-            DISPATCH(0x223);   // 7
-            DISPATCH(0x34);    // 7
-            DISPATCH(0x133);   // 7
-            DISPATCH(0x6);     // 6
-            DISPATCH(0x33);    // 6
-            DISPATCH(0x123);   // 6
-            DISPATCH(0x222);   // 6
-            DISPATCH(0x23);    // 5
-            DISPATCH(0x5);     // 5
-            DISPATCH(0x13);    // 4
-            DISPATCH(0x22);    // 4
-            DISPATCH(0x4);     // 4
-            DISPATCH(0x3);     // 3
-            DISPATCH(0x21);    // 3
-            DISPATCH(0x2);     // 2
-            DISPATCH(0x1);     // 1
+        DISPATCH(0x3333); // 12
+        DISPATCH(0x2333); // 11
+        DISPATCH(0x2233); // 10
+        DISPATCH(0x333);  // 9
+        DISPATCH(0x2223); // 9
+        DISPATCH(0x233);  // 8
+        DISPATCH(0x1223); // 8
+        DISPATCH(0x223);  // 7
+        DISPATCH(0x34);   // 7
+        DISPATCH(0x133);  // 7
+        DISPATCH(0x6);    // 6
+        DISPATCH(0x33);   // 6
+        DISPATCH(0x123);  // 6
+        DISPATCH(0x222);  // 6
+        DISPATCH(0x23);   // 5
+        DISPATCH(0x5);    // 5
+        DISPATCH(0x13);   // 4
+        DISPATCH(0x22);   // 4
+        DISPATCH(0x4);    // 4
+        DISPATCH(0x3);    // 3
+        DISPATCH(0x21);   // 3
+        DISPATCH(0x2);    // 2
+        DISPATCH(0x1);    // 1
 #undef DISPATCH
     }
 
     // default implementation where qbs is not known at compile time
 
     for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
-        const uint8_t *LUT = LUT0;
+        const uint8_t* LUT = LUT0;
         int qi = qbs;
         int i0 = 0;
-        while(qi) {
+        while (qi) {
             int nq = qi & 15;
             qi >>= 4;
             res.set_block_origin(i0, j0);
-#define DISPATCH(NQ)                                     \
-    case NQ:                                             \
-        kernel_accumulate_block<NQ, ResultHandler> \
-           (nsq, codes, LUT, res);                       \
+#define DISPATCH(NQ)                                                      \
+    case NQ:                                                              \
+        kernel_accumulate_block<NQ, ResultHandler>(nsq, codes, LUT, res); \
         break
-            switch(nq) {
+            switch (nq) {
                 DISPATCH(1);
                 DISPATCH(2);
                 DISPATCH(3);
                 DISPATCH(4);
 #undef DISPATCH
-            default:
-                FAISS_THROW_FMT("accumulate nq=%d not instanciated",
-                                nq);
+                default:
+                    FAISS_THROW_FMT("accumulate nq=%d not instanciated", nq);
             }
             i0 += nq;
             LUT += nq * nsq * 16;
@@ -262,14 +239,11 @@ void pq4_accumulate_loop_qbs(
     }
 }
 
-
-
 // explicit template instantiations
 
-
-#define INSTANTIATE_ACCUMULATE_Q(RH) \
-template void pq4_accumulate_loop_qbs<RH> \
-    (int, size_t, int, const uint8_t *, const uint8_t *, RH &);
+#define INSTANTIATE_ACCUMULATE_Q(RH)           \
+    template void pq4_accumulate_loop_qbs<RH>( \
+            int, size_t, int, const uint8_t*, const uint8_t*, RH&);
 
 using Csi = CMax<uint16_t, int>;
 INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi>)
@@ -295,7 +269,6 @@ INSTANTIATE_ACCUMULATE_Q(HHCsl2)
 INSTANTIATE_ACCUMULATE_Q(RHCsl2)
 INSTANTIATE_ACCUMULATE_Q(SHCsl2)
 
-
 /***************************************************************
  * Packing functions
  ***************************************************************/
@@ -303,7 +276,7 @@ INSTANTIATE_ACCUMULATE_Q(SHCsl2)
 int pq4_qbs_to_nq(int qbs) {
     int i0 = 0;
     int qi = qbs;
-    while(qi) {
+    while (qi) {
         int nq = qi & 15;
         qi >>= 4;
         i0 += nq;
@@ -311,29 +284,22 @@ int pq4_qbs_to_nq(int qbs) {
     return i0;
 }
 
-
-
 void accumulate_to_mem(
         int nq,
         size_t ntotal2,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        uint16_t* accu)
-{
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
     FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
     StoreResultHandler handler(accu, ntotal2);
     accumulate(nq, ntotal2, nsq, codes, LUT, handler);
 }
 
-
 int pq4_preferred_qbs(int n) {
     // from timmings in P141901742, P141902828
     static int map[12] = {
-        0, 1, 2, 3, 0x13,
-        0x23, 0x33, 0x223, 0x233, 0x333,
-        0x2233, 0x2333
-    };
+            0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
     if (n <= 11) {
         return map[n];
     } else if (n <= 24) {
@@ -348,7 +314,4 @@ int pq4_preferred_qbs(int n) {
     }
 }
 
-
-
 } // namespace faiss
-

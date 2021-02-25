@@ -11,8 +11,8 @@
 #ifndef FAISS_INDEX_PRETRANSFORM_C_H
 #define FAISS_INDEX_PRETRANSFORM_C_H
 
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +27,5 @@ FAISS_DECLARE_GETTER(IndexPreTransform, FaissIndex*, index)
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

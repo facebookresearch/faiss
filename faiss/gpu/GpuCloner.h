@@ -15,67 +15,70 @@
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 class GpuResourcesProvider;
 
 /// Cloner specialized for GPU -> CPU
-struct ToCPUCloner: faiss::Cloner {
-    void merge_index(Index *dst, Index *src, bool successive_ids);
-    Index *clone_Index(const Index *index) override;
+struct ToCPUCloner : faiss::Cloner {
+    void merge_index(Index* dst, Index* src, bool successive_ids);
+    Index* clone_Index(const Index* index) override;
 };
 
-
 /// Cloner specialized for CPU -> 1 GPU
-struct ToGpuCloner: faiss::Cloner, GpuClonerOptions {
-    GpuResourcesProvider *provider;
+struct ToGpuCloner : faiss::Cloner, GpuClonerOptions {
+    GpuResourcesProvider* provider;
     int device;
 
-    ToGpuCloner(GpuResourcesProvider *prov, int device,
-                const GpuClonerOptions &options);
+    ToGpuCloner(
+            GpuResourcesProvider* prov,
+            int device,
+            const GpuClonerOptions& options);
 
-    Index *clone_Index(const Index *index) override;
-
+    Index* clone_Index(const Index* index) override;
 };
 
 /// Cloner specialized for CPU -> multiple GPUs
-struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
+struct ToGpuClonerMultiple : faiss::Cloner, GpuMultipleClonerOptions {
     std::vector<ToGpuCloner> sub_cloners;
 
-    ToGpuClonerMultiple(std::vector<GpuResourcesProvider *> & provider,
-                        std::vector<int>& devices,
-                        const GpuMultipleClonerOptions &options);
+    ToGpuClonerMultiple(
+            std::vector<GpuResourcesProvider*>& provider,
+            std::vector<int>& devices,
+            const GpuMultipleClonerOptions& options);
 
-    ToGpuClonerMultiple(const std::vector<ToGpuCloner> & sub_cloners,
-                        const GpuMultipleClonerOptions &options);
+    ToGpuClonerMultiple(
+            const std::vector<ToGpuCloner>& sub_cloners,
+            const GpuMultipleClonerOptions& options);
 
-    void copy_ivf_shard (const IndexIVF *index_ivf, IndexIVF *idx2,
-                         long n, long i);
+    void copy_ivf_shard(
+            const IndexIVF* index_ivf,
+            IndexIVF* idx2,
+            long n,
+            long i);
 
-    Index * clone_Index_to_shards (const Index *index);
+    Index* clone_Index_to_shards(const Index* index);
 
     /// main function
-    Index *clone_Index(const Index *index) override;
+    Index* clone_Index(const Index* index) override;
 };
 
-
-
-
 /// converts any GPU index inside gpu_index to a CPU index
-faiss::Index * index_gpu_to_cpu(const faiss::Index *gpu_index);
+faiss::Index* index_gpu_to_cpu(const faiss::Index* gpu_index);
 
 /// converts any CPU index that can be converted to GPU
-faiss::Index * index_cpu_to_gpu(
-       GpuResourcesProvider* provider, int device,
-       const faiss::Index *index,
-       const GpuClonerOptions *options = nullptr);
+faiss::Index* index_cpu_to_gpu(
+        GpuResourcesProvider* provider,
+        int device,
+        const faiss::Index* index,
+        const GpuClonerOptions* options = nullptr);
 
-faiss::Index * index_cpu_to_gpu_multiple(
-       std::vector<GpuResourcesProvider*> & provider,
-       std::vector<int> &devices,
-       const faiss::Index *index,
-       const GpuMultipleClonerOptions *options = nullptr);
+faiss::Index* index_cpu_to_gpu_multiple(
+        std::vector<GpuResourcesProvider*>& provider,
+        std::vector<int>& devices,
+        const faiss::Index* index,
+        const GpuMultipleClonerOptions* options = nullptr);
 
-
-
-} } // namespace
+} // namespace gpu
+} // namespace faiss

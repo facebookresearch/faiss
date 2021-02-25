@@ -12,9 +12,9 @@
 
 #include <faiss/MetricType.h>
 #include <cstdio>
-#include <typeinfo>
-#include <string>
 #include <sstream>
+#include <string>
+#include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 7
@@ -36,7 +36,6 @@
  * an n*d matrix, which implies a row-major storage.
  */
 
-
 namespace faiss {
 
 /// Forward declarations see AuxIndexStructures.h
@@ -50,13 +49,13 @@ struct DistanceComputer;
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t;  ///< all indices are this type
+    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 
-    int d;                 ///< vector dimension
-    idx_t ntotal;          ///< total nb of indexed vectors
-    bool verbose;          ///< verbosity level
+    int d;        ///< vector dimension
+    idx_t ntotal; ///< total nb of indexed vectors
+    bool verbose; ///< verbosity level
 
     /// set if the Index does not require training, or if training is
     /// done already
@@ -64,18 +63,17 @@ struct Index {
 
     /// type of metric this index uses for search
     MetricType metric_type;
-    float metric_arg;     ///< argument of the metric type
+    float metric_arg; ///< argument of the metric type
 
-    explicit Index (idx_t d = 0, MetricType metric = METRIC_L2):
-                    d(d),
-                    ntotal(0),
-                    verbose(false),
-                    is_trained(true),
-                    metric_type (metric),
-                    metric_arg(0) {}
+    explicit Index(idx_t d = 0, MetricType metric = METRIC_L2)
+            : d(d),
+              ntotal(0),
+              verbose(false),
+              is_trained(true),
+              metric_type(metric),
+              metric_arg(0) {}
 
-    virtual ~Index ();
-
+    virtual ~Index();
 
     /** Perform training on a representative set of vectors
      *
@@ -91,7 +89,7 @@ struct Index {
      * blocksize_add and calls add_core.
      * @param x      input matrix, size n * d
      */
-    virtual void add (idx_t n, const float *x) = 0;
+    virtual void add(idx_t n, const float* x) = 0;
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -100,7 +98,7 @@ struct Index {
      *
      * @param xids if non-null, ids to store for the vectors (size n)
      */
-    virtual void add_with_ids (idx_t n, const float * x, const idx_t *xids);
+    virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
 
     /** query n vectors of dimension d to the index.
      *
@@ -111,8 +109,12 @@ struct Index {
      * @param labels      output labels of the NNs, size n*k
      * @param distances   output pairwise distances, size n*k
      */
-    virtual void search (idx_t n, const float *x, idx_t k,
-                         float *distances, idx_t *labels) const = 0;
+    virtual void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const = 0;
 
     /** query n vectors of dimension d to the index.
      *
@@ -124,8 +126,11 @@ struct Index {
      * @param radius      search radius
      * @param result      result table
      */
-    virtual void range_search (idx_t n, const float *x, float radius,
-                               RangeSearchResult *result) const;
+    virtual void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result) const;
 
     /** return the indexes of the k vectors closest to the query x.
      *
@@ -133,7 +138,8 @@ struct Index {
      * @param x           input vectors to search, size n * d
      * @param labels      output labels of the NNs, size n*k
      */
-    virtual void assign (idx_t n, const float * x, idx_t * labels, idx_t k = 1) const;
+    virtual void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1)
+            const;
 
     /// removes all elements from the database.
     virtual void reset() = 0;
@@ -141,7 +147,7 @@ struct Index {
     /** removes IDs from the index. Not supported by all
      * indexes. Returns the number of elements removed.
      */
-    virtual size_t remove_ids (const IDSelector & sel);
+    virtual size_t remove_ids(const IDSelector& sel);
 
     /** Reconstruct a stored vector (or an approximation if lossy coding)
      *
@@ -149,14 +155,14 @@ struct Index {
      * @param key         id of the vector to reconstruct
      * @param recons      reconstucted vector (size d)
      */
-    virtual void reconstruct (idx_t key, float * recons) const;
+    virtual void reconstruct(idx_t key, float* recons) const;
 
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
      * this function may not be defined for some indexes
      * @param recons      reconstucted vector (size ni * d)
      */
-    virtual void reconstruct_n (idx_t i0, idx_t ni, float *recons) const;
+    virtual void reconstruct_n(idx_t i0, idx_t ni, float* recons) const;
 
     /** Similar to search, but also reconstructs the stored vectors (or an
      * approximation in the case of lossy coding) for the search results.
@@ -166,9 +172,13 @@ struct Index {
      *
      * @param recons      reconstructed vectors size (n, k, d)
      **/
-    virtual void search_and_reconstruct (idx_t n, const float *x, idx_t k,
-                                         float *distances, idx_t *labels,
-                                         float *recons) const;
+    virtual void search_and_reconstruct(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* recons) const;
 
     /** Computes a residual vector after indexing encoding.
      *
@@ -181,8 +191,8 @@ struct Index {
      * @param residual    output residual vector, size d
      * @param key         encoded index, as returned by search and assign
      */
-    virtual void compute_residual (const float * x,
-                                   float * residual, idx_t key) const;
+    virtual void compute_residual(const float* x, float* residual, idx_t key)
+            const;
 
     /** Computes a residual vector after indexing encoding (batch form).
      * Equivalent to calling compute_residual for each vector.
@@ -197,9 +207,11 @@ struct Index {
      * @param residuals   output residual vectors, size (n x d)
      * @param keys        encoded index, as returned by search and assign
      */
-    virtual void compute_residual_n (idx_t n, const float* xs,
-                                     float* residuals,
-                                     const idx_t* keys) const;
+    virtual void compute_residual_n(
+            idx_t n,
+            const float* xs,
+            float* residuals,
+            const idx_t* keys) const;
 
     /** Get a DistanceComputer (defined in AuxIndexStructures) object
      * for this kind of index.
@@ -207,13 +219,12 @@ struct Index {
      * DistanceComputer is implemented for indexes that support random
      * access of their vectors.
      */
-    virtual DistanceComputer * get_distance_computer() const;
-
+    virtual DistanceComputer* get_distance_computer() const;
 
     /* The standalone codec interface */
 
     /** size of the produced codes in bytes */
-    virtual size_t sa_code_size () const;
+    virtual size_t sa_code_size() const;
 
     /** encode a set of vectors
      *
@@ -221,8 +232,7 @@ struct Index {
      * @param x       input vectors, size n * d
      * @param bytes   output encoded vectors, size n * sa_code_size()
      */
-    virtual void sa_encode (idx_t n, const float *x,
-                                  uint8_t *bytes) const;
+    virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
 
     /** encode a set of vectors
      *
@@ -230,13 +240,9 @@ struct Index {
      * @param bytes   input encoded vectors, size n * sa_code_size()
      * @param x       output vectors, size n * d
      */
-    virtual void sa_decode (idx_t n, const uint8_t *bytes,
-                                    float *x) const;
-
-
+    virtual void sa_decode(idx_t n, const uint8_t* bytes, float* x) const;
 };
 
-}
-
+} // namespace faiss
 
 #endif

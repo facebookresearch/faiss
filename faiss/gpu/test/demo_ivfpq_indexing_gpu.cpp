@@ -12,24 +12,19 @@
 
 #include <sys/time.h>
 
-
-#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
+#include <faiss/gpu/StandardGpuResources.h>
 
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/index_io.h>
 
-double elapsed ()
-{
+double elapsed() {
     struct timeval tv;
-    gettimeofday (&tv, NULL);
-    return  tv.tv_sec + tv.tv_usec * 1e-6;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec * 1e-6;
 }
 
-
-int main ()
-{
-
+int main() {
     double t0 = elapsed();
 
     // dimension of the vectors to index
@@ -48,10 +43,9 @@ int main ()
             elapsed() - t0, d, nb, nt, dev_no);
     */
     // a reasonable number of centroids to index nb vectors
-    int ncentroids = int (4 * sqrt (nb));
+    int ncentroids = int(4 * sqrt(nb));
 
     faiss::gpu::StandardGpuResources resources;
-
 
     // the coarse quantizer should not be dealloced before the index
     // 4 = nb of bytes per code (d must be a multiple of this)
@@ -59,36 +53,38 @@ int main ()
     faiss::gpu::GpuIndexIVFPQConfig config;
     config.device = dev_no;
 
-    faiss::gpu::GpuIndexIVFPQ index (
-      &resources, d, ncentroids, 4, 8, faiss::METRIC_L2, config);
+    faiss::gpu::GpuIndexIVFPQ index(
+            &resources, d, ncentroids, 4, 8, faiss::METRIC_L2, config);
 
     std::mt19937 rng;
 
     { // training
-        printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
-                elapsed() - t0, nt, d);
+        printf("[%.3f s] Generating %ld vectors in %dD for training\n",
+               elapsed() - t0,
+               nt,
+               d);
 
-        std::vector <float> trainvecs (nt * d);
+        std::vector<float> trainvecs(nt * d);
         std::uniform_real_distribution<> distrib;
         for (size_t i = 0; i < nt * d; i++) {
             trainvecs[i] = distrib(rng);
         }
 
-        printf ("[%.3f s] Training the index\n",
-                elapsed() - t0);
+        printf("[%.3f s] Training the index\n", elapsed() - t0);
         index.verbose = true;
 
-        index.train (nt, trainvecs.data());
+        index.train(nt, trainvecs.data());
     }
 
     { // I/O demo
-        const char *outfilename = "/tmp/index_trained.faissindex";
-        printf ("[%.3f s] storing the pre-trained index to %s\n",
-                elapsed() - t0, outfilename);
+        const char* outfilename = "/tmp/index_trained.faissindex";
+        printf("[%.3f s] storing the pre-trained index to %s\n",
+               elapsed() - t0,
+               outfilename);
 
-        faiss::Index * cpu_index = faiss::gpu::index_gpu_to_cpu (&index);
+        faiss::Index* cpu_index = faiss::gpu::index_gpu_to_cpu(&index);
 
-        write_index (cpu_index, outfilename);
+        write_index(cpu_index, outfilename);
 
         delete cpu_index;
     }
@@ -97,64 +93,65 @@ int main ()
     std::vector<float> queries;
 
     { // populating the database
-        printf ("[%.3f s] Building a dataset of %ld vectors to index\n",
-                elapsed() - t0, nb);
+        printf("[%.3f s] Building a dataset of %ld vectors to index\n",
+               elapsed() - t0,
+               nb);
 
-        std::vector <float> database (nb * d);
+        std::vector<float> database(nb * d);
         std::uniform_real_distribution<> distrib;
         for (size_t i = 0; i < nb * d; i++) {
             database[i] = distrib(rng);
         }
 
-        printf ("[%.3f s] Adding the vectors to the index\n",
-                elapsed() - t0);
+        printf("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
 
-        index.add (nb, database.data());
+        index.add(nb, database.data());
 
-        printf ("[%.3f s] done\n", elapsed() - t0);
+        printf("[%.3f s] done\n", elapsed() - t0);
 
         // remember a few elements from the database as queries
         int i0 = 1234;
         int i1 = 1243;
 
         nq = i1 - i0;
-        queries.resize (nq * d);
+        queries.resize(nq * d);
         for (int i = i0; i < i1; i++) {
             for (int j = 0; j < d; j++) {
-                queries [(i - i0) * d  + j]  = database [i * d + j];
+                queries[(i - i0) * d + j] = database[i * d + j];
             }
         }
-
     }
 
     { // searching the database
         int k = 5;
-        printf ("[%.3f s] Searching the %d nearest neighbors "
-                "of %ld vectors in the index\n",
-                elapsed() - t0, k, nq);
+        printf("[%.3f s] Searching the %d nearest neighbors "
+               "of %ld vectors in the index\n",
+               elapsed() - t0,
+               k,
+               nq);
 
-        std::vector<faiss::Index::idx_t> nns (k * nq);
-        std::vector<float>               dis (k * nq);
+        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<float> dis(k * nq);
 
-        index.search (nq, queries.data(), k, dis.data(), nns.data());
+        index.search(nq, queries.data(), k, dis.data(), nns.data());
 
-        printf ("[%.3f s] Query results (vector ids, then distances):\n",
-                elapsed() - t0);
+        printf("[%.3f s] Query results (vector ids, then distances):\n",
+               elapsed() - t0);
 
         for (int i = 0; i < nq; i++) {
-            printf ("query %2d: ", i);
+            printf("query %2d: ", i);
             for (int j = 0; j < k; j++) {
-                printf ("%7ld ", nns[j + i * k]);
+                printf("%7ld ", nns[j + i * k]);
             }
-            printf ("\n     dis: ");
+            printf("\n     dis: ");
             for (int j = 0; j < k; j++) {
-                printf ("%7g ", dis[j + i * k]);
+                printf("%7g ", dis[j + i * k]);
             }
-            printf ("\n");
+            printf("\n");
         }
 
-        printf ("note that the nearest neighbor is not at "
-                "distance 0 due to quantization errors\n");
+        printf("note that the nearest neighbor is not at "
+               "distance 0 due to quantization errors\n");
     }
 
     return 0;

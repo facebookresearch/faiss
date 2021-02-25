@@ -10,7 +10,6 @@
 #ifndef FAISS_INDEX_IVFPQ_H
 #define FAISS_INDEX_IVFPQ_H
 
-
 #include <vector>
 
 #include <faiss/IndexIVF.h>
@@ -20,32 +19,29 @@
 
 namespace faiss {
 
-struct IVFPQSearchParameters: IVFSearchParameters {
-    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
-    int polysemous_ht;             ///< Hamming thresh for polysemous filtering
-    IVFPQSearchParameters (): scan_table_threshold(0), polysemous_ht(0) {}
-    ~IVFPQSearchParameters () {}
+struct IVFPQSearchParameters : IVFSearchParameters {
+    size_t scan_table_threshold; ///< use table computation or on-the-fly?
+    int polysemous_ht;           ///< Hamming thresh for polysemous filtering
+    IVFPQSearchParameters() : scan_table_threshold(0), polysemous_ht(0) {}
+    ~IVFPQSearchParameters() {}
 };
 
-
-
 FAISS_API extern size_t precomputed_table_max_bytes;
-
 
 /** Inverted file with Product Quantizer encoding. Each residual
  * vector is encoded as a product quantizer code.
  */
-struct IndexIVFPQ: IndexIVF {
-    bool by_residual;              ///< Encode residual or plain vector?
+struct IndexIVFPQ : IndexIVF {
+    bool by_residual; ///< Encode residual or plain vector?
 
-    ProductQuantizer pq;           ///< produces the codes
+    ProductQuantizer pq; ///< produces the codes
 
-    bool do_polysemous_training;   ///< reorder PQ centroids after training?
-    PolysemousTraining *polysemous_training; ///< if NULL, use default
+    bool do_polysemous_training; ///< reorder PQ centroids after training?
+    PolysemousTraining* polysemous_training; ///< if NULL, use default
 
     // search-time parameters
-    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
-    int polysemous_ht;             ///< Hamming thresh for polysemous filtering
+    size_t scan_table_threshold; ///< use table computation or on-the-fly?
+    int polysemous_ht;           ///< Hamming thresh for polysemous filtering
 
     /** Precompute table that speed up query preprocessing at some
      * memory cost (used only for by_residual with L2 metric)
@@ -56,38 +52,47 @@ struct IndexIVFPQ: IndexIVF {
     /// size nlist * pq.M * pq.ksub
     AlignedTable<float> precomputed_table;
 
-    IndexIVFPQ (
-            Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx, MetricType metric = METRIC_L2);
+    IndexIVFPQ(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t M,
+            size_t nbits_per_idx,
+            MetricType metric = METRIC_L2);
 
+    void encode_vectors(
+            idx_t n,
+            const float* x,
+            const idx_t* list_nos,
+            uint8_t* codes,
+            bool include_listnos = false) const override;
 
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-    void encode_vectors(idx_t n, const float* x,
-                        const idx_t *list_nos,
-                        uint8_t * codes,
-                        bool include_listnos = false) const override;
-
-    void sa_decode (idx_t n, const uint8_t *bytes,
-                    float *x) const override;
-
-    void add_core (idx_t n, const float * x, const idx_t *xids,
-                const idx_t *precomputed_idx) override;
+    void add_core(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx) override;
 
     /// same as add_core, also:
     /// - output 2nd level residuals if residuals_2 != NULL
     /// - accepts precomputed_idx = nullptr
-    void add_core_o (idx_t n, const float *x,
-                     const idx_t *xids, float *residuals_2,
-                     const idx_t *precomputed_idx = nullptr);
+    void add_core_o(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            float* residuals_2,
+            const idx_t* precomputed_idx = nullptr);
 
     /// trains the product quantizer
     void train_residual(idx_t n, const float* x) override;
 
     /// same as train_residual, also output 2nd level residuals
-    void train_residual_o (idx_t n, const float *x, float *residuals_2);
+    void train_residual_o(idx_t n, const float* x, float* residuals_2);
 
-    void reconstruct_from_offset (int64_t list_no, int64_t offset,
-                                  float* recons) const override;
+    void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
+            const override;
 
     /** Find exact duplicates in the dataset.
      *
@@ -100,10 +105,10 @@ struct IndexIVFPQ: IndexIVF {
      *                duplicates (max size ntotal)
      * @return n      number of groups found
      */
-    size_t find_duplicates (idx_t *ids, size_t *lims) const;
+    size_t find_duplicates(idx_t* ids, size_t* lims) const;
 
     // map a vector to a binary code knowning the index
-    void encode (idx_t key, const float * x, uint8_t * code) const;
+    void encode(idx_t key, const float* x, uint8_t* code) const;
 
     /** Encode multiple vectors
      *
@@ -114,22 +119,27 @@ struct IndexIVFPQ: IndexIVF {
      * @param compute_keys  if false, assume keys are precomputed,
      *                      otherwise compute them
      */
-    void encode_multiple (size_t n, idx_t *keys,
-                          const float * x, uint8_t * codes,
-                          bool compute_keys = false) const;
+    void encode_multiple(
+            size_t n,
+            idx_t* keys,
+            const float* x,
+            uint8_t* codes,
+            bool compute_keys = false) const;
 
     /// inverse of encode_multiple
-    void decode_multiple (size_t n, const idx_t *keys,
-                          const uint8_t * xcodes, float * x) const;
+    void decode_multiple(
+            size_t n,
+            const idx_t* keys,
+            const uint8_t* xcodes,
+            float* x) const;
 
-    InvertedListScanner *get_InvertedListScanner (bool store_pairs)
-        const override;
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs) const override;
 
     /// build precomputed table
-    void precompute_table ();
+    void precompute_table();
 
-    IndexIVFPQ ();
-
+    IndexIVFPQ();
 };
 
 /** Pre-compute distance tables for IVFPQ with by-residual and METRIC_L2
@@ -137,24 +147,23 @@ struct IndexIVFPQ: IndexIVF {
  * @param use_precomputed_table (I/O)
  *        =-1: force disable
  *        =0: decide heuristically (default: use tables only if they are
- *            < precomputed_tables_max_bytes), set use_precomputed_table on output
- *        =1: tables that work for all quantizers (size 256 * nlist * M)
- *        =2: specific version for MultiIndexQuantizer (much more compact)
+ *            < precomputed_tables_max_bytes), set use_precomputed_table on
+ * output =1: tables that work for all quantizers (size 256 * nlist * M) =2:
+ * specific version for MultiIndexQuantizer (much more compact)
  * @param precomputed_table precomputed table to intialize
  */
 
 void initialize_IVFPQ_precomputed_table(
-    int &use_precomputed_table,
-    const Index *quantizer,
-    const ProductQuantizer &pq,
-    AlignedTable<float> & precomputed_table,
-    bool verbose
-);
+        int& use_precomputed_table,
+        const Index* quantizer,
+        const ProductQuantizer& pq,
+        AlignedTable<float>& precomputed_table,
+        bool verbose);
 
 /// statistics are robust to internal threading, but not if
 /// IndexIVFPQ::search_preassigned is called by multiple threads
 struct IndexIVFPQStats {
-    size_t nrefine;  ///< nb of refines (IVFPQR)
+    size_t nrefine; ///< nb of refines (IVFPQR)
 
     size_t n_hamming_pass;
     ///< nb of passed Hamming distance tests (for polysemous)
@@ -163,17 +172,15 @@ struct IndexIVFPQStats {
     size_t search_cycles;
     size_t refine_cycles; ///< only for IVFPQR
 
-    IndexIVFPQStats () {reset (); }
-    void reset ();
+    IndexIVFPQStats() {
+        reset();
+    }
+    void reset();
 };
 
 // global var that collects them all
 FAISS_API extern IndexIVFPQStats indexIVFPQ_stats;
 
-
-
-
 } // namespace faiss
-
 
 #endif

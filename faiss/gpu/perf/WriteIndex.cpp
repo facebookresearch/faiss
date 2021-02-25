@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
-#include <faiss/IndexFlat.h>
-#include <faiss/index_io.h>
 #include <faiss/gpu/test/TestUtils.h>
-#include <vector>
+#include <faiss/index_io.h>
 #include <gflags/gflags.h>
+#include <vector>
 
 // For IVFPQ:
 DEFINE_bool(ivfpq, false, "use IVFPQ encoding");
@@ -32,71 +31,83 @@ DEFINE_int32(num_train, -1, "number of database vecs to train on");
 
 template <typename T>
 void fillAndSave(T& index, int numTrain, int num, int dim) {
-  auto trainVecs = faiss::gpu::randVecs(numTrain, dim);
-  index.train(numTrain, trainVecs.data());
+    auto trainVecs = faiss::gpu::randVecs(numTrain, dim);
+    index.train(numTrain, trainVecs.data());
 
-  constexpr int kAddChunk = 1000000;
+    constexpr int kAddChunk = 1000000;
 
-  for (int i = 0; i < num; i += kAddChunk) {
-    int numRemaining = (num - i) < kAddChunk ? (num - i) : kAddChunk;
-    auto vecs = faiss::gpu::randVecs(numRemaining, dim);
+    for (int i = 0; i < num; i += kAddChunk) {
+        int numRemaining = (num - i) < kAddChunk ? (num - i) : kAddChunk;
+        auto vecs = faiss::gpu::randVecs(numRemaining, dim);
 
-    printf("adding at %d: %d\n", i, numRemaining);
-    index.add(numRemaining, vecs.data());
-  }
+        printf("adding at %d: %d\n", i, numRemaining);
+        index.add(numRemaining, vecs.data());
+    }
 
-  faiss::write_index(&index, FLAGS_out.c_str());
+    faiss::write_index(&index, FLAGS_out.c_str());
 }
 
 int main(int argc, char** argv) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  // Either ivfpq or ivfflat must be set
-  if ((FLAGS_ivfpq && FLAGS_ivfflat) ||
-      (!FLAGS_ivfpq && !FLAGS_ivfflat)) {
-    printf("must specify either ivfpq or ivfflat\n");
-    return 1;
-  }
+    // Either ivfpq or ivfflat must be set
+    if ((FLAGS_ivfpq && FLAGS_ivfflat) || (!FLAGS_ivfpq && !FLAGS_ivfflat)) {
+        printf("must specify either ivfpq or ivfflat\n");
+        return 1;
+    }
 
-  auto dim = FLAGS_dim;
-  auto numCentroids = FLAGS_num_coarse;
-  auto num = FLAGS_num;
-  auto numTrain = FLAGS_num_train;
-  numTrain = numTrain == -1 ? std::max((num / 4), 1) : numTrain;
-  numTrain = std::min(num, numTrain);
+    auto dim = FLAGS_dim;
+    auto numCentroids = FLAGS_num_coarse;
+    auto num = FLAGS_num;
+    auto numTrain = FLAGS_num_train;
+    numTrain = numTrain == -1 ? std::max((num / 4), 1) : numTrain;
+    numTrain = std::min(num, numTrain);
 
-  if (FLAGS_ivfpq) {
-    faiss::IndexFlatL2 quantizer(dim);
-    faiss::IndexIVFPQ index(&quantizer, dim, numCentroids,
-                            FLAGS_codes, FLAGS_bits_per_code);
-    index.verbose = true;
+    if (FLAGS_ivfpq) {
+        faiss::IndexFlatL2 quantizer(dim);
+        faiss::IndexIVFPQ index(
+                &quantizer,
+                dim,
+                numCentroids,
+                FLAGS_codes,
+                FLAGS_bits_per_code);
+        index.verbose = true;
 
-    printf("IVFPQ: codes %d bits per code %d\n",
-           FLAGS_codes, FLAGS_bits_per_code);
-    printf("Lists: %d\n", numCentroids);
-    printf("Database: dim %d num vecs %d trained on %d\n", dim, num, numTrain);
-    printf("output file: %s\n", FLAGS_out.c_str());
+        printf("IVFPQ: codes %d bits per code %d\n",
+               FLAGS_codes,
+               FLAGS_bits_per_code);
+        printf("Lists: %d\n", numCentroids);
+        printf("Database: dim %d num vecs %d trained on %d\n",
+               dim,
+               num,
+               numTrain);
+        printf("output file: %s\n", FLAGS_out.c_str());
 
-    fillAndSave(index, numTrain, num, dim);
-  } else if (FLAGS_ivfflat) {
-    faiss::IndexFlatL2 quantizerL2(dim);
-    faiss::IndexFlatIP quantizerIP(dim);
+        fillAndSave(index, numTrain, num, dim);
+    } else if (FLAGS_ivfflat) {
+        faiss::IndexFlatL2 quantizerL2(dim);
+        faiss::IndexFlatIP quantizerIP(dim);
 
-    faiss::IndexFlat* quantizer = FLAGS_l2 ?
-      (faiss::IndexFlat*) &quantizerL2 :
-      (faiss::IndexFlat*) &quantizerIP;
+        faiss::IndexFlat* quantizer = FLAGS_l2
+                ? (faiss::IndexFlat*)&quantizerL2
+                : (faiss::IndexFlat*)&quantizerIP;
 
-    faiss::IndexIVFFlat index(quantizer, dim, numCentroids,
-                              FLAGS_l2 ? faiss::METRIC_L2 :
-                              faiss::METRIC_INNER_PRODUCT);
+        faiss::IndexIVFFlat index(
+                quantizer,
+                dim,
+                numCentroids,
+                FLAGS_l2 ? faiss::METRIC_L2 : faiss::METRIC_INNER_PRODUCT);
 
-    printf("IVFFlat: metric %s\n", FLAGS_l2 ? "L2" : "IP");
-    printf("Lists: %d\n", numCentroids);
-    printf("Database: dim %d num vecs %d trained on %d\n", dim, num, numTrain);
-    printf("output file: %s\n", FLAGS_out.c_str());
+        printf("IVFFlat: metric %s\n", FLAGS_l2 ? "L2" : "IP");
+        printf("Lists: %d\n", numCentroids);
+        printf("Database: dim %d num vecs %d trained on %d\n",
+               dim,
+               num,
+               numTrain);
+        printf("output file: %s\n", FLAGS_out.c_str());
 
-    fillAndSave(index, numTrain, num, dim);
-  }
+        fillAndSave(index, numTrain, num, dim);
+    }
 
-  return 0;
+    return 0;
 }

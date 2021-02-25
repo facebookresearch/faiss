@@ -11,8 +11,8 @@
 #ifndef FAISS_GPU_RESOURCES_C_H
 #define FAISS_GPU_RESOURCES_C_H
 
-#include <cuda_runtime_api.h>
 #include <cublas.h>
+#include <cuda_runtime_api.h>
 #include "faiss_c.h"
 
 #ifdef __cplusplus
@@ -41,13 +41,20 @@ int faiss_GpuResources_getDefaultStream(FaissGpuResources*, int, cudaStream_t*);
 int faiss_GpuResources_getPinnedMemory(FaissGpuResources*, void**, size_t*);
 
 /// Returns the stream on which we perform async CPU <-> GPU copies
-int faiss_GpuResources_getAsyncCopyStream(FaissGpuResources*, int, cudaStream_t*);
+int faiss_GpuResources_getAsyncCopyStream(
+        FaissGpuResources*,
+        int,
+        cudaStream_t*);
 
 /// Calls getBlasHandle with the current device
-int faiss_GpuResources_getBlasHandleCurrentDevice(FaissGpuResources*, cublasHandle_t*);
+int faiss_GpuResources_getBlasHandleCurrentDevice(
+        FaissGpuResources*,
+        cublasHandle_t*);
 
 /// Calls getDefaultStream with the current device
-int faiss_GpuResources_getDefaultStreamCurrentDevice(FaissGpuResources*, cudaStream_t*);
+int faiss_GpuResources_getDefaultStreamCurrentDevice(
+        FaissGpuResources*,
+        cudaStream_t*);
 
 /// Synchronizes the CPU with respect to the default stream for the
 /// given device
@@ -58,7 +65,9 @@ int faiss_GpuResources_syncDefaultStream(FaissGpuResources*, int);
 int faiss_GpuResources_syncDefaultStreamCurrentDevice(FaissGpuResources*);
 
 /// Calls getAsyncCopyStream for the current device
-int faiss_GpuResources_getAsyncCopyStreamCurrentDevice(FaissGpuResources*, cudaStream_t*);
+int faiss_GpuResources_getAsyncCopyStreamCurrentDevice(
+        FaissGpuResources*,
+        cudaStream_t*);
 
 #ifdef __cplusplus
 }

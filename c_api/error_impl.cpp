@@ -8,10 +8,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <exception>
-#include <faiss/impl/FaissException.h>
-#include "error_c.h"
 #include "error_impl.h"
+#include <faiss/impl/FaissException.h>
+#include <exception>
+#include "error_c.h"
 
 thread_local std::exception_ptr faiss_last_exception;
 

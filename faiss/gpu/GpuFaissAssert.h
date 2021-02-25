@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #ifndef GPU_FAISS_ASSERT_INCLUDED
 #define GPU_FAISS_ASSERT_INCLUDED
 
-#include <faiss/impl/FaissAssert.h>
 #include <cuda.h>
+#include <faiss/impl/FaissAssert.h>
 
 ///
 /// Assertions

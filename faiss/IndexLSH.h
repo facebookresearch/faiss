@@ -17,25 +17,25 @@
 
 namespace faiss {
 
-
 /** The sign of each vector component is put in a binary signature */
-struct IndexLSH:Index {
+struct IndexLSH : Index {
     typedef unsigned char uint8_t;
 
-    int nbits;              ///< nb of bits per vector
-    int bytes_per_vec;      ///< nb of 8-bits per encoded vector
-    bool rotate_data;       ///< whether to apply a random rotation to input
-    bool train_thresholds;  ///< whether we train thresholds or use 0
+    int nbits;             ///< nb of bits per vector
+    int bytes_per_vec;     ///< nb of 8-bits per encoded vector
+    bool rotate_data;      ///< whether to apply a random rotation to input
+    bool train_thresholds; ///< whether we train thresholds or use 0
 
     RandomRotationMatrix rrot; ///< optional random rotation
 
-    std::vector <float> thresholds; ///< thresholds to compare with
+    std::vector<float> thresholds; ///< thresholds to compare with
 
     /// encoded dataset
     std::vector<uint8_t> codes;
 
-    IndexLSH (
-            idx_t d, int nbits,
+    IndexLSH(
+            idx_t d,
+            int nbits,
             bool rotate_data = true,
             bool train_thresholds = false);
 
@@ -46,45 +46,40 @@ struct IndexLSH:Index {
      * @return output vectors, size n * bits. May be the same pointer
      *         as x, otherwise it should be deleted by the caller
      */
-    const float *apply_preprocess (idx_t n, const float *x) const;
+    const float* apply_preprocess(idx_t n, const float* x) const;
 
     void train(idx_t n, const float* x) override;
 
     void add(idx_t n, const float* x) override;
 
     void search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const override;
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
 
     void reset() override;
 
     /// transfer the thresholds to a pre-processing stage (and unset
     /// train_thresholds)
-    void transfer_thresholds (LinearTransform * vt);
+    void transfer_thresholds(LinearTransform* vt);
 
     ~IndexLSH() override {}
 
-    IndexLSH ();
+    IndexLSH();
 
     /* standalone codec interface.
      *
      * The vectors are decoded to +/- 1 (not 0, 1) */
 
-    size_t sa_code_size () const override;
+    size_t sa_code_size() const override;
 
-    void sa_encode (idx_t n, const float *x,
-                          uint8_t *bytes) const override;
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
-    void sa_decode (idx_t n, const uint8_t *bytes,
-                            float *x) const override;
-
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
 
-
-}
-
+} // namespace faiss
 
 #endif

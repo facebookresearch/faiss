@@ -15,14 +15,13 @@
 
 #include <stdint.h>
 
-#include <vector>
-#include <unordered_set>
 #include <memory>
 #include <mutex>
+#include <unordered_set>
+#include <vector>
 
 #include <faiss/Index.h>
 #include <faiss/impl/platform_macros.h>
-
 
 namespace faiss {
 
@@ -31,42 +30,39 @@ namespace faiss {
  *  do_allocation can be overloaded to allocate the result tables in
  *  the matrix type of a scripting language like Lua or Python. */
 struct RangeSearchResult {
-    size_t nq;      ///< nb of queries
-    size_t *lims;   ///< size (nq + 1)
+    size_t nq;    ///< nb of queries
+    size_t* lims; ///< size (nq + 1)
 
     typedef Index::idx_t idx_t;
 
-    idx_t *labels;     ///< result for query i is labels[lims[i]:lims[i+1]]
-    float *distances;  ///< corresponding distances (not sorted)
+    idx_t* labels;    ///< result for query i is labels[lims[i]:lims[i+1]]
+    float* distances; ///< corresponding distances (not sorted)
 
     size_t buffer_size; ///< size of the result buffers used
 
     /// lims must be allocated on input to range_search.
-    explicit RangeSearchResult (idx_t nq, bool alloc_lims=true);
+    explicit RangeSearchResult(idx_t nq, bool alloc_lims = true);
 
     /// called when lims contains the nb of elements result entries
     /// for each query
 
-    virtual void do_allocation ();
+    virtual void do_allocation();
 
-    virtual ~RangeSearchResult ();
+    virtual ~RangeSearchResult();
 };
-
 
 /** Encapsulates a set of ids to remove. */
 struct IDSelector {
     typedef Index::idx_t idx_t;
-    virtual bool is_member (idx_t id) const = 0;
+    virtual bool is_member(idx_t id) const = 0;
     virtual ~IDSelector() {}
 };
 
-
-
 /** remove ids between [imni, imax) */
-struct IDSelectorRange: IDSelector {
+struct IDSelectorRange : IDSelector {
     idx_t imin, imax;
 
-    IDSelectorRange (idx_t imin, idx_t imax);
+    IDSelectorRange(idx_t imin, idx_t imax);
     bool is_member(idx_t id) const override;
     ~IDSelectorRange() override {}
 };
@@ -76,11 +72,11 @@ struct IDSelectorRange: IDSelector {
  * this is inefficient in most cases, except for IndexIVF with
  * maintain_direct_map
  */
-struct IDSelectorArray: IDSelector {
+struct IDSelectorArray : IDSelector {
     size_t n;
-    const idx_t *ids;
+    const idx_t* ids;
 
-    IDSelectorArray (size_t n, const idx_t *ids);
+    IDSelectorArray(size_t n, const idx_t* ids);
     bool is_member(idx_t id) const override;
     ~IDSelectorArray() override {}
 };
@@ -91,8 +87,7 @@ struct IDSelectorArray: IDSelector {
  * unordered_set are just the least significant bits of the id. This
  * works fine for random ids or ids in sequences but will produce many
  * hash collisions if lsb's are always the same */
-struct IDSelectorBatch: IDSelector {
-
+struct IDSelectorBatch : IDSelector {
     std::unordered_set<idx_t> set;
 
     typedef unsigned char uint8_t;
@@ -100,7 +95,7 @@ struct IDSelectorBatch: IDSelector {
     int nbits;
     idx_t mask;
 
-    IDSelectorBatch (size_t n, const idx_t *indices);
+    IDSelectorBatch(size_t n, const idx_t* indices);
     bool is_member(idx_t id) const override;
     ~IDSelectorBatch() override {}
 };
@@ -124,28 +119,26 @@ struct BufferList {
     size_t buffer_size;
 
     struct Buffer {
-        idx_t *ids;
-        float *dis;
+        idx_t* ids;
+        float* dis;
     };
 
     std::vector<Buffer> buffers;
     size_t wp; ///< write pointer in the last buffer.
 
-    explicit BufferList (size_t buffer_size);
+    explicit BufferList(size_t buffer_size);
 
-    ~BufferList ();
+    ~BufferList();
 
     /// create a new buffer
-    void append_buffer ();
+    void append_buffer();
 
     /// add one result, possibly appending a new buffer if needed
-    void add (idx_t id, float dis);
+    void add(idx_t id, float dis);
 
     /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
     /// tables dest_ids, dest_dis
-    void copy_range (size_t ofs, size_t n,
-                     idx_t * dest_ids, float *dest_dis);
-
+    void copy_range(size_t ofs, size_t n, idx_t* dest_ids, float* dest_dis);
 };
 
 struct RangeSearchPartialResult;
@@ -153,45 +146,44 @@ struct RangeSearchPartialResult;
 /// result structure for a single query
 struct RangeQueryResult {
     using idx_t = Index::idx_t;
-    idx_t qno;    //< id of the query
-    size_t nres;  //< nb of results for this query
-    RangeSearchPartialResult * pres;
+    idx_t qno;   //< id of the query
+    size_t nres; //< nb of results for this query
+    RangeSearchPartialResult* pres;
 
     /// called by search function to report a new result
-    void add (float dis, idx_t id);
+    void add(float dis, idx_t id);
 };
 
 /// the entries in the buffers are split per query
-struct RangeSearchPartialResult: BufferList {
-    RangeSearchResult * res;
+struct RangeSearchPartialResult : BufferList {
+    RangeSearchResult* res;
 
     /// eventually the result will be stored in res_in
-    explicit RangeSearchPartialResult (RangeSearchResult * res_in);
+    explicit RangeSearchPartialResult(RangeSearchResult* res_in);
 
     /// query ids + nb of results per query.
     std::vector<RangeQueryResult> queries;
 
     /// begin a new result
-    RangeQueryResult & new_result (idx_t qno);
+    RangeQueryResult& new_result(idx_t qno);
 
     /*****************************************
      * functions used at the end of the search to merge the result
      * lists */
-    void finalize ();
+    void finalize();
 
     /// called by range_search before do_allocation
-    void set_lims ();
+    void set_lims();
 
     /// called by range_search after do_allocation
-    void copy_result (bool incremental = false);
+    void copy_result(bool incremental = false);
 
     /// merge a set of PartialResult's into one RangeSearchResult
     /// on ouptut the partialresults are empty!
-    static void merge (std::vector <RangeSearchPartialResult *> &
-                       partial_results, bool do_delete=true);
-
+    static void merge(
+            std::vector<RangeSearchPartialResult*>& partial_results,
+            bool do_delete = true);
 };
-
 
 /***********************************************************
  * The distance computer maintains a current query and computes
@@ -202,19 +194,19 @@ struct RangeSearchPartialResult: BufferList {
  * instantiate one from each thread if needed.
  ***********************************************************/
 struct DistanceComputer {
-     using idx_t = Index::idx_t;
+    using idx_t = Index::idx_t;
 
-     /// called before computing distances. Pointer x should remain valid
-     /// while operator () is called
-     virtual void set_query(const float *x) = 0;
+    /// called before computing distances. Pointer x should remain valid
+    /// while operator () is called
+    virtual void set_query(const float* x) = 0;
 
-     /// compute distance of vector i to current query
-     virtual float operator () (idx_t i) = 0;
+    /// compute distance of vector i to current query
+    virtual float operator()(idx_t i) = 0;
 
-     /// compute distance between two stored vectors
-     virtual float symmetric_dis (idx_t i, idx_t j) = 0;
+    /// compute distance between two stored vectors
+    virtual float symmetric_dis(idx_t i, idx_t j) = 0;
 
-     virtual ~DistanceComputer() {}
+    virtual ~DistanceComputer() {}
 };
 
 /***********************************************************
@@ -222,7 +214,7 @@ struct DistanceComputer {
  ***********************************************************/
 
 struct FAISS_API InterruptCallback {
-    virtual bool want_interrupt () = 0;
+    virtual bool want_interrupt() = 0;
     virtual ~InterruptCallback() {}
 
     // lock that protects concurrent calls to is_interrupted
@@ -230,7 +222,7 @@ struct FAISS_API InterruptCallback {
 
     static std::unique_ptr<InterruptCallback> instance;
 
-    static void clear_instance ();
+    static void clear_instance();
 
     /** check if:
      * - an interrupt callback is set
@@ -238,23 +230,18 @@ struct FAISS_API InterruptCallback {
      * if this is the case, then throw an exception. Should not be called
      * from multiple threads.
      */
-    static void check ();
+    static void check();
 
     /// same as check() but return true if is interrupted instead of
     /// throwing. Can be called from multiple threads.
-    static bool is_interrupted ();
+    static bool is_interrupted();
 
     /** assuming each iteration takes a certain number of flops, what
      * is a reasonable interval to check for interrupts?
      */
-    static size_t get_period_hint (size_t flops);
-
+    static size_t get_period_hint(size_t flops);
 };
 
-
-
 }; // namespace faiss
-
-
 
 #endif
