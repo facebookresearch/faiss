@@ -44,6 +44,9 @@ Tested in `tests/test_contrib_torch.py` (CPU) and `gpu/test/test_contrib_torch_g
 Functions to inspect C++ objects wrapped by SWIG. Most often this just means reading
 fields and converting them to the proper python array.
 
+### ivf_tools.py
+
+A few functions to override the coarse quantizer in IVF, providing additional flexibility for assignment.
 
 ### datasets.py
 

@@ -656,6 +656,19 @@ void IndexBinaryIVF::range_search(
     t0 = getmillisecs();
     invlists->prefetch_lists(idx.get(), n * nprobe);
 
+    range_search_preassigned(n, x, radius, idx.get(), coarse_dis.get(), res);
+
+    indexIVF_stats.search_time += getmillisecs() - t0;
+}
+
+void IndexBinaryIVF::range_search_preassigned(
+        idx_t n,
+        const uint8_t* x,
+        int radius,
+        const idx_t* assign,
+        const int32_t* centroid_dis,
+        RangeSearchResult* res) const {
+    const size_t nprobe = std::min(nlist, this->nprobe);
     bool store_pairs = false;
     size_t nlistv = 0, ndis = 0;
 
@@ -671,7 +684,7 @@ void IndexBinaryIVF::range_search(
         all_pres[omp_get_thread_num()] = &pres;
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
-            idx_t key = idx[i * nprobe + ik]; /* select the list  */
+            idx_t key = assign[i * nprobe + ik]; /* select the list  */
             if (key < 0)
                 return;
             FAISS_THROW_IF_NOT_FMT(
@@ -688,7 +701,7 @@ void IndexBinaryIVF::range_search(
             InvertedLists::ScopedCodes scodes(invlists, key);
             InvertedLists::ScopedIds ids(invlists, key);
 
-            scanner->set_list(key, coarse_dis[i * nprobe + ik]);
+            scanner->set_list(key, assign[i * nprobe + ik]);
             nlistv++;
             ndis += list_size;
             scanner->scan_codes_range(
@@ -711,7 +724,6 @@ void IndexBinaryIVF::range_search(
     indexIVF_stats.nq += n;
     indexIVF_stats.nlist += nlistv;
     indexIVF_stats.ndis += ndis;
-    indexIVF_stats.search_time += getmillisecs() - t0;
 }
 
 IndexBinaryIVF::~IndexBinaryIVF() {
