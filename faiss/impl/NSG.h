@@ -45,32 +45,41 @@ struct Node;
 
 namespace nsg {
 
-/**************************************************************
- * Auxiliary structures
- **************************************************************/
+/***********************************************************
+ * Graph structure to store a graph.
+ *
+ * It is represented by an adjacency matrix `data`, where
+ * data[i, j] is the j-th neighbor of node i.
+ ***********************************************************/
 
 template <class node_t>
 struct Graph {
-  node_t *data;
-  int K;
-  int N;
-  bool own_fields;
+  node_t *data;     // the flattened adjacency matrix
+  int K;            // nb of neighbors per node
+  int N;            // total nb of nodes
+  bool own_fields;  // the underlying data owned by itself or not
 
+  // construct from a known graph
   Graph(node_t *data, int N, int K)
       : data(data), N(N), K(K), own_fields(false) {}
 
+  // construct an empty graph
+  // NOTE: the newly allocated data needs to be destroyed at destruction time
   Graph(int N, int K) : N(N), K(K), own_fields(true) {
     data = new node_t[N * K];
   }
 
+  // release the allocated memory if needed
   ~Graph() {
     if (own_fields) {
       delete[] data;
     }
   }
 
+  // access the j-th neighbor of node i
   inline node_t at(int i, int j) const { return data[i * K + j]; }
 
+  // access the j-th neighbor of node i by reference
   inline node_t &at(int i, int j) { return data[i * K + j]; }
 };
 
@@ -89,38 +98,55 @@ struct NSG {
   // It needs to be smaller than 0
   static const int EMPTY_ID = -1;
 
-  int ntotal; // nb of nodes
+  // nb of nodes
+  int ntotal;
+
+  // construction-time parameters
   int R;      // nb of neighbors per node
-  int L;      // expansion factor at construction time
-  int C;      // candidate pool size
+  int L;      // length of the search path at construction time
+  int C;      // candidate pool size at construction time
 
-  int search_L;   // expansion factor at search time
-  int enterpoint; // enterpoint
+  // search-time parameters
+  int search_L;   // length of the search path
 
+  // enterpoint
+  int enterpoint;
+
+  // the built graph structure
   std::shared_ptr<nsg::Graph<int>> final_graph;
+
+  // NSG is built or not
   bool is_built;
 
+  // random generator
   mutable RandomGenerator rng;
 
   explicit NSG(int R = 32);
 
+  // build NSG from a KNN graph
   void build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
              bool verbose);
 
+  // reset the graph
   void reset();
 
-  /// search interface
+  // search interface
   void search(DistanceComputer &dis, int k, idx_t *I, float *D,
               VisitedTable &vt) const;
 
+  // Compute the center point
   void init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph);
 
+  // Search on a built graph.
+  // If collect_fullset is true, the visited nodes will be
+  // collected in `fullset`.
   template <bool collect_fullset, class index_t>
   void search_on_graph(const nsg::Graph<index_t> &graph, DistanceComputer &dis,
                        VisitedTable &vt, int ep, int pool_size,
                        std::vector<Neighbor> &retset,
                        std::vector<Node> &fullset) const;
 
+  // Add reverse links
   void add_reverse_links(int q, std::vector<std::mutex> &locks,
                          DistanceComputer &dis, nsg::Graph<Node> &graph);
 
@@ -131,13 +157,18 @@ struct NSG {
   void link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
             nsg::Graph<Node> &graph);
 
-  void tree_grow(Index *storage);
+  // make NSG be fully connected
+  int tree_grow(Index *storage);
 
-  void dfs(VisitedTable &vt, int root, int &cnt);
+  // count the size of connected component
+  // using depth first search start by root
+  int dfs(VisitedTable &vt, int root) const;
 
-  void find_root(Index *storage, VisitedTable &vt, int &root);
+  // attach one unlinked node
+  void attach_unlinked(Index *storage, VisitedTable &vt);
 
-  void check_graph();
+  // check the integrity of the NSG built
+  void check_graph() const;
 };
 
 } // namespace faiss

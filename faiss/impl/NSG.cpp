@@ -141,8 +141,8 @@ void NSG::search(DistanceComputer &dis, int k, idx_t *I, float *D,
   int pool_size = std::max(search_L, k);
   std::vector<Neighbor> retset;
   std::vector<Node> tmp;
-  search_on_graph<false, int>(*final_graph, dis, vt, enterpoint, pool_size,
-                              retset, tmp);
+  search_on_graph<false>(*final_graph, dis, vt, enterpoint,
+                         pool_size, retset, tmp);
 
   std::partial_sort(retset.begin(), retset.begin() + k,
                     retset.begin() + pool_size);
@@ -176,7 +176,7 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
     }
   }
 
-  tree_grow(storage);
+  int num_attached = tree_grow(storage);
   check_graph();
   is_built = true;
 
@@ -195,6 +195,7 @@ void NSG::build(Index *storage, idx_t n, const nsg::Graph<idx_t> &knn_graph,
     avg = avg / n;
     printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n",
            max, min, avg);
+    printf("Attached nodes: %d\n", num_attached);
   }
 }
 
@@ -237,8 +238,8 @@ void NSG::init_graph(Index *storage, const nsg::Graph<idx_t> &knn_graph) {
   dis->set_query(center);
   VisitedTable vt(ntotal);
 
-  // Do not collect the visited set
-  search_on_graph<false, idx_t>(knn_graph, *dis, vt, ep, L, retset, tmpset);
+  // Do not collect the visited nodes
+  search_on_graph<false>(knn_graph, *dis, vt, ep, L, retset, tmpset);
 
   enterpoint = retset[0].id;
 }
@@ -341,8 +342,9 @@ void NSG::link(Index *storage, const nsg::Graph<idx_t> &knn_graph,
       storage->reconstruct(i, vec);
       dis->set_query(vec);
 
-      search_on_graph<true, idx_t>(knn_graph, *dis, vt, enterpoint, L, tmp,
-                                   pool);
+      // Collect the visited nodes into pool
+      search_on_graph<true>(knn_graph, *dis, vt, enterpoint,
+                            L, tmp, pool);
 
       sync_prune(i, pool, *dis, vt, knn_graph, graph);
 
@@ -495,27 +497,31 @@ void NSG::add_reverse_links(int q, std::vector<std::mutex> &locks,
   }
 }
 
-void NSG::tree_grow(Index *storage) {
+int NSG::tree_grow(Index *storage) {
   int root = enterpoint;
   VisitedTable vt(ntotal);
 
-  int cnt;
-  while (cnt < ntotal) {
-    dfs(vt, root, cnt);
+  int num_attached = 0;
+  while (true) {
+    int cnt = dfs(vt, root);
     if (cnt >= ntotal) {
       break;
     }
 
-    find_root(storage, vt, root);
+    attach_unlinked(storage, vt);
+    vt.advance();
+    num_attached += 1;
   }
+
+  return num_attached;
 }
 
-void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
+int NSG::dfs(VisitedTable &vt, int root) const {
   int node = root;
   std::stack<int> stack;
   stack.push(root);
 
-  cnt = 0;
+  int cnt = 0;
   if (!vt.get(root)) {
     cnt++;
   }
@@ -544,9 +550,11 @@ void NSG::dfs(VisitedTable &vt, int root, int &cnt) {
     stack.push(node);
     cnt++;
   }
+
+  return cnt;
 }
 
-void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
+void NSG::attach_unlinked(Index *storage, VisitedTable &vt) {
   int id = EMPTY_ID;
   for (int i = 0; i < ntotal; i++) {
     if (!vt.get(i)) {
@@ -572,16 +580,18 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
 
   {
     VisitedTable vt2(ntotal);
-    search_on_graph<true, int>(*final_graph, *dis, vt2, enterpoint, L, tmp,
-                               pool);
+    // Collect the visited nodes into pool
+    search_on_graph<true>(*final_graph, *dis, vt2, enterpoint,
+                          L, tmp, pool);
   }
 
   std::sort(pool.begin(), pool.end());
+  int node;
 
   int found = 0;
   for (int i = 0; i < pool.size(); i++) {
     if (vt.get(pool[i].id)) {
-      root = pool[i].id;
+      node = pool[i].id;
       found = 1;
       break;
     }
@@ -591,15 +601,15 @@ void NSG::find_root(Index *storage, VisitedTable &vt, int &root) {
     while (true) {
       int rid = rng.rand_int(ntotal);
       if (vt.get(rid)) {
-        root = rid;
+        node = rid;
         break;
       }
     }
   }
-  final_graph->at(root, R - 1) = id;
+  final_graph->at(node, R - 1) = id;
 }
 
-void NSG::check_graph() {
+void NSG::check_graph() const {
   for (int i = 0; i < ntotal; i++) {
     for (int j = 0; j < R; j++) {
       int id = final_graph->at(i, j);
