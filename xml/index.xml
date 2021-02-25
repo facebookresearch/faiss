@@ -1379,6 +1379,7 @@
     <member refid="structfaiss_1_1IndexBinaryIVF_1af4d27c34af39b34ce38e8026fb49f32e" kind="function"><name>get_InvertedListScanner</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1aeaf24ee802fe8f43879c735c363b6fd5" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1ac8d31cd455067c3c8a2d972db93369e5" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexBinaryIVF_1a84ad5f009fad999e54567bbb3f6a4fab" kind="function"><name>range_search_preassigned</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1ad233d3fcf4e001849301c0fbeb675f81" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a4a8cd9437b9adc21696aefe1fa440a22" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a75260a5d45fb24a9a3c3462786f1de4d" kind="function"><name>search_and_reconstruct</name></member>

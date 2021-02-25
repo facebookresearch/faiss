@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="201" column="5" bodyfile="faiss/IndexBinaryIVF.h" bodystart="201" bodyend="-1"/>
+        <location file="faiss/IndexBinaryIVF.h" line="209" column="5" bodyfile="faiss/IndexBinaryIVF.h" bodystart="209" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="204" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="212" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1ae28e1381cb4c16ff9941c909fe9c4122" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="207" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="215" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>uint32_t</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="210" column="22"/>
+        <location file="faiss/IndexBinaryIVF.h" line="218" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1a9ddb2bb0b513829b39528463c46f90f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="222" column="20"/>
+        <location file="faiss/IndexBinaryIVF.h" line="230" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1aa3efb4bb46f7dab5b8ac56727d624b17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="230" column="18"/>
+        <location file="faiss/IndexBinaryIVF.h" line="238" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BinaryInvertedListScanner_1afc7ad755907a2aba53cdd1ad034d9c04" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -208,14 +208,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryIVF.h" line="237" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="237" bodyend="237"/>
+        <location file="faiss/IndexBinaryIVF.h" line="245" column="13" bodyfile="faiss/IndexBinaryIVF.h" bodystart="245" bodyend="245"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryIVF.h" line="200" column="32" bodyfile="faiss/IndexBinaryIVF.h" bodystart="200" bodyend="238"/>
+    <location file="faiss/IndexBinaryIVF.h" line="208" column="32" bodyfile="faiss/IndexBinaryIVF.h" bodystart="208" bodyend="246"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1a79acbd6558c3a0e6b3261e5cc53292af" prot="public" virt="non-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>idx_t</name></member>
