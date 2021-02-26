@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/impl/NSG.h>
 #include <faiss/utils/utils.h>
 
@@ -21,24 +22,38 @@ namespace faiss {
  * link structure built on top */
 
 struct IndexNSG : Index {
-    using storage_idx_t = NSG::storage_idx_t;
-
-    // the link strcuture
+    /// the link strcuture
     NSG nsg;
 
-    // the sequential storage
+    /// the sequential storage
     bool own_fields;
     Index* storage;
 
-    // the index is built or not
+    /// the index is built or not
     bool is_built;
 
-    explicit IndexNSG(int d = 0, int M = 32, MetricType metric = METRIC_L2);
-    explicit IndexNSG(Index* storage, int M = 32);
+    /// K of KNN graph for building
+    int GK;
+
+    /// indicate how to build a knn graph
+    /// - 0: build NSG with brute force search
+    /// - 1: build NSG with NNDescent
+    char build_type;
+
+    /// parameters for nndescent
+    int nndescent_S;
+    int nndescent_R;
+    int nndescent_L;
+    int nndescent_iter;
+
+    explicit IndexNSG(int d = 0, int R = 32, MetricType metric = METRIC_L2);
+    explicit IndexNSG(Index* storage, int R = 32);
 
     ~IndexNSG() override;
 
     void build(idx_t n, const float* x, idx_t* knn_graph, int GK);
+
+    void build_knng(idx_t n, const float* x, std::vector<idx_t>& knng);
 
     void add(idx_t n, const float* x) override;
 

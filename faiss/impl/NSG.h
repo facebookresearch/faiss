@@ -54,10 +54,10 @@ namespace nsg {
 
 template <class node_t>
 struct Graph {
-    node_t* data;    // the flattened adjacency matrix
-    int K;           // nb of neighbors per node
-    int N;           // total nb of nodes
-    bool own_fields; // the underlying data owned by itself or not
+    node_t* data;    ///< the flattened adjacency matrix
+    int K;           ///< nb of neighbors per node
+    int N;           ///< total nb of nodes
+    bool own_fields; ///< the underlying data owned by itself or not
 
     // construct from a known graph
     Graph(node_t* data, int N, int K)
@@ -98,31 +98,26 @@ struct NSG {
     /// Faiss results are 64-bit
     using idx_t = Index::idx_t;
 
-    // It needs to be smaller than 0
+    /// It needs to be smaller than 0
     static const int EMPTY_ID = -1;
 
-    // nb of nodes
-    int ntotal;
+    int ntotal; ///< nb of nodes
 
-    // construction-time parameters
-    int R; // nb of neighbors per node
-    int L; // length of the search path at construction time
-    int C; // candidate pool size at construction time
+    /// construction-time parameters
+    int R; ///< nb of neighbors per node
+    int L; ///< length of the search path at construction time
+    int C; ///< candidate pool size at construction time
 
     // search-time parameters
-    int search_L; // length of the search path
+    int search_L; ///< length of the search path
 
-    // enterpoint
-    int enterpoint;
+    int enterpoint; ///< enterpoint
 
-    // the built graph structure
-    std::shared_ptr<nsg::Graph<int>> final_graph;
+    std::shared_ptr<nsg::Graph<int>> final_graph; ///< NSG graph structure
 
-    // NSG is built or not
-    bool is_built;
+    bool is_built; ///< NSG is built or not
 
-    // random generator
-    mutable RandomGenerator rng;
+    mutable RandomGenerator rng; ///< random generator
 
     explicit NSG(int R = 32);
 

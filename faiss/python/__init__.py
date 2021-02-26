@@ -100,12 +100,10 @@ def handle_NSG(the_class):
 
     def replacement_build(self, x, graph):
         n, d = x.shape
-        graph = graph.reshape((-1,))
-        graph = np.ascontiguousarray(graph)
-        m = graph.shape[0]
-        assert m % n == 0
         assert d == self.d
-        K = m // n
+        assert graph.ndim == 2
+        assert graph.shape[0] == n
+        K = graph.shape[1]
         self.build_c(n, swig_ptr(x), swig_ptr(graph), K)
 
     replace_method(the_class, 'build', replacement_build)

@@ -10,6 +10,7 @@
 #include <faiss/impl/NSG.h>
 
 #include <algorithm>
+#include <memory>
 #include <mutex>
 #include <stack>
 
@@ -225,15 +226,12 @@ void NSG::init_graph(Index* storage, const nsg::Graph<idx_t>& knn_graph) {
     int d = storage->d;
     int n = storage->ntotal;
 
-    float* center = new float[d];
-    float* tmp = new float[d];
-    ScopeDeleter<float> center_del(center);
-    ScopeDeleter<float> tmp_del(tmp);
-
-    std::fill_n(center, d, 0.0f);
+    std::unique_ptr<float[]> center(new float[d]);
+    std::unique_ptr<float[]> tmp(new float[d]);
+    std::fill_n(center.get(), d, 0.0f);
 
     for (int i = 0; i < n; i++) {
-        storage->reconstruct(i, tmp);
+        storage->reconstruct(i, tmp.get());
         for (int j = 0; j < d; j++) {
             center[j] += tmp[j];
         }
@@ -248,10 +246,9 @@ void NSG::init_graph(Index* storage, const nsg::Graph<idx_t>& knn_graph) {
 
     // random initialize navigating point
     int ep = rng.rand_int(n);
-    DistanceComputer* dis = storage_distance_computer(storage);
-    ScopeDeleter1<DistanceComputer> del(dis);
+    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
 
-    dis->set_query(center);
+    dis->set_query(center.get());
     VisitedTable vt(ntotal);
 
     // Do not collect the visited nodes
@@ -351,20 +348,19 @@ void NSG::link(
         bool verbose) {
 #pragma omp parallel
     {
-        float* vec = new float[storage->d];
-        ScopeDeleter<float> del_vec(vec);
+        std::unique_ptr<float[]> vec(new float[storage->d]);
 
         std::vector<Node> pool;
         std::vector<Neighbor> tmp;
 
         VisitedTable vt(ntotal);
-        DistanceComputer* dis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del1(dis);
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
 
 #pragma omp for schedule(dynamic, 100)
         for (int i = 0; i < ntotal; i++) {
-            storage->reconstruct(i, vec);
-            dis->set_query(vec);
+            storage->reconstruct(i, vec.get());
+            dis->set_query(vec.get());
 
             // Collect the visited nodes into pool
             search_on_graph<true>(
@@ -376,18 +372,19 @@ void NSG::link(
             tmp.clear();
             vt.advance();
         }
-    }
+    } // omp parallel
 
     std::vector<std::mutex> locks(ntotal);
 #pragma omp parallel
     {
-        DistanceComputer* dis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del(dis);
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
+
 #pragma omp for schedule(dynamic, 100)
         for (int i = 0; i < ntotal; ++i) {
             add_reverse_links(i, locks, *dis, graph);
         }
-    }
+    } // omp parallel
 }
 
 void NSG::sync_prune(
@@ -599,13 +596,11 @@ void NSG::attach_unlinked(Index* storage, VisitedTable& vt) {
     std::vector<Neighbor> tmp;
     std::vector<Node> pool;
 
-    DistanceComputer* dis = storage_distance_computer(storage);
-    ScopeDeleter1<DistanceComputer> del1(dis);
-    float* vec = new float[storage->d];
-    ScopeDeleter<float> vec_del(vec);
+    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
+    std::unique_ptr<float[]> vec(new float[storage->d]);
 
-    storage->reconstruct(id, vec);
-    dis->set_query(vec);
+    storage->reconstruct(id, vec.get());
+    dis->set_query(vec.get());
 
     {
         VisitedTable vt2(ntotal);

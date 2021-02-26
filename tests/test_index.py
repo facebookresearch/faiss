@@ -610,9 +610,35 @@ class TestNSG(unittest.TestCase):
 
         # build knn graph by brute force search
         _, knn_graph = index.search(self.xb, GK + 1)
-        self.knn_graph = knn_graph[:, 1:]
+        self.knn_graph = np.ascontiguousarray(knn_graph[:, 1:])
 
-    def test_nsg_L2(self):
+    def subtest_connectivity(self, index, nb):
+        vt = faiss.VisitedTable(nb)
+        count = index.nsg.dfs(vt, index.nsg.enterpoint)
+        self.assertEqual(count, nb)
+
+    def subtest_add(self, build_type):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
+        index.build_type = build_type
+        index.GK = 32
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        recalls = (self.Iref == Insg).sum()
+        print('nb equal: ', recalls)
+        self.assertGreaterEqual(recalls, 460)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
+    def test_add_bruteforce(self):
+        self.subtest_add(0)
+
+    def test_add_nndescent(self):
+        self.subtest_add(1)
+
+    def test_build_L2(self):
         d = self.xq.shape[1]
 
         index = faiss.IndexNSGFlat(d, 16)
@@ -623,8 +649,9 @@ class TestNSG(unittest.TestCase):
         recalls = (self.Iref == Insg).sum()
         print('nb equal: ', recalls)
         self.assertGreaterEqual(recalls, 460)
+        self.subtest_connectivity(index, self.xb.shape[0])
 
-    def test_nsg_IP(self):
+    def test_build_IP(self):
         d = self.xq.shape[1]
 
         index_IP = faiss.IndexFlatIP(d)
@@ -634,7 +661,7 @@ class TestNSG(unittest.TestCase):
         # build knn graph by brute force search
         GK = 32
         _, knn_graph = index_IP.search(self.xb, GK + 1)
-        knn_graph = knn_graph[:, 1:]
+        knn_graph = np.ascontiguousarray(knn_graph[:, 1:])
 
         index = faiss.IndexNSGFlat(d, 16, faiss.METRIC_INNER_PRODUCT)
         index.verbose = True
@@ -647,12 +674,13 @@ class TestNSG(unittest.TestCase):
 
         mask = Iref[:, 0] == Insg[:, 0]
         assert np.allclose(Dref[mask, 0], Dnsg[mask, 0])
+        self.subtest_connectivity(index, self.xb.shape[0])
 
-    def test_nsg_build(self):
+    def test_build_invalid_knng(self):
         d = self.xq.shape[1]
 
         knn_graph = self.knn_graph.copy()
-        knn_graph[:, 5] = -100  # invalid entries
+        knn_graph[:, 5] = -1  # make some invalid entries
 
         index = faiss.IndexNSGFlat(d, 16)
         index.verbose = True
@@ -662,18 +690,7 @@ class TestNSG(unittest.TestCase):
         recalls = (self.Iref == Insg).sum()
         print('nb equal: ', recalls)
         self.assertGreaterEqual(recalls, 450)
-
-    def test_nsg_connectivity(self):
-        d = self.xq.shape[1]
-        nb = self.xb.shape[0]
-
-        index = faiss.IndexNSGFlat(d, 16)
-        index.verbose = True
-        index.build(self.xb, self.knn_graph)
-        vt = faiss.VisitedTable(nb)
-        count = index.nsg.dfs(vt, index.nsg.enterpoint)
-
-        self.assertEqual(count, nb)
+        self.subtest_connectivity(index, self.xb.shape[0])
 
 
 class TestDistancesPositive(unittest.TestCase):
