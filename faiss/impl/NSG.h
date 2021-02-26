@@ -117,7 +117,7 @@ struct NSG {
 
     bool is_built; ///< NSG is built or not
 
-    mutable RandomGenerator rng; ///< random generator
+    RandomGenerator rng; ///< random generator
 
     explicit NSG(int R = 32);
 
