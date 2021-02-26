@@ -228,8 +228,6 @@ struct HNSW {
             int max_size);
 };
 
-
-
 struct HNSWStats {
     size_t n1, n2, n3;
     size_t ndis;
