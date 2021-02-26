@@ -44,7 +44,6 @@ int sgemm_(
         float* beta,
         float* c,
         FINTEGER* ldc);
-
 }
 
 namespace faiss {
