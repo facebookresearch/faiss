@@ -250,7 +250,7 @@ struct VisitedTable {
 
     explicit VisitedTable(int size) : visited(size), visno(1) {}
 
-    /// set flog #no to true
+    /// set flag #no to true
     void set(int no) {
         visited[no] = visno;
     }
