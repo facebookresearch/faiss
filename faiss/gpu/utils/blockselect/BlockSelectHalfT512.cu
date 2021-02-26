@@ -7,8 +7,10 @@
 
 #include <faiss/gpu/utils/blockselect/BlockSelectImpl.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 BLOCK_SELECT_IMPL(half, true, 512, 8);
 
-} } // namespace
+}
+} // namespace faiss

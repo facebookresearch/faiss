@@ -22,24 +22,23 @@ extern "C" {
  * constructor of the Clustering object.
  */
 typedef struct FaissClusteringParameters {
-    int niter;          ///< clustering iterations
-    int nredo;          ///< redo clustering this many times and keep best
+    int niter; ///< clustering iterations
+    int nredo; ///< redo clustering this many times and keep best
 
-    int verbose;       ///< (bool)
-    int spherical;     ///< (bool) do we want normalized centroids?
-    int update_index;  ///< (bool) update index after each iteration?
-    int frozen_centroids;  ///< (bool) use the centroids provided as input and do not change them during iterations
+    int verbose;          ///< (bool)
+    int spherical;        ///< (bool) do we want normalized centroids?
+    int update_index;     ///< (bool) update index after each iteration?
+    int frozen_centroids; ///< (bool) use the centroids provided as input and do
+                          ///< not change them during iterations
 
     int min_points_per_centroid; ///< otherwise you get a warning
-    int max_points_per_centroid;  ///< to limit size of dataset
+    int max_points_per_centroid; ///< to limit size of dataset
 
     int seed; ///< seed for the random number generator
 } FaissClusteringParameters;
 
-
 /// Sets the ClusteringParameters object with reasonable defaults
 void faiss_ClusteringParameters_init(FaissClusteringParameters* params);
-
 
 /** clustering based on assignment - centroid update iterations
  *
@@ -84,20 +83,30 @@ FAISS_DECLARE_GETTER(ClusteringIterationStats, int, nsplit)
 
 /// getter for centroids (size = k * d)
 void faiss_Clustering_centroids(
-    FaissClustering* clustering, float** centroids, size_t* size);
+        FaissClustering* clustering,
+        float** centroids,
+        size_t* size);
 
 /// getter for iteration stats
 void faiss_Clustering_iteration_stats(
-    FaissClustering* clustering, FaissClusteringIterationStats** iteration_stats, size_t* size);
+        FaissClustering* clustering,
+        FaissClusteringIterationStats** iteration_stats,
+        size_t* size);
 
 /// the only mandatory parameters are k and d
 int faiss_Clustering_new(FaissClustering** p_clustering, int d, int k);
 
 int faiss_Clustering_new_with_params(
-    FaissClustering** p_clustering, int d, int k, const FaissClusteringParameters* cp);
+        FaissClustering** p_clustering,
+        int d,
+        int k,
+        const FaissClusteringParameters* cp);
 
 int faiss_Clustering_train(
-    FaissClustering* clustering, idx_t n, const float* x, FaissIndex* index);
+        FaissClustering* clustering,
+        idx_t n,
+        const float* x,
+        FaissIndex* index);
 
 void faiss_Clustering_free(FaissClustering* clustering);
 
@@ -111,10 +120,13 @@ void faiss_Clustering_free(FaissClustering* clustering);
  * @param q_error final quantization error
  * @return error code
  */
-int faiss_kmeans_clustering (size_t d, size_t n, size_t k,
-                       const float *x,
-                       float *centroids,
-                       float *q_error);
+int faiss_kmeans_clustering(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* x,
+        float* centroids,
+        float* q_error);
 
 #ifdef __cplusplus
 }

@@ -11,8 +11,8 @@
 #ifndef INDEXSHARDS_C_H
 #define INDEXSHARDS_C_H
 
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +27,11 @@ FAISS_DECLARE_GETTER_SETTER(IndexShards, int, successive_ids)
 
 int faiss_IndexShards_new(FaissIndexShards** p_index, idx_t d);
 
-int faiss_IndexShards_new_with_options(FaissIndexShards** p_index, idx_t d, int threaded, int successive_ids);
+int faiss_IndexShards_new_with_options(
+        FaissIndexShards** p_index,
+        idx_t d,
+        int threaded,
+        int successive_ids);
 
 int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard);
 

@@ -160,12 +160,12 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 
         # print("tab a type", tab_a.get())
         if type(q) == int:
-            thresh2 = faiss.CMax_uint16_partition_fuzzy(
+            faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q
             q = np.array([-1], dtype='uint64')
-            thresh2 = faiss.CMax_uint16_partition_fuzzy(
+            faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n,
                 q_min, q_max, sp(q)
             )
@@ -209,7 +209,7 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
 
         # print("tab a type", tab_a.get())
         if type(q) == int:
-            thresh2 = faiss.CMin_uint16_partition_fuzzy(
+            faiss.CMin_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q

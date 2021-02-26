@@ -11,8 +11,8 @@
 #ifndef FAISS_AUTO_TUNE_C_H
 #define FAISS_AUTO_TUNE_C_H
 
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,22 +42,39 @@ size_t faiss_ParameterSpace_n_combinations(const FaissParameterSpace*);
 /// get string representation of the combination
 /// by writing it to the given character buffer.
 /// A buffer size of 1000 ensures that the full name is collected.
-int faiss_ParameterSpace_combination_name(const FaissParameterSpace*, size_t, char*, size_t);
+int faiss_ParameterSpace_combination_name(
+        const FaissParameterSpace*,
+        size_t,
+        char*,
+        size_t);
 
 /// set a combination of parameters described by a string
-int faiss_ParameterSpace_set_index_parameters(const FaissParameterSpace*, FaissIndex*, const char *);
+int faiss_ParameterSpace_set_index_parameters(
+        const FaissParameterSpace*,
+        FaissIndex*,
+        const char*);
 
 /// set a combination of parameters on an index
-int faiss_ParameterSpace_set_index_parameters_cno(const FaissParameterSpace*, FaissIndex*, size_t);
+int faiss_ParameterSpace_set_index_parameters_cno(
+        const FaissParameterSpace*,
+        FaissIndex*,
+        size_t);
 
 /// set one of the parameters
-int faiss_ParameterSpace_set_index_parameter(const FaissParameterSpace*, FaissIndex*, const char *, double);
+int faiss_ParameterSpace_set_index_parameter(
+        const FaissParameterSpace*,
+        FaissIndex*,
+        const char*,
+        double);
 
 /// print a description on stdout
 void faiss_ParameterSpace_display(const FaissParameterSpace*);
 
 /// add a new parameter (or return it if it exists)
-int faiss_ParameterSpace_add_range(FaissParameterSpace*, const char*, FaissParameterRange**);
+int faiss_ParameterSpace_add_range(
+        FaissParameterSpace*,
+        const char*,
+        FaissParameterRange**);
 
 #ifdef __cplusplus
 }

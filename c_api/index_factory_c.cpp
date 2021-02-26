@@ -8,9 +8,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <cstring>
-#include <faiss/index_factory.h>
 #include "index_factory_c.h"
+#include <faiss/index_factory.h>
+#include <cstring>
 #include "macros_impl.h"
 
 using faiss::Index;
@@ -18,9 +18,14 @@ using faiss::Index;
 /** Build and index with the sequence of processing steps described in
  *  the string.
  */
-int faiss_index_factory(FaissIndex** p_index, int d, const char* description, FaissMetricType metric) {
+int faiss_index_factory(
+        FaissIndex** p_index,
+        int d,
+        const char* description,
+        FaissMetricType metric) {
     try {
         *p_index = reinterpret_cast<FaissIndex*>(faiss::index_factory(
-            d, description, static_cast<faiss::MetricType>(metric)));
-    } CATCH_AND_HANDLE
+                d, description, static_cast<faiss::MetricType>(metric)));
+    }
+    CATCH_AND_HANDLE
 }

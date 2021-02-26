@@ -115,7 +115,6 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
     i0 = 0
     D = [[] for _i in range(nq)]
     I = [[] for _i in range(nq)]
-    all_lims = []
     for xbi in db_iterator:
         ni = xbi.shape[0]
         if ngpu > 0:

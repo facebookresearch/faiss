@@ -8,7 +8,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <faiss/gpu/DeviceUtils_c.h>
+#include <c_api/gpu/DeviceUtils_c.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include "macros_impl.h"
 
@@ -17,21 +17,24 @@ int faiss_get_num_gpus(int* p_output) {
     try {
         int output = faiss::gpu::getNumDevices();
         *p_output = output;
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
 /// Starts the CUDA profiler (exposed via SWIG)
 int faiss_gpu_profiler_start() {
     try {
         faiss::gpu::profilerStart();
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
 /// Stops the CUDA profiler (exposed via SWIG)
 int faiss_gpu_profiler_stop() {
     try {
         faiss::gpu::profilerStop();
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
 /// Synchronizes the CPU against all devices (equivalent to
@@ -39,5 +42,6 @@ int faiss_gpu_profiler_stop() {
 int faiss_gpu_sync_all_devices() {
     try {
         faiss::gpu::synchronizeAllDevices();
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }

@@ -9,13 +9,12 @@
 // -*- c++ -*-
 // I/O code for indexes
 
-
 #ifndef FAISS_CLONE_INDEX_C_H
 #define FAISS_CLONE_INDEX_C_H
 
 #include <stdio.h>
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +23,7 @@ extern "C" {
 /* cloning functions */
 
 /** Clone an index. This is equivalent to `faiss::clone_index` */
-int faiss_clone_index (const FaissIndex *, FaissIndex ** p_out);
+int faiss_clone_index(const FaissIndex*, FaissIndex** p_out);
 
 #ifdef __cplusplus
 }

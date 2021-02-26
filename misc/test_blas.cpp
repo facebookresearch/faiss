@@ -12,26 +12,40 @@
 #undef FINTEGER
 #define FINTEGER long
 
-
 extern "C" {
 
 /* declare BLAS functions, see http://www.netlib.org/clapack/cblas/ */
 
-int sgemm_ (const char *transa, const char *transb, FINTEGER *m, FINTEGER *
-            n, FINTEGER *k, const float *alpha, const float *a,
-            FINTEGER *lda, const float *b, FINTEGER *
-            ldb, float *beta, float *c, FINTEGER *ldc);
+int sgemm_(
+        const char* transa,
+        const char* transb,
+        FINTEGER* m,
+        FINTEGER* n,
+        FINTEGER* k,
+        const float* alpha,
+        const float* a,
+        FINTEGER* lda,
+        const float* b,
+        FINTEGER* ldb,
+        float* beta,
+        float* c,
+        FINTEGER* ldc);
 
 /* Lapack functions, see http://www.netlib.org/clapack/old/single/sgeqrf.c */
 
-int sgeqrf_ (FINTEGER *m, FINTEGER *n, float *a, FINTEGER *lda,
-                 float *tau, float *work, FINTEGER *lwork, FINTEGER *info);
-
+int sgeqrf_(
+        FINTEGER* m,
+        FINTEGER* n,
+        float* a,
+        FINTEGER* lda,
+        float* tau,
+        float* work,
+        FINTEGER* lwork,
+        FINTEGER* info);
 }
 
-float *new_random_vec(int size)
-{
-    float *x = new float[size];
+float* new_random_vec(int size) {
+    float* x = new float[size];
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
     for (int i = 0; i < size; i++)
@@ -39,17 +53,27 @@ float *new_random_vec(int size)
     return x;
 }
 
-
 int main() {
-
     FINTEGER m = 10, n = 20, k = 30;
-    float *a = new_random_vec(m * k), *b = new_random_vec(n * k), *c = new float[n * m];
+    float *a = new_random_vec(m * k), *b = new_random_vec(n * k),
+          *c = new float[n * m];
     float one = 1.0, zero = 0.0;
 
     printf("BLAS test\n");
 
-    sgemm_("Not transposed", "Not transposed",
-           &m, &n, &k, &one, a, &m, b, &k, &zero, c, &m);
+    sgemm_("Not transposed",
+           "Not transposed",
+           &m,
+           &n,
+           &k,
+           &one,
+           a,
+           &m,
+           b,
+           &k,
+           &zero,
+           c,
+           &m);
 
     printf("errors=\n");
 
@@ -58,30 +82,29 @@ int main() {
             float accu = 0;
             for (int l = 0; l < k; l++)
                 accu += a[i + l * m] * b[l + j * k];
-            printf ("%6.3f ", accu - c[i + j * m]);
+            printf("%6.3f ", accu - c[i + j * m]);
         }
         printf("\n");
     }
 
     long info = 0x64bL << 32;
     long mi = 0x64bL << 32 | m;
-    float *tau = new float[m];
+    float* tau = new float[m];
     FINTEGER lwork = -1;
 
     float work1;
 
     printf("Intentional Lapack error (appears only for 64-bit INTEGER):\n");
-    sgeqrf_ (&mi, &n, c, &m, tau, &work1, &lwork, (FINTEGER*)&info);
+    sgeqrf_(&mi, &n, c, &m, tau, &work1, &lwork, (FINTEGER*)&info);
 
     // sgeqrf_ (&m, &n, c, &zeroi, tau, &work1, &lwork, (FINTEGER*)&info);
     printf("info=%016lx\n", info);
 
-    if(info >> 32 == 0x64b) {
+    if (info >> 32 == 0x64b) {
         printf("Lapack uses 32-bit integers\n");
     } else {
         printf("Lapack uses 64-bit integers\n");
     }
-
 
     return 0;
 }

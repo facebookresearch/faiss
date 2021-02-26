@@ -10,7 +10,6 @@
 #ifndef FAISS_INDEX_LATTICE_H
 #define FAISS_INDEX_LATTICE_H
 
-
 #include <vector>
 
 #include <faiss/IndexIVF.h>
@@ -18,14 +17,9 @@
 
 namespace faiss {
 
-
-
-
-
 /** Index that encodes a vector with a series of Zn lattice quantizers
  */
-struct IndexLattice: Index {
-
+struct IndexLattice : Index {
     /// number of sub-vectors
     int nsq;
     /// dimension of sub-vectors
@@ -42,25 +36,26 @@ struct IndexLattice: Index {
     /// mins and maxes of the vector norms, per subquantizer
     std::vector<float> trained;
 
-    IndexLattice (idx_t d, int nsq, int scale_nbit, int r2);
+    IndexLattice(idx_t d, int nsq, int scale_nbit, int r2);
 
     void train(idx_t n, const float* x) override;
 
     /* The standalone codec interface */
-    size_t sa_code_size () const override;
+    size_t sa_code_size() const override;
 
-    void sa_encode (idx_t n, const float *x,
-                          uint8_t *bytes) const override;
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
-    void sa_decode (idx_t n, const uint8_t *bytes,
-                            float *x) const override;
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
     /// not implemented
     void add(idx_t n, const float* x) override;
-    void search(idx_t n, const float* x, idx_t k,
-                float* distances, idx_t* labels) const override;
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
     void reset() override;
-
 };
 
 } // namespace faiss

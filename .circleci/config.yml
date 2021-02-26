@@ -263,7 +263,7 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 11.0)
           cuda: "11.0"
-          cuda_archs: "35;52;60;61;70;72;75;80;86"
+          cuda_archs: "35;52;60;61;70;72;75;80"
           filters:
             tags:
               only: /^v.*/
@@ -309,7 +309,7 @@ workflows:
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 11.0)
           cuda: "11.0"
-          cuda_archs: "35;52;60;61;70;72;75;80;86"
+          cuda_archs: "35;52;60;61;70;72;75;80"
           label: nightly
       - deploy_windows:
           name: Windows nightlies

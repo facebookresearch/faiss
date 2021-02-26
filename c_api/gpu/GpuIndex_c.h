@@ -11,7 +11,7 @@
 #ifndef FAISS_GPU_INDEX_C_H
 #define FAISS_GPU_INDEX_C_H
 
-#include "faiss_c.h"
+#include <c_api/faiss_c.h>
 
 #ifdef __cplusplus
 extern "C" {

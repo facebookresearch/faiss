@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
-
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
 namespace faiss {
 
@@ -32,19 +30,23 @@ namespace quantize_lut {
  * @param tab input/output, size (n, d)
  */
 void round_uint8_per_column(
-        float *tab, size_t n, size_t d,
-        float *a_out = nullptr,
-        float *b_out = nullptr
-);
-
+        float* tab,
+        size_t n,
+        size_t d,
+        float* a_out = nullptr,
+        float* b_out = nullptr);
 
 /* affine quantizer, a and b are the affine coefficients
  *
  * @param tab input/output, size (m, n, d)
  */
 void round_uint8_per_column_multi(
-        float *tab, size_t m, size_t n, size_t d,
-        float *a_out = nullptr, float *b_out = nullptr);
+        float* tab,
+        size_t m,
+        size_t n,
+        size_t d,
+        float* a_out = nullptr,
+        float* b_out = nullptr);
 
 /** LUT quantization to uint8 and bias to uint16.
  *
@@ -63,18 +65,18 @@ void round_uint8_per_column_multi(
  */
 
 void quantize_LUT_and_bias(
-        size_t nprobe, size_t M, size_t ksub,
+        size_t nprobe,
+        size_t M,
+        size_t ksub,
         bool lut_is_3d,
-        const float *LUT,
-        const float *bias,
-        uint8_t *LUTq, size_t M2,
-        uint16_t *biasq,
-        float *a_out = nullptr, float *b_out = nullptr
-);
-
+        const float* LUT,
+        const float* bias,
+        uint8_t* LUTq,
+        size_t M2,
+        uint16_t* biasq,
+        float* a_out = nullptr,
+        float* b_out = nullptr);
 
 } // namespace quantize_lut
 
 } // namespace faiss
-
-

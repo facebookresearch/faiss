@@ -260,6 +260,22 @@ def handle_Index(the_class):
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
 
+    # get/set state for pickle
+    # the data is serialized to std::vector -> numpy array -> python bytes
+    # so not very efficient for now.
+
+    def index_getstate(self):
+        return {"this": serialize_index(self).tobytes()}
+
+    def index_setstate(self, st):
+        index2 = deserialize_index(np.frombuffer(st["this"], dtype="uint8"))
+        self.this = index2.this
+
+    the_class.__getstate__ = index_getstate
+    the_class.__setstate__ = index_setstate
+
+
+
 def handle_IndexBinary(the_class):
 
     def replacement_add(self, x):

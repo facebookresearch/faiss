@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include <immintrin.h>
 
 #include <faiss/impl/platform_macros.h>
 
 namespace faiss {
-
 
 /** Simple wrapper around the AVX 256-bit registers
  *
@@ -27,36 +26,34 @@ namespace faiss {
 
 /// 256-bit representation without interpretation as a vector
 struct simd256bit {
-
-        union {
+    union {
         __m256i i;
         __m256 f;
     };
 
-    simd256bit()   {}
+    simd256bit() {}
 
-    explicit simd256bit(__m256i i): i(i) {}
+    explicit simd256bit(__m256i i) : i(i) {}
 
-    explicit simd256bit(__m256 f): f(f) {}
+    explicit simd256bit(__m256 f) : f(f) {}
 
-    explicit simd256bit(const void *x):
-    i(_mm256_load_si256((__m256i const *)x))
-    {}
+    explicit simd256bit(const void* x)
+            : i(_mm256_load_si256((__m256i const*)x)) {}
 
     void clear() {
         i = _mm256_setzero_si256();
     }
 
-    void storeu(void *ptr) const {
-        _mm256_storeu_si256((__m256i *)ptr, i);
+    void storeu(void* ptr) const {
+        _mm256_storeu_si256((__m256i*)ptr, i);
     }
 
-    void loadu(const void *ptr) {
+    void loadu(const void* ptr) {
         i = _mm256_loadu_si256((__m256i*)ptr);
     }
 
-    void store(void *ptr) const {
-        _mm256_store_si256((__m256i *)ptr, i);
+    void store(void* ptr) const {
+        _mm256_store_si256((__m256i*)ptr, i);
     }
 
     void bin(char bits[257]) const {
@@ -73,30 +70,28 @@ struct simd256bit {
         bin(bits);
         return std::string(bits);
     }
-
 };
 
-
 /// vector of 16 elements in uint16
-struct simd16uint16: simd256bit {
+struct simd16uint16 : simd256bit {
     simd16uint16() {}
 
-    explicit simd16uint16(__m256i i): simd256bit(i) {}
+    explicit simd16uint16(__m256i i) : simd256bit(i) {}
 
-    explicit simd16uint16(int x): simd256bit(_mm256_set1_epi16(x)) {}
+    explicit simd16uint16(int x) : simd256bit(_mm256_set1_epi16(x)) {}
 
-    explicit simd16uint16(uint16_t x): simd256bit(_mm256_set1_epi16(x)) {}
+    explicit simd16uint16(uint16_t x) : simd256bit(_mm256_set1_epi16(x)) {}
 
-    explicit simd16uint16(simd256bit x): simd256bit(x) {}
+    explicit simd16uint16(simd256bit x) : simd256bit(x) {}
 
-    explicit simd16uint16(const uint16_t *x): simd256bit((const void*)x) {}
+    explicit simd16uint16(const uint16_t* x) : simd256bit((const void*)x) {}
 
-    std::string elements_to_string(const char * fmt) const {
+    std::string elements_to_string(const char* fmt) const {
         uint16_t bytes[16];
         storeu((void*)bytes);
         char res[1000];
-        char *ptr = res;
-        for(int i = 0; i < 16; i++) {
+        char* ptr = res;
+        for (int i = 0; i < 16; i++) {
             ptr += sprintf(ptr, fmt, bytes[i]);
         }
         // strip last ,
@@ -117,47 +112,47 @@ struct simd16uint16: simd256bit {
     }
 
     // shift must be known at compile time
-    simd16uint16 operator >> (const int shift) const {
+    simd16uint16 operator>>(const int shift) const {
         return simd16uint16(_mm256_srli_epi16(i, shift));
     }
 
     // shift must be known at compile time
-    simd16uint16 operator << (const int shift) const {
+    simd16uint16 operator<<(const int shift) const {
         return simd16uint16(_mm256_slli_epi16(i, shift));
     }
 
-    simd16uint16 operator += (simd16uint16 other) {
+    simd16uint16 operator+=(simd16uint16 other) {
         i = _mm256_add_epi16(i, other.i);
         return *this;
     }
 
-    simd16uint16 operator -= (simd16uint16 other) {
+    simd16uint16 operator-=(simd16uint16 other) {
         i = _mm256_sub_epi16(i, other.i);
         return *this;
     }
 
-    simd16uint16 operator + (simd16uint16 other) const {
+    simd16uint16 operator+(simd16uint16 other) const {
         return simd16uint16(_mm256_add_epi16(i, other.i));
     }
 
-    simd16uint16 operator - (simd16uint16 other) const {
+    simd16uint16 operator-(simd16uint16 other) const {
         return simd16uint16(_mm256_sub_epi16(i, other.i));
     }
 
-    simd16uint16 operator & (simd256bit other) const {
+    simd16uint16 operator&(simd256bit other) const {
         return simd16uint16(_mm256_and_si256(i, other.i));
     }
 
-    simd16uint16 operator | (simd256bit other) const {
+    simd16uint16 operator|(simd256bit other) const {
         return simd16uint16(_mm256_or_si256(i, other.i));
     }
 
     // returns binary masks
-    simd16uint16 operator == (simd256bit other) const {
+    simd16uint16 operator==(simd256bit other) const {
         return simd16uint16(_mm256_cmpeq_epi16(i, other.i));
     }
 
-    simd16uint16 operator ~() const {
+    simd16uint16 operator~() const {
         return simd16uint16(_mm256_xor_si256(i, _mm256_set1_epi32(-1)));
     }
 
@@ -188,7 +183,7 @@ struct simd16uint16: simd256bit {
     }
 
     // for debugging only
-    uint16_t operator [] (int i) const {
+    uint16_t operator[](int i) const {
         ALIGNED(32) uint16_t tab[16];
         store(tab);
         return tab[i];
@@ -201,7 +196,6 @@ struct simd16uint16: simd256bit {
     void accu_max(simd16uint16 incoming) {
         i = _mm256_max_epu16(i, incoming.i);
     }
-
 };
 
 // not really a std::min because it returns an elementwise min
@@ -213,13 +207,10 @@ inline simd16uint16 max(simd16uint16 a, simd16uint16 b) {
     return simd16uint16(_mm256_max_epu16(a.i, b.i));
 }
 
-
-
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
 // return (a0 + a1, b0 + b1)
 // TODO find a better name
 inline simd16uint16 combine2x2(simd16uint16 a, simd16uint16 b) {
-
     __m256i a1b0 = _mm256_permute2f128_si256(a.i, b.i, 0x21);
     __m256i a0b1 = _mm256_blend_epi32(a.i, b.i, 0xF0);
 
@@ -229,7 +220,6 @@ inline simd16uint16 combine2x2(simd16uint16 a, simd16uint16 b) {
 // compare d0 and d1 to thr, return 32 bits corresponding to the concatenation
 // of d0 and d1 with thr
 inline uint32_t cmp_ge32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
-
     __m256i max0 = _mm256_max_epu16(d0.i, thr.i);
     __m256i ge0 = _mm256_cmpeq_epi16(d0.i, max0);
 
@@ -245,9 +235,7 @@ inline uint32_t cmp_ge32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
     return ge;
 }
 
-
 inline uint32_t cmp_le32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
-
     __m256i max0 = _mm256_min_epu16(d0.i, thr.i);
     __m256i ge0 = _mm256_cmpeq_epi16(d0.i, max0);
 
@@ -263,29 +251,26 @@ inline uint32_t cmp_le32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
     return ge;
 }
 
-
 // vector of 32 unsigned 8-bit integers
-struct simd32uint8: simd256bit {
-
-
+struct simd32uint8 : simd256bit {
     simd32uint8() {}
 
-    explicit simd32uint8(__m256i i): simd256bit(i) {}
+    explicit simd32uint8(__m256i i) : simd256bit(i) {}
 
-    explicit simd32uint8(int x): simd256bit(_mm256_set1_epi8(x)) {}
+    explicit simd32uint8(int x) : simd256bit(_mm256_set1_epi8(x)) {}
 
-    explicit simd32uint8(uint8_t x): simd256bit(_mm256_set1_epi8(x)) {}
+    explicit simd32uint8(uint8_t x) : simd256bit(_mm256_set1_epi8(x)) {}
 
-    explicit simd32uint8(simd256bit x): simd256bit(x) {}
+    explicit simd32uint8(simd256bit x) : simd256bit(x) {}
 
-    explicit simd32uint8(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd32uint8(const uint8_t* x) : simd256bit((const void*)x) {}
 
-    std::string elements_to_string(const char * fmt) const {
+    std::string elements_to_string(const char* fmt) const {
         uint8_t bytes[32];
         storeu((void*)bytes);
         char res[1000];
-        char *ptr = res;
-        for(int i = 0; i < 32; i++) {
+        char* ptr = res;
+        for (int i = 0; i < 32; i++) {
             ptr += sprintf(ptr, fmt, bytes[i]);
         }
         // strip last ,
@@ -305,11 +290,11 @@ struct simd32uint8: simd256bit {
         i = _mm256_set1_epi8((char)x);
     }
 
-    simd32uint8 operator & (simd256bit other) const {
+    simd32uint8 operator&(simd256bit other) const {
         return simd32uint8(_mm256_and_si256(i, other.i));
     }
 
-    simd32uint8 operator + (simd32uint8 other) const {
+    simd32uint8 operator+(simd32uint8 other) const {
         return simd32uint8(_mm256_add_epi8(i, other.i));
     }
 
@@ -329,18 +314,17 @@ struct simd32uint8: simd256bit {
         return simd16uint16(_mm256_cvtepu8_epi16(x));
     }
 
-    simd32uint8 operator += (simd32uint8 other) {
+    simd32uint8 operator+=(simd32uint8 other) {
         i = _mm256_add_epi8(i, other.i);
         return *this;
     }
 
     // for debugging only
-    uint8_t operator [] (int i) const {
+    uint8_t operator[](int i) const {
         ALIGNED(32) uint8_t tab[32];
         store(tab);
         return tab[i];
     }
-
 };
 
 // convert with saturation
@@ -359,26 +343,24 @@ inline simd32uint8 blendv(simd32uint8 a, simd32uint8 b, simd32uint8 mask) {
     return simd32uint8(_mm256_blendv_epi8(a.i, b.i, mask.i));
 }
 
-
-
 /// vector of 8 unsigned 32-bit integers
-struct simd8uint32: simd256bit {
+struct simd8uint32 : simd256bit {
     simd8uint32() {}
 
-    explicit simd8uint32(__m256i i): simd256bit(i) {}
+    explicit simd8uint32(__m256i i) : simd256bit(i) {}
 
-    explicit simd8uint32(uint32_t x): simd256bit(_mm256_set1_epi32(x)) {}
+    explicit simd8uint32(uint32_t x) : simd256bit(_mm256_set1_epi32(x)) {}
 
-    explicit simd8uint32(simd256bit x): simd256bit(x) {}
+    explicit simd8uint32(simd256bit x) : simd256bit(x) {}
 
-    explicit simd8uint32(const uint8_t *x): simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint8_t* x) : simd256bit((const void*)x) {}
 
-    std::string elements_to_string(const char * fmt) const {
+    std::string elements_to_string(const char* fmt) const {
         uint32_t bytes[8];
         storeu((void*)bytes);
         char res[1000];
-        char *ptr = res;
-        for(int i = 0; i < 8; i++) {
+        char* ptr = res;
+        for (int i = 0; i < 8; i++) {
             ptr += sprintf(ptr, fmt, bytes[i]);
         }
         // strip last ,
@@ -397,31 +379,28 @@ struct simd8uint32: simd256bit {
     void set1(uint32_t x) {
         i = _mm256_set1_epi32((int)x);
     }
-
 };
 
-struct simd8float32: simd256bit {
-
+struct simd8float32 : simd256bit {
     simd8float32() {}
 
+    explicit simd8float32(simd256bit x) : simd256bit(x) {}
 
-    explicit simd8float32(simd256bit x): simd256bit(x) {}
+    explicit simd8float32(__m256 x) : simd256bit(x) {}
 
-    explicit simd8float32(__m256 x): simd256bit(x) {}
+    explicit simd8float32(float x) : simd256bit(_mm256_set1_ps(x)) {}
 
-    explicit simd8float32(float x): simd256bit(_mm256_set1_ps(x)) {}
+    explicit simd8float32(const float* x) : simd256bit(_mm256_load_ps(x)) {}
 
-    explicit simd8float32(const float *x): simd256bit(_mm256_load_ps(x)) {}
-
-    simd8float32 operator * (simd8float32 other) const {
+    simd8float32 operator*(simd8float32 other) const {
         return simd8float32(_mm256_mul_ps(f, other.f));
     }
 
-    simd8float32 operator + (simd8float32 other) const {
+    simd8float32 operator+(simd8float32 other) const {
         return simd8float32(_mm256_add_ps(f, other.f));
     }
 
-    simd8float32 operator - (simd8float32 other) const {
+    simd8float32 operator-(simd8float32 other) const {
         return simd8float32(_mm256_sub_ps(f, other.f));
     }
 
@@ -429,15 +408,14 @@ struct simd8float32: simd256bit {
         float tab[8];
         storeu((void*)tab);
         char res[1000];
-        char *ptr = res;
-        for(int i = 0; i < 8; i++) {
+        char* ptr = res;
+        for (int i = 0; i < 8; i++) {
             ptr += sprintf(ptr, "%g,", tab[i]);
         }
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
     }
-
 };
 
 inline simd8float32 hadd(simd8float32 a, simd8float32 b) {
@@ -456,6 +434,5 @@ inline simd8float32 unpackhi(simd8float32 a, simd8float32 b) {
 inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
     return simd8float32(_mm256_fmadd_ps(a.f, b.f, c.f));
 }
-
 
 } // namespace faiss

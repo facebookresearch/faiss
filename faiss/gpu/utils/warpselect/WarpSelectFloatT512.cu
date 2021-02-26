@@ -7,8 +7,10 @@
 
 #include <faiss/gpu/utils/warpselect/WarpSelectImpl.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 WARP_SELECT_IMPL(float, true, 512, 8);
 
-} } // namespace
+}
+} // namespace faiss

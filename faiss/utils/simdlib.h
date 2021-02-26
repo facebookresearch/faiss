@@ -7,8 +7,6 @@
 
 #pragma once
 
-
-
 /** Abstractions for 256-bit registers
  *
  * The objective is to separate the different interpretations of the same

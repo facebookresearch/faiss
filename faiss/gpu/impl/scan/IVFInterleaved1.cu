@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/gpu/impl/scan/IVFInterleavedImpl.cuh>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 IVF_INTERLEAVED_IMPL(128, 1, 1)
 
-} } // namespace
+}
+} // namespace faiss

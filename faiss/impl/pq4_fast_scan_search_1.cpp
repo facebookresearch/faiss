@@ -5,15 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/impl/pq4_fast_scan.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_result_handlers.h>
 
-
 namespace faiss {
-
 
 using namespace simd_result_handlers;
 
@@ -29,18 +26,17 @@ namespace {
  * writes results in a ResultHandler
  */
 
-template<int NQ, int BB, class ResultHandler>
+template <int NQ, int BB, class ResultHandler>
 void kernel_accumulate_block(
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     // distance accumulators
     simd16uint16 accu[NQ][BB][4];
 
-    for(int q = 0; q < NQ; q++) {
-        for(int b = 0; b < BB; b++) {
+    for (int q = 0; q < NQ; q++) {
+        for (int b = 0; b < BB; b++) {
             accu[q][b][0].clear();
             accu[q][b][1].clear();
             accu[q][b][2].clear();
@@ -48,9 +44,9 @@ void kernel_accumulate_block(
         }
     }
 
-    for(int sq = 0; sq < nsq; sq += 2) {
+    for (int sq = 0; sq < nsq; sq += 2) {
         simd32uint8 lut_cache[NQ];
-        for(int q = 0; q < NQ; q++) {
+        for (int q = 0; q < NQ; q++) {
             lut_cache[q] = simd32uint8(LUT);
             LUT += 32;
         }
@@ -62,7 +58,7 @@ void kernel_accumulate_block(
             simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
             simd32uint8 clo = c & mask;
 
-            for(int q = 0; q < NQ; q++) {
+            for (int q = 0; q < NQ; q++) {
                 simd32uint8 lut = lut_cache[q];
                 simd32uint8 res0 = lut.lookup_2_lanes(clo);
                 simd32uint8 res1 = lut.lookup_2_lanes(chi);
@@ -76,9 +72,8 @@ void kernel_accumulate_block(
         }
     }
 
-    for(int q = 0; q < NQ; q++) {
+    for (int q = 0; q < NQ; q++) {
         for (int b = 0; b < BB; b++) {
-
             accu[q][b][0] -= accu[q][b][1] << 8;
             simd16uint16 dis0 = combine2x2(accu[q][b][0], accu[q][b][1]);
 
@@ -88,19 +83,15 @@ void kernel_accumulate_block(
             res.handle(q, b, dis0, dis1);
         }
     }
-
-
 }
 
-
-template<int NQ, int BB, class ResultHandler>
+template <int NQ, int BB, class ResultHandler>
 void accumulate_fixed_blocks(
         size_t nb,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     constexpr int bbs = 32 * BB;
     for (int64_t j0 = 0; j0 < nb; j0 += bbs) {
         FixedStorageHandler<NQ, 2 * BB> res2;
@@ -111,29 +102,28 @@ void accumulate_fixed_blocks(
     }
 }
 
-
 } // anonymous namespace
 
-template<class ResultHandler>
+template <class ResultHandler>
 void pq4_accumulate_loop(
         int nq,
-        size_t nb, int bbs,
+        size_t nb,
+        int bbs,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res)
-{
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res) {
     FAISS_THROW_IF_NOT(is_aligned_pointer(codes));
     FAISS_THROW_IF_NOT(is_aligned_pointer(LUT));
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
 
-#define DISPATCH(NQ, BB) \
-   case NQ * 1000 + BB: \
-    accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res);  \
-    break
+#define DISPATCH(NQ, BB)                                           \
+    case NQ * 1000 + BB:                                           \
+        accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res); \
+        break
 
-    switch(nq * 1000 + bbs / 32) {
+    switch (nq * 1000 + bbs / 32) {
         DISPATCH(1, 1);
         DISPATCH(1, 2);
         DISPATCH(1, 3);
@@ -143,26 +133,28 @@ void pq4_accumulate_loop(
         DISPATCH(2, 2);
         DISPATCH(3, 1);
         DISPATCH(4, 1);
-    default:
-        FAISS_THROW_FMT("nq=%d bbs=%d not instantiated", nq, bbs);
+        default:
+            FAISS_THROW_FMT("nq=%d bbs=%d not instantiated", nq, bbs);
     }
 #undef DISPATCH
-
 }
 
 // explicit template instantiations
 
+#define INSTANTIATE_ACCUMULATE(TH, C, with_id_map)         \
+    template void pq4_accumulate_loop<TH<C, with_id_map>>( \
+            int,                                           \
+            size_t,                                        \
+            int,                                           \
+            int,                                           \
+            const uint8_t*,                                \
+            const uint8_t*,                                \
+            TH<C, with_id_map>&);
 
-
-
-#define INSTANTIATE_ACCUMULATE(TH, C, with_id_map) \
-template void pq4_accumulate_loop<TH<C, with_id_map>> \
-    (int, size_t, int, int, const uint8_t *, const uint8_t *, TH<C, with_id_map> &);
-
-#define INSTANTIATE_3(C, with_id_map) \
-INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map) \
-INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map) \
-INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map) \
+#define INSTANTIATE_3(C, with_id_map)                           \
+    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map) \
+    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map)         \
+    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map)
 
 using Csi = CMax<uint16_t, int>;
 INSTANTIATE_3(Csi, false);
@@ -174,7 +166,4 @@ INSTANTIATE_3(Csl, true);
 using CslMin = CMin<uint16_t, int64_t>;
 INSTANTIATE_3(CslMin, true);
 
-
-
 } // namespace faiss
-

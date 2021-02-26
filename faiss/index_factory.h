@@ -16,10 +16,11 @@ namespace faiss {
 
 /** Build and index with the sequence of processing steps described in
  *  the string. */
-Index *index_factory (int d, const char *description,
-                      MetricType metric = METRIC_L2);
+Index* index_factory(
+        int d,
+        const char* description,
+        MetricType metric = METRIC_L2);
 
-IndexBinary *index_binary_factory (int d, const char *description);
+IndexBinary* index_binary_factory(int d, const char* description);
 
-
-}
+} // namespace faiss

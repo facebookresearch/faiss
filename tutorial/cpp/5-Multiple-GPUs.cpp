@@ -16,26 +16,25 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 
-
 int main() {
-    int d = 64;                            // dimension
-    int nb = 100000;                       // database size
-    int nq = 10000;                        // nb of queries
+    int d = 64;      // dimension
+    int nb = 100000; // database size
+    int nq = 10000;  // nb of queries
 
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
 
-    float *xb = new float[d * nb];
-    float *xq = new float[d * nq];
+    float* xb = new float[d * nb];
+    float* xq = new float[d * nq];
 
-    for(int i = 0; i < nb; i++) {
-        for(int j = 0; j < d; j++)
+    for (int i = 0; i < nb; i++) {
+        for (int j = 0; j < d; j++)
             xb[d * i + j] = distrib(rng);
         xb[d * i] += i / 1000.;
     }
 
-    for(int i = 0; i < nq; i++) {
-        for(int j = 0; j < d; j++)
+    for (int i = 0; i < nq; i++) {
+        for (int j = 0; j < d; j++)
             xq[d * i + j] = distrib(rng);
         xq[d * i] += i / 1000.;
     }
@@ -46,59 +45,55 @@ int main() {
 
     std::vector<faiss::gpu::GpuResourcesProvider*> res;
     std::vector<int> devs;
-    for(int i = 0; i < ngpus; i++) {
+    for (int i = 0; i < ngpus; i++) {
         res.push_back(new faiss::gpu::StandardGpuResources);
         devs.push_back(i);
     }
 
     faiss::IndexFlatL2 cpu_index(d);
 
-    faiss::Index *gpu_index =
-        faiss::gpu::index_cpu_to_gpu_multiple(
-            res,
-            devs,
-            &cpu_index
-        );
+    faiss::Index* gpu_index =
+            faiss::gpu::index_cpu_to_gpu_multiple(res, devs, &cpu_index);
 
     printf("is_trained = %s\n", gpu_index->is_trained ? "true" : "false");
-    gpu_index->add(nb, xb);  // add vectors to the index
+    gpu_index->add(nb, xb); // add vectors to the index
     printf("ntotal = %ld\n", gpu_index->ntotal);
 
     int k = 4;
 
-    {       // search xq
-        long *I = new long[k * nq];
-        float *D = new float[k * nq];
+    { // search xq
+        long* I = new long[k * nq];
+        float* D = new float[k * nq];
 
         gpu_index->search(nq, xq, k, D, I);
 
         // print results
         printf("I (5 first results)=\n");
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < k; j++)
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
                 printf("%5ld ", I[i * k + j]);
             printf("\n");
         }
 
         printf("I (5 last results)=\n");
-        for(int i = nq - 5; i < nq; i++) {
-            for(int j = 0; j < k; j++)
+        for (int i = nq - 5; i < nq; i++) {
+            for (int j = 0; j < k; j++)
                 printf("%5ld ", I[i * k + j]);
             printf("\n");
         }
 
-        delete [] I;
-        delete [] D;
+        delete[] I;
+        delete[] D;
     }
 
     delete gpu_index;
 
-    for(int i = 0; i < ngpus; i++) {
+    for (int i = 0; i < ngpus; i++) {
         delete res[i];
     }
 
-    delete [] xb;
-    delete [] xq;
+    delete[] xb;
+    delete[] xq;
 
     return 0;
 }

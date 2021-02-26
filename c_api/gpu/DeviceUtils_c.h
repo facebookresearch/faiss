@@ -11,9 +11,9 @@
 #ifndef FAISS_DEVICE_UTILS_C_H
 #define FAISS_DEVICE_UTILS_C_H
 
-#include <cuda_runtime_api.h>
+#include <c_api/faiss_c.h>
 #include <cublas.h>
-#include "faiss_c.h"
+#include <cuda_runtime_api.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,6 @@ int faiss_gpu_profiler_stop();
 /// Synchronizes the CPU against all devices (equivalent to
 /// cudaDeviceSynchronize for each device)
 int faiss_gpu_sync_all_devices();
-
 
 #ifdef __cplusplus
 }

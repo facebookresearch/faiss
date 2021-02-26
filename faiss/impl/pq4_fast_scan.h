@@ -20,9 +20,7 @@
  * parallel compile times. Templates are instanciated explicitly.
  */
 
-
 namespace faiss {
-
 
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
@@ -36,11 +34,13 @@ namespace faiss {
  * @param blocks  output array, size nb * nsq / 2.
  */
 void pq4_pack_codes(
-        const uint8_t *codes,
-        size_t ntotal, size_t M,
-        size_t nb, size_t bbs, size_t M2,
-        uint8_t * blocks
-);
+        const uint8_t* codes,
+        size_t ntotal,
+        size_t M,
+        size_t nb,
+        size_t bbs,
+        size_t M2,
+        uint8_t* blocks);
 
 /** Same as pack_codes but write in a given range of the output,
  * leaving the rest untouched. Assumes allocated entries are 0 on input.
@@ -51,12 +51,13 @@ void pq4_pack_codes(
  * @param blocks  output array, size at least ceil(i1 / bbs) * bbs * nsq / 2
  */
 void pq4_pack_codes_range(
-        const uint8_t *codes,
+        const uint8_t* codes,
         size_t M,
-        size_t i0, size_t i1,
-        size_t bbs, size_t M2,
-        uint8_t * blocks
-);
+        size_t i0,
+        size_t i1,
+        size_t bbs,
+        size_t M2,
+        uint8_t* blocks);
 
 /** get a single element from a packed codes table
  *
@@ -64,9 +65,11 @@ void pq4_pack_codes_range(
  * @param sq       subquantizer (< nsq)
  */
 uint8_t pq4_get_packed_element(
-        const uint8_t *data, size_t bbs, size_t nsq,
-        size_t i, size_t sq
-);
+        const uint8_t* data,
+        size_t bbs,
+        size_t nsq,
+        size_t i,
+        size_t sq);
 
 /** Pack Look-up table for consumption by the kernel.
  *
@@ -75,13 +78,7 @@ uint8_t pq4_get_packed_element(
  * @param src     input array, size (nq, 16)
  * @param dest    output array, size (nq, 16)
  */
-void pq4_pack_LUT(
-        int nq, int nsq,
-        const uint8_t *src,
-        uint8_t *dest
-);
-
-
+void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
 
 /** Loop over database elements and accumulate results into result handler
  *
@@ -92,16 +89,15 @@ void pq4_pack_LUT(
  * @param codes   packed codes array
  * @param LUT     packed look-up table
  */
-template<class ResultHandler>
+template <class ResultHandler>
 void pq4_accumulate_loop(
         int nq,
-        size_t nb, int bbs,
+        size_t nb,
+        int bbs,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res);
-
-
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res);
 
 /* qbs versions, supported only for bbs=32.
  *
@@ -115,8 +111,7 @@ void pq4_accumulate_loop(
  * nq = 3 + 2 + 2 + 1 = 6 queries. For a given total block size, the optimal
  * decomposition into sub-blocks (measured empirically) is given by
  * preferred_qbs().
-*/
-
+ */
 
 /* compute the number of queries from a base-16 decomposition */
 int pq4_qbs_to_nq(int qbs);
@@ -133,18 +128,16 @@ int pq4_preferred_qbs(int nq);
  * @param dest    output array, size (nq, 16)
  * @return nq
  */
-int pq4_pack_LUT_qbs(
-        int fqbs, int nsq,
-        const uint8_t *src,
-        uint8_t *dest
-);
+int pq4_pack_LUT_qbs(int fqbs, int nsq, const uint8_t* src, uint8_t* dest);
 
-/** Same as pq4_pack_LUT_qbs, except the source vectors are remapped with q_map */
+/** Same as pq4_pack_LUT_qbs, except the source vectors are remapped with q_map
+ */
 int pq4_pack_LUT_qbs_q_map(
-        int qbs, int nsq,
-        const uint8_t *src,
-        const int * q_map,
-        uint8_t *dest);
+        int qbs,
+        int nsq,
+        const uint8_t* src,
+        const int* q_map,
+        uint8_t* dest);
 
 /** Run accumulation loop.
  *
@@ -155,15 +148,13 @@ int pq4_pack_LUT_qbs_q_map(
  * @param LUT     look-up table (packed)
  * @param res     call-back for the resutls
  */
-template<class ResultHandler>
+template <class ResultHandler>
 void pq4_accumulate_loop_qbs(
         int qbs,
         size_t nb,
         int nsq,
-        const uint8_t *codes,
-        const uint8_t *LUT,
-        ResultHandler & res);
-
-
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res);
 
 } // namespace faiss

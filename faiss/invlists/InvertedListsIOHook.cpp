@@ -7,9 +7,9 @@
 
 #include <faiss/invlists/InvertedListsIOHook.h>
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
-#include <faiss/impl/FaissAssert.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -17,24 +17,21 @@
 #include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_MSC_VER
 
-
 namespace faiss {
-
 
 /**********************************************************
  * InvertedListIOHook's
  **********************************************************/
 
 InvertedListsIOHook::InvertedListsIOHook(
-        const std::string & key, const std::string & classname):
-    key(key), classname(classname)
-{}
+        const std::string& key,
+        const std::string& classname)
+        : key(key), classname(classname) {}
 
 namespace {
 
 /// std::vector that deletes its contents
-struct IOHookTable: std::vector<InvertedListsIOHook*> {
-
+struct IOHookTable : std::vector<InvertedListsIOHook*> {
     IOHookTable() {
 #ifndef _MSC_VER
         push_back(new OnDiskInvertedListsIOHook());
@@ -43,7 +40,7 @@ struct IOHookTable: std::vector<InvertedListsIOHook*> {
     }
 
     ~IOHookTable() {
-        for (auto x: *this) {
+        for (auto x : *this) {
             delete x;
         }
     }
@@ -51,44 +48,41 @@ struct IOHookTable: std::vector<InvertedListsIOHook*> {
 
 static IOHookTable InvertedListsIOHook_table;
 
-} // anonymous namepsace
+} // namespace
 
-InvertedListsIOHook* InvertedListsIOHook::lookup(int h)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
+InvertedListsIOHook* InvertedListsIOHook::lookup(int h) {
+    for (const auto& callback : InvertedListsIOHook_table) {
         if (h == fourcc(callback->key)) {
             return callback;
         }
     }
-    FAISS_THROW_FMT (
-        "read_InvertedLists: could not load ArrayInvertedLists as "
-        "%08x (\"%s\")", h, fourcc_inv_printable(h).c_str()
-    );
+    FAISS_THROW_FMT(
+            "read_InvertedLists: could not load ArrayInvertedLists as "
+            "%08x (\"%s\")",
+            h,
+            fourcc_inv_printable(h).c_str());
 }
 
-InvertedListsIOHook* InvertedListsIOHook::lookup_classname(const std::string & classname)
-{
-    for(const auto & callback: InvertedListsIOHook_table) {
+InvertedListsIOHook* InvertedListsIOHook::lookup_classname(
+        const std::string& classname) {
+    for (const auto& callback : InvertedListsIOHook_table) {
         if (callback->classname == classname) {
             return callback;
         }
     }
-    FAISS_THROW_FMT (
+    FAISS_THROW_FMT(
             "read_InvertedLists: could not find classname %s",
-            classname.c_str()
-    );
+            classname.c_str());
 }
 
-void InvertedListsIOHook::add_callback(InvertedListsIOHook *cb)
-{
+void InvertedListsIOHook::add_callback(InvertedListsIOHook* cb) {
     InvertedListsIOHook_table.push_back(cb);
 }
 
-void InvertedListsIOHook::print_callbacks()
-{
+void InvertedListsIOHook::print_callbacks() {
     printf("registered %zd InvertedListsIOHooks:\n",
-          InvertedListsIOHook_table.size());
-    for(const auto & cb: InvertedListsIOHook_table) {
+           InvertedListsIOHook_table.size());
+    for (const auto& cb : InvertedListsIOHook_table) {
         printf("%08x %s %s\n",
                fourcc(cb->key.c_str()),
                cb->key.c_str(),
@@ -96,11 +90,12 @@ void InvertedListsIOHook::print_callbacks()
     }
 }
 
-InvertedLists * InvertedListsIOHook::read_ArrayInvertedLists(
-        IOReader *, int ,
-        size_t , size_t ,
-        const std::vector<size_t> &) const
-{
+InvertedLists* InvertedListsIOHook::read_ArrayInvertedLists(
+        IOReader*,
+        int,
+        size_t,
+        size_t,
+        const std::vector<size_t>&) const {
     FAISS_THROW_FMT("read to array not implemented for %s", classname.c_str());
 }
 

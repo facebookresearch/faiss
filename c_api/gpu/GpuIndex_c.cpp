@@ -8,8 +8,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
+#include <c_api/gpu/GpuIndex_c.h>
 #include <faiss/gpu/GpuIndex.h>
-#include <faiss/gpu/GpuIndex_c.h>
 #include "macros_impl.h"
 
 using faiss::gpu::GpuIndexConfig;

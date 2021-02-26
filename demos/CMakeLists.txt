@@ -13,6 +13,9 @@ target_link_libraries(demo_imi_pq PRIVATE faiss)
 add_executable(demo_ivfpq_indexing EXCLUDE_FROM_ALL demo_ivfpq_indexing.cpp)
 target_link_libraries(demo_ivfpq_indexing PRIVATE faiss)
 
+add_executable(demo_nndescent EXCLUDE_FROM_ALL demo_nndescent.cpp)
+target_link_libraries(demo_nndescent PRIVATE faiss)
+
 add_executable(demo_sift1M EXCLUDE_FROM_ALL demo_sift1M.cpp)
 target_link_libraries(demo_sift1M PRIVATE faiss)
 
