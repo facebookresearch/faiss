@@ -13,7 +13,6 @@
 #ifndef FAISS_AUX_INDEX_STRUCTURES_H
 #define FAISS_AUX_INDEX_STRUCTURES_H
 
-#include <cstring>
 #include <stdint.h>
 
 #include <cstring>
