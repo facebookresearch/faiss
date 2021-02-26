@@ -228,37 +228,7 @@ struct HNSW {
             int max_size);
 };
 
-/**************************************************************
- * Auxiliary structures
- **************************************************************/
 
-/// set implementation optimized for fast access.
-struct VisitedTable {
-    std::vector<uint8_t> visited;
-    int visno;
-
-    explicit VisitedTable(int size) : visited(size), visno(1) {}
-
-    /// set flog #no to true
-    void set(int no) {
-        visited[no] = visno;
-    }
-
-    /// get flag #no
-    bool get(int no) const {
-        return visited[no] == visno;
-    }
-
-    /// reset all flags to false
-    void advance() {
-        visno++;
-        if (visno == 250) {
-            // 250 rather than 255 because sometimes we use visno and visno+1
-            memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
-            visno = 1;
-        }
-    }
-};
 
 struct HNSWStats {
     size_t n1, n2, n3;

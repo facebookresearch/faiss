@@ -370,6 +370,61 @@ class TestSQByte(unittest.TestCase):
                 self.subtest_8bit_direct(metric_type, d)
 
 
+class TestNNDescent(unittest.TestCase):
+
+    def test_L1(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.83, 0.92, 0.95]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_L1, 10, search_L, threshold)
+
+    def test_L2(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.83, 0.92, 0.95]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_L2, 10, search_L, threshold)
+
+    def test_IP(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.80, 0.90, 0.93]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_INNER_PRODUCT, 10, search_L, threshold)
+
+    def subtest(self, d, metric, topk, search_L, threshold):
+        metric_names = {faiss.METRIC_L1: 'L1',
+                        faiss.METRIC_L2: 'L2',
+                        faiss.METRIC_INNER_PRODUCT: 'IP'}
+        topk = 10
+        nt, nb, nq = 2000, 1000, 200
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        gt_index = faiss.IndexFlat(d, metric)
+        gt_index.add(xb)
+        gt_D, gt_I = gt_index.search(xq, topk)
+
+        K = 16
+        index = faiss.IndexNNDescentFlat(d, K, metric)
+        index.nndescent.S = 10
+        index.nndescent.R = 32
+        index.nndescent.L = K + 20
+        index.nndescent.iter = 5
+        index.verbose = False
+
+        index.nndescent.search_L = search_L;
+
+        index.add(xb)
+        D, I = index.search(xq, topk)
+        recalls = 0
+        for i in range(nq):
+            for j in range(topk):
+                for k in range(topk):
+                    if I[i, j] == gt_I[i, k]:
+                        recalls += 1
+                        break
+        recall = 1.0 * recalls / (nq * topk)
+        print('Metric: {}, L: {}, Recall@{}: {}'.format(
+            metric_names[metric], search_L, topk, recall))
+        assert recall > threshold, '{} <= {}'.format(recall, threshold)
+
 
 class TestPQFlavors(unittest.TestCase):
 
