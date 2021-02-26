@@ -131,6 +131,14 @@ struct IndexBinaryIVF : IndexBinary {
             int radius,
             RangeSearchResult* result) const override;
 
+    void range_search_preassigned(
+            idx_t n,
+            const uint8_t* x,
+            int radius,
+            const idx_t* assign,
+            const int32_t* centroid_dis,
+            RangeSearchResult* result) const;
+
     void reconstruct(idx_t key, uint8_t* recons) const override;
 
     /** Reconstruct a subset of the indexed vectors.

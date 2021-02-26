@@ -11,6 +11,7 @@ import platform
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
 from faiss.contrib import evaluation
+from faiss.contrib import ivf_tools
 
 from common import get_dataset_2
 try:
@@ -265,3 +266,118 @@ class TestRangeEval(unittest.TestCase):
 
             np.testing.assert_array_almost_equal(ref_precisions, precisions)
             np.testing.assert_array_almost_equal(ref_recalls, recalls)
+
+
+class TestPreassigned(unittest.TestCase):
+
+    def test_float(self):
+        ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
+
+        d = ds.d
+        xt = ds.get_train()
+        xq = ds.get_queries()
+        xb = ds.get_database()
+
+        # define alternative quantizer on the 20 first dims of vectors
+        km = faiss.Kmeans(20, 50)
+        km.train(xt[:, :20].copy())
+        alt_quantizer = km.index
+
+        index = faiss.index_factory(d, "IVF50,PQ16np")
+        index.by_residual = False
+
+        # (optional) fake coarse quantizer
+        fake_centroids = np.zeros((index.nlist, index.d), dtype="float32")
+        index.quantizer.add(fake_centroids)
+
+        # train the PQ part
+        index.train(xt)
+
+        # add elements xb
+        a = alt_quantizer.search(xb[:, :20].copy(), 1)[1].ravel()
+        ivf_tools.add_preassigned(index, xb, a)
+
+        # search elements xq, increase nprobe, check 4 first results w/ groundtruth
+        prev_inter_perf = 0
+        for nprobe in 1, 10, 20:
+
+            index.nprobe = nprobe
+            a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
+            D, I = ivf_tools.search_preassigned(index, xq, 4, a)
+            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
+            self.assertTrue(inter_perf >= prev_inter_perf)
+            prev_inter_perf = inter_perf
+
+        # test range search
+
+        index.nprobe = 20
+
+        a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
+
+        # just to find a reasonable radius
+        D, I = ivf_tools.search_preassigned(index, xq, 4, a)
+        radius = D.max() * 1.01
+
+        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius, a)
+
+        # with that radius the k-NN results are a subset of the range search results
+        for q in range(len(xq)):
+            l0, l1 = lims[q], lims[q + 1]
+            self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
+
+    def test_binary(self):
+        ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
+
+        d = ds.d
+        xt = ds.get_train()
+        xq = ds.get_queries()
+        xb = ds.get_database()
+
+        # define alternative quantizer on the 20 first dims of vectors (will be in float)
+        km = faiss.Kmeans(20, 50)
+        km.train(xt[:, :20].copy())
+        alt_quantizer = km.index
+
+        binarizer = faiss.index_factory(d, "ITQ,LSHt")
+        binarizer.train(xt)
+
+        xb_bin = binarizer.sa_encode(xb)
+        xq_bin = binarizer.sa_encode(xq)
+
+        index = faiss.index_binary_factory(d, "BIVF200")
+
+        fake_centroids = np.zeros((index.nlist, index.d // 8), dtype="uint8")
+        index.quantizer.add(fake_centroids)
+        index.is_trained = True
+
+        # add elements xb
+        a = alt_quantizer.search(xb[:, :20].copy(), 1)[1].ravel()
+        ivf_tools.add_preassigned(index, xb_bin, a)
+
+        # search elements xq, increase nprobe, check 4 first results w/ groundtruth
+        prev_inter_perf = 0
+        for nprobe in 1, 10, 20:
+
+            index.nprobe = nprobe
+            a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
+            D, I = ivf_tools.search_preassigned(index, xq_bin, 4, a)
+            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
+            self.assertTrue(inter_perf >= prev_inter_perf)
+            prev_inter_perf = inter_perf
+
+        # test range search
+
+        index.nprobe = 20
+
+        a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
+
+        # just to find a reasonable radius
+        D, I = ivf_tools.search_preassigned(index, xq_bin, 4, a)
+        radius = int(D.max() + 1)
+
+        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq_bin, radius, a)
+
+        # with that radius the k-NN results are a subset of the range search results
+        for q in range(len(xq)):
+            l0, l1 = lims[q], lims[q + 1]
+            self.assertTrue(set(I[q]) <= set(IR[l0:l1]))

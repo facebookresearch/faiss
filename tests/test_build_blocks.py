@@ -637,5 +637,48 @@ class TestSWIGWrap(unittest.TestCase):
         faiss.vector_to_array(idx.id_map)
 
 
+class TestNNDescentKNNG(unittest.TestCase):
+
+    def test_knng_L2(self):
+        self.subtest(32, 10, faiss.METRIC_L2)
+
+    def test_knng_IP(self):
+        self.subtest(32, 10, faiss.METRIC_INNER_PRODUCT)
+
+    def subtest(self, d, K, metric):
+        metric_names = {faiss.METRIC_L1: 'L1',
+                        faiss.METRIC_L2: 'L2',
+                        faiss.METRIC_INNER_PRODUCT: 'IP'}
+
+        nb = 1000
+        _, xb, _ = get_dataset_2(d, 0, nb, 0)
+
+        _, knn = faiss.knn(xb, xb, K + 1, metric)
+        knn = knn[:, 1:]
+
+        index = faiss.IndexNNDescentFlat(d, K, metric)
+        index.nndescent.S = 10
+        index.nndescent.R = 32
+        index.nndescent.L = K + 20
+        index.nndescent.iter = 5
+        index.verbose = True
+
+        index.add(xb)
+        graph = index.nndescent.final_graph
+        graph = faiss.vector_to_array(graph)
+        graph = graph.reshape(nb, K)
+
+        recalls = 0
+        for i in range(nb):
+            for j in range(K):
+                for k in range(K):
+                    if graph[i, j] == knn[i, k]:
+                        recalls += 1
+                        break
+        recall = 1.0 * recalls / (nb * K)
+        print('Metric: {}, knng accuracy: {}'.format(metric_names[metric], recall))
+        assert recall > 0.99
+
+
 if __name__ == '__main__':
     unittest.main()

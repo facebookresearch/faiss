@@ -16,6 +16,7 @@
 #include <cstring>
 #include <stdint.h>
 
+#include <cstring>
 #include <memory>
 #include <mutex>
 #include <unordered_set>
@@ -270,7 +271,6 @@ struct VisitedTable {
         }
     }
 };
-
 
 }; // namespace faiss
 
