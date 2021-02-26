@@ -2476,6 +2476,75 @@
     <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>
     <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IndexNNDescent" kind="struct"><name>faiss::IndexNNDescent</name>
+    <member refid="structfaiss_1_1IndexNNDescent_1a548293c07bf7047a4c7995ee5def04a8" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ac91c79b77462a85ac82bcea98bde8bb3" kind="typedef"><name>idx_t</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1abbb67095a45de116b553cd4be872440f" kind="variable"><name>nndescent</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1aefe928f763b3fd4c8ae87b061b7413b3" kind="variable"><name>own_fields</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a93dbed36e0d306e9c362ba0e0ab5e822" kind="variable"><name>storage</name></member>
+    <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ac5d1820dfd93ebb376b9e30dc01e3992" kind="function"><name>IndexNNDescent</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a41fc13e13ab514788344845f9c76615c" kind="function"><name>IndexNNDescent</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ad34fa7fdf2b021e886decb05b0d0aa60" kind="function"><name>~IndexNNDescent</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a37aa303f2517a2d160eb308081c021fb" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1adefb0a4431d892410634129061fa5766" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ad2111361ac164b69f4658be446845f88" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
+    <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
+    <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>
+    <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1IndexNNDescentFlat" kind="struct"><name>faiss::IndexNNDescentFlat</name>
+    <member refid="structfaiss_1_1IndexNNDescentFlat_1a0a63f97ce7bf1e52c490333d73348fd0" kind="function"><name>IndexNNDescentFlat</name></member>
+    <member refid="structfaiss_1_1IndexNNDescentFlat_1ad9fde378040894d87bd7a74974bd600b" kind="function"><name>IndexNNDescentFlat</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a37aa303f2517a2d160eb308081c021fb" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1adefb0a4431d892410634129061fa5766" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ad2111361ac164b69f4658be446845f88" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
+    <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
+    <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>
+    <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a548293c07bf7047a4c7995ee5def04a8" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1ac91c79b77462a85ac82bcea98bde8bb3" kind="typedef"><name>idx_t</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1abbb67095a45de116b553cd4be872440f" kind="variable"><name>nndescent</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1aefe928f763b3fd4c8ae87b061b7413b3" kind="variable"><name>own_fields</name></member>
+    <member refid="structfaiss_1_1IndexNNDescent_1a93dbed36e0d306e9c362ba0e0ab5e822" kind="variable"><name>storage</name></member>
+    <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IndexPQ" kind="struct"><name>faiss::IndexPQ</name>
     <member refid="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe" kind="enum"><name>Search_type_t</name></member>
     <member refid="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fea00f77a4f8209c30c3ef37ccfd3d0c10a" kind="enumvalue"><name>ST_PQ</name></member>
@@ -4377,6 +4446,8 @@
   <compound refid="IndexLattice_8h" kind="file"><name>IndexLattice.h</name>
   </compound>
   <compound refid="IndexLSH_8h" kind="file"><name>IndexLSH.h</name>
+  </compound>
+  <compound refid="IndexNNDescent_8h" kind="file"><name>IndexNNDescent.h</name>
   </compound>
   <compound refid="IndexPQ_8h" kind="file"><name>IndexPQ.h</name>
   </compound>

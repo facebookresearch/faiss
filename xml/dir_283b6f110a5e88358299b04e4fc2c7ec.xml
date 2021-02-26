@@ -29,6 +29,7 @@
     <innerfile refid="IndexIVFSpectralHash_8h">IndexIVFSpectralHash.h</innerfile>
     <innerfile refid="IndexLattice_8h">IndexLattice.h</innerfile>
     <innerfile refid="IndexLSH_8h">IndexLSH.h</innerfile>
+    <innerfile refid="IndexNNDescent_8h">IndexNNDescent.h</innerfile>
     <innerfile refid="IndexPQ_8h">IndexPQ.h</innerfile>
     <innerfile refid="IndexPQFastScan_8h">IndexPQFastScan.h</innerfile>
     <innerfile refid="IndexPreTransform_8h">IndexPreTransform.h</innerfile>

@@ -28,7 +28,7 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="20">
+      <node id="21">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
       </node>
@@ -40,7 +40,7 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
@@ -78,7 +78,7 @@
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="22">
+      <node id="23">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
@@ -113,11 +113,11 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -157,10 +157,16 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
       </node>
       <node id="16">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
+      </node>
+      <node id="20">
+        <label>faiss/IndexNNDescent.h</label>
+        <link refid="IndexNNDescent_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
