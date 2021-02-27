@@ -151,7 +151,7 @@ NNDescent::NNDescent(const int d, const int K) : K(K), d(d), rng(2021) {
     has_built = false;
     S = 10;
     R = 100;
-    L = K;
+    L = K + 50;
     iter = 10;
     search_L = 0;
 }

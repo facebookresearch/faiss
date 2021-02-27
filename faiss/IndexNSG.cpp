@@ -235,6 +235,7 @@ void IndexNSG::reconstruct(idx_t key, float* recons) const {
 
 void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
     idx_t total_count = 0;
+
 #pragma omp parallel for reduction(+ : total_count)
     for (idx_t i = 0; i < n; i++) {
         int count = 0;
@@ -253,6 +254,10 @@ void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
                 "has %ld invalid entries\n",
                 total_count);
     }
+    FAISS_THROW_IF_NOT_MSG(
+            total_count < n / 10,
+            "There are too much invalid entries in the knn graph. "
+            "It may be an invalid knn graph.");
 }
 
 /**************************************************************

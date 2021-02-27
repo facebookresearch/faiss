@@ -626,8 +626,10 @@ class TestNSG(unittest.TestCase):
         count = index.nsg.dfs(vt, index.nsg.enterpoint)
         self.assertEqual(count, nb)
 
-    def subtest_add(self, build_type, metric=faiss.METRIC_L2):
+    def subtest_add(self, build_type, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
@@ -641,12 +643,14 @@ class TestNSG(unittest.TestCase):
         Dnsg, Insg = index.search(self.xq, 1)
 
         recalls = (Iref == Insg).sum()
-        print('nb equal: ', recalls)
-        self.assertGreaterEqual(recalls, 460)
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
 
-    def subtest_build(self, knn_graph, metric=faiss.METRIC_L2):
+    def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
@@ -659,29 +663,29 @@ class TestNSG(unittest.TestCase):
         Dnsg, Insg = index.search(self.xq, 1)
 
         recalls = (Iref == Insg).sum()
-        print('nb equal: ', recalls)
-        self.assertGreaterEqual(recalls, 460)
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
 
     def test_add_bruteforce_L2(self):
-        self.subtest_add(0, faiss.METRIC_L2)
+        self.subtest_add(0, 475, faiss.METRIC_L2)
 
     def test_add_nndescent_L2(self):
-        self.subtest_add(1, faiss.METRIC_L2)
+        self.subtest_add(1, 475, faiss.METRIC_L2)
 
     def test_add_bruteforce_IP(self):
-        self.subtest_add(0, faiss.METRIC_INNER_PRODUCT)
+        self.subtest_add(0, 480, faiss.METRIC_INNER_PRODUCT)
 
     def test_add_nndescent_IP(self):
-        self.subtest_add(1, faiss.METRIC_INNER_PRODUCT)
+        self.subtest_add(1, 480, faiss.METRIC_INNER_PRODUCT)
 
     def test_build_L2(self):
         knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        self.subtest_build(knn_graph, faiss.METRIC_L2)
+        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
 
     def test_build_IP(self):
         knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
-        self.subtest_build(knn_graph, faiss.METRIC_INNER_PRODUCT)
+        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
 
     def test_build_invalid_knng(self):
         """Make some invalid entries in the input knn graph.
@@ -690,12 +694,18 @@ class TestNSG(unittest.TestCase):
         to handel this.
         """
         knn_graph = self.make_knn_graph(faiss.METRIC_L2)
-        knn_graph[:, 5] = -111
-        self.subtest_build(knn_graph, faiss.METRIC_L2)
+        knn_graph[:100, 5] = -111
+        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
+
+        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
+        knn_graph[:100, 5] = -111
+        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
 
     def test_reset(self):
         """test IndexNSG.reset()"""
         d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
 
         metric = faiss.METRIC_L2
         flat_index = faiss.IndexFlat(d, metric)
@@ -709,15 +719,16 @@ class TestNSG(unittest.TestCase):
         index.add(self.xb)
         Dnsg, Insg = index.search(self.xq, 1)
         recalls = (Iref == Insg).sum()
-        print('nb equal: ', recalls)
-        self.assertGreaterEqual(recalls, 460)
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
 
         index.reset()
         index.add(self.xb)
         Dnsg, Insg = index.search(self.xq, 1)
         recalls = (Iref == Insg).sum()
-        self.assertGreaterEqual(recalls, 460)
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
 
 

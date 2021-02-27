@@ -95,7 +95,7 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
     // find the location to insert
     int left = 0, right = K - 1;
     if (addr[left].distance > nn.distance) {
-        memmove((char*)&addr[left + 1], &addr[left], K * sizeof(Neighbor));
+        memmove(&addr[left + 1], &addr[left], K * sizeof(Neighbor));
         addr[left] = nn;
         return left;
     }
@@ -125,7 +125,7 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
     if (addr[left].id == nn.id || addr[right].id == nn.id) {
         return K + 1;
     }
-    memmove((char*)&addr[right + 1],
+    memmove(&addr[right + 1],
             &addr[right],
             (K - right) * sizeof(Neighbor));
     addr[right] = nn;
@@ -133,8 +133,8 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
 }
 
 NSG::NSG(int R) : R(R), rng(0x0903) {
-    L = R;
-    C = R * 10;
+    L = R + 32;
+    C = R + 100;
     search_L = 16;
     ntotal = 0;
     is_built = false;
