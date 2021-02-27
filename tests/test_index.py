@@ -598,7 +598,7 @@ class TestNSG(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kwargs)
         d = 32
         nt = 0
-        nb = 1500
+        nb = 15000
         nq = 500
         self.GK = 32
 

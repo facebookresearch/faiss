@@ -192,7 +192,8 @@ void NSG::build(
         }
     }
 
-    int num_attached = tree_grow(storage);
+    // int num_attached = tree_grow(storage);
+    int num_attached = 0;
     check_graph();
     is_built = true;
 
@@ -595,43 +596,47 @@ void NSG::attach_unlinked(Index* storage, VisitedTable& vt) {
         return; // No Unlinked Node
     }
 
-    std::vector<Neighbor> tmp;
-    std::vector<Node> pool;
+    // std::vector<Neighbor> tmp;
+    // std::vector<Node> pool;
 
-    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
-    std::unique_ptr<float[]> vec(new float[storage->d]);
+    // std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
+    // std::unique_ptr<float[]> vec(new float[storage->d]);
 
-    storage->reconstruct(id, vec.get());
-    dis->set_query(vec.get());
+    // storage->reconstruct(id, vec.get());
+    // dis->set_query(vec.get());
 
-    {
-        VisitedTable vt2(ntotal);
-        // Collect the visited nodes into pool
-        search_on_graph<true>(
-                *final_graph, *dis, vt2, enterpoint, L, tmp, pool);
-    }
+    // {
+    //     VisitedTable vt2(ntotal);
+    //     // Collect the visited nodes into pool
+    //     search_on_graph<true>(
+    //             *final_graph, *dis, vt2, enterpoint, L, tmp, pool);
+    // }
 
-    std::sort(pool.begin(), pool.end());
+    // std::sort(pool.begin(), pool.end());
+    // int node;
+
+    // int found = 0;
+    // for (int i = 0; i < pool.size(); i++) {
+    //     if (vt.get(pool[i].id)) {
+    //         node = pool[i].id;
+    //         found = 1;
+    //         break;
+    //     }
+    // }
+
+    // if (found == 0) {
+    //     while (true) {
+    //         int rid = rng.rand_int(ntotal);
+    //         if (vt.get(rid)) {
+    //             node = rid;
+    //             break;
+    //         }
+    //     }
+    // }
     int node;
-
-    int found = 0;
-    for (int i = 0; i < pool.size(); i++) {
-        if (vt.get(pool[i].id)) {
-            node = pool[i].id;
-            found = 1;
-            break;
-        }
-    }
-
-    if (found == 0) {
-        while (true) {
-            int rid = rng.rand_int(ntotal);
-            if (vt.get(rid)) {
-                node = rid;
-                break;
-            }
-        }
-    }
+    do {
+        node = rng.rand_int(ntotal);
+    } while (node == id || !vt.get(node));
     final_graph->at(node, R - 1) = id;
 }
 
