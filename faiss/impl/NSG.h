@@ -177,14 +177,18 @@ struct NSG {
             bool verbose);
 
     // make NSG be fully connected
-    int tree_grow(Index* storage);
+    int tree_grow(Index* storage, std::vector<int>& degrees);
 
-    // count the size of connected component
+    // count the size of the connected component
     // using depth first search start by root
-    int dfs(VisitedTable& vt, int root) const;
+    int dfs(VisitedTable& vt, int root, int cnt) const;
 
     // attach one unlinked node
-    void attach_unlinked(Index* storage, VisitedTable& vt);
+    int attach_unlinked(
+            Index* storage,
+            VisitedTable& vt,
+            VisitedTable& vt2,
+            std::vector<int>& degrees);
 
     // check the integrity of the NSG built
     void check_graph() const;

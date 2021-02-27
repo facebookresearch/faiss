@@ -125,9 +125,7 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
     if (addr[left].id == nn.id || addr[right].id == nn.id) {
         return K + 1;
     }
-    memmove(&addr[right + 1],
-            &addr[right],
-            (K - right) * sizeof(Neighbor));
+    memmove(&addr[right + 1], &addr[right], (K - right) * sizeof(Neighbor));
     addr[right] = nn;
     return right;
 }
@@ -179,40 +177,54 @@ void NSG::build(
     ntotal = n;
     init_graph(storage, knn_graph);
 
+    std::vector<int> degrees(n, 0);
     {
         nsg::Graph<Node> tmp_graph(n, R);
 
         link(storage, knn_graph, tmp_graph, verbose);
 
         final_graph = std::make_shared<nsg::Graph<int>>(n, R);
+        std::fill_n(final_graph->data, n * R, EMPTY_ID);
+
+#pragma omp parallel for
         for (int i = 0; i < n; i++) {
+            int cnt = 0;
             for (int j = 0; j < R; j++) {
-                final_graph->at(i, j) = tmp_graph.at(i, j).id;
+                int id = tmp_graph.at(i, j).id;
+                if (id != EMPTY_ID) {
+                    final_graph->at(i, cnt) = id;
+                    cnt += 1;
+                }
+                degrees[i] = cnt;
             }
         }
     }
 
-    // int num_attached = tree_grow(storage);
-    int num_attached = 0;
+    int num_attached = tree_grow(storage, degrees);
     check_graph();
     is_built = true;
 
     if (verbose) {
-        int max = 0, min = 1e6;
+        int max_val = 0, min_val = 1e6;
         double avg = 0;
+
+#pragma omp parallel for reduction(max : max_val) \
+                         reduction(min : min_val) \
+                         reduction(+ : avg)
         for (int i = 0; i < n; i++) {
             int size = 0;
             while (size < R && final_graph->at(i, size) != EMPTY_ID) {
                 size += 1;
             }
-            max = std::max(size, max);
-            min = std::min(size, min);
+            max_val = std::max(size, max_val);
+            min_val = std::min(size, min_val);
             avg += size;
         }
+
         avg = avg / n;
         printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n",
-               max,
-               min,
+               max_val,
+               min_val,
                avg);
         printf("Attached nodes: %d\n", num_attached);
     }
@@ -526,31 +538,32 @@ void NSG::add_reverse_links(
     }
 }
 
-int NSG::tree_grow(Index* storage) {
+int NSG::tree_grow(Index* storage, std::vector<int>& degrees) {
     int root = enterpoint;
     VisitedTable vt(ntotal);
+    VisitedTable vt2(ntotal);
 
     int num_attached = 0;
+    int cnt = 0;
     while (true) {
-        int cnt = dfs(vt, root);
+        cnt = dfs(vt, root, cnt);
         if (cnt >= ntotal) {
             break;
         }
 
-        attach_unlinked(storage, vt);
-        vt.advance();
+        root = attach_unlinked(storage, vt, vt2, degrees);
+        vt2.advance();
         num_attached += 1;
     }
 
     return num_attached;
 }
 
-int NSG::dfs(VisitedTable& vt, int root) const {
+int NSG::dfs(VisitedTable& vt, int root, int cnt) const {
     int node = root;
     std::stack<int> stack;
     stack.push(root);
 
-    int cnt = 0;
     if (!vt.get(root)) {
         cnt++;
     }
@@ -583,7 +596,21 @@ int NSG::dfs(VisitedTable& vt, int root) const {
     return cnt;
 }
 
-void NSG::attach_unlinked(Index* storage, VisitedTable& vt) {
+int NSG::attach_unlinked(
+        Index* storage,
+        VisitedTable& vt,
+        VisitedTable& vt2,
+        std::vector<int>& degrees) {
+    /* NOTE: This implementation is slightly different from the original paper.
+     *
+     * Instead of connecting the unlinked node to the nearest point in the
+     * spanning tree which will increase the maximum degree of the graph and
+     * also make the graph hard to maintain, this implementation links the
+     * unlinked node to the nearest node of which the degree is smaller than R.
+     * It will keep the degree of all nodes to be no more than `R`.
+     */
+
+    // find one unlinked node
     int id = EMPTY_ID;
     for (int i = 0; i < ntotal; i++) {
         if (!vt.get(i)) {
@@ -593,54 +620,53 @@ void NSG::attach_unlinked(Index* storage, VisitedTable& vt) {
     }
 
     if (id == EMPTY_ID) {
-        return; // No Unlinked Node
+        return EMPTY_ID; // No Unlinked Node
     }
 
-    // std::vector<Neighbor> tmp;
-    // std::vector<Node> pool;
+    std::vector<Neighbor> tmp;
+    std::vector<Node> pool;
 
-    // std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
-    // std::unique_ptr<float[]> vec(new float[storage->d]);
+    std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
+    std::unique_ptr<float[]> vec(new float[storage->d]);
 
-    // storage->reconstruct(id, vec.get());
-    // dis->set_query(vec.get());
+    storage->reconstruct(id, vec.get());
+    dis->set_query(vec.get());
 
-    // {
-    //     VisitedTable vt2(ntotal);
-    //     // Collect the visited nodes into pool
-    //     search_on_graph<true>(
-    //             *final_graph, *dis, vt2, enterpoint, L, tmp, pool);
-    // }
+    // Collect the visited nodes into pool
+    search_on_graph<true>(
+            *final_graph, *dis, vt2, enterpoint, search_L, tmp, pool);
 
-    // std::sort(pool.begin(), pool.end());
-    // int node;
+    std::sort(pool.begin(), pool.end());
 
-    // int found = 0;
-    // for (int i = 0; i < pool.size(); i++) {
-    //     if (vt.get(pool[i].id)) {
-    //         node = pool[i].id;
-    //         found = 1;
-    //         break;
-    //     }
-    // }
-
-    // if (found == 0) {
-    //     while (true) {
-    //         int rid = rng.rand_int(ntotal);
-    //         if (vt.get(rid)) {
-    //             node = rid;
-    //             break;
-    //         }
-    //     }
-    // }
     int node;
-    do {
-        node = rng.rand_int(ntotal);
-    } while (node == id || !vt.get(node));
-    final_graph->at(node, R - 1) = id;
+    bool found = false;
+    for (int i = 0; i < pool.size(); i++) {
+        node = pool[i].id;
+        if (degrees[node] < R && node != id) {
+            found = true;
+            break;
+        }
+    }
+
+    // randomly choice annother node
+    if (!found) {
+        do {
+            node = rng.rand_int(ntotal);
+            if (vt.get(node) && degrees[node] < R && node != id) {
+                found = true;
+            }
+        } while (!found);
+    }
+
+    int pos = degrees[node];
+    final_graph->at(node, pos) = id; // replace
+    degrees[node] += 1;
+
+    return node;
 }
 
 void NSG::check_graph() const {
+#pragma omp parallel for
     for (int i = 0; i < ntotal; i++) {
         for (int j = 0; j < R; j++) {
             int id = final_graph->at(i, j);

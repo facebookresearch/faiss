@@ -598,7 +598,7 @@ class TestNSG(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kwargs)
         d = 32
         nt = 0
-        nb = 15000
+        nb = 1500
         nq = 500
         self.GK = 32
 
@@ -623,7 +623,7 @@ class TestNSG(unittest.TestCase):
 
     def subtest_connectivity(self, index, nb):
         vt = faiss.VisitedTable(nb)
-        count = index.nsg.dfs(vt, index.nsg.enterpoint)
+        count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
         self.assertEqual(count, nb)
 
     def subtest_add(self, build_type, thresh, metric=faiss.METRIC_L2):

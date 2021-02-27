@@ -189,7 +189,7 @@ void IndexNSG::add(idx_t n, const float* x) {
         IndexNNDescent index(storage, GK);
         index.nndescent.S = nndescent_S;
         index.nndescent.R = nndescent_R;
-        index.nndescent.L = nndescent_L;
+        index.nndescent.L = std::max(nndescent_L, GK + 50);
         index.nndescent.iter = nndescent_iter;
         index.verbose = verbose;
 
