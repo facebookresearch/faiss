@@ -692,6 +692,27 @@ class TestNSG(unittest.TestCase):
         self.assertGreaterEqual(recalls, 450)
         self.subtest_connectivity(index, self.xb.shape[0])
 
+    def test_reset(self):
+        d = self.xq.shape[1]
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
+        index.GK = 32
+
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+        recalls = (self.Iref == Insg).sum()
+        print('nb equal: ', recalls)
+        self.assertGreaterEqual(recalls, 460)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
+        index.reset()
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+        recalls = (self.Iref == Insg).sum()
+        self.assertGreaterEqual(recalls, 460)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
 
 class TestDistancesPositive(unittest.TestCase):
 

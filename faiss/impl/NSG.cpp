@@ -138,6 +138,7 @@ NSG::NSG(int R) : R(R), rng(0x0903) {
     search_L = 16;
     ntotal = 0;
     is_built = false;
+    srand(0x1998);
 }
 
 void NSG::search(

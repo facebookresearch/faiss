@@ -156,6 +156,7 @@ void IndexNSG::build_knng(idx_t n, const float* x, std::vector<idx_t>& knng) {
     if (build_type == 0) { // build with brute force search
         storage->add(n, x);
         ntotal = storage->ntotal;
+        FAISS_THROW_IF_NOT(ntotal == n);
         knng.resize(ntotal * (GK + 1));
 
         storage->assign(ntotal, x, knng.data(), GK + 1);
@@ -201,7 +202,7 @@ void IndexNSG::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
 
     FAISS_THROW_IF_NOT_MSG(
-            !is_built, "WARNING: NSG does not support incremental addition");
+            !is_built, "NSG does not support incremental addition");
 
     std::vector<idx_t> knng;
 
@@ -213,6 +214,7 @@ void IndexNSG::reset() {
     nsg.reset();
     storage->reset();
     ntotal = 0;
+    is_built = false;
 }
 
 void IndexNSG::reconstruct(idx_t key, float* recons) const {
