@@ -205,26 +205,23 @@ void NSG::build(
     is_built = true;
 
     if (verbose) {
-        int max_val = 0, min_val = 1e6;
+        int max = 0, min = 1e6;
         double avg = 0;
 
-#pragma omp parallel for reduction(max : max_val) \
-                         reduction(min : min_val) \
-                         reduction(+ : avg)
         for (int i = 0; i < n; i++) {
             int size = 0;
             while (size < R && final_graph->at(i, size) != EMPTY_ID) {
                 size += 1;
             }
-            max_val = std::max(size, max_val);
-            min_val = std::min(size, min_val);
+            max = std::max(size, max);
+            min = std::min(size, min);
             avg += size;
         }
 
         avg = avg / n;
         printf("Degree Statistics: Max = %d, Min = %d, Avg = %lf\n",
-               max_val,
-               min_val,
+               max,
+               min,
                avg);
         printf("Attached nodes: %d\n", num_attached);
     }

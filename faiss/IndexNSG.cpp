@@ -9,6 +9,7 @@
 
 #include <faiss/IndexNSG.h>
 
+#include <inttypes.h>
 #include <omp.h>
 
 #include <memory>
@@ -251,7 +252,7 @@ void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
     if (total_count > 0) {
         fprintf(stderr,
                 "WARNING: the input knn graph "
-                "has %ld invalid entries\n",
+                "has %" PRId64 " invalid entries\n",
                 total_count);
     }
     FAISS_THROW_IF_NOT_MSG(
