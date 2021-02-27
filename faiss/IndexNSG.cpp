@@ -40,7 +40,7 @@ IndexNSG::IndexNSG(int d, int R, MetricType metric)
           build_type(0) {
     nndescent_S = 10;
     nndescent_R = 100;
-    nndescent_L = GK + 10;
+    nndescent_L = GK + 50;
     nndescent_iter = 10;
 }
 
@@ -54,7 +54,7 @@ IndexNSG::IndexNSG(Index* storage, int R)
           build_type(0) {
     nndescent_S = 10;
     nndescent_R = 100;
-    nndescent_L = GK + 10;
+    nndescent_L = GK + 50;
     nndescent_iter = 10;
 }
 
