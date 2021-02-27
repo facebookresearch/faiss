@@ -125,48 +125,67 @@ void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int GK) {
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
-    FAISS_THROW_IF_NOT_MSG(!is_built, "The IndexNSG is already built");
+    FAISS_THROW_IF_NOT_MSG(
+            !is_built && ntotal == 0, "The IndexNSG is already built");
+
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    nsg::Graph<idx_t> knng(knn_graph, n, GK);
-
     // check the knn graph
-    idx_t count = 0;
-    for (idx_t i = 0; i < n; i++) {
-        for (int j = 0; j < GK; j++) {
-            idx_t id = knng.at(i, j);
-            if (id < 0 || id >= n) {
-                count += 1;
-            }
-        }
-    }
-    if (count > 0) {
-        fprintf(stderr,
-                "WARNING: the input knn graph "
-                "has %ld invalid entries\n",
-                count);
-    }
+    check_knn_graph(knn_graph, n, GK);
 
+    const nsg::Graph<idx_t> knng(knn_graph, n, GK);
     nsg.build(storage, n, knng, verbose);
     is_built = true;
 }
 
-void IndexNSG::build_knng(idx_t n, const float* x, std::vector<idx_t>& knng) {
+void IndexNSG::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "Please use IndexNSGFlat (or variants) "
+            "instead of IndexNSG directly");
+    FAISS_THROW_IF_NOT(is_trained);
+
+    FAISS_THROW_IF_NOT_MSG(
+            !is_built && ntotal == 0,
+            "NSG does not support incremental addition");
+
+    std::vector<idx_t> knng;
+
     if (build_type == 0) { // build with brute force search
         storage->add(n, x);
         ntotal = storage->ntotal;
         FAISS_THROW_IF_NOT(ntotal == n);
-        knng.resize(ntotal * (GK + 1));
 
+        knng.resize(ntotal * (GK + 1));
         storage->assign(ntotal, x, knng.data(), GK + 1);
 
-        for (idx_t i = 0; i < ntotal; i++) {
-            // Remove knng[i, 0], assumed that knng[i, 0] is node i itself
-            memmove(knng.data() + i * GK,
-                    knng.data() + i * (GK + 1) + 1,
-                    GK * sizeof(idx_t));
+        // Remove itself
+        // - For metric distance, we just need to remove the first neighbor
+        // - But for non-metric, e.g. inner product, we need to check
+        // - each neighbor
+        if (storage->metric_type == METRIC_INNER_PRODUCT) {
+            for (idx_t i = 0; i < ntotal; i++) {
+                int count = 0;
+                for (int j = 0; j < GK + 1; j++) {
+                    idx_t id = knng[i * (GK + 1) + j];
+                    if (id != i) {
+                        knng[i * GK + count] = id;
+                        count += 1;
+                    }
+                    if (count == GK) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            for (idx_t i = 0; i < ntotal; i++) {
+                memmove(knng.data() + i * GK,
+                        knng.data() + i * (GK + 1) + 1,
+                        GK * sizeof(idx_t));
+            }
         }
+
     } else if (build_type == 1) { // build with NNDescent
         IndexNNDescent index(storage, GK);
         index.nndescent.S = nndescent_S;
@@ -182,32 +201,26 @@ void IndexNSG::build_knng(idx_t n, const float* x, std::vector<idx_t>& knng) {
 
         // storage->add is already implicit called in IndexNSG.add
         ntotal = storage->ntotal;
+        FAISS_THROW_IF_NOT(ntotal == n);
+
         knng.resize(ntotal * GK);
 
         // cast from idx_t to int
         const int* knn_graph = index.nndescent.final_graph.data();
+#pragma omp parallel for
         for (idx_t i = 0; i < ntotal * GK; i++) {
             knng[i] = knn_graph[i];
         }
     } else {
         FAISS_THROW_MSG("build_type should be 0 or 1");
     }
-}
 
-void IndexNSG::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            storage,
-            "Please use IndexNSGFlat (or variants) "
-            "instead of IndexNSG directly");
-    FAISS_THROW_IF_NOT(is_trained);
+    // check the knn graph
+    check_knn_graph(knng.data(), n, GK);
 
-    FAISS_THROW_IF_NOT_MSG(
-            !is_built, "NSG does not support incremental addition");
-
-    std::vector<idx_t> knng;
-
-    build_knng(n, x, knng);
-    build(ntotal, x, knng.data(), GK);
+    const nsg::Graph<idx_t> knn_graph(knng.data(), n, GK);
+    nsg.build(storage, n, knn_graph, verbose);
+    is_built = true;
 }
 
 void IndexNSG::reset() {
@@ -219,6 +232,28 @@ void IndexNSG::reset() {
 
 void IndexNSG::reconstruct(idx_t key, float* recons) const {
     storage->reconstruct(key, recons);
+}
+
+void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
+    idx_t total_count = 0;
+#pragma omp parallel for reduction(+ : total_count)
+    for (idx_t i = 0; i < n; i++) {
+        int count = 0;
+        for (int j = 0; j < K; j++) {
+            idx_t id = knn_graph[i * K + j];
+            if (id < 0 || id >= n || id == i) {
+                count += 1;
+            }
+        }
+        total_count += count;
+    }
+
+    if (total_count > 0) {
+        fprintf(stderr,
+                "WARNING: the input knn graph "
+                "has %ld invalid entries\n",
+                total_count);
+    }
 }
 
 /**************************************************************

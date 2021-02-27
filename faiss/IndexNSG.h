@@ -53,8 +53,6 @@ struct IndexNSG : Index {
 
     void build(idx_t n, const float* x, idx_t* knn_graph, int GK);
 
-    void build_knng(idx_t n, const float* x, std::vector<idx_t>& knng);
-
     void add(idx_t n, const float* x) override;
 
     /// Trains the storage if needed
@@ -71,6 +69,8 @@ struct IndexNSG : Index {
     void reconstruct(idx_t key, float* recons) const override;
 
     void reset() override;
+
+    void check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const;
 };
 
 /** Flat index topped with with a NSG structure to access elements
