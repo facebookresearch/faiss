@@ -100,8 +100,8 @@ void IndexBinaryIVF::add_core(
         n_add++;
     }
     if (verbose) {
-        printf("IndexBinaryIVF::add_with_ids: added %ld / %" PRId64
-               " vectors\n",
+        printf("IndexBinaryIVF::add_with_ids: added "
+               "%" PRId64 " / %" PRId64 " vectors\n",
                n_add,
                n);
     }
