@@ -150,10 +150,11 @@ void IndexIVFPQFastScan::train_residual(idx_t n, const float* x_in) {
     }
 
     if (verbose) {
-        printf("training %zdx%zd product quantizer on %zd vectors in %dD\n",
+        printf("training %zdx%zd product quantizer on "
+               "%" PRId64 " vectors in %dD\n",
                pq.M,
                pq.ksub,
-               long(n),
+               n,
                d);
     }
     pq.verbose = verbose;
