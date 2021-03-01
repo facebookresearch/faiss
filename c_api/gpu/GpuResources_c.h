@@ -11,7 +11,7 @@
 #ifndef FAISS_GPU_RESOURCES_C_H
 #define FAISS_GPU_RESOURCES_C_H
 
-#include <cublas.h>
+#include <cublas_v2.h>
 #include <cuda_runtime_api.h>
 #include <c_api/faiss_c.h>
 
