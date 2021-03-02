@@ -5,6 +5,10 @@ orbs:
 
 jobs:
   build_linux:
+    parameters:
+      opt_level:
+        type: string
+        default: generic
     docker:
       - image: beauby/faiss-circleci:cpu
     environment:
@@ -16,6 +20,7 @@ jobs:
           name: Build faiss library
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -C build -j faiss
@@ -227,6 +232,9 @@ workflows:
     jobs:
       - build_linux:
           name: Linux
+      - build_linux:
+          name: Linux (AVX2)
+          opt_level: "avx2"
       - build_linux_gpu:
           name: Linux GPU
           requires:
