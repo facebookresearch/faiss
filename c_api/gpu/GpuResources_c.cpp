@@ -9,10 +9,11 @@
 // -*- c++ -*-
 
 #include <faiss/gpu/GpuResources.h>
-#include <c_api/gpu/GpuResources_c.h>
+#include "GpuResources_c.h"
 #include "macros_impl.h"
 
 using faiss::gpu::GpuResources;
+using faiss::gpu::GpuResourcesProvider;
 
 DEFINE_DESTRUCTOR(GpuResources)
 
@@ -114,4 +115,15 @@ int faiss_GpuResources_getAsyncCopyStreamCurrentDevice(
         *out = o;
     }
     CATCH_AND_HANDLE
+}
+
+DEFINE_DESTRUCTOR(GpuResourcesProvider)
+
+int faiss_GpuResourcesProvider_getResources(FaissGpuResourcesProvider* res,
+                                            FaissGpuResources** out) {
+  try {
+    auto o = reinterpret_cast<GpuResourcesProvider*>(res)->getResources();
+    *out = reinterpret_cast<FaissGpuResources*>(o.get());
+  }
+  CATCH_AND_HANDLE
 }

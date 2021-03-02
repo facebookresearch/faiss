@@ -12,8 +12,8 @@
 #define FAISS_STANDARD_GPURESOURCES_C_H
 
 #include <cuda_runtime_api.h>
-#include <c_api/faiss_c.h>
-#include <c_api/gpu/GpuResources_c.h>
+#include "../faiss_c.h"
+#include "GpuResources_c.h"
 
 #ifdef __cplusplus
 extern "C" {

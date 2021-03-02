@@ -13,7 +13,7 @@
 
 #include <cublas_v2.h>
 #include <cuda_runtime_api.h>
-#include <c_api/faiss_c.h>
+#include "../faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +68,13 @@ int faiss_GpuResources_syncDefaultStreamCurrentDevice(FaissGpuResources*);
 int faiss_GpuResources_getAsyncCopyStreamCurrentDevice(
         FaissGpuResources*,
         cudaStream_t*);
+
+FAISS_DECLARE_CLASS(GpuResourcesProvider)
+
+FAISS_DECLARE_DESTRUCTOR(GpuResourcesProvider)
+
+int faiss_GpuResourcesProvider_getResources(FaissGpuResourcesProvider*,
+                                            FaissGpuResources**);
 
 #ifdef __cplusplus
 }

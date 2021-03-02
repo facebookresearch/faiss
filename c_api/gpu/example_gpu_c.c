@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "AutoTune_c.h"
+#include "../AutoTune_c.h"
 #include "DeviceUtils_c.h"
 #include "GpuAutoTune_c.h"
-#include "Index_c.h"
+#include "../Index_c.h"
 #include "StandardGpuResources_c.h"
-#include "error_c.h"
-#include "index_factory_c.h"
+#include "../error_c.h"
+#include "../index_factory_c.h"
 
 #define FAISS_TRY(C)                                       \
     {                                                      \
@@ -72,7 +72,7 @@ int main() {
     FaissGpuClonerOptions* options = NULL;
     FAISS_TRY(faiss_GpuClonerOptions_new(&options));
     FAISS_TRY(faiss_index_cpu_to_gpu_with_options(
-            gpu_res, 0, cpu_index, options, &index));
+                  (FaissGpuResourcesProvider*)gpu_res, 0, cpu_index, options, &index));
 
     printf("is_trained = %s\n",
            faiss_Index_is_trained(index) ? "true" : "false");

@@ -8,7 +8,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 // -*- c++ -*-
 
-#include <c_api/gpu/DeviceUtils_c.h>
+#include "DeviceUtils_c.h"
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include "macros_impl.h"
 
