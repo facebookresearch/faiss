@@ -108,18 +108,13 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
         assert recall > 0.82, "recall = %g" % recall
 
     def test_wrapped_quantizer_HNSW(self):
-        faiss.omp_set_num_threads(1)
 
-        def bin2float(v):
-            def byte2float(byte):
-                return np.array([-1.0 + 2.0 * (byte & (1 << b) != 0)
-                                 for b in range(0, 8)])
-
-            return np.hstack([byte2float(byte) for byte in v]).astype('float32')
-
-        def floatvec2nparray(v):
-            return np.array([np.float32(v.at(i)) for i in range(0, v.size())]) \
-                     .reshape(-1, d)
+        def bin2float2d(v):
+            n, d = v.shape
+            vf = ((v.reshape(-1, 1) >> np.arange(8)) & 1).astype("float32")
+            vf *= 2
+            vf -= 1
+            return vf.reshape(n, d * 8)
 
         d = 256
         nt = 12800
@@ -135,10 +130,10 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
         clus = faiss.Clustering(d, nlist)
         clus_index = faiss.IndexFlatL2(d)
 
-        xt_f = np.array([bin2float(v) for v in xt])
+        xt_f = bin2float2d(xt)
         clus.train(xt_f, clus_index)
 
-        centroids = floatvec2nparray(clus.centroids)
+        centroids = faiss.vector_to_array(clus.centroids).reshape(-1, clus.d)
         hnsw_quantizer = faiss.IndexHNSWFlat(d, 32)
         hnsw_quantizer.add(centroids)
         hnsw_quantizer.is_trained = True
@@ -162,7 +157,7 @@ class TestIndexBinaryFromFloat(unittest.TestCase):
         recall = sum(gti[0] in Di[:10] for gti, Di in zip(D_ref, D)) \
                  / float(D_ref.shape[0])
 
-        assert recall > 0.77, "recall = %g" % recall
+        assert recall >= 0.77, "recall = %g" % recall
 
 
 class TestOverrideKmeansQuantizer(unittest.TestCase):
