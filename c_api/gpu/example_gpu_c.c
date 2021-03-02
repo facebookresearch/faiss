@@ -72,7 +72,7 @@ int main() {
     FaissGpuClonerOptions* options = NULL;
     FAISS_TRY(faiss_GpuClonerOptions_new(&options));
     FAISS_TRY(faiss_index_cpu_to_gpu_with_options(
-                  (FaissGpuResourcesProvider*)gpu_res, 0, cpu_index, options, &index));
+            gpu_res, 0, cpu_index, options, &index));
 
     printf("is_trained = %s\n",
            faiss_Index_is_trained(index) ? "true" : "false");
