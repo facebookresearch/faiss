@@ -73,6 +73,19 @@ jobs:
           command: |
             make -C build -j faiss_c
 
+  build_linux_conda:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run:
+          name: Conda build
+          command: |
+            conda install -y -q conda-build
+            conda install -c pytorch pytorch
+            cd conda
+            conda build faiss --python 3.7
+
   build_osx:
     macos:
       xcode: 11.6.0
@@ -260,6 +273,8 @@ workflows:
       - build_linux:
           name: Linux (AVX2)
           opt_level: "avx2"
+      - build_linux_conda:
+          name: Linux (conda)
       - build_linux_gpu:
           name: Linux GPU
           requires:
