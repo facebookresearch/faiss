@@ -4,6 +4,29 @@ orbs:
   win: circleci/windows@2.4.0
 
 jobs:
+  format:
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - checkout
+      - run:
+          name: Install clang-format
+          command: |
+            apt-get update
+            apt-get install -y git-core clang-format-11
+      - run:
+          name: Verify clang-format
+          command: |
+             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-11 -i
+             if git diff --quiet; then
+               echo "Formatting OK!"
+             else
+               echo "Formatting not OK!"
+               echo "------------------"
+               git --no-pager diff --color
+               exit 1
+             fi
+
   build_linux:
     docker:
       - image: beauby/faiss-circleci:cpu
@@ -225,6 +248,8 @@ workflows:
   version: 2
   build:
     jobs:
+      - format:
+          name: Format
       - build_linux:
           name: Linux
       - build_linux_gpu:
