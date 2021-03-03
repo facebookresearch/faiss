@@ -7,18 +7,20 @@
 
 #pragma once
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 template <typename T>
 inline __device__ void swap(bool swap, T& x, T& y) {
-  T tmp = x;
-  x = swap ? y : x;
-  y = swap ? tmp : y;
+    T tmp = x;
+    x = swap ? y : x;
+    y = swap ? tmp : y;
 }
 
 template <typename T>
 inline __device__ void assign(bool assign, T& x, T y) {
-  x = assign ? y : x;
+    x = assign ? y : x;
 }
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss

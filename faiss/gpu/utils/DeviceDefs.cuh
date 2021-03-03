@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
 #include <cuda.h>
 
-namespace faiss { namespace gpu {
+namespace faiss {
+namespace gpu {
 
 // We require at least CUDA 8.0 for compilation
 #if CUDA_VERSION < 8000
@@ -22,12 +22,11 @@ constexpr int kWarpSize = 32;
 
 // This is a memory barrier for intra-warp writes to shared memory.
 __forceinline__ __device__ void warpFence() {
-
 #if CUDA_VERSION >= 9000
-  __syncwarp();
+    __syncwarp();
 #else
-  // For the time being, assume synchronicity.
-  //  __threadfence_block();
+    // For the time being, assume synchronicity.
+    //  __threadfence_block();
 #endif
 }
 
@@ -40,4 +39,5 @@ __forceinline__ __device__ void warpFence() {
 #define GPU_MAX_SELECTION_K 1024
 #endif
 
-} } // namespace
+} // namespace gpu
+} // namespace faiss
