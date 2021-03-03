@@ -135,18 +135,17 @@ struct NNDescent {
 
     bool has_built;
 
-    int K; // K in KNN graph
-    int S; // number of sample neighbors to be updated for each node
-    int R; // size of reverse links, 0 means the reverse links will not be used
-    int L; // size of the candidate pool in building
-    int iter;     // number of iterations to iterate over
-    int search_L; // size of candidate pool in searching
+    int K;           // K in KNN graph
+    int S;           // number of sample neighbors to be updated for each node
+    int R;           // size of reverse links, 0 means the reverse links will not be used
+    int L;           // size of the candidate pool in building
+    int iter;        // number of iterations to iterate over
+    int search_L;    // size of candidate pool in searching
+    int random_seed; // random seed for generators
 
     int d; // dimensions
 
     int ntotal;
-
-    mutable std::mt19937 rng;
 
     KNNGraph graph;
     std::vector<int> final_graph;

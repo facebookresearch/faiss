@@ -146,7 +146,7 @@ using namespace nndescent;
 
 constexpr int NUM_EVAL_POINTS = 100;
 
-NNDescent::NNDescent(const int d, const int K) : K(K), d(d), rng(2021) {
+NNDescent::NNDescent(const int d, const int K) : K(K), random_seed(2021), d(d) {
     ntotal = 0;
     has_built = false;
     S = 10;
@@ -212,7 +212,7 @@ void NNDescent::update() {
     // Randomly choose R reverse links.
 #pragma omp parallel
     {
-        std::mt19937 rng(omp_get_thread_num());
+        std::mt19937 rng(random_seed * 5081 + omp_get_thread_num());
 #pragma omp for
         for (int n = 0; n < ntotal; ++n) {
             auto& node = graph[n];
@@ -286,6 +286,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
     int num_eval_points = std::min(NUM_EVAL_POINTS, ntotal);
     std::vector<int> eval_points(num_eval_points);
     std::vector<std::vector<int>> acc_eval_set(num_eval_points);
+    std::mt19937 rng(random_seed * 6577 + omp_get_thread_num());
     gen_random(rng, eval_points.data(), eval_points.size(), ntotal);
     generate_eval_set(qdis, eval_points, acc_eval_set, ntotal);
     for (int it = 0; it < iter; it++) {
@@ -347,25 +348,32 @@ float NNDescent::eval_recall(
 /// Initialize the KNN graph randomly
 void NNDescent::init_graph(DistanceComputer& qdis) {
     graph.reserve(ntotal);
-    for (int i = 0; i < ntotal; i++) {
-        graph.push_back(Nhood(L, S, rng, (int)ntotal));
-    }
-#pragma omp parallel for
-    for (int i = 0; i < ntotal; i++) {
-        std::vector<int> tmp(S);
-
-        gen_random(rng, tmp.data(), S, ntotal);
-
-        for (int j = 0; j < S; j++) {
-            int id = tmp[j];
-            if (id == i)
-                continue;
-            float dist = qdis.symmetric_dis(i, id);
-
-            graph[i].pool.push_back(Neighbor(id, dist, true));
+    {
+        std::mt19937 rng(random_seed * 6007);
+        for (int i = 0; i < ntotal; i++) {
+            graph.push_back(Nhood(L, S, rng, (int)ntotal));
         }
-        std::make_heap(graph[i].pool.begin(), graph[i].pool.end());
-        graph[i].pool.reserve(L);
+    }
+#pragma omp parallel
+    {
+        std::mt19937 rng(random_seed * 7741 + omp_get_thread_num());
+#pragma omp for
+        for (int i = 0; i < ntotal; i++) {
+            std::vector<int> tmp(S);
+
+            gen_random(rng, tmp.data(), S, ntotal);
+
+            for (int j = 0; j < S; j++) {
+                int id = tmp[j];
+                if (id == i)
+                    continue;
+                float dist = qdis.symmetric_dis(i, id);
+
+                graph[i].pool.push_back(Neighbor(id, dist, true));
+            }
+            std::make_heap(graph[i].pool.begin(), graph[i].pool.end());
+            graph[i].pool.reserve(L);
+        }
     }
 }
 
@@ -418,6 +426,8 @@ void NNDescent::search(
 
     // Randomly choose L points to intialize the candidate pool
     std::vector<int> init_ids(L);
+    std::mt19937 rng(random_seed);
+
     gen_random(rng, init_ids.data(), L, ntotal);
     for (int i = 0; i < L; i++) {
         int id = init_ids[i];
