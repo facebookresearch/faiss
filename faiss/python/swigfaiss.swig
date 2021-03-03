@@ -211,19 +211,19 @@ namespace std {
 %template(DoubleVector) std::vector<double>;
 %template(ByteVector) std::vector<uint8_t>;
 %template(CharVector) std::vector<char>;
-// NOTE(hoss): Using unsigned long instead of uint64_t because OSX defines
-//   uint64_t as unsigned long long, which SWIG is not aware of.
-%template(Uint64Vector) std::vector<unsigned long>;
-%template(LongVector) std::vector<long>;
-%template(LongLongVector) std::vector<long long>;
-%template(IntVector) std::vector<int>;
-%template(UInt32Vector) std::vector<uint32_t>;
 %template(Int16Vector) std::vector<int16_t>;
+// consider renaming to Int32Vector / Int64Vector
+%template(IntVector) std::vector<int>;
+%template(LongVector) std::vector<int64_t>;
+// TODO: deprecate/remove LongLongVector
+%template(LongLongVector) std::vector<int64_t>;
 %template(UInt16Vector) std::vector<uint16_t>;
+%template(UInt32Vector) std::vector<uint32_t>;
+%template(Uint64Vector) std::vector<uint64_t>;
 
 %template(FloatVectorVector) std::vector<std::vector<float> >;
 %template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
-%template(LongVectorVector) std::vector<std::vector<long> >;
+%template(LongVectorVector) std::vector<std::vector<int64_t> >;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
@@ -307,9 +307,9 @@ void gpu_sync_all_devices()
 
 %}
 
-%template() std::pair<int, unsigned long>;
-%template() std::map<std::string, std::pair<int, unsigned long> >;
-%template() std::map<int, std::map<std::string, std::pair<int, unsigned long> > >;
+%template() std::pair<int, uint64_t>;
+%template() std::map<std::string, std::pair<int, uint64_t> >;
+%template() std::map<int, std::map<std::string, std::pair<int, uint64_t> > >;
 
 // causes weird wrapper bug
 %ignore *::allocMemoryHandle;
@@ -324,12 +324,12 @@ typedef CUstream_st* cudaStream_t;
 %inline %{
 
 // interop between pytorch exposed cudaStream_t and faiss
-cudaStream_t cast_integer_to_cudastream_t(long long x) {
+cudaStream_t cast_integer_to_cudastream_t(int64_t x) {
   return (cudaStream_t) x;
 }
 
-long long cast_cudastream_t_to_integer(cudaStream_t x) {
-  return (long) x;
+int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
+  return (int64_t) x;
 }
 
 %}
@@ -914,23 +914,23 @@ void *memcpy(void *dest, const void *src, size_t n);
  *******************************************************************/
 
 %inline %{
-uint8_t * cast_integer_to_uint8_ptr (long long x) {
+uint8_t * cast_integer_to_uint8_ptr (int64_t x) {
     return (uint8_t*)x;
 }
 
-float * cast_integer_to_float_ptr (long long x) {
+float * cast_integer_to_float_ptr (int64_t x) {
     return (float*)x;
 }
 
-faiss::Index::idx_t* cast_integer_to_idx_t_ptr (long long x) {
+faiss::Index::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
     return (faiss::Index::idx_t*)x;
 }
 
-int * cast_integer_to_int_ptr (long long x) {
+int * cast_integer_to_int_ptr (int64_t x) {
     return (int*)x;
 }
 
-void * cast_integer_to_void_ptr (long long x) {
+void * cast_integer_to_void_ptr (int64_t x) {
     return (void*)x;
 }
 
@@ -957,7 +957,7 @@ struct MapLong2Long {
         }
     }
 
-    long search(int64_t key) {
+    int64_t search(int64_t key) {
         if (map.count(key) == 0) {
             return -1;
         } else {
