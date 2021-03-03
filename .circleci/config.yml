@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Verify clang-format
           command: |
-             git ls-files | grep -E  '\.(cpp|h|cu)$' | xargs clang-format-11 -i
+             git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-11 -i
              if git diff --quiet; then
                echo "Formatting OK!"
              else
