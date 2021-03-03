@@ -18,65 +18,80 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Select.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
-<codeline><highlight class="normal">__global__<sp/>void<sp/>warpSelect(Tensor&lt;K,<sp/>2,<sp/>true&gt;<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;K,<sp/>2,<sp/>true&gt;<sp/>outK,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;IndexType,<sp/>2,<sp/>true&gt;<sp/>outV,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>initK,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>initV,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal">__global__<sp/>void<sp/>warpSelect(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;K,<sp/>2,<sp/>true&gt;<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;K,<sp/>2,<sp/>true&gt;<sp/>outK,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;IndexType,<sp/>2,<sp/>true&gt;<sp/>outV,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>initK,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType<sp/>initV,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>WarpSelect&lt;K,<sp/>IndexType,<sp/>Dir,<sp/>Comparator&lt;K&gt;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,<sp/>NumThreadQ,<sp/>ThreadsPerBlock&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>k);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>WarpSelect&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comparator&lt;K&gt;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>row<sp/>=<sp/>blockIdx.x<sp/>*<sp/>kNumWarps<sp/>+<sp/>warpId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>row<sp/>=<sp/>blockIdx.x<sp/>*<sp/>kNumWarps<sp/>+<sp/>warpId;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(row<sp/>&gt;=<sp/>in.getSize(0))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(row<sp/>&gt;=<sp/>in.getSize(0))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>i<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>i<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)<sp/>i);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inStart<sp/>+=<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inStart<sp/>+=<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Handle<sp/>non-warp<sp/>multiple<sp/>remainder</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>in.getSize(1))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.addThreadQ(*inStart,<sp/>(IndexType)<sp/>i);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Handle<sp/>non-warp<sp/>multiple<sp/>remainder</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(i<sp/>&lt;<sp/>in.getSize(1))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.addThreadQ(*inStart,<sp/>(IndexType)i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>heap.reduce();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>heap.writeOut(outK[row].data(),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[row].data(),<sp/>k);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.reduce();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>heap.writeOut(outK[row].data(),<sp/>outV[row].data(),<sp/>k);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">void<sp/>runWarpSelect(Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,<sp/>int<sp/>k,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runWarpSelect(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">void<sp/>runWarpSelect(Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,<sp/>int<sp/>k,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runWarpSelect(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/WarpSelectKernel.cuh"/>
   </compounddef>

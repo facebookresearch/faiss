@@ -14,82 +14,91 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>defines<sp/>to<sp/>simplify<sp/>the<sp/>SASS<sp/>assembly<sp/>structure<sp/>file/line<sp/>in<sp/>the<sp/>profiler</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfe.u32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=r&quot;(OUT)<sp/>:<sp/>&quot;r&quot;(VAL),<sp/>&quot;r&quot;(POS),<sp/>&quot;r&quot;(LEN));</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U32(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;bfe.u32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=r&quot;(OUT)<sp/>:<sp/>&quot;r&quot;(VAL),<sp/>&quot;r&quot;(POS),<sp/>&quot;r&quot;(LEN));</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U64(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfe.u64<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=l&quot;(OUT)<sp/>:<sp/>&quot;l&quot;(VAL),<sp/>&quot;r&quot;(POS),<sp/>&quot;r&quot;(LEN));</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>GET_BITFIELD_U64(OUT,<sp/>VAL,<sp/>POS,<sp/>LEN)<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;bfe.u64<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=l&quot;(OUT)<sp/>:<sp/>&quot;l&quot;(VAL),<sp/>&quot;r&quot;(POS),<sp/>&quot;r&quot;(LEN));</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">__device__<sp/>__forceinline__</highlight></codeline>
-<codeline><highlight class="normal">unsigned<sp/>int<sp/>getBitfield(unsigned<sp/>int<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>int<sp/>ret;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfe.u32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=r&quot;(ret)<sp/>:<sp/>&quot;r&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>int<sp/>getBitfield(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;bfe.u32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=r&quot;(ret)<sp/>:<sp/>&quot;r&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ret;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">__device__<sp/>__forceinline__</highlight></codeline>
-<codeline><highlight class="normal">uint64_t<sp/>getBitfield(uint64_t<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>uint64_t<sp/>ret;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfe.u64<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=l&quot;(ret)<sp/>:<sp/>&quot;l&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>uint64_t</highlight></codeline>
+<codeline><highlight class="normal">getBitfield(uint64_t<sp/>val,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;bfe.u64<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3;&quot;<sp/>:<sp/>&quot;=l&quot;(ret)<sp/>:<sp/>&quot;l&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ret;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">__device__<sp/>__forceinline__</highlight></codeline>
-<codeline><highlight class="normal">unsigned<sp/>int<sp/>setBitfield(unsigned<sp/>int<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>toInsert,<sp/>int<sp/>pos,<sp/>int<sp/>len)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>int<sp/>ret;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;bfi.b32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3,<sp/>%4;&quot;<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(ret)<sp/>:<sp/>&quot;r&quot;(toInsert),<sp/>&quot;r&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>int<sp/>setBitfield(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>toInsert,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>len)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>ret;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;bfi.b32<sp/>%0,<sp/>%1,<sp/>%2,<sp/>%3,<sp/>%4;&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;=r&quot;(ret)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;r&quot;(toInsert),<sp/>&quot;r&quot;(val),<sp/>&quot;r&quot;(pos),<sp/>&quot;r&quot;(len));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ret;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>int<sp/>getLaneId()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>laneId;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%laneid;&quot;<sp/>:<sp/>&quot;=r&quot;(laneId)<sp/>);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>laneId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%laneid;&quot;<sp/>:<sp/>&quot;=r&quot;(laneId));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>laneId;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>getLaneMaskLt()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_lt;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_lt;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>mask;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>getLaneMaskLe()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_le;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_le;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>mask;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>getLaneMaskGt()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_gt;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_gt;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>mask;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>unsigned<sp/>getLaneMaskGe()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_ge;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>mask;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;mov.u32<sp/>%0,<sp/>%%lanemask_ge;&quot;<sp/>:<sp/>&quot;=r&quot;(mask));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>mask;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>void<sp/>namedBarrierWait(int<sp/>name,<sp/>int<sp/>numThreads)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm<sp/>volatile(&quot;bar.sync<sp/>%0,<sp/>%1;&quot;<sp/>:<sp/>:<sp/>&quot;r&quot;(name),<sp/>&quot;r&quot;(numThreads)<sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm<sp/>volatile(&quot;bar.sync<sp/>%0,<sp/>%1;&quot;<sp/>:<sp/>:<sp/>&quot;r&quot;(name),<sp/>&quot;r&quot;(numThreads)<sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">__device__<sp/>__forceinline__<sp/>void<sp/>namedBarrierArrived(int<sp/>name,<sp/>int<sp/>numThreads)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>asm<sp/>volatile(&quot;bar.arrive<sp/>%0,<sp/>%1;&quot;<sp/>:<sp/>:<sp/>&quot;r&quot;(name),<sp/>&quot;r&quot;(numThreads)<sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm<sp/>volatile(&quot;bar.arrive<sp/>%0,<sp/>%1;&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;r&quot;(name),<sp/>&quot;r&quot;(numThreads)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;memory&quot;);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/PtxUtils.cuh"/>
   </compounddef>

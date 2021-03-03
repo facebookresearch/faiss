@@ -14,141 +14,137 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceTensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/HostTensor.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Ensure<sp/>the<sp/>memory<sp/>at<sp/>`p`<sp/>is<sp/>either<sp/>on<sp/>the<sp/>given<sp/>device,<sp/>or<sp/>copy<sp/>it</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>to<sp/>the<sp/>device<sp/>in<sp/>a<sp/>new<sp/>temporary<sp/>allocation.</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim&gt;</highlight></codeline>
 <codeline><highlight class="normal">DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>toDeviceTemporary(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dstDevice,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>T*<sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>oldT(src,<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dstDevice,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>src,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>oldT(src,<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(dev<sp/>==<sp/>dstDevice)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>On<sp/>device<sp/>we<sp/>expect</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>oldT;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>On<sp/>different<sp/>device<sp/>or<sp/>on<sp/>host</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceScope<sp/>scope(dstDevice);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(dev<sp/>==<sp/>dstDevice)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>On<sp/>device<sp/>we<sp/>expect</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>oldT;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>On<sp/>different<sp/>device<sp/>or<sp/>on<sp/>host</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceScope<sp/>scope(dstDevice);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>newT(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>resources,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>newT(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>resources,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>newT.copyFrom(oldT,<sp/>stream);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>newT;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newT.copyFrom(oldT,<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>newT;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim&gt;</highlight></codeline>
 <codeline><highlight class="normal">DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>toDeviceNonTemporary(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dstDevice,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>T*<sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>oldT(src,<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dstDevice,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>src,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>oldT(src,<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(dev<sp/>==<sp/>dstDevice)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>On<sp/>device<sp/>we<sp/>expect</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>oldT;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>On<sp/>different<sp/>device<sp/>or<sp/>on<sp/>host</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceScope<sp/>scope(dstDevice);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(dev<sp/>==<sp/>dstDevice)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>On<sp/>device<sp/>we<sp/>expect</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>oldT;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>On<sp/>different<sp/>device<sp/>or<sp/>on<sp/>host</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceScope<sp/>scope(dstDevice);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>newT(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>resources,<sp/>makeDevAlloc(AllocType::Other,<sp/>stream),<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>newT(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>resources,<sp/>makeDevAlloc(AllocType::Other,<sp/>stream),<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>newT.copyFrom(oldT,<sp/>stream);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>newT;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newT.copyFrom(oldT,<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>newT;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">DeviceTensor&lt;T,<sp/>1,<sp/>true&gt;<sp/>toDeviceTemporary(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>std::vector&lt;T&gt;&amp;<sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>device<sp/>=<sp/>-1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Uses<sp/>the<sp/>current<sp/>device<sp/>if<sp/>device<sp/>==<sp/>-1</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceScope<sp/>scope(device);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>std::vector&lt;T&gt;&amp;<sp/>src,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>device<sp/>=<sp/>-1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Uses<sp/>the<sp/>current<sp/>device<sp/>if<sp/>device<sp/>==<sp/>-1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceScope<sp/>scope(device);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(src.size()<sp/>&lt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(size_t)<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(src.size()<sp/>&lt;<sp/>(size_t)std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceTensor&lt;T,<sp/>1,<sp/>true&gt;<sp/>out(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>resources,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>{(int)<sp/>src.size()});</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>1,<sp/>true&gt;<sp/>out(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>resources,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>makeTempAlloc(AllocType::Other,<sp/>stream),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{(int)src.size()});</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.copyFrom(src,<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.copyFrom(src,<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Copies<sp/>data<sp/>to<sp/>the<sp/>CPU,<sp/>if<sp/>it<sp/>is<sp/>not<sp/>already<sp/>on<sp/>the<sp/>CPU</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim&gt;</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>toHost(T*<sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
+<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>toHost(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>src,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;int&gt;<sp/>sizes)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(src);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(dev<sp/>==<sp/>-1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Already<sp/>on<sp/>the<sp/>CPU,<sp/>just<sp/>wrap<sp/>in<sp/>a<sp/>HostTensor<sp/>that<sp/>doesn&apos;t<sp/>own<sp/>this</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>memory</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;(src,<sp/>sizes);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>out(sizes);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>devData(src,<sp/>sizes);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.copyFrom(devData,<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(dev<sp/>==<sp/>-1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Already<sp/>on<sp/>the<sp/>CPU,<sp/>just<sp/>wrap<sp/>in<sp/>a<sp/>HostTensor<sp/>that<sp/>doesn&apos;t<sp/>own<sp/>this</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>memory</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;(src,<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HostTensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>out(sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>true&gt;<sp/>devData(src,<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.copyFrom(devData,<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Copies<sp/>a<sp/>device<sp/>array&apos;s<sp/>allocation<sp/>to<sp/>an<sp/>address,<sp/>if<sp/>necessary</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>void<sp/>fromDevice(T*<sp/>src,<sp/>T*<sp/>dst,<sp/>size_t<sp/>num,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>It<sp/>is<sp/>possible<sp/>that<sp/>the<sp/>array<sp/>already<sp/>represents<sp/>memory<sp/>at<sp/>`p`,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>in<sp/>which<sp/>case<sp/>no<sp/>copy<sp/>is<sp/>needed</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(src<sp/>==<sp/>dst)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>It<sp/>is<sp/>possible<sp/>that<sp/>the<sp/>array<sp/>already<sp/>represents<sp/>memory<sp/>at<sp/>`p`,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>in<sp/>which<sp/>case<sp/>no<sp/>copy<sp/>is<sp/>needed</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(src<sp/>==<sp/>dst)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(dst);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>dev<sp/>=<sp/>getDeviceForAddress(dst);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(dev<sp/>==<sp/>-1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(dst,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>num<sp/>*<sp/>sizeof(T),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaMemcpyDeviceToHost,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(dst,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>src,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>num<sp/>*<sp/>sizeof(T),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaMemcpyDeviceToDevice,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(dev<sp/>==<sp/>-1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dst,<sp/>src,<sp/>num<sp/>*<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToHost,<sp/>stream));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dst,<sp/>src,<sp/>num<sp/>*<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToDevice,<sp/>stream));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Copies<sp/>a<sp/>device<sp/>array&apos;s<sp/>allocation<sp/>to<sp/>an<sp/>address,<sp/>if<sp/>necessary</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim&gt;</highlight></codeline>
 <codeline><highlight class="normal">void<sp/>fromDevice(Tensor&lt;T,<sp/>Dim,<sp/>true&gt;&amp;<sp/>src,<sp/>T*<sp/>dst,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(src.isContiguous());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>fromDevice(src.data(),<sp/>dst,<sp/>src.numElements(),<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(src.isContiguous());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>fromDevice(src.data(),<sp/>dst,<sp/>src.numElements(),<sp/>stream);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/CopyUtils.cuh"/>
   </compounddef>

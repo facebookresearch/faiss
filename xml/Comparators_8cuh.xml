@@ -14,45 +14,46 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Float16.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Comparator<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Comparator&lt;half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>lt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hlt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hlt(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&lt;<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&lt;<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>static<sp/>inline<sp/>bool<sp/>gt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hgt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hgt(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&gt;<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&gt;<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Comparators.cuh"/>
   </compounddef>

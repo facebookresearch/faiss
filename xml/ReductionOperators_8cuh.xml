@@ -14,7 +14,6 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
@@ -22,64 +21,63 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MathOperators.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Pair.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Sum<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::add(a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::add(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::zero();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::zero();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Min<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::lt(a,<sp/>b)<sp/>?<sp/>a<sp/>:<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::lt(a,<sp/>b)<sp/>?<sp/>a<sp/>:<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Limits&lt;T&gt;::getMax();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Limits&lt;T&gt;::getMax();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Max<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::gt(a,<sp/>b)<sp/>?<sp/>a<sp/>:<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>operator()(T<sp/>a,<sp/>T<sp/>b)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;T&gt;::gt(a,<sp/>b)<sp/>?<sp/>a<sp/>:<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Limits&lt;T&gt;::getMin();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>T<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Limits&lt;T&gt;::getMin();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Used<sp/>for<sp/>producing<sp/>segmented<sp/>prefix<sp/>scans;<sp/>the<sp/>value<sp/>of<sp/>the<sp/>Pair</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>denotes<sp/>the<sp/>start<sp/>of<sp/>a<sp/>new<sp/>segment<sp/>for<sp/>the<sp/>scan</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>ReduceOp&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>SegmentedReduce<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>SegmentedReduce(const<sp/>ReduceOp&amp;<sp/>o)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>op(o)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>SegmentedReduce(const<sp/>ReduceOp&amp;<sp/>o)<sp/>:<sp/>op(o)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>Pair&lt;T,<sp/>bool&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator()(const<sp/>Pair&lt;T,<sp/>bool&gt;&amp;<sp/>a,<sp/>const<sp/>Pair&lt;T,<sp/>bool&gt;&amp;<sp/>b)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>bool&gt;(b.v<sp/>?<sp/>b.k<sp/>:<sp/>op(a.k,<sp/>b.k),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.v<sp/>||<sp/>b.v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>Pair&lt;T,<sp/>bool&gt;<sp/>operator()(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Pair&lt;T,<sp/>bool&gt;&amp;<sp/>a,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Pair&lt;T,<sp/>bool&gt;&amp;<sp/>b)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>bool&gt;(b.v<sp/>?<sp/>b.k<sp/>:<sp/>op(a.k,<sp/>b.k),<sp/>a.v<sp/>||<sp/>b.v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>Pair&lt;T,<sp/>bool&gt;<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>bool&gt;(op.identity(),<sp/>false);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>Pair&lt;T,<sp/>bool&gt;<sp/>identity()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>bool&gt;(op.identity(),<sp/>false);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>ReduceOp<sp/>op;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>ReduceOp<sp/>op;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/ReductionOperators.cuh"/>
   </compounddef>

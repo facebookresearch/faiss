@@ -14,7 +14,6 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;assert.h&gt;</highlight></codeline>
@@ -27,21 +26,26 @@
 <codeline><highlight class="normal">///<sp/>Originally<sp/>from<sp/>Facebook&apos;s<sp/>fbcunn,<sp/>since<sp/>added<sp/>to<sp/>the<sp/>Torch<sp/>GPU</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>library<sp/>cutorch<sp/>as<sp/>well.</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Our<sp/>tensor<sp/>type</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>Tensor;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Type<sp/>of<sp/>a<sp/>subspace<sp/>of<sp/>a<sp/>tensor</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>detail<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>TensorType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>SubDim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>SubDim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>SubTensor;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
@@ -49,15 +53,15 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>RestrictPtrTraits<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>T*<sp/>__restrict__<sp/>PtrType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>T*<sp/>__restrict__<sp/>PtrType;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>DefaultPtrTraits<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>T*<sp/>PtrType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>T*<sp/>PtrType;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>traits</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">/**</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>Templated<sp/>multi-dimensional<sp/>array<sp/>that<sp/>supports<sp/>strided<sp/>access<sp/>of</highlight></codeline>
@@ -77,300 +81,309 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>this<sp/>is<sp/>just<sp/>T*,<sp/>but<sp/>RestrictPtrTraits<sp/>can<sp/>be<sp/>used<sp/>to<sp/>apply<sp/>T*</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>__restrict__<sp/>for<sp/>alias-free<sp/>analysis.</highlight></codeline>
 <codeline><highlight class="normal">*/</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>Tensor<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>enum<sp/>{<sp/>NumDim<sp/>=<sp/>Dim<sp/>};</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>T<sp/>DataType;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>IndexT<sp/>IndexType;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>enum<sp/>{<sp/>IsInnerContig<sp/>=<sp/>InnerContig<sp/>};</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>DataPtrType;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>TensorType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>enum<sp/>{<sp/>NumDim<sp/>=<sp/>Dim<sp/>};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>T<sp/>DataType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>IndexT<sp/>IndexType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>enum<sp/>{<sp/>IsInnerContig<sp/>=<sp/>InnerContig<sp/>};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>DataPtrType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>TensorType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Default<sp/>constructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Default<sp/>constructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copy<sp/>constructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copy<sp/>constructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Move<sp/>constructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Move<sp/>constructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Assignment</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator=(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Assignment</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator=(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Move<sp/>assignment</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator=(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Move<sp/>assignment</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator=(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>calculates<sp/>strides<sp/>with<sp/>no<sp/>padding</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>calculates<sp/>strides<sp/>with<sp/>no<sp/>padding</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(DataPtrType<sp/>data,<sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor(DataPtrType<sp/>data,<sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>takes<sp/>arbitrary<sp/>size/stride<sp/>arrays.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Errors<sp/>if<sp/>you<sp/>attempt<sp/>to<sp/>pass<sp/>non-contiguous<sp/>strides<sp/>to<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>contiguous<sp/>tensor.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>that<sp/>takes<sp/>arbitrary<sp/>size/stride<sp/>arrays.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Errors<sp/>if<sp/>you<sp/>attempt<sp/>to<sp/>pass<sp/>non-contiguous<sp/>strides<sp/>to<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>contiguous<sp/>tensor.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor(DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim]);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copies<sp/>a<sp/>tensor<sp/>into<sp/>ourselves;<sp/>sizes<sp/>must<sp/>match</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>void<sp/>copyFrom(const<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copies<sp/>a<sp/>tensor<sp/>into<sp/>ourselves;<sp/>sizes<sp/>must<sp/>match</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>void<sp/>copyFrom(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copies<sp/>ourselves<sp/>into<sp/>a<sp/>tensor;<sp/>sizes<sp/>must<sp/>match</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>void<sp/>copyTo(Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copies<sp/>ourselves<sp/>into<sp/>a<sp/>tensor;<sp/>sizes<sp/>must<sp/>match</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>void<sp/>copyTo(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copies<sp/>a<sp/>CPU<sp/>std::vector&lt;T&gt;<sp/>into<sp/>ourselves,<sp/>allocating<sp/>memory<sp/>for<sp/>it.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>The<sp/>total<sp/>size<sp/>of<sp/>our<sp/>Tensor<sp/>must<sp/>match<sp/>vector&lt;T&gt;::size(),<sp/>though</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>we<sp/>are<sp/>not<sp/>restricted<sp/>to<sp/>1D<sp/>Tensors<sp/>to<sp/>match<sp/>the<sp/>1D<sp/>vector&lt;T&gt;.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>of<sp/>the<sp/>copy<sp/>and<sp/>thus<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>memory<sp/>will<sp/>initially<sp/>be<sp/>used.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>void<sp/>copyFrom(const<sp/>std::vector&lt;T&gt;&amp;<sp/>v,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copies<sp/>a<sp/>CPU<sp/>std::vector&lt;T&gt;<sp/>into<sp/>ourselves,<sp/>allocating<sp/>memory<sp/>for<sp/>it.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>total<sp/>size<sp/>of<sp/>our<sp/>Tensor<sp/>must<sp/>match<sp/>vector&lt;T&gt;::size(),<sp/>though</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>we<sp/>are<sp/>not<sp/>restricted<sp/>to<sp/>1D<sp/>Tensors<sp/>to<sp/>match<sp/>the<sp/>1D<sp/>vector&lt;T&gt;.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>of<sp/>the<sp/>copy<sp/>and<sp/>thus<sp/>the<sp/>stream<sp/>on<sp/>which</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>memory<sp/>will<sp/>initially<sp/>be<sp/>used.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>void<sp/>copyFrom(const<sp/>std::vector&lt;T&gt;&amp;<sp/>v,<sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copies<sp/>ourselves<sp/>into<sp/>a<sp/>flattened<sp/>(1D)<sp/>std::vector,<sp/>using<sp/>the<sp/>given<sp/>stream</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>std::vector&lt;T&gt;<sp/>copyToVector(cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copies<sp/>ourselves<sp/>into<sp/>a<sp/>flattened<sp/>(1D)<sp/>std::vector,<sp/>using<sp/>the<sp/>given</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>stream</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>std::vector&lt;T&gt;<sp/>copyToVector(cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>two<sp/>tensors<sp/>are<sp/>of<sp/>the<sp/>same<sp/>dimensionality,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>size<sp/>and<sp/>stride.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>OtherT,<sp/>int<sp/>OtherDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>isSame(const<sp/>Tensor&lt;OtherT,<sp/>OtherDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>rhs)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>two<sp/>tensors<sp/>are<sp/>of<sp/>the<sp/>same<sp/>dimensionality,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>and<sp/>stride.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherT,<sp/>int<sp/>OtherDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isSame(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Tensor&lt;OtherT,<sp/>OtherDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>rhs)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>two<sp/>tensors<sp/>are<sp/>of<sp/>the<sp/>same<sp/>dimensionality<sp/>and<sp/>size</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>OtherT,<sp/>int<sp/>OtherDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>isSameSize(const<sp/>Tensor&lt;OtherT,<sp/>OtherDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>rhs)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>two<sp/>tensors<sp/>are<sp/>of<sp/>the<sp/>same<sp/>dimensionality<sp/>and<sp/>size</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherT,<sp/>int<sp/>OtherDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isSameSize(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Tensor&lt;OtherT,<sp/>OtherDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>rhs)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>type<sp/>of<sp/>the<sp/>same<sp/>size<sp/>and</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>stride.<sp/>U<sp/>and<sp/>our<sp/>type<sp/>T<sp/>must<sp/>be<sp/>of<sp/>the<sp/>same<sp/>size</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>cast();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>type<sp/>of<sp/>the<sp/>same<sp/>size<sp/>and</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>stride.<sp/>U<sp/>and<sp/>our<sp/>type<sp/>T<sp/>must<sp/>be<sp/>of<sp/>the<sp/>same<sp/>size</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>cast();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Const<sp/>version<sp/>of<sp/>`cast`</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>cast()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Const<sp/>version<sp/>of<sp/>`cast`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>cast()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>type<sp/>which<sp/>is<sp/>potentially<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>different<sp/>size<sp/>than<sp/>our<sp/>type<sp/>T.<sp/>Tensor<sp/>must<sp/>be<sp/>aligned<sp/>and<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>innermost<sp/>dimension<sp/>must<sp/>be<sp/>a<sp/>size<sp/>that<sp/>is<sp/>a<sp/>multiple<sp/>of</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>sizeof(U)<sp/>/<sp/>sizeof(T),<sp/>and<sp/>the<sp/>stride<sp/>of<sp/>the<sp/>innermost<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>must<sp/>be<sp/>contiguous.<sp/>The<sp/>stride<sp/>of<sp/>all<sp/>outer<sp/>dimensions<sp/>must<sp/>be<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>multiple<sp/>of<sp/>sizeof(U)<sp/>/<sp/>sizeof(T)<sp/>as<sp/>well.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>castResize();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>type<sp/>which<sp/>is<sp/>potentially<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>different<sp/>size<sp/>than<sp/>our<sp/>type<sp/>T.<sp/>Tensor<sp/>must<sp/>be<sp/>aligned<sp/>and<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>innermost<sp/>dimension<sp/>must<sp/>be<sp/>a<sp/>size<sp/>that<sp/>is<sp/>a<sp/>multiple<sp/>of</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>sizeof(U)<sp/>/<sp/>sizeof(T),<sp/>and<sp/>the<sp/>stride<sp/>of<sp/>the<sp/>innermost<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>must<sp/>be<sp/>contiguous.<sp/>The<sp/>stride<sp/>of<sp/>all<sp/>outer<sp/>dimensions<sp/>must<sp/>be<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>multiple<sp/>of<sp/>sizeof(U)<sp/>/<sp/>sizeof(T)<sp/>as<sp/>well.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>castResize();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Const<sp/>version<sp/>of<sp/>`castResize`</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>castResize()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Const<sp/>version<sp/>of<sp/>`castResize`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>Tensor&lt;U,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>castResize()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>we<sp/>can<sp/>castResize()<sp/>this<sp/>tensor<sp/>to<sp/>the<sp/>new<sp/>type</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>canCastResize()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>we<sp/>can<sp/>castResize()<sp/>this<sp/>tensor<sp/>to<sp/>the<sp/>new<sp/>type</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>canCastResize()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Attempts<sp/>to<sp/>cast<sp/>this<sp/>tensor<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>IndexT.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Fails<sp/>if<sp/>size<sp/>or<sp/>stride<sp/>entries<sp/>are<sp/>not<sp/>representable<sp/>in<sp/>the<sp/>new</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>IndexT.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>NewIndexT&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>NewIndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>castIndexType()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Attempts<sp/>to<sp/>cast<sp/>this<sp/>tensor<sp/>to<sp/>a<sp/>tensor<sp/>of<sp/>a<sp/>different<sp/>IndexT.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Fails<sp/>if<sp/>size<sp/>or<sp/>stride<sp/>entries<sp/>are<sp/>not<sp/>representable<sp/>in<sp/>the<sp/>new</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>IndexT.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>NewIndexT&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>NewIndexT,<sp/>PtrTraits&gt;<sp/>castIndexType()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>we<sp/>can<sp/>use<sp/>this<sp/>indexing<sp/>type<sp/>to<sp/>access<sp/>all<sp/>elements</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>index<sp/>type</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>NewIndexT&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>bool<sp/>canUseIndexType()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>we<sp/>can<sp/>use<sp/>this<sp/>indexing<sp/>type<sp/>to<sp/>access<sp/>all<sp/>elements</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>index<sp/>type</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>NewIndexT&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>bool<sp/>canUseIndexType()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>start<sp/>of<sp/>our<sp/>data.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>data()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>start<sp/>of<sp/>our<sp/>data.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>data()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>end<sp/>of<sp/>our<sp/>data,<sp/>assuming</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>continuity</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>end()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data()<sp/>+<sp/>numElements();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>end<sp/>of<sp/>our<sp/>data,<sp/>assuming</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>continuity</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>end()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data()<sp/>+<sp/>numElements();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>start<sp/>of<sp/>our<sp/>data<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>DataPtrType<sp/>data()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>start<sp/>of<sp/>our<sp/>data<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>DataPtrType<sp/>data()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>end<sp/>of<sp/>our<sp/>data,<sp/>assuming</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>continuity<sp/>(const)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>end()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data()<sp/>+<sp/>numElements();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/>the<sp/>end<sp/>of<sp/>our<sp/>data,<sp/>assuming</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>continuity<sp/>(const)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>DataPtrType<sp/>end()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data()<sp/>+<sp/>numElements();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>PtrTraits&lt;U&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;U&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>PtrTraits&lt;U&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;U&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>typename<sp/>PtrTraits&lt;const<sp/>U&gt;::PtrType<sp/>dataAs()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>U&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>typename<sp/>PtrTraits&lt;const<sp/>U&gt;::PtrType</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>dataAs()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>U&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator[](IndexT);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator[](IndexT)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>read/write<sp/>view<sp/>of<sp/>a<sp/>portion<sp/>of<sp/>our<sp/>tensor<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>detail::</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>operator[](IndexT)<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>size<sp/>of<sp/>a<sp/>given<sp/>dimension,<sp/>`[0,<sp/>Dim<sp/>-<sp/>1]`.<sp/>No<sp/>bounds</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>checking.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>IndexT<sp/>getSize(int<sp/>i)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>size_[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>size<sp/>of<sp/>a<sp/>given<sp/>dimension,<sp/>`[0,<sp/>Dim<sp/>-<sp/>1]`.<sp/>No<sp/>bounds</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>checking.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>IndexT<sp/>getSize(int<sp/>i)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>size_[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stride<sp/>of<sp/>a<sp/>given<sp/>dimension,<sp/>`[0,<sp/>Dim<sp/>-<sp/>1]`.<sp/>No<sp/>bounds</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>checking.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>IndexT<sp/>getStride(int<sp/>i)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>stride_[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stride<sp/>of<sp/>a<sp/>given<sp/>dimension,<sp/>`[0,<sp/>Dim<sp/>-<sp/>1]`.<sp/>No<sp/>bounds</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>checking.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>IndexT<sp/>getStride(int<sp/>i)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>stride_[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>total<sp/>number<sp/>of<sp/>elements<sp/>contained<sp/>within<sp/>our<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>(product<sp/>of<sp/>`getSize(i)`)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>size_t<sp/>numElements()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>total<sp/>number<sp/>of<sp/>elements<sp/>contained<sp/>within<sp/>our<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(product<sp/>of<sp/>`getSize(i)`)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>size_t<sp/>numElements()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>If<sp/>we<sp/>are<sp/>contiguous,<sp/>returns<sp/>the<sp/>total<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>our</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>size_t<sp/>getSizeInBytes()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>numElements()<sp/>*<sp/>sizeof(T);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>we<sp/>are<sp/>contiguous,<sp/>returns<sp/>the<sp/>total<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>our</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>size_t<sp/>getSizeInBytes()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>numElements()<sp/>*<sp/>sizeof(T);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>size<sp/>array.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>IndexT*<sp/>sizes()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>size_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>size<sp/>array.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>IndexT*<sp/>sizes()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>size_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stride<sp/>array.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>IndexT*<sp/>strides()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>stride_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>stride<sp/>array.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>IndexT*<sp/>strides()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>stride_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>there<sp/>is<sp/>no<sp/>padding<sp/>within<sp/>the<sp/>tensor<sp/>and<sp/>no</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>re-ordering<sp/>of<sp/>the<sp/>dimensions.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>~~~</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>(stride(i)<sp/>==<sp/>size(i<sp/>+<sp/>1)<sp/>*<sp/>stride(i<sp/>+<sp/>1))<sp/>&amp;&amp;<sp/>stride(dim<sp/>-<sp/>1)<sp/>==<sp/>0</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>~~~</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isContiguous()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>there<sp/>is<sp/>no<sp/>padding<sp/>within<sp/>the<sp/>tensor<sp/>and<sp/>no</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>re-ordering<sp/>of<sp/>the<sp/>dimensions.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>~~~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(stride(i)<sp/>==<sp/>size(i<sp/>+<sp/>1)<sp/>*<sp/>stride(i<sp/>+<sp/>1))<sp/>&amp;&amp;<sp/>stride(dim<sp/>-<sp/>1)<sp/>==<sp/>0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>~~~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isContiguous()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>whether<sp/>a<sp/>given<sp/>dimension<sp/>has<sp/>only<sp/>increasing<sp/>stride</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>from<sp/>the<sp/>previous<sp/>dimension.<sp/>A<sp/>tensor<sp/>that<sp/>was<sp/>permuted<sp/>by</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>exchanging<sp/>size<sp/>and<sp/>stride<sp/>only<sp/>will<sp/>fail<sp/>this<sp/>check.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>If<sp/>`i<sp/>==<sp/>0`<sp/>just<sp/>check<sp/>`size<sp/>&gt;<sp/>0`.<sp/>Returns<sp/>`false`<sp/>if<sp/>`stride`<sp/>is<sp/>`&lt;=<sp/>0`.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isConsistentlySized(int<sp/>i)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>whether<sp/>a<sp/>given<sp/>dimension<sp/>has<sp/>only<sp/>increasing<sp/>stride</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>from<sp/>the<sp/>previous<sp/>dimension.<sp/>A<sp/>tensor<sp/>that<sp/>was<sp/>permuted<sp/>by</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>exchanging<sp/>size<sp/>and<sp/>stride<sp/>only<sp/>will<sp/>fail<sp/>this<sp/>check.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>`i<sp/>==<sp/>0`<sp/>just<sp/>check<sp/>`size<sp/>&gt;<sp/>0`.<sp/>Returns<sp/>`false`<sp/>if<sp/>`stride`<sp/>is<sp/>`&lt;=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>0`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isConsistentlySized(int<sp/>i)<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Returns<sp/>whether<sp/>at<sp/>each<sp/>dimension<sp/>`stride<sp/>&lt;=<sp/>size`.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>If<sp/>this<sp/>is<sp/>not<sp/>the<sp/>case<sp/>then<sp/>iterating<sp/>once<sp/>over<sp/>the<sp/>size<sp/>space<sp/>will</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>touch<sp/>the<sp/>same<sp/>memory<sp/>locations<sp/>multiple<sp/>times.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isConsistentlySized()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Returns<sp/>whether<sp/>at<sp/>each<sp/>dimension<sp/>`stride<sp/>&lt;=<sp/>size`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>this<sp/>is<sp/>not<sp/>the<sp/>case<sp/>then<sp/>iterating<sp/>once<sp/>over<sp/>the<sp/>size<sp/>space<sp/>will</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>touch<sp/>the<sp/>same<sp/>memory<sp/>locations<sp/>multiple<sp/>times.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isConsistentlySized()<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>given<sp/>dimension<sp/>index<sp/>has<sp/>no<sp/>padding</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isContiguousDim(int<sp/>i)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>given<sp/>dimension<sp/>index<sp/>has<sp/>no<sp/>padding</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>bool<sp/>isContiguousDim(int<sp/>i)<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>after<sp/>transposing<sp/>the<sp/>two</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>dimensions<sp/>given.<sp/>Does<sp/>not<sp/>actually<sp/>move<sp/>elements;<sp/>transposition</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>is<sp/>made<sp/>by<sp/>permuting<sp/>the<sp/>size/stride<sp/>arrays.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>If<sp/>the<sp/>dimensions<sp/>are<sp/>not<sp/>valid,<sp/>asserts.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>transpose(int<sp/>dim1,<sp/>int<sp/>dim2)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>after<sp/>transposing<sp/>the<sp/>two</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>dimensions<sp/>given.<sp/>Does<sp/>not<sp/>actually<sp/>move<sp/>elements;<sp/>transposition</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>is<sp/>made<sp/>by<sp/>permuting<sp/>the<sp/>size/stride<sp/>arrays.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>the<sp/>dimensions<sp/>are<sp/>not<sp/>valid,<sp/>asserts.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>transpose(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim2)<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Transpose<sp/>a<sp/>tensor,<sp/>exchanging<sp/>a<sp/>non-innermost<sp/>dimension<sp/>with<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>innermost<sp/>dimension,<sp/>returning<sp/>a<sp/>no<sp/>longer<sp/>innermost<sp/>contiguous<sp/>tensor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>false,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>transposeInnermost(int<sp/>dim1)<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Transpose<sp/>a<sp/>tensor,<sp/>exchanging<sp/>a<sp/>non-innermost<sp/>dimension<sp/>with<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>innermost<sp/>dimension,<sp/>returning<sp/>a<sp/>no<sp/>longer<sp/>innermost<sp/>contiguous<sp/>tensor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>false,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>transposeInnermost(int<sp/>dim1)<sp/>const;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Upcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>D&apos;<sp/>&gt;<sp/>D<sp/>by<sp/>padding<sp/>the<sp/>leading<sp/>dimensions<sp/>by<sp/>1</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>e.g.,<sp/>upcasting<sp/>a<sp/>2-d<sp/>tensor<sp/>`[2][3]`<sp/>to<sp/>a<sp/>4-d<sp/>tensor<sp/>`[1][1][2][3]`</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>upcastOuter();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Upcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>D&apos;<sp/>&gt;<sp/>D<sp/>by<sp/>padding<sp/>the<sp/>leading<sp/>dimensions<sp/>by<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>e.g.,<sp/>upcasting<sp/>a<sp/>2-d<sp/>tensor<sp/>`[2][3]`<sp/>to<sp/>a<sp/>4-d<sp/>tensor<sp/>`[1][1][2][3]`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>upcastOuter();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Upcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>D&apos;<sp/>&gt;<sp/>D<sp/>by<sp/>padding<sp/>the<sp/>lowest/most<sp/>varying<sp/>dimensions<sp/>by<sp/>1</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>e.g.,<sp/>upcasting<sp/>a<sp/>2-d<sp/>tensor<sp/>`[2][3]`<sp/>to<sp/>a<sp/>4-d<sp/>tensor<sp/>`[2][3][1][1]`</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>upcastInner();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Upcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>D&apos;<sp/>&gt;<sp/>D<sp/>by<sp/>padding<sp/>the<sp/>lowest/most<sp/>varying<sp/>dimensions<sp/>by<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>e.g.,<sp/>upcasting<sp/>a<sp/>2-d<sp/>tensor<sp/>`[2][3]`<sp/>to<sp/>a<sp/>4-d<sp/>tensor<sp/>`[2][3][1][1]`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>upcastInner();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Downcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>D&apos;<sp/>&lt;<sp/>D<sp/>by<sp/>collapsing<sp/>the<sp/>leading<sp/>dimensions.<sp/>asserts<sp/>if<sp/>there<sp/>is</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>padding<sp/>on<sp/>the<sp/>leading<sp/>dimensions.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>downcastOuter();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Downcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>D&apos;<sp/>&lt;<sp/>D<sp/>by<sp/>collapsing<sp/>the<sp/>leading<sp/>dimensions.<sp/>asserts<sp/>if<sp/>there<sp/>is</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>padding<sp/>on<sp/>the<sp/>leading<sp/>dimensions.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>downcastOuter();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Downcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>D&apos;<sp/>&lt;<sp/>D<sp/>by<sp/>collapsing<sp/>the<sp/>leading<sp/>dimensions.<sp/>asserts<sp/>if<sp/>there<sp/>is</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>padding<sp/>on<sp/>the<sp/>leading<sp/>dimensions.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>downcastInner();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Downcast<sp/>a<sp/>tensor<sp/>of<sp/>dimension<sp/>`D`<sp/>to<sp/>some<sp/>tensor<sp/>of<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>D&apos;<sp/>&lt;<sp/>D<sp/>by<sp/>collapsing<sp/>the<sp/>leading<sp/>dimensions.<sp/>asserts<sp/>if<sp/>there<sp/>is</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>padding<sp/>on<sp/>the<sp/>leading<sp/>dimensions.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>downcastInner();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>`SubDim`-dimensional<sp/>slice</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>at<sp/>`at`.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>SubDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>SubDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>view(DataPtrType<sp/>at);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>`SubDim`-dimensional<sp/>slice</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>at<sp/>`at`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>SubDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>SubDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>view(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>at);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>`SubDim`-dimensional<sp/>slice</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>where<sp/>our<sp/>data<sp/>begins</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>SubDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>SubDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>view();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>`SubDim`-dimensional<sp/>slice</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>where<sp/>our<sp/>data<sp/>begins</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>SubDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>SubDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>view();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>original<sp/>tensor<sp/>with<sp/>the<sp/>specified<sp/>dimension<sp/>restricted<sp/>to<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>elements<sp/>in<sp/>the<sp/>range<sp/>[start,<sp/>start<sp/>+<sp/>size)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>narrowOutermost(IndexT<sp/>start,<sp/>IndexT<sp/>size);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>original<sp/>tensor<sp/>with<sp/>the<sp/>specified<sp/>dimension<sp/>restricted<sp/>to<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>elements<sp/>in<sp/>the<sp/>range<sp/>[start,<sp/>start<sp/>+<sp/>size)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>narrowOutermost(IndexT<sp/>start,<sp/>IndexT<sp/>size);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>original<sp/>tensor<sp/>with<sp/>the<sp/>specified<sp/>dimension<sp/>restricted<sp/>to<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>elements<sp/>in<sp/>the<sp/>range<sp/>[start,<sp/>start<sp/>+<sp/>size).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Can<sp/>occur<sp/>in<sp/>an<sp/>arbitrary<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>narrow(int<sp/>dim,<sp/>IndexT<sp/>start,<sp/>IndexT<sp/>size);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>same<sp/>dimension<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>original<sp/>tensor<sp/>with<sp/>the<sp/>specified<sp/>dimension<sp/>restricted<sp/>to<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>elements<sp/>in<sp/>the<sp/>range<sp/>[start,<sp/>start<sp/>+<sp/>size).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Can<sp/>occur<sp/>in<sp/>an<sp/>arbitrary<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>narrow(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>start,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>size);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>given<sp/>tensor<sp/>expressed<sp/>as<sp/>a<sp/>tensor<sp/>of<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>different<sp/>number<sp/>of<sp/>dimensions.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Only<sp/>works<sp/>if<sp/>we<sp/>are<sp/>contiguous.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>view(std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>given<sp/>tensor<sp/>expressed<sp/>as<sp/>a<sp/>tensor<sp/>of<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>different<sp/>number<sp/>of<sp/>dimensions.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Only<sp/>works<sp/>if<sp/>we<sp/>are<sp/>contiguous.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;int<sp/>NewDim&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>Tensor&lt;T,<sp/>NewDim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>view(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>protected:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Raw<sp/>pointer<sp/>to<sp/>where<sp/>the<sp/>tensor<sp/>data<sp/>begins</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DataPtrType<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Raw<sp/>pointer<sp/>to<sp/>where<sp/>the<sp/>tensor<sp/>data<sp/>begins</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DataPtrType<sp/>data_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Array<sp/>of<sp/>strides<sp/>(in<sp/>sizeof(T)<sp/>terms)<sp/>per<sp/>each<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>stride_[Dim];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Array<sp/>of<sp/>strides<sp/>(in<sp/>sizeof(T)<sp/>terms)<sp/>per<sp/>each<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>stride_[Dim];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Size<sp/>per<sp/>each<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>IndexT<sp/>size_[Dim];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Size<sp/>per<sp/>each<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>size_[Dim];</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Utilities<sp/>for<sp/>checking<sp/>a<sp/>collection<sp/>of<sp/>tensors</highlight></codeline>
@@ -378,20 +391,20 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>IndexType&gt;</highlight></codeline>
 <codeline><highlight class="normal">bool<sp/>canUseIndexType()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>true;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>IndexType,<sp/>typename<sp/>T,<sp/>typename...<sp/>U&gt;</highlight></codeline>
 <codeline><highlight class="normal">bool<sp/>canUseIndexType(const<sp/>T&amp;<sp/>arg,<sp/>const<sp/>U&amp;...<sp/>args)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>arg.template<sp/>canUseIndexType&lt;IndexType&gt;()<sp/>&amp;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>canUseIndexType(args...);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>arg.template<sp/>canUseIndexType&lt;IndexType&gt;()<sp/>&amp;&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>canUseIndexType(args...);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>detail</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>IndexType,<sp/>typename...<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">bool<sp/>canUseIndexType(const<sp/>T&amp;...<sp/>args)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>detail::canUseIndexType(args...);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>detail::canUseIndexType(args...);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>detail<sp/>{</highlight></codeline>
@@ -399,279 +412,296 @@
 <codeline><highlight class="normal">///<sp/>Specialization<sp/>for<sp/>a<sp/>view<sp/>of<sp/>a<sp/>single<sp/>value<sp/>(0-dimensional)</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>TensorType,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>SubTensor&lt;TensorType,<sp/>0,<sp/>PtrTraits&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>SubTensor&lt;TensorType,<sp/>0,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator=(typename<sp/>TensorType::DataType<sp/>val)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>*data_<sp/>=<sp/>val;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>SubTensor&lt;TensorType,<sp/>0,<sp/>PtrTraits&gt;<sp/>operator=(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataType<sp/>val)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*data_<sp/>=<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>operator<sp/>T&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>operator<sp/>typename<sp/>TensorType::DataType&amp;()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>operator<sp/>T&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>operator<sp/>typename<sp/>TensorType::DataType<sp/>&amp;()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>const<sp/>operator<sp/>T&amp;<sp/>returning<sp/>const<sp/>T&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>operator<sp/>const<sp/>typename<sp/>TensorType::DataType&amp;()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>const<sp/>operator<sp/>T&amp;<sp/>returning<sp/>const<sp/>T&amp;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>operator<sp/>const<sp/>typename<sp/>TensorType::DataType<sp/>&amp;()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>operator&amp;<sp/>returning<sp/>T*</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>operator&amp;<sp/>returning<sp/>T*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>const<sp/>operator&amp;<sp/>returning<sp/>const<sp/>T*</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>const<sp/>operator&amp;<sp/>returning<sp/>const<sp/>T*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>T&amp;<sp/>as()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>T&amp;<sp/>as()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>T&amp;<sp/>as()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>T&amp;<sp/>as()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;T&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;T&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType<sp/>dataAs()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType<sp/>dataAs()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/>protected:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>One<sp/>dimension<sp/>greater<sp/>can<sp/>create<sp/>us</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>friend<sp/>class<sp/>SubTensor&lt;TensorType,<sp/>1,<sp/>PtrTraits&gt;;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>One<sp/>dimension<sp/>greater<sp/>can<sp/>create<sp/>us</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>class<sp/>SubTensor&lt;TensorType,<sp/>1,<sp/>PtrTraits&gt;;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Our<sp/>parent<sp/>tensor<sp/>can<sp/>create<sp/>us</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>friend<sp/>class<sp/>Tensor&lt;typename<sp/>TensorType::DataType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>parent<sp/>tensor<sp/>can<sp/>create<sp/>us</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>class<sp/>Tensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>SubTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>t,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>data)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>tensor_(t),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_(data)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>SubTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>t,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>data)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>tensor_(t),<sp/>data_(data)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>The<sp/>tensor<sp/>we&apos;re<sp/>referencing</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>TensorType&amp;<sp/>tensor_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>tensor<sp/>we&apos;re<sp/>referencing</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>tensor_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Where<sp/>our<sp/>value<sp/>is<sp/>located</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>const<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Where<sp/>our<sp/>value<sp/>is<sp/>located</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>const<sp/>data_;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>A<sp/>`SubDim`-rank<sp/>slice<sp/>of<sp/>a<sp/>parent<sp/>Tensor</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>TensorType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>SubDim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>SubDim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>SubTensor<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>data<sp/>located<sp/>at<sp/>our<sp/>offset<sp/>(the<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`SubDim`<sp/>-<sp/>1<sp/>tensor).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>data<sp/>located<sp/>at<sp/>our<sp/>offset<sp/>(the<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`SubDim`<sp/>-<sp/>1<sp/>tensor).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator[](typename<sp/>TensorType::IndexType<sp/>index)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(TensorType::IsInnerContig<sp/>&amp;&amp;<sp/>SubDim<sp/>==<sp/>1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Innermost<sp/>dimension<sp/>is<sp/>stride<sp/>1<sp/>for<sp/>contiguous<sp/>arrays</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,<sp/>data_<sp/>+<sp/>index);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_<sp/>+<sp/>index<sp/>*<sp/>tensor_.getStride(TensorType::NumDim<sp/>-<sp/>SubDim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(TensorType::IsInnerContig<sp/>&amp;&amp;<sp/>SubDim<sp/>==<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Innermost<sp/>dimension<sp/>is<sp/>stride<sp/>1<sp/>for<sp/>contiguous<sp/>arrays</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,<sp/>data_<sp/>+<sp/>index);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_<sp/>+</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_.getStride(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::NumDim<sp/>-<sp/>SubDim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>data<sp/>located<sp/>at<sp/>our<sp/>offset<sp/>(the<sp/>dimension</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`SubDim`<sp/>-<sp/>1<sp/>tensor)<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>view<sp/>of<sp/>the<sp/>data<sp/>located<sp/>at<sp/>our<sp/>offset<sp/>(the<sp/>dimension</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`SubDim`<sp/>-<sp/>1<sp/>tensor)<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>SubTensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubDim<sp/>-<sp/>1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>operator[](typename<sp/>TensorType::IndexType<sp/>index)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(TensorType::IsInnerContig<sp/>&amp;&amp;<sp/>SubDim<sp/>==<sp/>1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Innermost<sp/>dimension<sp/>is<sp/>stride<sp/>1<sp/>for<sp/>contiguous<sp/>arrays</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,<sp/>data_<sp/>+<sp/>index);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_<sp/>+<sp/>index<sp/>*<sp/>tensor_.getStride(TensorType::NumDim<sp/>-<sp/>SubDim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(TensorType::IsInnerContig<sp/>&amp;&amp;<sp/>SubDim<sp/>==<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Innermost<sp/>dimension<sp/>is<sp/>stride<sp/>1<sp/>for<sp/>contiguous<sp/>arrays</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,<sp/>data_<sp/>+<sp/>index);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_<sp/>+</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tensor_.getStride(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::NumDim<sp/>-<sp/>SubDim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>operator&amp;<sp/>returning<sp/>T*</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>operator&amp;<sp/>returning<sp/>T*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>const<sp/>operator&amp;<sp/>returning<sp/>const<sp/>T*</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>const<sp/>operator&amp;<sp/>returning<sp/>const<sp/>T*</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>typename<sp/>TensorType::DataType*<sp/>operator&amp;()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>raw<sp/>accessor<sp/>to<sp/>our<sp/>slice<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>const<sp/>typename<sp/>TensorType::DataPtrType<sp/>data()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>T&amp;<sp/>as()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>T&amp;<sp/>as()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>T&amp;<sp/>as()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>const<sp/>T&amp;<sp/>as()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*dataAs&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;T&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>dataAs()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;T&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType<sp/>dataAs()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Cast<sp/>to<sp/>a<sp/>different<sp/>datatype<sp/>(const)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType<sp/>dataAs()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>reinterpret_cast&lt;typename<sp/>PtrTraits&lt;const<sp/>T&gt;::PtrType&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>typename<sp/>TensorType::DataType<sp/>ldg()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(data_);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*data_;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Use<sp/>the<sp/>texture<sp/>cache<sp/>for<sp/>reads;<sp/>cast<sp/>as<sp/>a<sp/>particular<sp/>type</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>T<sp/>ldgAs()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>__CUDA_ARCH__<sp/>&gt;=<sp/>350</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__ldg(dataAs&lt;T&gt;());</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>as&lt;T&gt;();</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>SubDim-dimensional<sp/>slice</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>where<sp/>our<sp/>data<sp/>begins</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;typename<sp/>TensorType::DataType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubDim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;<sp/>view()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>tensor_.template<sp/>view&lt;SubDim&gt;(data_);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>a<sp/>tensor<sp/>that<sp/>is<sp/>a<sp/>view<sp/>of<sp/>the<sp/>SubDim-dimensional<sp/>slice</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>of<sp/>this<sp/>tensor,<sp/>starting<sp/>where<sp/>our<sp/>data<sp/>begins</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;typename<sp/>TensorType::DataType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SubDim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>view()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>tensor_.template<sp/>view&lt;SubDim&gt;(data_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/>protected:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>One<sp/>dimension<sp/>greater<sp/>can<sp/>create<sp/>us</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>friend<sp/>class<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>+<sp/>1,<sp/>PtrTraits&gt;;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>One<sp/>dimension<sp/>greater<sp/>can<sp/>create<sp/>us</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>class<sp/>SubTensor&lt;TensorType,<sp/>SubDim<sp/>+<sp/>1,<sp/>PtrTraits&gt;;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Our<sp/>parent<sp/>tensor<sp/>can<sp/>create<sp/>us</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>friend<sp/>class</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;typename<sp/>TensorType::DataType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::NumDim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>parent<sp/>tensor<sp/>can<sp/>create<sp/>us</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>class<sp/>Tensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::NumDim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType::IsInnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::IndexType,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>SubTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>t,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>data)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>tensor_(t),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data_(data)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>inline<sp/>SubTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>t,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>data)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>tensor_(t),<sp/>data_(data)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>The<sp/>tensor<sp/>we&apos;re<sp/>referencing</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>TensorType&amp;<sp/>tensor_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>tensor<sp/>we&apos;re<sp/>referencing</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>TensorType&amp;<sp/>tensor_;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>The<sp/>start<sp/>of<sp/>our<sp/>sub-region</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>const<sp/>data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>start<sp/>of<sp/>our<sp/>sub-region</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typename<sp/>TensorType::DataPtrType<sp/>const<sp/>data_;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>detail</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal">detail::SubTensor&lt;Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator[](IndexT<sp/>index)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>detail::SubTensor&lt;TensorType,<sp/>Dim,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>*this,<sp/>data_)[index]);</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>__device__<sp/>inline<sp/>detail::SubTensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim<sp/>-<sp/>1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator[](IndexT<sp/>index)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::SubTensor&lt;TensorType,<sp/>Dim,<sp/>PtrTraits&gt;(*this,<sp/>data_)[index]);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__<sp/>__device__<sp/>inline</highlight></codeline>
-<codeline><highlight class="normal">const<sp/>detail::SubTensor&lt;Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator[](IndexT<sp/>index)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>detail::SubTensor&lt;TensorType,<sp/>Dim,<sp/>PtrTraits&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>const_cast&lt;TensorType&amp;&gt;(*this),<sp/>data_)[index]);</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>__device__<sp/>inline<sp/>const<sp/>detail::SubTensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim<sp/>-<sp/>1,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator[](IndexT<sp/>index)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>detail::SubTensor&lt;TensorType,<sp/>Dim<sp/>-<sp/>1,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::SubTensor&lt;TensorType,<sp/>Dim,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const_cast&lt;TensorType&amp;&gt;(*this),<sp/>data_)[index]);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor-inl.cuh&gt;</highlight></codeline>
     </programlisting>

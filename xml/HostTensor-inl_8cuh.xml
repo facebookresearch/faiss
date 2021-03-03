@@ -14,179 +14,236 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor()<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::~HostTensor()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(state_<sp/>==<sp/>AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delete[]<sp/>this-&gt;data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>nullptr;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::~HostTensor()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(state_<sp/>==<sp/>AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;operator=(std::move(t));</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>HostTensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;::</highlight></codeline>
+<codeline><highlight class="normal">operator=(HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(this-&gt;state_<sp/>==<sp/>AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delete[]<sp/>this-&gt;data_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>nullptr;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator=(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::move(t));</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;state_<sp/>=<sp/>t.state_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>t.state_<sp/>=<sp/>AllocState::NotOwner;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim])</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[this-&gt;numElements()];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>delete[]<sp/>this-&gt;data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>nullptr;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;operator=(std::move(t));</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator=(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(this-&gt;state_<sp/>==<sp/>AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[this-&gt;numElements()];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>delete[]<sp/>this-&gt;data_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>nullptr;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::operator=(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::move(t));</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;state_<sp/>=<sp/>t.state_;<sp/>t.state_<sp/>=<sp/>AllocState::NotOwner;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>*this;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim])<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim])</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[this-&gt;numElements()];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[this-&gt;numElements()];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>!=<sp/>nullptr);</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim])</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes,<sp/>strides),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim])<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nullptr,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.sizes(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.strides()),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Only<sp/>contiguous<sp/>arrays<sp/>handled<sp/>for<sp/>now</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(t.isContiguous());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim])<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(data,<sp/>sizes,<sp/>strides),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::NotOwner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::HostTensor(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>cudaStream_t<sp/>stream)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>t.sizes(),<sp/>t.strides()),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>state_(AllocState::Owner)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Only<sp/>contiguous<sp/>arrays<sp/>handled<sp/>for<sp/>now</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(t.isContiguous());</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[t.numElements()];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>this-&gt;copyFrom(t,<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>new<sp/>T[t.numElements()];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;copyFrom(t,<sp/>stream);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Call<sp/>to<sp/>zero<sp/>out<sp/>memory</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Region<sp/>must<sp/>be<sp/>contiguous</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(this-&gt;isContiguous());</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>HostTensor&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;::zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Region<sp/>must<sp/>be<sp/>contiguous</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;isContiguous());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(this-&gt;data_<sp/>!=<sp/>nullptr)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>memset(this-&gt;data_,<sp/>0,<sp/>this-&gt;getSizeInBytes());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>*this;</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>Dim,<sp/>bool<sp/>InnerContig,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,<sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__<sp/>T</highlight></codeline>
-<codeline><highlight class="normal">HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::maxDiff(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>auto<sp/>size<sp/>=<sp/>this-&gt;numElements();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(size<sp/>==<sp/>t.numElements());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(size<sp/>&gt;<sp/>0);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(InnerContig)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>a<sp/>=<sp/>this-&gt;data();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>b<sp/>=<sp/>t.data();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>maxDiff<sp/>=<sp/>a[0]<sp/>-<sp/>b[0];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>type-specific<sp/>abs()</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>maxDiff<sp/>=<sp/>maxDiff<sp/>&lt;<sp/>0<sp/>?<sp/>maxDiff<sp/>*<sp/>(T)<sp/>-1<sp/>:<sp/>maxDiff;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>1;<sp/>i<sp/>&lt;<sp/>size;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>diff<sp/>=<sp/>a[i]<sp/>-<sp/>b[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>type-specific<sp/>abs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>diff<sp/>=<sp/>diff<sp/>&lt;<sp/>0<sp/>?<sp/>diff<sp/>*<sp/>(T)<sp/>-1<sp/>:<sp/>diff;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(diff<sp/>&gt;<sp/>maxDiff)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>maxDiff<sp/>=<sp/>diff;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(this-&gt;data_<sp/>!=<sp/>nullptr)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memset(this-&gt;data_,<sp/>0,<sp/>this-&gt;getSizeInBytes());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>maxDiff;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>non-contiguous</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>FIXME</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(false);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T)<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>T<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::maxDiff(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>HostTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>size<sp/>=<sp/>this-&gt;numElements();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(size<sp/>==<sp/>t.numElements());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(size<sp/>&gt;<sp/>0);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(InnerContig)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>a<sp/>=<sp/>this-&gt;data();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>b<sp/>=<sp/>t.data();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>maxDiff<sp/>=<sp/>a[0]<sp/>-<sp/>b[0];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>type-specific<sp/>abs()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>maxDiff<sp/>=<sp/>maxDiff<sp/>&lt;<sp/>0<sp/>?<sp/>maxDiff<sp/>*<sp/>(T)-1<sp/>:<sp/>maxDiff;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>1;<sp/>i<sp/>&lt;<sp/>size;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>diff<sp/>=<sp/>a[i]<sp/>-<sp/>b[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>type-specific<sp/>abs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>diff<sp/>=<sp/>diff<sp/>&lt;<sp/>0<sp/>?<sp/>diff<sp/>*<sp/>(T)-1<sp/>:<sp/>diff;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(diff<sp/>&gt;<sp/>maxDiff)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>maxDiff<sp/>=<sp/>diff;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>maxDiff;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>non-contiguous</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(false);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>(T)0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/HostTensor-inl.cuh"/>
   </compounddef>

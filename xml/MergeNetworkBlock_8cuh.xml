@@ -16,286 +16,318 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceDefs.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MergeNetworkUtils.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/PtxUtils.cuh&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/WarpShuffles.cuh&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Merge<sp/>pairs<sp/>of<sp/>lists<sp/>smaller<sp/>than<sp/>blockDim.x<sp/>(NumThreads)</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>AllThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>AllThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>blockMergeSmall(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(utils::isPowerOf2(L),<sp/>&quot;L<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(utils::isPowerOf2(NumThreads),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;NumThreads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(L<sp/>&lt;=<sp/>NumThreads,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&lt;=<sp/>NumThreads&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(L),<sp/>&quot;L<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(NumThreads),<sp/>&quot;NumThreads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(L<sp/>&lt;=<sp/>NumThreads,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&lt;=<sp/>NumThreads&quot;);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Which<sp/>pair<sp/>of<sp/>lists<sp/>we<sp/>are<sp/>merging</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>mergeId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>L;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Which<sp/>pair<sp/>of<sp/>lists<sp/>we<sp/>are<sp/>merging</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>mergeId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>L;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Which<sp/>thread<sp/>we<sp/>are<sp/>within<sp/>the<sp/>merge</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>tid<sp/>=<sp/>threadIdx.x<sp/>%<sp/>L;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Which<sp/>thread<sp/>we<sp/>are<sp/>within<sp/>the<sp/>merge</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>tid<sp/>=<sp/>threadIdx.x<sp/>%<sp/>L;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>listK<sp/>points<sp/>to<sp/>a<sp/>region<sp/>of<sp/>size<sp/>N<sp/>*<sp/>2<sp/>*<sp/>L</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>listK<sp/>+=<sp/>2<sp/>*<sp/>L<sp/>*<sp/>mergeId;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>listV<sp/>+=<sp/>2<sp/>*<sp/>L<sp/>*<sp/>mergeId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>listK<sp/>points<sp/>to<sp/>a<sp/>region<sp/>of<sp/>size<sp/>N<sp/>*<sp/>2<sp/>*<sp/>L</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listK<sp/>+=<sp/>2<sp/>*<sp/>L<sp/>*<sp/>mergeId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listV<sp/>+=<sp/>2<sp/>*<sp/>L<sp/>*<sp/>mergeId;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>It&apos;s<sp/>not<sp/>a<sp/>bitonic<sp/>merge,<sp/>both<sp/>lists<sp/>are<sp/>in<sp/>the<sp/>same<sp/>direction,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>so<sp/>handle<sp/>the<sp/>first<sp/>swap<sp/>assuming<sp/>the<sp/>second<sp/>list<sp/>is<sp/>reversed</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>pos<sp/>=<sp/>L<sp/>-<sp/>1<sp/>-<sp/>tid;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>stride<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>+<sp/>1;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>stride<sp/>=<sp/>L<sp/>/<sp/>2;<sp/>stride<sp/>&gt;<sp/>0;<sp/>stride<sp/>/=<sp/>2)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>-<sp/>(tid<sp/>&amp;<sp/>(stride<sp/>-<sp/>1));</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">//<sp/>Merge<sp/>pairs<sp/>of<sp/>sorted<sp/>lists<sp/>larger<sp/>than<sp/>blockDim.x<sp/>(NumThreads)</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>blockMergeLarge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(utils::isPowerOf2(L),<sp/>&quot;L<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(L<sp/>&gt;=<sp/>kWarpSize,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&gt;=<sp/>32&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(utils::isPowerOf2(NumThreads),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;NumThreads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(L<sp/>&gt;=<sp/>NumThreads,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&gt;=<sp/>NumThreads&quot;);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>For<sp/>L<sp/>&gt;<sp/>NumThreads,<sp/>each<sp/>thread<sp/>has<sp/>to<sp/>perform<sp/>more<sp/>work</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>per<sp/>each<sp/>stride.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>int<sp/>kLoopPerThread<sp/>=<sp/>L<sp/>/<sp/>NumThreads;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>It&apos;s<sp/>not<sp/>a<sp/>bitonic<sp/>merge,<sp/>both<sp/>lists<sp/>are<sp/>in<sp/>the<sp/>same<sp/>direction,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>so<sp/>handle<sp/>the<sp/>first<sp/>swap<sp/>assuming<sp/>the<sp/>second<sp/>list<sp/>is<sp/>reversed</highlight></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>loop<sp/>=<sp/>0;<sp/>loop<sp/>&lt;<sp/>kLoopPerThread;<sp/>++loop)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>tid<sp/>=<sp/>loop<sp/>*<sp/>NumThreads<sp/>+<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>It&apos;s<sp/>not<sp/>a<sp/>bitonic<sp/>merge,<sp/>both<sp/>lists<sp/>are<sp/>in<sp/>the<sp/>same<sp/>direction,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>so<sp/>handle<sp/>the<sp/>first<sp/>swap<sp/>assuming<sp/>the<sp/>second<sp/>list<sp/>is<sp/>reversed</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>L<sp/>-<sp/>1<sp/>-<sp/>tid;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>stride<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>+<sp/>1;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>int<sp/>kSecondLoopPerThread<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FullMerge<sp/>?<sp/>kLoopPerThread<sp/>:<sp/>kLoopPerThread<sp/>/<sp/>2;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>stride<sp/>=<sp/>L<sp/>/<sp/>2;<sp/>stride<sp/>&gt;<sp/>0;<sp/>stride<sp/>/=<sp/>2)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>loop<sp/>=<sp/>0;<sp/>loop<sp/>&lt;<sp/>kSecondLoopPerThread;<sp/>++loop)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>tid<sp/>=<sp/>loop<sp/>*<sp/>NumThreads<sp/>+<sp/>threadIdx.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>-<sp/>(tid<sp/>&amp;<sp/>(stride<sp/>-<sp/>1));</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>stride<sp/>=<sp/>L<sp/>/<sp/>2;<sp/>stride<sp/>&gt;<sp/>0;<sp/>stride<sp/>/=<sp/>2)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>-<sp/>(tid<sp/>&amp;<sp/>(stride<sp/>-<sp/>1));</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(AllThreads<sp/>||<sp/>(threadIdx.x<sp/>&lt;<sp/>N<sp/>*<sp/>L))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Merge<sp/>pairs<sp/>of<sp/>sorted<sp/>lists<sp/>larger<sp/>than<sp/>blockDim.x<sp/>(NumThreads)</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>blockMergeLarge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(L),<sp/>&quot;L<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(L<sp/>&gt;=<sp/>kWarpSize,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&gt;=<sp/>32&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(NumThreads),<sp/>&quot;NumThreads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(L<sp/>&gt;=<sp/>NumThreads,<sp/>&quot;merge<sp/>list<sp/>size<sp/>must<sp/>be<sp/>&gt;=<sp/>NumThreads&quot;);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>L<sp/>&gt;<sp/>NumThreads,<sp/>each<sp/>thread<sp/>has<sp/>to<sp/>perform<sp/>more<sp/>work</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>per<sp/>each<sp/>stride.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kLoopPerThread<sp/>=<sp/>L<sp/>/<sp/>NumThreads;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>It&apos;s<sp/>not<sp/>a<sp/>bitonic<sp/>merge,<sp/>both<sp/>lists<sp/>are<sp/>in<sp/>the<sp/>same<sp/>direction,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>so<sp/>handle<sp/>the<sp/>first<sp/>swap<sp/>assuming<sp/>the<sp/>second<sp/>list<sp/>is<sp/>reversed</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>loop<sp/>=<sp/>0;<sp/>loop<sp/>&lt;<sp/>kLoopPerThread;<sp/>++loop)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>tid<sp/>=<sp/>loop<sp/>*<sp/>NumThreads<sp/>+<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>L<sp/>-<sp/>1<sp/>-<sp/>tid;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>stride<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>+<sp/>1;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kSecondLoopPerThread<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FullMerge<sp/>?<sp/>kLoopPerThread<sp/>:<sp/>kLoopPerThread<sp/>/<sp/>2;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>stride<sp/>=<sp/>L<sp/>/<sp/>2;<sp/>stride<sp/>&gt;<sp/>0;<sp/>stride<sp/>/=<sp/>2)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>loop<sp/>=<sp/>0;<sp/>loop<sp/>&lt;<sp/>kSecondLoopPerThread;<sp/>++loop)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>tid<sp/>=<sp/>loop<sp/>*<sp/>NumThreads<sp/>+<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>pos<sp/>=<sp/>2<sp/>*<sp/>tid<sp/>-<sp/>(tid<sp/>&amp;<sp/>(stride<sp/>-<sp/>1));</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos]<sp/>=<sp/>swap<sp/>?<sp/>kb<sp/>:<sp/>ka;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>ka<sp/>:<sp/>kb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos]<sp/>=<sp/>swap<sp/>?<sp/>vb<sp/>:<sp/>va;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listV[pos<sp/>+<sp/>stride]<sp/>=<sp/>swap<sp/>?<sp/>va<sp/>:<sp/>vb;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>is<sp/>this<sp/>a<sp/>CUDA<sp/>9<sp/>compiler<sp/>bug?</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>ka<sp/>=<sp/>listK[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>K&amp;<sp/>kb<sp/>=<sp/>listK[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bool<sp/>s<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(ka,<sp/>kb)<sp/>:<sp/>Comp::lt(ka,<sp/>kb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>ka,<sp/>kb);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>va<sp/>=<sp/>listV[pos];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>V&amp;<sp/>vb<sp/>=<sp/>listV[pos<sp/>+<sp/>stride];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>swap(s,<sp/>va,<sp/>vb);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Class<sp/>template<sp/>to<sp/>prevent<sp/>static_assert<sp/>from<sp/>firing<sp/>for</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>mixing<sp/>smaller/larger<sp/>than<sp/>block<sp/>cases</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>SmallerThanBlock,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
-<codeline><highlight class="normal">struct<sp/>BlockMerge<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>SmallerThanBlock,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>BlockMerge<sp/>{};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Merging<sp/>lists<sp/>smaller<sp/>than<sp/>a<sp/>block</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>BlockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>N,<sp/>L,<sp/>Dir,<sp/>Comp,<sp/>true,<sp/>FullMerge&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumParallelMerges<sp/>=<sp/>NumThreads<sp/>/<sp/>L;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumIterations<sp/>=<sp/>N<sp/>/<sp/>kNumParallelMerges;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumParallelMerges<sp/>=<sp/>NumThreads<sp/>/<sp/>L;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumIterations<sp/>=<sp/>N<sp/>/<sp/>kNumParallelMerges;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(L<sp/>&lt;=<sp/>NumThreads,<sp/>&quot;list<sp/>must<sp/>be<sp/>&lt;=<sp/>NumThreads&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert((N<sp/>&lt;<sp/>kNumParallelMerges)<sp/>||</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(kNumIterations<sp/>*<sp/>kNumParallelMerges<sp/>==<sp/>N),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;improper<sp/>selection<sp/>of<sp/>N<sp/>and<sp/>L&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(L<sp/>&lt;=<sp/>NumThreads,<sp/>&quot;list<sp/>must<sp/>be<sp/>&lt;=<sp/>NumThreads&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(N<sp/>&lt;<sp/>kNumParallelMerges)<sp/>||</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(kNumIterations<sp/>*<sp/>kNumParallelMerges<sp/>==<sp/>N),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;improper<sp/>selection<sp/>of<sp/>N<sp/>and<sp/>L&quot;);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(N<sp/>&lt;<sp/>kNumParallelMerges)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>only<sp/>need<sp/>L<sp/>threads<sp/>per<sp/>each<sp/>list<sp/>to<sp/>perform<sp/>the<sp/>merge</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeSmall&lt;NumThreads,<sp/>K,<sp/>V,<sp/>N,<sp/>L,<sp/>false,<sp/>Dir,<sp/>Comp,<sp/>FullMerge&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK,<sp/>listV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>All<sp/>threads<sp/>participate</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(N<sp/>&lt;<sp/>kNumParallelMerges)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>only<sp/>need<sp/>L<sp/>threads<sp/>per<sp/>each<sp/>list<sp/>to<sp/>perform<sp/>the<sp/>merge</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeSmall&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FullMerge&gt;(listK,<sp/>listV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>All<sp/>threads<sp/>participate</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumIterations;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>start<sp/>=<sp/>i<sp/>*<sp/>kNumParallelMerges<sp/>*<sp/>2<sp/>*<sp/>L;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumIterations;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>start<sp/>=<sp/>i<sp/>*<sp/>kNumParallelMerges<sp/>*<sp/>2<sp/>*<sp/>L;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeSmall&lt;NumThreads,<sp/>K,<sp/>V,<sp/>N,<sp/>L,<sp/>true,<sp/>Dir,<sp/>Comp,<sp/>FullMerge&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK<sp/>+<sp/>start,<sp/>listV<sp/>+<sp/>start);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeSmall&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>true,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FullMerge&gt;(listK<sp/>+<sp/>start,<sp/>listV<sp/>+<sp/>start);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Merging<sp/>lists<sp/>larger<sp/>than<sp/>a<sp/>block</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>BlockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>N,<sp/>L,<sp/>Dir,<sp/>Comp,<sp/>false,<sp/>FullMerge&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Each<sp/>pair<sp/>of<sp/>lists<sp/>is<sp/>merged<sp/>sequentially</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Each<sp/>pair<sp/>of<sp/>lists<sp/>is<sp/>merged<sp/>sequentially</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>start<sp/>=<sp/>i<sp/>*<sp/>2<sp/>*<sp/>L;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>N;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>start<sp/>=<sp/>i<sp/>*<sp/>2<sp/>*<sp/>L;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeLarge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>L,<sp/>Dir,<sp/>Comp,<sp/>FullMerge&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK<sp/>+<sp/>start,<sp/>listV<sp/>+<sp/>start);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMergeLarge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>L,<sp/>Dir,<sp/>Comp,<sp/>FullMerge&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>listK<sp/>+<sp/>start,<sp/>listV<sp/>+<sp/>start);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge<sp/>=<sp/>true&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>FullMerge<sp/>=<sp/>true&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>blockMerge(K*<sp/>listK,<sp/>V*<sp/>listV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>bool<sp/>kSmallerThanBlock<sp/>=<sp/>(L<sp/>&lt;=<sp/>NumThreads);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>bool<sp/>kSmallerThanBlock<sp/>=<sp/>(L<sp/>&lt;=<sp/>NumThreads);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>BlockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>N,<sp/>L,<sp/>Dir,<sp/>Comp,<sp/>kSmallerThanBlock,<sp/>FullMerge&gt;::</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>merge(listK,<sp/>listV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BlockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>N,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>L,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kSmallerThanBlock,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FullMerge&gt;::merge(listK,<sp/>listV);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/MergeNetworkBlock.cuh"/>
   </compounddef>

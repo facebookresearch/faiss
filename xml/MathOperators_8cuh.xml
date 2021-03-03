@@ -14,7 +14,6 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/ConversionOperators.cuh&gt;</highlight></codeline>
@@ -26,546 +25,548 @@
 <codeline><highlight class="normal">//<sp/>over<sp/>half<sp/>and<sp/>float,<sp/>and<sp/>on<sp/>vector<sp/>types<sp/>transparently</highlight></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>T<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>T<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>add(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>add(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>sub(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>sub(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>mul(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>mul(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>neg(T<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>-v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>neg(T<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>-v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(T<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(T<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&lt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>&gt;<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>a<sp/>==<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(T<sp/>a,<sp/>T<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>a<sp/>==<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T)<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>(T)0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;float2&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>float<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>float<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>add(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>add(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>sub(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>sub(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>add(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>add(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>sub(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>sub(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>mul(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>mul(float2<sp/>a,<sp/>float2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>mul(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>mul(float2<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>neg(float2<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>-v.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>-v.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>neg(float2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>-v.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>-v.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(float2<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v.x<sp/>+<sp/>v.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(float2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v.x<sp/>+<sp/>v.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(float2<sp/>a,<sp/>float2<sp/>b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;float4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>float<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>float<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>add(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>+<sp/>b.z;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>+<sp/>b.w;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>add(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>+<sp/>b.z;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>+<sp/>b.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>sub(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>-<sp/>b.z;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>-<sp/>b.w;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>sub(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>-<sp/>b.z;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>-<sp/>b.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>add(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>+<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>add(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>+<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>sub(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>-<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>sub(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>-<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>mul(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>*<sp/>b.z;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>*<sp/>b.w;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>mul(float4<sp/>a,<sp/>float4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>*<sp/>b.z;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>*<sp/>b.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>mul(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>*<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>mul(float4<sp/>a,<sp/>float<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>a.x<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>a.y<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>a.z<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>a.w<sp/>*<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>neg(float4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>-v.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>-v.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>-v.z;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>-v.w;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>neg(float4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>-v.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>-v.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>-v.z;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>-v.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(float4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v.x<sp/>+<sp/>v.y<sp/>+<sp/>v.z<sp/>+<sp/>v.w;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>a<sp/>vector<sp/>type,<sp/>this<sp/>is<sp/>a<sp/>horizontal<sp/>add,<sp/>returning<sp/>sum(v_i)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(float4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v.x<sp/>+<sp/>v.y<sp/>+<sp/>v.z<sp/>+<sp/>v.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(float4<sp/>a,<sp/>float4<sp/>b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float4<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.x<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.y<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.z<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v.w<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>add(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>add(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hadd(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>+<sp/>__half2float(b));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>+<sp/>__half2float(b));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>sub(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>sub(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hsub(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>-<sp/>__half2float(b));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>-<sp/>__half2float(b));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>mul(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>mul(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hmul(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>*<sp/>__half2float(b));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(__half2float(a)<sp/>*<sp/>__half2float(b));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>neg(half<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>neg(half<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hneg(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hneg(v);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__float2half(-__half2float(v));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(-__half2float(v));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(half<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(half<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>ConvertTo&lt;float&gt;::to(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hlt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hlt(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&lt;<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&lt;<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hgt(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hgt(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&gt;<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>&gt;<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(half<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__heq(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__heq(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>==<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(a)<sp/>==<sp/>__half2float(b);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>zero()<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>0;</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;half2&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>add(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>add(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>+=<sp/>bf.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>+=<sp/>bf.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>+=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>+=<sp/>bf.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>sub(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>sub(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>-=<sp/>bf.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>-=<sp/>bf.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>-=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>-=<sp/>bf.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>add(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>add(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hadd2(a,<sp/>b2);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>+=<sp/>bf;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>+=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>+=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>+=<sp/>bf;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>sub(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>sub(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hsub2(a,<sp/>b2);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>-=<sp/>bf;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>-=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>-=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>-=<sp/>bf;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>mul(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>mul(half2<sp/>a,<sp/>half2<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>bf<sp/>=<sp/>__half22float2(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>*=<sp/>bf.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>*=<sp/>bf.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>*=<sp/>bf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>*=<sp/>bf.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>mul(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>mul(half2<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>half2<sp/>b2<sp/>=<sp/>__half2half2(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hmul2(a,<sp/>b2);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>af<sp/>=<sp/>__half22float2(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>bf<sp/>=<sp/>__half2float(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.x<sp/>*=<sp/>bf;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>af.y<sp/>*=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.x<sp/>*=<sp/>bf;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>af.y<sp/>*=<sp/>bf;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(af);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>neg(half2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>neg(half2<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>FAISS_USE_FULL_FLOAT16</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__hneg2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__hneg2(v);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__half22float2(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>vf.x<sp/>=<sp/>-vf.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>vf.y<sp/>=<sp/>-vf.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__half22float2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.x<sp/>=<sp/>-vf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.y<sp/>=<sp/>-vf.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__float22half2_rn(vf);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(vf);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(half2<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__half22float2(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vf.x<sp/>+=<sp/>vf.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(half2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float2<sp/>vf<sp/>=<sp/>__half22float2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vf.x<sp/>+=<sp/>vf.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>vf.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>vf.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(half2<sp/>a,<sp/>half2<sp/>b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2half2(Math&lt;half&gt;::zero());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2half2(Math&lt;half&gt;::zero());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;Half4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>add(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::add(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::add(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>add(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::add(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::add(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>sub(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::sub(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::sub(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>sub(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::sub(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::sub(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>add(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::add(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::add(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>add(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::add(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::add(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>sub(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::sub(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::sub(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>sub(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::sub(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::sub(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>mul(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::mul(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::mul(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>mul(Half4<sp/>a,<sp/>Half4<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::mul(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::mul(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>mul(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::mul(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::mul(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>mul(Half4<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::mul(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::mul(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>neg(Half4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::neg(v.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::neg(v.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>neg(Half4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::neg(v.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::neg(v.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(Half4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>x<sp/>=<sp/>Math&lt;half2&gt;::reduceAdd(v.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>y<sp/>=<sp/>Math&lt;half2&gt;::reduceAdd(v.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>x<sp/>+<sp/>y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(Half4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>x<sp/>=<sp/>Math&lt;half2&gt;::reduceAdd(v.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>y<sp/>=<sp/>Math&lt;half2&gt;::reduceAdd(v.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>x<sp/>+<sp/>y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(Half4<sp/>a,<sp/>Half4<sp/>b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::zero();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::zero();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;half2&gt;::zero();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;half2&gt;::zero();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Math&lt;Half8&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>half<sp/>ScalarType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>add(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::add(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::add(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>add(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::add(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::add(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>sub(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>sub(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>add(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::add(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::add(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>add(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::add(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::add(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>sub(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>sub(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::sub(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>mul(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.a,<sp/>b.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.b,<sp/>b.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>mul(Half8<sp/>a,<sp/>Half8<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.a,<sp/>b.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.b,<sp/>b.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>mul(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.a,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.b,<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>mul(Half8<sp/>a,<sp/>half<sp/>b)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.a,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::mul(a.b,<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>neg(Half8<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::neg(v.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::neg(v.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>neg(Half8<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::neg(v.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::neg(v.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(Half8<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>x<sp/>=<sp/>Math&lt;Half4&gt;::reduceAdd(v.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float<sp/>y<sp/>=<sp/>Math&lt;Half4&gt;::reduceAdd(v.b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>x<sp/>+<sp/>y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>reduceAdd(Half8<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>x<sp/>=<sp/>Math&lt;Half4&gt;::reduceAdd(v.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>y<sp/>=<sp/>Math&lt;Half4&gt;::reduceAdd(v.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>x<sp/>+<sp/>y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>not<sp/>implemented<sp/>for<sp/>vector<sp/>types</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>lt(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>gt(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>static<sp/>inline<sp/>__device__<sp/>bool<sp/>eq(Half8<sp/>a,<sp/>Half8<sp/>b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>zero()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::zero();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::zero();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>zero()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.a<sp/>=<sp/>Math&lt;Half4&gt;::zero();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>h.b<sp/>=<sp/>Math&lt;Half4&gt;::zero();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/MathOperators.cuh"/>
   </compounddef>

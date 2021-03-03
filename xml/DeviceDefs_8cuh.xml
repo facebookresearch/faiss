@@ -14,12 +14,12 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>We<sp/>require<sp/>at<sp/>least<sp/>CUDA<sp/>8.0<sp/>for<sp/>compilation</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>8000</highlight></codeline>
@@ -31,12 +31,11 @@
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>is<sp/>a<sp/>memory<sp/>barrier<sp/>for<sp/>intra-warp<sp/>writes<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>
 <codeline><highlight class="normal">__forceinline__<sp/>__device__<sp/>void<sp/>warpFence()<sp/>{</highlight></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__syncwarp();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncwarp();</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>For<sp/>the<sp/>time<sp/>being,<sp/>assume<sp/>synchronicity.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/><sp/>__threadfence_block();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>the<sp/>time<sp/>being,<sp/>assume<sp/>synchronicity.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/><sp/>__threadfence_block();</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
@@ -49,7 +48,8 @@
 <codeline><highlight class="normal">#define<sp/>GPU_MAX_SELECTION_K<sp/>1024</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/DeviceDefs.cuh"/>
   </compounddef>

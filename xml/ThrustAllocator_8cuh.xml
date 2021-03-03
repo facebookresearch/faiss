@@ -14,80 +14,80 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;unordered_set&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Allocator<sp/>for<sp/>Thrust<sp/>that<sp/>comes<sp/>out<sp/>of<sp/>a<sp/>specified<sp/>memory<sp/>space</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>GpuResourcesThrustAllocator<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>char<sp/>value_type;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>char<sp/>value_type;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>GpuResourcesThrustAllocator(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>void*<sp/>mem,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>size)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>res_(res),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream_(stream),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_((char*)<sp/>mem),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cur_((char*)<sp/>mem),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>end_((char*)<sp/>mem<sp/>+<sp/>size)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>GpuResourcesThrustAllocator(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>void*<sp/>mem,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>size)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>res_(res),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream_(stream),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_((char*)mem),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cur_((char*)mem),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>end_((char*)mem<sp/>+<sp/>size)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>~GpuResourcesThrustAllocator()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>In<sp/>the<sp/>case<sp/>of<sp/>an<sp/>exception<sp/>being<sp/>thrown,<sp/>we<sp/>may<sp/>not<sp/>have<sp/>called</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>deallocate<sp/>on<sp/>all<sp/>of<sp/>our<sp/>sub-allocations.<sp/>Free<sp/>them<sp/>here</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>p<sp/>:<sp/>mallocAllocs_)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>res_-&gt;deallocMemory(getCurrentDevice(),<sp/>p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>~GpuResourcesThrustAllocator()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>In<sp/>the<sp/>case<sp/>of<sp/>an<sp/>exception<sp/>being<sp/>thrown,<sp/>we<sp/>may<sp/>not<sp/>have<sp/>called</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>deallocate<sp/>on<sp/>all<sp/>of<sp/>our<sp/>sub-allocations.<sp/>Free<sp/>them<sp/>here</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>p<sp/>:<sp/>mallocAllocs_)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res_-&gt;deallocMemory(getCurrentDevice(),<sp/>p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>char*<sp/>allocate(std::ptrdiff_t<sp/>size)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(size<sp/>&lt;=<sp/>(end_<sp/>-<sp/>cur_))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>char*<sp/>p<sp/>=<sp/>cur_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cur_<sp/>+=<sp/>size;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(cur_<sp/>&lt;=<sp/>end_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>char*<sp/>allocate(std::ptrdiff_t<sp/>size)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(size<sp/>&lt;=<sp/>(end_<sp/>-<sp/>cur_))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>char*<sp/>p<sp/>=<sp/>cur_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cur_<sp/>+=<sp/>size;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(cur_<sp/>&lt;=<sp/>end_);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>p;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>we<sp/>cannot<sp/>use<sp/>temporary<sp/>memory<sp/>for<sp/>new<sp/>requests<sp/>because<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>current<sp/>temporary<sp/>memory<sp/>allocator<sp/>cannot<sp/>handle<sp/>stream<sp/>synchronization</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>at<sp/>present,<sp/>so<sp/>just<sp/>allocate<sp/>through<sp/>the<sp/>general<sp/>device</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>char*<sp/>p<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(char*)<sp/>res_-&gt;allocMemory(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AllocRequest(makeDevAlloc(AllocType::Other,<sp/>stream_),<sp/>size));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>p;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>FIXME:<sp/>we<sp/>cannot<sp/>use<sp/>temporary<sp/>memory<sp/>for<sp/>new<sp/>requests<sp/>because</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>current<sp/>temporary<sp/>memory<sp/>allocator<sp/>cannot<sp/>handle<sp/>stream</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>synchronization<sp/>at<sp/>present,<sp/>so<sp/>just<sp/>allocate<sp/>through<sp/>the<sp/>general</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>device</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>char*<sp/>p<sp/>=<sp/>(char*)res_-&gt;allocMemory(AllocRequest(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>makeDevAlloc(AllocType::Other,<sp/>stream_),<sp/>size));</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>mallocAllocs_.insert(p);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>p;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mallocAllocs_.insert(p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>p;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>void<sp/>deallocate(char*<sp/>p,<sp/>size_t<sp/>size)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Allocations<sp/>could<sp/>be<sp/>returned<sp/>out-of-order;<sp/>ignore<sp/>those<sp/>we</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>didn&apos;t<sp/>cudaMalloc</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>it<sp/>=<sp/>mallocAllocs_.find(p);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(it<sp/>!=<sp/>mallocAllocs_.end())<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>res_-&gt;deallocMemory(getCurrentDevice(),<sp/>p);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>mallocAllocs_.erase(it);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>void<sp/>deallocate(char*<sp/>p,<sp/>size_t<sp/>size)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Allocations<sp/>could<sp/>be<sp/>returned<sp/>out-of-order;<sp/>ignore<sp/>those<sp/>we</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>didn&apos;t<sp/>cudaMalloc</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>it<sp/>=<sp/>mallocAllocs_.find(p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(it<sp/>!=<sp/>mallocAllocs_.end())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res_-&gt;deallocMemory(getCurrentDevice(),<sp/>p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mallocAllocs_.erase(it);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/>private:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>GpuResources*<sp/>res_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>cudaStream_t<sp/>stream_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>char*<sp/>start_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>char*<sp/>cur_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>char*<sp/>end_;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>std::unordered_set&lt;char*&gt;<sp/>mallocAllocs_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>private:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GpuResources*<sp/>res_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>char*<sp/>start_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>char*<sp/>cur_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>char*<sp/>end_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_set&lt;char*&gt;<sp/>mallocAllocs_;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/ThrustAllocator.cuh"/>
   </compounddef>

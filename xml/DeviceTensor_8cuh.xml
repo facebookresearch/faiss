@@ -14,85 +14,92 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>DeviceTensor<sp/>:<sp/>public<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>IndexT<sp/>IndexType;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>typedef<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>DataPtrType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>IndexT<sp/>IndexType;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>typename<sp/>PtrTraits&lt;T&gt;::PtrType<sp/>DataPtrType;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Default<sp/>constructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Default<sp/>constructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Destructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>~DeviceTensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Destructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>~DeviceTensor();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Move<sp/>constructor</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Move<sp/>constructor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Move<sp/>assignment</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator=(DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Move<sp/>assignment</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>operator=(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size,<sp/>allocating<sp/>memory<sp/>for<sp/>it</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>via<sp/>temporary<sp/>or<sp/>other<sp/>allocation.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>used</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size,<sp/>allocating<sp/>memory<sp/>for<sp/>it</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>via<sp/>temporary<sp/>or<sp/>other<sp/>allocation.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>used</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size,<sp/>allocating<sp/>memory<sp/>for<sp/>it</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>via<sp/>temporary<sp/>or<sp/>other<sp/>allocation.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>used</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size,<sp/>allocating<sp/>memory<sp/>for<sp/>it</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>via<sp/>temporary<sp/>or<sp/>other<sp/>allocation.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the<sp/>memory<sp/>will<sp/>be<sp/>used</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(DataPtrType<sp/>data,<sp/>const<sp/>IndexT<sp/>sizes[Dim]);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(DataPtrType<sp/>data,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim]);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Constructs<sp/>a<sp/>tensor<sp/>of<sp/>the<sp/>given<sp/>size<sp/>and<sp/>stride,<sp/>referencing<sp/>a</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>memory<sp/>region<sp/>we<sp/>do<sp/>not<sp/>own</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DataPtrType<sp/>data,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim],</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>strides[Dim]);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Copies<sp/>a<sp/>tensor<sp/>into<sp/>ourselves,<sp/>allocating<sp/>memory<sp/>for<sp/>it.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>of<sp/>the<sp/>copy<sp/>and<sp/>thus<sp/>the<sp/>stream<sp/>on<sp/>which<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>memory<sp/>will<sp/>initially<sp/>be<sp/>used.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Copies<sp/>a<sp/>tensor<sp/>into<sp/>ourselves,<sp/>allocating<sp/>memory<sp/>for<sp/>it.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>`stream`<sp/>specifies<sp/>the<sp/>stream<sp/>of<sp/>the<sp/>copy<sp/>and<sp/>thus<sp/>the<sp/>stream<sp/>on<sp/>which</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>memory<sp/>will<sp/>initially<sp/>be<sp/>used.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>t);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Call<sp/>to<sp/>zero<sp/>out<sp/>memory</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__host__<sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>zero(cudaStream_t<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Call<sp/>to<sp/>zero<sp/>out<sp/>memory</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>DeviceTensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;&amp;<sp/>zero(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/>private:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>If<sp/>we<sp/>own<sp/>the<sp/>memory<sp/>(temporary<sp/>or<sp/>non-temporary<sp/>memory<sp/>reservation),<sp/>this</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>holds<sp/>the<sp/>memory<sp/>and<sp/>will<sp/>release<sp/>it<sp/>when<sp/>we<sp/>are<sp/>destroyed</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>GpuMemoryReservation<sp/>reservation_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>private:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>we<sp/>own<sp/>the<sp/>memory<sp/>(temporary<sp/>or<sp/>non-temporary<sp/>memory<sp/>reservation),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>this<sp/>holds<sp/>the<sp/>memory<sp/>and<sp/>will<sp/>release<sp/>it<sp/>when<sp/>we<sp/>are<sp/>destroyed</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GpuMemoryReservation<sp/>reservation_;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceTensor-inl.cuh&gt;</highlight></codeline>
     </programlisting>

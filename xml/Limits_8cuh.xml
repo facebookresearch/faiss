@@ -14,17 +14,16 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Pair.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;limits&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">struct<sp/>Limits<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Limits<sp/>{};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Unfortunately<sp/>we<sp/>can&apos;t<sp/>use<sp/>constexpr<sp/>because<sp/>there<sp/>is<sp/>no</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>constexpr<sp/>constructor<sp/>for<sp/>half</highlight></codeline>
@@ -34,34 +33,34 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Limits&lt;float&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>float<sp/>getMin()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kFloatMin;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>float<sp/>getMax()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kFloatMax;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>float<sp/>getMin()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kFloatMin;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>float<sp/>getMax()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kFloatMax;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>__host__<sp/>half<sp/>kGetHalf(unsigned<sp/>short<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__half_raw<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>h.x<sp/>=<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__half(h);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__half_raw<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half(h);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>half<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>h.x<sp/>=<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Limits&lt;half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>half<sp/>getMin()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kGetHalf(0xfbffU);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>half<sp/>getMax()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kGetHalf(0x7bffU);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>half<sp/>getMin()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kGetHalf(0xfbffU);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>half<sp/>getMax()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kGetHalf(0x7bffU);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">constexpr<sp/>int<sp/>kIntMax<sp/>=<sp/>std::numeric_limits&lt;int&gt;::max();</highlight></codeline>
@@ -69,26 +68,27 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Limits&lt;int&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>int<sp/>getMin()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kIntMin;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>int<sp/>getMax()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kIntMax;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>int<sp/>getMin()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kIntMin;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>int<sp/>getMax()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kIntMax;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template&lt;typename<sp/>K,<sp/>typename<sp/>V&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Limits&lt;Pair&lt;K,<sp/>V&gt;&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>Pair&lt;K,<sp/>V&gt;<sp/>getMin()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;K,<sp/>V&gt;(Limits&lt;K&gt;::getMin(),<sp/>Limits&lt;V&gt;::getMin());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>Pair&lt;K,<sp/>V&gt;<sp/>getMin()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;K,<sp/>V&gt;(Limits&lt;K&gt;::getMin(),<sp/>Limits&lt;V&gt;::getMin());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>Pair&lt;K,<sp/>V&gt;<sp/>getMax()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;K,<sp/>V&gt;(Limits&lt;K&gt;::getMax(),<sp/>Limits&lt;V&gt;::getMax());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>Pair&lt;K,<sp/>V&gt;<sp/>getMax()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;K,<sp/>V&gt;(Limits&lt;K&gt;::getMax(),<sp/>Limits&lt;V&gt;::getMax());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Limits.cuh"/>
   </compounddef>

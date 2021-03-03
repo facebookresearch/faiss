@@ -14,68 +14,65 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MathOperators.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/WarpShuffles.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>A<sp/>simple<sp/>pair<sp/>type<sp/>for<sp/>CUDA<sp/>device<sp/>usage</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Pair<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>__device__<sp/>inline<sp/>Pair()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>__device__<sp/>inline<sp/>Pair()<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>constexpr<sp/>__device__<sp/>inline<sp/>Pair(K<sp/>key,<sp/>V<sp/>value)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>k(key),<sp/>v(value)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>__device__<sp/>inline<sp/>Pair(K<sp/>key,<sp/>V<sp/>value)<sp/>:<sp/>k(key),<sp/>v(value)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator==(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::eq(v,<sp/>rhs.v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>bool<sp/>operator==(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::eq(v,<sp/>rhs.v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator!=(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>!operator==(rhs);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>bool<sp/>operator!=(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>!operator==(rhs);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator&lt;(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::lt(k,<sp/>rhs.k)<sp/>||</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::lt(v,<sp/>rhs.v));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>bool<sp/>operator&lt;(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::lt(k,<sp/>rhs.k)<sp/>||</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::lt(v,<sp/>rhs.v));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>bool</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>operator&gt;(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::gt(k,<sp/>rhs.k)<sp/>||</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::gt(v,<sp/>rhs.v));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>bool<sp/>operator&gt;(const<sp/>Pair&lt;K,<sp/>V&gt;&amp;<sp/>rhs)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Math&lt;K&gt;::gt(k,<sp/>rhs.k)<sp/>||</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(Math&lt;K&gt;::eq(k,<sp/>rhs.k)<sp/>&amp;&amp;<sp/>Math&lt;V&gt;::gt(v,<sp/>rhs.v));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>k;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>k;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>v;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>Pair&lt;T,<sp/>U&gt;<sp/>shfl_up(const<sp/>Pair&lt;T,<sp/>U&gt;&amp;<sp/>pair,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>Pair&lt;T,<sp/>U&gt;(shfl_up(pair.k,<sp/>delta,<sp/>width),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shfl_up(pair.v,<sp/>delta,<sp/>width));</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>Pair&lt;T,<sp/>U&gt;<sp/>shfl_up(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Pair&lt;T,<sp/>U&gt;&amp;<sp/>pair,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>U&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shfl_up(pair.k,<sp/>delta,<sp/>width),<sp/>shfl_up(pair.v,<sp/>delta,<sp/>width));</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>U&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>Pair&lt;T,<sp/>U&gt;<sp/>shfl_xor(const<sp/>Pair&lt;T,<sp/>U&gt;&amp;<sp/>pair,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>Pair&lt;T,<sp/>U&gt;(shfl_xor(pair.k,<sp/>laneMask,<sp/>width),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shfl_xor(pair.v,<sp/>laneMask,<sp/>width));</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>Pair&lt;T,<sp/>U&gt;<sp/>shfl_xor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>Pair&lt;T,<sp/>U&gt;&amp;<sp/>pair,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Pair&lt;T,<sp/>U&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shfl_xor(pair.k,<sp/>laneMask,<sp/>width),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shfl_xor(pair.v,<sp/>laneMask,<sp/>width));</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Pair.cuh"/>
   </compounddef>

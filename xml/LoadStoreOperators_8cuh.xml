@@ -14,16 +14,14 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Float16.cuh&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#ifndef<sp/>__HALF2_TO_UI</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>cuda_fp16.hpp<sp/>doesn&apos;t<sp/>export<sp/>this</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>__HALF2_TO_UI(var)<sp/>*(reinterpret_cast&lt;unsigned<sp/>int<sp/>*&gt;(&amp;(var)))</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>__HALF2_TO_UI(var)<sp/>*(reinterpret_cast&lt;unsigned<sp/>int*&gt;(&amp;(var)))</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>Templated<sp/>wrappers<sp/>to<sp/>express<sp/>load/store<sp/>for<sp/>different<sp/>scalar<sp/>and<sp/>vector</highlight></codeline>
@@ -31,72 +29,85 @@
 <codeline><highlight class="normal">//<sp/>over<sp/>half<sp/>and<sp/>float,<sp/>and<sp/>on<sp/>vector<sp/>types<sp/>transparently</highlight></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadStore<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>*((T*)<sp/>p);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>T<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*((T*)p);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>const<sp/>T&amp;<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>*((T*)<sp/>p)<sp/>=<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>const<sp/>T&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*((T*)p)<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadStore&lt;Half4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half4<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v2.u32<sp/>{%0,<sp/>%1},<sp/>[%2];&quot;<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a)),<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b))<sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v2.u32<sp/>{%0,<sp/>%1},<sp/>[%2];&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a)),<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b))</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v2.u32<sp/>{%0,<sp/>%1},<sp/>[%2];&quot;<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(out.a.x),<sp/>&quot;=r&quot;(out.b.x)<sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v2.u32<sp/>{%0,<sp/>%1},<sp/>[%2];&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;=r&quot;(out.a.x),<sp/>&quot;=r&quot;(out.b.x)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>Half4&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>Half4&amp;<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;st.v2.u32<sp/>[%0],<sp/>{%1,<sp/>%2};&quot;<sp/>:<sp/>:<sp/>&quot;l&quot;(p),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.a)),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.b)));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;st.v2.u32<sp/>[%0],<sp/>{%1,<sp/>%2};&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.a)),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.b)));</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;st.v2.u32<sp/>[%0],<sp/>{%1,<sp/>%2};&quot;<sp/>:<sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(v.a.x),<sp/>&quot;r&quot;(v.b.x));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;st.v2.u32<sp/>[%0],<sp/>{%1,<sp/>%2};&quot;<sp/>:<sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(v.a.x),<sp/>&quot;r&quot;(v.b.x));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>LoadStore&lt;Half8&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half8<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half8<sp/>load(void*<sp/>p)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Half8<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v4.u32<sp/>{%0,<sp/>%1,<sp/>%2,<sp/>%3},<sp/>[%4];&quot;<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a.a)),<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a.b)),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b.a)),<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b.b))<sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v4.u32<sp/>{%0,<sp/>%1,<sp/>%2,<sp/>%3},<sp/>[%4];&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a.a)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.a.b)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b.a)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(__HALF2_TO_UI(out.b.b))</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v4.u32<sp/>{%0,<sp/>%1,<sp/>%2,<sp/>%3},<sp/>[%4];&quot;<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(out.a.a.x),<sp/>&quot;=r&quot;(out.a.b.x),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;=r&quot;(out.b.a.x),<sp/>&quot;=r&quot;(out.b.b.x)<sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;ld.global.v4.u32<sp/>{%0,<sp/>%1,<sp/>%2,<sp/>%3},<sp/>[%4];&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;=r&quot;(out.a.a.x),<sp/>&quot;=r&quot;(out.a.b.x),<sp/>&quot;=r&quot;(out.b.a.x),<sp/>&quot;=r&quot;(out.b.b.x)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>Half8&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>store(void*<sp/>p,<sp/>Half8&amp;<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;st.v4.u32<sp/>[%0],<sp/>{%1,<sp/>%2,<sp/>%3,<sp/>%4};&quot;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.a.a)),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.a.b)),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.b.a)),<sp/>&quot;r&quot;(__HALF2_TO_UI(v.b.b)));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;st.v4.u32<sp/>[%0],<sp/>{%1,<sp/>%2,<sp/>%3,<sp/>%4};&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.a.a)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.a.b)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.b.a)),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;r&quot;(__HALF2_TO_UI(v.b.b)));</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>asm(&quot;st.v4.u32<sp/>[%0],<sp/>{%1,<sp/>%2,<sp/>%3,<sp/>%4};&quot;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(v.a.a.x),<sp/>&quot;r&quot;(v.a.b.x),<sp/>&quot;r&quot;(v.b.a.x),<sp/>&quot;r&quot;(v.b.b.x));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asm(&quot;st.v4.u32<sp/>[%0],<sp/>{%1,<sp/>%2,<sp/>%3,<sp/>%4};&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>&quot;l&quot;(p),<sp/>&quot;r&quot;(v.a.a.x),<sp/>&quot;r&quot;(v.a.b.x),<sp/>&quot;r&quot;(v.b.a.x),<sp/>&quot;r&quot;(v.b.b.x));</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/LoadStoreOperators.cuh"/>
   </compounddef>

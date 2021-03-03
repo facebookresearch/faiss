@@ -16,21 +16,23 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>swap(bool<sp/>swap,<sp/>T&amp;<sp/>x,<sp/>T&amp;<sp/>y)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>T<sp/>tmp<sp/>=<sp/>x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>x<sp/>=<sp/>swap<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>y<sp/>=<sp/>swap<sp/>?<sp/>tmp<sp/>:<sp/>y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>tmp<sp/>=<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>x<sp/>=<sp/>swap<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>y<sp/>=<sp/>swap<sp/>?<sp/>tmp<sp/>:<sp/>y;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>void<sp/>assign(bool<sp/>assign,<sp/>T&amp;<sp/>x,<sp/>T<sp/>y)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>x<sp/>=<sp/>assign<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>x<sp/>=<sp/>assign<sp/>?<sp/>y<sp/>:<sp/>x;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/MergeNetworkUtils.cuh"/>
   </compounddef>

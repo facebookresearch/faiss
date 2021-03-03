@@ -14,141 +14,146 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceDefs.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/PtxUtils.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/ReductionOperators.cuh&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/WarpShuffles.cuh&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>Op,<sp/>int<sp/>ReduceWidth<sp/>=<sp/>kWarpSize&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>T<sp/>warpReduceAll(T<sp/>val,<sp/>Op<sp/>op)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>mask<sp/>=<sp/>ReduceWidth<sp/>/<sp/>2;<sp/>mask<sp/>&gt;<sp/>0;<sp/>mask<sp/>&gt;&gt;=<sp/>1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val<sp/>=<sp/>op(val,<sp/>shfl_xor(val,<sp/>mask));</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>mask<sp/>=<sp/>ReduceWidth<sp/>/<sp/>2;<sp/>mask<sp/>&gt;<sp/>0;<sp/>mask<sp/>&gt;&gt;=<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>op(val,<sp/>shfl_xor(val,<sp/>mask));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>val;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Sums<sp/>a<sp/>register<sp/>value<sp/>across<sp/>all<sp/>warp<sp/>threads</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>int<sp/>ReduceWidth<sp/>=<sp/>kWarpSize&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>T<sp/>warpReduceAllSum(T<sp/>val)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>warpReduceAll&lt;T,<sp/>Sum&lt;T&gt;,<sp/>ReduceWidth&gt;(val,<sp/>Sum&lt;T&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>warpReduceAll&lt;T,<sp/>Sum&lt;T&gt;,<sp/>ReduceWidth&gt;(val,<sp/>Sum&lt;T&gt;());</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Performs<sp/>a<sp/>block-wide<sp/>reduction</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>Op,<sp/>bool<sp/>BroadcastAll,<sp/>bool<sp/>KillWARDependency&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>T<sp/>blockReduceAll(T<sp/>val,<sp/>Op<sp/>op,<sp/>T*<sp/>smem)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>val<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val,<sp/>op);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>smem[warpId]<sp/>=<sp/>val;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(warpId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val<sp/>=<sp/>laneId<sp/>&lt;<sp/>utils::divUp(blockDim.x,<sp/>kWarpSize)<sp/>?<sp/>smem[laneId]<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>op.identity();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val,<sp/>op);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[warpId]<sp/>=<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(warpId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>laneId<sp/>&lt;<sp/>utils::divUp(blockDim.x,<sp/>kWarpSize)<sp/>?<sp/>smem[laneId]</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>op.identity();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val,<sp/>op);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__threadfence_block();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[0]<sp/>=<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>__threadfence_block();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[0]<sp/>=<sp/>val;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>smem[0];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val<sp/>=<sp/>smem[0];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(KillWARDependency)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(KillWARDependency)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>val;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Performs<sp/>a<sp/>block-wide<sp/>reduction<sp/>of<sp/>multiple<sp/>values<sp/>simultaneously</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Num,<sp/>typename<sp/>T,<sp/>typename<sp/>Op,<sp/>bool<sp/>BroadcastAll,<sp/>bool<sp/>KillWARDependency&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Num,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Op,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>BroadcastAll,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>KillWARDependency&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>void<sp/>blockReduceAll(T<sp/>val[Num],<sp/>Op<sp/>op,<sp/>T*<sp/>smem)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val[i],<sp/>op);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>smem[warpId<sp/>*<sp/>Num<sp/>+<sp/>i]<sp/>=<sp/>val[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val[i],<sp/>op);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(warpId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>laneId<sp/>&lt;<sp/>utils::divUp(blockDim.x,<sp/>kWarpSize)<sp/>?<sp/>smem[laneId<sp/>*<sp/>Num<sp/>+<sp/>i]<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>op.identity();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val[i],<sp/>op);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[warpId<sp/>*<sp/>Num<sp/>+<sp/>i]<sp/>=<sp/>val[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(warpId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>laneId<sp/>&lt;<sp/>utils::divUp(blockDim.x,<sp/>kWarpSize)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>?<sp/>smem[laneId<sp/>*<sp/>Num<sp/>+<sp/>i]</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>op.identity();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>warpReduceAll&lt;T,<sp/>Op&gt;(val[i],<sp/>op);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__threadfence_block();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[i]<sp/>=<sp/>val[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>__threadfence_block();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smem[i]<sp/>=<sp/>val[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>smem[i];</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(BroadcastAll)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Num;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>val[i]<sp/>=<sp/>smem[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(KillWARDependency)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>if<sp/>(KillWARDependency)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
-<codeline></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Sums<sp/>a<sp/>register<sp/>value<sp/>across<sp/>the<sp/>entire<sp/>block</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>bool<sp/>BroadcastAll,<sp/>bool<sp/>KillWARDependency&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>T<sp/>blockReduceAllSum(T<sp/>val,<sp/>T*<sp/>smem)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>blockReduceAll&lt;T,<sp/>Sum&lt;T&gt;,<sp/>BroadcastAll,<sp/>KillWARDependency&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>val,<sp/>Sum&lt;T&gt;(),<sp/>smem);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>blockReduceAll&lt;T,<sp/>Sum&lt;T&gt;,<sp/>BroadcastAll,<sp/>KillWARDependency&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val,<sp/>Sum&lt;T&gt;(),<sp/>smem);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;int<sp/>Num,<sp/>typename<sp/>T,<sp/>bool<sp/>BroadcastAll,<sp/>bool<sp/>KillWARDependency&gt;</highlight></codeline>
 <codeline><highlight class="normal">__device__<sp/>inline<sp/>void<sp/>blockReduceAllSum(T<sp/>vals[Num],<sp/>T*<sp/>smem)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>blockReduceAll&lt;Num,<sp/>T,<sp/>Sum&lt;T&gt;,<sp/>BroadcastAll,<sp/>KillWARDependency&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vals,<sp/>Sum&lt;T&gt;(),<sp/>smem);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>blockReduceAll&lt;Num,<sp/>T,<sp/>Sum&lt;T&gt;,<sp/>BroadcastAll,<sp/>KillWARDependency&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vals,<sp/>Sum&lt;T&gt;(),<sp/>smem);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Reductions.cuh"/>
   </compounddef>

@@ -14,7 +14,6 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
@@ -25,7 +24,8 @@
 <codeline><highlight class="normal">#include<sp/>&lt;thrust/execution_policy.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;thrust/transform.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>Conversion<sp/>utilities</highlight></codeline>
@@ -33,114 +33,137 @@
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>From,<sp/>typename<sp/>To&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Convert<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>To<sp/>operator()(From<sp/>v)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(To)<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>To<sp/>operator()(From<sp/>v)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>(To)v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Convert&lt;float,<sp/>half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>half<sp/>operator()(float<sp/>v)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__float2half(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>half<sp/>operator()(float<sp/>v)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Convert&lt;half,<sp/>float&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>inline<sp/>__device__<sp/>float<sp/>operator()(half<sp/>v)<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__half2float(v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>__device__<sp/>float<sp/>operator()(half<sp/>v)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">struct<sp/>ConvertTo<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>ConvertTo<sp/>{};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;float&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>to(float<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>to(half<sp/>v)<sp/>{<sp/>return<sp/>__half2float(v);<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>to(float<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float<sp/>to(half<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half2float(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;float2&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>to(float2<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>to(half2<sp/>v)<sp/>{<sp/>return<sp/>__half22float2(v);<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>to(float2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float2<sp/>to(half2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__half22float2(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;float4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>to(float4<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>to(Half4<sp/>v)<sp/>{<sp/>return<sp/>half4ToFloat4(v);<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>to(float4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>float4<sp/>to(Half4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>half4ToFloat4(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>to(float<sp/>v)<sp/>{<sp/>return<sp/>__float2half(v);<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>to(half<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>to(float<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float2half(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half<sp/>to(half<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;half2&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>to(float2<sp/>v)<sp/>{<sp/>return<sp/>__float22half2_rn(v);<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>to(half2<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>to(float2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>__float22half2_rn(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>half2<sp/>to(half2<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>ConvertTo&lt;Half4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>to(float4<sp/>v)<sp/>{<sp/>return<sp/>float4ToHalf4(v);<sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>to(Half4<sp/>v)<sp/>{<sp/>return<sp/>v;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>to(float4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>float4ToHalf4(v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>Half4<sp/>to(Half4<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Tensor<sp/>conversion</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>From,<sp/>typename<sp/>To&gt;</highlight></codeline>
-<codeline><highlight class="normal">void<sp/>runConvert(const<sp/>From*<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>To*<sp/>out,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>num,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>thrust::transform(thrust::cuda::par.on(stream),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in,<sp/>in<sp/>+<sp/>num,<sp/>out,<sp/>Convert&lt;From,<sp/>To&gt;());</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>runConvert(const<sp/>From*<sp/>in,<sp/>To*<sp/>out,<sp/>size_t<sp/>num,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>thrust::transform(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thrust::cuda::par.on(stream),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>in<sp/>+<sp/>num,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Convert&lt;From,<sp/>To&gt;());</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>From,<sp/>typename<sp/>To,<sp/>int<sp/>Dim&gt;</highlight></codeline>
-<codeline><highlight class="normal">void<sp/>convertTensor(cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;To,<sp/>Dim,<sp/>true&gt;&amp;<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(in.numElements()<sp/>==<sp/>out.numElements());</highlight></codeline>
+<codeline><highlight class="normal">void<sp/>convertTensor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;To,<sp/>Dim,<sp/>true&gt;&amp;<sp/>out)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(in.numElements()<sp/>==<sp/>out.numElements());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>runConvert&lt;From,<sp/>To&gt;(in.data(),<sp/>out.data(),<sp/>in.numElements(),<sp/>stream);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>runConvert&lt;From,<sp/>To&gt;(in.data(),<sp/>out.data(),<sp/>in.numElements(),<sp/>stream);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>From,<sp/>typename<sp/>To,<sp/>int<sp/>Dim&gt;</highlight></codeline>
-<codeline><highlight class="normal">DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;</highlight></codeline>
-<codeline><highlight class="normal">convertTensorTemporary(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(res);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>out(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>res,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>in.sizes());</highlight></codeline>
+<codeline><highlight class="normal">DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>convertTensorTemporary(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(res);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>out(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>makeTempAlloc(AllocType::Other,<sp/>stream),<sp/>in.sizes());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>convertTensor(stream,<sp/>in,<sp/>out);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>convertTensor(stream,<sp/>in,<sp/>out);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>From,<sp/>typename<sp/>To,<sp/>int<sp/>Dim&gt;</highlight></codeline>
-<codeline><highlight class="normal">DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;</highlight></codeline>
-<codeline><highlight class="normal">convertTensorNonTemporary(GpuResources*<sp/>res,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>FAISS_ASSERT(res);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>out(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>res,<sp/>makeDevAlloc(AllocType::Other,<sp/>stream),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>in.sizes());</highlight></codeline>
+<codeline><highlight class="normal">DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>convertTensorNonTemporary(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;From,<sp/>Dim,<sp/>true&gt;&amp;<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(res);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;To,<sp/>Dim,<sp/>true&gt;<sp/>out(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res,<sp/>makeDevAlloc(AllocType::Other,<sp/>stream),<sp/>in.sizes());</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>convertTensor(stream,<sp/>in,<sp/>out);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>convertTensor(stream,<sp/>in,<sp/>out);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/ConversionOperators.cuh"/>
   </compounddef>

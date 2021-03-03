@@ -14,13 +14,13 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/PtxUtils.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/WarpShuffles.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>Warp-coalesced<sp/>parallel<sp/>reading<sp/>and<sp/>writing<sp/>of<sp/>packed<sp/>bits</highlight></codeline>
@@ -29,248 +29,265 @@
 <codeline><highlight class="normal">//<sp/>Read/write<sp/>native<sp/>word<sp/>sizes</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>WordT,<sp/>int<sp/>Bits&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpPackedBits<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(int<sp/>laneId,<sp/>WordT<sp/>v,<sp/>bool<sp/>valid,<sp/>WordT*<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(sizeof(WordT)<sp/>==<sp/>Bits<sp/>/<sp/>8<sp/>&amp;&amp;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(Bits<sp/>%<sp/>8)<sp/>==<sp/>0,<sp/>&quot;&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>just<sp/>write<sp/>directly</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(valid)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(int<sp/>laneId,<sp/>WordT<sp/>v,<sp/>bool<sp/>valid,<sp/>WordT*<sp/>out)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(sizeof(WordT)<sp/>==<sp/>Bits<sp/>/<sp/>8<sp/>&amp;&amp;<sp/>(Bits<sp/>%<sp/>8)<sp/>==<sp/>0,<sp/>&quot;&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>just<sp/>write<sp/>directly</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(valid)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>WordT<sp/>read(int<sp/>laneId,<sp/>WordT*<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>in[laneId];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>WordT<sp/>read(int<sp/>laneId,<sp/>WordT*<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>WordT<sp/>postRead(int<sp/>laneId,<sp/>WordT<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>WordT<sp/>postRead(int<sp/>laneId,<sp/>WordT<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Read/write<sp/>6<sp/>bit<sp/>fields,<sp/>packed<sp/>across<sp/>the<sp/>warp<sp/>into<sp/>24<sp/>bytes</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpPackedBits&lt;uint8_t,<sp/>6&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(int<sp/>laneId,<sp/>uint8_t<sp/>v,<sp/>bool<sp/>valid,<sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>wwrite<sp/>out<sp/>packed<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>8)<sp/>/<sp/>6;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>valid,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>wwrite<sp/>out<sp/>packed<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>8)<sp/>/<sp/>6;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x3f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>6<sp/>bits</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x3f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>6<sp/>bits</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vLower<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vUpper<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vLower<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vUpper<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>lsb<sp/><sp/><sp/><sp/><sp/>...<sp/><sp/><sp/><sp/>msb</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>1<sp/>1</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>1<sp/>1<sp/>1<sp/>1<sp/>2<sp/>2<sp/>2<sp/>2</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>2<sp/>2<sp/>3<sp/>3<sp/>3<sp/>3<sp/>3<sp/>3</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>typeLane<sp/>=<sp/>laneId<sp/>%<sp/>3;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>switch<sp/>(typeLane)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>0:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>6<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>vLower<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>6);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>1:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(vLower<sp/>&gt;&gt;<sp/>2)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>2:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>6<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(vLower<sp/>&gt;&gt;<sp/>4)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>2);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>lsb<sp/><sp/><sp/><sp/><sp/>...<sp/><sp/><sp/><sp/>msb</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>1<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>1<sp/>1<sp/>1<sp/>1<sp/>2<sp/>2<sp/>2<sp/>2</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>2<sp/>2<sp/>3<sp/>3<sp/>3<sp/>3<sp/>3<sp/>3</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>typeLane<sp/>=<sp/>laneId<sp/>%<sp/>3;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switch<sp/>(typeLane)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>0:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>6<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>vLower<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>6);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>1:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(vLower<sp/>&gt;&gt;<sp/>2)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>2:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>6<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(vLower<sp/>&gt;&gt;<sp/>4)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>24)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>24)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>24)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>24)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>6)<sp/>/<sp/>8;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>6)<sp/>/<sp/>8;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vLower<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vUpper<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vConcat<sp/>=<sp/>(vUpper<sp/>&lt;&lt;<sp/>8)<sp/>|<sp/>vLower;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vLower<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vUpper<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vConcat<sp/>=<sp/>(vUpper<sp/>&lt;&lt;<sp/>8)<sp/>|<sp/>vLower;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>this<sp/>is<sp/>weird.<sp/>Each<sp/>lane<sp/>reads<sp/>two<sp/>uint8,<sp/>but<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bfe.u32<sp/>instruction<sp/>to<sp/>read<sp/>a<sp/>6<sp/>bit<sp/>value<sp/>from<sp/>the<sp/>concatenated</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>uint32.<sp/>The<sp/>offset<sp/>in<sp/>which<sp/>we<sp/>wish<sp/>to<sp/>read<sp/>in<sp/>the<sp/>concatenated<sp/>word</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>is<sp/>the<sp/>following:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0,<sp/>1:<sp/>offset<sp/>0<sp/>size<sp/>6</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>0,<sp/>1:<sp/>offset<sp/>6<sp/>size<sp/>6</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>1,<sp/>2:<sp/>offset<sp/>4<sp/>size<sp/>6</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>2,<sp/>3:<sp/>offset<sp/>2<sp/>size<sp/>6</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offsets<sp/>are<sp/>the<sp/>following<sp/>(concatenated<sp/>together):</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0x2460</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>thus<sp/>use<sp/>bfe.u32<sp/>as<sp/>a<sp/>lookup<sp/>table<sp/>for<sp/>the<sp/>above<sp/>sequence.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>pos;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(pos,<sp/>0x2460,<sp/>(laneId<sp/>&amp;<sp/>0x3)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>this<sp/>is<sp/>weird.<sp/>Each<sp/>lane<sp/>reads<sp/>two<sp/>uint8,<sp/>but<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>bfe.u32<sp/>instruction<sp/>to<sp/>read<sp/>a<sp/>6<sp/>bit<sp/>value<sp/>from<sp/>the<sp/>concatenated<sp/>uint32.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offset<sp/>in<sp/>which<sp/>we<sp/>wish<sp/>to<sp/>read<sp/>in<sp/>the<sp/>concatenated<sp/>word<sp/>is<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>following:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0,<sp/>1:<sp/>offset<sp/>0<sp/>size<sp/>6</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>0,<sp/>1:<sp/>offset<sp/>6<sp/>size<sp/>6</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>1,<sp/>2:<sp/>offset<sp/>4<sp/>size<sp/>6</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>2,<sp/>3:<sp/>offset<sp/>2<sp/>size<sp/>6</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offsets<sp/>are<sp/>the<sp/>following<sp/>(concatenated<sp/>together):</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0x2460</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>thus<sp/>use<sp/>bfe.u32<sp/>as<sp/>a<sp/>lookup<sp/>table<sp/>for<sp/>the<sp/>above<sp/>sequence.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>pos;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(pos,<sp/>0x2460,<sp/>(laneId<sp/>&amp;<sp/>0x3)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(out,<sp/>vConcat,<sp/>pos,<sp/>6);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(out,<sp/>vConcat,<sp/>pos,<sp/>6);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
-<codeline></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Read/write<sp/>5<sp/>bit<sp/>fields,<sp/>packed<sp/>across<sp/>the<sp/>warp<sp/>into<sp/>20<sp/>bytes</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpPackedBits&lt;uint8_t,<sp/>5&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(int<sp/>laneId,<sp/>uint8_t<sp/>v,<sp/>bool<sp/>valid,<sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>wwrite<sp/>out<sp/>packed<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>8)<sp/>/<sp/>5;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>valid,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>wwrite<sp/>out<sp/>packed<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>8)<sp/>/<sp/>5;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x1f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>6<sp/>bits</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x1f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>6<sp/>bits</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>lo<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>hi<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>hi2<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>2,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>lo<sp/>=<sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>hi<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>hi2<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>2,<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>lsb<sp/><sp/><sp/><sp/><sp/>...<sp/><sp/><sp/><sp/>msb</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>1<sp/>1<sp/>1</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>1<sp/>1<sp/>2<sp/>2<sp/>2<sp/>2<sp/>2<sp/>3</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>3<sp/>3<sp/>3<sp/>3<sp/>4<sp/>4<sp/>4<sp/>4</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>4<sp/>5<sp/>5<sp/>5<sp/>5<sp/>5<sp/>6<sp/>6</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>4:<sp/>6<sp/>6<sp/>6<sp/>7<sp/>7<sp/>7<sp/>7<sp/>7</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>switch<sp/>(laneId<sp/>%<sp/>5)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>0:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&amp;<sp/>0x1f)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>5);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>1:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1<sp/>lsbs<sp/>of<sp/>upper2<sp/>as<sp/>vOut<sp/>msb</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>3)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>2)<sp/>|<sp/>(hi2<sp/>&lt;&lt;<sp/>7);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>2:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>1)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>3:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>lsbs<sp/>of<sp/>upper2<sp/>as<sp/>vOut<sp/>msb</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>4)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>1)<sp/>|<sp/>(hi2<sp/>&lt;&lt;<sp/>6);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>4:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>2)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>3);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>lsb<sp/><sp/><sp/><sp/><sp/>...<sp/><sp/><sp/><sp/>msb</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0<sp/>0<sp/>0<sp/>0<sp/>0<sp/>1<sp/>1<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>1<sp/>1<sp/>2<sp/>2<sp/>2<sp/>2<sp/>2<sp/>3</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>3<sp/>3<sp/>3<sp/>3<sp/>4<sp/>4<sp/>4<sp/>4</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>4<sp/>5<sp/>5<sp/>5<sp/>5<sp/>5<sp/>6<sp/>6</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4:<sp/>6<sp/>6<sp/>6<sp/>7<sp/>7<sp/>7<sp/>7<sp/>7</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switch<sp/>(laneId<sp/>%<sp/>5)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>0:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&amp;<sp/>0x1f)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>5);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>1:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1<sp/>lsbs<sp/>of<sp/>upper2<sp/>as<sp/>vOut<sp/>msb</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>3)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>2)<sp/>|<sp/>(hi2<sp/>&lt;&lt;<sp/>7);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>2:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>1)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>3:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2<sp/>lsbs<sp/>of<sp/>upper2<sp/>as<sp/>vOut<sp/>msb</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>4)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>1)<sp/>|<sp/>(hi2<sp/>&lt;&lt;<sp/>6);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>4:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3<sp/>msbs<sp/>of<sp/>lower<sp/>as<sp/>vOut<sp/>lsbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5<sp/>lsbs<sp/>of<sp/>upper<sp/>as<sp/>vOut<sp/>msbs</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vOut<sp/>=<sp/>(lo<sp/>&gt;&gt;<sp/>2)<sp/>|<sp/>(hi<sp/>&lt;&lt;<sp/>3);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>break;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>20)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>20)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>20)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>20)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>5)<sp/>/<sp/>8;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>5)<sp/>/<sp/>8;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vLower<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vUpper<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vConcat<sp/>=<sp/>(vUpper<sp/>&lt;&lt;<sp/>8)<sp/>|<sp/>vLower;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vLower<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vUpper<sp/>=<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>vConcat<sp/>=<sp/>(vUpper<sp/>&lt;&lt;<sp/>8)<sp/>|<sp/>vLower;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>this<sp/>is<sp/>weird.<sp/>Each<sp/>lane<sp/>reads<sp/>two<sp/>uint8,<sp/>but<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>bfe.u32<sp/>instruction<sp/>to<sp/>read<sp/>a<sp/>5<sp/>bit<sp/>value<sp/>from<sp/>the<sp/>concatenated</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>uint32.<sp/>The<sp/>offset<sp/>in<sp/>which<sp/>we<sp/>wish<sp/>to<sp/>read<sp/>in<sp/>the<sp/>concatenated<sp/>word</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>is<sp/>the<sp/>following:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0,<sp/>1:<sp/>offset<sp/>0<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>0,<sp/>1:<sp/>offset<sp/>5<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>1,<sp/>2:<sp/>offset<sp/>2<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>1,<sp/>2:<sp/>offset<sp/>7<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>4:<sp/>2,<sp/>3:<sp/>offset<sp/>4<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>5:<sp/>3,<sp/>4:<sp/>offset<sp/>1<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>6:<sp/>3,<sp/>4:<sp/>offset<sp/>6<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>7:<sp/>4,<sp/>5:<sp/>offset<sp/>3<sp/>size<sp/>5</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offsets<sp/>are<sp/>the<sp/>following<sp/>(concatenated<sp/>together):</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>0x36147250</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>thus<sp/>use<sp/>bfe.u32<sp/>as<sp/>a<sp/>lookup<sp/>table<sp/>for<sp/>the<sp/>above<sp/>sequence.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>pos;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(pos,<sp/>0x36147250,<sp/>(laneId<sp/>&amp;<sp/>0x7)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>this<sp/>is<sp/>weird.<sp/>Each<sp/>lane<sp/>reads<sp/>two<sp/>uint8,<sp/>but<sp/>we<sp/>wish<sp/>to<sp/>use<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>bfe.u32<sp/>instruction<sp/>to<sp/>read<sp/>a<sp/>5<sp/>bit<sp/>value<sp/>from<sp/>the<sp/>concatenated<sp/>uint32.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offset<sp/>in<sp/>which<sp/>we<sp/>wish<sp/>to<sp/>read<sp/>in<sp/>the<sp/>concatenated<sp/>word<sp/>is<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>following:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0:<sp/>0,<sp/>1:<sp/>offset<sp/>0<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>1:<sp/>0,<sp/>1:<sp/>offset<sp/>5<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>2:<sp/>1,<sp/>2:<sp/>offset<sp/>2<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>3:<sp/>1,<sp/>2:<sp/>offset<sp/>7<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>4:<sp/>2,<sp/>3:<sp/>offset<sp/>4<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>5:<sp/>3,<sp/>4:<sp/>offset<sp/>1<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>6:<sp/>3,<sp/>4:<sp/>offset<sp/>6<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>7:<sp/>4,<sp/>5:<sp/>offset<sp/>3<sp/>size<sp/>5</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>offsets<sp/>are<sp/>the<sp/>following<sp/>(concatenated<sp/>together):</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>0x36147250</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>can<sp/>thus<sp/>use<sp/>bfe.u32<sp/>as<sp/>a<sp/>lookup<sp/>table<sp/>for<sp/>the<sp/>above<sp/>sequence.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>pos;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(pos,<sp/>0x36147250,<sp/>(laneId<sp/>&amp;<sp/>0x7)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(out,<sp/>vConcat,<sp/>pos,<sp/>5);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GET_BITFIELD_U32(out,<sp/>vConcat,<sp/>pos,<sp/>5);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Read/write<sp/>4<sp/>bit<sp/>fields,<sp/>packed<sp/>across<sp/>the<sp/>warp<sp/>into<sp/>16<sp/>bytes</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpPackedBits&lt;uint8_t,<sp/>4&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(int<sp/>laneId,<sp/>uint8_t<sp/>v,<sp/>bool<sp/>valid,<sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>16<sp/>lanes<sp/>write<sp/>out<sp/>packed<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>laneId<sp/>*<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>void<sp/>write(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>valid,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>16<sp/>lanes<sp/>write<sp/>out<sp/>packed<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>laneId<sp/>*<sp/>2;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vLower<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vUpper<sp/>=<sp/>(uint8_t)<sp/>SHFL_SYNC((unsigned<sp/>int)<sp/>v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vLower<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vUpper<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom<sp/>+<sp/>1,<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>(vLower<sp/>&amp;<sp/>0xf)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>vOut<sp/>=<sp/>(vLower<sp/>&amp;<sp/>0xf)<sp/>|<sp/>(vUpper<sp/>&lt;&lt;<sp/>4);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>16)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>16)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>There<sp/>could<sp/>be<sp/>prior<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[laneId]<sp/>|=<sp/>vOut;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>read(int<sp/>laneId,<sp/>uint8_t*<sp/>in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>16)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>&lt;<sp/>16)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>in[laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>laneId<sp/>/<sp/>2;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>v2<sp/>=<sp/>shfl((unsigned<sp/>int)<sp/>v,<sp/>laneFrom);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>getBitfield(v2,<sp/>(laneId<sp/>&amp;<sp/>0x1)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>uint8_t<sp/>postRead(int<sp/>laneId,<sp/>uint8_t<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>laneId<sp/>/<sp/>2;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>v2<sp/>=<sp/>shfl((unsigned<sp/>int)v,<sp/>laneFrom);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>getBitfield(v2,<sp/>(laneId<sp/>&amp;<sp/>0x1)<sp/>*<sp/>4,<sp/>4);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/WarpPackedBits.cuh"/>
   </compounddef>

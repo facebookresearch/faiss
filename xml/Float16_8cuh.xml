@@ -14,7 +14,6 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
@@ -28,58 +27,59 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda_fp16.h&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>64<sp/>bytes<sp/>containing<sp/>4<sp/>half<sp/>(float16)<sp/>values</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Half4<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>half2<sp/>a;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>half2<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half2<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half2<sp/>b;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>float4<sp/>half4ToFloat4(Half4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>a<sp/>=<sp/>__half22float2(v.a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>b<sp/>=<sp/>__half22float2(v.b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>a<sp/>=<sp/>__half22float2(v.a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>b<sp/>=<sp/>__half22float2(v.b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float4<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.x<sp/>=<sp/>a.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.y<sp/>=<sp/>a.y;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.z<sp/>=<sp/>b.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.w<sp/>=<sp/>b.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float4<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.x<sp/>=<sp/>a.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.y<sp/>=<sp/>a.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.z<sp/>=<sp/>b.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.w<sp/>=<sp/>b.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">inline<sp/>__device__<sp/>Half4<sp/>float4ToHalf4(float4<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>a;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>a.x<sp/>=<sp/>v.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>a.y<sp/>=<sp/>v.y;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>a.x<sp/>=<sp/>v.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>a.y<sp/>=<sp/>v.y;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>float2<sp/>b;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>b.x<sp/>=<sp/>v.z;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>b.y<sp/>=<sp/>v.w;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>float2<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>b.x<sp/>=<sp/>v.z;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>b.y<sp/>=<sp/>v.w;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Half4<sp/>out;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.a<sp/>=<sp/>__float22half2_rn(a);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>out.b<sp/>=<sp/>__float22half2_rn(b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.a<sp/>=<sp/>__float22half2_rn(a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out.b<sp/>=<sp/>__float22half2_rn(b);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>128<sp/>bytes<sp/>containing<sp/>8<sp/>half<sp/>(float16)<sp/>values</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Half8<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Half4<sp/>a;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>Half4<sp/>b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>a;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Half4<sp/>b;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Returns<sp/>true<sp/>if<sp/>the<sp/>given<sp/>device<sp/>supports<sp/>native<sp/>float16<sp/>math</highlight></codeline>
 <codeline><highlight class="normal">inline<sp/>bool<sp/>getDeviceSupportsFloat16Math(int<sp/>device)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>auto&amp;<sp/>prop<sp/>=<sp/>getDeviceProperties(device);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>auto&amp;<sp/>prop<sp/>=<sp/>getDeviceProperties(device);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>(prop.major<sp/>&gt;=<sp/>6<sp/>||</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(prop.major<sp/>==<sp/>5<sp/>&amp;&amp;<sp/>prop.minor<sp/>&gt;=<sp/>3));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(prop.major<sp/>&gt;=<sp/>6<sp/>||<sp/>(prop.major<sp/>==<sp/>5<sp/>&amp;&amp;<sp/>prop.minor<sp/>&gt;=<sp/>3));</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Float16.cuh"/>
   </compounddef>

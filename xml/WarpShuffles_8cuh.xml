@@ -14,125 +14,126 @@
 <codeline><highlight class="normal"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
 <codeline><highlight class="normal"><sp/>*/</highlight></codeline>
 <codeline></codeline>
-<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceDefs.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>defines<sp/>to<sp/>simplify<sp/>the<sp/>SASS<sp/>assembly<sp/>structure<sp/>file/line<sp/>in<sp/>the<sp/>profiler</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>SHFL_SYNC(VAL,<sp/>SRC_LANE,<sp/>WIDTH)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__shfl_sync(0xffffffff,<sp/>VAL,<sp/>SRC_LANE,<sp/>WIDTH)</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>SHFL_SYNC(VAL,<sp/>SRC_LANE,<sp/>WIDTH)<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__shfl_sync(0xffffffff,<sp/>VAL,<sp/>SRC_LANE,<sp/>WIDTH)</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>SHFL_SYNC(VAL,<sp/>SRC_LANE,<sp/>WIDTH)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__shfl(VAL,<sp/>SRC_LANE,<sp/>WIDTH)</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>SHFL_SYNC(VAL,<sp/>SRC_LANE,<sp/>WIDTH)<sp/>__shfl(VAL,<sp/>SRC_LANE,<sp/>WIDTH)</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl(const<sp/>T<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl(const<sp/>T<sp/>val,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_sync(0xffffffff,<sp/>val,<sp/>srcLane,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_sync(0xffffffff,<sp/>val,<sp/>srcLane,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl(val,<sp/>srcLane,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl(val,<sp/>srcLane,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>SDK<sp/>does<sp/>not<sp/>provide<sp/>specializations<sp/>for<sp/>T*</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl(T*<sp/>const<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl(T*<sp/>const<sp/>val,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)val;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>(T*)<sp/>shfl(v,<sp/>srcLane,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl(v,<sp/>srcLane,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl_up(const<sp/>T<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T</highlight></codeline>
+<codeline><highlight class="normal">shfl_up(const<sp/>T<sp/>val,<sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_up_sync(0xffffffff,<sp/>val,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_up_sync(0xffffffff,<sp/>val,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_up(val,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_up(val,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>SDK<sp/>does<sp/>not<sp/>provide<sp/>specializations<sp/>for<sp/>T*</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_up(T*<sp/>const<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_up(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>const<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)val;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>(T*)<sp/>shfl_up(v,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl_up(v,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl_down(const<sp/>T<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T</highlight></codeline>
+<codeline><highlight class="normal">shfl_down(const<sp/>T<sp/>val,<sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_down_sync(0xffffffff,<sp/>val,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_down_sync(0xffffffff,<sp/>val,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_down(val,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_down(val,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>SDK<sp/>does<sp/>not<sp/>provide<sp/>specializations<sp/>for<sp/>T*</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_down(T*<sp/>const<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)<sp/>val;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>(T*)<sp/>shfl_down(v,<sp/>delta,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_down(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>const<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>delta,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl_down(v,<sp/>delta,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl_xor(const<sp/>T<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T<sp/>shfl_xor(const<sp/>T<sp/>val,<sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_xor_sync(0xffffffff,<sp/>val,<sp/>laneMask,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_xor_sync(0xffffffff,<sp/>val,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>__shfl_xor(val,<sp/>laneMask,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>__shfl_xor(val,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>SDK<sp/>does<sp/>not<sp/>provide<sp/>specializations<sp/>for<sp/>T*</highlight></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_xor(T*<sp/>const<sp/>val,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)<sp/>val;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>(T*)<sp/>shfl_xor(v,<sp/>laneMask,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>T*<sp/>shfl_xor(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>const<sp/>val,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(sizeof(T*)<sp/>==<sp/>sizeof(long<sp/>long),<sp/>&quot;pointer<sp/>size&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>long<sp/>long<sp/>v<sp/>=<sp/>(long<sp/>long)val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>(T*)shfl_xor(v,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>CUDA<sp/>9.0+<sp/>has<sp/>half<sp/>shuffle</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&lt;<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl(half<sp/>v,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>v.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>vu<sp/>=<sp/>__shfl(vu,<sp/>srcLane,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl(half<sp/>v,<sp/>int<sp/>srcLane,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>v.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vu<sp/>=<sp/>__shfl(vu,<sp/>srcLane,<sp/>width);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>half<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>h.x<sp/>=<sp/>(unsigned<sp/>short)<sp/>vu;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>(unsigned<sp/>short)vu;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl_xor(half<sp/>v,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>v.x;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>vu<sp/>=<sp/>__shfl_xor(vu,<sp/>laneMask,<sp/>width);</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>__device__<sp/>half<sp/>shfl_xor(half<sp/>v,<sp/>int<sp/>laneMask,<sp/>int<sp/>width<sp/>=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>unsigned<sp/>int<sp/>vu<sp/>=<sp/>v.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>vu<sp/>=<sp/>__shfl_xor(vu,<sp/>laneMask,<sp/>width);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>half<sp/>h;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>h.x<sp/>=<sp/>(unsigned<sp/>short)<sp/>vu;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>return<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>half<sp/>h;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>h.x<sp/>=<sp/>(unsigned<sp/>short)vu;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>h;</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline><highlight class="normal">#endif<sp/>//<sp/>CUDA_VERSION</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/WarpShuffles.cuh"/>
   </compounddef>

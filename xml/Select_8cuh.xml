@@ -21,345 +21,414 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MergeNetworkBlock.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/MergeNetworkWarp.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/PtxUtils.cuh&gt;</highlight></codeline>
-<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Reductions.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/ReductionOperators.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Reductions.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{<sp/>namespace<sp/>gpu<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Specialization<sp/>for<sp/>block-wide<sp/>monotonic<sp/>merges<sp/>producing<sp/>a<sp/>merge<sp/>sort</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>since<sp/>what<sp/>we<sp/>really<sp/>want<sp/>is<sp/>a<sp/>constexpr<sp/>loop<sp/>expansion</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumWarps,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,<sp/>typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
-<codeline><highlight class="normal">struct<sp/>FinalBlockMerge<sp/>{</highlight></codeline>
-<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarps,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>FinalBlockMerge<sp/>{};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,<sp/>typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>FinalBlockMerge&lt;1,<sp/>NumThreads,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>no<sp/>merge<sp/>required;<sp/>single<sp/>warp</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>no<sp/>merge<sp/>required;<sp/>single<sp/>warp</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,<sp/>typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>FinalBlockMerge&lt;2,<sp/>NumThreads,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,<sp/>!Dir,<sp/>Comp,<sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,<sp/>typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>FinalBlockMerge&lt;4,<sp/>NumThreads,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,<sp/>!Dir,<sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>4),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>2,<sp/>!Dir,<sp/>Comp,<sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>4),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>2,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>NumThreads,<sp/>typename<sp/>K,<sp/>typename<sp/>V,<sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,<sp/>typename<sp/>Comp&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>FinalBlockMerge&lt;8,<sp/>NumThreads,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,<sp/>!Dir,<sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>4),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>2,<sp/>!Dir,<sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>blockMerge&lt;NumThreads,<sp/>K,<sp/>V,<sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>8),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>4,<sp/>!Dir,<sp/>Comp,<sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>inline<sp/>__device__<sp/>void<sp/>merge(K*<sp/>sharedK,<sp/>V*<sp/>sharedV)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>2),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>4),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>2,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Final<sp/>merge<sp/>doesn&apos;t<sp/>need<sp/>to<sp/>fully<sp/>merge<sp/>the<sp/>second<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>blockMerge&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreads<sp/>/<sp/>(kWarpSize<sp/>*<sp/>8),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumWarpQ<sp/>*<sp/>4,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>`Dir`<sp/>true,<sp/>produce<sp/>largest<sp/>values.</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>`Dir`<sp/>false,<sp/>produce<sp/>smallest<sp/>values.</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>BlockSelect<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kTotalWarpSortSize<sp/>=<sp/>NumWarpQ;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kTotalWarpSortSize<sp/>=<sp/>NumWarpQ;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>BlockSelect(K<sp/>initKVal,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>initVVal,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K*<sp/>smemK,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V*<sp/>smemV,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>initK(initKVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedK(smemK),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedV(smemV),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>kMinus1(k<sp/>-<sp/>1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(ThreadsPerBlock),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;threads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(NumWarpQ),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;warp<sp/>queue<sp/>must<sp/>be<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>BlockSelect(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>initKVal,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>initVVal,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K*<sp/>smemK,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V*<sp/>smemV,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>initK(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedK(smemK),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedV(smemV),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kMinus1(k<sp/>-<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(ThreadsPerBlock),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;threads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(NumWarpQ),<sp/>&quot;warp<sp/>queue<sp/>must<sp/>be<sp/>power-of-2&quot;);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>per-thread<sp/>queue<sp/>keys<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>per-thread<sp/>queue<sp/>keys<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpK<sp/>=<sp/>sharedK<sp/>+<sp/>warpId<sp/>*<sp/>kTotalWarpSortSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpV<sp/>=<sp/>sharedV<sp/>+<sp/>warpId<sp/>*<sp/>kTotalWarpSortSize;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>warp<sp/>queue<sp/>(only<sp/>the<sp/>actual<sp/>queue<sp/>space<sp/>is<sp/>fine,<sp/>not<sp/>where</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>we<sp/>write<sp/>the<sp/>per-thread<sp/>queues<sp/>for<sp/>merging)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>laneId;<sp/>i<sp/>&lt;<sp/>NumWarpQ;<sp/>i<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpK<sp/>=<sp/>sharedK<sp/>+<sp/>warpId<sp/>*<sp/>kTotalWarpSortSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpV<sp/>=<sp/>sharedV<sp/>+<sp/>warpId<sp/>*<sp/>kTotalWarpSortSize;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>warp<sp/>queue<sp/>(only<sp/>the<sp/>actual<sp/>queue<sp/>space<sp/>is<sp/>fine,<sp/>not<sp/>where</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>we<sp/>write<sp/>the<sp/>per-thread<sp/>queues<sp/>for<sp/>merging)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>laneId;<sp/>i<sp/>&lt;<sp/>NumWarpQ;<sp/>i<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i]<sp/>=<sp/>initV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>threadK[i<sp/>-<sp/>1];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>threadV[i<sp/>-<sp/>1];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>threadK[i<sp/>-<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>threadV[i<sp/>-<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[0]<sp/>=<sp/>k;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[0]<sp/>=<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++numVals;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[0]<sp/>=<sp/>k;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[0]<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++numVals;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(!needSort)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>no<sp/>lanes<sp/>have<sp/>triggered<sp/>a<sp/>sort</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!needSort)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>no<sp/>lanes<sp/>have<sp/>triggered<sp/>a<sp/>sort</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>This<sp/>has<sp/>a<sp/>trailing<sp/>warpFence</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>This<sp/>has<sp/>a<sp/>trailing<sp/>warpFence</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Any<sp/>top-k<sp/>elements<sp/>have<sp/>been<sp/>merged<sp/>into<sp/>the<sp/>warp<sp/>queue;<sp/>we&apos;re</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>free<sp/>to<sp/>reset<sp/>the<sp/>thread<sp/>queues</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>numVals<sp/>=<sp/>0;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>warpK[kMinus1];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>This<sp/>function<sp/>handles<sp/>sorting<sp/>and<sp/>merging<sp/>together<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>per-thread<sp/>queues<sp/>with<sp/>the<sp/>warp-wide<sp/>queue,<sp/>creating<sp/>a<sp/>sorted</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>list<sp/>across<sp/>both</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>mergeWarpQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Sort<sp/>all<sp/>of<sp/>the<sp/>per-thread<sp/>queues</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpSortAnyRegisters&lt;K,<sp/>V,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp&gt;(threadK,<sp/>threadV);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarpQRegisters<sp/>=<sp/>NumWarpQ<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpKRegisters[kNumWarpQRegisters];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>warpVRegisters[kNumWarpQRegisters];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Any<sp/>top-k<sp/>elements<sp/>have<sp/>been<sp/>merged<sp/>into<sp/>the<sp/>warp<sp/>queue;<sp/>we&apos;re</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>free<sp/>to<sp/>reset<sp/>the<sp/>thread<sp/>queues</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpKRegisters[i]<sp/>=<sp/>warpK[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpVRegisters[i]<sp/>=<sp/>warpV[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>warpK[kMinus1];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>function<sp/>handles<sp/>sorting<sp/>and<sp/>merging<sp/>together<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>per-thread<sp/>queues<sp/>with<sp/>the<sp/>warp-wide<sp/>queue,<sp/>creating<sp/>a<sp/>sorted</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>list<sp/>across<sp/>both</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>mergeWarpQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>warp<sp/>queue<sp/>is<sp/>already<sp/>sorted,<sp/>and<sp/>now<sp/>that<sp/>we&apos;ve<sp/>sorted<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>per-thread<sp/>queue,<sp/>merge<sp/>both<sp/>sorted<sp/>lists<sp/>together,<sp/>producing</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>one<sp/>sorted<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpMergeAnyRegisters&lt;K,<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kNumWarpQRegisters,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp,<sp/>false&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpKRegisters,<sp/>warpVRegisters,<sp/>threadK,<sp/>threadV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Sort<sp/>all<sp/>of<sp/>the<sp/>per-thread<sp/>queues</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpSortAnyRegisters&lt;K,<sp/>V,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp&gt;(threadK,<sp/>threadV);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Write<sp/>back<sp/>out<sp/>the<sp/>warp<sp/>queue</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>constexpr<sp/>int<sp/>kNumWarpQRegisters<sp/>=<sp/>NumWarpQ<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>warpKRegisters[kNumWarpQRegisters];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>warpVRegisters[kNumWarpQRegisters];</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId]<sp/>=<sp/>warpKRegisters[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId]<sp/>=<sp/>warpVRegisters[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKRegisters[i]<sp/>=<sp/>warpK[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpVRegisters[i]<sp/>=<sp/>warpV[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>warp<sp/>queue<sp/>is<sp/>already<sp/>sorted,<sp/>and<sp/>now<sp/>that<sp/>we&apos;ve<sp/>sorted<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>per-thread<sp/>queue,<sp/>merge<sp/>both<sp/>sorted<sp/>lists<sp/>together,<sp/>producing</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>one<sp/>sorted<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpMergeAnyRegisters&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kNumWarpQRegisters,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;(warpKRegisters,<sp/>warpVRegisters,<sp/>threadK,<sp/>threadV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Write<sp/>back<sp/>out<sp/>the<sp/>warp<sp/>queue</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId]<sp/>=<sp/>warpKRegisters[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId]<sp/>=<sp/>warpVRegisters[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpFence();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>WARNING:<sp/>all<sp/>threads<sp/>in<sp/>a<sp/>warp<sp/>must<sp/>participate<sp/>in<sp/>this.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Otherwise,<sp/>you<sp/>must<sp/>call<sp/>the<sp/>constituent<sp/>parts<sp/>separately.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>checkThreadQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>WARNING:<sp/>all<sp/>threads<sp/>in<sp/>a<sp/>warp<sp/>must<sp/>participate<sp/>in<sp/>this.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Otherwise,<sp/>you<sp/>must<sp/>call<sp/>the<sp/>constituent<sp/>parts<sp/>separately.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>checkThreadQ();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Have<sp/>all<sp/>warps<sp/>dump<sp/>and<sp/>merge<sp/>their<sp/>queues;<sp/>this<sp/>will<sp/>produce</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>final<sp/>per-warp<sp/>results</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Have<sp/>all<sp/>warps<sp/>dump<sp/>and<sp/>merge<sp/>their<sp/>queues;<sp/>this<sp/>will<sp/>produce</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>the<sp/>final<sp/>per-warp<sp/>results</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>block-wide<sp/>dep;<sp/>thus<sp/>far,<sp/>all<sp/>warps<sp/>have<sp/>been<sp/>completely</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>independent</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>block-wide<sp/>dep;<sp/>thus<sp/>far,<sp/>all<sp/>warps<sp/>have<sp/>been<sp/>completely</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>independent</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>All<sp/>warp<sp/>queues<sp/>are<sp/>contiguous<sp/>in<sp/>smem.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>we<sp/>have<sp/>kNumWarps<sp/>lists<sp/>of<sp/>NumWarpQ<sp/>elements.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>This<sp/>is<sp/>a<sp/>power<sp/>of<sp/>2.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FinalBlockMerge&lt;kNumWarps,<sp/>ThreadsPerBlock,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;::</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>merge(sharedK,<sp/>sharedV);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>All<sp/>warp<sp/>queues<sp/>are<sp/>contiguous<sp/>in<sp/>smem.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Now,<sp/>we<sp/>have<sp/>kNumWarps<sp/>lists<sp/>of<sp/>NumWarpQ<sp/>elements.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>This<sp/>is<sp/>a<sp/>power<sp/>of<sp/>2.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FinalBlockMerge&lt;kNumWarps,<sp/>ThreadsPerBlock,<sp/>K,<sp/>V,<sp/>NumWarpQ,<sp/>Dir,<sp/>Comp&gt;::</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>merge(sharedK,<sp/>sharedV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>block-wide<sp/>merge<sp/>has<sp/>a<sp/>trailing<sp/>syncthreads</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>block-wide<sp/>merge<sp/>has<sp/>a<sp/>trailing<sp/>syncthreads</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Default<sp/>element<sp/>key</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>K<sp/>initK;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Default<sp/>element<sp/>key</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>K<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Default<sp/>element<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>V<sp/>initV;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Default<sp/>element<sp/>value</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>V<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Number<sp/>of<sp/>valid<sp/>elements<sp/>in<sp/>our<sp/>thread<sp/>queue</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>numVals;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Number<sp/>of<sp/>valid<sp/>elements<sp/>in<sp/>our<sp/>thread<sp/>queue</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>numVals;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>threadV[NumThreadQ];</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>threadV[NumThreadQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Queues<sp/>for<sp/>all<sp/>warps</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>sharedK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V*<sp/>sharedV;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Queues<sp/>for<sp/>all<sp/>warps</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K*<sp/>sharedK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V*<sp/>sharedV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Our<sp/>warp&apos;s<sp/>queue<sp/>(points<sp/>into<sp/>sharedK/sharedV)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>warpK[0]<sp/>is<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>warpK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V*<sp/>warpV;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Our<sp/>warp&apos;s<sp/>queue<sp/>(points<sp/>into<sp/>sharedK/sharedV)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>warpK[0]<sp/>is<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K*<sp/>warpK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V*<sp/>warpV;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>This<sp/>is<sp/>a<sp/>cached<sp/>k-1<sp/>value</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>kMinus1;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>This<sp/>is<sp/>a<sp/>cached<sp/>k-1<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>kMinus1;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Specialization<sp/>for<sp/>k<sp/>==<sp/>1<sp/>(NumWarpQ<sp/>==<sp/>1)</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>BlockSelect&lt;K,<sp/>V,<sp/>Dir,<sp/>Comp,<sp/>1,<sp/>NumThreadQ,<sp/>ThreadsPerBlock&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>BlockSelect(K<sp/>initK,<sp/>V<sp/>initV,<sp/>K*<sp/>smemK,<sp/>V*<sp/>smemV,<sp/>int<sp/>k)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK(initK),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV(initV),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedK(smemK),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedV(smemV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>BlockSelect(K<sp/>initK,<sp/>V<sp/>initV,<sp/>K*<sp/>smemK,<sp/>V*<sp/>smemV,<sp/>int<sp/>k)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>threadK(initK),<sp/>threadV(initV),<sp/>sharedK(smemK),<sp/>sharedV(smemV)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>don&apos;t<sp/>need<sp/>to<sp/>do<sp/>anything<sp/>here,<sp/>since<sp/>the<sp/>warp<sp/>doesn&apos;t</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>cooperate<sp/>until<sp/>the<sp/>end</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Reduce<sp/>within<sp/>the<sp/>warp</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Pair&lt;K,<sp/>V&gt;<sp/>pair(threadK,<sp/>threadV);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(pair,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(pair,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Each<sp/>warp<sp/>writes<sp/>out<sp/>a<sp/>single<sp/>value</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedK[warpId]<sp/>=<sp/>pair.k;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedV[warpId]<sp/>=<sp/>pair.v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>typically<sp/>use<sp/>this<sp/>for<sp/>small<sp/>blocks<sp/>(&lt;=<sp/>128),<sp/>just<sp/>having<sp/>the<sp/>first</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>thread<sp/>in<sp/>the<sp/>block<sp/>perform<sp/>the<sp/>reduction<sp/>across<sp/>warps<sp/>is</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>faster</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(threadIdx.x<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>sharedK[0];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>sharedV[0];</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>1;<sp/>i<sp/>&lt;<sp/>kNumWarps;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>k<sp/>=<sp/>sharedK[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>v<sp/>=<sp/>sharedV[i];</highlight></codeline>
-<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Hopefully<sp/>a<sp/>thread&apos;s<sp/>smem<sp/>reads/writes<sp/>are<sp/>ordered<sp/>wrt</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>itself,<sp/>so<sp/>no<sp/>barrier<sp/>needed<sp/>:)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedK[0]<sp/>=<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sharedV[0]<sp/>=<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>In<sp/>case<sp/>other<sp/>threads<sp/>wish<sp/>to<sp/>read<sp/>this<sp/>value</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>don&apos;t<sp/>need<sp/>to<sp/>do<sp/>anything<sp/>here,<sp/>since<sp/>the<sp/>warp<sp/>doesn&apos;t</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>cooperate<sp/>until<sp/>the<sp/>end</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>threadK<sp/>is<sp/>lowest<sp/>(Dir)<sp/>or<sp/>highest<sp/>(!Dir)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Where<sp/>we<sp/>reduce<sp/>in<sp/>smem</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K*<sp/>sharedK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V*<sp/>sharedV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Reduce<sp/>within<sp/>the<sp/>warp</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Pair&lt;K,<sp/>V&gt;<sp/>pair(threadK,<sp/>threadV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=<sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=<sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Each<sp/>warp<sp/>writes<sp/>out<sp/>a<sp/>single<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(laneId<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedK[warpId]<sp/>=<sp/>pair.k;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedV[warpId]<sp/>=<sp/>pair.v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>typically<sp/>use<sp/>this<sp/>for<sp/>small<sp/>blocks<sp/>(&lt;=<sp/>128),<sp/>just<sp/>having<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>first<sp/>thread<sp/>in<sp/>the<sp/>block<sp/>perform<sp/>the<sp/>reduction<sp/>across<sp/>warps<sp/>is</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>faster</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(threadIdx.x<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>sharedK[0];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>sharedV[0];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>1;<sp/>i<sp/>&lt;<sp/>kNumWarps;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K<sp/>k<sp/>=<sp/>sharedK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V<sp/>v<sp/>=<sp/>sharedV[i];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Hopefully<sp/>a<sp/>thread&apos;s<sp/>smem<sp/>reads/writes<sp/>are<sp/>ordered<sp/>wrt</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>itself,<sp/>so<sp/>no<sp/>barrier<sp/>needed<sp/>:)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedK[0]<sp/>=<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sharedV[0]<sp/>=<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>In<sp/>case<sp/>other<sp/>threads<sp/>wish<sp/>to<sp/>read<sp/>this<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__syncthreads();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>threadK<sp/>is<sp/>lowest<sp/>(Dir)<sp/>or<sp/>highest<sp/>(!Dir)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>threadV;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Where<sp/>we<sp/>reduce<sp/>in<sp/>smem</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>sharedK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V*<sp/>sharedV;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
@@ -368,216 +437,223 @@
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>`Dir`<sp/>true,<sp/>produce<sp/>largest<sp/>values.</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>`Dir`<sp/>false,<sp/>produce<sp/>smallest<sp/>values.</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumWarpQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpSelect<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarpQRegisters<sp/>=<sp/>NumWarpQ<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarpQRegisters<sp/>=<sp/>NumWarpQ<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>WarpSelect(K<sp/>initKVal,<sp/>V<sp/>initVVal,<sp/>int<sp/>k)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>initK(initKVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>kLane((k<sp/>-<sp/>1)<sp/>%<sp/>kWarpSize)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(ThreadsPerBlock),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;threads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static_assert(utils::isPowerOf2(NumWarpQ),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;warp<sp/>queue<sp/>must<sp/>be<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>WarpSelect(K<sp/>initKVal,<sp/>V<sp/>initVVal,<sp/>int<sp/>k)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>initK(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initV(initVVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals(0),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop(initKVal),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kLane((k<sp/>-<sp/>1)<sp/>%<sp/>kWarpSize)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(ThreadsPerBlock),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;threads<sp/>must<sp/>be<sp/>a<sp/>power-of-2&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>utils::isPowerOf2(NumWarpQ),<sp/>&quot;warp<sp/>queue<sp/>must<sp/>be<sp/>power-of-2&quot;);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>per-thread<sp/>queue<sp/>keys<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>per-thread<sp/>queue<sp/>keys<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>warp<sp/>queue<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Fill<sp/>the<sp/>warp<sp/>queue<sp/>with<sp/>the<sp/>default<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>threadK[i<sp/>-<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>threadV[i<sp/>-<sp/>1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[0]<sp/>=<sp/>k;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[0]<sp/>=<sp/>v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++numVals;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir<sp/>?<sp/>Comp::gt(k,<sp/>warpKTop)<sp/>:<sp/>Comp::lt(k,<sp/>warpKTop))<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Rotate<sp/>right</highlight></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>NumThreadQ<sp/>-<sp/>1;<sp/>i<sp/>&gt;<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>threadK[i<sp/>-<sp/>1];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>threadV[i<sp/>-<sp/>1];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[0]<sp/>=<sp/>k;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[0]<sp/>=<sp/>v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++numVals;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>needSort<sp/>=<sp/>(numVals<sp/>==<sp/>NumThreadQ);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#if<sp/>CUDA_VERSION<sp/>&gt;=<sp/>9000</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any_sync(0xffffffff,<sp/>needSort);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>needSort<sp/>=<sp/>__any(needSort);</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(!needSort)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>no<sp/>lanes<sp/>have<sp/>triggered<sp/>a<sp/>sort</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!needSort)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>no<sp/>lanes<sp/>have<sp/>triggered<sp/>a<sp/>sort</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Any<sp/>top-k<sp/>elements<sp/>have<sp/>been<sp/>merged<sp/>into<sp/>the<sp/>warp<sp/>queue;<sp/>we&apos;re</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>free<sp/>to<sp/>reset<sp/>the<sp/>thread<sp/>queues</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>numVals<sp/>=<sp/>0;</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>shfl(warpK[kNumWarpQRegisters<sp/>-<sp/>1],<sp/>kLane);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>This<sp/>function<sp/>handles<sp/>sorting<sp/>and<sp/>merging<sp/>together<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>per-thread<sp/>queues<sp/>with<sp/>the<sp/>warp-wide<sp/>queue,<sp/>creating<sp/>a<sp/>sorted</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>list<sp/>across<sp/>both</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>mergeWarpQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Sort<sp/>all<sp/>of<sp/>the<sp/>per-thread<sp/>queues</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpSortAnyRegisters&lt;K,<sp/>V,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp&gt;(threadK,<sp/>threadV);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>warp<sp/>queue<sp/>is<sp/>already<sp/>sorted,<sp/>and<sp/>now<sp/>that<sp/>we&apos;ve<sp/>sorted<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>per-thread<sp/>queue,<sp/>merge<sp/>both<sp/>sorted<sp/>lists<sp/>together,<sp/>producing</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>one<sp/>sorted<sp/>list</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>warpMergeAnyRegisters&lt;K,<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kNumWarpQRegisters,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp,<sp/>false&gt;(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>warpK,<sp/>warpV,<sp/>threadK,<sp/>threadV);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>WARNING:<sp/>all<sp/>threads<sp/>in<sp/>a<sp/>warp<sp/>must<sp/>participate<sp/>in<sp/>this.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Otherwise,<sp/>you<sp/>must<sp/>call<sp/>the<sp/>constituent<sp/>parts<sp/>separately.</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>checkThreadQ();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Have<sp/>all<sp/>warps<sp/>dump<sp/>and<sp/>merge<sp/>their<sp/>queues;<sp/>this<sp/>will<sp/>produce</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>the<sp/>final<sp/>per-warp<sp/>results</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Dump<sp/>final<sp/>k<sp/>selected<sp/>values<sp/>for<sp/>this<sp/>warp<sp/>out</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>writeOut(K*<sp/>outK,<sp/>V*<sp/>outV,<sp/>int<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Any<sp/>top-k<sp/>elements<sp/>have<sp/>been<sp/>merged<sp/>into<sp/>the<sp/>warp<sp/>queue;<sp/>we&apos;re</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>free<sp/>to<sp/>reset<sp/>the<sp/>thread<sp/>queues</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>numVals<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>idx<sp/>=<sp/>i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>NumThreadQ;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK[i]<sp/>=<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV[i]<sp/>=<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(idx<sp/>&lt;<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[idx]<sp/>=<sp/>warpK[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[idx]<sp/>=<sp/>warpV[i];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>have<sp/>to<sp/>beat<sp/>at<sp/>least<sp/>this<sp/>element</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpKTop<sp/>=<sp/>shfl(warpK[kNumWarpQRegisters<sp/>-<sp/>1],<sp/>kLane);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Default<sp/>element<sp/>key</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>K<sp/>initK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>function<sp/>handles<sp/>sorting<sp/>and<sp/>merging<sp/>together<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>per-thread<sp/>queues<sp/>with<sp/>the<sp/>warp-wide<sp/>queue,<sp/>creating<sp/>a<sp/>sorted</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>list<sp/>across<sp/>both</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>mergeWarpQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Sort<sp/>all<sp/>of<sp/>the<sp/>per-thread<sp/>queues</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpSortAnyRegisters&lt;K,<sp/>V,<sp/>NumThreadQ,<sp/>!Dir,<sp/>Comp&gt;(threadK,<sp/>threadV);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Default<sp/>element<sp/>value</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>const<sp/>V<sp/>initV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>warp<sp/>queue<sp/>is<sp/>already<sp/>sorted,<sp/>and<sp/>now<sp/>that<sp/>we&apos;ve<sp/>sorted<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>per-thread<sp/>queue,<sp/>merge<sp/>both<sp/>sorted<sp/>lists<sp/>together,<sp/>producing</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>one<sp/>sorted<sp/>list</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpMergeAnyRegisters&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kNumWarpQRegisters,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>false&gt;(warpK,<sp/>warpV,<sp/>threadK,<sp/>threadV);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Number<sp/>of<sp/>valid<sp/>elements<sp/>in<sp/>our<sp/>thread<sp/>queue</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>numVals;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>WARNING:<sp/>all<sp/>threads<sp/>in<sp/>a<sp/>warp<sp/>must<sp/>participate<sp/>in<sp/>this.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Otherwise,<sp/>you<sp/>must<sp/>call<sp/>the<sp/>constituent<sp/>parts<sp/>separately.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>checkThreadQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Have<sp/>all<sp/>warps<sp/>dump<sp/>and<sp/>merge<sp/>their<sp/>queues;<sp/>this<sp/>will<sp/>produce</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>final<sp/>per-warp<sp/>results</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mergeWarpQ();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>threadV[NumThreadQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Dump<sp/>final<sp/>k<sp/>selected<sp/>values<sp/>for<sp/>this<sp/>warp<sp/>out</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>writeOut(K*<sp/>outK,<sp/>V*<sp/>outV,<sp/>int<sp/>k)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneId<sp/>=<sp/>getLaneId();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>warpK[0]<sp/>is<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>warpK[kNumWarpQRegisters];</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>warpV[kNumWarpQRegisters];</highlight></codeline>
+<codeline><highlight class="normal">#pragma<sp/>unroll</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>kNumWarpQRegisters;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>idx<sp/>=<sp/>i<sp/>*<sp/>kWarpSize<sp/>+<sp/>laneId;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>This<sp/>is<sp/>what<sp/>lane<sp/>we<sp/>should<sp/>load<sp/>an<sp/>approximation<sp/>(&gt;=k)<sp/>to<sp/>the</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>kth<sp/>element<sp/>from<sp/>the<sp/>last<sp/>register<sp/>in<sp/>the<sp/>warp<sp/>queue<sp/>(i.e.,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>warpK[kNumWarpQRegisters<sp/>-<sp/>1]).</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>int<sp/>kLane;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(idx<sp/>&lt;<sp/>k)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outK[idx]<sp/>=<sp/>warpK[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outV[idx]<sp/>=<sp/>warpV[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Default<sp/>element<sp/>key</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>K<sp/>initK;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Default<sp/>element<sp/>value</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>V<sp/>initV;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Number<sp/>of<sp/>valid<sp/>elements<sp/>in<sp/>our<sp/>thread<sp/>queue</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>numVals;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>The<sp/>k-th<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)<sp/>element</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpKTop;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Thread<sp/>queue<sp/>values</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK[NumThreadQ];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>threadV[NumThreadQ];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>warpK[0]<sp/>is<sp/>highest<sp/>(Dir)<sp/>or<sp/>lowest<sp/>(!Dir)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>warpK[kNumWarpQRegisters];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>warpV[kNumWarpQRegisters];</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>This<sp/>is<sp/>what<sp/>lane<sp/>we<sp/>should<sp/>load<sp/>an<sp/>approximation<sp/>(&gt;=k)<sp/>to<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>kth<sp/>element<sp/>from<sp/>the<sp/>last<sp/>register<sp/>in<sp/>the<sp/>warp<sp/>queue<sp/>(i.e.,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>warpK[kNumWarpQRegisters<sp/>-<sp/>1]).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>kLane;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Specialization<sp/>for<sp/>k<sp/>==<sp/>1<sp/>(NumWarpQ<sp/>==<sp/>1)</highlight></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>K,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>V,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>Dir,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>Comp,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>NumThreadQ,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>ThreadsPerBlock&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>WarpSelect&lt;K,<sp/>V,<sp/>Dir,<sp/>Comp,<sp/>1,<sp/>NumThreadQ,<sp/>ThreadsPerBlock&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>kNumWarps<sp/>=<sp/>ThreadsPerBlock<sp/>/<sp/>kWarpSize;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>WarpSelect(K<sp/>initK,<sp/>V<sp/>initV,<sp/>int<sp/>k)<sp/>:</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadK(initK),</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>threadV(initV)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>WarpSelect(K<sp/>initK,<sp/>V<sp/>initV,<sp/>int<sp/>k)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>threadK(initK),<sp/>threadV(initV)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>don&apos;t<sp/>need<sp/>to<sp/>do<sp/>anything<sp/>here,<sp/>since<sp/>the<sp/>warp<sp/>doesn&apos;t</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>cooperate<sp/>until<sp/>the<sp/>end</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Reduce<sp/>within<sp/>the<sp/>warp</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Pair&lt;K,<sp/>V&gt;<sp/>pair(threadK,<sp/>threadV);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(pair,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(pair,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>addThreadQ(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>swap<sp/>=<sp/>Dir<sp/>?<sp/>Comp::gt(k,<sp/>threadK)<sp/>:<sp/>Comp::lt(k,<sp/>threadK);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>swap<sp/>?<sp/>k<sp/>:<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>swap<sp/>?<sp/>v<sp/>:<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>pair.k;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>pair.v;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>///<sp/>Dump<sp/>final<sp/>k<sp/>selected<sp/>values<sp/>for<sp/>this<sp/>warp<sp/>out</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>writeOut(K*<sp/>outK,<sp/>V*<sp/>outV,<sp/>int<sp/>k)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(getLaneId()<sp/>==<sp/>0)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>*outK<sp/>=<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>*outV<sp/>=<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>checkThreadQ()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>don&apos;t<sp/>need<sp/>to<sp/>do<sp/>anything<sp/>here,<sp/>since<sp/>the<sp/>warp<sp/>doesn&apos;t</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>cooperate<sp/>until<sp/>the<sp/>end</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/>//<sp/>threadK<sp/>is<sp/>lowest<sp/>(Dir)<sp/>or<sp/>highest<sp/>(!Dir)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>K<sp/>threadK;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/>V<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>add(K<sp/>k,<sp/>V<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>addThreadQ(k,<sp/>v);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>reduce()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Reduce<sp/>within<sp/>the<sp/>warp</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Pair&lt;K,<sp/>V&gt;<sp/>pair(threadK,<sp/>threadV);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(Dir)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=<sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair,<sp/>Max&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair<sp/>=<sp/>warpReduceAll&lt;Pair&lt;K,<sp/>V&gt;,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pair,<sp/>Min&lt;Pair&lt;K,<sp/>V&gt;&gt;());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadK<sp/>=<sp/>pair.k;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>threadV<sp/>=<sp/>pair.v;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Dump<sp/>final<sp/>k<sp/>selected<sp/>values<sp/>for<sp/>this<sp/>warp<sp/>out</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__device__<sp/>inline<sp/>void<sp/>writeOut(K*<sp/>outK,<sp/>V*<sp/>outV,<sp/>int<sp/>k)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(getLaneId()<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*outK<sp/>=<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*outV<sp/>=<sp/>threadV;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>threadK<sp/>is<sp/>lowest<sp/>(Dir)<sp/>or<sp/>highest<sp/>(!Dir)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K<sp/>threadK;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>V<sp/>threadV;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">}<sp/>}<sp/>//<sp/>namespace</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/Select.cuh"/>
   </compounddef>
