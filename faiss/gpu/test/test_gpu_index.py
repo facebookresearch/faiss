@@ -416,6 +416,48 @@ class TestSQ_to_gpu(unittest.TestCase):
         self.assertIsInstance(gpu_index, faiss.GpuIndexFlat)
 
 
+class TestInvalidParams(unittest.TestCase):
+
+    def test_indices_ivfpq(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nlist = 10
+        M = 4
+        nbits = 8
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xb_indices_base = np.arange(nb, dtype=np.int64)
+
+        # Force values to not be representable in int32
+        xb_indices = (xb_indices_base + 4294967296).astype('int64')
+
+        config = faiss.GpuIndexIVFPQConfig()
+        idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
+                                  faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        # invalid k (should be > 0)
+        k = -5
+        idx.setNumProbes(3)
+        self.assertRaises(AssertionError, idx.search, xb[10:20], k)
+
+        # invalid nprobe (should be > 0)
+        self.assertRaises(RuntimeError, idx.setNumProbes, 0)
+        self.assertRaises(RuntimeError, idx.setNumProbes, -3)
+
+        k = 5
+        idx.nprobe = -3
+        self.assertRaises(RuntimeError, idx.search, xb[10:20], k)
+
+        # valid params
+        k = 5
+        idx.setNumProbes(3)
+        _, I = idx.search(xb[10:20], k)
+        self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
 
 if __name__ == '__main__':
     unittest.main()

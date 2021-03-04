@@ -56,6 +56,8 @@ void IndexScalarQuantizer::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(
             metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT);

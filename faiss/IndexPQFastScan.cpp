@@ -178,6 +178,8 @@ void IndexPQFastScan::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels);
     } else {

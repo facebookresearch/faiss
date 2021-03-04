@@ -36,6 +36,8 @@ void IndexBinaryFlat::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     const idx_t block_size = query_batch_size;
     for (idx_t s = 0; s < n; s += block_size) {
         idx_t nn = block_size;

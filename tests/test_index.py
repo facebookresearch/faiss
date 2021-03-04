@@ -781,3 +781,60 @@ class TestReconsHash(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestValidIndexParams(unittest.TestCase):
+
+    def test_IndexIVFPQ(self):
+        d = 32
+        nb = 1000
+        nt = 1500
+        nq = 200
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+
+        coarse_quantizer = faiss.IndexFlatL2(d)
+        index = faiss.IndexIVFPQ(coarse_quantizer, d, 32, 8, 8)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.train(xt)
+        index.add(xb)
+
+        # invalid nprobe
+        index.nprobe = 0
+        k = 10
+        self.assertRaises(RuntimeError, index.search, xq, k)
+
+        # invalid k
+        index.nprobe = 4
+        k = -10
+        self.assertRaises(AssertionError, index.search, xq, k)
+
+        # valid params
+        index.nprobe = 4
+        k = 10
+        D, nns = index.search(xq, k)
+
+        self.assertEquals(D.shape[0], nq)
+        self.assertEquals(D.shape[1], k)
+
+    def test_IndexFlat(self):
+        d = 32
+        nb = 1000
+        nt = 0
+        nq = 200
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlat(d, faiss.METRIC_L2)
+
+        index.add(xb)
+
+        # invalid k
+        k = -5
+        self.assertRaises(AssertionError, index.search, xq, k)
+
+        # valid k
+        k = 5
+        D, I = index.search(xq, k)
+
+        self.assertEquals(D.shape[0], nq)
+        self.assertEquals(D.shape[1], k)

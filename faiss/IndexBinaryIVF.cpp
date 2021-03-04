@@ -126,6 +126,9 @@ void IndexBinaryIVF::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
     const size_t nprobe = std::min(nlist, this->nprobe);
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
     std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
@@ -174,6 +177,9 @@ void IndexBinaryIVF::search_and_reconstruct(
         idx_t* labels,
         uint8_t* recons) const {
     const size_t nprobe = std::min(nlist, this->nprobe);
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
     std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);
 

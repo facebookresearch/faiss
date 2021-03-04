@@ -121,6 +121,8 @@ void IndexLSH::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_preprocess(n, x);
     ScopeDeleter<float> del(xt == x ? nullptr : xt);

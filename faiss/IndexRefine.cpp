@@ -96,6 +96,8 @@ void IndexRefine::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     idx_t k_base = idx_t(k * k_factor);
     idx_t* base_labels = labels;
@@ -193,6 +195,8 @@ void IndexRefineFlat::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     idx_t k_base = idx_t(k * k_factor);
     idx_t* base_labels = labels;

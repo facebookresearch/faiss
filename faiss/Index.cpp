@@ -61,6 +61,8 @@ void Index::search_and_reconstruct(
         float* distances,
         idx_t* labels,
         float* recons) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     search(n, x, k, distances, labels);
     for (idx_t i = 0; i < n; ++i) {
         for (idx_t j = 0; j < k; ++j) {

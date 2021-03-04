@@ -204,6 +204,8 @@ void IndexPQ::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     if (search_type == ST_PQ) { // Simple PQ search
 
@@ -341,6 +343,8 @@ void IndexPQ::search_core_polysemous(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(pq.nbits == 8);
 
     // PQ distance tables
@@ -919,6 +923,8 @@ void MultiIndexQuantizer::search(
     if (n == 0)
         return;
 
+    FAISS_THROW_IF_NOT(k > 0);
+
     // the allocation just below can be severe...
     idx_t bs = 32768;
     if (n > bs) {
@@ -1060,6 +1066,7 @@ void MultiIndexQuantizer2::search(
         return;
 
     int k2 = std::min(K, int64_t(pq.ksub));
+    FAISS_THROW_IF_NOT(k2);
 
     int64_t M = pq.M;
     int64_t dsub = pq.dsub, ksub = pq.ksub;

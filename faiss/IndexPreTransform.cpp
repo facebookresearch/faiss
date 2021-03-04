@@ -163,6 +163,8 @@ void IndexPreTransform::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_chain(n, x);
     ScopeDeleter<float> del(xt == x ? nullptr : xt);
@@ -218,6 +220,8 @@ void IndexPreTransform::search_and_reconstruct(
         float* distances,
         idx_t* labels,
         float* recons) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT(is_trained);
 
     const float* xt = apply_chain(n, x);

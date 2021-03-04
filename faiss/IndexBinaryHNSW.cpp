@@ -195,6 +195,8 @@ void IndexBinaryHNSW::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
 #pragma omp parallel
     {
         VisitedTable vt(ntotal);

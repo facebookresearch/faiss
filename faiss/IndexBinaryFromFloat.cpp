@@ -53,6 +53,8 @@ void IndexBinaryFromFloat::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     constexpr idx_t bs = 32768;
     std::unique_ptr<float[]> xf(new float[bs * d]);
     std::unique_ptr<float[]> df(new float[bs * k]);

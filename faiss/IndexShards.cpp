@@ -289,6 +289,8 @@ void IndexShardsTemplate<IndexT>::search(
         idx_t k,
         distance_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     long nshard = this->count();
 
     std::vector<distance_t> all_distances(nshard * k * n);

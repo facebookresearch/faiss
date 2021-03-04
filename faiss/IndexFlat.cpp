@@ -37,6 +37,8 @@ void IndexFlat::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     // we see the distances and labels as heaps
 
     if (metric_type == METRIC_INNER_PRODUCT) {
@@ -232,6 +234,8 @@ void IndexFlat1D::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == ntotal, "Call update_permutation before search");
 

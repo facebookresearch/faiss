@@ -131,6 +131,8 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
 
+        assert k > 0
+
         if D is None:
             D = np.empty((n, k), dtype=np.float32)
         else:
@@ -147,6 +149,8 @@ def handle_Index(the_class):
     def replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
         n, d = x.shape
         assert d == self.d
+
+        assert k > 0
 
         if D is None:
             D = np.empty((n, k), dtype=np.float32)
@@ -302,6 +306,7 @@ def handle_IndexBinary(the_class):
     def replacement_search(self, x, k):
         n, d = x.shape
         assert d * 8 == self.d
+        assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
         labels = np.empty((n, k), dtype=np.int64)
         self.search_c(n, swig_ptr(x),

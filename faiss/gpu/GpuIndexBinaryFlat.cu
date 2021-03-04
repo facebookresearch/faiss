@@ -155,6 +155,8 @@ void GpuIndexBinaryFlat::search(
         return;
     }
 
+    FAISS_THROW_IF_NOT(k > 0);
+
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(
             n <= (Index::idx_t)std::numeric_limits<int>::max(),

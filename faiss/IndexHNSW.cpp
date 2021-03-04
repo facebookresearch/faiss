@@ -287,6 +287,8 @@ void IndexHNSW::search(
         idx_t* labels) const
 
 {
+    FAISS_THROW_IF_NOT(k > 0);
+
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
@@ -417,6 +419,9 @@ void IndexHNSW::search_level_0(
         idx_t* labels,
         int nprobe,
         int search_type) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
     storage_idx_t ntotal = hnsw.levels.size();
     size_t n1 = 0, n2 = 0, n3 = 0, ndis = 0, nreorder = 0;
 
@@ -1031,6 +1036,8 @@ void IndexHNSW2Level::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     if (dynamic_cast<const Index2Layer*>(storage)) {
         IndexHNSW::search(n, x, k, distances, labels);
 

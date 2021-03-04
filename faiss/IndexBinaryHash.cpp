@@ -245,6 +245,8 @@ void IndexBinaryHash::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     using HeapForL2 = CMax<int32_t, idx_t>;
     size_t nlist = 0, ndis = 0, n0 = 0;
 
@@ -458,6 +460,8 @@ void IndexBinaryMultiHash::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     using HeapForL2 = CMax<int32_t, idx_t>;
     size_t nlist = 0, ndis = 0, n0 = 0;
 

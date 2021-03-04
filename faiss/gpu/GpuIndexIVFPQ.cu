@@ -356,6 +356,7 @@ void GpuIndexIVFPQ::searchImpl_(
     // Device is already set in GpuIndex::search
     FAISS_ASSERT(index_);
     FAISS_ASSERT(n > 0);
+    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
 
     // Data is already resident on the GPU
     Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});

@@ -283,7 +283,10 @@ void IndexIVF::search(
         idx_t k,
         float* distances,
         idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     const size_t nprobe = std::min(nlist, this->nprobe);
+    FAISS_THROW_IF_NOT(nprobe > 0);
 
     // search function for a subset of queries
     auto sub_search_func = [this, k, nprobe](
@@ -369,8 +372,11 @@ void IndexIVF::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params,
         IndexIVFStats* ivf_stats) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     idx_t nprobe = params ? params->nprobe : this->nprobe;
     nprobe = std::min((idx_t)nlist, nprobe);
+    FAISS_THROW_IF_NOT(nprobe > 0);
 
     idx_t max_codes = params ? params->max_codes : this->max_codes;
 
@@ -839,7 +845,11 @@ void IndexIVF::search_and_reconstruct(
         float* distances,
         idx_t* labels,
         float* recons) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
     const size_t nprobe = std::min(nlist, this->nprobe);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
     idx_t* idx = new idx_t[n * nprobe];
     ScopeDeleter<idx_t> del(idx);
     float* coarse_dis = new float[n * nprobe];
