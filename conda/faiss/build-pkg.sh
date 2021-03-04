@@ -10,6 +10,7 @@ set -e
 # Build avx2 version.
 cmake -B _build_python_${PY_VER}_avx2 \
       -Dfaiss_ROOT=_libfaiss_avx2_stage/ \
+      -DFAISS_OPT_LEVEL=avx2 \
       -DFAISS_ENABLE_GPU=OFF \
       -DCMAKE_BUILD_TYPE=Release \
       -DPython_EXECUTABLE=$PYTHON \
@@ -31,6 +32,6 @@ cmake --build _build_python_${PY_VER} -j $CPU_COUNT
 
 # Build actual python module.
 cp _build_python_${PY_VER}_avx2/swigfaiss.py _build_python_${PY_VER}/swigfaiss_avx2.py
-cp _build_python_${PY_VER}_avx2/_swigfaiss.so _build_python_${PY_VER}/_swigfaiss_avx2.so
+cp _build_python_${PY_VER}_avx2/_swigfaiss_avx2.so _build_python_${PY_VER}/_swigfaiss_avx2.so
 cd _build_python_${PY_VER}/
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt --prefix=$PREFIX

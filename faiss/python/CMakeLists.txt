@@ -61,6 +61,10 @@ swig_add_library(swigfaiss
   SOURCES swigfaiss.swig
 )
 
+if(FAISS_OPT_LEVEL STREQUAL "avx2")
+  set_target_properties(swigfaiss PROPERTIES OUTPUT_NAME "swigfaiss_avx2")
+endif()
+
 if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
