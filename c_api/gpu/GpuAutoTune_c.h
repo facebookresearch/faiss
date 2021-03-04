@@ -12,11 +12,11 @@
 #define FAISS_GPU_AUTO_TUNE_C_H
 
 #include <stddef.h>
+#include "../Index_c.h"
+#include "../faiss_c.h"
 #include "GpuClonerOptions_c.h"
 #include "GpuIndex_c.h"
 #include "GpuResources_c.h"
-#include "Index_c.h"
-#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,14 +27,14 @@ int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out);
 
 /// converts any CPU index that can be converted to GPU
 int faiss_index_cpu_to_gpu(
-        FaissGpuResources* resources,
+        FaissGpuResourcesProvider* provider,
         int device,
         const FaissIndex* index,
         FaissGpuIndex** p_out);
 
 /// converts any CPU index that can be converted to GPU
 int faiss_index_cpu_to_gpu_with_options(
-        FaissGpuResources* resources,
+        FaissGpuResourcesProvider* provider,
         int device,
         const FaissIndex* index,
         const FaissGpuClonerOptions* options,
@@ -42,7 +42,7 @@ int faiss_index_cpu_to_gpu_with_options(
 
 /// converts any CPU index that can be converted to GPU
 int faiss_index_cpu_to_gpu_multiple(
-        FaissGpuResources* const* resources_vec,
+        FaissGpuResourcesProvider* const* providers_vec,
         const int* devices,
         size_t devices_size,
         const FaissIndex* index,
@@ -50,7 +50,8 @@ int faiss_index_cpu_to_gpu_multiple(
 
 /// converts any CPU index that can be converted to GPU
 int faiss_index_cpu_to_gpu_multiple_with_options(
-        FaissGpuResources* const* resources_vec,
+        FaissGpuResourcesProvider* const* providers_vec,
+        size_t providers_vec_size,
         const int* devices,
         size_t devices_size,
         const FaissIndex* index,

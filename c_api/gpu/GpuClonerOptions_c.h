@@ -11,8 +11,8 @@
 #ifndef FAISS_GPU_CLONER_OPTIONS_C_H
 #define FAISS_GPU_CLONER_OPTIONS_C_H
 
+#include "../faiss_c.h"
 #include "GpuIndicesOptions_c.h"
-#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {

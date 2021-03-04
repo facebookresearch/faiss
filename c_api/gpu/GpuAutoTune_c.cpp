@@ -9,19 +9,19 @@
 // -*- c++ -*-
 
 #include "GpuAutoTune_c.h"
+#include <faiss/Index.h>
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <vector>
 #include "GpuClonerOptions_c.h"
-#include "Index.h"
 #include "macros_impl.h"
 
 using faiss::Index;
 using faiss::gpu::GpuClonerOptions;
 using faiss::gpu::GpuMultipleClonerOptions;
-using faiss::gpu::GpuResources;
+using faiss::gpu::GpuResourcesProvider;
 
 int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
     try {
@@ -34,12 +34,12 @@ int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
 
 /// converts any CPU index that can be converted to GPU
 int faiss_index_cpu_to_gpu(
-        FaissGpuResources* resources,
+        FaissGpuResourcesProvider* provider,
         int device,
         const FaissIndex* index,
         FaissGpuIndex** p_out) {
     try {
-        auto res = reinterpret_cast<GpuResources*>(resources);
+        auto res = reinterpret_cast<GpuResourcesProvider*>(provider);
         auto gpu_index = faiss::gpu::index_cpu_to_gpu(
                 res, device, reinterpret_cast<const Index*>(index));
         *p_out = reinterpret_cast<FaissGpuIndex*>(gpu_index);
@@ -48,13 +48,13 @@ int faiss_index_cpu_to_gpu(
 }
 
 int faiss_index_cpu_to_gpu_with_options(
-        FaissGpuResources* resources,
+        FaissGpuResourcesProvider* provider,
         int device,
         const FaissIndex* index,
         const FaissGpuClonerOptions* options,
         FaissGpuIndex** p_out) {
     try {
-        auto res = reinterpret_cast<GpuResources*>(resources);
+        auto res = reinterpret_cast<GpuResourcesProvider*>(provider);
         auto gpu_index = faiss::gpu::index_cpu_to_gpu(
                 res,
                 device,
@@ -66,15 +66,15 @@ int faiss_index_cpu_to_gpu_with_options(
 }
 
 int faiss_index_cpu_to_gpu_multiple(
-        FaissGpuResources* const* resources_vec,
+        FaissGpuResourcesProvider* const* providers_vec,
         const int* devices,
         size_t devices_size,
         const FaissIndex* index,
         FaissGpuIndex** p_out) {
     try {
-        std::vector<GpuResources*> res(devices_size);
+        std::vector<GpuResourcesProvider*> res(devices_size);
         for (auto i = 0u; i < devices_size; ++i) {
-            res[i] = reinterpret_cast<GpuResources*>(resources_vec[i]);
+            res[i] = reinterpret_cast<GpuResourcesProvider*>(providers_vec[i]);
         }
 
         std::vector<int> dev(devices, devices + devices_size);
@@ -87,17 +87,17 @@ int faiss_index_cpu_to_gpu_multiple(
 }
 
 int faiss_index_cpu_to_gpu_multiple_with_options(
-        FaissGpuResources** resources_vec,
-        size_t resources_vec_size,
+        FaissGpuResourcesProvider** providers_vec,
+        size_t providers_vec_size,
         int* devices,
         size_t devices_size,
         const FaissIndex* index,
         const FaissGpuMultipleClonerOptions* options,
         FaissGpuIndex** p_out) {
     try {
-        std::vector<GpuResources*> res(resources_vec_size);
-        for (auto i = 0u; i < resources_vec_size; ++i) {
-            res[i] = reinterpret_cast<GpuResources*>(resources_vec[i]);
+        std::vector<GpuResourcesProvider*> res(providers_vec_size);
+        for (auto i = 0u; i < providers_vec_size; ++i) {
+            res[i] = reinterpret_cast<GpuResourcesProvider*>(providers_vec[i]);
         }
 
         std::vector<int> dev(devices, devices + devices_size);

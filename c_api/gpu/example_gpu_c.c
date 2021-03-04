@@ -12,13 +12,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "AutoTune_c.h"
+#include "../AutoTune_c.h"
+#include "../Index_c.h"
+#include "../error_c.h"
+#include "../index_factory_c.h"
 #include "DeviceUtils_c.h"
 #include "GpuAutoTune_c.h"
-#include "Index_c.h"
 #include "StandardGpuResources_c.h"
-#include "error_c.h"
-#include "index_factory_c.h"
 
 #define FAISS_TRY(C)                                       \
     {                                                      \

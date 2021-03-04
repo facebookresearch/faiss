@@ -12,16 +12,16 @@
 #define FAISS_STANDARD_GPURESOURCES_C_H
 
 #include <cuda_runtime_api.h>
-#include "faiss_c.h"
-#include "gpu/GpuResources_c.h"
+#include "../faiss_c.h"
+#include "GpuResources_c.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// Default implementation of GpuResources that allocates a cuBLAS
+/// Default implementation of GpuResourcesProvider that allocates a cuBLAS
 /// stream and 2 streams for use, as well as temporary memory
-FAISS_DECLARE_CLASS_INHERITED(StandardGpuResources, GpuResources)
+FAISS_DECLARE_CLASS_INHERITED(StandardGpuResources, GpuResourcesProvider)
 
 FAISS_DECLARE_DESTRUCTOR(StandardGpuResources)
 

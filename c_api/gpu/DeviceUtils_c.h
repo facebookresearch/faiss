@@ -13,7 +13,7 @@
 
 #include <cublas.h>
 #include <cuda_runtime_api.h>
-#include "faiss_c.h"
+#include "../faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
