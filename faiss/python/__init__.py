@@ -5,13 +5,14 @@
 
 #@nolint
 
-# not linting this file because it imports * form swigfaiss, which
+# not linting this file because it imports * from swigfaiss, which
 # causes a ton of useless warnings.
 
 import numpy as np
 import sys
 import inspect
 import array
+import warnings
 
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
@@ -799,7 +800,7 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
     if gpus is None:
         gpus = range(len(resources))
     vres = GpuResourcesVector()
-    vdev = IntVector()
+    vdev = Int32Vector()
     for i, res in zip(gpus, resources):
         vdev.push_back(i)
         vres.push_back(res)
@@ -940,23 +941,53 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
 # numpy array / std::vector conversions
 ###########################################
 
-# mapping from vector names in swigfaiss.swig and the numpy dtype names
-vector_name_map = {
-    'Float': 'float32',
-    'Byte': 'uint8',
-    'Char': 'int8',
-    'Uint64': 'uint64',
-    'LongLong': 'int64',
-    'Int': 'int32',
-    'Double': 'float64'
+sizeof_long = array.array('l').itemsize
+deprecated_name_map = {
+    'Float': 'Float32',
+    'Double': 'Float64',
+    'Char': 'Int8',
+    'Int': 'Int32',
+    'Long': 'Int32' if sizeof_long == 4 else 'Int64',
+    'LongLong': 'Int64',
+    'Byte': 'UInt8'
 }
 
-sizeof_long = array.array('l').itemsize
-if sizeof_long == 4:
-    vector_name_map["Long"] = 'int32'
-elif sizeof_long == 8:
-    vector_name_map["Long"] = 'int64'
+def make_deprecated_class(deprecated_name, base_name):
+    """
+    Dynamically construct deprecated classes and add warning to their __new__-method.
 
+    We do this here because the classes are defined in the swig interface,
+    making it cumbersome to add the following functionality there directly.
+    """
+    base_class = globals()[base_name]
+    def new_meth(cls, *args, **kwargs):
+        msg = f"The class faiss.{deprecated_name} is deprecated in favour of faiss.{base_name}!"
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        instance = super(base_class, cls).__new__(cls, *args, **kwargs)
+        return instance
+
+    # three-argument version of type uses (name, tuple-of-bases, dict-of-attributes)
+    return type(deprecated_name, (base_class,), {"__new__": new_meth})
+
+for depr_prefix, base_prefix in deprecated_name_map.items():
+    klazz = make_deprecated_class(depr_prefix + "Vector", base_prefix + "Vector")
+    globals()[depr_prefix + "Vector"] = klazz
+
+# mapping from vector names in swigfaiss.swig and the numpy dtype names
+# TODO: once deprecated classes are removed, remove the dict and just use .lower() below
+vector_name_map = {
+    'Float32': 'float32',
+    'Float64': 'float64',
+    'Int8': 'int8',
+    'Int16': 'int16',
+    'Int32': 'int32',
+    'Int64': 'int64',
+    'UInt8': 'uint8',
+    'UInt16': 'uint16',
+    'UInt32': 'uint32',
+    'UInt64': 'uint64',
+    **{k: v.lower() for k, v in deprecated_name_map.items()}
+}
 
 
 def vector_to_array(v):

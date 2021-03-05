@@ -207,23 +207,20 @@ namespace std {
 %include <std_shared_ptr.i>
 
 // primitive array types
-%template(FloatVector) std::vector<float>;
-%template(DoubleVector) std::vector<double>;
-%template(ByteVector) std::vector<uint8_t>;
-%template(CharVector) std::vector<char>;
+%template(Float32Vector) std::vector<float>;
+%template(Float64Vector) std::vector<double>;
+%template(Int8Vector) std::vector<int8_t>;
 %template(Int16Vector) std::vector<int16_t>;
-// consider renaming to Int32Vector / Int64Vector
-%template(IntVector) std::vector<int>;
-%template(LongVector) std::vector<int64_t>;
-// TODO: deprecate/remove LongLongVector
-%template(LongLongVector) std::vector<int64_t>;
+%template(Int32Vector) std::vector<int32_t>;
+%template(Int64Vector) std::vector<int64_t>;
+%template(UInt8Vector) std::vector<uint8_t>;
 %template(UInt16Vector) std::vector<uint16_t>;
 %template(UInt32Vector) std::vector<uint32_t>;
 %template(Uint64Vector) std::vector<uint64_t>;
 
-%template(FloatVectorVector) std::vector<std::vector<float> >;
-%template(ByteVectorVector) std::vector<std::vector<unsigned char> >;
-%template(LongVectorVector) std::vector<std::vector<int64_t> >;
+%template(Float32VectorVector) std::vector<std::vector<float> >;
+%template(UInt8VectorVector) std::vector<std::vector<uint8_t> >;
+%template(Int64VectorVector) std::vector<std::vector<int64_t> >;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
