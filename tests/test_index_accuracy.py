@@ -778,7 +778,7 @@ class TestRefine(unittest.TestCase):
         # the original recall@100
         recall2 = (I2 == Iref[:, :1]).sum()
         # print("recalls", recall1, recall2)
-        self.assertEquals(recall1, recall2)
+        self.assertEqual(recall1, recall2)
 
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
