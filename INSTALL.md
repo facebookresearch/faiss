@@ -27,9 +27,32 @@ Nightly pre-release packages can be installed as follows:
 # CPU-only version
 $ conda install -c pytorch/label/nightly faiss-cpu
 
-# GPU(+CPU) versoin
+# GPU(+CPU) version
 $ conda install -c pytorch/label/nightly faiss-gpu
 ```
+
+## Installing from conda-forge
+
+Faiss is also being packaged by [conda-forge](https://conda-forge.org/), the
+community-driven packaging ecosystem for conda. The packaging effort is
+collaborating with the Faiss team to ensure high-quality package builds.
+
+Due to the comprehensive infrastructure of conda-forge, it may even happen that
+certain build combinations are supported in conda-forge that are not available
+through the pytorch channel. To install, use
+
+``` shell
+# CPU version
+$ conda install -c conda-forge faiss-cpu
+
+# GPU version
+$ conda install -c conda-forge faiss-gpu
+```
+
+You can tell which channel your conda packages come from by using `conda list`.
+If you are having problems using a package built by conda-forge, please raise
+an [issue](https://github.com/conda-forge/faiss-split-feedstock/issues) on the
+conda-forge package "feedstock".
 
 # Building from source
 
