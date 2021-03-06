@@ -943,6 +943,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
 
 sizeof_long = array.array('l').itemsize
 deprecated_name_map = {
+    # deprecated: replacement
     'Float': 'Float32',
     'Double': 'Float64',
     'Char': 'Int8',
@@ -950,15 +951,18 @@ deprecated_name_map = {
     'Long': 'Int32' if sizeof_long == 4 else 'Int64',
     'LongLong': 'Int64',
     'Byte': 'UInt8',
-    # misspelled variant previously
+    # previously misspelled variant
     'Uint64': 'UInt64',
 }
 
 def make_deprecated_class(deprecated_name, base_name):
     """
-    Dynamically construct deprecated classes and add warning to their __new__-method.
+    Dynamically construct deprecated classes as wrappers around renamed ones
 
-    We do this here because the classes are defined in the swig interface,
+    The deprecation warning added in their __new__-method will trigger upon
+    construction of an instance of the class, but only once per session.
+
+    We do this here because the base classes are defined in the SWIG interface,
     making it cumbersome to add the following functionality there directly.
     """
     base_class = globals()[base_name]
@@ -968,11 +972,13 @@ def make_deprecated_class(deprecated_name, base_name):
         instance = super(base_class, cls).__new__(cls, *args, **kwargs)
         return instance
 
-    # three-argument version of type uses (name, tuple-of-bases, dict-of-attributes)
+    # three-argument version of "type" uses (name, tuple-of-bases, dict-of-attributes)
     return type(deprecated_name, (base_class,), {"__new__": new_meth})
 
 for depr_prefix, base_prefix in deprecated_name_map.items():
     klazz = make_deprecated_class(depr_prefix + "Vector", base_prefix + "Vector")
+    # this ends up adding the class to the "faiss" namespace, in a way that it
+    # is available both through "import faiss" and "from faiss import *"
     globals()[depr_prefix + "Vector"] = klazz
 
 # mapping from vector names in swigfaiss.swig and the numpy dtype names
