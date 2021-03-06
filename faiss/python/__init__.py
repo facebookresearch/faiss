@@ -949,7 +949,9 @@ deprecated_name_map = {
     'Int': 'Int32',
     'Long': 'Int32' if sizeof_long == 4 else 'Int64',
     'LongLong': 'Int64',
-    'Byte': 'UInt8'
+    'Byte': 'UInt8',
+    # misspelled variant previously
+    'Uint64': 'UInt64',
 }
 
 def make_deprecated_class(deprecated_name, base_name):

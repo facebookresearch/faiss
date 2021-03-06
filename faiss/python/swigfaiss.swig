@@ -216,7 +216,7 @@ namespace std {
 %template(UInt8Vector) std::vector<uint8_t>;
 %template(UInt16Vector) std::vector<uint16_t>;
 %template(UInt32Vector) std::vector<uint32_t>;
-%template(Uint64Vector) std::vector<uint64_t>;
+%template(UInt64Vector) std::vector<uint64_t>;
 
 %template(Float32VectorVector) std::vector<std::vector<float> >;
 %template(UInt8VectorVector) std::vector<std::vector<uint8_t> >;
