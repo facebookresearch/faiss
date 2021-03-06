@@ -981,6 +981,12 @@ for depr_prefix, base_prefix in deprecated_name_map.items():
     # is available both through "import faiss" and "from faiss import *"
     globals()[depr_prefix + "Vector"] = klazz
 
+    # same for the three legacy *VectorVector classes
+    if depr_prefix in ['Float', 'Long', 'Byte']:
+        klazz = make_deprecated_class(depr_prefix + "VectorVector",
+                                      base_prefix + "VectorVector")
+        globals()[depr_prefix + "VectorVector"] = klazz
+
 # mapping from vector names in swigfaiss.swig and the numpy dtype names
 # TODO: once deprecated classes are removed, remove the dict and just use .lower() below
 vector_name_map = {

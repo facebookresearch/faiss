@@ -220,6 +220,7 @@ namespace std {
 
 %template(Float32VectorVector) std::vector<std::vector<float> >;
 %template(UInt8VectorVector) std::vector<std::vector<uint8_t> >;
+%template(Int32VectorVector) std::vector<std::vector<int32_t> >;
 %template(Int64VectorVector) std::vector<std::vector<int64_t> >;
 %template(VectorTransformVector) std::vector<faiss::VectorTransform*>;
 %template(OperatingPointVector) std::vector<faiss::OperatingPoint>;
