@@ -80,6 +80,7 @@ target_link_libraries(swigfaiss PRIVATE
   OpenMP::OpenMP_CXX
 )
 
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
 target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../../)
