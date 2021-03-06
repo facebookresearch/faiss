@@ -157,6 +157,16 @@ class IndexAccuracy(unittest.TestCase):
         # should give 0.234  0.236  0.236
         assert e[10] > 0.235
 
+    def test_polysemous_OOM(self):
+        """ this used to cause OOM when training polysemous with large
+        nb bits"""
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 10000, 0, 0)
+        index = faiss.IndexPQ(d, M, 13)
+        index.do_polysemous_training = True
+        index.pq.cp.niter = 0
+        index.polysemous_training.max_memory = 128 * 1024 * 1024
+        self.assertRaises(RuntimeError, index.train, xt)
 
 
 class TestSQFlavors(unittest.TestCase):

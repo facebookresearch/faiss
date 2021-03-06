@@ -8,8 +8,11 @@
 // -*- c++ -*-
 
 #include <faiss/impl/PolysemousTraining.h>
+#include "faiss/impl/FaissAssert.h"
 
+#include <omp.h>
 #include <stdint.h>
+
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -760,6 +763,8 @@ PolysemousTraining::PolysemousTraining() {
     optimization_type = OT_ReproduceDistances_affine;
     ntrain_permutation = 0;
     dis_weight_factor = log(2);
+    // max 20 G RAM
+    max_memory = (size_t)(20) * 1024 * 1024 * 1024;
 }
 
 void PolysemousTraining::optimize_reproduce_distances(
@@ -769,7 +774,22 @@ void PolysemousTraining::optimize_reproduce_distances(
     int n = pq.ksub;
     int nbits = pq.nbits;
 
-#pragma omp parallel for
+    size_t mem1 = memory_usage_per_thread(pq);
+    int nt = std::min(omp_get_max_threads(), int(pq.M));
+    FAISS_THROW_IF_NOT_FMT(
+            mem1 < max_memory,
+            "Polysemous training will use %zd bytes per thread, while the max is set to %zd",
+            mem1,
+            max_memory);
+
+    if (mem1 * nt > max_memory) {
+        nt = max_memory / mem1;
+        fprintf(stderr,
+                "Polysemous training: WARN, reducing number of threads to %d to save memory",
+                nt);
+    }
+
+#pragma omp parallel for num_threads(nt)
     for (int m = 0; m < pq.M; m++) {
         std::vector<double> dis_table;
 
@@ -824,7 +844,6 @@ void PolysemousTraining::optimize_ranking(
         size_t n,
         const float* x) const {
     int dsub = pq.dsub;
-
     int nbits = pq.nbits;
 
     std::vector<uint8_t> all_codes(pq.code_size * n);
@@ -833,8 +852,9 @@ void PolysemousTraining::optimize_ranking(
 
     FAISS_THROW_IF_NOT(pq.nbits == 8);
 
-    if (n == 0)
+    if (n == 0) {
         pq.compute_sdc_table();
+    }
 
 #pragma omp parallel for
     for (int m = 0; m < pq.M; m++) {
@@ -941,6 +961,20 @@ void PolysemousTraining::optimize_pq_for_hamming(
     }
 
     pq.compute_sdc_table();
+}
+
+size_t PolysemousTraining::memory_usage_per_thread(
+        const ProductQuantizer& pq) const {
+    size_t n = pq.ksub;
+
+    switch (optimization_type) {
+        case OT_None:
+            return 0;
+        case OT_ReproduceDistances_affine:
+            return n * n * sizeof(double) * 3;
+        case OT_Ranking_weighted_diff:
+            return n * n * n * sizeof(float);
+    }
 }
 
 } // namespace faiss

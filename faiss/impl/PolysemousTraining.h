@@ -127,6 +127,9 @@ struct PolysemousTraining : SimulatedAnnealingParameters {
     int ntrain_permutation;
     double dis_weight_factor; ///< decay of exp that weights distance loss
 
+    /// refuse to train if it would require more than that amount of RAM
+    size_t max_memory;
+
     // filename pattern for the logging of iterations
     std::string log_pattern;
 
@@ -142,6 +145,9 @@ struct PolysemousTraining : SimulatedAnnealingParameters {
     void optimize_ranking(ProductQuantizer& pq, size_t n, const float* x) const;
     /// called by optimize_pq_for_hamming
     void optimize_reproduce_distances(ProductQuantizer& pq) const;
+
+    /// make sure we don't blow up the memory
+    size_t memory_usage_per_thread(const ProductQuantizer& pq) const;
 };
 
 } // namespace faiss
