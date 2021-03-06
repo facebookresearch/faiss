@@ -29,6 +29,8 @@ __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
 
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
+    """ Replaces a method in a class with another version. The old method
+    is renamed to method_name_c (because presumably it was implemented in C) """
     try:
         orig_method = getattr(the_class, name)
     except AttributeError:
@@ -42,7 +44,20 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
     setattr(the_class, name, replacement)
 
 def handle_Clustering():
+
     def replacement_train(self, x, index, weights=None):
+        """Perform clustering on a set of vectors. The index is used for assignment.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        index : faiss.Index
+            Index used for assignment. The dimension of the index should be `self.d`.
+        weights : array_like, optional
+            Per training sample weight (size n) used when computing the weighted
+            average to obtain the centroid (default is 1 for all training vectors).
+        """
         n, d = x.shape
         assert d == self.d
         if weights is not None:
@@ -50,7 +65,23 @@ def handle_Clustering():
             self.train_c(n, swig_ptr(x), index, swig_ptr(weights))
         else:
             self.train_c(n, swig_ptr(x), index)
+
     def replacement_train_encoded(self, x, codec, index, weights=None):
+        """ Perform clustering on a set of compressed vectors. The index is used for assignment.
+        The decompression is performed on-the-fly.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, codec.code_size()). `dtype` must be `uint8`.
+        codec : faiss.Index
+            Index used to decode the vectors. Should have dimension `self.d`.
+        index : faiss.Index
+            Index used for assignment. The dimension of the index should be `self.d`.
+        weigths : array_like, optional
+            Per training sample weight (size n) used when computing the weighted
+            average to obtain the centroid (default is 1 for all training vectors).
+        """
         n, d = x.shape
         assert d == codec.sa_code_size()
         assert codec.d == index.d
@@ -69,11 +100,31 @@ handle_Clustering()
 def handle_Quantizer(the_class):
 
     def replacement_train(self, x):
+        """ Train the quantizer on a set of training vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        """
         n, d = x.shape
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
     def replacement_compute_codes(self, x):
+        """ Compute the codes corresponding to a set of vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Vectors to encode, shape (n, self.d). `dtype` must be float32.
+
+        Returns
+        -------
+        codes : array_like
+            Corresponding code for each vector, shape (n, self.code_size)
+            and `dtype` uint8.
+        """
         n, d = x.shape
         assert d == self.d
         codes = np.empty((n, self.code_size), dtype='uint8')
@@ -81,6 +132,17 @@ def handle_Quantizer(the_class):
         return codes
 
     def replacement_decode(self, codes):
+        """Reconstruct an approximation of vectors given their codes.
+
+        Parameters
+        ----------
+        codes : array_like
+            Codes to decode, shape (n, self.code_size). `dtype` must be uint8.
+
+        Returns
+        -------
+            Reconstructed vectors for each code, shape `(n, d)` and `dtype` float32.
+        """
         n, cs = codes.shape
         assert cs == self.code_size
         x = np.empty((n, self.d), dtype='float32')
@@ -99,11 +161,36 @@ handle_Quantizer(ScalarQuantizer)
 def handle_Index(the_class):
 
     def replacement_add(self, x):
+        """Adds vectors to the index.
+        The index must be trained before vectors can be added to it.
+        The vectors are implicitly numbered in sequence. When `n` vectors are
+        added to the index, they are given ids `ntotal`, `ntotal + 1`, ..., `ntotal + n - 1`.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
+
         n, d = x.shape
         assert d == self.d
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
+        """Adds vectors with arbitrary ids to the index (not all indexes support this).
+        The index must be trained before vectors can be added to it.
+        Vector `i` is stored in `x[i]` and has id `ids[i]`.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        ids : array_like
+            Array if ids of size n. The ids must be of type `int64`. Note that `-1` is reserved
+            in result lists to mean "not found" so it's better to not use it as an id.
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -111,6 +198,25 @@ def handle_Index(the_class):
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_assign(self, x, k, labels=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+        This is the same as the `search` method, but discards the distances.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        labels : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        labels: array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -123,11 +229,44 @@ def handle_Index(the_class):
         return labels
 
     def replacement_train(self, x):
+        """Trains the index on a representative set of vectors.
+        The index must be trained before vectors can be added to it.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
         n, d = x.shape
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
     def replacement_search(self, x, k, D=None, I=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
+
         n, d = x.shape
         assert d == self.d
 
@@ -147,6 +286,34 @@ def handle_Index(the_class):
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
+        """Find the k nearest neighbors of the set of vectors x in the index,
+        and return an approximation of these vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the result.
+        R : array_like, optional
+            reconstruction array to store
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
+            the label is set to -1
+        R : array_like
+            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -174,6 +341,21 @@ def handle_Index(the_class):
         return D, I, R
 
     def replacement_remove_ids(self, x):
+        """Remove some ids from the index.
+        This is a O(ntotal) operation by default, so could be expensive.
+
+        Parameters
+        ----------
+        x : array_like or faiss.IDSelector
+            Either an IDSelector that returns True for vectors to remove, or a
+            list of ids to reomove (1D array of int64). When `x` is a list,
+            it is wrapped into an IDSelector.
+
+        Returns
+        -------
+        n_remove: int
+            number of vectors that were removed
+        """
         if isinstance(x, IDSelector):
             sel = x
         else:
@@ -186,6 +368,20 @@ def handle_Index(the_class):
         return self.remove_ids_c(sel)
 
     def replacement_reconstruct(self, key, x=None):
+        """Approximate reconstruction of one vector from the index.
+
+        Parameters
+        ----------
+        key : int
+            Id of the vector to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            Reconstructed vector, size `self.d`, `dtype`=float32
+        """
         if x is None:
             x = np.empty(self.d, dtype=np.float32)
         else:
@@ -195,6 +391,23 @@ def handle_Index(the_class):
         return x
 
     def replacement_reconstruct_n(self, n0, ni, x=None):
+        """Approximate reconstruction of vectors `n0` ... `n0 + ni - 1` from the index.
+        Missing vectors trigger an exception.
+
+        Parameters
+        ----------
+        n0 : int
+            Id of the first vector to reconstruct
+        ni : int
+            Number of vectors to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
+        """
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -212,6 +425,30 @@ def handle_Index(the_class):
 
     # The CPU does not support passed-in output buffers
     def replacement_range_search(self, x, thresh):
+        """Search vectors that are within a distance of the query vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        thresh : float
+            Threshold to select neighbors. All elements within this radius are returned,
+            except for maximum inner product indexes, where the elements above the
+            threshold are returned
+
+        Returns
+        -------
+        lims: array_like
+            Startring index of the results for each query vector, size n+1.
+        D : array_like
+            Distances of the nearest neighbors, shape `lims[n]`. The distances for
+            query i are in `D[lims[i]:lims[i+1]]`.
+        I : array_like
+            Labels of nearest neighbors, shape `lims[n]`. The labels for query i
+            are in `I[lims[i]:lims[i+1]]`.
+
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -225,6 +462,8 @@ def handle_Index(the_class):
         return lims, D, I
 
     def replacement_sa_encode(self, x, codes=None):
+
+
         n, d = x.shape
         assert d == self.d
 
@@ -570,6 +809,35 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
 
 # allows numpy ndarray usage with bfKnn
 def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
+    """
+    Compute the k nearest neighbors of a vector on one GPU without constructing an index
+
+    Parameters
+    ----------
+    res : StandardGpuResources
+        GPU resources to use during computation
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    D : array_like, optional
+        Output array for distances of the nearest neighbors, shape (nq, k)
+    I : array_like, optional
+        Output array for the nearest neighbors, shape (nq, k)
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
     nq, d = xq.shape
     if xq.flags.c_contiguous:
         xq_row_major = True
@@ -925,7 +1193,30 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
 ######################################################
 
 def knn(xq, xb, k, metric=METRIC_L2):
-    """ wrapper around the faiss knn functions without index """
+    """
+    Compute the k nearest neighbors of a vector without constructing an index
+
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
     nq, d = xq.shape
     nb, d2 = xb.shape
     assert d == d2
@@ -964,8 +1255,36 @@ def knn(xq, xb, k, metric=METRIC_L2):
 
 
 class Kmeans:
-    """shallow wrapper around the Clustering object. The important method
-    is train()."""
+    """Object that performs k-means clustering and manages the centroids.
+    The `Kmeans` class is essentially a wrapper around the C++ `Clustering` object.
+
+    Parameters
+    ----------
+    d : int
+       dimension of the vectors to cluster
+    k : int
+       number of clusters
+    gpu: bool or int, optional
+       False: don't use GPU
+       True: use all GPUs
+       number: use this many GPUs
+
+    Subsequent parameters are fields of the Clustring object. The most important are:
+
+    niter: int, optional
+       clustering iterations
+    nredo: int, optional
+       redo clustering this many times and keep best
+    verbose: bool, optional
+    spherical: bool, optional
+       do we want normalized centroids?
+    int_centroids: bool, optional
+       round centroids coordinates to integer
+    seed: int, optional
+       seed for the random number generator
+
+    """
+
 
     def __init__(self, d, k, **kwargs):
         """d: input dimension, k: nb of centroids. Additional
@@ -986,6 +1305,31 @@ class Kmeans:
         self.centroids = None
 
     def train(self, x, weights=None, init_centroids=None):
+        """ Perform k-means clustering.
+        On output of the function call:
+
+        - the centroids are in the centroids field of size (`k`, `d`).
+
+        - the objective value at each iteration is in the array obj (size `niter`)
+
+        - detailed optimization statistics are in the array iteration_stats.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, d), `dtype` must be float32 and n should
+            be larger than the number of clusters `k`.
+        weights : array_like
+            weight associated to each vector, shape `n`
+        init_centroids : array_like
+            initial set of centroids, shape (n, d)
+
+        Returns
+        -------
+        final_obj: float
+            final optimization objective
+
+        """
         n, d = x.shape
         assert d == self.d
         clus = Clustering(d, self.k, self.cp)
