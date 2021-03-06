@@ -31,7 +31,7 @@ cmake --build _build_python_${PY_VER} -j $CPU_COUNT
 
 
 # Build actual python module.
-cp _build_python_${PY_VER}_avx2/swigfaiss.py _build_python_${PY_VER}/swigfaiss_avx2.py
-cp _build_python_${PY_VER}_avx2/_swigfaiss_avx2.so _build_python_${PY_VER}/_swigfaiss_avx2.so
+cp _build_python_${PY_VER}_avx2/swigfaiss.py _build_python_${PY_VER}/swigfaiss.py
+cp _build_python_${PY_VER}_avx2/_swigfaiss.so _build_python_${PY_VER}/_swigfaiss.so
 cd _build_python_${PY_VER}/
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt --prefix=$PREFIX
