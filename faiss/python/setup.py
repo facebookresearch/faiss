@@ -16,17 +16,23 @@ shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
+if os.path.exists("swigfaiss_avx2.py"):
+    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
-shutil.copyfile(f"{prefix}_swigfaiss{ext}", f"faiss/_swigfaiss{ext}")
 
-try:
-    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
+faiss_exists = os.path.exists(f"{prefix}_swigfaiss{ext}")
+faiss_avx2_exists = os.path.exists(f"{prefix}_swigfaiss_avx2{ext}")
+assert(faiss_exists or faiss_avx2_exists)
+
+if faiss_exists:
+    print("Found swigfaiss")
+    shutil.copyfile(f"{prefix}_swigfaiss{ext}", f"faiss/_swigfaiss{ext}")
+
+if faiss_avx2_exists:
+    print("Found swigfaiss_avx2")
     shutil.copyfile(f"{prefix}_swigfaiss_avx2{ext}", f"faiss/_swigfaiss_avx2{ext}")
-except Exception as e:
-    print(f"Could not move swigfaiss_avx2.py / {prefix}_swigfaiss_avx2{ext} due to:\n{e!r}")
-    pass
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense
