@@ -21,7 +21,6 @@ if os.path.exists("swigfaiss_avx2.py"):
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
-
 faiss_exists = os.path.exists(f"{prefix}_swigfaiss{ext}")
 faiss_avx2_exists = os.path.exists(f"{prefix}_swigfaiss_avx2{ext}")
 assert(faiss_exists or faiss_avx2_exists)
