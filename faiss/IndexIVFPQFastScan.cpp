@@ -7,7 +7,7 @@
 
 #include <faiss/IndexIVFPQFastScan.h>
 
-#include <inttypes.h>
+#include <cinttypes>
 #include <cassert>
 #include <cstdio>
 
