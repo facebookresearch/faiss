@@ -23,7 +23,7 @@ if todo == []:
 
 def evaluate(index):
     # for timing with a single core
-    # faiss.omp_set_num_threads(1)
+    faiss.omp_set_num_threads(1)
 
     t0 = time.time()
     D, I = index.search(xq, k)

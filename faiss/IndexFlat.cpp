@@ -129,6 +129,10 @@ struct FlatL2Dis : DistanceComputer {
         return fvec_L2sqr(b + j * d, b + i * d, d);
     }
 
+    inline const float *data(idx_t i) override {
+        return b + i * d;
+    }
+
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
             : d(storage.d),
               nb(storage.ntotal),
