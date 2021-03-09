@@ -15,6 +15,7 @@ cmake -B _build_avx2 \
       -DFAISS_ENABLE_GPU=OFF \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
+      -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
 cmake --build _build_avx2 -j $CPU_COUNT
@@ -30,6 +31,7 @@ cmake -B _build_generic \
       -DFAISS_ENABLE_GPU=OFF \
       -DFAISS_ENABLE_PYTHON=OFF \
       -DBLA_VENDOR=Intel10_64lp \
+      -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
 cmake --build _build_generic -j $CPU_COUNT

@@ -47,8 +47,8 @@ outputs:
         - blas =*=mkl
     test:
       commands:
-        - test -f $PREFIX/lib/libfaiss.so              # [linux]
-        - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
@@ -79,5 +79,8 @@ outputs:
       commands:
         - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
+        - sh test_cpu_dispatch.sh  # [linux]
+      files:
+        - test_cpu_dispatch.sh  # [linux]
       source_files:
         - tests/

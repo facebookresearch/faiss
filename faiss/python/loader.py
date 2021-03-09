@@ -7,6 +7,7 @@ from distutils.version import LooseVersion
 import platform
 import subprocess
 import logging
+import os
 
 
 def supported_instruction_sets():
@@ -30,6 +31,8 @@ def supported_instruction_sets():
         # __cpu_features__ is a dictionary with CPU features
         # as keys, and True / False as values
         supported = {k for k, v in __cpu_features__.items() if v}
+        for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
+            supported.discard(f)
         return supported
 
     # platform-dependent legacy fallback before numpy 1.19, no windows
