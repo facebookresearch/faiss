@@ -29,7 +29,7 @@ found_swigfaiss_general = os.path.exists(swigfaiss_general_lib)
 found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
 
 assert (found_swigfaiss_general or found_swigfaiss_avx2), \
-        f"Could not find {swigfaiss_general_lib} and " \
+        f"Could not find {swigfaiss_general_lib} or " \
         f"{swigfaiss_avx2_lib}. Faiss may not be compiled yet."
 
 if found_swigfaiss_general:
