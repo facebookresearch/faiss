@@ -22,7 +22,11 @@
         <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="52">
+      <node id="48">
+        <label>faiss/IndexNSG.h</label>
+        <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="53">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
@@ -32,6 +36,8 @@
         <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
         </childnode>
       </node>
       <node id="16">
@@ -44,12 +50,12 @@
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h_source"/>
       </node>
-      <node id="49">
+      <node id="50">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="48" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
-        <childnode refid="50" relation="include">
+        <childnode refid="51" relation="include">
         </childnode>
       </node>
       <node id="44">
@@ -64,7 +70,7 @@
         <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="50">
+      <node id="51">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h_source"/>
       </node>
@@ -271,19 +277,19 @@
         </childnode>
         <childnode refid="46" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
-        </childnode>
         <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
       </node>
       <node id="34">
@@ -296,7 +302,7 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="52">
         <label>faiss/IndexRefine.h</label>
         <link refid="IndexRefine_8h_source"/>
       </node>
@@ -322,7 +328,7 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="49">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
       </node>
@@ -363,6 +369,8 @@
       <node id="47">
         <label>faiss/IndexNNDescent.h</label>
         <link refid="IndexNNDescent_8h_source"/>
+        <childnode refid="48" relation="include">
+        </childnode>
       </node>
       <node id="13">
         <label>faiss/index_factory.h</label>

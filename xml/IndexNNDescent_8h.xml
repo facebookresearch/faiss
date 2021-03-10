@@ -6,6 +6,7 @@
     <includes refid="IndexFlat_8h" local="no">faiss/IndexFlat.h</includes>
     <includes local="no">faiss/impl/NNDescent.h</includes>
     <includes refid="utils_8h" local="no">faiss/utils/utils.h</includes>
+    <includedby refid="IndexNSG_8h" local="no">faiss/IndexNSG.h</includedby>
     <incdepgraph>
       <node id="18">
         <label>limits</label>
@@ -120,6 +121,18 @@
         </childnode>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexNSG.h</label>
+        <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/IndexNNDescent.h</label>
+        <link refid="IndexNNDescent_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexNNDescent" prot="public">faiss::IndexNNDescent</innerclass>
     <innerclass refid="structfaiss_1_1IndexNNDescentFlat" prot="public">faiss::IndexNNDescentFlat</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
