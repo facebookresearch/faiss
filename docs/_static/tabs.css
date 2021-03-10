@@ -25,18 +25,20 @@
   font-weight: 700;
   border: 1px solid #a0b3bf;
   border-bottom: 1px solid white;
-  margin-bottom: -1px;
+  margin: -1px;
   background-color: white;
 }
 
 .sphinx-tabs-tab:focus {
   z-index: 1;
+  outline-offset: 1px;
 }
 
 .sphinx-tabs-panel {
   position: relative;
   padding: 1rem;
   border: 1px solid #a0b3bf;
+  margin: 0px -1px -1px -1px;
   border-radius: 0 0 5px 5px;
   border-top: 0;
   background: white;
