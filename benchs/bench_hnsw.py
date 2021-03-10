@@ -7,18 +7,33 @@ import time
 import sys
 import numpy as np
 import faiss
-from datasets import load_sift1M
+
+try:
+    from faiss.contrib.datasets_fb import DatasetSIFT1M
+except ImportError:
+    from faiss.contrib.datasets import DatasetSIFT1M
+
+# from datasets import load_sift1M
 
 
 k = int(sys.argv[1])
 todo = sys.argv[1:]
 
 print("load data")
-xb, xq, xt, gt = load_sift1M()
+
+# xb, xq, xt, gt = load_sift1M()
+
+ds = DatasetSIFT1M()
+
+xq = ds.get_queries()
+xb = ds.get_database()
+gt = ds.get_groundtruth()
+xt = ds.get_train()
+
 nq, d = xq.shape
 
 if todo == []:
-    todo = 'hnsw hnsw_sq ivf ivf_hnsw_quantizer kmeans kmeans_hnsw'.split()
+    todo = 'hnsw hnsw_sq ivf ivf_hnsw_quantizer kmeans kmeans_hnsw nsg'.split()
 
 
 def evaluate(index):
@@ -153,3 +168,25 @@ if 'kmeans_hnsw' in todo:
     # clusters is too high.
     index.hnsw.efSearch = 128
     clus.train(xb, index)
+
+if 'nsg' in todo:
+
+    print("Testing NSG Flat")
+
+    index = faiss.IndexNSGFlat(d, 32)
+    index.build_type = 1
+    # training is not needed
+
+    # this is the default, higher is more accurate and slower to
+    # construct
+
+    print("add")
+    # to see progress
+    index.verbose = True
+    index.add(xb)
+
+    print("search")
+    for search_L in -1, 16, 32, 64, 128, 256:
+        print("search_L", search_L, end=' ')
+        index.nsg.search_L = search_L
+        evaluate(index)

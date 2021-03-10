@@ -592,6 +592,147 @@ class TestHNSW(unittest.TestCase):
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
 
 
+class TestNSG(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        d = 32
+        nt = 0
+        nb = 1500
+        nq = 500
+        self.GK = 32
+
+        _, self.xb, self.xq = get_dataset_2(d, nt, nb, nq)
+
+    def make_knn_graph(self, metric):
+        n = self.xb.shape[0]
+        d = self.xb.shape[1]
+        index = faiss.IndexFlat(d, metric)
+        index.add(self.xb)
+        _, I = index.search(self.xb, self.GK + 1)
+        knn_graph = np.zeros((n, self.GK), dtype=np.int64)
+
+        # For the inner product distance, the distance between a vector and itself
+        # may not be the smallest, so it is not guaranteed that I[:, 0] is the query itself.
+        for i in range(n):
+            cnt = 0
+            for j in range(self.GK + 1):
+                if I[i, j] != i:
+                    knn_graph[i, cnt] = I[i, j]
+                    cnt += 1
+                if cnt == self.GK:
+                    break
+        return knn_graph
+
+    def subtest_connectivity(self, index, nb):
+        vt = faiss.VisitedTable(nb)
+        count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
+        self.assertEqual(count, nb)
+
+    def subtest_add(self, build_type, thresh, metric=faiss.METRIC_L2):
+        d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
+
+        flat_index = faiss.IndexFlat(d, metric)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, 1)
+
+        index = faiss.IndexNSGFlat(d, 16, metric)
+        index.verbose = True
+        index.build_type = build_type
+        index.GK = self.GK
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        recalls = (Iref == Insg).sum()
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, thresh)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
+    def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
+        d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
+
+        flat_index = faiss.IndexFlat(d, metric)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, 1)
+
+        index = faiss.IndexNSGFlat(d, 16, metric)
+        index.verbose = True
+
+        index.build(self.xb, knn_graph)
+        Dnsg, Insg = index.search(self.xq, 1)
+
+        recalls = (Iref == Insg).sum()
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, thresh)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
+    def test_add_bruteforce_L2(self):
+        self.subtest_add(0, 475, faiss.METRIC_L2)
+
+    def test_add_nndescent_L2(self):
+        self.subtest_add(1, 475, faiss.METRIC_L2)
+
+    def test_add_bruteforce_IP(self):
+        self.subtest_add(0, 480, faiss.METRIC_INNER_PRODUCT)
+
+    def test_add_nndescent_IP(self):
+        self.subtest_add(1, 480, faiss.METRIC_INNER_PRODUCT)
+
+    def test_build_L2(self):
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
+
+    def test_build_IP(self):
+        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
+        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
+
+    def test_build_invalid_knng(self):
+        """Make some invalid entries in the input knn graph.
+
+        It would cause a warning but IndexNSG should be able
+        to handel this.
+        """
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        knn_graph[:100, 5] = -111
+        self.subtest_build(knn_graph, 475, faiss.METRIC_L2)
+
+        knn_graph = self.make_knn_graph(faiss.METRIC_INNER_PRODUCT)
+        knn_graph[:100, 5] = -111
+        self.subtest_build(knn_graph, 480, faiss.METRIC_INNER_PRODUCT)
+
+    def test_reset(self):
+        """test IndexNSG.reset()"""
+        d = self.xq.shape[1]
+        metrics = {faiss.METRIC_L2: 'L2',
+                   faiss.METRIC_INNER_PRODUCT: 'IP'}
+
+        metric = faiss.METRIC_L2
+        flat_index = faiss.IndexFlat(d, metric)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, 1)
+
+        index = faiss.IndexNSGFlat(d, 16)
+        index.verbose = True
+        index.GK = 32
+
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+        recalls = (Iref == Insg).sum()
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, 475)
+        self.subtest_connectivity(index, self.xb.shape[0])
+
+        index.reset()
+        index.add(self.xb)
+        Dnsg, Insg = index.search(self.xq, 1)
+        recalls = (Iref == Insg).sum()
+        print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
+        self.assertGreaterEqual(recalls, 475)
+        self.subtest_connectivity(index, self.xb.shape[0])
 
 
 class TestDistancesPositive(unittest.TestCase):
