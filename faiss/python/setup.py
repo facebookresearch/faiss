@@ -21,17 +21,24 @@ if os.path.exists("swigfaiss_avx2.py"):
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
-faiss_exists = os.path.exists(f"{prefix}_swigfaiss{ext}")
-faiss_avx2_exists = os.path.exists(f"{prefix}_swigfaiss_avx2{ext}")
-assert(faiss_exists or faiss_avx2_exists)
 
-if faiss_exists:
-    print("Found swigfaiss")
-    shutil.copyfile(f"{prefix}_swigfaiss{ext}", f"faiss/_swigfaiss{ext}")
+swigfaiss_general_lib = f"{prefix}_swigfaiss{ext}"
+swigfaiss_avx2_lib = f"{prefix}_swigfaiss_avx2{ext}"
 
-if faiss_avx2_exists:
-    print("Found swigfaiss_avx2")
-    shutil.copyfile(f"{prefix}_swigfaiss_avx2{ext}", f"faiss/_swigfaiss_avx2{ext}")
+found_swigfaiss_general = os.path.exists(swigfaiss_general_lib)
+found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
+
+assert (found_swigfaiss_general or found_swigfaiss_avx2), \
+        f"Could not find {swigfaiss_general_lib} and " \
+        f"{swigfaiss_avx2_lib}. Faiss may not be compiled yet."
+
+if found_swigfaiss_general:
+    print(f"Copying {swigfaiss_general_lib}")
+    shutil.copyfile(swigfaiss_general_lib, f"faiss/_swigfaiss{ext}")
+
+if found_swigfaiss_avx2:
+    print(f"Copying {swigfaiss_avx2_lib}")
+    shutil.copyfile(swigfaiss_avx2_lib, f"faiss/_swigfaiss_avx2{ext}")
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense
