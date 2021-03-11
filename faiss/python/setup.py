@@ -16,8 +16,6 @@ shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
 shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
-if os.path.exists("swigfaiss_avx2.py"):
-    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
