@@ -137,7 +137,6 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
     return right;
 }
 
-
 NSG::NSG(int R) : R(R), rng(0x0903) {
     L = R + 32;
     C = R + 100;
