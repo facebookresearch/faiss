@@ -27,6 +27,7 @@ add_library(faiss
   IndexLSH.cpp
   IndexNNDescent.cpp
   IndexLattice.cpp
+  IndexNSG.cpp
   IndexPQ.cpp
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
@@ -42,6 +43,7 @@ add_library(faiss
   impl/AuxIndexStructures.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
+  impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/ScalarQuantizer.cpp
@@ -94,6 +96,7 @@ set(FAISS_HEADERS
   IndexLSH.h
   IndexLattice.h
   IndexNNDescent.h
+  IndexNSG.h
   IndexPQ.h
   IndexPQFastScan.h
   IndexPreTransform.h
@@ -112,6 +115,7 @@ set(FAISS_HEADERS
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
+  impl/NSG.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h

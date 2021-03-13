@@ -419,7 +419,7 @@ class TestNNDescent(unittest.TestCase):
         index.nndescent.iter = 5
         index.verbose = False
 
-        index.nndescent.search_L = search_L;
+        index.nndescent.search_L = search_L
 
         index.add(xb)
         D, I = index.search(xq, topk)

@@ -9,6 +9,7 @@
 
 #include <faiss/IndexNNDescent.h>
 
+#include <inttypes.h>
 #include <omp.h>
 #include <cstdio>
 #include <cstdlib>
@@ -141,7 +142,9 @@ void IndexNNDescent::search(
             "Please use IndexNNDescentFlat (or variants) "
             "instead of IndexNNDescent directly");
     if (verbose) {
-        printf("Parameters: k=%ld, search_L=%d\n", k, nndescent.search_L);
+        printf("Parameters: k=%" PRId64 ", search_L=%d\n",
+               k,
+               nndescent.search_L);
     }
 
     idx_t check_period =

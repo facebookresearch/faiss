@@ -39,7 +39,7 @@ inline int __builtin_ctzll(uint64_t x) {
 }
 
 // cudatoolkit provides __builtin_ctz for NVCC >= 11.0
-#if ! defined(__CUDACC__) || __CUDACC_VER_MAJOR__ < 11
+#if !defined(__CUDACC__) || __CUDACC_VER_MAJOR__ < 11
 inline int __builtin_ctz(unsigned long x) {
     unsigned long ret;
     _BitScanForward(&ret, x);
