@@ -122,7 +122,7 @@ for dataset_basedir in (
     if os.path.exists(dataset_basedir):
         break
 else:
-    dataset_basedir = None
+    dataset_basedir = ''
 
 
 class DatasetSIFT1M(Dataset):

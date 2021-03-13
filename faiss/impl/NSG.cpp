@@ -12,9 +12,17 @@
 #include <algorithm>
 #include <memory>
 #include <mutex>
+#include <mmintrin.h>
+#include <xmmintrin.h>
 #include <stack>
 
 #include <faiss/impl/AuxIndexStructures.h>
+
+#ifdef __SSE__
+    #define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
+#else
+    #define MM_PREFETCH(a)
+#endif
 
 namespace faiss {
 
@@ -332,9 +340,20 @@ void NSG::search_on_graph(
             retset[k].flag = false;
             int n = retset[k].id;
 
+            MM_PREFETCH(graph.data + n * graph.K);
+            MM_PREFETCH(dis.data(graph.at(n, 0)));
+            MM_PREFETCH(vt.visited.data() + graph.at(n, 0));
+
             for (int m = 0; m < graph.K; m++) {
                 int id = (int)graph.at(n, m);
-                if (id < 0 || id > ntotal || vt.get(id)) {
+                if (id < 0 || id > ntotal) {
+                    break;
+                }
+
+                MM_PREFETCH(dis.data(graph.at(n, m + 1)));
+                MM_PREFETCH(vt.visited.data() + graph.at(n, m + 1));
+
+                if (vt.get(id)) {
                     continue;
                 }
                 vt.set(id);
