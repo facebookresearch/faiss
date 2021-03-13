@@ -98,9 +98,6 @@ struct NSG {
     /// Faiss results are 64-bit
     using idx_t = Index::idx_t;
 
-    /// It needs to be smaller than 0
-    static const int EMPTY_ID;
-
     int ntotal; ///< nb of nodes
 
     /// construction-time parameters

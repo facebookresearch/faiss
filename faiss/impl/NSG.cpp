@@ -22,6 +22,9 @@ namespace nsg {
 
 namespace {
 
+// It needs to be smaller than 0
+constexpr int EMPTY_ID = -1;
+
 /* Wrap the distance computer into one that negates the
    distances. This makes supporting INNER_PRODUCE search easier */
 
@@ -133,8 +136,6 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
     addr[right] = nn;
     return right;
 }
-
-const int NSG::EMPTY_ID = -1;
 
 NSG::NSG(int R) : R(R), rng(0x0903) {
     L = R + 32;
