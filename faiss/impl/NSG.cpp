@@ -9,19 +9,19 @@
 
 #include <faiss/impl/NSG.h>
 
+#include <mmintrin.h>
+#include <xmmintrin.h>
 #include <algorithm>
 #include <memory>
 #include <mutex>
-#include <mmintrin.h>
-#include <xmmintrin.h>
 #include <stack>
 
 #include <faiss/impl/AuxIndexStructures.h>
 
 #ifdef __SSE__
-    #define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
+#define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
 #else
-    #define MM_PREFETCH(a)
+#define MM_PREFETCH(a)
 #endif
 
 namespace faiss {

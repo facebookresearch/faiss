@@ -15,9 +15,9 @@
 #include <faiss/impl/HNSW.h>
 
 #ifdef __SSE__
-    #define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
+#define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
 #else
-    #define MM_PREFETCH(a)
+#define MM_PREFETCH(a)
 #endif
 
 namespace faiss {
