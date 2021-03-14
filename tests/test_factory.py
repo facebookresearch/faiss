@@ -75,15 +75,28 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_NSG(self):
         index = faiss.index_factory(12, "NSG64")
-        assert index.storage.sa_code_size() == 12 * 4 and index.nsg.R == 64
+        assert isinstance(index, faiss.IndexNSGFlat)
+        assert index.nsg.R == 64
+
         index = faiss.index_factory(12, "NSG64", faiss.METRIC_INNER_PRODUCT)
-        assert index.storage.sa_code_size() == 12 * 4 and index.nsg.R == 64
+        assert isinstance(index, faiss.IndexNSGFlat)
+        assert index.nsg.R == 64
         assert index.metric_type == faiss.METRIC_INNER_PRODUCT
+
         index = faiss.index_factory(12, "NSG64,Flat")
-        assert index.storage.sa_code_size() == 12 * 4 and index.nsg.R == 64
+        assert isinstance(index, faiss.IndexNSGFlat)
+        assert index.nsg.R == 64
+
         index = faiss.index_factory(12, "IVF65536_NSG64,Flat")
         index_nsg = faiss.downcast_index(index.quantizer)
+        assert isinstance(index, faiss.IndexIVFFlat)
         assert index.nlist == 65536 and index_nsg.nsg.R == 64
+
+        index = faiss.index_factory(12, "IVF65536_NSG64,PQ2x8")
+        index_nsg = faiss.downcast_index(index.quantizer)
+        assert isinstance(index, faiss.IndexIVFPQ)
+        assert index.nlist == 65536 and index_nsg.nsg.R == 64
+        assert index.pq.M == 2 and index.pq.nbits == 8
 
     def test_factory_fast_scan(self):
         index = faiss.index_factory(56, "PQ28x4fs")
