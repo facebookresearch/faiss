@@ -90,11 +90,13 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "IVF65536_NSG64,Flat")
         index_nsg = faiss.downcast_index(index.quantizer)
         assert isinstance(index, faiss.IndexIVFFlat)
+        assert isinstance(index_nsg, faiss.IndexNSGFlat)
         assert index.nlist == 65536 and index_nsg.nsg.R == 64
 
         index = faiss.index_factory(12, "IVF65536_NSG64,PQ2x8")
         index_nsg = faiss.downcast_index(index.quantizer)
         assert isinstance(index, faiss.IndexIVFPQ)
+        assert isinstance(index_nsg, faiss.IndexNSGFlat)
         assert index.nlist == 65536 and index_nsg.nsg.R == 64
         assert index.pq.M == 2 and index.pq.nbits == 8
 
