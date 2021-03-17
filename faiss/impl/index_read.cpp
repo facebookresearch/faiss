@@ -276,7 +276,7 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     constexpr int EMPTY_ID = -1;
     int N = nsg->ntotal;
     int R = nsg->R;
-    auto &graph = nsg->final_graph;
+    auto& graph = nsg->final_graph;
     graph = std::make_shared<nsg::Graph<int>>(N, R);
     std::fill_n(graph->data, N * R, EMPTY_ID);
 

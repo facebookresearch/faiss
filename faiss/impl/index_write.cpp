@@ -248,7 +248,7 @@ static void write_NSG(const NSG* nsg, IOWriter* f) {
     }
 
     constexpr int EMPTY_ID = -1;
-    auto &graph = nsg->final_graph;
+    auto& graph = nsg->final_graph;
     int K = graph->K;
     int N = graph->N;
     FAISS_THROW_IF_NOT(N == nsg->ntotal);
@@ -462,8 +462,8 @@ void write_index(const Index* idx, IOWriter* f) {
         write_HNSW(&idxhnsw->hnsw, f);
         write_index(idxhnsw->storage, f);
     } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {
-        uint32_t h = dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf")
-                                                             : 0;
+        uint32_t h =
+                dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf") : 0;
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);
         write_index_header(idxnsg, f);

@@ -70,7 +70,7 @@ struct Graph {
     }
 
     // copy constructor
-    Graph(const Graph &g) : Graph(g.N, g.K) {
+    Graph(const Graph& g) : Graph(g.N, g.K) {
         memcpy(data, g.data, N * K * sizeof(node_t));
     }
 
