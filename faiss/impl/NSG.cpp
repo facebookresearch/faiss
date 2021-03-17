@@ -285,7 +285,7 @@ void NSG::search_on_graph(
         int pool_size,
         std::vector<Neighbor>& retset,
         std::vector<Node>& fullset) const {
-    RandomGenerator gen(rand());
+    RandomGenerator gen(0x1234);
     retset.resize(pool_size + 1);
     std::vector<int> init_ids(pool_size);
 
