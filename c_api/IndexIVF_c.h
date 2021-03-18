@@ -34,7 +34,7 @@ extern "C" {
  * lists are visited.
  *
  * Sub-classes implement a post-filtering of the index that refines
- * the distance estimation from the query to databse vectors.
+ * the distance estimation from the query to database vectors.
  */
 FAISS_DECLARE_CLASS_INHERITED(IndexIVF, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexIVF)
