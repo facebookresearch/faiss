@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
-#include <functional>
 #include <string>
 
 namespace faiss {
@@ -94,9 +93,8 @@ struct simd16uint16 : simd256bit {
         return elements_to_string("%3d,");
     }
 
-    static simd16uint16 unary_func(
-            simd16uint16 a,
-            std::function<uint16_t(uint16_t)> f) {
+    template <typename F>
+    static simd16uint16 unary_func(simd16uint16 a, F&& f) {
         simd16uint16 c;
         for (int j = 0; j < 16; j++) {
             c.u16[j] = f(a.u16[j]);
@@ -104,10 +102,11 @@ struct simd16uint16 : simd256bit {
         return c;
     }
 
+    template <typename F>
     static simd16uint16 binary_func(
             simd16uint16 a,
             simd16uint16 b,
-            std::function<uint16_t(uint16_t, uint16_t)> f) {
+            F&& f) {
         simd16uint16 c;
         for (int j = 0; j < 16; j++) {
             c.u16[j] = f(a.u16[j], b.u16[j]);
@@ -318,10 +317,11 @@ struct simd32uint8 : simd256bit {
         }
     }
 
+    template <typename F>
     static simd32uint8 binary_func(
             simd32uint8 a,
             simd32uint8 b,
-            std::function<uint8_t(uint8_t, uint8_t)> f) {
+            F&& f) {
         simd32uint8 c;
         for (int j = 0; j < 32; j++) {
             c.u8[j] = f(a.u8[j], b.u8[j]);
@@ -468,10 +468,11 @@ struct simd8float32 : simd256bit {
         }
     }
 
+    template <typename F>
     static simd8float32 binary_func(
             simd8float32 a,
             simd8float32 b,
-            std::function<float(float, float)> f) {
+            F&& f) {
         simd8float32 c;
         for (int j = 0; j < 8; j++) {
             c.f32[j] = f(a.f32[j], b.f32[j]);
