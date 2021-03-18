@@ -85,7 +85,8 @@ void IndexNSG::search(
             storage,
             "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");
 
-    idx_t check_period = InterruptCallback::get_period_hint(d * nsg.search_L);
+    int L = std::max(nsg.search_L, (int)k); // in case of search L = -1
+    idx_t check_period = InterruptCallback::get_period_hint(d * L);
 
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
