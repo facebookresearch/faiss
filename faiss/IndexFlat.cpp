@@ -129,7 +129,7 @@ struct FlatL2Dis : DistanceComputer {
         return fvec_L2sqr(b + j * d, b + i * d, d);
     }
 
-    inline const void *data(idx_t i) override {
+    inline const void* data(idx_t i) override {
         return b + i * d;
     }
 
@@ -161,7 +161,7 @@ struct FlatIPDis : DistanceComputer {
         return fvec_inner_product(b + j * d, b + i * d, d);
     }
 
-    inline const void *data(idx_t i) override {
+    inline const void* data(idx_t i) override {
         return b + i * d;
     }
 

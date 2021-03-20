@@ -192,7 +192,7 @@ struct ExtraDistanceComputer : DistanceComputer {
         return vd(b + j * vd.d, b + i * vd.d);
     }
 
-    inline const void *data(idx_t i) override {
+    inline const void* data(idx_t i) override {
         return b + i * vd.d;
     }
 

@@ -208,7 +208,7 @@ struct DistanceComputer {
     virtual float symmetric_dis(idx_t i, idx_t j) = 0;
 
     /// access the underlying data directly
-    virtual inline const void *data(idx_t i) { return nullptr; }
+    virtual inline const void* data(idx_t i) { return nullptr; }
 
     virtual ~DistanceComputer() {}
 };

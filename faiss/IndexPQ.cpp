@@ -158,7 +158,7 @@ struct PQDistanceComputer : DistanceComputer {
         return accu;
     }
 
-    inline const void *data(idx_t i) override {
+    inline const void* data(idx_t i) override {
         return codes + i * code_size;
     }
 
