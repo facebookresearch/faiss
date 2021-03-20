@@ -103,6 +103,10 @@ struct ScalarQuantizer {
         size_t code_size;
 
         SQDistanceComputer() : q(nullptr), codes(nullptr), code_size(0) {}
+
+        inline const void *data(idx_t i) override {
+            return codes + i * code_size;
+        }
     };
 
     SQDistanceComputer* get_distance_computer(

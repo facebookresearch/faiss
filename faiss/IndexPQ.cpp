@@ -158,6 +158,10 @@ struct PQDistanceComputer : DistanceComputer {
         return accu;
     }
 
+    inline const void *data(idx_t i) override {
+        return codes + i * code_size;
+    }
+
     explicit PQDistanceComputer(const IndexPQ& storage) : pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;

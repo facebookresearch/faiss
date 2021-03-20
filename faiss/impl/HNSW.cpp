@@ -15,9 +15,9 @@
 #include <faiss/impl/HNSW.h>
 
 #ifdef __SSE__
-#define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
+#define PREFETCH_HINT(a) _mm_prefetch((a), _MM_HINT_T0)
 #else
-#define MM_PREFETCH(a)
+#define PREFETCH_HINT(a)
 #endif
 
 namespace faiss {
@@ -549,15 +549,15 @@ int HNSW::search_from_candidates(
 
         size_t begin, end;
         neighbor_range(v0, level, &begin, &end);
-        MM_PREFETCH(neighbors.data() + begin);
-        MM_PREFETCH(qdis.data(neighbors[begin]));
-        MM_PREFETCH(vt.visited.data() + neighbors[begin]);
+        PREFETCH_HINT(neighbors.data() + begin);
+        PREFETCH_HINT(qdis.data(neighbors[begin]));
+        PREFETCH_HINT(vt.visited.data() + neighbors[begin]);
 
         for (size_t j = begin; j < end; j++) {
             int v1 = neighbors[j];
 
-            MM_PREFETCH(qdis.data(neighbors[j + 1]));
-            MM_PREFETCH(vt.visited.data() + neighbors[j + 1]);
+            PREFETCH_HINT(qdis.data(neighbors[j + 1]));
+            PREFETCH_HINT(vt.visited.data() + neighbors[j + 1]);
 
             if (v1 < 0)
                 break;
@@ -625,15 +625,15 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
         size_t begin, end;
         neighbor_range(v0, 0, &begin, &end);
 
-        MM_PREFETCH(neighbors.data() + begin);
-        MM_PREFETCH(qdis.data(neighbors[begin]));
-        MM_PREFETCH(vt->visited.data() + neighbors[begin]);
+        PREFETCH_HINT(neighbors.data() + begin);
+        PREFETCH_HINT(qdis.data(neighbors[begin]));
+        PREFETCH_HINT(vt->visited.data() + neighbors[begin]);
 
         for (size_t j = begin; j < end; ++j) {
             int v1 = neighbors[j];
 
-            MM_PREFETCH(qdis.data(neighbors[j + 1]));
-            MM_PREFETCH(vt->visited.data() + neighbors[j + 1]);
+            PREFETCH_HINT(qdis.data(neighbors[j + 1]));
+            PREFETCH_HINT(vt->visited.data() + neighbors[j + 1]);
 
             if (v1 < 0) {
                 break;

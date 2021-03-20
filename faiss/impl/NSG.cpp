@@ -19,9 +19,9 @@
 #include <faiss/impl/AuxIndexStructures.h>
 
 #ifdef __SSE__
-#define MM_PREFETCH(a) _mm_prefetch((a), _MM_HINT_T0)
+#define PREFETCH_HINT(a) _mm_prefetch((a), _MM_HINT_T0)
 #else
-#define MM_PREFETCH(a)
+#define PREFETCH_HINT(a)
 #endif
 
 namespace faiss {
@@ -340,9 +340,9 @@ void NSG::search_on_graph(
             retset[k].flag = false;
             int n = retset[k].id;
 
-            MM_PREFETCH(graph.data + n * graph.K);
-            MM_PREFETCH(dis.data(graph.at(n, 0)));
-            MM_PREFETCH(vt.visited.data() + graph.at(n, 0));
+            PREFETCH_HINT(graph.data + n * graph.K);
+            PREFETCH_HINT(dis.data(graph.at(n, 0)));
+            PREFETCH_HINT(vt.visited.data() + graph.at(n, 0));
 
             for (int m = 0; m < graph.K; m++) {
                 int id = (int)graph.at(n, m);
@@ -350,8 +350,8 @@ void NSG::search_on_graph(
                     break;
                 }
 
-                MM_PREFETCH(dis.data(graph.at(n, m + 1)));
-                MM_PREFETCH(vt.visited.data() + graph.at(n, m + 1));
+                PREFETCH_HINT(dis.data(graph.at(n, m + 1)));
+                PREFETCH_HINT(vt.visited.data() + graph.at(n, m + 1));
 
                 if (vt.get(id)) {
                     continue;
