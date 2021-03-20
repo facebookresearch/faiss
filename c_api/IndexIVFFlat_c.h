@@ -23,7 +23,7 @@ extern "C" {
  * pre-selects the vectors to be searched, but they are not otherwise
  * encoded, the code array just contains the raw float entries.
  */
-FAISS_DECLARE_CLASS(IndexIVFFlat)
+FAISS_DECLARE_CLASS_INHERITED(IndexIVFFlat, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexIVFFlat)
 FAISS_DECLARE_INDEX_DOWNCAST(IndexIVFFlat)
 

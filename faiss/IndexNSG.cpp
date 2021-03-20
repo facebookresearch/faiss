@@ -9,9 +9,9 @@
 
 #include <faiss/IndexNSG.h>
 
-#include <inttypes.h>
 #include <omp.h>
 
+#include <cinttypes>
 #include <memory>
 
 #include <faiss/IndexFlat.h>

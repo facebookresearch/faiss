@@ -975,6 +975,9 @@ size_t PolysemousTraining::memory_usage_per_thread(
         case OT_Ranking_weighted_diff:
             return n * n * n * sizeof(float);
     }
+
+    FAISS_THROW_MSG("Invalid optmization type");
+    return 0;
 }
 
 } // namespace faiss

@@ -32,8 +32,12 @@ jobs:
       opt_level:
         type: string
         default: generic
+      resource_class:
+        type: string
+        default: medium
     docker:
       - image: beauby/faiss-circleci:cpu
+    resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
@@ -273,6 +277,7 @@ workflows:
       - build_linux:
           name: Linux (AVX2)
           opt_level: "avx2"
+          resource_class: "medium+"
       - build_linux_conda:
           name: Linux (conda)
       - build_linux_gpu:
