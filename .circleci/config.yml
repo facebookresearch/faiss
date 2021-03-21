@@ -51,6 +51,13 @@ jobs:
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -C build -j faiss
+      - when:
+          condition:
+            equal: [ "avx2", << parameters.opt_level >> ]
+          steps:
+            - run:
+                name: Build faiss_avx2 library
+                command: make -C build -j faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
           command: |

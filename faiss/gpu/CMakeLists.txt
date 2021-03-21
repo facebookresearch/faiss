@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-target_sources(faiss PRIVATE
+set(FAISS_GPU_SRC
   GpuAutoTune.cpp
   GpuCloner.cpp
   GpuClonerOptions.cpp
@@ -181,8 +181,11 @@ set(FAISS_GPU_HEADERS
   utils/warpselect/WarpSelectImpl.cuh
 )
 
-# Export FAISS_HEADERS variable to parent scope.
+# Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
+
+target_sources(faiss PRIVATE ${FAISS_GPU_SRC})
+target_sources(faiss_avx2 PRIVATE ${FAISS_GPU_SRC})
 
 foreach(header ${FAISS_GPU_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
@@ -192,8 +195,4 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 find_package(CUDAToolkit REQUIRED)
-
-find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-
 target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
