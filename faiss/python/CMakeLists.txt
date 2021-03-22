@@ -26,7 +26,7 @@ set_source_files_properties(swigfaiss.swig PROPERTIES
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
   set_source_files_properties(swigfaiss.swig PROPERTIES
-    SWIG_FLAGS -DSWIGWORDSIZE64
+    SWIG_FLAGS "-DSWIGWORDSIZE64 -doxygen"
   )
 endif()
 
