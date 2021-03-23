@@ -15,5 +15,8 @@ class TestDocumentation(unittest.TestCase):
 
         self.assertTrue("Adds vectors to the index" in index.add.__doc__)
 
-# At some point we will check here if SWIG imported the C++ doxygen comments
-# for the classes as docstrings
+    def test_class_doc(self):
+        index = faiss.IndexFlat(32)
+        self.assertTrue("performs exhaustive search" in index.__doc__)
+
+
