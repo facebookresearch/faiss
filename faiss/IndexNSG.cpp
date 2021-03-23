@@ -51,7 +51,7 @@ IndexNSG::IndexNSG(Index* storage, int R)
           storage(storage),
           is_built(false),
           GK(64),
-          build_type(0) {
+          build_type(1) {
     nndescent_S = 10;
     nndescent_R = 100;
     nndescent_L = GK + 50;
