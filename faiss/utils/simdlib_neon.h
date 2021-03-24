@@ -691,4 +691,32 @@ inline simd8float32 fmadd(
             vfmaq_f32(c.data.val[1], a.data.val[1], b.data.val[1])}};
 }
 
+namespace {
+
+// get even float32's of a and b, interleaved
+simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
+    return simd8float32{float32x4x2_t{
+            vuzp1q_f32(a.data.val[0], b.data.val[0]),
+            vuzp1q_f32(a.data.val[1], b.data.val[1])}};
+}
+
+// get odd float32's of a and b, interleaved
+simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
+    return simd8float32{float32x4x2_t{
+            vuzp2q_f32(a.data.val[0], b.data.val[0]),
+            vuzp2q_f32(a.data.val[1], b.data.val[1])}};
+}
+
+// 3 cycles
+// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
+simd8float32 getlow128(const simd8float32& a, const simd8float32& b) {
+    return simd8float32{float32x4x2_t{a.data.val[0], b.data.val[0]}};
+}
+
+simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
+    return simd8float32{float32x4x2_t{a.data.val[1], b.data.val[1]}};
+}
+
+} // namespace
+
 } // namespace faiss
