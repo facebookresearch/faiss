@@ -841,8 +841,6 @@ int fvec_madd_and_argmin(
  * PQ tables computations
  ***************************************************************************/
 
-#ifdef __AVX2__
-
 namespace {
 
 /// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
@@ -956,20 +954,5 @@ void compute_PQ_dis_tables_dsub2(
         }
     }
 }
-
-#else
-
-void compute_PQ_dis_tables_dsub2(
-        size_t d,
-        size_t ksub,
-        const float* all_centroids,
-        size_t nx,
-        const float* x,
-        bool is_inner_product,
-        float* dis_tables) {
-    FAISS_THROW_MSG("only implemented for AVX2");
-}
-
-#endif
 
 } // namespace faiss
