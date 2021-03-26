@@ -15,7 +15,6 @@ os.mkdir("faiss")
 shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
-shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
@@ -32,10 +31,12 @@ assert (found_swigfaiss_generic or found_swigfaiss_avx2), \
 
 if found_swigfaiss_generic:
     print(f"Copying {swigfaiss_generic_lib}")
+    shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
     shutil.copyfile(swigfaiss_generic_lib, f"faiss/_swigfaiss{ext}")
 
 if found_swigfaiss_avx2:
     print(f"Copying {swigfaiss_avx2_lib}")
+    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
     shutil.copyfile(swigfaiss_avx2_lib, f"faiss/_swigfaiss_avx2{ext}")
 
 long_description="""

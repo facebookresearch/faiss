@@ -79,6 +79,9 @@ outputs:
       commands:
         - python -m unittest discover tests/
         - python -m unittest discover faiss/gpu/test/
+        - sh test_cpu_dispatch.sh  # [linux]
+      files:
+        - test_cpu_dispatch.sh  # [linux]
       source_files:
         - tests/
         - faiss/gpu/test/
