@@ -7,8 +7,7 @@
 
 // -*- c++ -*-
 
-#include <mmintrin.h>
-#include <xmmintrin.h>
+#include <immintrin.h>
 #include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>

@@ -9,8 +9,7 @@
 
 #include <faiss/impl/NSG.h>
 
-#include <mmintrin.h>
-#include <xmmintrin.h>
+#include <immintrin.h>
 #include <algorithm>
 #include <memory>
 #include <mutex>
