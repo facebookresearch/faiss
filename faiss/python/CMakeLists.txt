@@ -19,37 +19,45 @@ include(${SWIG_USE_FILE})
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 set(SWIG_SOURCE_FILE_EXTENSIONS swig)
 
-set_source_files_properties(swigfaiss.swig PROPERTIES
-  CPLUSPLUS ON
-  USE_TARGET_INCLUDE_DIRECTORIES TRUE
-)
-
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
-  set_source_files_properties(swigfaiss.swig PROPERTIES
-    SWIG_FLAGS -DSWIGWORDSIZE64
+macro(configure_swigfaiss source)
+  set_source_files_properties(${source} PROPERTIES
+    CPLUSPLUS ON
+    USE_TARGET_INCLUDE_DIRECTORIES TRUE
   )
-endif()
+  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
+    set_source_files_properties(${source} PROPERTIES
+      SWIG_FLAGS -DSWIGWORDSIZE64
+    )
+  endif()
+  if(WIN32)
+    set_source_files_properties(${source} PROPERTIES
+      SWIG_FLAGS -DSWIGWIN
+    )
+  endif()
+  if(FAISS_ENABLE_GPU)
+    set_source_files_properties(${source} PROPERTIES
+      COMPILE_DEFINITIONS GPU_WRAPPER
+    )
+  endif()
+endmacro()
 
-if(WIN32)
-  set_source_files_properties(swigfaiss.swig PROPERTIES
-    SWIG_FLAGS -DSWIGWIN
-  )
-endif()
+# CMake's SWIG wrappers only allow tweaking certain settings at source level, so
+# we duplicate the source in order to override the module name.
+configure_file(swigfaiss.swig ${CMAKE_CURRENT_SOURCE_DIR}/swigfaiss_avx2.swig COPYONLY)
 
-if(FAISS_ENABLE_GPU)
-  set_source_files_properties(swigfaiss.swig PROPERTIES
-    COMPILE_DEFINITIONS GPU_WRAPPER
-  )
-endif()
+configure_swigfaiss(swigfaiss.swig)
+configure_swigfaiss(swigfaiss_avx2.swig)
 
 if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
   set(SWIG_MODULE_swigfaiss_EXTRA_DEPS)
   foreach(h ${FAISS_HEADERS})
-    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${PROJECT_SOURCE_DIR}/../${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
   foreach(h ${FAISS_GPU_HEADERS})
-    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${PROJECT_SOURCE_DIR}/../gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
   endforeach()
 else()
   find_package(faiss REQUIRED)
@@ -61,18 +69,27 @@ swig_add_library(swigfaiss
   SOURCES swigfaiss.swig
 )
 
-if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  set_target_properties(swigfaiss PROPERTIES OUTPUT_NAME "swigfaiss_avx2")
+set_property(SOURCE swigfaiss_avx2.swig
+  PROPERTY SWIG_MODULE_NAME swigfaiss_avx2)
+swig_add_library(swigfaiss_avx2
+  TYPE SHARED
+  LANGUAGE python
+  SOURCES swigfaiss_avx2.swig
+)
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+  set_target_properties(swigfaiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
 if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
+  set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
 endif()
 
 if(FAISS_ENABLE_GPU)
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(swigfaiss PRIVATE CUDA::cudart)
+  target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart)
 endif()
 
 find_package(OpenMP REQUIRED)
@@ -84,9 +101,17 @@ target_link_libraries(swigfaiss PRIVATE
   OpenMP::OpenMP_CXX
 )
 
+target_link_libraries(swigfaiss_avx2 PRIVATE
+  faiss_avx2
+  Python::Module
+  Python::NumPy
+  OpenMP::OpenMP_CXX
+)
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
-target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../../)
+target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+target_include_directories(swigfaiss_avx2 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
   COMPONENTS Development NumPy
@@ -101,11 +126,11 @@ set_property(TARGET faiss_python_callbacks
 
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
-target_include_directories(faiss_python_callbacks PRIVATE ${PROJECT_SOURCE_DIR}/../../)
+target_include_directories(faiss_python_callbacks PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_python_callbacks PRIVATE ${Python_INCLUDE_DIRS})
-target_link_libraries(faiss_python_callbacks PRIVATE faiss)
 
-target_link_libraries(swigfaiss PRIVATE faiss faiss_python_callbacks)
+target_link_libraries(swigfaiss PRIVATE faiss_python_callbacks)
+target_link_libraries(swigfaiss_avx2 PRIVATE faiss_python_callbacks)
 
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)

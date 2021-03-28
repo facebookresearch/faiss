@@ -33,6 +33,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
@@ -257,6 +258,42 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
     READ1(hnsw->upper_beam);
+}
+
+static void read_NSG(NSG* nsg, IOReader* f) {
+    READ1(nsg->ntotal);
+    READ1(nsg->R);
+    READ1(nsg->L);
+    READ1(nsg->C);
+    READ1(nsg->search_L);
+    READ1(nsg->enterpoint);
+    READ1(nsg->is_built);
+
+    if (!nsg->is_built) {
+        return;
+    }
+
+    constexpr int EMPTY_ID = -1;
+    int N = nsg->ntotal;
+    int R = nsg->R;
+    auto& graph = nsg->final_graph;
+    graph = std::make_shared<nsg::Graph<int>>(N, R);
+    std::fill_n(graph->data, N * R, EMPTY_ID);
+
+    int size = 0;
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < R + 1; j++) {
+            int id;
+            READ1(id);
+            if (id != EMPTY_ID) {
+                graph->at(i, j) = id;
+                size += 1;
+            } else {
+                break;
+            }
+        }
+    }
 }
 
 ProductQuantizer* read_ProductQuantizer(const char* fname) {
@@ -600,6 +637,19 @@ Index* read_index(IOReader* f, int io_flags) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
         }
         idx = idxhnsw;
+    } else if (h == fourcc("INSf")) {
+        IndexNSG* idxnsg = new IndexNSGFlat();
+        read_index_header(idxnsg, f);
+        READ1(idxnsg->GK);
+        READ1(idxnsg->build_type);
+        READ1(idxnsg->nndescent_S);
+        READ1(idxnsg->nndescent_R);
+        READ1(idxnsg->nndescent_L);
+        READ1(idxnsg->nndescent_iter);
+        read_NSG(&idxnsg->nsg, f);
+        idxnsg->storage = read_index(f, io_flags);
+        idxnsg->own_fields = true;
+        idx = idxnsg;
     } else if (h == fourcc("IPfs")) {
         IndexPQFastScan* idxpqfs = new IndexPQFastScan();
         read_index_header(idxpqfs, f);

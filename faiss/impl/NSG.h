@@ -69,6 +69,11 @@ struct Graph {
         data = new node_t[N * K];
     }
 
+    // copy constructor
+    Graph(const Graph& g) : Graph(g.N, g.K) {
+        memcpy(data, g.data, N * K * sizeof(node_t));
+    }
+
     // release the allocated memory if needed
     ~Graph() {
         if (own_fields) {
