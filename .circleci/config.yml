@@ -76,7 +76,9 @@ jobs:
           steps:
             - run:
                 name: Test avx2 building
-                command: python3 -c "import faiss; assert faiss.has_AVX2"
+                command: |
+                  export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+                  python3 -c "import faiss; assert faiss.has_AVX2"
       - run:
           name: Test python extension
           command: |
