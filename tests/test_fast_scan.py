@@ -5,13 +5,13 @@
 
 
 import unittest
+import time
 
 import numpy as np
 import faiss
 
 from faiss.contrib import datasets
 import platform
-
 
 class TestSearch(unittest.TestCase):
 
@@ -23,7 +23,7 @@ class TestSearch(unittest.TestCase):
         index_gt.add(ds.get_database())
         Dref, Iref = index_gt.search(ds.get_queries(), 10)
 
-        index = faiss.index_factory(32, 'PQ16x4')
+        index = faiss.index_factory(32, 'PQ16x4fs')
         index.train(ds.get_train())
         index.add(ds.get_database())
         Da, Ia = index.search(ds.get_queries(), 10)
@@ -32,6 +32,38 @@ class TestSearch(unittest.TestCase):
         recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
         assert recall_at_1 > 0.6
         # print(f'recall@1 = {recall_at_1:.3f}')
+
+    def test_PQ4_speed(self):
+        # only test while building with avx2
+        print(faiss.has_AVX2)
+        if not faiss.has_AVX2:
+            return
+
+        ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
+        xt = ds.get_train()
+        xb = ds.get_database()
+        xq = ds.get_queries()
+
+        index = faiss.index_factory(32, 'PQ16x4')
+        index.train(xt)
+        index.add(xb)
+
+        t0 = time.time()
+        D1, I1 = index.search(xq, 10)
+        t1 = time.time()
+        pq_t = t1 - t0
+        print('PQ16x4 search time:', pq_t)
+
+        index2 = faiss.index_factory(32, 'PQ16x4fs')
+        index2.train(xt)
+        index2.add(xb)
+
+        t0 = time.time()
+        D2, I2 = index2.search(xq, 10)
+        t1 = time.time()
+        pqfs_t = t1 - t0
+        print('PQ16x4fs search time:', pqfs_t)
+        self.assertLess(pqfs_t * 10, pq_t)
 
 
 class TestRounding(unittest.TestCase):
