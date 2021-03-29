@@ -70,13 +70,6 @@ jobs:
             make -C build -j swigfaiss
             cd build/faiss/python
             python3 setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            pip3 install pytest
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - when:
           condition:
             equal: [ "avx2", << parameters.opt_level >> ]
@@ -84,6 +77,13 @@ jobs:
             - run:
                 name: Test avx2 building
                 command: python3 -c "import faiss; assert faiss.has_AVX2"
+      - run:
+          name: Test python extension
+          command: |
+            pip3 install pytest
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
       - run:
