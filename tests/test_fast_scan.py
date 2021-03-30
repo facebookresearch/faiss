@@ -13,6 +13,7 @@ import faiss
 from faiss.contrib import datasets
 import platform
 
+
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
