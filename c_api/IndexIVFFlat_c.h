@@ -43,7 +43,6 @@ FAISS_DECLARE_GETTER(IndexIVFFlat, char, quantizer_trains_alone)
 /// whether object owns the quantizer
 FAISS_DECLARE_GETTER(IndexIVFFlat, int, own_fields)
 
-
 int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index);
 
 int faiss_IndexIVFFlat_new_with(
