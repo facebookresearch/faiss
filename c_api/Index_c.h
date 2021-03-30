@@ -55,7 +55,7 @@ FAISS_DECLARE_GETTER(Index, idx_t, ntotal)
 /// Getter for metric_type
 FAISS_DECLARE_GETTER(Index, FaissMetricType, metric_type)
 
-FAISS_DECLARE_GETTER_SETTER(Index, bool, verbose)
+FAISS_DECLARE_GETTER_SETTER(Index, int, verbose)
 
 /** Perform training on a representative set of vectors
  *
