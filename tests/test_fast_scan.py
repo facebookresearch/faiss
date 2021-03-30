@@ -15,7 +15,6 @@ import platform
 
 class TestSearch(unittest.TestCase):
 
-
     def test_PQ4_accuracy(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
 
@@ -33,12 +32,8 @@ class TestSearch(unittest.TestCase):
         assert recall_at_1 > 0.6
         # print(f'recall@1 = {recall_at_1:.3f}')
 
+    @unittest.skipIf(not faiss.has_AVX2, "only test while building with avx2")
     def test_PQ4_speed(self):
-        # only test while building with avx2
-        print(faiss.has_AVX2)
-        if not faiss.has_AVX2:
-            return
-
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()
         xb = ds.get_database()
