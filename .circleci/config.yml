@@ -164,7 +164,7 @@ jobs:
 
   build_linux_gpu:
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
@@ -208,7 +208,7 @@ jobs:
       cuda_archs:
         type: string
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
