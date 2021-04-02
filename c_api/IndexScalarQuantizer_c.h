@@ -19,14 +19,14 @@ extern "C" {
 #endif
 
 typedef enum FaissQuantizerType {
-        QT_8bit,         ///< 8 bits per component
-        QT_4bit,         ///< 4 bits per component
-        QT_8bit_uniform, ///< same, shared range for all dimensions
-        QT_4bit_uniform,
-        QT_fp16,
-        QT_8bit_direct, ///< fast indexing of uint8s
-        QT_6bit,        ///< 6 bits per component
-    } FaissQuantizerType;
+    QT_8bit,         ///< 8 bits per component
+    QT_4bit,         ///< 4 bits per component
+    QT_8bit_uniform, ///< same, shared range for all dimensions
+    QT_4bit_uniform,
+    QT_fp16,
+    QT_8bit_direct, ///< fast indexing of uint8s
+    QT_6bit,        ///< 6 bits per component
+} FaissQuantizerType;
 
 // forward declaration
 typedef enum FaissMetricType FaissMetricType;

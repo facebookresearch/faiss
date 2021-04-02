@@ -25,8 +25,10 @@ int faiss_IndexScalarQuantizer_new_with(
         FaissQuantizerType qt,
         FaissMetricType metric) {
     try {
-        IndexScalarQuantizer* index =
-                new IndexScalarQuantizer(d, static_cast<faiss::ScalarQuantizer::QuantizerType>(qt), static_cast<faiss::MetricType>(metric));
+        IndexScalarQuantizer* index = new IndexScalarQuantizer(
+                d,
+                static_cast<faiss::ScalarQuantizer::QuantizerType>(qt),
+                static_cast<faiss::MetricType>(metric));
         *p_index = reinterpret_cast<FaissIndexScalarQuantizer*>(index);
         return 0;
     }
