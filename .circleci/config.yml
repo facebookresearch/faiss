@@ -223,7 +223,7 @@ jobs:
               faiss \
               conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
                 --user pytorch --label <<parameters.label>>
-          no_output_timeout: 20m
+          no_output_timeout: 40m
 
   deploy_osx:
     parameters:
