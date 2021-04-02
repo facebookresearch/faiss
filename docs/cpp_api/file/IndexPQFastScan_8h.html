@@ -304,7 +304,7 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Variables</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
 <dl class="cpp var">
 <dt>
 <span class="target" id="namespacefaiss_1a740c0ca147e528a2d7913acad0fc9bc3"></span><code class="sig-name descname"><span class="pre">FAISS_API</span> <span class="pre">FastScanStats</span> <span class="pre">FastScan_stats</span></code></dt>
@@ -315,7 +315,7 @@
 <dt id="_CPPv4N5faiss13FastScanStatsE">
 <span id="_CPPv3N5faiss13FastScanStatsE"></span><span id="_CPPv2N5faiss13FastScanStatsE"></span><span id="faiss::FastScanStats"></span><span class="target" id="structfaiss_1_1FastScanStats"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">FastScanStats</span></code><a class="headerlink" href="#_CPPv4N5faiss13FastScanStatsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss13FastScanStats13FastScanStatsEv">
 <span id="_CPPv3N5faiss13FastScanStats13FastScanStatsEv"></span><span id="_CPPv2N5faiss13FastScanStats13FastScanStatsEv"></span><span id="faiss::FastScanStats::FastScanStats"></span><span class="target" id="structfaiss_1_1FastScanStats_1ab303350e82dfae5997cf983a812ca047"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">FastScanStats</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13FastScanStats13FastScanStatsEv" title="Permalink to this definition">¶</a><br /></dt>
@@ -328,7 +328,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss13FastScanStats2t0E">
 <span id="_CPPv3N5faiss13FastScanStats2t0E"></span><span id="_CPPv2N5faiss13FastScanStats2t0E"></span><span id="faiss::FastScanStats::t0__uint64_t"></span><span class="target" id="structfaiss_1_1FastScanStats_1a1607aa1a69e14d01c3ccf4fa5c8386ba"></span><span class="pre">uint64_t</span> <code class="sig-name descname"><span class="pre">t0</span></code><a class="headerlink" href="#_CPPv4N5faiss13FastScanStats2t0E" title="Permalink to this definition">¶</a><br /></dt>
@@ -359,7 +359,7 @@
 <p>The codes are not stored sequentially but grouped in blocks of size bbs. This makes it possible to compute distances quickly with SIMD instructions.</p>
 <p>Implementations: 12: blocked loop with internal loop on Q with qbs 13: same with reservoir accumulator to store results 14: no qbs with heap accumulator 15: no qbs with reservoir accumulator </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15IndexPQFastScan15IndexPQFastScanEi6size_t6size_t10MetricTypei">
 <span id="_CPPv3N5faiss15IndexPQFastScan15IndexPQFastScanEi6size_t6size_t10MetricTypei"></span><span id="_CPPv2N5faiss15IndexPQFastScan15IndexPQFastScanEi6size_t6size_t10MetricTypei"></span><span id="faiss::IndexPQFastScan::IndexPQFastScan__i.s.s.MetricType.i"></span><span class="target" id="structfaiss_1_1IndexPQFastScan_1a6484985aa1614f0a5b5d4b33c60baa6b"></span><code class="sig-name descname"><span class="pre">IndexPQFastScan</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">M</span></em>, <span class="pre">size_t</span> <em><span class="pre">nbits</span></em>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em> <span class="pre">=</span> <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="pre">METRIC_L2</span></a>, <span class="pre">int</span> <em><span class="pre">bbs</span></em> <span class="pre">=</span> <span class="pre">32</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15IndexPQFastScan15IndexPQFastScanEi6size_t6size_t10MetricTypei" title="Permalink to this definition">¶</a><br /></dt>
@@ -452,7 +452,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss15IndexPQFastScan2pqE">
 <span id="_CPPv3N5faiss15IndexPQFastScan2pqE"></span><span id="_CPPv2N5faiss15IndexPQFastScan2pqE"></span><span id="faiss::IndexPQFastScan::pq__ProductQuantizer"></span><span class="target" id="structfaiss_1_1IndexPQFastScan_1a70691701e6ea9a56c30cd4a325da8191"></span><span class="pre">ProductQuantizer</span> <code class="sig-name descname"><span class="pre">pq</span></code><a class="headerlink" href="#_CPPv4N5faiss15IndexPQFastScan2pqE" title="Permalink to this definition">¶</a><br /></dt>

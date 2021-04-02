@@ -311,7 +311,7 @@
 <span id="_CPPv3N5faiss3gpu20StandardGpuResourcesE"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResourcesE"></span><span id="faiss::gpu::StandardGpuResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">StandardGpuResources</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="pre">gpu</span></a><span class="pre">::</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="pre">GpuResourcesProvider</span></a><br /></dt>
 <dd><em>#include &lt;StandardGpuResources.h&gt;</em><p>Default implementation of <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> that allocates a cuBLAS stream and 2 streams for use, as well as temporary memory. Internally, the Faiss GPU code uses the instance managed by getResources, but this is the user-facing object that is internally reference counted. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv">
 <span id="_CPPv3N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources20StandardGpuResourcesEv"></span><span id="faiss::gpu::StandardGpuResources::StandardGpuResources"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1ad1ef27033798e5250230a339099e07db"></span><code class="sig-name descname"><span class="pre">StandardGpuResources</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
@@ -396,7 +396,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Private Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu20StandardGpuResources4res_E">
 <span id="_CPPv3N5faiss3gpu20StandardGpuResources4res_E"></span><span id="_CPPv2N5faiss3gpu20StandardGpuResources4res_E"></span><span id="faiss::gpu::StandardGpuResources::res___std::shared_ptr:StandardGpuResourcesImpl:"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResources_1a14134d33f2201b905babac6252ac1019"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">shared_ptr</span><span class="pre">&lt;</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1StandardGpuResourcesImpl.html#_CPPv4N5faiss3gpu24StandardGpuResourcesImplE" title="faiss::gpu::StandardGpuResourcesImpl"><span class="pre">StandardGpuResourcesImpl</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">res_</span></code><br /></dt>
@@ -410,7 +410,7 @@
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImplE"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImplE"></span><span id="faiss::gpu::StandardGpuResourcesImpl"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">StandardGpuResourcesImpl</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="pre">gpu</span></a><span class="pre">::</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="pre">GpuResources</span></a><br /></dt>
 <dd><em>#include &lt;StandardGpuResources.h&gt;</em><p>Standard implementation of the <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> object that provides for a temporary memory manager </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl24StandardGpuResourcesImplEv">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl24StandardGpuResourcesImplEv"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl24StandardGpuResourcesImplEv"></span><span id="faiss::gpu::StandardGpuResourcesImpl::StandardGpuResourcesImpl"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a416835fae3db3685e40f42c8260f8745"></span><code class="sig-name descname"><span class="pre">StandardGpuResourcesImpl</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
@@ -526,7 +526,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Private Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi">
 <span id="_CPPv3NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi"></span><span id="_CPPv2NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi"></span><span id="faiss::gpu::StandardGpuResourcesImpl::isInitialized__iC"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a55c7e84b0f56ea2c591fd14415a23dd2"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">isInitialized</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
@@ -535,7 +535,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Private Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl7allocs_E">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl7allocs_E"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl7allocs_E"></span><span id="faiss::gpu::StandardGpuResourcesImpl::allocs___std::unordered_map:i.std::unordered_map:voidP.AllocRequest::"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1aaf1d435773c0b0a0571fa397c9bfaa6a"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">unordered_map</span><span class="pre">&lt;</span><span class="pre">int</span><span class="pre">,</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">unordered_map</span><span class="pre">&lt;</span><span class="pre">void</span><span class="pre">*</span><span class="pre">,</span> <a class="reference internal" href="GpuResources_8h.html#_CPPv4N5faiss3gpu12AllocRequestE" title="faiss::gpu::AllocRequest"><span class="pre">AllocRequest</span></a><span class="pre">&gt;</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">allocs_</span></code><br /></dt>
@@ -609,7 +609,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Private Static Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-static-functions">Private Static Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t"></span><span id="faiss::gpu::StandardGpuResourcesImpl::getDefaultTempMemForGPU__i.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a8ec365660c997441b2cf5faea71c36bb"></span><em class="property"><span class="pre">static</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">getDefaultTempMemForGPU</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em>, <span class="pre">size_t</span> <em><span class="pre">requested</span></em><span class="sig-paren">)</span><br /></dt>

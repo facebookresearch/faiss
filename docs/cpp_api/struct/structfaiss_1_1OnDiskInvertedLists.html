@@ -343,7 +343,7 @@
 <p>Addition to the invlists is slow. For incremental add it is better to use a default <a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html#structfaiss_1_1ArrayInvertedLists"><span class="std std-ref">ArrayInvertedLists</span></a> object and convert it to an OnDisk with merge_from.</p>
 <p>When it is known that a set of lists will be accessed, it is useful to call prefetch_lists, that launches a set of threads to read the lists in parallel. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Types</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists4ListE">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists4ListE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists4ListE"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1ab0bdb727091e04f877db89e733aeab7c"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">List</span></code> <span class="pre">=</span> <a class="reference internal" href="../file/OnDiskInvertedLists_8h.html#_CPPv4N5faiss13OnDiskOneListE" title="faiss::OnDiskOneList"><span class="pre">OnDiskOneList</span></a><br /></dt>
@@ -356,7 +356,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists19OnDiskInvertedListsE6size_t6size_tPKc">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists19OnDiskInvertedListsE6size_t6size_tPKc"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists19OnDiskInvertedListsE6size_t6size_tPKc"></span><span id="faiss::OnDiskInvertedLists::OnDiskInvertedLists__s.s.cCP"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1acce006c1c63aee12d45c7f7dbeb8bb23"></span><code class="sig-name descname"><span class="pre">OnDiskInvertedLists</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nlist</span></em>, <span class="pre">size_t</span> <em><span class="pre">code_size</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">filename</span></em><span class="sig-paren">)</span><br /></dt>
@@ -544,7 +544,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists5listsE">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists5listsE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists5listsE"></span><span id="faiss::OnDiskInvertedLists::lists__std::vector:List:"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1a96715d36dae381fc45204f091198d932"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><a class="reference internal" href="../file/OnDiskInvertedLists_8h.html#_CPPv4N5faiss19OnDiskInvertedLists4ListE" title="faiss::OnDiskInvertedLists::List"><span class="pre">List</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">lists</span></code><br /></dt>
@@ -604,7 +604,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists17INVALID_CODE_SIZEE">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists17INVALID_CODE_SIZEE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists17INVALID_CODE_SIZEE"></span><span id="faiss::OnDiskInvertedLists::INVALID_CODE_SIZE__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">INVALID_CODE_SIZE</span></code> <span class="pre">=</span> <span class="pre">static_cast</span><span class="pre">&lt;</span><span class="pre">size_t</span><span class="pre">&gt;</span><span class="pre">(</span><span class="pre">-</span><span class="pre">1</span><span class="pre">)</span><br /></dt>
@@ -616,7 +616,7 @@
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists4SlotE">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists4SlotE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists4SlotE"></span><span id="faiss::OnDiskInvertedLists::Slot"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1_1Slot"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">Slot</span></code><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists4Slot4SlotE6size_t6size_t">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists4Slot4SlotE6size_t6size_t"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists4Slot4SlotE6size_t6size_t"></span><span id="faiss::OnDiskInvertedLists::Slot::Slot__s.s"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1abb6e828d751c385dbcbfb492f65a148f"></span><code class="sig-name descname"><span class="pre">Slot</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">offset</span></em>, <span class="pre">size_t</span> <em><span class="pre">capacity</span></em><span class="sig-paren">)</span><br /></dt>
@@ -629,7 +629,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss19OnDiskInvertedLists4Slot6offsetE">
 <span id="_CPPv3N5faiss19OnDiskInvertedLists4Slot6offsetE"></span><span id="_CPPv2N5faiss19OnDiskInvertedLists4Slot6offsetE"></span><span id="faiss::OnDiskInvertedLists::Slot::offset__s"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1a9a8e27932a37a7b7a2a8bef7758bc837"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">offset</span></code><br /></dt>

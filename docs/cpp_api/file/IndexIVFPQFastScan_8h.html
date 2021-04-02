@@ -304,7 +304,7 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Variables</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
 <dl class="cpp var">
 <dt>
 <span class="target" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9"></span><code class="sig-name descname"><span class="pre">FAISS_API</span> <span class="pre">IVFFastScanStats</span> <span class="pre">IVFFastScan_stats</span></code></dt>
@@ -318,7 +318,7 @@
 <p>The codes in the inverted lists are not stored sequentially but grouped in blocks of size bbs. This makes it possible to very quickly compute distances with SIMD instructions.</p>
 <p>Implementations (implem): 0: auto-select implementation (default) 1: orig’s search, re-implemented 2: orig’s search, re-ordered by invlist 10: optimizer int16 search, collect results in heap, no qbs 11: idem, collect results in reservoir 12: optimizer int16 search, collect results in heap, uses qbs 13: idem, collect results in reservoir </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss18IndexIVFPQFastScan18IndexIVFPQFastScanEP5Index6size_t6size_t6size_t6size_t10MetricTypei">
 <span id="_CPPv3N5faiss18IndexIVFPQFastScan18IndexIVFPQFastScanEP5Index6size_t6size_t6size_t6size_t10MetricTypei"></span><span id="_CPPv2N5faiss18IndexIVFPQFastScan18IndexIVFPQFastScanEP5Index6size_t6size_t6size_t6size_t10MetricTypei"></span><span id="faiss::IndexIVFPQFastScan::IndexIVFPQFastScan__IndexP.s.s.s.s.MetricType.i"></span><span class="target" id="structfaiss_1_1IndexIVFPQFastScan_1ab8777083c6b029e116367387cd370c81"></span><code class="sig-name descname"><span class="pre">IndexIVFPQFastScan</span></code><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">quantizer</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">nlist</span></em>, <span class="pre">size_t</span> <em><span class="pre">M</span></em>, <span class="pre">size_t</span> <em><span class="pre">nbits_per_idx</span></em>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em> <span class="pre">=</span> <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="pre">METRIC_L2</span></a>, <span class="pre">int</span> <em><span class="pre">bbs</span></em> <span class="pre">=</span> <span class="pre">32</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss18IndexIVFPQFastScan18IndexIVFPQFastScanEP5Index6size_t6size_t6size_t6size_t10MetricTypei" title="Permalink to this definition">¶</a><br /></dt>
@@ -401,7 +401,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss18IndexIVFPQFastScan11by_residualE">
 <span id="_CPPv3N5faiss18IndexIVFPQFastScan11by_residualE"></span><span id="_CPPv2N5faiss18IndexIVFPQFastScan11by_residualE"></span><span id="faiss::IndexIVFPQFastScan::by_residual__b"></span><span class="target" id="structfaiss_1_1IndexIVFPQFastScan_1a00afd534152e6c5b3879c78599c69eb1"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">by_residual</span></code><a class="headerlink" href="#_CPPv4N5faiss18IndexIVFPQFastScan11by_residualE" title="Permalink to this definition">¶</a><br /></dt>
@@ -469,7 +469,7 @@
 <dt id="_CPPv4N5faiss16IVFFastScanStatsE">
 <span id="_CPPv3N5faiss16IVFFastScanStatsE"></span><span id="_CPPv2N5faiss16IVFFastScanStatsE"></span><span id="faiss::IVFFastScanStats"></span><span class="target" id="structfaiss_1_1IVFFastScanStats"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">IVFFastScanStats</span></code><a class="headerlink" href="#_CPPv4N5faiss16IVFFastScanStatsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss16IVFFastScanStats6Mcy_atEi">
 <span id="_CPPv3N5faiss16IVFFastScanStats6Mcy_atEi"></span><span id="_CPPv2N5faiss16IVFFastScanStats6Mcy_atEi"></span><span id="faiss::IVFFastScanStats::Mcy_at__i"></span><span class="target" id="structfaiss_1_1IVFFastScanStats_1aa449244dbdd545cb866cd12d79d327bf"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">Mcy_at</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">i</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16IVFFastScanStats6Mcy_atEi" title="Permalink to this definition">¶</a><br /></dt>
@@ -492,7 +492,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss16IVFFastScanStats5timesE">
 <span id="_CPPv3N5faiss16IVFFastScanStats5timesE"></span><span id="_CPPv2N5faiss16IVFFastScanStats5timesE"></span><span id="faiss::IVFFastScanStats::times__uint64_tA"></span><span class="target" id="structfaiss_1_1IVFFastScanStats_1ad836bf4a3d230269269f8508056beb32"></span><span class="pre">uint64_t</span> <code class="sig-name descname"><span class="pre">times</span></code><span class="pre">[</span><span class="pre">10</span><span class="pre">]</span><a class="headerlink" href="#_CPPv4N5faiss16IVFFastScanStats5timesE" title="Permalink to this definition">¶</a><br /></dt>

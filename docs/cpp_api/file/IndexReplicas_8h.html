@@ -304,7 +304,7 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Typedefs</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss13IndexReplicasE">
 <span id="_CPPv3N5faiss13IndexReplicasE"></span><span id="_CPPv2N5faiss13IndexReplicasE"></span><span class="target" id="namespacefaiss_1af3735e1903da947aaa2d79389d4ddfd0"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">IndexReplicas</span></code> <span class="pre">=</span> <a class="reference internal" href="../class/classfaiss_1_1IndexReplicasTemplate.html#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate"><span class="pre">IndexReplicasTemplate</span></a><span class="pre">&lt;</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">&gt;</span><a class="headerlink" href="#_CPPv4N5faiss13IndexReplicasE" title="Permalink to this definition">¶</a><br /></dt>
@@ -321,7 +321,7 @@
 <span id="_CPPv3I0EN5faiss21IndexReplicasTemplateE"></span><span id="_CPPv2I0EN5faiss21IndexReplicasTemplateE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">IndexT</span></code><span class="pre">&gt;</span><br /><span class="target" id="classfaiss_1_1IndexReplicasTemplate"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">IndexReplicasTemplate</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">ThreadedIndex</span><span class="pre">&lt;</span><a class="reference internal" href="../class/classfaiss_1_1IndexReplicasTemplate.html#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT"><span class="pre">IndexT</span></a><span class="pre">&gt;</span><br /></dt>
 <dd><em>#include &lt;IndexReplicas.h&gt;</em><p>Takes individual <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> instances, and splits queries for sending to each <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> instance, and joins the results together when done. Each index is managed by a separate CPU thread. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Types</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss21IndexReplicasTemplate5idx_tE">
 <span id="_CPPv3N5faiss21IndexReplicasTemplate5idx_tE"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate5idx_tE"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1ae8b631f7c3200cf1a02cd6e4397a50c9"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">idx_t</span></code> <span class="pre">=</span> <em class="property"><span class="pre">typename</span></em> <a class="reference internal" href="../class/classfaiss_1_1IndexReplicasTemplate.html#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT"><span class="pre">IndexT</span></a><span class="pre">::</span><span class="pre">idx_t</span><br /></dt>
@@ -339,7 +339,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb">
 <span id="_CPPv3N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate21IndexReplicasTemplateEb"></span><span id="faiss::IndexReplicasTemplate::IndexReplicasTemplate__b"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a29d851d995abc011c759a855ae0057ae"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">IndexReplicasTemplate</span></code><span class="sig-paren">(</span><span class="pre">bool</span> <em><span class="pre">threaded</span></em> <span class="pre">=</span> <span class="pre">true</span><span class="sig-paren">)</span><br /></dt>
@@ -415,7 +415,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT">
 <span id="_CPPv3N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT"></span><span id="_CPPv2N5faiss21IndexReplicasTemplate15onAfterAddIndexEP6IndexT"></span><span id="faiss::IndexReplicasTemplate::onAfterAddIndex__IndexTP"></span><span class="target" id="classfaiss_1_1IndexReplicasTemplate_1a4fd98a5ba105391bfb3e490d84d26b27"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">onAfterAddIndex</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1IndexReplicasTemplate.html#_CPPv4I0EN5faiss21IndexReplicasTemplateE" title="faiss::IndexReplicasTemplate::IndexT"><span class="pre">IndexT</span></a> <span class="pre">*</span><em><span class="pre">index</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>

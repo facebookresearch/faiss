@@ -196,7 +196,7 @@
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVFE"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVFE"></span><span id="faiss::gpu::GpuIndexIVF"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF"></span><em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="pre">gpu</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">GpuIndexIVF</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="pre">gpu</span></a><span class="pre">::</span><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndexE" title="faiss::gpu::GpuIndex"><span class="pre">GpuIndex</span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVFE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFFlat"><span class="std std-ref">faiss::gpu::GpuIndexIVFFlat</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFPQ"><span class="std std-ref">faiss::gpu::GpuIndexIVFPQ</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer"><span class="std std-ref">faiss::gpu::GpuIndexIVFScalarQuantizer</span></a></p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Types</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF5idx_tE"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF5idx_tE"></span><span class="target" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">idx_t</span></code> <span class="pre">=</span> <span class="pre">int64_t</span><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="Permalink to this definition">¶</a><br /></dt>
@@ -215,7 +215,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF11GpuIndexIVFEP20GpuResourcesProvideriN5faiss10MetricTypeEfi17GpuIndexIVFConfig">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF11GpuIndexIVFEP20GpuResourcesProvideriN5faiss10MetricTypeEfi17GpuIndexIVFConfig"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF11GpuIndexIVFEP20GpuResourcesProvideriN5faiss10MetricTypeEfi17GpuIndexIVFConfig"></span><span id="faiss::gpu::GpuIndexIVF::GpuIndexIVF__GpuResourcesProviderP.i.faiss::MetricType.float.i.GpuIndexIVFConfig"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8fa90aab480c74879c8ae9f7d2916bc4"></span><code class="sig-name descname"><span class="pre">GpuIndexIVF</span></code><span class="sig-paren">(</span><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="pre">GpuResourcesProvider</span></a> <span class="pre">*</span><em><span class="pre">provider</span></em>, <span class="pre">int</span> <em><span class="pre">dims</span></em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em>, <span class="pre">float</span> <em><span class="pre">metricArg</span></em>, <span class="pre">int</span> <em><span class="pre">nlist</span></em>, <a class="reference internal" href="../file/GpuIndexIVF_8h.html#_CPPv4N5faiss3gpu17GpuIndexIVFConfigE" title="faiss::gpu::GpuIndexIVFConfig"><span class="pre">GpuIndexIVFConfig</span></a> <em><span class="pre">config</span></em> <span class="pre">=</span> <a class="reference internal" href="../file/GpuIndexIVF_8h.html#_CPPv4N5faiss3gpu17GpuIndexIVFConfigE" title="faiss::gpu::GpuIndexIVFConfig"><span class="pre">GpuIndexIVFConfig</span></a><span class="pre">(</span><span class="pre">)</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVF11GpuIndexIVFEP20GpuResourcesProvideriN5faiss10MetricTypeEfi17GpuIndexIVFConfig" title="Permalink to this definition">¶</a><br /></dt>
@@ -468,7 +468,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF2cpE">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF2cpE"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF2cpE"></span><span id="faiss::gpu::GpuIndexIVF::cp__ClusteringParameters"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a520803e209b44c904b876d6b8dad23c9"></span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="pre">ClusteringParameters</span></a> <code class="sig-name descname"><span class="pre">cp</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVF2cpE" title="Permalink to this definition">¶</a><br /></dt>
@@ -531,7 +531,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Protected Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu11GpuIndexIVF19addImplRequiresIDs_Ev">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF19addImplRequiresIDs_Ev"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF19addImplRequiresIDs_Ev"></span><span id="faiss::gpu::GpuIndexIVF::addImplRequiresIDs_C"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">bool</span> <code class="sig-name descname"><span class="pre">addImplRequiresIDs_</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss3gpu11GpuIndexIVF19addImplRequiresIDs_Ev" title="Permalink to this definition">¶</a><br /></dt>
@@ -569,7 +569,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Protected Attributes</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF10ivfConfig_E">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF10ivfConfig_E"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF10ivfConfig_E"></span><span id="faiss::gpu::GpuIndexIVF::ivfConfig___GpuIndexIVFConfigC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43"></span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/GpuIndexIVF_8h.html#_CPPv4N5faiss3gpu17GpuIndexIVFConfigE" title="faiss::gpu::GpuIndexIVFConfig"><span class="pre">GpuIndexIVFConfig</span></a> <code class="sig-name descname"><span class="pre">ivfConfig_</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVF10ivfConfig_E" title="Permalink to this definition">¶</a><br /></dt>
@@ -596,7 +596,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Private Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF5init_Ev">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF5init_Ev"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF5init_Ev"></span><span id="faiss::gpu::GpuIndexIVF::init_"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1acfc0a0775791db1859571e442ad678a4"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">init_</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu11GpuIndexIVF5init_Ev" title="Permalink to this definition">¶</a><br /></dt>
