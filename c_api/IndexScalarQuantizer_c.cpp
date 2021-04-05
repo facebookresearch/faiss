@@ -19,6 +19,13 @@ using faiss::IndexScalarQuantizer;
 DEFINE_DESTRUCTOR(IndexScalarQuantizer)
 DEFINE_INDEX_DOWNCAST(IndexScalarQuantizer)
 
+int faiss_IndexScalarQuantizer_new(FaissIndexScalarQuantizer** p_index) {
+    try {
+        *p_index = reinterpret_cast<FaissIndexScalarQuantizer*>(new IndexScalarQuantizer());
+    }
+    CATCH_AND_HANDLE
+}
+
 int faiss_IndexScalarQuantizer_new_with(
         FaissIndexScalarQuantizer** p_index,
         idx_t d,

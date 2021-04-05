@@ -34,6 +34,8 @@ typedef enum FaissMetricType FaissMetricType;
 /** Opaque type for IndexScalarQuantizer */
 FAISS_DECLARE_CLASS_INHERITED(IndexScalarQuantizer, Index)
 
+int faiss_IndexScalarQuantizer_new(FaissIndexScalarQuantizer** p_index);
+
 int faiss_IndexScalarQuantizer_new_with(
         FaissIndexScalarQuantizer** p_index,
         idx_t d,
