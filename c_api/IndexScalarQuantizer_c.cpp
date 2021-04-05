@@ -21,7 +21,8 @@ DEFINE_INDEX_DOWNCAST(IndexScalarQuantizer)
 
 int faiss_IndexScalarQuantizer_new(FaissIndexScalarQuantizer** p_index) {
     try {
-        *p_index = reinterpret_cast<FaissIndexScalarQuantizer*>(new IndexScalarQuantizer());
+        *p_index = reinterpret_cast<FaissIndexScalarQuantizer*>(
+                new IndexScalarQuantizer());
     }
     CATCH_AND_HANDLE
 }
