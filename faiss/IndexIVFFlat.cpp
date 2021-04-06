@@ -73,6 +73,9 @@ void IndexIVFFlat::add_core(
             } else {
                 offset = 0;
             }
+
+#pragma omp critical
+            // executed by one thread at a time
             direct_map.add_single_id(id, list_no, offset);
         }
     }
