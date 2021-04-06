@@ -15,6 +15,8 @@ at the moment.
 ### Changed
 - The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
 Also the metric argument was called distance_type.
+- The typed vectors (LongVector, LongLongVector, etc.) of the SWIG interface have
+been deprecated. They have been replaced with Int32Vector, Int64Vector, etc.
 
 ### Fixed
 - Fixed a bug causing kNN search functions for IndexBinaryHash and

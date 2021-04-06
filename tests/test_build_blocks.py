@@ -614,13 +614,7 @@ class TestSWIGWrap(unittest.TestCase):
 
     def test_int64(self):
         # see https://github.com/facebookresearch/faiss/issues/1529
-        sizeof_long = array.array("l").itemsize
-        if sizeof_long == 4:
-            v = faiss.LongLongVector()
-        elif sizeof_long == 8:
-            v = faiss.LongVector()
-        else:
-            raise AssertionError("weird long size")
+        v = faiss.Int64Vector()
 
         for i in range(10):
             v.push_back(i)
