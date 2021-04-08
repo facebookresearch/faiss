@@ -123,12 +123,9 @@ class TestPQTables(unittest.TestCase):
             assert False
 
         # compute sdc tables in numpy
-        ref_sdc_tab = np.zeros((M, pq.ksub, pq.ksub), "float32")
-        for sq in range(M):
-            centsq = centroids[sq, :, :]
-            cent1 = centsq.reshape(pq.ksub, 1, dsub)
-            cent2 = centsq.reshape(1, pq.ksub, dsub)
-            ref_sdc_tab[sq] = ((cent1 - cent2) ** 2).sum(2)
+        cent1 = np.expand_dims(centroids, axis=2)  # [M, ksub, 1, dsub]
+        cent2 = np.expand_dims(centroids, axis=1)  # [M, 1, ksub, dsub]
+        ref_sdc_tab = ((cent1 - cent2) ** 2).sum(3)
 
         pq.compute_sdc_table()
         new_sdc_tab = faiss.vector_to_array(pq.sdc_table)
