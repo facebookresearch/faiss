@@ -715,20 +715,39 @@ static float sqr(float x) {
 
 void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
+    std::unique_ptr<float[]> inner_product(new float[ksub * ksub]);
+    float* ip = inner_product.get();
 
     for (int m = 0; m < M; m++) {
         const float* cents = centroids.data() + m * ksub * dsub;
         float* dis_tab = sdc_table.data() + m * ksub * ksub;
 
-        // TODO optimize with BLAS
+        float one = 1.0f;
+        float zero = 0.0f;
+        FINTEGER ncodes = ksub, ndims = dsub;
+
+        // compute X * X^T
+        // blas assumes matrices are column major
+        sgemm_("Transposed",
+               "Not Transposed",
+               &ncodes,
+               &ncodes,
+               &ndims,
+               &one,
+               cents,
+               &ndims,
+               cents,
+               &ndims,
+               &zero,
+               ip,
+               &ncodes);
+
+        // (x - y)^2 = x^2 + y^2 - 2xy
         for (int i = 0; i < ksub; i++) {
-            const float* centi = cents + i * dsub;
             for (int j = 0; j < ksub; j++) {
-                float accu = 0;
-                const float* centj = cents + j * dsub;
-                for (int k = 0; k < dsub; k++)
-                    accu += sqr(centi[k] - centj[k]);
-                dis_tab[i + j * ksub] = accu;
+                float xx_yy = ip[i * ksub + i] + ip[j * ksub + j];
+                float xy = 2 * ip[i * ksub + j];
+                dis_tab[i * ksub + j] = xx_yy - xy;
             }
         }
     }

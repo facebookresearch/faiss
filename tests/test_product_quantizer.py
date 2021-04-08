@@ -122,7 +122,20 @@ class TestPQTables(unittest.TestCase):
         else:
             assert False
 
+        # compute sdc tables in numpy
+        ref_sdc_tab = np.zeros((M, pq.ksub, pq.ksub), "float32")
+        for sq in range(M):
+            centsq = centroids[sq, :, :]
+            cent1 = centsq.reshape(pq.ksub, 1, dsub)
+            cent2 = centsq.reshape(1, pq.ksub, dsub)
+            ref_sdc_tab[sq] = ((cent1 - cent2) ** 2).sum(2)
+
+        pq.compute_sdc_table()
+        new_sdc_tab = faiss.vector_to_array(pq.sdc_table)
+        new_sdc_tab = new_sdc_tab.reshape(M, pq.ksub, pq.ksub)
+
         np.testing.assert_array_almost_equal(ref_tab, new_tab, decimal=5)
+        np.testing.assert_array_almost_equal(ref_sdc_tab, new_sdc_tab, decimal=5)
 
     def test_dsub2(self):
         self.do_test(16, 2)
