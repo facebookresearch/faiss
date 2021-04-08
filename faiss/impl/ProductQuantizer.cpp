@@ -746,8 +746,8 @@ void ProductQuantizer::compute_sdc_table() {
         for (int i = 0; i < ksub; i++) {
             for (int j = 0; j < ksub; j++) {
                 float xx_yy = ip[i * ksub + i] + ip[j * ksub + j];
-                float xy = 2 * ip[i * ksub + j];
-                dis_tab[i * ksub + j] = xx_yy - xy;
+                float xy = ip[i * ksub + j];
+                dis_tab[i * ksub + j] = xx_yy - 2 * xy;
             }
         }
     }
