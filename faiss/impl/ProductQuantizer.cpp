@@ -715,39 +715,51 @@ static float sqr(float x) {
 
 void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
-    std::unique_ptr<float[]> inner_product(new float[ksub * ksub]);
-    float* ip = inner_product.get();
 
-    for (int m = 0; m < M; m++) {
-        const float* cents = centroids.data() + m * ksub * dsub;
-        float* dis_tab = sdc_table.data() + m * ksub * ksub;
+    if (dsub < 8) {
+#pragma omp parallel for
+        for (int mk = 0; mk < M * ksub; mk++) {
+            int m = mk / ksub;
+            int k = mk % ksub;
+            const float* cents = centroids.data() + m * ksub * dsub;
+            const float* centi = cents + k * dsub;
+            float* dis_tab = sdc_table.data() + m * ksub * ksub;
+            fvec_L2sqr_ny(dis_tab + k * ksub, centi, cents, dsub, ksub);
+        }
+    } else {
+        std::unique_ptr<float[]> inner_product(new float[M * ksub * ksub]);
+#pragma omp parallel for
+        for (int m = 0; m < M; m++) {
+            const float* cents = centroids.data() + m * ksub * dsub;
+            float* ip = inner_product.get() + m * ksub * ksub;
+            float* dis_tab = sdc_table.data() + m * ksub * ksub;
+            float one = 1.0f;
+            float zero = 0.0f;
+            FINTEGER ncodes = ksub, ndims = dsub;
 
-        float one = 1.0f;
-        float zero = 0.0f;
-        FINTEGER ncodes = ksub, ndims = dsub;
+            // compute X * X^T
+            // blas assumes matrices are column major
+            sgemm_("Transposed",
+                   "Not Transposed",
+                   &ncodes,
+                   &ncodes,
+                   &ndims,
+                   &one,
+                   cents,
+                   &ndims,
+                   cents,
+                   &ndims,
+                   &zero,
+                   ip,
+                   &ncodes);
 
-        // compute X * X^T
-        // blas assumes matrices are column major
-        sgemm_("Transposed",
-               "Not Transposed",
-               &ncodes,
-               &ncodes,
-               &ndims,
-               &one,
-               cents,
-               &ndims,
-               cents,
-               &ndims,
-               &zero,
-               ip,
-               &ncodes);
-
-        // (x - y)^2 = x^2 + y^2 - 2xy
-        for (int i = 0; i < ksub; i++) {
-            for (int j = 0; j < ksub; j++) {
-                float xx_yy = ip[i * ksub + i] + ip[j * ksub + j];
-                float xy = ip[i * ksub + j];
-                dis_tab[i * ksub + j] = xx_yy - 2 * xy;
+            // (x - y)^2 = x^2 + y^2 - 2xy
+            for (int i = 0; i < ksub; i++) {
+                for (int j = 0; j < ksub; j++) {
+                    float xx_yy = ip[i * ksub + i] + ip[j * ksub + j];
+                    float xy = ip[i * ksub + j];
+                    dis_tab[i * ksub + j] = xx_yy - 2 * xy;
+                }
             }
         }
     }
