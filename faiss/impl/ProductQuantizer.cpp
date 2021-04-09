@@ -716,51 +716,25 @@ static float sqr(float x) {
 void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
-    if (dsub < 8) {
-#pragma omp parallel for
-        for (int mk = 0; mk < M * ksub; mk++) {
-            int m = mk / ksub;
-            int k = mk % ksub;
-            const float* cents = centroids.data() + m * ksub * dsub;
-            const float* centi = cents + k * dsub;
-            float* dis_tab = sdc_table.data() + m * ksub * ksub;
-            fvec_L2sqr_ny(dis_tab + k * ksub, centi, cents, dsub, ksub);
+    if (dsub < 4) {
+#pragma omp parallel for collapse(2)
+        for (int m = 0; m < M; m++) {
+            for (int k = 0; k < ksub; k++) {
+                const float* cents = centroids.data() + m * ksub * dsub;
+                const float* centi = cents + k * dsub;
+                float* dis_tab = sdc_table.data() + m * ksub * ksub;
+                fvec_L2sqr_ny(dis_tab + k * ksub, centi, cents, dsub, ksub);
+            }
         }
     } else {
-        std::unique_ptr<float[]> inner_product(new float[M * ksub * ksub]);
+        // NOTE: it would disable the omp loop in pairwise_L2sqr
+        // but still accelerate especially when M >= 4
 #pragma omp parallel for
         for (int m = 0; m < M; m++) {
             const float* cents = centroids.data() + m * ksub * dsub;
-            float* ip = inner_product.get() + m * ksub * ksub;
             float* dis_tab = sdc_table.data() + m * ksub * ksub;
-            float one = 1.0f;
-            float zero = 0.0f;
-            FINTEGER ncodes = ksub, ndims = dsub;
-
-            // compute X * X^T
-            // blas assumes matrices are column major
-            sgemm_("Transposed",
-                   "Not Transposed",
-                   &ncodes,
-                   &ncodes,
-                   &ndims,
-                   &one,
-                   cents,
-                   &ndims,
-                   cents,
-                   &ndims,
-                   &zero,
-                   ip,
-                   &ncodes);
-
-            // (x - y)^2 = x^2 + y^2 - 2xy
-            for (int i = 0; i < ksub; i++) {
-                for (int j = 0; j < ksub; j++) {
-                    float xx_yy = ip[i * ksub + i] + ip[j * ksub + j];
-                    float xy = ip[i * ksub + j];
-                    dis_tab[i * ksub + j] = xx_yy - 2 * xy;
-                }
-            }
+            pairwise_L2sqr(
+                    dsub, ksub, cents, ksub, cents, dis_tab, dsub, dsub, ksub);
         }
     }
 }
