@@ -33,7 +33,8 @@ class TestSearch(unittest.TestCase):
         assert recall_at_1 > 0.6
         # print(f'recall@1 = {recall_at_1:.3f}')
 
-    @unittest.skipIf(not faiss.has_AVX2, "only test while building with avx2")
+    @unittest.skipUnless(faiss.cvar.simd_set == 1,
+            "only test while building with avx2")
     def test_PQ4_speed(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()

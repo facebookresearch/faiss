@@ -39,6 +39,7 @@ jobs:
       - image: beauby/faiss-circleci:cpu
     resource_class: << parameters.resource_class >>
     environment:
+      OPT_LEVEL: << parameters.opt_level >>
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
     steps:
@@ -70,15 +71,13 @@ jobs:
             make -C build -j swigfaiss
             cd build/faiss/python
             python3 setup.py build
-      - when:
-          condition:
-            equal: [ "avx2", << parameters.opt_level >> ]
-          steps:
-            - run:
-                name: Test avx2 building
-                command: |
-                  export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-                  python3 -c "import faiss; assert faiss.has_AVX2"
+      - run:
+          name: Test optimization level
+          command: |
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            python3 -c "import faiss; \
+                simd_map = {'generic': 0, 'avx2': 1}; \
+                assert faiss.simd_set == simd_map['$OPT_LEVEL']"
       - run:
           name: Test python extension
           command: |

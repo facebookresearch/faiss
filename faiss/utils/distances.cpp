@@ -17,6 +17,10 @@
 
 #include <omp.h>
 
+#ifdef __SSE3__
+#include <immintrin.h>
+#endif
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
@@ -46,6 +50,12 @@ int sgemm_(
 }
 
 namespace faiss {
+
+#ifdef __AVX2__
+int simd_set = 1;
+#else
+int simd_set = 0;
+#endif
 
 /***************************************************************************
  * Matrix/vector ops
