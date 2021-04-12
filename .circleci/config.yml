@@ -77,7 +77,7 @@ jobs:
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             python3 -c "import faiss; \
                 simd_map = {'generic': 0, 'avx2': 1}; \
-                assert faiss.simd_set == simd_map['$OPT_LEVEL']"
+                assert faiss.cvar.simd_set == simd_map['$OPT_LEVEL']"
       - run:
           name: Test python extension
           command: |
