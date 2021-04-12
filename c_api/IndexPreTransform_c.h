@@ -12,8 +12,8 @@
 #define FAISS_INDEX_PRETRANSFORM_C_H
 
 #include "Index_c.h"
-#include "faiss_c.h"
 #include "VectorTransform_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,14 +32,12 @@ int faiss_IndexPreTransform_new(FaissIndexPreTransform** p_index);
 
 int faiss_IndexPreTransform_new_with(
         FaissIndexPreTransform** p_index,
-        FaissIndex* index
-    );
+        FaissIndex* index);
 
 int faiss_IndexPreTransform_new_with_transform(
         FaissIndexPreTransform** p_index,
         FaissVectorTransform* ltrans,
-        FaissIndex* index
-    );
+        FaissIndex* index);
 
 #ifdef __cplusplus
 }

@@ -40,7 +40,10 @@ FAISS_DECLARE_GETTER(VectorTransform, int, d_out)
  * @param n      nb of training vectors
  * @param x      training vectors, size n * d
  */
-int faiss_VectorTransform_train(FaissVectorTransform* vt, idx_t n, const float* x);
+int faiss_VectorTransform_train(
+        FaissVectorTransform* vt,
+        idx_t n,
+        const float* x);
 
 /// Opaque type for referencing to a LinearTransform object
 FAISS_DECLARE_CLASS_INHERITED(LinearTransform, VectorTransform)
@@ -55,14 +58,16 @@ FAISS_DECLARE_GETTER(LinearTransform, int, is_orthonormal)
 FAISS_DECLARE_CLASS_INHERITED(RandomRotationMatrix, LinearTransform)
 FAISS_DECLARE_DESTRUCTOR(RandomRotationMatrix)
 
-int faiss_RandomRotationMatrix_new_with(FaissRandomRotationMatrix** p_vt,
+int faiss_RandomRotationMatrix_new_with(
+        FaissRandomRotationMatrix** p_vt,
         int d_in,
         int d_out);
 
 FAISS_DECLARE_CLASS_INHERITED(PCAMatrix, LinearTransform)
 FAISS_DECLARE_DESTRUCTOR(PCAMatrix)
 
-int faiss_PCAMatrix_new_with(FaissPCAMatrix** p_vt,
+int faiss_PCAMatrix_new_with(
+        FaissPCAMatrix** p_vt,
         int d_in,
         int d_out,
         float eigen_power,

@@ -22,7 +22,10 @@ DEFINE_GETTER(VectorTransform, int, d_in)
 
 DEFINE_GETTER(VectorTransform, int, d_out)
 
-int faiss_VectorTransform_train(FaissVectorTransform* vt, idx_t n, const float* x) {
+int faiss_VectorTransform_train(
+        FaissVectorTransform* vt,
+        idx_t n,
+        const float* x) {
     try {
         reinterpret_cast<faiss::VectorTransform*>(vt)->train(n, x);
     }
@@ -45,7 +48,8 @@ DEFINE_GETTER(LinearTransform, int, is_orthonormal)
 
 DEFINE_DESTRUCTOR(RandomRotationMatrix)
 
-int faiss_RandomRotationMatrix_new_with(FaissRandomRotationMatrix** p_vt,
+int faiss_RandomRotationMatrix_new_with(
+        FaissRandomRotationMatrix** p_vt,
         int d_in,
         int d_out) {
     try {
@@ -61,14 +65,15 @@ int faiss_RandomRotationMatrix_new_with(FaissRandomRotationMatrix** p_vt,
 
 DEFINE_DESTRUCTOR(PCAMatrix)
 
-int faiss_PCAMatrix_new_with(FaissPCAMatrix** p_vt,
+int faiss_PCAMatrix_new_with(
+        FaissPCAMatrix** p_vt,
         int d_in,
         int d_out,
         float eigen_power,
         int random_rotation) {
     try {
-        *p_vt = reinterpret_cast<FaissPCAMatrix*>(
-                new faiss::PCAMatrix(d_in, d_out, eigen_power, random_rotation));
+        *p_vt = reinterpret_cast<FaissPCAMatrix*>(new faiss::PCAMatrix(
+                d_in, d_out, eigen_power, random_rotation));
     }
     CATCH_AND_HANDLE
 }
@@ -80,5 +85,4 @@ DEFINE_GETTER(PCAMatrix, int, d_out)
 DEFINE_GETTER(PCAMatrix, float, eigen_power)
 
 DEFINE_GETTER(PCAMatrix, int, random_rotation)
-
 }
