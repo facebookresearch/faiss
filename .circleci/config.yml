@@ -173,7 +173,7 @@ jobs:
 
   build_linux_gpu:
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
@@ -217,7 +217,7 @@ jobs:
       cuda_archs:
         type: string
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
@@ -232,7 +232,7 @@ jobs:
               faiss \
               conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
                 --user pytorch --label <<parameters.label>>
-          no_output_timeout: 20m
+          no_output_timeout: 40m
 
   deploy_osx:
     parameters:
