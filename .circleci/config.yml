@@ -32,8 +32,12 @@ jobs:
       opt_level:
         type: string
         default: generic
+      resource_class:
+        type: string
+        default: medium
     docker:
       - image: beauby/faiss-circleci:cpu
+    resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
@@ -47,6 +51,13 @@ jobs:
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -C build -j faiss
+      - when:
+          condition:
+            equal: [ "avx2", << parameters.opt_level >> ]
+          steps:
+            - run:
+                name: Build faiss_avx2 library
+                command: make -C build -j faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
           command: |
@@ -153,7 +164,7 @@ jobs:
 
   build_linux_gpu:
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
@@ -197,7 +208,7 @@ jobs:
       cuda_archs:
         type: string
     machine:
-      resource_class: gpu.nvidia.small
+      resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
       docker_layer_caching: true
     steps:
@@ -212,7 +223,7 @@ jobs:
               faiss \
               conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
                 --user pytorch --label <<parameters.label>>
-          no_output_timeout: 20m
+          no_output_timeout: 40m
 
   deploy_osx:
     parameters:
@@ -273,6 +284,7 @@ workflows:
       - build_linux:
           name: Linux (AVX2)
           opt_level: "avx2"
+          resource_class: "medium+"
       - build_linux_conda:
           name: Linux (conda)
       - build_linux_gpu:

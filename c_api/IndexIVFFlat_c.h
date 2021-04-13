@@ -27,6 +27,22 @@ FAISS_DECLARE_CLASS_INHERITED(IndexIVFFlat, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexIVFFlat)
 FAISS_DECLARE_INDEX_DOWNCAST(IndexIVFFlat)
 
+/// number of possible key values
+FAISS_DECLARE_GETTER(IndexIVFFlat, size_t, nlist)
+/// number of probes at query time
+FAISS_DECLARE_GETTER(IndexIVFFlat, size_t, nprobe)
+/// quantizer that maps vectors to inverted lists
+FAISS_DECLARE_GETTER(IndexIVFFlat, FaissIndex*, quantizer)
+/**
+ * = 0: use the quantizer as index in a kmeans training
+ * = 1: just pass on the training set to the train() of the quantizer
+ * = 2: kmeans training on a flat index + add the centroids to the quantizer
+ */
+FAISS_DECLARE_GETTER(IndexIVFFlat, char, quantizer_trains_alone)
+
+/// whether object owns the quantizer
+FAISS_DECLARE_GETTER(IndexIVFFlat, int, own_fields)
+
 int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index);
 
 int faiss_IndexIVFFlat_new_with(
