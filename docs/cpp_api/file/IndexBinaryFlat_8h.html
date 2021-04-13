@@ -318,13 +318,12 @@
 <dt id="_CPPv4N5faiss15IndexBinaryFlat3addE5idx_tPK7uint8_t">
 <span id="_CPPv3N5faiss15IndexBinaryFlat3addE5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss15IndexBinaryFlat3addE5idx_tPK7uint8_t"></span><span id="faiss::IndexBinaryFlat::add__idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss15IndexBinaryFlat3addE5idx_tPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d / 8 </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d / 8 </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -338,15 +337,15 @@
 <span id="_CPPv3NK5faiss15IndexBinaryFlat6searchE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_t"></span><span id="_CPPv2NK5faiss15IndexBinaryFlat6searchE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_t"></span><span id="faiss::IndexBinaryFlat::search__idx_t.uint8_tCP.idx_t.int32_tP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexBinaryFlat_1a473e35ebabadc79869ca89f987553b13"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss15IndexBinaryFlat6searchE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Query n vectors of dimension d to the index.</p>
 <p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output pairwise distances, size n*k </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -354,29 +353,30 @@
 <span id="_CPPv3NK5faiss15IndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="_CPPv2NK5faiss15IndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="faiss::IndexBinaryFlat::range_search__idx_t.uint8_tCP.i.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexBinaryFlat_1a342f5711a7c720a1a52e59d2eaecbec6"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">int</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss15IndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15IndexBinaryFlat11reconstructE5idx_tP7uint8_t">
 <span id="_CPPv3NK5faiss15IndexBinaryFlat11reconstructE5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss15IndexBinaryFlat11reconstructE5idx_tP7uint8_t"></span><span id="faiss::IndexBinaryFlat::reconstruct__idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryFlat5idx_tE" title="faiss::IndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss15IndexBinaryFlat11reconstructE5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Reconstruct a stored vector.</p>
-<p>This function may not be defined for some indexes. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d / 8) </p></li>
+<p>This function may not be defined for some indexes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d / 8) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

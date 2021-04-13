@@ -309,19 +309,20 @@
 <dt id="_CPPv4N5faiss17kmeans_clusteringE6size_t6size_t6size_tPKfPf">
 <span id="_CPPv3N5faiss17kmeans_clusteringE6size_t6size_t6size_tPKfPf"></span><span id="_CPPv2N5faiss17kmeans_clusteringE6size_t6size_t6size_tPKfPf"></span><span id="faiss::kmeans_clustering__s.s.s.floatCP.floatP"></span><span class="target" id="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">kmeans_clustering</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">size_t</span> <em><span class="pre">k</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">centroids</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17kmeans_clusteringE6size_t6size_t6size_tPKfPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>simplified interface</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>final quantization error </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimension of the data </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: nb of output centroids </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training set (size n * d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">centroids</span></code>: output centroids (size k * d) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimension of the data </p></li>
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>k</strong> – nb of output centroids </p></li>
+<li><p><strong>x</strong> – training set (size n * d) </p></li>
+<li><p><strong>centroids</strong> – output centroids (size k * d) </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>final quantization error </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -355,15 +356,15 @@
 <dt id="_CPPv4N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf">
 <span id="_CPPv3N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="_CPPv2N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf"></span><span id="faiss::Clustering::train__idx_t.floatCP.faiss::IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">&amp;</span><em><span class="pre">index</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x_weights</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10Clustering5trainE5idx_tPKfRN5faiss5IndexEPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>run k-means training</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">index</span></code>: index used for assignment </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x_weights</span></code>: weight associated to each vector: NULL or size n </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – training vectors, size n * d </p></li>
+<li><p><strong>index</strong> – index used for assignment </p></li>
+<li><p><strong>x_weights</strong> – weight associated to each vector: NULL or size n </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -371,13 +372,11 @@
 <span id="_CPPv3N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="_CPPv2N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="faiss::Clustering::train_encoded__idx_t.uint8_tCP.IndexCP.IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">train_encoded</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">nx</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x_in</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">codec</span></em>, <a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">&amp;</span><em><span class="pre">index</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">weights</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>run with encoded vectors</p>
 <p>win addition to <a class="reference internal" href="../struct/structfaiss_1_1Clustering.html#structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"><span class="std std-ref">train()</span></a>’s parameters takes a codec as parameter to decode the input vectors.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">codec</span></code>: codec used to decode the vectors (nullptr = vectors are in fact floats) * </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>codec</strong> – codec used to decode the vectors (nullptr = vectors are in fact floats) * </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

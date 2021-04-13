@@ -326,26 +326,27 @@
 <dt id="_CPPv4N5faiss9fvec_maddE6size_tPKffPKfPf">
 <span id="_CPPv3N5faiss9fvec_maddE6size_tPKffPKfPf"></span><span id="_CPPv2N5faiss9fvec_maddE6size_tPKffPKfPf"></span><span id="faiss::fvec_madd__s.floatCP.float.floatCP.floatP"></span><span class="target" id="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">fvec_madd</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">a</span></em>, <span class="pre">float</span> <em><span class="pre">bf</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">b</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">c</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9fvec_maddE6size_tPKffPKfPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>compute c := a + bf * b for a, b and c tables</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: size of the tables </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: size n </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: size n </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">c</span></code>: restult table, size n </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – size of the tables </p></li>
+<li><p><strong>a</strong> – size n </p></li>
+<li><p><strong>b</strong> – size n </p></li>
+<li><p><strong>c</strong> – restult table, size n </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf">
 <span id="_CPPv3N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf"></span><span id="_CPPv2N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf"></span><span id="faiss::fvec_madd_and_argmin__s.floatCP.float.floatCP.floatP"></span><span class="target" id="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">fvec_madd_and_argmin</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">a</span></em>, <span class="pre">float</span> <em><span class="pre">bf</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">b</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">c</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20fvec_madd_and_argminE6size_tPKffPKfPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>same as fvec_madd, also return index of the min of the result table <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>index of the min of table c </p>
+<dd><p>same as fvec_madd, also return index of the min of the result table </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>index of the min of table c </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -356,13 +357,12 @@
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9matrix_qrEiiPf">
 <span id="_CPPv3N5faiss9matrix_qrEiiPf"></span><span id="_CPPv2N5faiss9matrix_qrEiiPf"></span><span id="faiss::matrix_qr__i.i.floatP"></span><span class="target" id="namespacefaiss_1afb68fe89ad5e948974da1b70d7b4157c"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">matrix_qr</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">m</span></em>, <span class="pre">int</span> <em><span class="pre">n</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9matrix_qrEiiPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>compute the Q of the QR decomposition for m &gt; n <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: size n * m: input matrix and output Q </p></li>
-</ul>
+<dd><p>compute the Q of the QR decomposition for m &gt; n </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> – size n * m: input matrix and output Q </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -381,18 +381,19 @@
 <dt id="_CPPv4N5faiss23merge_result_table_withE6size_t6size_tP7int64_tPfPK7int64_tPKfb7int64_t">
 <span id="_CPPv3N5faiss23merge_result_table_withE6size_t6size_tP7int64_tPfPK7int64_tPKfb7int64_t"></span><span id="_CPPv2N5faiss23merge_result_table_withE6size_t6size_tP7int64_tPfPK7int64_tPKfb7int64_t"></span><span id="faiss::merge_result_table_with__s.s.int64_tP.floatP.int64_tCP.floatCP.b.int64_t"></span><span class="target" id="namespacefaiss_1a7690bafb56c991da908ee11822c7a8da"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">merge_result_table_with</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">size_t</span> <em><span class="pre">k</span></em>, <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">I0</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">D0</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">I1</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">D1</span></em>, <span class="pre">bool</span> <em><span class="pre">keep_min</span></em> <span class="pre">=</span> <span class="pre">true</span>, <span class="pre">int64_t</span> <em><span class="pre">translation</span></em> <span class="pre">=</span> <span class="pre">0</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss23merge_result_table_withE6size_t6size_tP7int64_tPfPK7int64_tPKfb7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>merge a result table into another one</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>nb of values that were taken from the second table </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">I0</span><span class="pre">D0</span></code>: first result table, size (n, k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">I1</span><span class="pre">D1</span></code>: second result table, size (n, k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">keep_min</span></code>: if true, keep min values, otherwise keep max </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">translation</span></code>: add this value to all I1’s indexes </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>I0D0</strong> – first result table, size (n, k) </p></li>
+<li><p><strong>I1D1</strong> – second result table, size (n, k) </p></li>
+<li><p><strong>keep_min</strong> – if true, keep min values, otherwise keep max </p></li>
+<li><p><strong>translation</strong> – add this value to all I1’s indexes </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nb of values that were taken from the second table </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -427,14 +428,14 @@
 <dt id="_CPPv4N5faiss12bincode_histE6size_t6size_tPK7uint8_tPi">
 <span id="_CPPv3N5faiss12bincode_histE6size_t6size_tPK7uint8_tPi"></span><span id="_CPPv2N5faiss12bincode_histE6size_t6size_tPK7uint8_tPi"></span><span id="faiss::bincode_hist__s.s.uint8_tCP.iP"></span><span class="target" id="namespacefaiss_1a154a47857ed321b9db91122770a16e09"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">bincode_hist</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <span class="pre">size_t</span> <em><span class="pre">nbits</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em>, <span class="pre">int</span> <span class="pre">*</span><em><span class="pre">hist</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12bincode_histE6size_t6size_tPK7uint8_tPi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Compute histogram of bits on a code array</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: size(n, nbits / 8) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hist</span></code>: size(nbits): nb of 1s in the array of codes </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – size(n, nbits / 8) </p></li>
+<li><p><strong>hist</strong> – size(nbits): nb of 1s in the array of codes </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -447,49 +448,50 @@
 <dt id="_CPPv4N5faiss21fvecs_maybe_subsampleE6size_tP6size_t6size_tPKfb7int64_t">
 <span id="_CPPv3N5faiss21fvecs_maybe_subsampleE6size_tP6size_t6size_tPKfb7int64_t"></span><span id="_CPPv2N5faiss21fvecs_maybe_subsampleE6size_tP6size_t6size_tPKfb7int64_t"></span><span id="faiss::fvecs_maybe_subsample__s.sP.s.floatCP.b.int64_t"></span><span class="target" id="namespacefaiss_1af851590d865ea2eae8dae3ae72406bfb"></span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">fvecs_maybe_subsample</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <span class="pre">*</span><em><span class="pre">n</span></em>, <span class="pre">size_t</span> <em><span class="pre">nmax</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">bool</span> <em><span class="pre">verbose</span></em> <span class="pre">=</span> <span class="pre">false</span>, <span class="pre">int64_t</span> <em><span class="pre">seed</span></em> <span class="pre">=</span> <span class="pre">1234</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21fvecs_maybe_subsampleE6size_tP6size_t6size_tPKfb7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>random subsamples a set of vectors if there are too many of them</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>x or an array allocated with new [] with *n vectors </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimension of the vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: on input: nb of input vectors, output: nb of output vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nmax</span></code>: max nb of vectors to keep </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input array, size *n-by-d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">seed</span></code>: random seed to use for sampling </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimension of the vectors </p></li>
+<li><p><strong>n</strong> – on input: nb of input vectors, output: nb of output vectors </p></li>
+<li><p><strong>nmax</strong> – max nb of vectors to keep </p></li>
+<li><p><strong>x</strong> – input array, size *n-by-d </p></li>
+<li><p><strong>seed</strong> – random seed to use for sampling </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>x or an array allocated with new [] with *n vectors </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss14binary_to_realE6size_tPK7uint8_tPf">
 <span id="_CPPv3N5faiss14binary_to_realE6size_tPK7uint8_tPf"></span><span id="_CPPv2N5faiss14binary_to_realE6size_tPK7uint8_tPf"></span><span id="faiss::binary_to_real__s.uint8_tCP.floatP"></span><span class="target" id="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">binary_to_real</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">d</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x_in</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x_out</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14binary_to_realE6size_tPK7uint8_tPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Convert binary vector to +1/-1 valued float vector.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimension of the vector (multiple of 8) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x_in</span></code>: input binary vector (uint8_t table of size d / 8) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x_out</span></code>: output float vector (float table of size d) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimension of the vector (multiple of 8) </p></li>
+<li><p><strong>x_in</strong> – input binary vector (uint8_t table of size d / 8) </p></li>
+<li><p><strong>x_out</strong> – output float vector (float table of size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss14real_to_binaryE6size_tPKfP7uint8_t">
 <span id="_CPPv3N5faiss14real_to_binaryE6size_tPKfP7uint8_t"></span><span id="_CPPv2N5faiss14real_to_binaryE6size_tPKfP7uint8_t"></span><span id="faiss::real_to_binary__s.floatCP.uint8_tP"></span><span class="target" id="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">real_to_binary</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">d</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x_in</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x_out</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14real_to_binaryE6size_tPKfP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Convert float vector to binary vector. Components &gt; 0 are converted to 1, others to 0.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimension of the vector (multiple of 8) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x_in</span></code>: input float vector (float table of size d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x_out</span></code>: output binary vector (uint8_t table of size d / 8) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimension of the vector (multiple of 8) </p></li>
+<li><p><strong>x_in</strong> – input float vector (float table of size d) </p></li>
+<li><p><strong>x_out</strong> – output binary vector (uint8_t table of size d / 8) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

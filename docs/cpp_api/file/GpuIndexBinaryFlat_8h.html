@@ -357,13 +357,12 @@
 <dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t">
 <span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add__faiss::IndexBinary::idx_t.uint8_tCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a84b9c07089abd5c0fa8f07a7a22de047"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d / 8 </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d / 8 </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -377,29 +376,30 @@
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::search__faiss::IndexBinary::idx_t.uint8_tCP.faiss::IndexBinary::idx_t.int32_tP.faiss::IndexBinary::idx_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1aa4d81e853f4194a8b865fcfe7dddd050"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Query n vectors of dimension d to the index.</p>
 <p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output pairwise distances, size n*k </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reconstruct__faiss::IndexBinary::idx_t.uint8_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9b16b11b5fcc5cc97359e684f5e4a338"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector.</p>
-<p>This function may not be defined for some indexes. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d / 8) </p></li>
+<p>This function may not be defined for some indexes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d / 8) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

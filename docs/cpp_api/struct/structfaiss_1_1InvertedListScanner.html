@@ -358,20 +358,21 @@
 <dt id="_CPPv4NK5faiss19InvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tPfP5idx_t6size_t">
 <span id="_CPPv3NK5faiss19InvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tPfP5idx_t6size_t"></span><span id="_CPPv2NK5faiss19InvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tPfP5idx_t6size_t"></span><span id="faiss::InvertedListScanner::scan_codes__s.uint8_tCP.idx_tCP.floatP.idx_tP.sC"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a218aeaf7cc45bf0bf27c3a8bfa44e303"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">scan_codes</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScanner5idx_tE" title="faiss::InvertedListScanner::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScanner5idx_tE" title="faiss::InvertedListScanner::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">size_t</span> <em><span class="pre">k</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>scan a set of codes, compute distances to current query and update heap of results if necessary.</p>
-<p><dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>number of heap updates performed </p>
-</dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of codes to scan </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: codes to scan (n * code_size) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ids</span></code>: corresponding ids (ignored if store_pairs) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: heap distances (size k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: heap labels (size k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: heap size </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of codes to scan </p></li>
+<li><p><strong>codes</strong> – codes to scan (n * code_size) </p></li>
+<li><p><strong>ids</strong> – corresponding ids (ignored if store_pairs) </p></li>
+<li><p><strong>distances</strong> – heap distances (size k) </p></li>
+<li><p><strong>labels</strong> – heap labels (size k) </p></li>
+<li><p><strong>k</strong> – heap size </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of heap updates performed </p>
+</dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

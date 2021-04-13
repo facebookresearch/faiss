@@ -363,31 +363,31 @@
 <dt id="_CPPv4N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t">
 <span id="_CPPv3N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray4addnE6size_tPK1T2TI6size_t7int64_t"></span><span id="faiss::HeapArray::addn__s.TCP.TI.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">addn</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nj</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vin</span></em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <em><span class="pre">j0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">size_t</span> <em><span class="pre">i0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">int64_t</span> <em><span class="pre">ni</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>add nj elements to heaps i0:i0+ni, with sequential ids</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">nj</span></code>: nb of elements to add to each heap </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">vin</span></code>: elements to add, size ni * nj </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">j0</span></code>: add this to the ids that are added </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">i0</span></code>: first heap to update </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ni</span></code>: nb of elements to update (-1 = use nh) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nj</strong> – nb of elements to add to each heap </p></li>
+<li><p><strong>vin</strong> – elements to add, size ni * nj </p></li>
+<li><p><strong>j0</strong> – add this to the ids that are added </p></li>
+<li><p><strong>i0</strong> – first heap to update </p></li>
+<li><p><strong>ni</strong> – nb of elements to update (-1 = use nh) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t">
 <span id="_CPPv3N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="_CPPv2N5faiss9HeapArray13addn_with_idsE6size_tPK1TPK2TI7int64_t6size_t7int64_t"></span><span id="faiss::HeapArray::addn_with_ids__s.TCP.TICP.int64_t.s.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">addn_with_ids</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">nj</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vin</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><em><span class="pre">id_in</span></em> <span class="pre">=</span> <span class="pre">nullptr</span>, <span class="pre">int64_t</span> <em><span class="pre">id_stride</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">size_t</span> <em><span class="pre">i0</span></em> <span class="pre">=</span> <span class="pre">0</span>, <span class="pre">int64_t</span> <em><span class="pre">ni</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>same as addn</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">id_in</span></code>: ids of the elements to add, size ni * nj </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">id_stride</span></code>: stride for id_in </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_in</strong> – ids of the elements to add, size ni * nj </p></li>
+<li><p><strong>id_stride</strong> – stride for id_in </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -399,14 +399,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9HeapArray16per_line_extremaEP1TP2TI">
 <span id="_CPPv3NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="_CPPv2NK5faiss9HeapArray16per_line_extremaEP1TP2TI"></span><span id="faiss::HeapArray::per_line_extrema__TP.TIPC"></span><span class="target" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">per_line_extrema</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="pre">T</span></a> <span class="pre">*</span><em><span class="pre">vals_out</span></em>, <a class="reference internal" href="../file/Heap_8h.html#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="pre">TI</span></a> <span class="pre">*</span><em><span class="pre">idx_out</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd><p>this is not really a heap function. It just finds the per-line extrema of each line of array D <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">vals_out</span></code>: extreme value of each line (size nh, or NULL) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">idx_out</span></code>: index of extreme value (size nh or NULL) </p></li>
+<dd><p>this is not really a heap function. It just finds the per-line extrema of each line of array D </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals_out</strong> – extreme value of each line (size nh, or NULL) </p></li>
+<li><p><strong>idx_out</strong> – index of extreme value (size nh or NULL) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

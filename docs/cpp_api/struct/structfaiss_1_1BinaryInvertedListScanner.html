@@ -357,18 +357,18 @@
 <dt id="_CPPv4NK5faiss25BinaryInvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tP7int32_tP5idx_t6size_t">
 <span id="_CPPv3NK5faiss25BinaryInvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tP7int32_tP5idx_t6size_t"></span><span id="_CPPv2NK5faiss25BinaryInvertedListScanner10scan_codesE6size_tPK7uint8_tPK5idx_tP7int32_tP5idx_t6size_t"></span><span id="faiss::BinaryInvertedListScanner::scan_codes__s.uint8_tCP.idx_tCP.int32_tP.idx_tP.sC"></span><span class="target" id="structfaiss_1_1BinaryInvertedListScanner_1a9ddb2bb0b513829b39528463c46f90f5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">scan_codes</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/IndexBinaryIVF_8h.html#_CPPv4N5faiss25BinaryInvertedListScanner5idx_tE" title="faiss::BinaryInvertedListScanner::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">ids</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../file/IndexBinaryIVF_8h.html#_CPPv4N5faiss25BinaryInvertedListScanner5idx_tE" title="faiss::BinaryInvertedListScanner::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">size_t</span> <em><span class="pre">k</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>compute the distances to codes. (distances, labels) should be organized as a min- or max-heap</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of codes to scan </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: codes to scan (n * code_size) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ids</span></code>: corresponding ids (ignored if store_pairs) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: heap distances (size k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: heap labels (size k) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: heap size </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of codes to scan </p></li>
+<li><p><strong>codes</strong> – codes to scan (n * code_size) </p></li>
+<li><p><strong>ids</strong> – corresponding ids (ignored if store_pairs) </p></li>
+<li><p><strong>distances</strong> – heap distances (size k) </p></li>
+<li><p><strong>labels</strong> – heap labels (size k) </p></li>
+<li><p><strong>k</strong> – heap size </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

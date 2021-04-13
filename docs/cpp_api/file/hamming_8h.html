@@ -350,32 +350,33 @@
 <dt id="_CPPv4N5faiss8hammingsEPK7uint8_tPK7uint8_t6size_t6size_t6size_tP8hamdis_t">
 <span id="_CPPv3N5faiss8hammingsEPK7uint8_tPK7uint8_t6size_t6size_t6size_tP8hamdis_t"></span><span id="_CPPv2N5faiss8hammingsEPK7uint8_tPK7uint8_t6size_t6size_t6size_tP8hamdis_t"></span><span id="faiss::hammings__uint8_tCP.uint8_tCP.s.s.s.hamdis_tP"></span><span class="target" id="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">hammings</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">b</span></em>, <span class="pre">size_t</span> <em><span class="pre">na</span></em>, <span class="pre">size_t</span> <em><span class="pre">nb</span></em>, <span class="pre">size_t</span> <em><span class="pre">nbytespercode</span></em>, <a class="reference internal" href="#_CPPv48hamdis_t" title="hamdis_t"><span class="pre">hamdis_t</span></a> <span class="pre">*</span><em><span class="pre">dis</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss8hammingsEPK7uint8_tPK7uint8_t6size_t6size_t6size_tP8hamdis_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Compute a set of Hamming distances between na and nb binary vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: size na * nbytespercode </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: size nb * nbytespercode </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nbytespercode</span></code>: should be multiple of 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dis</span></code>: output distances, size na * nb </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – size na * nbytespercode </p></li>
+<li><p><strong>b</strong> – size nb * nbytespercode </p></li>
+<li><p><strong>nbytespercode</strong> – should be multiple of 8 </p></li>
+<li><p><strong>dis</strong> – output distances, size na * nb </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15hammings_knn_hcEP19int_maxheap_array_tPK7uint8_tPK7uint8_t6size_t6size_ti">
 <span id="_CPPv3N5faiss15hammings_knn_hcEP19int_maxheap_array_tPK7uint8_tPK7uint8_t6size_t6size_ti"></span><span id="_CPPv2N5faiss15hammings_knn_hcEP19int_maxheap_array_tPK7uint8_tPK7uint8_t6size_t6size_ti"></span><span id="faiss::hammings_knn_hc__int_maxheap_array_tP.uint8_tCP.uint8_tCP.s.s.i"></span><span class="target" id="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">hammings_knn_hc</span></code><span class="sig-paren">(</span><a class="reference internal" href="Heap_8h.html#_CPPv4N5faiss19int_maxheap_array_tE" title="faiss::int_maxheap_array_t"><span class="pre">int_maxheap_array_t</span></a> <span class="pre">*</span><em><span class="pre">ha</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">b</span></em>, <span class="pre">size_t</span> <em><span class="pre">nb</span></em>, <span class="pre">size_t</span> <em><span class="pre">ncodes</span></em>, <span class="pre">int</span> <em><span class="pre">ordered</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15hammings_knn_hcEP19int_maxheap_array_tPK7uint8_tPK7uint8_t6size_t6size_ti" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the k smallest Hamming distances for a set of binary query vectors, using a max heap. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: queries, size ha-&gt;nh * ncodes </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: database, size nb * ncodes </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nb</span></code>: number of database vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ncodes</span></code>: size of the binary codes (bytes) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ordered</span></code>: if != 0: order the results by decreasing distance (may be bottleneck for k/n &gt; 0.01) </p></li>
+<dd><p>Return the k smallest Hamming distances for a set of binary query vectors, using a max heap. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – queries, size ha-&gt;nh * ncodes </p></li>
+<li><p><strong>b</strong> – database, size nb * ncodes </p></li>
+<li><p><strong>nb</strong> – number of database vectors </p></li>
+<li><p><strong>ncodes</strong> – size of the binary codes (bytes) </p></li>
+<li><p><strong>ordered</strong> – if != 0: order the results by decreasing distance (may be bottleneck for k/n &gt; 0.01) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -386,20 +387,21 @@
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss15hammings_knn_mcEPK7uint8_tPK7uint8_t6size_t6size_t6size_t6size_tP7int32_tP7int64_t">
 <span id="_CPPv3N5faiss15hammings_knn_mcEPK7uint8_tPK7uint8_t6size_t6size_t6size_t6size_tP7int32_tP7int64_t"></span><span id="_CPPv2N5faiss15hammings_knn_mcEPK7uint8_tPK7uint8_t6size_t6size_t6size_t6size_tP7int32_tP7int64_t"></span><span id="faiss::hammings_knn_mc__uint8_tCP.uint8_tCP.s.s.s.s.int32_tP.int64_tP"></span><span class="target" id="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">hammings_knn_mc</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">b</span></em>, <span class="pre">size_t</span> <em><span class="pre">na</span></em>, <span class="pre">size_t</span> <em><span class="pre">nb</span></em>, <span class="pre">size_t</span> <em><span class="pre">k</span></em>, <span class="pre">size_t</span> <em><span class="pre">ncodes</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15hammings_knn_mcEPK7uint8_tPK7uint8_t6size_t6size_t6size_t6size_tP7int32_tP7int64_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the k smallest Hamming distances for a set of binary query vectors, using counting max. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: queries, size na * ncodes </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: database, size nb * ncodes </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">na</span></code>: number of query vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nb</span></code>: number of database vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code>: number of vectors/distances to return </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ncodes</span></code>: size of the binary codes (bytes) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output distances from each query vector to its k nearest neighbors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output ids of the k nearest neighbors to each query vector </p></li>
+<dd><p>Return the k smallest Hamming distances for a set of binary query vectors, using counting max. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – queries, size na * ncodes </p></li>
+<li><p><strong>b</strong> – database, size nb * ncodes </p></li>
+<li><p><strong>na</strong> – number of query vectors </p></li>
+<li><p><strong>nb</strong> – number of database vectors </p></li>
+<li><p><strong>k</strong> – number of vectors/distances to return </p></li>
+<li><p><strong>ncodes</strong> – size of the binary codes (bytes) </p></li>
+<li><p><strong>distances</strong> – output distances from each query vector to its k nearest neighbors </p></li>
+<li><p><strong>labels</strong> – output ids of the k nearest neighbors to each query vector </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

@@ -351,15 +351,15 @@
 <dt id="_CPPv4N5faiss20IndexScalarQuantizer20IndexScalarQuantizerEiN15ScalarQuantizer13QuantizerTypeE10MetricType">
 <span id="_CPPv3N5faiss20IndexScalarQuantizer20IndexScalarQuantizerEiN15ScalarQuantizer13QuantizerTypeE10MetricType"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer20IndexScalarQuantizerEiN15ScalarQuantizer13QuantizerTypeE10MetricType"></span><span id="faiss::IndexScalarQuantizer::IndexScalarQuantizer__i.ScalarQuantizer::QuantizerType.MetricType"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a474ad5a50eb2e9f0d79f869855c57223"></span><code class="sig-name descname"><span class="pre">IndexScalarQuantizer</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">ScalarQuantizer</span><span class="pre">::</span><span class="pre">QuantizerType</span> <em><span class="pre">qtype</span></em>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em> <span class="pre">=</span> <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="pre">METRIC_L2</span></a><span class="sig-paren">)</span><br /></dt>
 <dd><p>Constructor.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimensionality of the input vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">M</span></code>: number of subquantizers </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nbits</span></code>: number of bit per subvector index </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimensionality of the input vectors </p></li>
+<li><p><strong>M</strong> – number of subquantizers </p></li>
+<li><p><strong>nbits</strong> – number of bit per subvector index </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -371,27 +371,26 @@
 <dt id="_CPPv4N5faiss20IndexScalarQuantizer5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss20IndexScalarQuantizer5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer5trainE5idx_tPKf"></span><span id="faiss::IndexScalarQuantizer::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a300647e9cdac9acd160f2c55c610056b"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Perform training on a representative set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss20IndexScalarQuantizer3addE5idx_tPKf">
 <span id="_CPPv3N5faiss20IndexScalarQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexScalarQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1ad49602f9ecfcaa2ec8737a449b69ccd7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -399,15 +398,15 @@
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexScalarQuantizer::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1abf24732c29106bb808148c3d30599662"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output pairwise distances, size n*k </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -420,27 +419,27 @@
 <dt id="_CPPv4NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexScalarQuantizer::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a06e6935b75f0b209f65fffa1c9e1477c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf"></span><span id="faiss::IndexScalarQuantizer::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a8fb8680f64465d643d96119da58099f3"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -460,30 +459,30 @@
 <dt id="_CPPv4NK5faiss20IndexScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexScalarQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1ae8c5ed4f9c2145aa074986bf1be3af46"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss20IndexScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexScalarQuantizer::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a96a5ca50fbdef07c7773bb9a27e860e5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -491,13 +490,11 @@
 <span id="_CPPv3N5faiss20IndexScalarQuantizer12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexScalarQuantizer::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_with_ids</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">xids</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Same as add, but stores xids instead of sequential ids.</p>
 <p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">xids</span></code>: if non-null, ids to store for the vectors (size n) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -505,29 +502,30 @@
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::IndexScalarQuantizer::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss20IndexScalarQuantizer6assignE5idx_tPKfP5idx_t5idx_t">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::IndexScalarQuantizer::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">assign</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em> <span class="pre">=</span> <span class="pre">1</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>return the indexes of the k vectors closest to the query x.</p>
-<p>This function is identical as search but only return labels of neighbors. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
+<p>This function is identical as search but only return labels of neighbors. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -541,13 +539,11 @@
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::IndexScalarQuantizer::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -555,15 +551,15 @@
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer16compute_residualEPKfPf5idx_t"></span><span id="faiss::IndexScalarQuantizer::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">compute_residual</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">residual</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Computes a residual vector after indexing encoding.</p>
 <p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vector, size d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">residual</span></code>: output residual vector, size d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: encoded index, as returned by search and assign </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vector, size d </p></li>
+<li><p><strong>residual</strong> – output residual vector, size d </p></li>
+<li><p><strong>key</strong> – encoded index, as returned by search and assign </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -571,16 +567,16 @@
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::IndexScalarQuantizer::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">compute_residual_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xs</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">residuals</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">keys</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</p>
 <p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xs</span></code>: input vectors, size (n x d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">residuals</span></code>: output residual vectors, size (n x d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">keys</span></code>: encoded index, as returned by search and assign </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>xs</strong> – input vectors, size (n x d) </p></li>
+<li><p><strong>residuals</strong> – output residual vectors, size (n x d) </p></li>
+<li><p><strong>keys</strong> – encoded index, as returned by search and assign </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

@@ -332,19 +332,19 @@
 <dt id="_CPPv4N5faiss14pairwise_L2sqrE7int64_t7int64_tPKf7int64_tPKfPf7int64_t7int64_t7int64_t">
 <span id="_CPPv3N5faiss14pairwise_L2sqrE7int64_t7int64_tPKf7int64_tPKfPf7int64_t7int64_t7int64_t"></span><span id="_CPPv2N5faiss14pairwise_L2sqrE7int64_t7int64_tPKf7int64_tPKfPf7int64_t7int64_t7int64_t"></span><span id="faiss::pairwise_L2sqr__int64_t.int64_t.floatCP.int64_t.floatCP.floatP.int64_t.int64_t.int64_t"></span><span class="target" id="namespacefaiss_1ac7a976807ce755fe82dde95efaecaf99"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">pairwise_L2sqr</span></code><span class="sig-paren">(</span><span class="pre">int64_t</span> <em><span class="pre">d</span></em>, <span class="pre">int64_t</span> <em><span class="pre">nq</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xq</span></em>, <span class="pre">int64_t</span> <em><span class="pre">nb</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xb</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">dis</span></em>, <span class="pre">int64_t</span> <em><span class="pre">ldq</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span>, <span class="pre">int64_t</span> <em><span class="pre">ldb</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span>, <span class="pre">int64_t</span> <em><span class="pre">ldd</span></em> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14pairwise_L2sqrE7int64_t7int64_tPKf7int64_tPKfPf7int64_t7int64_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Compute pairwise distances between sets of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: dimension of the vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nq</span></code>: nb of query vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nb</span></code>: nb of database vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xq</span></code>: query vectors (size nq * d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xb</span></code>: database vectros (size nb * d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dis</span></code>: output distances (size nq * nb) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ldq</span><span class="pre">ldb</span><span class="pre">ldd</span></code>: strides for the matrices </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimension of the vectors </p></li>
+<li><p><strong>nq</strong> – nb of query vectors </p></li>
+<li><p><strong>nb</strong> – nb of database vectors </p></li>
+<li><p><strong>xq</strong> – query vectors (size nq * d) </p></li>
+<li><p><strong>xb</strong> – database vectros (size nb * d) </p></li>
+<li><p><strong>dis</strong> – output distances (size nq * nb) </p></li>
+<li><p><strong>ldqldbldd</strong> – strides for the matrices </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -367,14 +367,14 @@
 <dt id="_CPPv4N5faiss13fvec_norms_L2EPfPKf6size_t6size_t">
 <span id="_CPPv3N5faiss13fvec_norms_L2EPfPKf6size_t6size_t"></span><span id="_CPPv2N5faiss13fvec_norms_L2EPfPKf6size_t6size_t"></span><span id="faiss::fvec_norms_L2__floatP.floatCP.s.s"></span><span class="target" id="namespacefaiss_1a40265aa2cbbe57e5b223c2c7dafac31f"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">fvec_norms_L2</span></code><span class="sig-paren">(</span><span class="pre">float</span> <span class="pre">*</span><em><span class="pre">ip</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">nx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13fvec_norms_L2EPfPKf6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>compute the L2 norms for a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ip</span></code>: output norms, size nx </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: set of vectors, size nx * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> – output norms, size nx </p></li>
+<li><p><strong>x</strong> – set of vectors, size nx * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -407,17 +407,17 @@
 <dt id="_CPPv4N5faiss22pairwise_indexed_L2sqrE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf">
 <span id="_CPPv3N5faiss22pairwise_indexed_L2sqrE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf"></span><span id="_CPPv2N5faiss22pairwise_indexed_L2sqrE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf"></span><span id="faiss::pairwise_indexed_L2sqr__s.s.floatCP.int64_tCP.floatCP.int64_tCP.floatP"></span><span class="target" id="namespacefaiss_1afbe3e1fcb434cea1ee9ff8ed6ec1d609"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">pairwise_indexed_L2sqr</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">ix</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">y</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">iy</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">dis</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22pairwise_indexed_L2sqrE6size_t6size_tPKfPK7int64_tPKfPK7int64_tPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>compute dis[j] = L2sqr(x[ix[j]], y[iy[j]]) forall j=0..n-1</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size (max(ix) + 1, d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: size (max(iy) + 1, d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ix</span></code>: size n </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">iy</span></code>: size n </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dis</span></code>: size n </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – size (max(ix) + 1, d) </p></li>
+<li><p><strong>y</strong> – size (max(iy) + 1, d) </p></li>
+<li><p><strong>ix</strong> – size n </p></li>
+<li><p><strong>iy</strong> – size n </p></li>
+<li><p><strong>dis</strong> – size n </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -429,27 +429,26 @@
 <dt id="_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t">
 <span id="_CPPv3N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t"></span><span id="_CPPv2N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t"></span><span id="faiss::knn_inner_product__floatCP.floatCP.s.s.s.float_minheap_array_tP"></span><span class="target" id="namespacefaiss_1a880c7318971f866267a86945aaa61b17"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">knn_inner_product</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">y</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">nx</span></em>, <span class="pre">size_t</span> <em><span class="pre">ny</span></em>, <a class="reference internal" href="Heap_8h.html#_CPPv4N5faiss21float_minheap_array_tE" title="faiss::float_minheap_array_t"><span class="pre">float_minheap_array_t</span></a> <span class="pre">*</span><em><span class="pre">res</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: query vectors, size nx * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: database vectors, size ny * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">res</span></code>: result array, which also provides k. Sorted on output </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>y</strong> – database vectors, size ny * d </p></li>
+<li><p><strong>res</strong> – result array, which also provides k. Sorted on output </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf">
 <span id="_CPPv3N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf"></span><span id="_CPPv2N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf"></span><span id="faiss::knn_L2sqr__floatCP.floatCP.s.s.s.float_maxheap_array_tP.floatCP"></span><span class="target" id="namespacefaiss_1a7931bf425c5825f2634c20952bbdb4b7"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">knn_L2sqr</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">y</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">nx</span></em>, <span class="pre">size_t</span> <em><span class="pre">ny</span></em>, <a class="reference internal" href="Heap_8h.html#_CPPv4N5faiss21float_maxheap_array_tE" title="faiss::float_maxheap_array_t"><span class="pre">float_maxheap_array_t</span></a> <span class="pre">*</span><em><span class="pre">res</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">y_norm2</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Same as knn_inner_product, for the L2 distance <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">y_norm2</span></code>: norms for the y vectors (nullptr or size ny) </p></li>
-</ul>
+<dd><p>Same as knn_inner_product, for the L2 distance </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>y_norm2</strong> – norms for the y vectors (nullptr or size ny) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -466,16 +465,16 @@
 <dt id="_CPPv4N5faiss18range_search_L2sqrEPKfPKf6size_t6size_t6size_tfP17RangeSearchResult">
 <span id="_CPPv3N5faiss18range_search_L2sqrEPKfPKf6size_t6size_t6size_tfP17RangeSearchResult"></span><span id="_CPPv2N5faiss18range_search_L2sqrEPKfPKf6size_t6size_t6size_tfP17RangeSearchResult"></span><span id="faiss::range_search_L2sqr__floatCP.floatCP.s.s.s.float.RangeSearchResultP"></span><span class="target" id="namespacefaiss_1a139f6e538b65f47b826794620af7d491"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search_L2sqr</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">y</span></em>, <span class="pre">size_t</span> <em><span class="pre">d</span></em>, <span class="pre">size_t</span> <em><span class="pre">nx</span></em>, <span class="pre">size_t</span> <em><span class="pre">ny</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss18range_search_L2sqrEPKfPKf6size_t6size_t6size_tfP17RangeSearchResult" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: query vectors, size nx * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: database vectors, size ny * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius around the x vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result structure </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>y</strong> – database vectors, size ny * d </p></li>
+<li><p><strong>radius</strong> – search radius around the x vectors </p></li>
+<li><p><strong>result</strong> – result structure </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

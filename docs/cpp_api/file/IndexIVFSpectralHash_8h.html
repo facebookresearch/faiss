@@ -359,15 +359,15 @@
 <dt id="_CPPv4NK5faiss20IndexIVFSpectralHash14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb">
 <span id="_CPPv3NK5faiss20IndexIVFSpectralHash14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="_CPPv2NK5faiss20IndexIVFSpectralHash14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="faiss::IndexIVFSpectralHash::encode_vectors__idx_t.floatCP.idx_tCP.uint8_tP.bC"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1aecae74e51701e356d64788404814bb46"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">encode_vectors</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexIVFSpectralHash5idx_tE" title="faiss::IndexIVFSpectralHash::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexIVFSpectralHash5idx_tE" title="faiss::IndexIVFSpectralHash::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">list_nos</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">codes</span></em>, <span class="pre">bool</span> <em><span class="pre">include_listnos</span></em> <span class="pre">=</span> <span class="pre">false</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss20IndexIVFSpectralHash14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encodes a set of vectors as they would appear in the inverted lists</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">list_nos</span></code>: inverted list ids as returned by the quantizer (size n). -1s are ignored. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code>: output codes, size n * code_size </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">include_listno</span></code>: include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_nos</strong> – inverted list ids as returned by the quantizer (size n). -1s are ignored. </p></li>
+<li><p><strong>codes</strong> – output codes, size n * code_size </p></li>
+<li><p><strong>include_listno</strong> – include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

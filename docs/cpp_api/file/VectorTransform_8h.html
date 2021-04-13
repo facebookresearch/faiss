@@ -343,15 +343,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss18CenteringTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="faiss::CenteringTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss18CenteringTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -408,14 +408,14 @@
 <dt id="_CPPv4N5faiss9ITQMatrix5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss9ITQMatrix5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss9ITQMatrix5trainE5idx_tPKf"></span><span id="faiss::ITQMatrix::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9ITQMatrix5idx_tE" title="faiss::ITQMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss9ITQMatrix5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -450,15 +450,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9ITQMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9ITQMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9ITQMatrix5applyE5idx_tPKf"></span><span id="faiss::ITQMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9ITQMatrix5idx_tE" title="faiss::ITQMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss9ITQMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -551,14 +551,14 @@
 <dt id="_CPPv4N5faiss12ITQTransform5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss12ITQTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss12ITQTransform5trainE5idx_tPKf"></span><span id="faiss::ITQTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss12ITQTransform5idx_tE" title="faiss::ITQTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss12ITQTransform5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -570,15 +570,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss12ITQTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss12ITQTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss12ITQTransform5applyE5idx_tPKf"></span><span id="faiss::ITQTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss12ITQTransform5idx_tE" title="faiss::ITQTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss12ITQTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -695,28 +695,28 @@
 <dt id="_CPPv4N5faiss15LinearTransform5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss15LinearTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss15LinearTransform5trainE5idx_tPKf"></span><span id="faiss::LinearTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15LinearTransform5idx_tE" title="faiss::LinearTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15LinearTransform5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15LinearTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="faiss::LinearTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15LinearTransform5idx_tE" title="faiss::LinearTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss15LinearTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -811,28 +811,28 @@
 <dt id="_CPPv4N5faiss22NormalizationTransform5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss22NormalizationTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss22NormalizationTransform5trainE5idx_tPKf"></span><span id="faiss::NormalizationTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss22NormalizationTransform5idx_tE" title="faiss::NormalizationTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss22NormalizationTransform5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss22NormalizationTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss22NormalizationTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss22NormalizationTransform5applyE5idx_tPKf"></span><span id="faiss::NormalizationTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss22NormalizationTransform5idx_tE" title="faiss::NormalizationTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss22NormalizationTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -888,14 +888,14 @@
 <dt id="_CPPv4N5faiss9OPQMatrix5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss9OPQMatrix5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss9OPQMatrix5trainE5idx_tPKf"></span><span id="faiss::OPQMatrix::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1OPQMatrix_1abc57f03c88623a5844c7ac06a927ab6a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9OPQMatrix5idx_tE" title="faiss::OPQMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss9OPQMatrix5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -930,15 +930,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9OPQMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9OPQMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9OPQMatrix5applyE5idx_tPKf"></span><span id="faiss::OPQMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9OPQMatrix5idx_tE" title="faiss::OPQMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss9OPQMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -1098,15 +1098,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss9PCAMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9PCAMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9PCAMatrix5applyE5idx_tPKf"></span><span id="faiss::PCAMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9PCAMatrix5idx_tE" title="faiss::PCAMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss9PCAMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -1234,14 +1234,14 @@
 <dt id="_CPPv4N5faiss20RandomRotationMatrix5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss20RandomRotationMatrix5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss20RandomRotationMatrix5trainE5idx_tPKf"></span><span id="faiss::RandomRotationMatrix::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss20RandomRotationMatrix5idx_tE" title="faiss::RandomRotationMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss20RandomRotationMatrix5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1281,15 +1281,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss20RandomRotationMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="faiss::RandomRotationMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss20RandomRotationMatrix5idx_tE" title="faiss::RandomRotationMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss20RandomRotationMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -1390,28 +1390,28 @@
 <dt id="_CPPv4N5faiss24RemapDimensionsTransform5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss24RemapDimensionsTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss24RemapDimensionsTransform5trainE5idx_tPKf"></span><span id="faiss::RemapDimensionsTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss24RemapDimensionsTransform5idx_tE" title="faiss::RemapDimensionsTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss24RemapDimensionsTransform5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf"></span><span id="faiss::RemapDimensionsTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss24RemapDimensionsTransform5idx_tE" title="faiss::RemapDimensionsTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -1468,28 +1468,28 @@
 <dt id="_CPPv4N5faiss15VectorTransform5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss15VectorTransform5trainE5idx_tPKf"></span><span id="faiss::VectorTransform::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15VectorTransform5trainE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss15VectorTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="faiss::VectorTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><a class="headerlink" href="#_CPPv4NK5faiss15VectorTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

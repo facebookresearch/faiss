@@ -930,27 +930,32 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams6metricE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams6metricE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams6metricE"></span><span id="faiss::gpu::GpuDistanceParams::metric__faiss::MetricType"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa"></span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <code class="sig-name descname"><span class="pre">metric</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: distance metric. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams9metricArgE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams9metricArgE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams9metricArgE"></span><span id="faiss::gpu::GpuDistanceParams::metricArg__float"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a72acefaf5f4d3b7e410a6eff97ec375d"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">metricArg</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: distance metric argument (if applicable) For metric == METRIC_Lp, this is the p-value </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams1kE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams1kE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams1kE"></span><span id="faiss::gpu::GpuDistanceParams::k__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9f46ba6c76c2cbeb2f35c3ebe2acfcd4"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">k</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: return k nearest neighbors If the value provided is -1, then we report all pairwise distances without top-k filtering </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams4dimsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams4dimsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams4dimsE"></span><span id="faiss::gpu::GpuDistanceParams::dims__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">dims</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Vector dimensionality. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams7vectorsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams7vectorsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams7vectorsE"></span><span id="faiss::gpu::GpuDistanceParams::vectors__voidCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa"></span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">vectors</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>If vectorsRowMajor is true, this is numVectors x dims, with dims innermost; otherwise, dims x numVectors, with numVectors innermost </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams10vectorTypeE">
@@ -970,12 +975,14 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams11vectorNormsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams11vectorNormsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams11vectorNormsE"></span><span id="faiss::gpu::GpuDistanceParams::vectorNorms__floatCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689"></span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">vectorNorms</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Precomputed L2 norms for each vector in <code class="docutils literal notranslate"><span class="pre">vectors</span></code>, which can be optionally provided in advance to speed computation for METRIC_L2 </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams7queriesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams7queriesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams7queriesE"></span><span id="faiss::gpu::GpuDistanceParams::queries__voidCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800"></span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">queries</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>If queriesRowMajor is true, this is numQueries x dims, with dims innermost; otherwise, dims x numQueries, with numQueries innermost </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams9queryTypeE">
@@ -995,17 +1002,20 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams12outDistancesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams12outDistancesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams12outDistancesE"></span><span id="faiss::gpu::GpuDistanceParams::outDistances__floatP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9ad96367054d61e361107f5c1e7e0535"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">outDistances</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>A region of memory size numQueries x k, with k innermost (row major) if k &gt; 0, or if k == -1, a region of memory of size numQueries x numVectors </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE"></span><span id="faiss::gpu::GpuDistanceParams::ignoreOutDistances__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">ignoreOutDistances</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>Do we only care about the indices reported, rather than the output distances? Not used if k == -1 (all pairwise distances) </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams14outIndicesTypeE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams14outIndicesTypeE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams14outIndicesTypeE"></span><span id="faiss::gpu::GpuDistanceParams::outIndicesType__IndicesDataType"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27"></span><a class="reference internal" href="../file/GpuDistance_8h.html#_CPPv4N5faiss3gpu15IndicesDataTypeE" title="faiss::gpu::IndicesDataType"><span class="pre">IndicesDataType</span></a> <code class="sig-name descname"><span class="pre">outIndicesType</span></code><br /></dt>
-<dd></dd></dl>
+<dd><p>A region of memory size numQueries x k, with k innermost (row major). Not used if k == -1 (all pairwise distances) </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams10outIndicesE">
@@ -1109,14 +1119,14 @@
 <dt id="_CPPv4N5faiss3gpu8GpuIndex5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss3gpu8GpuIndex5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss3gpu8GpuIndex5trainE5idx_tPKf"></span><span id="faiss::gpu::GpuIndex::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Perform training on a representative set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1124,15 +1134,15 @@
 <span id="_CPPv3NK5faiss3gpu8GpuIndex12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndex::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1151,27 +1161,27 @@
 <dt id="_CPPv4NK5faiss3gpu8GpuIndex11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu8GpuIndex11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndex::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu8GpuIndex13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu8GpuIndex13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndex::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1179,13 +1189,11 @@
 <span id="_CPPv3NK5faiss3gpu8GpuIndex22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndex::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1205,30 +1213,30 @@
 <dt id="_CPPv4NK5faiss3gpu8GpuIndex9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu8GpuIndex9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndex::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu8GpuIndex9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu8GpuIndex9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu8GpuIndex9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndex::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndex.html#_CPPv4N5faiss3gpu8GpuIndex5idx_tE" title="faiss::gpu::GpuIndex::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -1424,13 +1432,12 @@
 <dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t">
 <span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat3addEN5faiss11IndexBinary5idx_tEPK7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add__faiss::IndexBinary::idx_t.uint8_tCP"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a84b9c07089abd5c0fa8f07a7a22de047"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d / 8 </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d / 8 </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1444,43 +1451,44 @@
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6searchEN5faiss11IndexBinary5idx_tEPK7uint8_tN5faiss11IndexBinary5idx_tEP7int32_tPN5faiss11IndexBinary5idx_tE"></span><span id="faiss::gpu::GpuIndexBinaryFlat::search__faiss::IndexBinary::idx_t.uint8_tCP.faiss::IndexBinary::idx_t.int32_tP.faiss::IndexBinary::idx_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1aa4d81e853f4194a8b865fcfe7dddd050"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Query n vectors of dimension d to the index.</p>
 <p>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distances</span></code>: output pairwise distances, size n*k </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+<li><p><strong>distances</strong> – output pairwise distances, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat11reconstructEN5faiss11IndexBinary5idx_tEP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reconstruct__faiss::IndexBinary::idx_t.uint8_tPC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9b16b11b5fcc5cc97359e684f5e4a338"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a><span class="pre">::</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector.</p>
-<p>This function may not be defined for some indexes. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d / 8) </p></li>
+<p>This function may not be defined for some indexes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d / 8) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t">
 <span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat5trainE5idx_tPK7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::train__idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Perform training on a representative set of vectors.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d / 8 </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d / 8 </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1488,13 +1496,11 @@
 <span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat12add_with_idsE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::add_with_ids__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add_with_ids</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">xids</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Same as add, but stores xids instead of sequential ids.</p>
 <p>The default implementation fails with an assertion, as it is not supported by all indexes.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">xids</span></code>: if non-null, ids to store for the vectors (size n) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xids</strong> – if non-null, ids to store for the vectors (size n) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1502,29 +1508,30 @@
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat12range_searchE5idx_tPK7uint8_tiP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexBinaryFlat::range_search__idx_t.uint8_tCP.i.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1a35aedb48dd0270377f5602d61b783fd1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">int</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat6assignE5idx_tPK7uint8_tP5idx_t5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::assign__idx_t.uint8_tCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">assign</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em> <span class="pre">=</span> <span class="pre">1</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Return the indexes of the k vectors closest to the query x.</p>
-<p>This function is identical to search but only returns labels of neighbors. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d / 8 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels of the NNs, size n*k </p></li>
+<p>This function is identical to search but only returns labels of neighbors. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d / 8 </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1537,13 +1544,12 @@
 <dt id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat13reconstruct_nE5idx_t5idx_tP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::reconstruct_n__idx_t.idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1.</p>
-<p>This function may not be defined for some indexes. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vectors (size ni * d / 8) </p></li>
-</ul>
+<p>This function may not be defined for some indexes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vectors (size ni * d / 8) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1551,13 +1557,11 @@
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat22search_and_reconstructE5idx_tPK7uint8_t5idx_tP7int32_tP5idx_tP7uint8_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::search_and_reconstruct__idx_t.uint8_tCP.idx_t.int32_tP.idx_tP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinary_1ae7a4b9bdbe6f4392d00cf4e44120409e"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">int32_t</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting array is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1858,15 +1862,15 @@
 <span id="_CPPv3NK5faiss3gpu12GpuIndexFlat12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu12GpuIndexFlat12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexFlat::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1880,13 +1884,11 @@
 <span id="_CPPv3NK5faiss3gpu12GpuIndexFlat22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu12GpuIndexFlat22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexFlat::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1906,30 +1908,30 @@
 <dt id="_CPPv4NK5faiss3gpu12GpuIndexFlat9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu12GpuIndexFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu12GpuIndexFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexFlat::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu12GpuIndexFlat9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu12GpuIndexFlat9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu12GpuIndexFlat9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexFlat::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlat.html#_CPPv4N5faiss3gpu12GpuIndexFlat5idx_tE" title="faiss::gpu::GpuIndexFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -2252,15 +2254,15 @@
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatIP12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatIP12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexFlatIP::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2274,13 +2276,11 @@
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatIP22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatIP22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexFlatIP::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2300,30 +2300,30 @@
 <dt id="_CPPv4NK5faiss3gpu14GpuIndexFlatIP9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatIP9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatIP9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexFlatIP::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu14GpuIndexFlatIP9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatIP9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatIP9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexFlatIP::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatIP.html#_CPPv4N5faiss3gpu14GpuIndexFlatIP5idx_tE" title="faiss::gpu::GpuIndexFlatIP::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -2606,15 +2606,15 @@
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatL212range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatL212range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexFlatL2::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2628,13 +2628,11 @@
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatL222search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatL222search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexFlatL2::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2654,30 +2652,30 @@
 <dt id="_CPPv4NK5faiss3gpu14GpuIndexFlatL29sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatL29sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatL29sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexFlatL2::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu14GpuIndexFlatL29sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu14GpuIndexFlatL29sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu14GpuIndexFlatL29sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexFlatL2::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexFlatL2.html#_CPPv4N5faiss3gpu14GpuIndexFlatL25idx_tE" title="faiss::gpu::GpuIndexFlatL2::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -2941,14 +2939,14 @@
 <dt id="_CPPv4N5faiss3gpu11GpuIndexIVF5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss3gpu11GpuIndexIVF5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss3gpu11GpuIndexIVF5trainE5idx_tPKf"></span><span id="faiss::gpu::GpuIndexIVF::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
 <dd><p>Perform training on a representative set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2956,15 +2954,15 @@
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexIVF::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2983,27 +2981,27 @@
 <dt id="_CPPv4NK5faiss3gpu11GpuIndexIVF11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVF::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu11GpuIndexIVF13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVF::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3011,13 +3009,11 @@
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVF::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3037,30 +3033,30 @@
 <dt id="_CPPv4NK5faiss3gpu11GpuIndexIVF9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexIVF::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu11GpuIndexIVF9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu11GpuIndexIVF9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu11GpuIndexIVF9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexIVF::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVF.html#_CPPv4N5faiss3gpu11GpuIndexIVF5idx_tE" title="faiss::gpu::GpuIndexIVF::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -3441,15 +3437,15 @@
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexIVFFlat::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3462,27 +3458,27 @@
 <dt id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3490,13 +3486,11 @@
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3516,30 +3510,30 @@
 <dt id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexIVFFlat::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu15GpuIndexIVFFlat9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu15GpuIndexIVFFlat9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu15GpuIndexIVFFlat9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexIVFFlat::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFFlat.html#_CPPv4N5faiss3gpu15GpuIndexIVFFlat5idx_tE" title="faiss::gpu::GpuIndexIVFFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -3964,15 +3958,15 @@
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexIVFPQ::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -3985,27 +3979,27 @@
 <dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFPQ::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFPQ::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4013,13 +4007,11 @@
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFPQ::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4039,30 +4031,30 @@
 <dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexIVFPQ::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu13GpuIndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu13GpuIndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu13GpuIndexIVFPQ9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexIVFPQ::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFPQ.html#_CPPv4N5faiss3gpu13GpuIndexIVFPQ5idx_tE" title="faiss::gpu::GpuIndexIVFPQ::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -4512,15 +4504,15 @@
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">range_search</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">float</span> <em><span class="pre">radius</span></em>, <span class="pre">RangeSearchResult</span> <span class="pre">*</span><em><span class="pre">result</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
 <p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors to search, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">radius</span></code>: search radius </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code>: result table </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4533,27 +4525,27 @@
 <dt id="_CPPv4NK5faiss3gpu26GpuIndexIVFScalarQuantizer11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer11reconstructE5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu26GpuIndexIVFScalarQuantizer13reconstruct_nE5idx_t5idx_tPf">
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct_n</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">i0</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">ni</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size ni * d) </p></li>
-</ul>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4561,13 +4553,11 @@
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_and_reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
 <p>If there are not enough results for a query, the resulting arrays is padded with -1s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstructed vectors size (n, k, d) </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -4587,30 +4577,30 @@
 <dt id="_CPPv4NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_encode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input vectors, size n * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf">
 <span id="_CPPv3NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss3gpu26GpuIndexIVFScalarQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::gpu::GpuIndexIVFScalarQuantizer::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">sa_decode</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html#_CPPv4N5faiss3gpu26GpuIndexIVFScalarQuantizer5idx_tE" title="faiss::gpu::GpuIndexIVFScalarQuantizer::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">bytes</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd><p>encode a set of vectors</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: number of vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: output vectors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer2.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -5038,16 +5028,17 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss3gpu17GpuParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints">
 <span id="_CPPv3NK5faiss3gpu17GpuParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints"></span><span id="_CPPv2NK5faiss3gpu17GpuParameterSpace7exploreEP5Index6size_tPKfRK17AutoTuneCriterionP15OperatingPoints"></span><span id="faiss::gpu::GpuParameterSpace::explore__IndexP.s.floatCP.AutoTuneCriterionCR.OperatingPointsPC"></span><span class="target" id="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">explore</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><em><span class="pre">index</span></em>, <span class="pre">size_t</span> <em><span class="pre">nq</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">xq</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/AutoTune_8h.html#_CPPv4N5faiss17AutoTuneCriterionE" title="faiss::AutoTuneCriterion"><span class="pre">AutoTuneCriterion</span></a> <span class="pre">&amp;</span><em><span class="pre">crit</span></em>, <a class="reference internal" href="../file/AutoTune_8h.html#_CPPv4N5faiss15OperatingPointsE" title="faiss::OperatingPoints"><span class="pre">OperatingPoints</span></a> <span class="pre">*</span><em><span class="pre">ops</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd><p>explore operating points <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">index</span></code>: index to run on </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xq</span></code>: query vectors (size nq * index.d) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">crit</span></code>: selection criterion </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ops</span></code>: resulting operating points </p></li>
+<dd><p>explore operating points </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> – index to run on </p></li>
+<li><p><strong>xq</strong> – query vectors (size nq * index.d) </p></li>
+<li><p><strong>crit</strong> – selection criterion </p></li>
+<li><p><strong>ops</strong> – resulting operating points </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

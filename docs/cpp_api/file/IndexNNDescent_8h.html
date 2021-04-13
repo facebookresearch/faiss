@@ -343,13 +343,12 @@
 <dt id="_CPPv4N5faiss14IndexNNDescent3addE5idx_tPKf">
 <span id="_CPPv3N5faiss14IndexNNDescent3addE5idx_tPKf"></span><span id="_CPPv2N5faiss14IndexNNDescent3addE5idx_tPKf"></span><span id="faiss::IndexNNDescent::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexNNDescent_1a37aa303f2517a2d160eb308081c021fb"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss14IndexNNDescent5idx_tE" title="faiss::IndexNNDescent::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss14IndexNNDescent3addE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -368,14 +367,15 @@
 <dt id="_CPPv4NK5faiss14IndexNNDescent11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss14IndexNNDescent11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss14IndexNNDescent11reconstructE5idx_tPf"></span><span id="faiss::IndexNNDescent::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss14IndexNNDescent5idx_tE" title="faiss::IndexNNDescent::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss14IndexNNDescent11reconstructE5idx_tPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -439,13 +439,12 @@
 <dt id="_CPPv4N5faiss18IndexNNDescentFlat3addE5idx_tPKf">
 <span id="_CPPv3N5faiss18IndexNNDescentFlat3addE5idx_tPKf"></span><span id="_CPPv2N5faiss18IndexNNDescentFlat3addE5idx_tPKf"></span><span id="faiss::IndexNNDescentFlat::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexNNDescent_1a37aa303f2517a2d160eb308081c021fb"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss18IndexNNDescentFlat5idx_tE" title="faiss::IndexNNDescentFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss18IndexNNDescentFlat3addE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -464,14 +463,15 @@
 <dt id="_CPPv4NK5faiss18IndexNNDescentFlat11reconstructE5idx_tPf">
 <span id="_CPPv3NK5faiss18IndexNNDescentFlat11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss18IndexNNDescentFlat11reconstructE5idx_tPf"></span><span id="faiss::IndexNNDescentFlat::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss18IndexNNDescentFlat5idx_tE" title="faiss::IndexNNDescentFlat::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss18IndexNNDescentFlat11reconstructE5idx_tPf" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d) </p></li>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

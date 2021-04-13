@@ -375,27 +375,32 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams6metricE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams6metricE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams6metricE"></span><span id="faiss::gpu::GpuDistanceParams::metric__faiss::MetricType"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa"></span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <code class="sig-name descname"><span class="pre">metric</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams6metricE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: distance metric. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams9metricArgE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams9metricArgE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams9metricArgE"></span><span id="faiss::gpu::GpuDistanceParams::metricArg__float"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a72acefaf5f4d3b7e410a6eff97ec375d"></span><span class="pre">float</span> <code class="sig-name descname"><span class="pre">metricArg</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams9metricArgE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: distance metric argument (if applicable) For metric == METRIC_Lp, this is the p-value </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams1kE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams1kE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams1kE"></span><span id="faiss::gpu::GpuDistanceParams::k__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9f46ba6c76c2cbeb2f35c3ebe2acfcd4"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">k</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams1kE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Search parameter: return k nearest neighbors If the value provided is -1, then we report all pairwise distances without top-k filtering </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams4dimsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams4dimsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams4dimsE"></span><span id="faiss::gpu::GpuDistanceParams::dims__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">dims</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams4dimsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Vector dimensionality. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams7vectorsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams7vectorsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams7vectorsE"></span><span id="faiss::gpu::GpuDistanceParams::vectors__voidCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa"></span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">vectors</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams7vectorsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>If vectorsRowMajor is true, this is numVectors x dims, with dims innermost; otherwise, dims x numVectors, with numVectors innermost </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams10vectorTypeE">
@@ -415,12 +420,14 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams11vectorNormsE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams11vectorNormsE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams11vectorNormsE"></span><span id="faiss::gpu::GpuDistanceParams::vectorNorms__floatCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689"></span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">vectorNorms</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams11vectorNormsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Precomputed L2 norms for each vector in <code class="docutils literal notranslate"><span class="pre">vectors</span></code>, which can be optionally provided in advance to speed computation for METRIC_L2 </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams7queriesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams7queriesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams7queriesE"></span><span id="faiss::gpu::GpuDistanceParams::queries__voidCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800"></span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">queries</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams7queriesE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>If queriesRowMajor is true, this is numQueries x dims, with dims innermost; otherwise, dims x numQueries, with numQueries innermost </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams9queryTypeE">
@@ -440,17 +447,20 @@
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams12outDistancesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams12outDistancesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams12outDistancesE"></span><span id="faiss::gpu::GpuDistanceParams::outDistances__floatP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9ad96367054d61e361107f5c1e7e0535"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">outDistances</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams12outDistancesE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>A region of memory size numQueries x k, with k innermost (row major) if k &gt; 0, or if k == -1, a region of memory of size numQueries x numVectors </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE"></span><span id="faiss::gpu::GpuDistanceParams::ignoreOutDistances__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">ignoreOutDistances</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams18ignoreOutDistancesE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>Do we only care about the indices reported, rather than the output distances? Not used if k == -1 (all pairwise distances) </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams14outIndicesTypeE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams14outIndicesTypeE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams14outIndicesTypeE"></span><span id="faiss::gpu::GpuDistanceParams::outIndicesType__IndicesDataType"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu15IndicesDataTypeE" title="faiss::gpu::IndicesDataType"><span class="pre">IndicesDataType</span></a> <code class="sig-name descname"><span class="pre">outIndicesType</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams14outIndicesTypeE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><p>A region of memory size numQueries x k, with k innermost (row major). Not used if k == -1 (all pairwise distances) </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss3gpu17GpuDistanceParams10outIndicesE">

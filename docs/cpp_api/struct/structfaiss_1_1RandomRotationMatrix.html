@@ -352,14 +352,14 @@
 <dt id="_CPPv4N5faiss20RandomRotationMatrix5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss20RandomRotationMatrix5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss20RandomRotationMatrix5trainE5idx_tPKf"></span><span id="faiss::RandomRotationMatrix::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss20RandomRotationMatrix5idx_tE" title="faiss::RandomRotationMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><br /></dt>
 <dd><p>Perform training on a representative set of vectors. Does nothing by default.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of training vectors </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: training vecors, size n * d </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of training vectors </p></li>
+<li><p><strong>x</strong> – training vecors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -399,15 +399,15 @@
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss20RandomRotationMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="faiss::RandomRotationMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="pre">float</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss20RandomRotationMatrix5idx_tE" title="faiss::RandomRotationMatrix::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd><p>apply the random roation, return new allocated matrix <dl class="simple">
-<dt><strong>Return</strong></dt><dd><p>size n * d_out </p>
+<dd><p>apply the random roation, return new allocated matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: size n * d_in </p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size n * d_out </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

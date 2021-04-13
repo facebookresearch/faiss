@@ -346,13 +346,12 @@
 <dt id="_CPPv4N5faiss15IndexBinaryHNSW3addE5idx_tPK7uint8_t">
 <span id="_CPPv3N5faiss15IndexBinaryHNSW3addE5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss15IndexBinaryHNSW3addE5idx_tPK7uint8_t"></span><span id="faiss::IndexBinaryHNSW::add__idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryHNSW5idx_tE" title="faiss::IndexBinaryHNSW::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4N5faiss15IndexBinaryHNSW3addE5idx_tPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: input matrix, size n * d / 8 </p></li>
-</ul>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d / 8 </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -371,14 +370,15 @@
 <dt id="_CPPv4NK5faiss15IndexBinaryHNSW11reconstructE5idx_tP7uint8_t">
 <span id="_CPPv3NK5faiss15IndexBinaryHNSW11reconstructE5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss15IndexBinaryHNSW11reconstructE5idx_tP7uint8_t"></span><span id="faiss::IndexBinaryHNSW::reconstruct__idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">reconstruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexBinaryHNSW5idx_tE" title="faiss::IndexBinaryHNSW::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">key</span></em>, <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">recons</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss15IndexBinaryHNSW11reconstructE5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Reconstruct a stored vector.</p>
-<p>This function may not be defined for some indexes. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: id of the vector to reconstruct </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recons</span></code>: reconstucted vector (size d / 8) </p></li>
+<p>This function may not be defined for some indexes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d / 8) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

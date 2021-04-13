@@ -361,21 +361,21 @@
 <dt id="_CPPv4NK5faiss11IndexIVFPQR18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats">
 <span id="_CPPv3NK5faiss11IndexIVFPQR18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="_CPPv2NK5faiss11IndexIVFPQR18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="faiss::IndexIVFPQR::search_preassigned__idx_t.floatCP.idx_t.idx_tCP.floatCP.floatP.idx_tP.b.IVFSearchParametersCP.IndexIVFStatsPC"></span><span class="target" id="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">search_preassigned</span></code><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss11IndexIVFPQR5idx_tE" title="faiss::IndexIVFPQR::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss11IndexIVFPQR5idx_tE" title="faiss::IndexIVFPQR::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">k</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss11IndexIVFPQR5idx_tE" title="faiss::IndexIVFPQR::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">assign</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">centroid_dis</span></em>, <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">distances</span></em>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss11IndexIVFPQR5idx_tE" title="faiss::IndexIVFPQR::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">labels</span></em>, <span class="pre">bool</span> <em><span class="pre">store_pairs</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters"><span class="pre">IVFSearchParameters</span></a> <span class="pre">*</span><em><span class="pre">params</span></em> <span class="pre">=</span> <span class="pre">nullptr</span>, <a class="reference internal" href="IndexIVF_8h.html#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats"><span class="pre">IndexIVFStats</span></a> <span class="pre">*</span><em><span class="pre">stats</span></em> <span class="pre">=</span> <span class="pre">nullptr</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss11IndexIVFPQR18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>search a set of vectors, that are pre-quantized by the IVF quantizer. Fill in the corresponding heaps with the query results. The default implementation uses InvertedListScanners to do the search.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code>: nb of vectors to query </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: query vectors, size nx * d </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">assign</span></code>: coarse quantization indices, size nx * nprobe </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">centroid_dis</span></code>: distances to coarse centroids, size nx * nprobe </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">distance</span></code>: output distances, size n * k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: output labels, size n * k </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">store_pairs</span></code>: store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: used to override the object’s search parameters </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stats</span></code>: search stats to be updated (can be null) </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of vectors to query </p></li>
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>assign</strong> – coarse quantization indices, size nx * nprobe </p></li>
+<li><p><strong>centroid_dis</strong> – distances to coarse centroids, size nx * nprobe </p></li>
+<li><p><strong>distance</strong> – output distances, size n * k </p></li>
+<li><p><strong>labels</strong> – output labels, size n * k </p></li>
+<li><p><strong>store_pairs</strong> – store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </p></li>
+<li><p><strong>params</strong> – used to override the object’s search parameters </p></li>
+<li><p><strong>stats</strong> – search stats to be updated (can be null) </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">

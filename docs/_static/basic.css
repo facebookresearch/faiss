@@ -277,25 +277,25 @@ p.rubric {
     font-weight: bold;
 }
 
-img.align-left, .figure.align-left, object.align-left {
+img.align-left, figure.align-left, .figure.align-left, object.align-left {
     clear: left;
     float: left;
     margin-right: 1em;
 }
 
-img.align-right, .figure.align-right, object.align-right {
+img.align-right, figure.align-right, .figure.align-right, object.align-right {
     clear: right;
     float: right;
     margin-left: 1em;
 }
 
-img.align-center, .figure.align-center, object.align-center {
+img.align-center, figure.align-center, .figure.align-center, object.align-center {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-img.align-default, .figure.align-default {
+img.align-default, figure.align-default, .figure.align-default {
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -319,7 +319,8 @@ img.align-default, .figure.align-default {
 
 /* -- sidebars -------------------------------------------------------------- */
 
-div.sidebar {
+div.sidebar,
+aside.sidebar {
     margin: 0 0 0.5em 1em;
     border: 1px solid #ddb;
     padding: 7px;
@@ -377,12 +378,14 @@ div.body p.centered {
 /* -- content of sidebars/topics/admonitions -------------------------------- */
 
 div.sidebar > :last-child,
+aside.sidebar > :last-child,
 div.topic > :last-child,
 div.admonition > :last-child {
     margin-bottom: 0;
 }
 
 div.sidebar::after,
+aside.sidebar::after,
 div.topic::after,
 div.admonition::after,
 blockquote::after {
@@ -455,20 +458,22 @@ td > :last-child {
 
 /* -- figures --------------------------------------------------------------- */
 
-div.figure {
+div.figure, figure {
     margin: 0.5em;
     padding: 0.5em;
 }
 
-div.figure p.caption {
+div.figure p.caption, figcaption {
     padding: 0.3em;
 }
 
-div.figure p.caption span.caption-number {
+div.figure p.caption span.caption-number,
+figcaption span.caption-number {
     font-style: italic;
 }
 
-div.figure p.caption span.caption-text {
+div.figure p.caption span.caption-text,
+figcaption span.caption-text {
 }
 
 /* -- field list styles ----------------------------------------------------- */
