@@ -82,9 +82,7 @@ FAISS_DECLARE_GETTER(PCAMatrix, int, random_rotation)
 FAISS_DECLARE_CLASS_INHERITED(ITQMatrix, LinearTransform)
 FAISS_DECLARE_DESTRUCTOR(ITQMatrix)
 
-int faiss_ITQMatrix_new_with(
-        FaissITQMatrix** p_vt,
-        int d);
+int faiss_ITQMatrix_new_with(FaissITQMatrix** p_vt, int d);
 
 FAISS_DECLARE_CLASS_INHERITED(ITQTransform, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(ITQTransform)
@@ -101,11 +99,7 @@ FAISS_DECLARE_GETTER(ITQTransform, int, do_pca)
 FAISS_DECLARE_CLASS_INHERITED(OPQMatrix, LinearTransform)
 FAISS_DECLARE_DESTRUCTOR(OPQMatrix)
 
-int faiss_OPQMatrix_new_with(
-        FaissOPQMatrix** p_vt,
-        int d,
-        int M,
-        int d2);
+int faiss_OPQMatrix_new_with(FaissOPQMatrix** p_vt, int d, int M, int d2);
 
 FAISS_DECLARE_GETTER_SETTER(OPQMatrix, int, verbose)
 FAISS_DECLARE_GETTER_SETTER(OPQMatrix, int, niter)
@@ -133,9 +127,7 @@ FAISS_DECLARE_GETTER(NormalizationTransform, float, norm)
 FAISS_DECLARE_CLASS_INHERITED(CenteringTransform, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(CenteringTransform)
 
-int faiss_CenteringTransform_new_with(
-        FaissCenteringTransform** p_vt,
-        int d);
+int faiss_CenteringTransform_new_with(FaissCenteringTransform** p_vt, int d);
 
 #ifdef __cplusplus
 }

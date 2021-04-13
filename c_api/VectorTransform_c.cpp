@@ -89,12 +89,9 @@ DEFINE_GETTER(PCAMatrix, int, random_rotation)
 
 DEFINE_DESTRUCTOR(ITQMatrix)
 
-int faiss_ITQMatrix_new_with(
-        FaissITQMatrix** p_vt,
-        int d) {
+int faiss_ITQMatrix_new_with(FaissITQMatrix** p_vt, int d) {
     try {
-        *p_vt = reinterpret_cast<FaissITQMatrix*>(new faiss::ITQMatrix(
-                d));
+        *p_vt = reinterpret_cast<FaissITQMatrix*>(new faiss::ITQMatrix(d));
     }
     CATCH_AND_HANDLE
 }
@@ -108,8 +105,8 @@ int faiss_ITQTransform_new_with(
         int do_pca) {
     try {
         bool do_pca_ = (bool)do_pca;
-        *p_vt = reinterpret_cast<FaissITQTransform*>(new faiss::ITQTransform(
-                d_in, d_out, do_pca_));
+        *p_vt = reinterpret_cast<FaissITQTransform*>(
+                new faiss::ITQTransform(d_in, d_out, do_pca_));
     }
     CATCH_AND_HANDLE
 }
@@ -122,14 +119,10 @@ DEFINE_GETTER(ITQTransform, int, do_pca)
 
 DEFINE_DESTRUCTOR(OPQMatrix)
 
-int faiss_OPQMatrix_new_with(
-        FaissOPQMatrix** p_vt,
-        int d,
-        int M,
-        int d2) {
+int faiss_OPQMatrix_new_with(FaissOPQMatrix** p_vt, int d, int M, int d2) {
     try {
-        *p_vt = reinterpret_cast<FaissOPQMatrix*>(new faiss::OPQMatrix(
-                d, M, d2));
+        *p_vt = reinterpret_cast<FaissOPQMatrix*>(
+                new faiss::OPQMatrix(d, M, d2));
     }
     CATCH_AND_HANDLE
 }
@@ -156,8 +149,8 @@ int faiss_RemapDimensionsTransform_new_with(
         int uniform) {
     try {
         bool uniform_ = (bool)uniform;
-        *p_vt = reinterpret_cast<FaissRemapDimensionsTransform*>(new faiss::RemapDimensionsTransform(
-                d_in, d_out, uniform_));
+        *p_vt = reinterpret_cast<FaissRemapDimensionsTransform*>(
+                new faiss::RemapDimensionsTransform(d_in, d_out, uniform_));
     }
     CATCH_AND_HANDLE
 }
@@ -173,8 +166,8 @@ int faiss_NormalizationTransform_new_with(
         int d,
         float norm) {
     try {
-        *p_vt = reinterpret_cast<FaissNormalizationTransform*>(new faiss::NormalizationTransform(
-                d, norm));
+        *p_vt = reinterpret_cast<FaissNormalizationTransform*>(
+                new faiss::NormalizationTransform(d, norm));
     }
     CATCH_AND_HANDLE
 }
@@ -187,12 +180,10 @@ DEFINE_GETTER(NormalizationTransform, float, norm)
 
 DEFINE_DESTRUCTOR(CenteringTransform)
 
-int faiss_CenteringTransform_new_with(
-        FaissCenteringTransform** p_vt,
-        int d) {
+int faiss_CenteringTransform_new_with(FaissCenteringTransform** p_vt, int d) {
     try {
-        *p_vt = reinterpret_cast<FaissCenteringTransform*>(new faiss::CenteringTransform(
-                d));
+        *p_vt = reinterpret_cast<FaissCenteringTransform*>(
+                new faiss::CenteringTransform(d));
     }
     CATCH_AND_HANDLE
 }
