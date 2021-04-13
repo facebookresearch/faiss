@@ -6,7 +6,7 @@
  */
 
 // Copyright 2004-present Facebook. All Rights Reserved.
-// -*- c++ -*-
+// -*- c -*-
 
 #ifndef FAISS_VECTOR_TRANSFORM_C_H
 #define FAISS_VECTOR_TRANSFORM_C_H
@@ -73,17 +73,69 @@ int faiss_PCAMatrix_new_with(
         float eigen_power,
         int random_rotation);
 
-/// Getter for input dimension
-FAISS_DECLARE_GETTER(PCAMatrix, int, d_in)
-
-/// Getter for output dimension
-FAISS_DECLARE_GETTER(PCAMatrix, int, d_out)
-
 /// Getter for eigen_power
 FAISS_DECLARE_GETTER(PCAMatrix, float, eigen_power)
 
 /// Getter for random_rotation
 FAISS_DECLARE_GETTER(PCAMatrix, int, random_rotation)
+
+FAISS_DECLARE_CLASS_INHERITED(ITQMatrix, LinearTransform)
+FAISS_DECLARE_DESTRUCTOR(ITQMatrix)
+
+int faiss_ITQMatrix_new_with(
+        FaissITQMatrix** p_vt,
+        int d);
+
+FAISS_DECLARE_CLASS_INHERITED(ITQTransform, VectorTransform)
+FAISS_DECLARE_DESTRUCTOR(ITQTransform)
+
+int faiss_ITQTransform_new_with(
+        FaissITQTransform** p_vt,
+        int d_in,
+        int d_out,
+        int do_pca);
+
+/// Getter for do_pca
+FAISS_DECLARE_GETTER(ITQTransform, int, do_pca)
+
+FAISS_DECLARE_CLASS_INHERITED(OPQMatrix, LinearTransform)
+FAISS_DECLARE_DESTRUCTOR(OPQMatrix)
+
+int faiss_OPQMatrix_new_with(
+        FaissOPQMatrix** p_vt,
+        int d,
+        int M,
+        int d2);
+
+FAISS_DECLARE_GETTER_SETTER(OPQMatrix, int, verbose)
+FAISS_DECLARE_GETTER_SETTER(OPQMatrix, int, niter)
+FAISS_DECLARE_GETTER_SETTER(OPQMatrix, int, niter_pq)
+
+FAISS_DECLARE_CLASS_INHERITED(RemapDimensionsTransform, VectorTransform)
+FAISS_DECLARE_DESTRUCTOR(RemapDimensionsTransform)
+
+int faiss_RemapDimensionsTransform_new_with(
+        FaissRemapDimensionsTransform** p_vt,
+        int d_in,
+        int d_out,
+        int uniform);
+
+FAISS_DECLARE_CLASS_INHERITED(NormalizationTransform, VectorTransform)
+FAISS_DECLARE_DESTRUCTOR(NormalizationTransform)
+
+int faiss_NormalizationTransform_new_with(
+        FaissNormalizationTransform** p_vt,
+        int d,
+        float norm);
+
+FAISS_DECLARE_GETTER(NormalizationTransform, float, norm)
+
+FAISS_DECLARE_CLASS_INHERITED(CenteringTransform, VectorTransform)
+FAISS_DECLARE_DESTRUCTOR(CenteringTransform)
+
+int faiss_CenteringTransform_new_with(
+        FaissCenteringTransform** p_vt,
+        int d);
 
 #ifdef __cplusplus
 }

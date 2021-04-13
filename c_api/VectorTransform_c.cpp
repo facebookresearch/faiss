@@ -72,17 +72,128 @@ int faiss_PCAMatrix_new_with(
         float eigen_power,
         int random_rotation) {
     try {
+        bool random_rotation_ = (bool)random_rotation;
         *p_vt = reinterpret_cast<FaissPCAMatrix*>(new faiss::PCAMatrix(
-                d_in, d_out, eigen_power, random_rotation));
+                d_in, d_out, eigen_power, random_rotation_));
     }
     CATCH_AND_HANDLE
 }
 
-DEFINE_GETTER(PCAMatrix, int, d_in)
-
-DEFINE_GETTER(PCAMatrix, int, d_out)
-
 DEFINE_GETTER(PCAMatrix, float, eigen_power)
 
 DEFINE_GETTER(PCAMatrix, int, random_rotation)
+
+/*********************************************
+ * ITQMatrix
+ *********************************************/
+
+DEFINE_DESTRUCTOR(ITQMatrix)
+
+int faiss_ITQMatrix_new_with(
+        FaissITQMatrix** p_vt,
+        int d) {
+    try {
+        *p_vt = reinterpret_cast<FaissITQMatrix*>(new faiss::ITQMatrix(
+                d));
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_DESTRUCTOR(ITQTransform)
+
+int faiss_ITQTransform_new_with(
+        FaissITQTransform** p_vt,
+        int d_in,
+        int d_out,
+        int do_pca) {
+    try {
+        bool do_pca_ = (bool)do_pca;
+        *p_vt = reinterpret_cast<FaissITQTransform*>(new faiss::ITQTransform(
+                d_in, d_out, do_pca_));
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_GETTER(ITQTransform, int, do_pca)
+
+/*********************************************
+ * OPQMatrix
+ *********************************************/
+
+DEFINE_DESTRUCTOR(OPQMatrix)
+
+int faiss_OPQMatrix_new_with(
+        FaissOPQMatrix** p_vt,
+        int d,
+        int M,
+        int d2) {
+    try {
+        *p_vt = reinterpret_cast<FaissOPQMatrix*>(new faiss::OPQMatrix(
+                d, M, d2));
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_GETTER(OPQMatrix, int, verbose)
+DEFINE_SETTER(OPQMatrix, int, verbose)
+
+DEFINE_GETTER(OPQMatrix, int, niter)
+DEFINE_SETTER(OPQMatrix, int, niter)
+
+DEFINE_GETTER(OPQMatrix, int, niter_pq)
+DEFINE_SETTER(OPQMatrix, int, niter_pq)
+
+/*********************************************
+ * RemapDimensionsTransform
+ *********************************************/
+
+DEFINE_DESTRUCTOR(RemapDimensionsTransform)
+
+int faiss_RemapDimensionsTransform_new_with(
+        FaissRemapDimensionsTransform** p_vt,
+        int d_in,
+        int d_out,
+        int uniform) {
+    try {
+        bool uniform_ = (bool)uniform;
+        *p_vt = reinterpret_cast<FaissRemapDimensionsTransform*>(new faiss::RemapDimensionsTransform(
+                d_in, d_out, uniform_));
+    }
+    CATCH_AND_HANDLE
+}
+
+/*********************************************
+ * NormalizationTransform
+ *********************************************/
+
+DEFINE_DESTRUCTOR(NormalizationTransform)
+
+int faiss_NormalizationTransform_new_with(
+        FaissNormalizationTransform** p_vt,
+        int d,
+        float norm) {
+    try {
+        *p_vt = reinterpret_cast<FaissNormalizationTransform*>(new faiss::NormalizationTransform(
+                d, norm));
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_GETTER(NormalizationTransform, float, norm)
+
+/*********************************************
+ * CenteringTransform
+ *********************************************/
+
+DEFINE_DESTRUCTOR(CenteringTransform)
+
+int faiss_CenteringTransform_new_with(
+        FaissCenteringTransform** p_vt,
+        int d) {
+    try {
+        *p_vt = reinterpret_cast<FaissCenteringTransform*>(new faiss::CenteringTransform(
+                d));
+    }
+    CATCH_AND_HANDLE
+}
 }
