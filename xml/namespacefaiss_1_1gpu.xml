@@ -357,7 +357,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="126" column="6" declfile="faiss/gpu/GpuDistance.h" declline="126" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="129" column="6" declfile="faiss/gpu/GpuDistance.h" declline="129" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -419,7 +419,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="129" column="6" declfile="faiss/gpu/GpuDistance.h" declline="129" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="132" column="6" declfile="faiss/gpu/GpuDistance.h" declline="132" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
