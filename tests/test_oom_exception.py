@@ -19,7 +19,7 @@ class TestOOMException(unittest.TestCase):
         # make sure that allocing more than 10G will fail
         resource.setrlimit(resource.RLIMIT_AS, (10 * 1024 * 1024, hard_as))
         try:
-            x = faiss.IntVector()
+            x = faiss.Int32Vector()
             try:
                 x.resize(10**11)   # 400 G of RAM
             except MemoryError:

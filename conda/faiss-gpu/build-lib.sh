@@ -8,7 +8,7 @@ set -e
 
 
 # Build libfaiss_avx2.so.
-cmake -B _build_avx2 \
+cmake -B _build \
       -DBUILD_SHARED_LIBS=ON \
       -DBUILD_TESTING=OFF \
       -DFAISS_OPT_LEVEL=avx2 \
@@ -18,23 +18,7 @@ cmake -B _build_avx2 \
       -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_BUILD_TYPE=Release .
 
-cmake --build _build_avx2 -j $CPU_COUNT
+make -C _build -j $CPU_COUNT faiss faiss_avx2
 
-cmake --install _build_avx2 --prefix $PREFIX
-cmake --install _build_avx2 --prefix _libfaiss_avx2_stage/
-
-
-# Build libfaiss.so.
-cmake -B _build_generic \
-      -DBUILD_SHARED_LIBS=ON \
-      -DBUILD_TESTING=OFF \
-      -DFAISS_ENABLE_GPU=ON \
-      -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
-      -DFAISS_ENABLE_PYTHON=OFF \
-      -DBLA_VENDOR=Intel10_64lp \
-      -DCMAKE_BUILD_TYPE=Release .
-
-cmake --build _build_generic -j $CPU_COUNT
-
-cmake --install _build_generic --prefix $PREFIX
-cmake --install _build_generic --prefix _libfaiss_stage/
+cmake --install _build --prefix $PREFIX
+cmake --install _build --prefix _libfaiss_stage/

@@ -33,6 +33,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
@@ -233,6 +234,42 @@ static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     WRITE1(hnsw->upper_beam);
 }
 
+static void write_NSG(const NSG* nsg, IOWriter* f) {
+    WRITE1(nsg->ntotal);
+    WRITE1(nsg->R);
+    WRITE1(nsg->L);
+    WRITE1(nsg->C);
+    WRITE1(nsg->search_L);
+    WRITE1(nsg->enterpoint);
+    WRITE1(nsg->is_built);
+
+    if (!nsg->is_built) {
+        return;
+    }
+
+    constexpr int EMPTY_ID = -1;
+    auto& graph = nsg->final_graph;
+    int K = graph->K;
+    int N = graph->N;
+    FAISS_THROW_IF_NOT(N == nsg->ntotal);
+    FAISS_THROW_IF_NOT(K == nsg->R);
+    FAISS_THROW_IF_NOT(true == graph->own_fields);
+
+    int size = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < K; j++) {
+            int id = graph->at(i, j);
+            if (id != EMPTY_ID) {
+                WRITE1(id);
+                size += 1;
+            } else {
+                break;
+            }
+        }
+        WRITE1(EMPTY_ID);
+    }
+}
+
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
     char maintain_direct_map =
             (char)dm->type; // for backwards compatibility with bool
@@ -424,6 +461,20 @@ void write_index(const Index* idx, IOWriter* f) {
         write_index_header(idxhnsw, f);
         write_HNSW(&idxhnsw->hnsw, f);
         write_index(idxhnsw->storage, f);
+    } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {
+        uint32_t h =
+                dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf") : 0;
+        FAISS_THROW_IF_NOT(h != 0);
+        WRITE1(h);
+        write_index_header(idxnsg, f);
+        WRITE1(idxnsg->GK);
+        WRITE1(idxnsg->build_type);
+        WRITE1(idxnsg->nndescent_S);
+        WRITE1(idxnsg->nndescent_R);
+        WRITE1(idxnsg->nndescent_L);
+        WRITE1(idxnsg->nndescent_iter);
+        write_NSG(&idxnsg->nsg, f);
+        write_index(idxnsg->storage, f);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {

@@ -624,6 +624,28 @@ class TestNSG(unittest.TestCase):
                     break
         return knn_graph
 
+    def subtest_io_and_clone(self, index, Dnsg, Insg):
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, tmpfile)
+            index2 = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+
+        Dnsg2, Insg2 = index2.search(self.xq, 1)
+
+        self.assertTrue(np.all(Dnsg2 == Dnsg))
+        self.assertTrue(np.all(Insg2 == Insg))
+
+        # also test clone
+        index3 = faiss.clone_index(index)
+        Dnsg3, Insg3 = index3.search(self.xq, 1)
+
+        self.assertTrue(np.all(Dnsg3 == Dnsg))
+        self.assertTrue(np.all(Insg3 == Insg))
+
     def subtest_connectivity(self, index, nb):
         vt = faiss.VisitedTable(nb)
         count = index.nsg.dfs(vt, index.nsg.enterpoint, 0)
@@ -649,6 +671,7 @@ class TestNSG(unittest.TestCase):
         print('metric: {}, nb equal: {}'.format(metrics[metric], recalls))
         self.assertGreaterEqual(recalls, thresh)
         self.subtest_connectivity(index, self.xb.shape[0])
+        self.subtest_io_and_clone(index, Dnsg, Insg)
 
     def subtest_build(self, knn_graph, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]

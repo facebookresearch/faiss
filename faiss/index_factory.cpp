@@ -30,6 +30,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
@@ -151,10 +152,11 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
     int64_t ncentroids = -1;
     bool use_2layer = false;
     int hnsw_M = -1;
+    int nsg_R = -1;
 
     for (char* tok = strtok_r(&description[0], " ,", &ptr); tok;
          tok = strtok_r(nullptr, " ,", &ptr)) {
-        int d_out, opq_M, nbit, M, M2, pq_m, ncent, r2;
+        int d_out, opq_M, nbit, M, M2, pq_m, ncent, r2, R;
         std::string stok(tok);
         nbit = 8;
         int bbs = -1;
@@ -206,6 +208,11 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 !coarse_quantizer &&
                 sscanf(tok, "IVF%" PRId64 "_HNSW%d", &ncentroids, &M) == 2) {
             coarse_quantizer_1 = new IndexHNSWFlat(d, M, metric);
+
+        } else if (
+                !coarse_quantizer &&
+                sscanf(tok, "IVF%" PRId64 "_NSG%d", &ncentroids, &R) == 2) {
+            coarse_quantizer_1 = new IndexNSGFlat(d, R, metric);
 
         } else if (
                 !coarse_quantizer &&
@@ -263,6 +270,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 index_1 = index_ivf;
             } else if (hnsw_M > 0) {
                 index_1 = new IndexHNSWFlat(d, hnsw_M, metric);
+            } else if (nsg_R > 0) {
+                index_1 = new IndexNSGFlat(d, nsg_R, metric);
             } else {
                 FAISS_THROW_IF_NOT_MSG(
                         stok != "FlatDedup",
@@ -396,6 +405,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
         } else if (!index && sscanf(tok, "HNSW%d", &M) == 1) {
             hnsw_M = M;
             // here it is unclear what we want: HNSW flat or HNSWx,Y ?
+        } else if (!index && sscanf(tok, "NSG%d", &R) == 1) {
+            nsg_R = R;
         } else if (
                 !index &&
                 (stok == "LSH" || stok == "LSHr" || stok == "LSHrt" ||
@@ -446,6 +457,9 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
 
     if (!index && hnsw_M > 0) {
         index = new IndexHNSWFlat(d, hnsw_M, metric);
+        del_index.set(index);
+    } else if (!index && nsg_R > 0) {
+        index = new IndexNSGFlat(d, nsg_R, metric);
         del_index.set(index);
     }
 

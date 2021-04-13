@@ -24,6 +24,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -121,6 +122,17 @@ Index* Cloner::clone_Index(const Index* index) {
         IndexHNSW* res = new IndexHNSW(*ihnsw);
         res->own_fields = true;
         res->storage = clone_Index(ihnsw->storage);
+        return res;
+    } else if (const IndexNSG* insg = dynamic_cast<const IndexNSG*>(index)) {
+        IndexNSG* res = new IndexNSG(*insg);
+
+        // copy the dynamic allocated graph
+        auto& new_graph = res->nsg.final_graph;
+        auto& old_graph = insg->nsg.final_graph;
+        new_graph = std::make_shared<nsg::Graph<int>>(*old_graph);
+
+        res->own_fields = true;
+        res->storage = clone_Index(insg->storage);
         return res;
     } else if (
             const Index2Layer* i2l = dynamic_cast<const Index2Layer*>(index)) {

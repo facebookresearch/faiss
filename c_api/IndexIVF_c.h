@@ -107,7 +107,7 @@ int faiss_IndexIVF_search_preassigned(
 
 size_t faiss_IndexIVF_get_list_size(const FaissIndexIVF* index, size_t list_no);
 
-/** intialize a direct map
+/** initialize a direct map
  *
  * @param new_maintain_direct_map    if true, create a direct map,
  *                                   else clear it
@@ -141,7 +141,7 @@ void faiss_IndexIVF_invlists_get_ids(
 typedef struct FaissIndexIVFStats {
     size_t nq;    // nb of queries run
     size_t nlist; // nb of inverted lists scanned
-    size_t ndis;  // nb of distancs computed
+    size_t ndis;  // nb of distances computed
 } FaissIndexIVFStats;
 
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats);
