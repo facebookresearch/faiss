@@ -415,20 +415,8 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t">
-<span id="_CPPv3NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::IntersectionCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">D</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">I</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Evaluate the criterion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>D</strong> – size nq * nnn </p></li>
-<li><p><strong>I</strong> – size nq * nnn </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the criterion, between 0 and 1. Larger is better. </p>
-</dd>
-</dl>
-</dd></dl>
+<span id="_CPPv3NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::IntersectionCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">D</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">I</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <em class="property"><span class="pre">override</span></em><a class="headerlink" href="#_CPPv4NK5faiss21IntersectionCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N5faiss21IntersectionCriterionD0Ev">
@@ -445,6 +433,23 @@
 <li><p><strong>gt_D_in</strong> – size nq * gt_nnn </p></li>
 <li><p><strong>gt_I_in</strong> – size nq * gt_nnn </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">D</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4N5faiss21IntersectionCriterion5idx_tE" title="faiss::IntersectionCriterion::idx_t"><span class="pre">idx_t</span></a> <span class="pre">*</span><em><span class="pre">I</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
+<dd><p>Evaluate the criterion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D</strong> – size nq * nnn </p></li>
+<li><p><strong>I</strong> – size nq * nnn </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the criterion, between 0 and 1. Larger is better. </p>
 </dd>
 </dl>
 </dd></dl>
