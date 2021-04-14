@@ -29,6 +29,7 @@
     <innerclass refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" prot="public">faiss::gpu::GpuMemoryReservation</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public">faiss::gpu::GpuMultipleClonerOptions</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResources" prot="public">faiss::gpu::GpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public">faiss::gpu::GpuResourcesProvider</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1IndexWrapper" prot="public">faiss::gpu::IndexWrapper</innerclass>

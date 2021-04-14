@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="structfaiss_1_1IntersectionCriterion" kind="struct" language="C++" prot="public">
+  <compounddef id="structfaiss_1_1IntersectionCriterion" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IntersectionCriterion</compoundname>
     <basecompoundref refid="structfaiss_1_1AutoTuneCriterion" prot="public" virt="non-virtual">faiss::AutoTuneCriterion</basecompoundref>
       <sectiondef kind="public-attrib">
@@ -110,12 +110,11 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="71" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::IntersectionCriterion::evaluate</definition>
         <argsstring>(const float *D, const idx_t *I) const override</argsstring>
         <name>evaluate</name>
-        <reimplements refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47">evaluate</reimplements>
         <param>
           <type>const float *</type>
           <declname>D</declname>
@@ -127,27 +126,6 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Evaluate the criterion.</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>D</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>size nq * nnn </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>I</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>size nq * nnn </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>the criterion, between 0 and 1. Larger is better. </para>
-</simplesect>
-</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -210,6 +188,48 @@
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="42" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>double</type>
+        <definition>virtual double faiss::AutoTuneCriterion::evaluate</definition>
+        <argsstring>(const float *D, const idx_t *I) const =0</argsstring>
+        <name>evaluate</name>
+        <param>
+          <type>const float *</type>
+          <declname>D</declname>
+        </param>
+        <param>
+          <type>const idx_t *</type>
+          <declname>I</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Evaluate the criterion.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>D</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size nq * nnn </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>I</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size nq * nnn </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the criterion, between 0 and 1. Larger is better. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="53" column="20"/>
+      </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982" prot="public" static="no">
@@ -257,7 +277,8 @@
     <location file="faiss/AutoTune.h" line="68" column="46" bodyfile="faiss/AutoTune.h" bodystart="68" bodyend="76"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AutoTuneCriterion_1abd85ee0d09e9f4958330c42e867e432b" prot="public" virt="non-virtual"><scope>faiss::IntersectionCriterion</scope><name>AutoTuneCriterion</name></member>
-      <member refid="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791" prot="public" virt="virtual"><scope>faiss::IntersectionCriterion</scope><name>evaluate</name></member>
+      <member refid="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791" prot="public" virt="non-virtual"><scope>faiss::IntersectionCriterion</scope><name>evaluate</name></member>
+      <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" prot="public" virt="pure-virtual" ambiguityscope="faiss::AutoTuneCriterion::"><scope>faiss::IntersectionCriterion</scope><name>evaluate</name></member>
       <member refid="structfaiss_1_1AutoTuneCriterion_1a40e91caa9232a597c16fc946d0befd9b" prot="public" virt="non-virtual"><scope>faiss::IntersectionCriterion</scope><name>gt_D</name></member>
       <member refid="structfaiss_1_1AutoTuneCriterion_1af915fc4df215e3c8d9f71ff42d526144" prot="public" virt="non-virtual"><scope>faiss::IntersectionCriterion</scope><name>gt_I</name></member>
       <member refid="structfaiss_1_1AutoTuneCriterion_1a9b3a2242729a0873d255c1684881bbd4" prot="public" virt="non-virtual"><scope>faiss::IntersectionCriterion</scope><name>gt_nnn</name></member>

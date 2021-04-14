@@ -163,7 +163,6 @@
         <definition>virtual double faiss::AutoTuneCriterion::evaluate</definition>
         <argsstring>(const float *D, const idx_t *I) const =0</argsstring>
         <name>evaluate</name>
-        <reimplementedby refid="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791">evaluate</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>D</declname>

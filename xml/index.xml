@@ -965,6 +965,15 @@
     <member refid="structfaiss_1_1ParameterSpace_1af6dc3b9c5631b509cbae99bf0f24170b" kind="variable"><name>thread_over_batches</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a50d9d784d69d9812c12dc9b2baf9351d" kind="variable"><name>min_test_duration</name></member>
   </compound>
+  <compound refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kind="struct"><name>faiss::gpu::GpuProgressiveDimIndexFactory</name>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1aa003250bd9171229891f0b0bf43ef6fa" kind="variable"><name>options</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac477c154125b04c6ac5bbffbeda39b47" kind="variable"><name>vres</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ad88346e2195f1b0b9f55b267a889ef73" kind="variable"><name>devices</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1af169086fe6ba5743149efb2389fb7a56" kind="variable"><name>ncall</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a7dad261772a26571a1bb87dd90d1b709" kind="function"><name>GpuProgressiveDimIndexFactory</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac346f9e6604c8d393e995b5d9c411c8b" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a3daef564abba3be06c01d8b40bb93c91" kind="function"><name>~GpuProgressiveDimIndexFactory</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuResources" kind="class"><name>faiss::gpu::GpuResources</name>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a979a487daf95fc077321e4cd8020278c" kind="function"><name>~GpuResources</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuResources_1a1f7f4e220ce279257e1daf929c3b0d4e" kind="function"><name>initializeForDevice</name></member>
@@ -2963,6 +2972,7 @@
     <member refid="structfaiss_1_1IntersectionCriterion_1a6f7aef25852931b22298f7bb4c358791" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1IntersectionCriterion_1ab5ae8b2a2a4a978fa057ef2e2178f321" kind="function"><name>~IntersectionCriterion</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" kind="function"><name>set_groundtruth</name></member>
+    <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982" kind="typedef"><name>idx_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryHash_1_1InvertedList" kind="struct"><name>faiss::IndexBinaryHash::InvertedList</name>
@@ -3446,6 +3456,50 @@
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1a0974f23063edde22b5934008196b9c5b" kind="function"><name>PerDimStats</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0" kind="function"><name>compute_mean_std</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ProgressiveDimClustering" kind="struct"><name>faiss::ProgressiveDimClustering</name>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a060b6d0f13c9de921f92707dd93b20cc" kind="typedef"><name>idx_t</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" kind="variable"><name>centroids</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc" kind="variable"><name>iteration_stats</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4" kind="variable"><name>progressive_dim_steps</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" kind="variable"><name>apply_pca</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" kind="variable"><name>niter</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b" kind="variable"><name>nredo</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" kind="variable"><name>spherical</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" kind="variable"><name>int_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" kind="variable"><name>update_index</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" kind="variable"><name>frozen_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924" kind="variable"><name>min_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0" kind="function"><name>ProgressiveDimClustering</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" kind="function"><name>ProgressiveDimClustering</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629" kind="function"><name>~ProgressiveDimClustering</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ProgressiveDimClusteringParameters" kind="struct"><name>faiss::ProgressiveDimClusteringParameters</name>
+    <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4" kind="variable"><name>progressive_dim_steps</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" kind="variable"><name>apply_pca</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" kind="variable"><name>niter</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b" kind="variable"><name>nredo</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" kind="variable"><name>spherical</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" kind="variable"><name>int_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" kind="variable"><name>update_index</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" kind="variable"><name>frozen_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924" kind="variable"><name>min_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a8611a01f2d1c9b35af4871ce53e98160" kind="function"><name>ProgressiveDimClusteringParameters</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ProgressiveDimIndexFactory" kind="struct"><name>faiss::ProgressiveDimIndexFactory</name>
+    <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a5be0d2fc467c0792f1980658e10f2945" kind="function"><name>~ProgressiveDimIndexFactory</name></member>
   </compound>
   <compound refid="structPyCallbackIOReader" kind="struct"><name>PyCallbackIOReader</name>
     <member refid="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" kind="variable"><name>callback</name></member>

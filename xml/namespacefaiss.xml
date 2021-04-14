@@ -112,6 +112,9 @@
     <innerclass refid="structfaiss_1_1ParameterSpace" prot="public">faiss::ParameterSpace</innerclass>
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
     <innerclass refid="structfaiss_1_1PCAMatrix" prot="public">faiss::PCAMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimClustering" prot="public">faiss::ProgressiveDimClustering</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimClusteringParameters" prot="public">faiss::ProgressiveDimClusteringParameters</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimIndexFactory" prot="public">faiss::ProgressiveDimIndexFactory</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
     <innerclass refid="structfaiss_1_1ReadOnlyInvertedLists" prot="public">faiss::ReadOnlyInvertedLists</innerclass>
@@ -714,7 +717,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="123" column="7" declfile="faiss/Clustering.h" declline="123" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="173" column="7" declfile="faiss/Clustering.h" declline="173" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

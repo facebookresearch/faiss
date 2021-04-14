@@ -3,39 +3,46 @@
   <compounddef id="GpuCloner_8h" kind="file" language="C++">
     <compoundname>GpuCloner.h</compoundname>
     <includes local="no">vector</includes>
+    <includes refid="Clustering_8h" local="no">faiss/Clustering.h</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="clone__index_8h" local="no">faiss/clone_index.h</includes>
     <includes refid="GpuClonerOptions_8h" local="no">faiss/gpu/GpuClonerOptions.h</includes>
     <includes refid="GpuIndex_8h" local="no">faiss/gpu/GpuIndex.h</includes>
     <includes refid="GpuIndicesOptions_8h" local="no">faiss/gpu/GpuIndicesOptions.h</includes>
     <incdepgraph>
-      <node id="14">
+      <node id="15">
         <label>cublas_v2.h</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/clone_index.h</label>
         <link refid="clone__index_8h_source"/>
       </node>
-      <node id="15">
-        <label>cuda_runtime.h</label>
-      </node>
-      <node id="7">
-        <label>string</label>
-      </node>
-      <node id="10">
-        <label>faiss/gpu/GpuClonerOptions.h</label>
-        <link refid="GpuClonerOptions_8h_source"/>
-        <childnode refid="11" relation="include">
+      <node id="3">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="16">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>faiss/gpu/GpuClonerOptions.h</label>
+        <link refid="GpuClonerOptions_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
@@ -44,33 +51,33 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>typeinfo</label>
       </node>
-      <node id="5">
+      <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
       <node id="2">
         <label>vector</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>utility</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>sstream</label>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
@@ -78,6 +85,8 @@
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -87,34 +96,37 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
-      </node>
-      <node id="12">
-        <label>faiss/gpu/GpuIndex.h</label>
-        <link refid="GpuIndex_8h_source"/>
-        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="5">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+      </node>
+      <node id="13">
+        <label>faiss/gpu/GpuIndex.h</label>
+        <link refid="GpuIndex_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
         <label>memory</label>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <briefdescription>
@@ -133,12 +145,12 @@
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/clone_index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuClonerOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndex.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Clustering.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/clone_index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuClonerOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndex.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">gpu<sp/>{</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
@@ -203,9 +215,24 @@
 <codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;&amp;<sp/>devices,</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref>*<sp/>index,</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref>*<sp/>options<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="comment">///<sp/>index<sp/>factory<sp/>for<sp/>the<sp/>ProgressiveDimClustering<sp/>object</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kindref="compound">GpuProgressiveDimIndexFactory</ref><sp/>:<sp/><ref refid="structfaiss_1_1ProgressiveDimIndexFactory" kindref="compound">ProgressiveDimIndexFactory</ref><sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kindref="compound">GpuMultipleClonerOptions</ref><sp/>options;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;GpuResourcesProvider*&gt;<sp/>vres;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/>devices;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ncall;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kindref="compound">GpuProgressiveDimIndexFactory</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ngpu);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ac346f9e6604c8d393e995b5d9c411c8b" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kindref="compound">GpuProgressiveDimIndexFactory</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/GpuCloner.h"/>
   </compounddef>
