@@ -45,9 +45,47 @@ int faiss_VectorTransform_train(
         idx_t n,
         const float* x);
 
+/** apply the random rotation, return new allocated matrix
+ * @param     x size n * d_in
+ * @return    size n * d_out
+ */
+float* faiss_VectorTransform_apply(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* x);
+
+/** apply transformation and result is pre-allocated
+ * @param     x size n * d_in
+ * @param     xt size n * d_out
+ */
+void faiss_VectorTransform_apply_noalloc(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* x,
+        float* xt);
+
+/// reverse transformation. May not be implemented or may return
+/// approximate result
+void faiss_VectorTransform_reverse_transform(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* xt,
+        float* x);
+
 /// Opaque type for referencing to a LinearTransform object
 FAISS_DECLARE_CLASS_INHERITED(LinearTransform, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(LinearTransform)
+
+/// compute x = A^T * (x - b)
+/// is reverse transform if A has orthonormal lines
+void faiss_LinearTransform_transform_transpose(
+        const FaissLinearTransform* vt,
+        idx_t n,
+        const float* y,
+        float* x);
+
+/// compute A^T * A to set the is_orthonormal flag
+void faiss_LinearTransform_set_is_orthonormal(FaissLinearTransform* vt);
 
 /// Getter for have_bias
 FAISS_DECLARE_GETTER(LinearTransform, int, have_bias)

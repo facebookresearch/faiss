@@ -32,6 +32,31 @@ int faiss_VectorTransform_train(
     CATCH_AND_HANDLE
 }
 
+float* faiss_VectorTransform_apply(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* x) {
+    return reinterpret_cast<const faiss::VectorTransform*>(vt)->apply(n, x);
+}
+
+void faiss_VectorTransform_apply_noalloc(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* x,
+        float* xt) {
+    return reinterpret_cast<const faiss::VectorTransform*>(vt)->apply_noalloc(
+            n, x, xt);
+}
+
+void faiss_VectorTransform_reverse_transform(
+        const FaissVectorTransform* vt,
+        idx_t n,
+        const float* xt,
+        float* x) {
+    return reinterpret_cast<const faiss::VectorTransform*>(vt)
+            ->reverse_transform(n, xt, x);
+}
+
 /*********************************************
  * LinearTransform
  *********************************************/
@@ -41,6 +66,19 @@ DEFINE_DESTRUCTOR(LinearTransform)
 DEFINE_GETTER(LinearTransform, int, have_bias)
 
 DEFINE_GETTER(LinearTransform, int, is_orthonormal)
+
+void faiss_LinearTransform_transform_transpose(
+        const FaissLinearTransform* vt,
+        idx_t n,
+        const float* y,
+        float* x) {
+    return reinterpret_cast<const faiss::LinearTransform*>(vt)
+            ->transform_transpose(n, y, x);
+}
+
+void faiss_LinearTransform_set_is_orthonormal(FaissLinearTransform* vt) {
+    return reinterpret_cast<faiss::LinearTransform*>(vt)->set_is_orthonormal();
+}
 
 /*********************************************
  * RandomRotationMatrix
