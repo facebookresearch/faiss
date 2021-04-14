@@ -6,7 +6,10 @@
  */
 
 #include <faiss/gpu/GpuCloner.h>
+#include <faiss/impl/FaissAssert.h>
 #include <typeinfo>
+
+#include <faiss/gpu/StandardGpuResources.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
@@ -401,6 +404,30 @@ faiss::Index* index_cpu_to_gpu_multiple(
     GpuMultipleClonerOptions defaults;
     ToGpuClonerMultiple cl(provider, devices, options ? *options : defaults);
     return cl.clone_Index(index);
+}
+
+GpuProgressiveDimIndexFactory::GpuProgressiveDimIndexFactory(int ngpu) {
+    FAISS_THROW_IF_NOT(ngpu >= 1);
+    devices.resize(ngpu);
+    vres.resize(ngpu);
+
+    for (int i = 0; i < ngpu; i++) {
+        vres[i] = new StandardGpuResources();
+        devices[i] = i;
+    }
+    ncall = 0;
+}
+
+GpuProgressiveDimIndexFactory::~GpuProgressiveDimIndexFactory() {
+    for (int i = 0; i < vres.size(); i++) {
+        delete vres[i];
+    }
+}
+
+Index* GpuProgressiveDimIndexFactory::operator()(int dim) {
+    IndexFlatL2 index(dim);
+    ncall++;
+    return index_cpu_to_gpu_multiple(vres, devices, &index, &options);
 }
 
 } // namespace gpu

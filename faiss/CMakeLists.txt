@@ -46,6 +46,7 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/ResidualQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp

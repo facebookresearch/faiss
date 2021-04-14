@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 import numpy as np
 import faiss
-
+from common import get_dataset_2
 
 class ReferencedObject(unittest.TestCase):
 
@@ -121,6 +121,25 @@ class TestGPUKmeans(unittest.TestCase):
 
         print(obj1, obj2)
         assert np.allclose(obj1, obj2)
+
+    def test_progressive_dim(self):
+        d = 32
+        n = 10000
+        k = 50
+        xt, _, _ = get_dataset_2(d, n, 0, 0)
+
+        # basic kmeans
+        kmeans = faiss.Kmeans(d, k, gpu=True)
+        kmeans.train(xt)
+
+        pca = faiss.PCAMatrix(d, d)
+        pca.train(xt)
+        xt_pca = pca.apply(xt)
+
+        # same test w/ Kmeans wrapper
+        kmeans2 = faiss.Kmeans(d, k, progressive_dim_steps=5, gpu=True)
+        kmeans2.train(xt_pca)
+        self.assertLess(kmeans2.obj[-1], kmeans.obj[-1])
 
 
 class TestAlternativeDistances(unittest.TestCase):
@@ -363,6 +382,43 @@ class TestAllPairwiseDistance(unittest.TestCase):
             print('f16', np.abs(ref_d_f16 - out_d_f16).max())
 
             self.assertTrue(np.allclose(ref_d_f16, out_d_f16, atol = 4e-3))
+
+
+
+def eval_codec(q, xb):
+    codes = q.compute_codes(xb)
+    decoded = q.decode(codes)
+    return ((xb - decoded) ** 2).sum()
+
+
+class TestResidualQuantizer(unittest.TestCase):
+
+    def test_with_gpu(self):
+        """ check that we get the same resutls with a GPU quantizer and a CPU quantizer """
+        d = 32
+        nt = 3000
+        nb = 1000
+        xt, xb, _ = get_dataset_2(d, nt, nb, 0)
+
+        rq0 = faiss.ResidualQuantizer(d, 4, 6)
+        rq0.train(xt)
+        err_rq0 = eval_codec(rq0, xb)
+        # codes0 = rq0.compute_codes(xb)
+        rq1 = faiss.ResidualQuantizer(d, 4, 6)
+        fac = faiss.GpuProgressiveDimIndexFactory(1)
+        rq1.assign_index_factory = fac
+        rq1.train(xt)
+        self.assertGreater(fac.ncall, 0)
+        ncall_train = fac.ncall
+        err_rq1 = eval_codec(rq1, xb)
+        # codes1 = rq1.compute_codes(xb)
+        self.assertGreater(fac.ncall, ncall_train)
+
+        print(err_rq0, err_rq1)
+
+        self.assertTrue(0.9 * err_rq0 < err_rq1 < 1.1 * err_rq0)
+
+        # np.testing.assert_array_equal(codes0, codes1)
 
 if __name__ == '__main__':
     unittest.main()

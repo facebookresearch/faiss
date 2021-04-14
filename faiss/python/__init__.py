@@ -157,6 +157,7 @@ def handle_Quantizer(the_class):
 
 handle_Quantizer(ProductQuantizer)
 handle_Quantizer(ScalarQuantizer)
+handle_Quantizer(ResidualQuantizer)
 
 
 def handle_NSG(the_class):
@@ -620,6 +621,7 @@ def handle_VectorTransform(the_class):
     replace_method(the_class, 'train', replacement_vt_train)
     # apply is reserved in Pyton...
     the_class.apply_py = apply_method
+    the_class.apply = apply_method
     replace_method(the_class, 'reverse_transform',
                    replacement_reverse_transform)
 
@@ -1438,6 +1440,8 @@ class Kmeans:
        False: don't use GPU
        True: use all GPUs
        number: use this many GPUs
+    progressive_dim_steps:
+        use a progressive dimension clustering (with that number of steps)
 
     Subsequent parameters are fields of the Clustring object. The most important are:
 
@@ -1464,9 +1468,14 @@ class Kmeans:
         self.d = d
         self.k = k
         self.gpu = False
-        self.cp = ClusteringParameters()
+        if "progressive_dim_steps" in kwargs:
+            self.cp = ProgressiveDimClusteringParameters()
+        else:
+            self.cp = ClusteringParameters()
         for k, v in kwargs.items():
             if k == 'gpu':
+                if v == True or v == -1:
+                    v = get_num_gpus()
                 self.gpu = v
             else:
                 # if this raises an exception, it means that it is a non-existent field
@@ -1502,23 +1511,35 @@ class Kmeans:
         """
         n, d = x.shape
         assert d == self.d
-        clus = Clustering(d, self.k, self.cp)
-        if init_centroids is not None:
-            nc, d2 = init_centroids.shape
-            assert d2 == d
-            copy_array_to_vector(init_centroids.ravel(), clus.centroids)
-        if self.cp.spherical:
-            self.index = IndexFlatIP(d)
-        else:
-            self.index = IndexFlatL2(d)
-        if self.gpu:
-            if self.gpu == True:
-                ngpu = -1
+
+        if self.cp.__class__ == ClusteringParameters:
+            # regular clustering
+            clus = Clustering(d, self.k, self.cp)
+            if init_centroids is not None:
+                nc, d2 = init_centroids.shape
+                assert d2 == d
+                copy_array_to_vector(init_centroids.ravel(), clus.centroids)
+            if self.cp.spherical:
+                self.index = IndexFlatIP(d)
             else:
-                ngpu = self.gpu
-            self.index = index_cpu_to_all_gpus(self.index, ngpu=ngpu)
-        clus.train(x, self.index, weights)
+                self.index = IndexFlatL2(d)
+            if self.gpu:
+                self.index = index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+            clus.train(x, self.index, weights)
+        else:
+            # not supported for progressive dim
+            assert weights is None
+            assert init_centroids is None
+            assert not self.cp.spherical
+            clus = ProgressiveDimClustering(d, self.k, self.cp)
+            if self.gpu:
+                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
+            else:
+                fac = ProgressiveDimIndexFactory()
+            clus.train(n, swig_ptr(x), fac)
+
         centroids = vector_float_to_array(clus.centroids)
+
         self.centroids = centroids.reshape(self.k, d)
         stats = clus.iteration_stats
         stats = [stats.at(i) for i in range(stats.size())]
