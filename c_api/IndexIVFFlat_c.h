@@ -30,7 +30,7 @@ FAISS_DECLARE_INDEX_DOWNCAST(IndexIVFFlat)
 /// number of possible key values
 FAISS_DECLARE_GETTER(IndexIVFFlat, size_t, nlist)
 /// number of probes at query time
-FAISS_DECLARE_GETTER(IndexIVFFlat, size_t, nprobe)
+FAISS_DECLARE_GETTER_SETTER(IndexIVFFlat, size_t, nprobe)
 /// quantizer that maps vectors to inverted lists
 FAISS_DECLARE_GETTER(IndexIVFFlat, FaissIndex*, quantizer)
 /**
@@ -41,7 +41,7 @@ FAISS_DECLARE_GETTER(IndexIVFFlat, FaissIndex*, quantizer)
 FAISS_DECLARE_GETTER(IndexIVFFlat, char, quantizer_trains_alone)
 
 /// whether object owns the quantizer
-FAISS_DECLARE_GETTER(IndexIVFFlat, int, own_fields)
+FAISS_DECLARE_GETTER_SETTER(IndexIVFFlat, int, own_fields)
 
 int faiss_IndexIVFFlat_new(FaissIndexIVFFlat** p_index);
 

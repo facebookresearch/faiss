@@ -24,6 +24,8 @@ DEFINE_INDEX_DOWNCAST(IndexIVF)
 DEFINE_GETTER(IndexIVF, size_t, nlist)
 /// number of probes at query time
 DEFINE_GETTER(IndexIVF, size_t, nprobe)
+DEFINE_SETTER(IndexIVF, size_t, nprobe)
+
 /// quantizer that maps vectors to inverted lists
 DEFINE_GETTER_PERMISSIVE(IndexIVF, FaissIndex*, quantizer)
 
@@ -36,6 +38,7 @@ DEFINE_GETTER(IndexIVF, char, quantizer_trains_alone)
 
 /// whether object owns the quantizer
 DEFINE_GETTER(IndexIVF, int, own_fields)
+DEFINE_SETTER(IndexIVF, int, own_fields)
 
 using faiss::IndexIVF;
 
