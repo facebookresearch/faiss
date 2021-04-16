@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Namespace faiss::detail &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="https://faiss.ai/cpp_api/namespace/namespacefaiss_1_1detail.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Namespace faiss::detail::simdlib" href="namespacefaiss_1_1detail_1_1simdlib.html" />
+    <link rel="prev" title="Namespace faiss::@77" href="namespacefaiss_1_1_0d77.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d75.html">Namespace faiss::&#64;75</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d76.html">Namespace faiss::&#64;76</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d77.html">Namespace faiss::&#64;77</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1quantize__lut.html">Namespace faiss::quantize_lut</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../namespacelist.html">Namespace list</a> &raquo;</li>
+        
+      <li>Namespace faiss::detail</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1detail.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="namespace-faiss-detail">
+<h1>Namespace faiss::detail<a class="headerlink" href="#namespace-faiss-detail" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv4N5faiss6detailE">
+<span id="_CPPv3N5faiss6detailE"></span><span id="_CPPv2N5faiss6detailE"></span><span id="faiss::detail"></span><span class="target" id="namespacefaiss_1_1detail"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">detail</span></code><br /></dt>
+<dd><dl class="cpp type">
+<dt id="_CPPv4N5faiss6detail7simdlibE">
+<span id="_CPPv3N5faiss6detail7simdlibE"></span><span id="_CPPv2N5faiss6detail7simdlibE"></span><span id="faiss::detail::simdlib"></span><span class="target" id="namespacefaiss_1_1detail_1_1simdlib"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">simdlib</span></code><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK12uint8x16x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib14reinterpret_u8ERK12uint8x16x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib14reinterpret_u8ERK12uint8x16x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u8__uint8x16x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a21ac13492c3a23c090d5847c49e95094"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint8x16x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK12uint16x8x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib14reinterpret_u8ERK12uint16x8x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib14reinterpret_u8ERK12uint16x8x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u8__uint16x8x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a03045fdaeb4fc92c954add5db6909b4c"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint8x16x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK12uint32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib14reinterpret_u8ERK12uint32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib14reinterpret_u8ERK12uint32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u8__uint32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1afc0b6b13ac7030afb50e0b68d83c9bbf"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint8x16x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK13float32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib14reinterpret_u8ERK13float32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib14reinterpret_u8ERK13float32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u8__float32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a9a263b42ed62cfc27ad7bfdec8353bc7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint8x16x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u16ERK12uint8x16x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u16ERK12uint8x16x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u16ERK12uint8x16x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u16__uint8x16x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a929a14cc40597d47acaa49006a6f9807"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint16x8x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u16</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u16ERK12uint16x8x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u16ERK12uint16x8x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u16ERK12uint16x8x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u16__uint16x8x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a3550a22a9bd3d8923450e4dd9e69cc8a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint16x8x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u16</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u16ERK12uint32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u16ERK12uint32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u16ERK12uint32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u16__uint32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1ad4d21b79aec09b0b3a7c2188edead7ba"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint16x8x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u16</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u16ERK13float32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u16ERK13float32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u16ERK13float32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u16__float32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1aae18889bf2f0ec4d796da66f6445efb0"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint16x8x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u16</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u32ERK12uint8x16x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u32ERK12uint8x16x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u32ERK12uint8x16x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u32__uint8x16x2_tCR"></span><span class="target" id="simdlib__neon_8h_1ae7b65cf85c494c90a7f4184c775c1971"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u32ERK12uint16x8x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u32ERK12uint16x8x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u32ERK12uint16x8x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u32__uint16x8x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a4d3deb0c35a8987ecfe2c1a5cb6f90f4"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u32ERK12uint32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u32ERK12uint32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u32ERK12uint32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u32__uint32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1aede32d1db2924d01a7b9752bbc5d74e8"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_u32ERK13float32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_u32ERK13float32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_u32ERK13float32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_u32__float32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a581a95e25bf6b61c6e7dd9c6aca56a51"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_u32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_f32ERK12uint8x16x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_f32ERK12uint8x16x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_f32ERK12uint8x16x2_t"></span><span id="faiss::detail::simdlib::reinterpret_f32__uint8x16x2_tCR"></span><span class="target" id="simdlib__neon_8h_1aabb23f9cc959a0358f1d49540a192cdf"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">float32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_f32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_f32ERK12uint16x8x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_f32ERK12uint16x8x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_f32ERK12uint16x8x2_t"></span><span id="faiss::detail::simdlib::reinterpret_f32__uint16x8x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a7360e9c8b5355ddbcd2e2fd6f19aaa6e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">float32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_f32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_f32ERK12uint32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_f32ERK12uint32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_f32ERK12uint32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_f32__uint32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1a905ff7784ec0f823daefd36fe92063e6"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">float32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_f32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib15reinterpret_f32ERK13float32x4x2_t">
+<span id="_CPPv3N5faiss6detail7simdlib15reinterpret_f32ERK13float32x4x2_t"></span><span id="_CPPv2N5faiss6detail7simdlib15reinterpret_f32ERK13float32x4x2_t"></span><span id="faiss::detail::simdlib::reinterpret_f32__float32x4x2_tCR"></span><span class="target" id="simdlib__neon_8h_1abde69fbe04959f420b18f69affa69958"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">float32x4x2_t</span> <code class="sig-name descname"><span class="pre">reinterpret_f32</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">float32x4x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib3binERAL32E_KcAL257E_c">
+<span id="_CPPv3N5faiss6detail7simdlib3binERAL32E_KcAL257E_c"></span><span id="_CPPv2N5faiss6detail7simdlib3binERA32_KcA257_c"></span><span class="target" id="simdlib__neon_8h_1ad58dc5826346d30ee3accbb74f45b79e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">(</span><span class="pre">&amp;</span><em><span class="pre">bytes</span></em><span class="pre">)</span><span class="pre">[</span><span class="pre">32</span><span class="pre">]</span>, <span class="pre">char</span> <em><span class="pre">bits</span></em><span class="pre">[</span><span class="pre">257</span><span class="pre">]</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0_6size_t0EN5faiss6detail7simdlib3binEvRK1SAL257E_c">
+<span id="_CPPv3I0_6size_t0EN5faiss6detail7simdlib3binERK1SAL257E_c"></span><span id="_CPPv2I0_6size_t0EN5faiss6detail7simdlib3binERK1SA257_c"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">N</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">S</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1a0bdbadf03a4024405ab47ba9f47ac4ed"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I0_6size_t0EN5faiss6detail7simdlib3binEvRK1SAL257E_c" title="faiss::detail::simdlib::bin::S"><span class="pre">S</span></a> <span class="pre">&amp;</span><em><span class="pre">simd</span></em>, <span class="pre">char</span> <em><span class="pre">bits</span></em><span class="pre">[</span><span class="pre">257</span><span class="pre">]</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0EN5faiss6detail7simdlib3binENSt6stringERK1S">
+<span id="_CPPv3I0EN5faiss6detail7simdlib3binERK1S"></span><span id="_CPPv2I0EN5faiss6detail7simdlib3binERK1S"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">S</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1acae57755eecf9ec8eb851e4820fd663e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I0EN5faiss6detail7simdlib3binENSt6stringERK1S" title="faiss::detail::simdlib::bin::S"><span class="pre">S</span></a> <span class="pre">&amp;</span><em><span class="pre">simd</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I000EN5faiss6detail7simdlib4set1EvR1DRR1F1T">
+<span id="_CPPv3I000EN5faiss6detail7simdlib4set1ER1DRR1F1T"></span><span id="_CPPv2I000EN5faiss6detail7simdlib4set1ER1DRR1F1T"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">D</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1a4ba93329f5aadce629de02019c0e1b2f"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">set1</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I000EN5faiss6detail7simdlib4set1EvR1DRR1F1T" title="faiss::detail::simdlib::set1::D"><span class="pre">D</span></a> <span class="pre">&amp;</span><em><span class="pre">d</span></em>, <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I000EN5faiss6detail7simdlib4set1EvR1DRR1F1T" title="faiss::detail::simdlib::set1::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em>, <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I000EN5faiss6detail7simdlib4set1EvR1DRR1F1T" title="faiss::detail::simdlib::set1::T"><span class="pre">T</span></a> <em><span class="pre">t</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0_6size_t0EN5faiss6detail7simdlib18elements_to_stringENSt6stringEPKcRK1S">
+<span id="_CPPv3I0_6size_t0EN5faiss6detail7simdlib18elements_to_stringEPKcRK1S"></span><span id="_CPPv2I0_6size_t0EN5faiss6detail7simdlib18elements_to_stringEPKcRK1S"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">N</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">S</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1a4449840079783da5bed6cd04bd6cf752"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">elements_to_string</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">fmt</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I0_6size_t0EN5faiss6detail7simdlib18elements_to_stringENSt6stringEPKcRK1S" title="faiss::detail::simdlib::elements_to_string::S"><span class="pre">S</span></a> <span class="pre">&amp;</span><em><span class="pre">simd</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I00EN5faiss6detail7simdlib10unary_funcE1TRK1TRR1F">
+<span id="_CPPv3I00EN5faiss6detail7simdlib10unary_funcERK1TRR1F"></span><span id="_CPPv2I00EN5faiss6detail7simdlib10unary_funcERK1TRR1F"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1ab6a3808fc65861d1af5a02e2c59e1c27"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib10unary_funcE1TRK1TRR1F" title="faiss::detail::simdlib::unary_func::T"><span class="pre">T</span></a> <code class="sig-name descname"><span class="pre">unary_func</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib10unary_funcE1TRK1TRR1F" title="faiss::detail::simdlib::unary_func::T"><span class="pre">T</span></a> <span class="pre">&amp;</span><em><span class="pre">a</span></em>, <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib10unary_funcE1TRK1TRR1F" title="faiss::detail::simdlib::unary_func::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I00EN5faiss6detail7simdlib11binary_funcE1TRK1TRK1TRR1F">
+<span id="_CPPv3I00EN5faiss6detail7simdlib11binary_funcERK1TRK1TRR1F"></span><span id="_CPPv2I00EN5faiss6detail7simdlib11binary_funcERK1TRK1TRR1F"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">F</span></code><span class="pre">&gt;</span><br /><span class="target" id="simdlib__neon_8h_1abb45baa820a1cc05c130c552a73b470f"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib11binary_funcE1TRK1TRK1TRR1F" title="faiss::detail::simdlib::binary_func::T"><span class="pre">T</span></a> <code class="sig-name descname"><span class="pre">binary_func</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib11binary_funcE1TRK1TRK1TRR1F" title="faiss::detail::simdlib::binary_func::T"><span class="pre">T</span></a> <span class="pre">&amp;</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib11binary_funcE1TRK1TRK1TRR1F" title="faiss::detail::simdlib::binary_func::T"><span class="pre">T</span></a> <span class="pre">&amp;</span><em><span class="pre">b</span></em>, <a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib11binary_funcE1TRK1TRK1TRR1F" title="faiss::detail::simdlib::binary_func::F"><span class="pre">F</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">f</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss6detail7simdlib11vmovmask_u8ERK10uint8x16_t">
+<span id="_CPPv3N5faiss6detail7simdlib11vmovmask_u8ERK10uint8x16_t"></span><span id="_CPPv2N5faiss6detail7simdlib11vmovmask_u8ERK10uint8x16_t"></span><span id="faiss::detail::simdlib::vmovmask_u8__uint8x16_tCR"></span><span class="target" id="simdlib__neon_8h_1ad026e84d722ca1800cbcd1e62a7bd1ce"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">inline</span></em> <span class="pre">uint16_t</span> <code class="sig-name descname"><span class="pre">vmovmask_u8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="simdlib__neon_8h_1a50f928e67de705ccbe14bd1f77a79ac5"></span><code class="sig-name descname"><span class="pre">template&lt;uint16x8_t(*)(uint16x8_t,</span> <span class="pre">uint16x8_t)</span> <span class="pre">F&gt;</span> <span class="pre">static</span> <span class="pre">inline</span> <span class="pre">uint32_t</span> <span class="pre">cmp_xe32</span> <span class="pre">(const</span> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;d0,</span> <span class="pre">const</span> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;d1,</span> <span class="pre">const</span> <span class="pre">uint16x8x2_t</span> <span class="pre">&amp;thr)</span></code></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt id="_CPPv4I00EN5faiss6detail7simdlib13is_simd256bitE">
+<span id="_CPPv3I00EN5faiss6detail7simdlib13is_simd256bitE"></span><span id="_CPPv2I00EN5faiss6detail7simdlib13is_simd256bitE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">U</span></code> <span class="pre">=</span> <span class="pre">decltype(</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK12uint8x16x2_t" title="faiss::detail::simdlib::reinterpret_u8"><span class="pre">reinterpret_u8</span></a><span class="pre">(</span><span class="pre">std</span><span class="pre">::</span><span class="pre">declval</span><span class="pre">&lt;</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib13is_simd256bitE" title="faiss::detail::simdlib::is_simd256bit::T"><span class="pre">T</span></a><span class="pre">&gt;</span><span class="pre">(</span><span class="pre">)</span><span class="pre">.</span><span class="pre">data</span><span class="pre">)</span><span class="pre">)</span><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">is_simd256bit</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">is_same</span><span class="pre">&lt;</span><span class="pre">decltype(</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detail7simdlib14reinterpret_u8ERK12uint8x16x2_t" title="faiss::detail::simdlib::reinterpret_u8"><span class="pre">reinterpret_u8</span></a><span class="pre">(</span><span class="pre">std</span><span class="pre">::</span><span class="pre">declval</span><span class="pre">&lt;</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib13is_simd256bitE" title="faiss::detail::simdlib::is_simd256bit::T"><span class="pre">T</span></a><span class="pre">&gt;</span><span class="pre">(</span><span class="pre">)</span><span class="pre">.</span><span class="pre">data</span><span class="pre">)</span><span class="pre">)</span><span class="pre">,</span> <span class="pre">uint8x16x2_t</span><span class="pre">&gt;</span><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="namespacefaiss_1_1detail_1_1simdlib.html" class="btn btn-neutral float-right" title="Namespace faiss::detail::simdlib" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="namespacefaiss_1_1_0d77.html" class="btn btn-neutral float-left" title="Namespace faiss::@77" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright Facebook, Inc. and its affiliates..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -226,6 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit.html">Struct faiss::detail::simdlib::is_simd256bit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocInfo.html">Struct faiss::gpu::AllocInfo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocRequest.html">Struct faiss::gpu::AllocRequest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">Struct faiss::gpu::GpuClonerOptions</a></li>
@@ -487,13 +488,108 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss11simd32uint85clearEv">
-<span id="_CPPv3N5faiss11simd32uint85clearEv"></span><span id="_CPPv2N5faiss11simd32uint85clearEv"></span><span id="faiss::simd32uint8::clear"></span><span class="target" id="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a60eed9a0f64bcf885c6ccd17b74f93e8"></span><code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">default</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt>
-<span class="target" id="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a44349183b73ea0564729eb2283445a2c"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1aacac602e6ae5847325cd03a6f4fd5f25"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><span class="pre">uint8_t</span> <em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss11simd32uint811simd32uint8ERK12uint8x16x2_t">
+<span id="_CPPv3N5faiss11simd32uint811simd32uint8ERK12uint8x16x2_t"></span><span id="_CPPv2N5faiss11simd32uint811simd32uint8ERK12uint8x16x2_t"></span><span id="faiss::simd32uint8::simd32uint8__uint8x16x2_tCR"></span><span class="target" id="structfaiss_1_1simd32uint8_1a2fb1ec15d12816b44c8311f34efc8878"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8x16x2_t</span> <span class="pre">&amp;</span><em><span class="pre">v</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEEN5faiss11simd32uint811simd32uint8ERK1T">
+<span id="_CPPv3I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEEN5faiss11simd32uint811simd32uint8ERK1T"></span><span id="_CPPv2I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEEN5faiss11simd32uint811simd32uint8ERK1T"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <em class="property"><span class="pre">typename</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">enable_if</span><span class="pre">&lt;</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detailE" title="faiss::detail"><span class="pre">detail</span></a><span class="pre">::</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detail7simdlibE" title="faiss::detail::simdlib"><span class="pre">simdlib</span></a><span class="pre">::</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib13is_simd256bitE" title="faiss::detail::simdlib::is_simd256bit"><span class="pre">is_simd256bit</span></a><span class="pre">&lt;</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEEN5faiss11simd32uint811simd32uint8ERK1T" title="faiss::simd32uint8::simd32uint8::T"><span class="pre">T</span></a><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">value</span><span class="pre">,</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">nullptr_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">type</span> <span class="pre">=</span> <span class="pre">nullptr</span><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1simd32uint8_1a84978e5132d269e44ddd849d25161bb4"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEEN5faiss11simd32uint811simd32uint8ERK1T" title="faiss::simd32uint8::simd32uint8::T"><span class="pre">T</span></a> <span class="pre">&amp;</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a963006a6994282e956e4ada482d0cf94"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">simd32uint8</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss11simd32uint85clearEv">
+<span id="_CPPv3N5faiss11simd32uint85clearEv"></span><span id="_CPPv2N5faiss11simd32uint85clearEv"></span><span id="faiss::simd32uint8::clear"></span><span class="target" id="structfaiss_1_1simd32uint8_1a5d2f962fd7470b498d9345b7ae525632"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss11simd32uint86storeuEP7uint8_t">
+<span id="_CPPv3NK5faiss11simd32uint86storeuEP7uint8_t"></span><span id="_CPPv2NK5faiss11simd32uint86storeuEP7uint8_t"></span><span id="faiss::simd32uint8::storeu__uint8_tPC"></span><span class="target" id="structfaiss_1_1simd32uint8_1a3372ed869128b0b4637e9ed05b08a3b6"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">storeu</span></code><span class="sig-paren">(</span><span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5faiss11simd32uint85loaduEPK7uint8_t">
+<span id="_CPPv3N5faiss11simd32uint85loaduEPK7uint8_t"></span><span id="_CPPv2N5faiss11simd32uint85loaduEPK7uint8_t"></span><span id="faiss::simd32uint8::loadu__uint8_tCP"></span><span class="target" id="structfaiss_1_1simd32uint8_1a1535ca1b590597e078064b79d2633851"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">loadu</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss11simd32uint85storeEP7uint8_t">
+<span id="_CPPv3NK5faiss11simd32uint85storeEP7uint8_t"></span><span id="_CPPv2NK5faiss11simd32uint85storeEP7uint8_t"></span><span id="faiss::simd32uint8::store__uint8_tPC"></span><span class="target" id="structfaiss_1_1simd32uint8_1a61478775ada7c758a78ead35b4af00d4"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">store</span></code><span class="sig-paren">(</span><span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss11simd32uint83binEAL257E_c">
+<span id="_CPPv3NK5faiss11simd32uint83binEAL257E_c"></span><span id="_CPPv2NK5faiss11simd32uint83binEA257_c"></span><span id="faiss::simd32uint8::bin__cAC"></span><span class="target" id="structfaiss_1_1simd32uint8_1a9f7464bbf7c64bbf4dc98bc798f96eb3"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">bits</span></em><span class="pre">[</span><span class="pre">257</span><span class="pre">]</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK5faiss11simd32uint83binEv">
+<span id="_CPPv3NK5faiss11simd32uint83binEv"></span><span id="_CPPv2NK5faiss11simd32uint83binEv"></span><span id="faiss::simd32uint8::binC"></span><span class="target" id="structfaiss_1_1simd32uint8_1a17f5d20835c2db40bc629cbff8cd369f"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a475df0a6247a4b2f27c32747e43eb3a8"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">elements_to_string</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">fmt</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a3dd9c7e5676c98b54f4a5fe09b6e24d4"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">hex</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1ac962d91b9b95592d27786049f756b9fd"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">dec</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1aa5f0d78560238a22d1c2195ebe920aa8"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">set1</span></code><span class="sig-paren">(</span><span class="pre">uint8_t</span> <em><span class="pre">x</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEENK5faiss11simd32uint8anE11simd32uint8RK1T">
+<span id="_CPPv3I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEENK5faiss11simd32uint8anERK1T"></span><span id="_CPPv2I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEENK5faiss11simd32uint8anERK1T"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">T</span></code><span class="pre">,</span> <em class="property"><span class="pre">typename</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">enable_if</span><span class="pre">&lt;</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detailE" title="faiss::detail"><span class="pre">detail</span></a><span class="pre">::</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4N5faiss6detail7simdlibE" title="faiss::detail::simdlib"><span class="pre">simdlib</span></a><span class="pre">::</span><a class="reference internal" href="../file/simdlib__neon_8h.html#_CPPv4I00EN5faiss6detail7simdlib13is_simd256bitE" title="faiss::detail::simdlib::is_simd256bit"><span class="pre">is_simd256bit</span></a><span class="pre">&lt;</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEENK5faiss11simd32uint8anE11simd32uint8RK1T" title="faiss::simd32uint8::operator&amp;::T"><span class="pre">T</span></a><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">value</span><span class="pre">,</span> <span class="pre">std</span><span class="pre">::</span><span class="pre">nullptr_t</span><span class="pre">&gt;</span><span class="pre">::</span><span class="pre">type</span> <span class="pre">=</span> <span class="pre">nullptr</span><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1simd32uint8_1a506e75af01bcdf0c8c954b2b5e7eb58b"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <code class="sig-name descname"><span class="pre">operator&amp;</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4I0_NSt9enable_ifIN6detail7simdlib13is_simd256bitI1TE5valueENSt9nullptr_tEE4typeEENK5faiss11simd32uint8anE11simd32uint8RK1T" title="faiss::simd32uint8::operator&amp;::T"><span class="pre">T</span></a> <span class="pre">&amp;</span><em><span class="pre">other</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a9ff1f702dd8a74e68b7d45fc3fa4340d"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <code class="sig-name descname"><span class="pre">operator+</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <span class="pre">&amp;</span><em><span class="pre">other</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1aabe2595cea3bfbf441cb23a86dbcd0fa"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <code class="sig-name descname"><span class="pre">lookup_2_lanes</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <span class="pre">&amp;</span><em><span class="pre">idx</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a82e41a14b9fba96f53c53a6e0fa0aff4"></span><em class="property"><span class="pre">inline</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <code class="sig-name descname"><span class="pre">operator+=</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss11simd32uint8E" title="faiss::simd32uint8"><span class="pre">simd32uint8</span></a> <span class="pre">&amp;</span><em><span class="pre">other</span></em><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="structfaiss_1_1simd32uint8_1a42caa7515646aa765aa0ff7682390b64"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">uint8_t</span> <code class="sig-name descname"><span class="pre">operator[]</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">i</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -502,18 +598,8 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">storeu</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt id="_CPPv4N5faiss11simd32uint85loaduEPKv">
 <span id="_CPPv3N5faiss11simd32uint85loaduEPKv"></span><span id="_CPPv2N5faiss11simd32uint85loaduEPKv"></span><span id="faiss::simd32uint8::loadu__voidCP"></span><span class="target" id="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">loadu</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">loadu</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -521,34 +607,14 @@
 <span id="_CPPv3NK5faiss11simd32uint85storeEPv"></span><span id="_CPPv2NK5faiss11simd32uint85storeEPv"></span><span id="faiss::simd32uint8::store__voidPC"></span><span class="target" id="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">store</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">store</span></code><span class="sig-paren">(</span><span class="pre">void</span> <span class="pre">*</span><em><span class="pre">ptr</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4NK5faiss11simd32uint83binEAL257E_c">
-<span id="_CPPv3NK5faiss11simd32uint83binEAL257E_c"></span><span id="_CPPv2NK5faiss11simd32uint83binEA257_c"></span><span id="faiss::simd32uint8::bin__cAC"></span><span class="target" id="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">bits</span></em><span class="pre">[</span><span class="pre">257</span><span class="pre">]</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4NK5faiss11simd32uint83binEv">
-<span id="_CPPv3NK5faiss11simd32uint83binEv"></span><span id="_CPPv2NK5faiss11simd32uint83binEv"></span><span id="faiss::simd32uint8::binC"></span><span class="target" id="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="pre">char</span> <em><span class="pre">bits</span></em><span class="pre">[</span><span class="pre">257</span><span class="pre">]</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">bin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
-<dd></dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5faiss11simd32uint84dataE">
+<span id="_CPPv3N5faiss11simd32uint84dataE"></span><span id="_CPPv2N5faiss11simd32uint84dataE"></span><span id="faiss::simd32uint8::data__uint8x16x2_t"></span><span class="target" id="structfaiss_1_1simd32uint8_1a0a028edc495908ef1381853d560aa0d8"></span><span class="pre">uint8x16x2_t</span> <code class="sig-name descname"><span class="pre">data</span></code><br /></dt>
+<dd></dd></dl>
+
 <dl class="cpp var">
 <dt id="_CPPv4N5faiss11simd32uint81iE">
 <span id="_CPPv3N5faiss11simd32uint81iE"></span><span id="_CPPv2N5faiss11simd32uint81iE"></span><span id="faiss::simd32uint8::i____m256i"></span><span class="target" id="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e"></span><span class="pre">__m256i</span> <code class="sig-name descname"><span class="pre">i</span></code><br /></dt>
