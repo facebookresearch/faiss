@@ -575,4 +575,76 @@ inline simd8float32 fmadd(
     return res;
 }
 
+namespace {
+
+// get even float32's of a and b, interleaved
+simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
+    simd8float32 c;
+
+    c.f32[0] = a.f32[0];
+    c.f32[1] = a.f32[2];
+    c.f32[2] = b.f32[0];
+    c.f32[3] = b.f32[2];
+
+    c.f32[4] = a.f32[4];
+    c.f32[5] = a.f32[6];
+    c.f32[6] = b.f32[4];
+    c.f32[7] = b.f32[6];
+
+    return c;
+}
+
+// get odd float32's of a and b, interleaved
+simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
+    simd8float32 c;
+
+    c.f32[0] = a.f32[1];
+    c.f32[1] = a.f32[3];
+    c.f32[2] = b.f32[1];
+    c.f32[3] = b.f32[3];
+
+    c.f32[4] = a.f32[5];
+    c.f32[5] = a.f32[7];
+    c.f32[6] = b.f32[5];
+    c.f32[7] = b.f32[7];
+
+    return c;
+}
+
+// 3 cycles
+// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
+simd8float32 getlow128(const simd8float32& a, const simd8float32& b) {
+    simd8float32 c;
+
+    c.f32[0] = a.f32[0];
+    c.f32[1] = a.f32[1];
+    c.f32[2] = a.f32[2];
+    c.f32[3] = a.f32[3];
+
+    c.f32[4] = b.f32[0];
+    c.f32[5] = b.f32[1];
+    c.f32[6] = b.f32[2];
+    c.f32[7] = b.f32[3];
+
+    return c;
+}
+
+simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
+    simd8float32 c;
+
+    c.f32[0] = a.f32[4];
+    c.f32[1] = a.f32[5];
+    c.f32[2] = a.f32[6];
+    c.f32[3] = a.f32[7];
+
+    c.f32[4] = b.f32[4];
+    c.f32[5] = b.f32[5];
+    c.f32[6] = b.f32[6];
+    c.f32[7] = b.f32[7];
+
+    return c;
+}
+
+} // namespace
+
 } // namespace faiss

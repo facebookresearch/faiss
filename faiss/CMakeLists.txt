@@ -149,6 +149,7 @@ set(FAISS_HEADERS
   utils/simdlib.h
   utils/simdlib_avx2.h
   utils/simdlib_emulated.h
+  utils/simdlib_neon.h
   utils/utils.h
 )
 
