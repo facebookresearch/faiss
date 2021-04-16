@@ -14,8 +14,8 @@
 #include "macros_impl.h"
 
 using faiss::Index;
-using faiss::IndexScalarQuantizer;
 using faiss::IndexIVFScalarQuantizer;
+using faiss::IndexScalarQuantizer;
 
 DEFINE_DESTRUCTOR(IndexScalarQuantizer)
 DEFINE_INDEX_DOWNCAST(IndexScalarQuantizer)
@@ -69,11 +69,8 @@ int faiss_IndexIVFScalarQuantizer_new_with(
     try {
         auto q = reinterpret_cast<Index*>(quantizer);
         auto qt_ = static_cast<faiss::ScalarQuantizer::QuantizerType>(qt);
-        IndexIVFScalarQuantizer* index = new IndexIVFScalarQuantizer(
-                q,
-                d,
-                nlist,
-                qt_);
+        IndexIVFScalarQuantizer* index =
+                new IndexIVFScalarQuantizer(q, d, nlist, qt_);
         *p_index = reinterpret_cast<FaissIndexIVFScalarQuantizer*>(index);
         return 0;
     }
@@ -93,13 +90,8 @@ int faiss_IndexIVFScalarQuantizer_new_with_metric(
         auto mt = static_cast<faiss::MetricType>(metric);
         auto er = (bool)encode_residual;
         auto qt_ = static_cast<faiss::ScalarQuantizer::QuantizerType>(qt);
-        IndexIVFScalarQuantizer* index = new IndexIVFScalarQuantizer(
-                q,
-                d,
-                nlist,
-                qt_,
-                mt,
-                er);
+        IndexIVFScalarQuantizer* index =
+                new IndexIVFScalarQuantizer(q, d, nlist, qt_, mt, er);
         *p_index = reinterpret_cast<FaissIndexIVFScalarQuantizer*>(index);
         return 0;
     }
@@ -124,8 +116,7 @@ int faiss_IndexIVFScalarQuantizer_train_residual(
         idx_t n,
         const float* x) {
     try {
-        reinterpret_cast<IndexIVFScalarQuantizer*>(index)->train_residual(
-                n, x);
+        reinterpret_cast<IndexIVFScalarQuantizer*>(index)->train_residual(n, x);
     }
     CATCH_AND_HANDLE
 }
