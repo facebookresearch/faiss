@@ -88,7 +88,7 @@ int faiss_IndexIVFScalarQuantizer_new_with_metric(
     try {
         auto q = reinterpret_cast<Index*>(quantizer);
         auto mt = static_cast<faiss::MetricType>(metric);
-        auto er = (bool)encode_residual;
+        auto er = static_cast<bool>(encode_residual);
         auto qt_ = static_cast<faiss::ScalarQuantizer::QuantizerType>(qt);
         IndexIVFScalarQuantizer* index =
                 new IndexIVFScalarQuantizer(q, d, nlist, qt_, mt, er);
