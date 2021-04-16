@@ -4677,6 +4677,272 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx2.h" line="434" column="21" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="434" bodyend="436"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::min</definition>
+        <argsstring>(const simd16uint16 &amp;av, const simd16uint16 &amp;bv)</argsstring>
+        <name>min</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>av</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>bv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="230" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="230" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a94593d5bf8da8904666020693959166c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::max</definition>
+        <argsstring>(const simd16uint16 &amp;av, const simd16uint16 &amp;bv)</argsstring>
+        <name>max</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>av</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>bv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="235" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="235" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af86b965844d92f2549c492d6831d0796" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::combine2x2</definition>
+        <argsstring>(const simd16uint16 &amp;a, const simd16uint16 &amp;b)</argsstring>
+        <name>combine2x2</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="243" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="243" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aea6378d42540886a794d30add9701220" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::cmp_ge32</definition>
+        <argsstring>(const simd16uint16 &amp;d0, const simd16uint16 &amp;d1, const simd16uint16 &amp;thr)</argsstring>
+        <name>cmp_ge32</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>thr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="254" column="17" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="254" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a39039b1bf15d79603f4ceb8469021e51" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::cmp_le32</definition>
+        <argsstring>(const simd16uint16 &amp;d0, const simd16uint16 &amp;d1, const simd16uint16 &amp;thr)</argsstring>
+        <name>cmp_le32</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>thr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="270" column="17" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="270" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aea0f6a537a28bcb5133211212513f7f6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref></type>
+        <definition>simd32uint8 faiss::uint16_to_uint8_saturate</definition>
+        <argsstring>(const simd16uint16 &amp;a, const simd16uint16 &amp;b)</argsstring>
+        <name>uint16_to_uint8_saturate</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="383" column="20" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="383" bodyend="397"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1abe20bc347c6b89b6673db250922da5f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::get_MSBs</definition>
+        <argsstring>(const simd32uint8 &amp;a)</argsstring>
+        <name>get_MSBs</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+<para>get most significant bit of each byte </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="400" column="17" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="400" bodyend="408"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8fd4605fb081ee3572fe7362c19f53a1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref></type>
+        <definition>simd32uint8 faiss::blendv</definition>
+        <argsstring>(const simd32uint8 &amp;a, const simd32uint8 &amp;b, const simd32uint8 &amp;mask)</argsstring>
+        <name>blendv</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+          <declname>mask</declname>
+        </param>
+        <briefdescription>
+<para>use MSB of each byte of mask to select a byte between a and b </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="411" column="20" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="411" bodyend="424"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a91611066b2685fd2aa236551026c371e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref></type>
+        <definition>simd8float32 faiss::hadd</definition>
+        <argsstring>(const simd8float32 &amp;a, const simd8float32 &amp;b)</argsstring>
+        <name>hadd</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="521" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="521" bodyend="534"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a554df30b43cdf9d435fd91cd2135ed1b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref></type>
+        <definition>simd8float32 faiss::unpacklo</definition>
+        <argsstring>(const simd8float32 &amp;a, const simd8float32 &amp;b)</argsstring>
+        <name>unpacklo</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="536" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="536" bodyend="549"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a61c7690da3feacac77f0fea9d1ce3109" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref></type>
+        <definition>simd8float32 faiss::unpackhi</definition>
+        <argsstring>(const simd8float32 &amp;a, const simd8float32 &amp;b)</argsstring>
+        <name>unpackhi</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="551" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="551" bodyend="564"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a93b8f9e8a1da01d0b335d36a5c2fdf2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref></type>
+        <definition>simd8float32 faiss::fmadd</definition>
+        <argsstring>(const simd8float32 &amp;a, const simd8float32 &amp;b, const simd8float32 &amp;c)</argsstring>
+        <name>fmadd</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref> &amp;</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="567" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="567" bodyend="576"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double faiss::getmillisecs</definition>
