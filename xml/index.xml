@@ -3028,6 +3028,8 @@
     <member refid="structfaiss_1_1InvertedListsIOHook_1afea628376e67f00243952ae6e5aa2bc4" kind="function"><name>lookup</name></member>
     <member refid="structfaiss_1_1InvertedListsIOHook_1a2f4b40119498c66604b04cac588340a6" kind="function"><name>lookup_classname</name></member>
   </compound>
+  <compound refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kind="struct"><name>faiss::detail::simdlib::is_simd256bit</name>
+  </compound>
   <compound refid="structfaiss_1_1ITQMatrix" kind="struct"><name>faiss::ITQMatrix</name>
     <member refid="structfaiss_1_1ITQMatrix_1a31407547017869e82b462f462d29dac7" kind="variable"><name>max_iter</name></member>
     <member refid="structfaiss_1_1ITQMatrix_1aad8bf31090ef0414326e42286f164a3a" kind="variable"><name>seed</name></member>
@@ -3631,6 +3633,15 @@
     <member refid="structfaiss_1_1InvertedLists_1_1ScopedIds_1ac4b3370c7075ef1b79a873588d3e44dc" kind="function"><name>~ScopedIds</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd16uint16" kind="struct"><name>faiss::simd16uint16</name>
+    <member refid="structfaiss_1_1simd16uint16_1ab55c9dbcc50e95d98bdde9ca6820570b" kind="variable"><name>data</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
+    <member refid="structfaiss_1_1simd256bit_1acb1ccdc5222ee156bacdc10a5f94d736" kind="variable"><name>u8</name></member>
+    <member refid="structfaiss_1_1simd256bit_1ae1a0c5c5a086370f21a346bd20e2b378" kind="variable"><name>u16</name></member>
+    <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a3547dd39bb0c4bab633bb29706a7fbea" kind="function"><name>simd16uint16</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a9f1a895a1616aff805c44192aec50063" kind="function"><name>simd16uint16</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a35d2938ab0d0dabd62e3c8e853382f37" kind="function"><name>simd16uint16</name></member>
@@ -3686,28 +3697,45 @@
     <member refid="structfaiss_1_1simd16uint16_1aa8ec1f70e981766e7910aa809987a895" kind="function"><name>operator[]</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a8da8ba27539cfafad1de1144cc3b0a46" kind="function"><name>accu_min</name></member>
     <member refid="structfaiss_1_1simd16uint16_1aa76f9e880b7d5226d4d61d07a5e341f7" kind="function"><name>accu_max</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ad4b578ba46dfbc051763a5ae52855748" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a35d2938ab0d0dabd62e3c8e853382f37" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a272eec70c6afc37de09319871deeb62b" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a3815b0ebffe18942ec0a1cafb9970525" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a93b40b7a9df3dfa6681788d4816ec298" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a0c40372cb284afc9298708cfe83af617" kind="function"><name>simd16uint16</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1af1177e11e067497087860fe6b7b10ed9" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1acacaa21cdb400de0b518c4e2a2ade76b" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a3760603e01a5fb4b21388c333d75db14" kind="function"><name>loadu</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ad97614f9107fa9e90d789a90d9f39824" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a9c4aed45eb4a713020eba1748d51e620" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1aa2e4c321c2573a6b2779752660a829fe" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1aef0543938a8157a759304c988e700aba" kind="function"><name>elements_to_string</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ab146955ce5866305af89821dfd255775" kind="function"><name>hex</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a15b3195fa088ad30d6f9d712beeb54e0" kind="function"><name>dec</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a6b42c729fb49ee838c9d10dea0aafede" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a9cc47e261e7a5d0d2f92f23159d39962" kind="function"><name>operator&gt;&gt;</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a37ec43cf3b69ff03a5179c26d0c35a37" kind="function"><name>operator&lt;&lt;</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ae4d112fdd56a99eb0045e000c85f7dfb" kind="function"><name>operator+=</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a8e4b940544bd8c801769a3839d1cf6b1" kind="function"><name>operator-=</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a942a17c96ba7407186e4a5ec0fecbc55" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a470f320e55778f486022f6e008185688" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a61142f0593f587b24d619eb39ab176b2" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a54c5f346d14aa28f54183a3cafc370aa" kind="function"><name>operator|</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a0aab312de981155c15109710467deb40" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1ae67c5d5d9daf09fa311013b44b7d2dbe" kind="function"><name>get_scalar_0</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a64d46062991ea6f7c5e148ea2cb7d48c" kind="function"><name>ge_mask</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a1b1e39ae2c6a24f328e9b2124fdf31eb" kind="function"><name>le_mask</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a692b4fa65f1a93a17df452f39ef53779" kind="function"><name>gt_mask</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a7593e727b01efb9ccb0cb827d1c1ef01" kind="function"><name>all_gt</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1aa8ec1f70e981766e7910aa809987a895" kind="function"><name>operator[]</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a8da8ba27539cfafad1de1144cc3b0a46" kind="function"><name>accu_min</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1aa76f9e880b7d5226d4d61d07a5e341f7" kind="function"><name>accu_max</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a35a80fed1b3b6eb887aefca6c9a318bf" kind="function"><name>unary_func</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ae52980be63ef4066b42fb33ac8469280" kind="function"><name>binary_func</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
-    <member refid="structfaiss_1_1simd256bit_1acb1ccdc5222ee156bacdc10a5f94d736" kind="variable"><name>u8</name></member>
-    <member refid="structfaiss_1_1simd256bit_1ae1a0c5c5a086370f21a346bd20e2b378" kind="variable"><name>u16</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd256bit" kind="struct"><name>faiss::simd256bit</name>
     <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
@@ -3738,6 +3766,15 @@
     <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd32uint8" kind="struct"><name>faiss::simd32uint8</name>
+    <member refid="structfaiss_1_1simd32uint8_1a0a028edc495908ef1381853d560aa0d8" kind="variable"><name>data</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
+    <member refid="structfaiss_1_1simd256bit_1acb1ccdc5222ee156bacdc10a5f94d736" kind="variable"><name>u8</name></member>
+    <member refid="structfaiss_1_1simd256bit_1ae1a0c5c5a086370f21a346bd20e2b378" kind="variable"><name>u16</name></member>
+    <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
+    <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
     <member refid="structfaiss_1_1simd32uint8_1af050f5b54ede870a1d6add3b089d2d42" kind="function"><name>simd32uint8</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a4eab8c7033bde28909f663d9e8915398" kind="function"><name>simd32uint8</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a44349183b73ea0564729eb2283445a2c" kind="function"><name>simd32uint8</name></member>
@@ -3769,19 +3806,34 @@
     <member refid="structfaiss_1_1simd32uint8_1aabe2595cea3bfbf441cb23a86dbcd0fa" kind="function"><name>lookup_2_lanes</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a82e41a14b9fba96f53c53a6e0fa0aff4" kind="function"><name>operator+=</name></member>
     <member refid="structfaiss_1_1simd32uint8_1a42caa7515646aa765aa0ff7682390b64" kind="function"><name>operator[]</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a60eed9a0f64bcf885c6ccd17b74f93e8" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a44349183b73ea0564729eb2283445a2c" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1aacac602e6ae5847325cd03a6f4fd5f25" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a2fb1ec15d12816b44c8311f34efc8878" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a84978e5132d269e44ddd849d25161bb4" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a963006a6994282e956e4ada482d0cf94" kind="function"><name>simd32uint8</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a5d2f962fd7470b498d9345b7ae525632" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a3372ed869128b0b4637e9ed05b08a3b6" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a1535ca1b590597e078064b79d2633851" kind="function"><name>loadu</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a61478775ada7c758a78ead35b4af00d4" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a9f7464bbf7c64bbf4dc98bc798f96eb3" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a17f5d20835c2db40bc629cbff8cd369f" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a475df0a6247a4b2f27c32747e43eb3a8" kind="function"><name>elements_to_string</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a3dd9c7e5676c98b54f4a5fe09b6e24d4" kind="function"><name>hex</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1ac962d91b9b95592d27786049f756b9fd" kind="function"><name>dec</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1aa5f0d78560238a22d1c2195ebe920aa8" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a506e75af01bcdf0c8c954b2b5e7eb58b" kind="function"><name>operator&amp;</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a9ff1f702dd8a74e68b7d45fc3fa4340d" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1aabe2595cea3bfbf441cb23a86dbcd0fa" kind="function"><name>lookup_2_lanes</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a82e41a14b9fba96f53c53a6e0fa0aff4" kind="function"><name>operator+=</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a42caa7515646aa765aa0ff7682390b64" kind="function"><name>operator[]</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
     <member refid="structfaiss_1_1simd32uint8_1adbc2039e6054117950fbf9dfbd220678" kind="function"><name>binary_func</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1simd8float32" kind="struct"><name>faiss::simd8float32</name>
+    <member refid="structfaiss_1_1simd8float32_1ab83d945254427a5965b2d063a9933689" kind="variable"><name>data</name></member>
     <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
     <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
     <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
@@ -3790,8 +3842,6 @@
     <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
     <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
     <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1simd8float32" kind="struct"><name>faiss::simd8float32</name>
     <member refid="structfaiss_1_1simd8float32_1a13a05c69be6321dfa2778291ca5be638" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1ad3d875200c6287b25ddbab84cb4d60df" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1adf206c50f1615d4b30f2971daa4fbb42" kind="function"><name>simd8float32</name></member>
@@ -3810,19 +3860,28 @@
     <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0d95a77258c4fb7770d87dd20616b618" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1aee4b896ae49c702e76cfd96736640aea" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a3f1e8da257ffd2da62e870f27d1aea35" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a033d162035528e258ed4e1f908ea7daf" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a6e375f0accbc236eea629e5965ad178e" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a8f773f2162ea15dc4507f5d90236f6b8" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a732cf1710939845927604931a88a1d1c" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a89dd9608ee88051ba0f7f666a5862a31" kind="function"><name>loadu</name></member>
+    <member refid="structfaiss_1_1simd8float32_1aeb0faa4843de8231506aea6b6386eae2" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a99a3ff736770cd8a9eb44d33c3222819" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a478115a4e114b9887a6c1ae1e10faae4" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd8float32_1ad262436ce2ae29c78e8e25b6c559e2fa" kind="function"><name>operator*</name></member>
+    <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
     <member refid="structfaiss_1_1simd8float32_1aace44cdab4ba6ce7628a04e663f37a12" kind="function"><name>binary_func</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1simd8uint32" kind="struct"><name>faiss::simd8uint32</name>
+    <member refid="structfaiss_1_1simd8uint32_1ac48e258881fce8283f47a1f112d123ff" kind="variable"><name>data</name></member>
     <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
     <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
     <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
@@ -3831,8 +3890,6 @@
     <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
     <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
     <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1simd8uint32" kind="struct"><name>faiss::simd8uint32</name>
     <member refid="structfaiss_1_1simd8uint32_1a89da3bccd3b703777fe4127f5fc764a7" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1aa5492eb7ac37ae575678d0ef892d22b7" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
@@ -3850,26 +3907,24 @@
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" kind="function"><name>set1</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa0fd61910bf50501b9e4f3db18b9fb29" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a91007d2e6b4014a04af520fb2613563b" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a4afdab340dd761c338ae8ba062eea447" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1ad3a20f7237b6cbd6539335f864ff604b" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1ac7c7f6d24de40a0775ec4eabf105a87f" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1ad9640b0b2bf719d75099690cac845f39" kind="function"><name>storeu</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a522eb3e5f8f2b08a4fa60d0a166a7b66" kind="function"><name>loadu</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a2a0698c637a32a56f2bf61922a522fa3" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a106f0835ce8804af4e71eb8f65b3860c" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1aec657e75ce56fa6427d9b3971758e9d8" kind="function"><name>bin</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a6bd39771259f83652ead2bd46591d20c" kind="function"><name>elements_to_string</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" kind="function"><name>set1</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" kind="function"><name>bin</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" kind="variable"><name>f</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a1142cc58e944c92c58668dffee8d0aeb" kind="variable"><name>@1</name></member>
-    <member refid="structfaiss_1_1simd256bit_1acb1ccdc5222ee156bacdc10a5f94d736" kind="variable"><name>u8</name></member>
-    <member refid="structfaiss_1_1simd256bit_1ae1a0c5c5a086370f21a346bd20e2b378" kind="variable"><name>u16</name></member>
-    <member refid="structfaiss_1_1simd256bit_1aa68a3cf73ecbc73107a720e8c3f1d25c" kind="variable"><name>u32</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" kind="variable"><name>f32</name></member>
-    <member refid="structfaiss_1_1simd256bit_1a41568f363b0e4ca2f7772717a68f40e2" kind="variable"><name>@3</name></member>
   </compound>
   <compound refid="structfaiss_1_1SliceInvertedLists" kind="struct"><name>faiss::SliceInvertedLists</name>
     <member refid="structfaiss_1_1SliceInvertedLists_1a580a773b1857eb771604f2e95ceb28ea" kind="variable"><name>il</name></member>
@@ -4330,6 +4385,41 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
+  <compound refid="namespacefaiss_1_1_0d75" kind="namespace"><name>faiss::@75</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d76" kind="namespace"><name>faiss::@76</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d77" kind="namespace"><name>faiss::@77</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1detail" kind="namespace"><name>faiss::detail</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1detail_1_1simdlib" kind="namespace"><name>faiss::detail::simdlib</name>
+    <member refid="simdlib__neon_8h_1a21ac13492c3a23c090d5847c49e95094" kind="function"><name>reinterpret_u8</name></member>
+    <member refid="simdlib__neon_8h_1a03045fdaeb4fc92c954add5db6909b4c" kind="function"><name>reinterpret_u8</name></member>
+    <member refid="simdlib__neon_8h_1afc0b6b13ac7030afb50e0b68d83c9bbf" kind="function"><name>reinterpret_u8</name></member>
+    <member refid="simdlib__neon_8h_1a9a263b42ed62cfc27ad7bfdec8353bc7" kind="function"><name>reinterpret_u8</name></member>
+    <member refid="simdlib__neon_8h_1a929a14cc40597d47acaa49006a6f9807" kind="function"><name>reinterpret_u16</name></member>
+    <member refid="simdlib__neon_8h_1a3550a22a9bd3d8923450e4dd9e69cc8a" kind="function"><name>reinterpret_u16</name></member>
+    <member refid="simdlib__neon_8h_1ad4d21b79aec09b0b3a7c2188edead7ba" kind="function"><name>reinterpret_u16</name></member>
+    <member refid="simdlib__neon_8h_1aae18889bf2f0ec4d796da66f6445efb0" kind="function"><name>reinterpret_u16</name></member>
+    <member refid="simdlib__neon_8h_1ae7b65cf85c494c90a7f4184c775c1971" kind="function"><name>reinterpret_u32</name></member>
+    <member refid="simdlib__neon_8h_1a4d3deb0c35a8987ecfe2c1a5cb6f90f4" kind="function"><name>reinterpret_u32</name></member>
+    <member refid="simdlib__neon_8h_1aede32d1db2924d01a7b9752bbc5d74e8" kind="function"><name>reinterpret_u32</name></member>
+    <member refid="simdlib__neon_8h_1a581a95e25bf6b61c6e7dd9c6aca56a51" kind="function"><name>reinterpret_u32</name></member>
+    <member refid="simdlib__neon_8h_1aabb23f9cc959a0358f1d49540a192cdf" kind="function"><name>reinterpret_f32</name></member>
+    <member refid="simdlib__neon_8h_1a7360e9c8b5355ddbcd2e2fd6f19aaa6e" kind="function"><name>reinterpret_f32</name></member>
+    <member refid="simdlib__neon_8h_1a905ff7784ec0f823daefd36fe92063e6" kind="function"><name>reinterpret_f32</name></member>
+    <member refid="simdlib__neon_8h_1abde69fbe04959f420b18f69affa69958" kind="function"><name>reinterpret_f32</name></member>
+    <member refid="simdlib__neon_8h_1ad58dc5826346d30ee3accbb74f45b79e" kind="function"><name>bin</name></member>
+    <member refid="simdlib__neon_8h_1a0bdbadf03a4024405ab47ba9f47ac4ed" kind="function"><name>bin</name></member>
+    <member refid="simdlib__neon_8h_1acae57755eecf9ec8eb851e4820fd663e" kind="function"><name>bin</name></member>
+    <member refid="simdlib__neon_8h_1a4ba93329f5aadce629de02019c0e1b2f" kind="function"><name>set1</name></member>
+    <member refid="simdlib__neon_8h_1a4449840079783da5bed6cd04bd6cf752" kind="function"><name>elements_to_string</name></member>
+    <member refid="simdlib__neon_8h_1ab6a3808fc65861d1af5a02e2c59e1c27" kind="function"><name>unary_func</name></member>
+    <member refid="simdlib__neon_8h_1abb45baa820a1cc05c130c552a73b470f" kind="function"><name>binary_func</name></member>
+    <member refid="simdlib__neon_8h_1ad026e84d722ca1800cbcd1e62a7bd1ce" kind="function"><name>vmovmask_u8</name></member>
+    <member refid="simdlib__neon_8h_1a50f928e67de705ccbe14bd1f77a79ac5" kind="function"><name>cmp_xe32</name></member>
+  </compound>
   <compound refid="namespacefaiss_1_1gpu" kind="namespace"><name>faiss::gpu</name>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
@@ -4663,6 +4753,8 @@
   <compound refid="simdlib__avx2_8h" kind="file"><name>simdlib_avx2.h</name>
   </compound>
   <compound refid="simdlib__emulated_8h" kind="file"><name>simdlib_emulated.h</name>
+  </compound>
+  <compound refid="simdlib__neon_8h" kind="file"><name>simdlib_neon.h</name>
   </compound>
   <compound refid="utils_8h" kind="file"><name>utils.h</name>
   </compound>

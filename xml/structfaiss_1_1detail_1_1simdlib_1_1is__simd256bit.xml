@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::detail::simdlib::is_simd256bit</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::is_same&lt; decltype(reinterpret_u8(std::declval&lt; T &gt;().data)), uint8x16x2_t &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>typename U</type>
+        <defval>decltype(reinterpret_u8(std::declval&lt;T&gt;().data))</defval>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>std::is_same&lt; decltype(reinterpret_u8(std::declval&lt;T&gt;().data)) , uint8x16x2_t &gt;</label>
+      </node>
+      <node id="1">
+        <label>faiss::detail::simdlib::is_simd256bit&lt; T, U &gt;</label>
+        <link refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>std::is_same&lt; decltype(reinterpret_u8(std::declval&lt;T&gt;().data)) , uint8x16x2_t &gt;</label>
+      </node>
+      <node id="1">
+        <label>faiss::detail::simdlib::is_simd256bit&lt; T, U &gt;</label>
+        <link refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/utils/simdlib_neon.h" line="94" column="35" bodyfile="faiss/utils/simdlib_neon.h" bodystart="94" bodyend="94"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

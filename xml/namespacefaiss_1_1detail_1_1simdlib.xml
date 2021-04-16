@@ -1,0 +1,547 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacefaiss_1_1detail_1_1simdlib" kind="namespace" language="C++">
+    <compoundname>faiss::detail::simdlib</compoundname>
+    <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" prot="public">faiss::detail::simdlib::is_simd256bit</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="simdlib__neon_8h_1a21ac13492c3a23c090d5847c49e95094" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8x16x2_t</type>
+        <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
+        <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
+        <name>reinterpret_u8</name>
+        <param>
+          <type>const uint8x16x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="27" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="27" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a03045fdaeb4fc92c954add5db6909b4c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8x16x2_t</type>
+        <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
+        <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
+        <name>reinterpret_u8</name>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="31" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="31" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1afc0b6b13ac7030afb50e0b68d83c9bbf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8x16x2_t</type>
+        <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
+        <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u8</name>
+        <param>
+          <type>const uint32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="35" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a9a263b42ed62cfc27ad7bfdec8353bc7" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint8x16x2_t</type>
+        <definition>static uint8x16x2_t faiss::detail::simdlib::reinterpret_u8</definition>
+        <argsstring>(const float32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u8</name>
+        <param>
+          <type>const float32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="39" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a929a14cc40597d47acaa49006a6f9807" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16x8x2_t</type>
+        <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
+        <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
+        <name>reinterpret_u16</name>
+        <param>
+          <type>const uint8x16x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="43" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="43" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a3550a22a9bd3d8923450e4dd9e69cc8a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16x8x2_t</type>
+        <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
+        <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
+        <name>reinterpret_u16</name>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="47" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="47" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ad4d21b79aec09b0b3a7c2188edead7ba" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16x8x2_t</type>
+        <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
+        <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u16</name>
+        <param>
+          <type>const uint32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="51" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="51" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1aae18889bf2f0ec4d796da66f6445efb0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16x8x2_t</type>
+        <definition>static uint16x8x2_t faiss::detail::simdlib::reinterpret_u16</definition>
+        <argsstring>(const float32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u16</name>
+        <param>
+          <type>const float32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="55" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="55" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ae7b65cf85c494c90a7f4184c775c1971" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32x4x2_t</type>
+        <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
+        <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
+        <name>reinterpret_u32</name>
+        <param>
+          <type>const uint8x16x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="59" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="59" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a4d3deb0c35a8987ecfe2c1a5cb6f90f4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32x4x2_t</type>
+        <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
+        <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
+        <name>reinterpret_u32</name>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="63" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1aede32d1db2924d01a7b9752bbc5d74e8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32x4x2_t</type>
+        <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
+        <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u32</name>
+        <param>
+          <type>const uint32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="67" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="67" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a581a95e25bf6b61c6e7dd9c6aca56a51" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32x4x2_t</type>
+        <definition>static uint32x4x2_t faiss::detail::simdlib::reinterpret_u32</definition>
+        <argsstring>(const float32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_u32</name>
+        <param>
+          <type>const float32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="71" column="28" bodyfile="faiss/utils/simdlib_neon.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1aabb23f9cc959a0358f1d49540a192cdf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float32x4x2_t</type>
+        <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
+        <argsstring>(const uint8x16x2_t &amp;v)</argsstring>
+        <name>reinterpret_f32</name>
+        <param>
+          <type>const uint8x16x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="75" column="29" bodyfile="faiss/utils/simdlib_neon.h" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a7360e9c8b5355ddbcd2e2fd6f19aaa6e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float32x4x2_t</type>
+        <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
+        <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
+        <name>reinterpret_f32</name>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="79" column="29" bodyfile="faiss/utils/simdlib_neon.h" bodystart="79" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a905ff7784ec0f823daefd36fe92063e6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float32x4x2_t</type>
+        <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
+        <argsstring>(const uint32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_f32</name>
+        <param>
+          <type>const uint32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="83" column="29" bodyfile="faiss/utils/simdlib_neon.h" bodystart="83" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1abde69fbe04959f420b18f69affa69958" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float32x4x2_t</type>
+        <definition>static float32x4x2_t faiss::detail::simdlib::reinterpret_f32</definition>
+        <argsstring>(const float32x4x2_t &amp;v)</argsstring>
+        <name>reinterpret_f32</name>
+        <param>
+          <type>const float32x4x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="87" column="29" bodyfile="faiss/utils/simdlib_neon.h" bodystart="87" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ad58dc5826346d30ee3accbb74f45b79e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::detail::simdlib::bin</definition>
+        <argsstring>(const char(&amp;bytes)[32], char bits[257])</argsstring>
+        <name>bin</name>
+        <param>
+          <type>const char(&amp;)</type>
+          <declname>bytes</declname>
+          <array>[32]</array>
+        </param>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[257]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="96" column="20" bodyfile="faiss/utils/simdlib_neon.h" bodystart="96" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a0bdbadf03a4024405ab47ba9f47ac4ed" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>N</declname>
+            <defname>N</defname>
+          </param>
+          <param>
+            <type>typename S</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>static void faiss::detail::simdlib::bin</definition>
+        <argsstring>(const S &amp;simd, char bits[257])</argsstring>
+        <name>bin</name>
+        <param>
+          <type>const S &amp;</type>
+          <declname>simd</declname>
+        </param>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[257]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="104" column="20" bodyfile="faiss/utils/simdlib_neon.h" bodystart="104" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1acae57755eecf9ec8eb851e4820fd663e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename S</type>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>static std::string faiss::detail::simdlib::bin</definition>
+        <argsstring>(const S &amp;simd)</argsstring>
+        <name>bin</name>
+        <param>
+          <type>const S &amp;</type>
+          <declname>simd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="116" column="27" bodyfile="faiss/utils/simdlib_neon.h" bodystart="116" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a4ba93329f5aadce629de02019c0e1b2f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename D</type>
+          </param>
+          <param>
+            <type>typename F</type>
+          </param>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>static void faiss::detail::simdlib::set1</definition>
+        <argsstring>(D &amp;d, F &amp;&amp;f, T t)</argsstring>
+        <name>set1</name>
+        <param>
+          <type>D &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="123" column="20" bodyfile="faiss/utils/simdlib_neon.h" bodystart="123" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a4449840079783da5bed6cd04bd6cf752" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>N</declname>
+            <defname>N</defname>
+          </param>
+          <param>
+            <type>typename S</type>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>static std::string faiss::detail::simdlib::elements_to_string</definition>
+        <argsstring>(const char *fmt, const S &amp;simd)</argsstring>
+        <name>elements_to_string</name>
+        <param>
+          <type>const char *</type>
+          <declname>fmt</declname>
+        </param>
+        <param>
+          <type>const S &amp;</type>
+          <declname>simd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="130" column="27" bodyfile="faiss/utils/simdlib_neon.h" bodystart="130" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ab6a3808fc65861d1af5a02e2c59e1c27" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>static T faiss::detail::simdlib::unary_func</definition>
+        <argsstring>(const T &amp;a, F &amp;&amp;f)</argsstring>
+        <name>unary_func</name>
+        <param>
+          <type>const T &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="146" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="146" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1abb45baa820a1cc05c130c552a73b470f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>static T faiss::detail::simdlib::binary_func</definition>
+        <argsstring>(const T &amp;a, const T &amp;b, F &amp;&amp;f)</argsstring>
+        <name>binary_func</name>
+        <param>
+          <type>const T &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="154" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="154" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ad026e84d722ca1800cbcd1e62a7bd1ce" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>static uint16_t faiss::detail::simdlib::vmovmask_u8</definition>
+        <argsstring>(const uint8x16_t &amp;v)</argsstring>
+        <name>vmovmask_u8</name>
+        <param>
+          <type>const uint8x16_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="161" column="24" bodyfile="faiss/utils/simdlib_neon.h" bodystart="161" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a50f928e67de705ccbe14bd1f77a79ac5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>uint16x8_t(*)(uint16x8_t, uint16x8_t)</type>
+            <declname>F</declname>
+            <defname>F</defname>
+          </param>
+        </templateparamlist>
+        <type>uint32_t</type>
+        <definition>static uint32_t faiss::detail::simdlib::cmp_xe32</definition>
+        <argsstring>(const uint16x8x2_t &amp;d0, const uint16x8x2_t &amp;d1, const uint16x8x2_t &amp;thr)</argsstring>
+        <name>cmp_xe32</name>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>d1</declname>
+        </param>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>thr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="171" column="24" bodyfile="faiss/utils/simdlib_neon.h" bodystart="171" bodyend="182"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/simdlib_neon.h" line="25" column="17"/>
+  </compounddef>
+</doxygen>
