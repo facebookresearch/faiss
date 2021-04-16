@@ -110,7 +110,7 @@ int faiss_PCAMatrix_new_with(
         float eigen_power,
         int random_rotation) {
     try {
-        bool random_rotation_ = (bool)random_rotation;
+        bool random_rotation_ = static_cast<bool>(random_rotation);
         *p_vt = reinterpret_cast<FaissPCAMatrix*>(new faiss::PCAMatrix(
                 d_in, d_out, eigen_power, random_rotation_));
     }
@@ -142,7 +142,7 @@ int faiss_ITQTransform_new_with(
         int d_out,
         int do_pca) {
     try {
-        bool do_pca_ = (bool)do_pca;
+        bool do_pca_ = static_cast<bool>(do_pca);
         *p_vt = reinterpret_cast<FaissITQTransform*>(
                 new faiss::ITQTransform(d_in, d_out, do_pca_));
     }
@@ -186,7 +186,7 @@ int faiss_RemapDimensionsTransform_new_with(
         int d_out,
         int uniform) {
     try {
-        bool uniform_ = (bool)uniform;
+        bool uniform_ = static_cast<bool>(uniform);
         *p_vt = reinterpret_cast<FaissRemapDimensionsTransform*>(
                 new faiss::RemapDimensionsTransform(d_in, d_out, uniform_));
     }
