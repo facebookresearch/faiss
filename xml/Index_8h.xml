@@ -561,7 +561,7 @@
 <codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Add<sp/>n<sp/>vectors<sp/>of<sp/>dimension<sp/>d<sp/>to<sp/>the<sp/>index.</highlight></codeline>
 <codeline lineno="86"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="87"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>Vectors<sp/>are<sp/>implicitly<sp/>assigned<sp/>labels<sp/>ntotal<sp/>..<sp/>ntotal<sp/>+<sp/>n<sp/>-<sp/>1</highlight></codeline>
-<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>This<sp/>function<sp/>slices<sp/>the<sp/>input<sp/>vectors<sp/>in<sp/>chuncks<sp/>smaller<sp/>than</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>This<sp/>function<sp/>slices<sp/>the<sp/>input<sp/>vectors<sp/>in<sp/>chunks<sp/>smaller<sp/>than</highlight></codeline>
 <codeline lineno="89"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>blocksize_add<sp/>and<sp/>calls<sp/>add_core.</highlight></codeline>
 <codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>matrix,<sp/>size<sp/>n<sp/>*<sp/>d</highlight></codeline>
 <codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>

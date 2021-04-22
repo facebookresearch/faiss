@@ -283,7 +283,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Add n vectors of dimension d to the index.</para>
-<para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. <parameterlist kind="param"><parameteritem>
+<para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
