@@ -128,7 +128,7 @@ void beam_search_encode_step(
     }
 
 #pragma omp parallel for if (n > 100)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const int32_t* codes_i = codes + i * m * beam_size;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
         const float* residuals_i = residuals + i * d * beam_size;
@@ -403,7 +403,7 @@ void ResidualQuantizer::pack_codes(
         ld_codes = M;
     }
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const int32_t* codes1 = codes + i * ld_codes;
         BitstringWriter bsw(packed_codes + i * code_size, code_size);
         for (int m = 0; m < M; m++) {
@@ -415,7 +415,7 @@ void ResidualQuantizer::pack_codes(
 void ResidualQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
     // standard additive quantizer decoding
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(code + i * code_size, code_size);
         float* xi = x + i * d;
         for (int m = 0; m < M; m++) {
