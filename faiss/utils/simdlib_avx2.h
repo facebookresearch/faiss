@@ -435,4 +435,30 @@ inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
     return simd8float32(_mm256_fmadd_ps(a.f, b.f, c.f));
 }
 
+namespace {
+
+// get even float32's of a and b, interleaved
+inline simd8float32 geteven(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+            _mm256_shuffle_ps(a.f, b.f, 0 << 0 | 2 << 2 | 0 << 4 | 2 << 6));
+}
+
+// get odd float32's of a and b, interleaved
+inline simd8float32 getodd(simd8float32 a, simd8float32 b) {
+    return simd8float32(
+            _mm256_shuffle_ps(a.f, b.f, 1 << 0 | 3 << 2 | 1 << 4 | 3 << 6));
+}
+
+// 3 cycles
+// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
+inline simd8float32 getlow128(simd8float32 a, simd8float32 b) {
+    return simd8float32(_mm256_permute2f128_ps(a.f, b.f, 0 | 2 << 4));
+}
+
+inline simd8float32 gethigh128(simd8float32 a, simd8float32 b) {
+    return simd8float32(_mm256_permute2f128_ps(a.f, b.f, 1 | 3 << 4));
+}
+
+} // namespace
+
 } // namespace faiss

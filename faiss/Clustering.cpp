@@ -8,6 +8,7 @@
 // -*- c++ -*-
 
 #include <faiss/Clustering.h>
+#include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
 #include <cinttypes>
@@ -565,6 +566,105 @@ float kmeans_clustering(
     clus.train(n, x, index);
     memcpy(centroids, clus.centroids.data(), sizeof(*centroids) * d * k);
     return clus.iteration_stats.back().obj;
+}
+
+/******************************************************************************
+ * ProgressiveDimClustering implementation
+ ******************************************************************************/
+
+ProgressiveDimClusteringParameters::ProgressiveDimClusteringParameters() {
+    progressive_dim_steps = 10;
+    apply_pca = true; // seems a good idea to do this by default
+    niter = 10;       // reduce nb of iterations per step
+}
+
+Index* ProgressiveDimIndexFactory::operator()(int dim) {
+    return new IndexFlatL2(dim);
+}
+
+ProgressiveDimClustering::ProgressiveDimClustering(int d, int k) : d(d), k(k) {}
+
+ProgressiveDimClustering::ProgressiveDimClustering(
+        int d,
+        int k,
+        const ProgressiveDimClusteringParameters& cp)
+        : ProgressiveDimClusteringParameters(cp), d(d), k(k) {}
+
+namespace {
+
+using idx_t = Index::idx_t;
+
+void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
+    idx_t d = std::min(d1, d2);
+    for (idx_t i = 0; i < n; i++) {
+        memcpy(dest, src, sizeof(float) * d);
+        src += d1;
+        dest += d2;
+    }
+}
+
+}; // namespace
+
+void ProgressiveDimClustering::train(
+        idx_t n,
+        const float* x,
+        ProgressiveDimIndexFactory& factory) {
+    int d_prev = 0;
+
+    PCAMatrix pca(d, d);
+
+    std::vector<float> xbuf;
+    if (apply_pca) {
+        if (verbose) {
+            printf("Training PCA transform\n");
+        }
+        pca.train(n, x);
+        if (verbose) {
+            printf("Apply PCA\n");
+        }
+        xbuf.resize(n * d);
+        pca.apply_noalloc(n, x, xbuf.data());
+        x = xbuf.data();
+    }
+
+    for (int iter = 0; iter < progressive_dim_steps; iter++) {
+        int di = int(pow(d, (1. + iter) / progressive_dim_steps));
+        if (verbose) {
+            printf("Progressive dim step %d: cluster in dimension %d\n",
+                   iter,
+                   di);
+        }
+        std::unique_ptr<Index> clustering_index(factory(di));
+
+        Clustering clus(di, k, *this);
+        if (d_prev > 0) {
+            // copy warm-start centroids (padded with 0s)
+            clus.centroids.resize(k * di);
+            copy_columns(
+                    k, d_prev, centroids.data(), di, clus.centroids.data());
+        }
+        std::vector<float> xsub(n * di);
+        copy_columns(n, d, x, di, xsub.data());
+
+        clus.train(n, xsub.data(), *clustering_index.get());
+
+        centroids = clus.centroids;
+        iteration_stats.insert(
+                iteration_stats.end(),
+                clus.iteration_stats.begin(),
+                clus.iteration_stats.end());
+
+        d_prev = di;
+    }
+
+    if (apply_pca) {
+        if (verbose) {
+            printf("Revert PCA transform on centroids\n");
+        }
+        std::vector<float> cent_transformed(d * k);
+        pca.reverse_transform(k, centroids.data(), cent_transformed.data());
+        cent_transformed.swap(centroids);
+    }
 }
 
 } // namespace faiss

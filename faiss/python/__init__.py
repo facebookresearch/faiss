@@ -157,6 +157,7 @@ def handle_Quantizer(the_class):
 
 handle_Quantizer(ProductQuantizer)
 handle_Quantizer(ScalarQuantizer)
+handle_Quantizer(ResidualQuantizer)
 
 
 def handle_NSG(the_class):
@@ -620,6 +621,7 @@ def handle_VectorTransform(the_class):
     replace_method(the_class, 'train', replacement_vt_train)
     # apply is reserved in Pyton...
     the_class.apply_py = apply_method
+    the_class.apply = apply_method
     replace_method(the_class, 'reverse_transform',
                    replacement_reverse_transform)
 
@@ -903,7 +905,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
         xq = xq.T
         xq_row_major = False
     else:
-        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+        raise TypeError('xq matrix should be row (C) or column-major (Fortran)')
 
     xq_ptr = swig_ptr(xq)
 
@@ -922,7 +924,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
         xb = xb.T
         xb_row_major = False
     else:
-        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+        raise TypeError('xb matrix should be row (C) or column-major (Fortran)')
 
     xb_ptr = swig_ptr(xb)
 
@@ -931,7 +933,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
     elif xb.dtype == np.float16:
         xb_type = DistanceDataType_F16
     else:
-        raise TypeError('xb must be f32 or f16')
+        raise TypeError('xb must be float32 or float16')
 
     if D is None:
         D = np.empty((nq, k), dtype=np.float32)
@@ -977,6 +979,98 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
     bfKnn(res, args)
 
     return D, I
+
+# allows numpy ndarray usage with bfKnn for all pairwise distances
+def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2):
+    """
+    Compute all pairwise distances between xq and xb on one GPU without constructing an index
+
+    Parameters
+    ----------
+    res : StandardGpuResources
+        GPU resources to use during computation
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    D : array_like, optional
+        Output array for all pairwise distances, shape (nq, nb)
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        All pairwise distances, shape (nq, nb)
+    """
+    nq, d = xq.shape
+    if xq.flags.c_contiguous:
+        xq_row_major = True
+    elif xq.flags.f_contiguous:
+        xq = xq.T
+        xq_row_major = False
+    else:
+        raise TypeError('xq matrix should be row (C) or column-major (Fortran)')
+
+    xq_ptr = swig_ptr(xq)
+
+    if xq.dtype == np.float32:
+        xq_type = DistanceDataType_F32
+    elif xq.dtype == np.float16:
+        xq_type = DistanceDataType_F16
+    else:
+        raise TypeError('xq must be float32 or float16')
+
+    nb, d2 = xb.shape
+    assert d2 == d
+    if xb.flags.c_contiguous:
+        xb_row_major = True
+    elif xb.flags.f_contiguous:
+        xb = xb.T
+        xb_row_major = False
+    else:
+        raise TypeError('xb matrix should be row (C) or column-major (Fortran)')
+
+    xb_ptr = swig_ptr(xb)
+
+    if xb.dtype == np.float32:
+        xb_type = DistanceDataType_F32
+    elif xb.dtype == np.float16:
+        xb_type = DistanceDataType_F16
+    else:
+        raise TypeError('xb must be float32 or float16')
+
+    if D is None:
+        D = np.empty((nq, nb), dtype=np.float32)
+    else:
+        assert D.shape == (nq, nb)
+        # interface takes void*, we need to check this
+        assert D.dtype == np.float32
+
+    D_ptr = swig_ptr(D)
+
+    args = GpuDistanceParams()
+    args.metric = metric
+    args.k = -1 # selects all pairwise distances
+    args.dims = d
+    args.vectors = xb_ptr
+    args.vectorsRowMajor = xb_row_major
+    args.vectorType = xb_type
+    args.numVectors = nb
+    args.queries = xq_ptr
+    args.queriesRowMajor = xq_row_major
+    args.queryType = xq_type
+    args.numQueries = nq
+    args.outDistances = D_ptr
+
+    # no stream synchronization needed, inputs and outputs are guaranteed to
+    # be on the CPU (numpy arrays)
+    bfKnn(res, args)
+
+    return D
+
 
 ###########################################
 # numpy array / std::vector conversions
@@ -1346,6 +1440,8 @@ class Kmeans:
        False: don't use GPU
        True: use all GPUs
        number: use this many GPUs
+    progressive_dim_steps:
+        use a progressive dimension clustering (with that number of steps)
 
     Subsequent parameters are fields of the Clustring object. The most important are:
 
@@ -1372,9 +1468,14 @@ class Kmeans:
         self.d = d
         self.k = k
         self.gpu = False
-        self.cp = ClusteringParameters()
+        if "progressive_dim_steps" in kwargs:
+            self.cp = ProgressiveDimClusteringParameters()
+        else:
+            self.cp = ClusteringParameters()
         for k, v in kwargs.items():
             if k == 'gpu':
+                if v == True or v == -1:
+                    v = get_num_gpus()
                 self.gpu = v
             else:
                 # if this raises an exception, it means that it is a non-existent field
@@ -1410,23 +1511,35 @@ class Kmeans:
         """
         n, d = x.shape
         assert d == self.d
-        clus = Clustering(d, self.k, self.cp)
-        if init_centroids is not None:
-            nc, d2 = init_centroids.shape
-            assert d2 == d
-            copy_array_to_vector(init_centroids.ravel(), clus.centroids)
-        if self.cp.spherical:
-            self.index = IndexFlatIP(d)
-        else:
-            self.index = IndexFlatL2(d)
-        if self.gpu:
-            if self.gpu == True:
-                ngpu = -1
+
+        if self.cp.__class__ == ClusteringParameters:
+            # regular clustering
+            clus = Clustering(d, self.k, self.cp)
+            if init_centroids is not None:
+                nc, d2 = init_centroids.shape
+                assert d2 == d
+                copy_array_to_vector(init_centroids.ravel(), clus.centroids)
+            if self.cp.spherical:
+                self.index = IndexFlatIP(d)
             else:
-                ngpu = self.gpu
-            self.index = index_cpu_to_all_gpus(self.index, ngpu=ngpu)
-        clus.train(x, self.index, weights)
+                self.index = IndexFlatL2(d)
+            if self.gpu:
+                self.index = index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+            clus.train(x, self.index, weights)
+        else:
+            # not supported for progressive dim
+            assert weights is None
+            assert init_centroids is None
+            assert not self.cp.spherical
+            clus = ProgressiveDimClustering(d, self.k, self.cp)
+            if self.gpu:
+                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
+            else:
+                fac = ProgressiveDimIndexFactory()
+            clus.train(n, swig_ptr(x), fac)
+
         centroids = vector_float_to_array(clus.centroids)
+
         self.centroids = centroids.reshape(self.k, d)
         stats = clus.iteration_stats
         stats = [stats.at(i) for i in range(stats.size())]

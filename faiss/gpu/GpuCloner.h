@@ -9,12 +9,12 @@
 
 #include <vector>
 
+#include <faiss/Clustering.h>
 #include <faiss/Index.h>
 #include <faiss/clone_index.h>
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-
 namespace faiss {
 namespace gpu {
 
@@ -79,6 +79,21 @@ faiss::Index* index_cpu_to_gpu_multiple(
         std::vector<int>& devices,
         const faiss::Index* index,
         const GpuMultipleClonerOptions* options = nullptr);
+
+/// index factory for the ProgressiveDimClustering object
+
+struct GpuProgressiveDimIndexFactory : ProgressiveDimIndexFactory {
+    GpuMultipleClonerOptions options;
+    std::vector<GpuResourcesProvider*> vres;
+    std::vector<int> devices;
+    int ncall;
+
+    explicit GpuProgressiveDimIndexFactory(int ngpu);
+
+    Index* operator()(int dim) override;
+
+    virtual ~GpuProgressiveDimIndexFactory() override;
+};
 
 } // namespace gpu
 } // namespace faiss

@@ -107,7 +107,7 @@ jobs:
 
   build_osx:
     macos:
-      xcode: 11.6.0
+      xcode: 12.4.0
     environment:
       OMP_NUM_THREADS: 10
     steps:
@@ -239,7 +239,7 @@ jobs:
         type: string
         default: main
     macos:
-      xcode: 11.6.0
+      xcode: 12.4.0
     steps:
       - checkout
       - run:

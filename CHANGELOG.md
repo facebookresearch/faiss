@@ -10,7 +10,8 @@ at the moment.
 - Support for building C bindings through the `FAISS_ENABLE_C_API` CMake option.
 - Serializing the indexes with the python pickle module
 - Support for the NNDescent k-NN graph building method
-- Support for the NSG indexing method
+- Support for the NSG graph indexing method
+- Begin support for residual quantizers
 
 ### Changed
 - The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.

@@ -47,12 +47,10 @@ set(FAISS_GPU_SRC
   impl/scan/IVFInterleaved1024.cu
   impl/scan/IVFInterleaved2048.cu
   utils/BlockSelectFloat.cu
-  utils/BlockSelectHalf.cu
   utils/DeviceUtils.cu
   utils/StackDeviceMemory.cpp
   utils/Timer.cpp
   utils/WarpSelectFloat.cu
-  utils/WarpSelectHalf.cu
   utils/blockselect/BlockSelectFloat1.cu
   utils/blockselect/BlockSelectFloat32.cu
   utils/blockselect/BlockSelectFloat64.cu
@@ -64,17 +62,6 @@ set(FAISS_GPU_SRC
   utils/blockselect/BlockSelectFloatT512.cu
   utils/blockselect/BlockSelectFloatT1024.cu
   utils/blockselect/BlockSelectFloatT2048.cu
-  utils/blockselect/BlockSelectHalf1.cu
-  utils/blockselect/BlockSelectHalf32.cu
-  utils/blockselect/BlockSelectHalf64.cu
-  utils/blockselect/BlockSelectHalf128.cu
-  utils/blockselect/BlockSelectHalf256.cu
-  utils/blockselect/BlockSelectHalfF512.cu
-  utils/blockselect/BlockSelectHalfF1024.cu
-  utils/blockselect/BlockSelectHalfF2048.cu
-  utils/blockselect/BlockSelectHalfT512.cu
-  utils/blockselect/BlockSelectHalfT1024.cu
-  utils/blockselect/BlockSelectHalfT2048.cu
   utils/warpselect/WarpSelectFloat1.cu
   utils/warpselect/WarpSelectFloat32.cu
   utils/warpselect/WarpSelectFloat64.cu
@@ -86,17 +73,6 @@ set(FAISS_GPU_SRC
   utils/warpselect/WarpSelectFloatT512.cu
   utils/warpselect/WarpSelectFloatT1024.cu
   utils/warpselect/WarpSelectFloatT2048.cu
-  utils/warpselect/WarpSelectHalf1.cu
-  utils/warpselect/WarpSelectHalf32.cu
-  utils/warpselect/WarpSelectHalf64.cu
-  utils/warpselect/WarpSelectHalf128.cu
-  utils/warpselect/WarpSelectHalf256.cu
-  utils/warpselect/WarpSelectHalfF512.cu
-  utils/warpselect/WarpSelectHalfF1024.cu
-  utils/warpselect/WarpSelectHalfF2048.cu
-  utils/warpselect/WarpSelectHalfT512.cu
-  utils/warpselect/WarpSelectHalfT1024.cu
-  utils/warpselect/WarpSelectHalfT2048.cu
 )
 
 set(FAISS_GPU_HEADERS
