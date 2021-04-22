@@ -55,7 +55,7 @@
         <argsstring></argsstring>
         <name>gt_nnn</name>
         <briefdescription>
-<para>nb of GT NNs required to evaluate crterion </para>
+<para>nb of GT NNs required to evaluate criterion </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

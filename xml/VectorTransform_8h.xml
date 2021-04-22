@@ -134,7 +134,7 @@
 <codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kindref="member">train</ref>(idx_t<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>apply<sp/>the<sp/>random<sp/>roation,<sp/>return<sp/>new<sp/>allocated<sp/>matrix</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>apply<sp/>the<sp/>random<sp/>rotation,<sp/>return<sp/>new<sp/>allocated<sp/>matrix</highlight></codeline>
 <codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/><sp/><sp/><sp/><sp/>x<sp/>size<sp/>n<sp/>*<sp/>d_in</highlight></codeline>
 <codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@return<sp/><sp/><sp/><sp/>size<sp/>n<sp/>*<sp/>d_out</highlight></codeline>
 <codeline lineno="49"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>

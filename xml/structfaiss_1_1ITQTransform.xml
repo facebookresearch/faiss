@@ -226,7 +226,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>apply the random roation, return new allocated matrix <parameterlist kind="param"><parameteritem>
+<para>apply the random rotation, return new allocated matrix <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
