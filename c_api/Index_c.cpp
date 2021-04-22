@@ -24,6 +24,9 @@ DEFINE_GETTER(Index, idx_t, ntotal)
 
 DEFINE_GETTER(Index, FaissMetricType, metric_type)
 
+DEFINE_GETTER(Index, int, verbose);
+DEFINE_SETTER(Index, int, verbose);
+
 int faiss_Index_train(FaissIndex* index, idx_t n, const float* x) {
     try {
         reinterpret_cast<faiss::Index*>(index)->train(n, x);

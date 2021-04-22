@@ -76,10 +76,18 @@ struct ScalarQuantizer {
             bool by_residual,
             bool verbose);
 
-    /// same as compute_code for several vectors
+    /** Encode a set of vectors
+     *
+     * @param x      vectors to encode, size n * d
+     * @param codes  output codes, size n * code_size
+     */
     void compute_codes(const float* x, uint8_t* codes, size_t n) const;
 
-    /// decode a vector from a given code (or n vectors if third argument)
+    /** Decode a set of vectors
+     *
+     * @param codes  codes to decode, size n * code_size
+     * @param x      output vectors, size n * d
+     */
     void decode(const uint8_t* code, float* x, size_t n) const;
 
     /*****************************************************

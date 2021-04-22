@@ -252,6 +252,7 @@ void runGeneralDistanceKernel(
 template <typename T, typename DistanceOp, bool InnerContig>
 void runGeneralDistance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<T, 2, InnerContig>& centroids,
         Tensor<T, 2, InnerContig>& queries,
         int k,
@@ -275,18 +276,16 @@ void runGeneralDistance(
     FAISS_ASSERT(outDistances.getSize(1) == k);
     FAISS_ASSERT(outIndices.getSize(1) == k);
 
-    auto defaultStream = res->getDefaultStreamCurrentDevice();
-
     // If we're quering against a 0 sized set, just return empty results
     if (centroids.numElements() == 0) {
         thrust::fill(
-                thrust::cuda::par.on(defaultStream),
+                thrust::cuda::par.on(stream),
                 outDistances.data(),
                 outDistances.end(),
                 Limits<float>::getMax());
 
         thrust::fill(
-                thrust::cuda::par.on(defaultStream),
+                thrust::cuda::par.on(stream),
                 outIndices.data(),
                 outIndices.end(),
                 -1);
@@ -315,40 +314,36 @@ void runGeneralDistance(
 
     // Temporary output memory space we'll use
     DeviceTensor<float, 2, true> distanceBuf1(
-            res,
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {tileRows, tileCols});
+            res, makeTempAlloc(AllocType::Other, stream), {tileRows, tileCols});
     DeviceTensor<float, 2, true> distanceBuf2(
-            res,
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {tileRows, tileCols});
+            res, makeTempAlloc(AllocType::Other, stream), {tileRows, tileCols});
     DeviceTensor<float, 2, true>* distanceBufs[2] = {
             &distanceBuf1, &distanceBuf2};
 
     DeviceTensor<float, 2, true> outDistanceBuf1(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<float, 2, true> outDistanceBuf2(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<float, 2, true>* outDistanceBufs[2] = {
             &outDistanceBuf1, &outDistanceBuf2};
 
     DeviceTensor<int, 2, true> outIndexBuf1(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<int, 2, true> outIndexBuf2(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<int, 2, true>* outIndexBufs[2] = {
             &outIndexBuf1, &outIndexBuf2};
 
     auto streams = res->getAlternateStreamsCurrentDevice();
-    streamWait(streams, {defaultStream});
+    streamWait(streams, {stream});
 
     int curStream = 0;
     bool interrupt = false;
@@ -445,7 +440,7 @@ void runGeneralDistance(
     }
 
     // Have the desired ordering stream wait on the multi-stream
-    streamWait({defaultStream}, streams);
+    streamWait({stream}, streams);
 
     if (interrupt) {
         FAISS_THROW_MSG("interrupted");

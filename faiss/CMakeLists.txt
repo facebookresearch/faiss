@@ -46,6 +46,7 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/ResidualQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
@@ -148,6 +149,7 @@ set(FAISS_HEADERS
   utils/simdlib.h
   utils/simdlib_avx2.h
   utils/simdlib_emulated.h
+  utils/simdlib_neon.h
   utils/utils.h
 )
 

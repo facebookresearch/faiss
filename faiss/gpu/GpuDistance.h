@@ -51,33 +51,35 @@ struct GpuDistanceParams {
     // Search parameters
     //
 
-    // Search parameter: distance metric
+    /// Search parameter: distance metric
     faiss::MetricType metric;
 
-    // Search parameter: distance metric argument (if applicable)
-    // For metric == METRIC_Lp, this is the p-value
+    /// Search parameter: distance metric argument (if applicable)
+    /// For metric == METRIC_Lp, this is the p-value
     float metricArg;
 
-    // Search parameter: return k nearest neighbors
+    /// Search parameter: return k nearest neighbors
+    /// If the value provided is -1, then we report all pairwise distances
+    /// without top-k filtering
     int k;
 
-    // Vector dimensionality
+    /// Vector dimensionality
     int dims;
 
     //
     // Vectors being queried
     //
 
-    // If vectorsRowMajor is true, this is
-    // numVectors x dims, with dims innermost; otherwise,
-    // dims x numVectors, with numVectors innermost
+    /// If vectorsRowMajor is true, this is
+    /// numVectors x dims, with dims innermost; otherwise,
+    /// dims x numVectors, with numVectors innermost
     const void* vectors;
     DistanceDataType vectorType;
     bool vectorsRowMajor;
     int numVectors;
 
-    // Precomputed L2 norms for each vector in `vectors`, which can be
-    // optionally provided in advance to speed computation for METRIC_L2
+    /// Precomputed L2 norms for each vector in `vectors`, which can be
+    /// optionally provided in advance to speed computation for METRIC_L2
     const float* vectorNorms;
 
     //
@@ -85,9 +87,9 @@ struct GpuDistanceParams {
     // of the `queries`
     //
 
-    // If queriesRowMajor is true, this is
-    // numQueries x dims, with dims innermost; otherwise,
-    // dims x numQueries, with numQueries innermost
+    /// If queriesRowMajor is true, this is
+    /// numQueries x dims, with dims innermost; otherwise,
+    /// dims x numQueries, with numQueries innermost
     const void* queries;
     DistanceDataType queryType;
     bool queriesRowMajor;
@@ -97,16 +99,17 @@ struct GpuDistanceParams {
     // Output results
     //
 
-    // A region of memory size numQueries x k, with k
-    // innermost (row major)
+    /// A region of memory size numQueries x k, with k
+    /// innermost (row major) if k > 0, or if k == -1, a region of memory of
+    /// size numQueries x numVectors
     float* outDistances;
 
-    // Do we only care abouty the indices reported, rather than the output
-    // distances?
+    /// Do we only care about the indices reported, rather than the output
+    /// distances? Not used if k == -1 (all pairwise distances)
     bool ignoreOutDistances;
 
-    // A region of memory size numQueries x k, with k
-    // innermost (row major)
+    /// A region of memory size numQueries x k, with k
+    /// innermost (row major). Not used if k == -1 (all pairwise distances)
     IndicesDataType outIndicesType;
     void* outIndices;
 };

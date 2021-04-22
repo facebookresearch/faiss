@@ -10,7 +10,7 @@ import os
 import numpy as np
 import faiss
 
-from faiss.contrib.datasets import SynteticDataset
+from faiss.contrib.datasets import SyntheticDataset
 
 
 os.system("grep -m1 'model name' < /proc/cpuinfo")
@@ -54,7 +54,7 @@ for have_threads in False, :
 
             # d = 32
 
-            ds = SynteticDataset(d, 0, nb, nq)
+            ds = SyntheticDataset(d, 0, nb, nq)
 
             print(ds)
 

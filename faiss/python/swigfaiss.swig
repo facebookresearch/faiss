@@ -118,6 +118,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include  <faiss/impl/ResidualQuantizer.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -373,6 +374,7 @@ void gpu_sync_all_devices()
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
 %include  <faiss/impl/ProductQuantizer.h>
+%include  <faiss/impl/ResidualQuantizer.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>

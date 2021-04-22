@@ -978,8 +978,8 @@ class TestValidIndexParams(unittest.TestCase):
         k = 10
         D, nns = index.search(xq, k)
 
-        self.assertEquals(D.shape[0], nq)
-        self.assertEquals(D.shape[1], k)
+        self.assertEqual(D.shape[0], nq)
+        self.assertEqual(D.shape[1], k)
 
     def test_IndexFlat(self):
         d = 32
@@ -1000,5 +1000,5 @@ class TestValidIndexParams(unittest.TestCase):
         k = 5
         D, I = index.search(xq, k)
 
-        self.assertEquals(D.shape[0], nq)
-        self.assertEquals(D.shape[1], k)
+        self.assertEqual(D.shape[0], nq)
+        self.assertEqual(D.shape[1], k)

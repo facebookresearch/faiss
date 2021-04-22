@@ -20,7 +20,10 @@ namespace gpu {
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     // Validate the input data
-    FAISS_THROW_IF_NOT_MSG(args.k > 0, "bfKnn: k must be > 0");
+    FAISS_THROW_IF_NOT_MSG(
+            args.k > 0 || args.k == -1,
+            "bfKnn: k must be > 0 for top-k reduction, "
+            "or -1 for all pairwise distances");
     FAISS_THROW_IF_NOT_MSG(args.dims > 0, "bfKnn: dims must be > 0");
     FAISS_THROW_IF_NOT_MSG(
             args.numVectors > 0, "bfKnn: numVectors must be > 0");
@@ -34,7 +37,7 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             args.outDistances,
             "bfKnn: outDistances must be provided (passed null)");
     FAISS_THROW_IF_NOT_MSG(
-            args.outIndices,
+            args.outIndices || args.k == -1,
             "bfKnn: outIndices must be provided (passed null)");
 
     // Don't let the resources go out of scope
@@ -69,9 +72,27 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     }
 
     auto tOutDistances = toDeviceTemporary<float, 2>(
-            res, device, args.outDistances, stream, {args.numQueries, args.k});
+            res,
+            device,
+            args.outDistances,
+            stream,
+            {args.numQueries, args.k == -1 ? args.numVectors : args.k});
 
-    if (args.outIndicesType == IndicesDataType::I64) {
+    if (args.k == -1) {
+        // Reporting all pairwise distances
+        allPairwiseDistanceOnDevice<T>(
+                res,
+                device,
+                stream,
+                tVectors,
+                args.vectorsRowMajor,
+                args.vectorNorms ? &tVectorNorms : nullptr,
+                tQueries,
+                args.queriesRowMajor,
+                args.metric,
+                args.metricArg,
+                tOutDistances);
+    } else if (args.outIndicesType == IndicesDataType::I64) {
         // The brute-force API only supports an interface for i32 indices only,
         // so we must create an output i32 buffer then convert back
         DeviceTensor<int, 2, true> tOutIntIndices(

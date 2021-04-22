@@ -841,31 +841,7 @@ int fvec_madd_and_argmin(
  * PQ tables computations
  ***************************************************************************/
 
-#ifdef __AVX2__
-
 namespace {
-
-// get even float32's of a and b, interleaved
-simd8float32 geteven(simd8float32 a, simd8float32 b) {
-    return simd8float32(
-            _mm256_shuffle_ps(a.f, b.f, 0 << 0 | 2 << 2 | 0 << 4 | 2 << 6));
-}
-
-// get odd float32's of a and b, interleaved
-simd8float32 getodd(simd8float32 a, simd8float32 b) {
-    return simd8float32(
-            _mm256_shuffle_ps(a.f, b.f, 1 << 0 | 3 << 2 | 1 << 4 | 3 << 6));
-}
-
-// 3 cycles
-// if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
-simd8float32 getlow128(simd8float32 a, simd8float32 b) {
-    return simd8float32(_mm256_permute2f128_ps(a.f, b.f, 0 | 2 << 4));
-}
-
-simd8float32 gethigh128(simd8float32 a, simd8float32 b) {
-    return simd8float32(_mm256_permute2f128_ps(a.f, b.f, 1 | 3 << 4));
-}
 
 /// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
 template <bool is_inner_product>
@@ -978,20 +954,5 @@ void compute_PQ_dis_tables_dsub2(
         }
     }
 }
-
-#else
-
-void compute_PQ_dis_tables_dsub2(
-        size_t d,
-        size_t ksub,
-        const float* all_centroids,
-        size_t nx,
-        const float* x,
-        bool is_inner_product,
-        float* dis_tables) {
-    FAISS_THROW_MSG("only implemented for AVX2");
-}
-
-#endif
 
 } // namespace faiss

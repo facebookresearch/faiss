@@ -336,3 +336,97 @@ class TestTorchUtilsKnnGpu(unittest.TestCase):
 
         self.assertTrue(torch.equal(torch.from_numpy(I).long(), gt_I))
         self.assertLess((torch.from_numpy(D) - gt_D).abs().max(), 1.5e-3)
+
+class TestTorchUtilsPairwiseDistanceGpu(unittest.TestCase):
+    def test_pairwise_distance_gpu(self):
+        torch.manual_seed(10)
+        d = 32
+        k = 100
+        # To compare against IndexFlat, use nb == k
+        nb = k
+        nq = 10
+        res = faiss.StandardGpuResources()
+
+        # make GT on torch cpu and test using IndexFlatL2
+        xb = torch.rand(nb, d, dtype=torch.float32)
+        xq = torch.rand(nq, d, dtype=torch.float32)
+
+        index = faiss.IndexFlatL2(d)
+        index.add(xb)
+        gt_D, _ = index.search(xq, k)
+
+        # for the GPU, we'll use a non-default stream
+        s = torch.cuda.Stream()
+        with torch.cuda.stream(s):
+            # test numpy inputs
+            xb_np = xb.numpy()
+            xq_np = xq.numpy()
+
+            for xq_row_major in True, False:
+                for xb_row_major in True, False:
+                    if not xq_row_major:
+                        xq_c = to_column_major_numpy(xq_np)
+                        assert not xq_c.flags.contiguous
+                    else:
+                        xq_c = xq_np
+
+                    if not xb_row_major:
+                        xb_c = to_column_major_numpy(xb_np)
+                        assert not xb_c.flags.contiguous
+                    else:
+                        xb_c = xb_np
+
+                    D = faiss.pairwise_distance_gpu(res, xq_c, xb_c)
+
+                    # IndexFlat will sort the results, so we need to
+                    # do the same on our end
+                    D = np.sort(D, axis=1)
+
+                    self.assertLess((torch.from_numpy(D) - gt_D).abs().max(), 1e-4)
+
+            # test torch (cpu, gpu) inputs
+            for is_cuda in True, False:
+                for xq_row_major in True, False:
+                    for xb_row_major in True, False:
+
+                        if is_cuda:
+                            xq_c = xq.cuda()
+                            xb_c = xb.cuda()
+                        else:
+                            # also test torch cpu tensors
+                            xq_c = xq
+                            xb_c = xb
+
+                        if not xq_row_major:
+                            xq_c = to_column_major_torch(xq)
+                            assert not xq_c.is_contiguous()
+
+                        if not xb_row_major:
+                            xb_c = to_column_major_torch(xb)
+                            assert not xb_c.is_contiguous()
+
+                        D = faiss.pairwise_distance_gpu(res, xq_c, xb_c)
+
+                        # IndexFlat will sort the results, so we need to
+                        # do the same on our end
+                        D, _ = torch.sort(D, dim=1)
+
+                        self.assertLess((D.cpu() - gt_D).abs().max(), 1e-4)
+
+                        # test on subset
+                        try:
+                            # This internally uses the current pytorch stream
+                            D = faiss.pairwise_distance_gpu(res, xq_c[4:8], xb_c)
+                        except TypeError:
+                            if not xq_row_major:
+                                # then it is expected
+                                continue
+                            # otherwise it is an error
+                            raise
+
+                        # IndexFlat will sort the results, so we need to
+                        # do the same on our end
+                        print(D)
+                        D, _ = torch.sort(D, dim=1)
+
+                        self.assertLess((D.cpu() - gt_D[4:8]).abs().max(), 1e-4)

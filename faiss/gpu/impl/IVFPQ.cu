@@ -197,6 +197,7 @@ void IVFPQ::appendVectors_(
 
             runL2Distance(
                     resources_,
+                    stream,
                     pqCentroidsMiddleCodeView,
                     true,    // pqCentroidsMiddleCodeView is row major
                     nullptr, // no precomputed norms

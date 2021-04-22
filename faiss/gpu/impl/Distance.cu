@@ -30,9 +30,97 @@ namespace faiss {
 namespace gpu {
 
 template <typename T>
+void runAllPairwiseDistance(
+        bool computeL2,
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<T, 2, true>& centroids,
+        bool centroidsRowMajor,
+        Tensor<float, 1, true>* centroidNorms,
+        Tensor<T, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    // The # of centroids in `centroids` based on memory layout
+    auto numCentroids = centroids.getSize(centroidsRowMajor ? 0 : 1);
+
+    // The # of queries in `queries` based on memory layout
+    auto numQueries = queries.getSize(queriesRowMajor ? 0 : 1);
+
+    // The dimensions of the vectors to consider
+    auto dim = queries.getSize(queriesRowMajor ? 1 : 0);
+    FAISS_ASSERT(
+            (numQueries == 0 || numCentroids == 0) ||
+            dim == centroids.getSize(centroidsRowMajor ? 1 : 0));
+
+    FAISS_ASSERT(outDistances.getSize(0) == numQueries);
+    FAISS_ASSERT(outDistances.getSize(1) == numCentroids);
+
+    // If we're querying against a 0 sized set, just return empty results
+    if (centroids.numElements() == 0) {
+        thrust::fill(
+                thrust::cuda::par.on(stream),
+                outDistances.data(),
+                outDistances.end(),
+                Limits<float>::getMax());
+
+        return;
+    }
+
+    // L2: If ||c||^2 is not pre-computed, calculate it
+    DeviceTensor<float, 1, true> cNorms;
+    if (computeL2 && !centroidNorms) {
+        cNorms = DeviceTensor<float, 1, true>(
+                res, makeTempAlloc(AllocType::Other, stream), {numCentroids});
+        runL2Norm(centroids, centroidsRowMajor, cNorms, true, stream);
+        centroidNorms = &cNorms;
+    }
+
+    //
+    // Prepare norm vector ||q||^2; ||c||^2 is already pre-computed
+    //
+    DeviceTensor<float, 1, true> queryNorms(
+            res, makeTempAlloc(AllocType::Other, stream), {(int)numQueries});
+
+    // ||q||^2
+    if (computeL2) {
+        runL2Norm(queries, queriesRowMajor, queryNorms, true, stream);
+    }
+
+    // L2: distance is ||c||^2 - 2qc + ||q||^2, we compute -2qc
+    // IP: just compute qc
+    // (query id x dim) x (centroid id, dim)' = (query id, centroid id)
+    runMatrixMult(
+            outDistances,
+            false, // not transposed
+            queries,
+            !queriesRowMajor, // transposed MM if col major
+            centroids,
+            centroidsRowMajor, // transposed MM if row major
+            computeL2 ? -2.0f : 1.0f,
+            0.0f,
+            res->getBlasHandleCurrentDevice(),
+            stream);
+
+    if (computeL2) {
+        // Need to add ||q||^2 along rows
+        // Need to add ||c||^2 along columns
+        // FIXME: optimize with a dedicated kernel
+        runSumAlongColumns(*centroidNorms, outDistances, stream);
+
+        runSumAlongRows(
+                queryNorms,
+                outDistances,
+                true, // L2 distances should not go below zero
+                // due to roundoff error
+                stream);
+    }
+}
+
+template <typename T>
 void runDistance(
         bool computeL2,
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<T, 2, true>& centroids,
         bool centroidsRowMajor,
         Tensor<float, 1, true>* centroidNorms,
@@ -59,18 +147,16 @@ void runDistance(
     FAISS_ASSERT(outDistances.getSize(1) == k);
     FAISS_ASSERT(outIndices.getSize(1) == k);
 
-    auto defaultStream = res->getDefaultStreamCurrentDevice();
-
     // If we're querying against a 0 sized set, just return empty results
     if (centroids.numElements() == 0) {
         thrust::fill(
-                thrust::cuda::par.on(defaultStream),
+                thrust::cuda::par.on(stream),
                 outDistances.data(),
                 outDistances.end(),
                 Limits<float>::getMax());
 
         thrust::fill(
-                thrust::cuda::par.on(defaultStream),
+                thrust::cuda::par.on(stream),
                 outIndices.data(),
                 outIndices.end(),
                 -1);
@@ -82,10 +168,8 @@ void runDistance(
     DeviceTensor<float, 1, true> cNorms;
     if (computeL2 && !centroidNorms) {
         cNorms = DeviceTensor<float, 1, true>(
-                res,
-                makeTempAlloc(AllocType::Other, defaultStream),
-                {numCentroids});
-        runL2Norm(centroids, centroidsRowMajor, cNorms, true, defaultStream);
+                res, makeTempAlloc(AllocType::Other, stream), {numCentroids});
+        runL2Norm(centroids, centroidsRowMajor, cNorms, true, stream);
         centroidNorms = &cNorms;
     }
 
@@ -93,13 +177,11 @@ void runDistance(
     // Prepare norm vector ||q||^2; ||c||^2 is already pre-computed
     //
     DeviceTensor<float, 1, true> queryNorms(
-            res,
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {(int)numQueries});
+            res, makeTempAlloc(AllocType::Other, stream), {(int)numQueries});
 
     // ||q||^2
     if (computeL2) {
-        runL2Norm(queries, queriesRowMajor, queryNorms, true, defaultStream);
+        runL2Norm(queries, queriesRowMajor, queryNorms, true, stream);
     }
 
     // By default, aim to use up to 512 MB of memory for the processing, with
@@ -123,40 +205,36 @@ void runDistance(
 
     // Temporary output memory space we'll use
     DeviceTensor<float, 2, true> distanceBuf1(
-            res,
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {tileRows, tileCols});
+            res, makeTempAlloc(AllocType::Other, stream), {tileRows, tileCols});
     DeviceTensor<float, 2, true> distanceBuf2(
-            res,
-            makeTempAlloc(AllocType::Other, defaultStream),
-            {tileRows, tileCols});
+            res, makeTempAlloc(AllocType::Other, stream), {tileRows, tileCols});
     DeviceTensor<float, 2, true>* distanceBufs[2] = {
             &distanceBuf1, &distanceBuf2};
 
     DeviceTensor<float, 2, true> outDistanceBuf1(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<float, 2, true> outDistanceBuf2(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<float, 2, true>* outDistanceBufs[2] = {
             &outDistanceBuf1, &outDistanceBuf2};
 
     DeviceTensor<int, 2, true> outIndexBuf1(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<int, 2, true> outIndexBuf2(
             res,
-            makeTempAlloc(AllocType::Other, defaultStream),
+            makeTempAlloc(AllocType::Other, stream),
             {tileRows, numColTiles * k});
     DeviceTensor<int, 2, true>* outIndexBufs[2] = {
             &outIndexBuf1, &outIndexBuf2};
 
     auto streams = res->getAlternateStreamsCurrentDevice();
-    streamWait(streams, {defaultStream});
+    streamWait(streams, {stream});
 
     int curStream = 0;
     bool interrupt = false;
@@ -319,7 +397,7 @@ void runDistance(
     }
 
     // Have the desired ordering stream wait on the multi-stream
-    streamWait({defaultStream}, streams);
+    streamWait({stream}, streams);
 
     if (interrupt) {
         FAISS_THROW_MSG("interrupted");
@@ -329,6 +407,7 @@ void runDistance(
 template <typename T>
 void runL2Distance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<T, 2, true>& centroids,
         bool centroidsRowMajor,
         Tensor<float, 1, true>* centroidNorms,
@@ -341,6 +420,7 @@ void runL2Distance(
     runDistance<T>(
             true, // L2
             res,
+            stream,
             centroids,
             centroidsRowMajor,
             centroidNorms,
@@ -355,6 +435,7 @@ void runL2Distance(
 template <typename T>
 void runIPDistance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<T, 2, true>& centroids,
         bool centroidsRowMajor,
         Tensor<T, 2, true>& queries,
@@ -365,6 +446,7 @@ void runIPDistance(
     runDistance<T>(
             false, // IP
             res,
+            stream,
             centroids,
             centroidsRowMajor,
             nullptr, // no centroid norms provided
@@ -380,48 +462,91 @@ void runIPDistance(
 // Instantiations of the distance templates
 //
 
-void runIPDistance(
+void runAllPairwiseL2Distance(
         GpuResources* res,
+        cudaStream_t stream,
+        Tensor<float, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<float, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<float>(
+            true,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+
+void runAllPairwiseL2Distance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<half, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 1, true>* vectorNorms,
+        Tensor<half, 2, true>& queries,
+        bool queriesRowMajor,
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<half>(
+            true,
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            vectorNorms,
+            queries,
+            queriesRowMajor,
+            outDistances);
+}
+
+void runAllPairwiseIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
         Tensor<float, 2, true>& vectors,
         bool vectorsRowMajor,
         Tensor<float, 2, true>& queries,
         bool queriesRowMajor,
-        int k,
-        Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
-    runIPDistance<float>(
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<float>(
+            false,
             res,
+            stream,
             vectors,
             vectorsRowMajor,
+            nullptr,
             queries,
             queriesRowMajor,
-            k,
-            outDistances,
-            outIndices);
+            outDistances);
 }
 
-void runIPDistance(
+void runAllPairwiseIPDistance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<half, 2, true>& vectors,
         bool vectorsRowMajor,
         Tensor<half, 2, true>& queries,
         bool queriesRowMajor,
-        int k,
-        Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
-    runIPDistance<half>(
+        Tensor<float, 2, true>& outDistances) {
+    runAllPairwiseDistance<half>(
+            false,
             res,
+            stream,
             vectors,
             vectorsRowMajor,
+            nullptr,
             queries,
             queriesRowMajor,
-            k,
-            outDistances,
-            outIndices);
+            outDistances);
 }
 
 void runL2Distance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<float, 2, true>& vectors,
         bool vectorsRowMajor,
         Tensor<float, 1, true>* vectorNorms,
@@ -433,6 +558,7 @@ void runL2Distance(
         bool ignoreOutDistances) {
     runL2Distance<float>(
             res,
+            stream,
             vectors,
             vectorsRowMajor,
             vectorNorms,
@@ -446,6 +572,7 @@ void runL2Distance(
 
 void runL2Distance(
         GpuResources* res,
+        cudaStream_t stream,
         Tensor<half, 2, true>& vectors,
         bool vectorsRowMajor,
         Tensor<float, 1, true>* vectorNorms,
@@ -457,6 +584,7 @@ void runL2Distance(
         bool ignoreOutDistances) {
     runL2Distance<half>(
             res,
+            stream,
             vectors,
             vectorsRowMajor,
             vectorNorms,
@@ -466,6 +594,50 @@ void runL2Distance(
             outDistances,
             outIndices,
             ignoreOutDistances);
+}
+
+void runIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<float, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<float, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<int, 2, true>& outIndices) {
+    runIPDistance<float>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices);
+}
+
+void runIPDistance(
+        GpuResources* res,
+        cudaStream_t stream,
+        Tensor<half, 2, true>& vectors,
+        bool vectorsRowMajor,
+        Tensor<half, 2, true>& queries,
+        bool queriesRowMajor,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<int, 2, true>& outIndices) {
+    runIPDistance<half>(
+            res,
+            stream,
+            vectors,
+            vectorsRowMajor,
+            queries,
+            queriesRowMajor,
+            k,
+            outDistances,
+            outIndices);
 }
 
 } // namespace gpu
