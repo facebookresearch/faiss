@@ -17,10 +17,6 @@
 
 #include <omp.h>
 
-#ifdef __SSE3__
-#include <immintrin.h>
-#endif
-
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
