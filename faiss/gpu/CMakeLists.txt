@@ -172,3 +172,4 @@ endforeach()
 
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
+target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
