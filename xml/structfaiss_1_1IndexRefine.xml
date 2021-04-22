@@ -177,7 +177,7 @@
           <declname>refine_index</declname>
         </param>
         <briefdescription>
-<para>intitialize from empty index </para>
+<para>initialize from empty index </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
