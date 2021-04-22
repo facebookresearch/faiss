@@ -382,7 +382,7 @@
 <dt id="_CPPv4N5faiss5Index3addE5idx_tPKf">
 <span id="_CPPv3N5faiss5Index3addE5idx_tPKf"></span><span id="_CPPv2N5faiss5Index3addE5idx_tPKf"></span><span id="faiss::Index::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2"></span><em class="property"><span class="pre">virtual</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">0</span><br /></dt>
 <dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chuncks smaller than blocksize_add and calls add_core. </p>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
