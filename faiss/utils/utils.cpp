@@ -32,6 +32,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 
 #ifndef FINTEGER
@@ -99,6 +100,26 @@ int sgemv_(
  **************************************************/
 
 namespace faiss {
+
+std::string get_compile_options() {
+    std::string options;
+
+#ifdef __AVX2__
+    options += "AVX2 ";
+#elif defined(__aarch64__)
+    options += "NEON ";
+#else
+    options += "GENERIC ";
+#endif
+
+    /// TODO: other compile options could be added here
+
+    // remove the trailing whitespace
+    if (options.size() > 0 && options.back() == ' ') {
+        options.pop_back();
+    }
+    return options;
+}
 
 #ifdef _MSC_VER
 double getmillisecs() {

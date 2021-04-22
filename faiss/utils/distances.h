@@ -20,10 +20,6 @@
 
 namespace faiss {
 
-/// Supported SIMD set, 0 for none, 1 for avx2
-/// TODO: add neon if it was supported in the future
-FAISS_API extern int simd_set;
-
 /*********************************************************
  * Optimized distance/norm/inner prod computations
  *********************************************************/

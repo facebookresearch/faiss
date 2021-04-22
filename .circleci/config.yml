@@ -76,8 +76,8 @@ jobs:
           command: |
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             python3 -c "import faiss; \
-                simd_map = {'generic': 0, 'avx2': 1}; \
-                assert faiss.cvar.simd_set == simd_map['$OPT_LEVEL']"
+                options = faiss.get_compile_options().upper() \
+                assert '$OPT_LEVEL'.upper() in options"
       - run:
           name: Test python extension
           command: |
