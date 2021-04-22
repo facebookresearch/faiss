@@ -61,7 +61,7 @@ FAISS_DECLARE_GETTER_SETTER(Index, int, verbose)
  *
  * @param index  opaque pointer to index object
  * @param n      nb of training vectors
- * @param x      training vecors, size n * d
+ * @param x      training vectors, size n * d
  */
 int faiss_Index_train(FaissIndex* index, idx_t n, const float* x);
 
