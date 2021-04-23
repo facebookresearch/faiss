@@ -83,14 +83,6 @@ jobs:
           name: Build C API
           command: |
             make -C build -j faiss_c
-      - when:
-          condition:
-            equal: [ "avx2", << parameters.opt_level >> ]
-          steps:
-            - run:
-                name: Build AVX2 C API
-                command: make -C build -j faiss_avx2_c
-
 
   build_linux_conda:
     docker:

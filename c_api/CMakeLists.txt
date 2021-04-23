@@ -30,7 +30,6 @@ set(FAISS_C_SRC
   utils/distances_c.cpp
 )
 add_library(faiss_c ${FAISS_C_SRC})
-target_link_libraries(faiss_c PRIVATE faiss)
 
 function(faiss_install_headers headers p)
   foreach(h ${headers})
@@ -49,18 +48,14 @@ file(GLOB FAISS_C_API_HEADERS
 
 faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
 
-add_library(faiss_avx2_c ${FAISS_C_SRC})
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
-  set_target_properties(faiss_avx2_c PROPERTIES EXCLUDE_FROM_ALL TRUE)
+if(FAISS_OPT_LEVEL STREQUAL "avx2")
+  target_link_libraries(faiss_c PRIVATE faiss_avx2)
+else()
+  target_link_libraries(faiss_c PRIVATE faiss)
 endif()
-target_link_libraries(faiss_avx2_c PRIVATE faiss_avx2)
 
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
-if(FAISS_OPT_LEVEL STREQUAL "avx2")
-  target_link_libraries(example_c PRIVATE faiss_avx2_c)
-else()
-  target_link_libraries(example_c PRIVATE faiss_c)
-endif()
+target_link_libraries(example_c PRIVATE faiss_c)
 
 if(FAISS_ENABLE_GPU)
   add_subdirectory(gpu)
