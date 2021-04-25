@@ -50,6 +50,8 @@ void IndexIVFFlat::add_core(
 
     int64_t n_add = 0;
 
+    DirectMapAdd dm_adder(direct_map, n, xids);
+
 #pragma omp parallel reduction(+ : n_add)
     {
         int nt = omp_get_num_threads();
@@ -59,24 +61,16 @@ void IndexIVFFlat::add_core(
         for (size_t i = 0; i < n; i++) {
             idx_t list_no = coarse_idx[i];
 
-            if (list_no % nt != rank) {
-                continue;
-            }
-
-            idx_t id = xids ? xids[i] : ntotal + i;
-            size_t offset;
-
-            if (list_no >= 0) {
+            if (list_no >= 0 && list_no % nt == rank) {
+                idx_t id = xids ? xids[i] : ntotal + i;
                 const float* xi = x + i * d;
-                offset = invlists->add_entry(list_no, id, (const uint8_t*)xi);
+                size_t offset =
+                        invlists->add_entry(list_no, id, (const uint8_t*)xi);
+                dm_adder.add(i, list_no, offset);
                 n_add++;
-            } else {
-                offset = 0;
+            } else if (rank == 0 && list_no == -1) {
+                dm_adder.add(i, -1, 0);
             }
-
-#pragma omp critical
-            // executed by one thread at a time
-            direct_map.add_single_id(id, list_no, offset);
         }
     }
 
