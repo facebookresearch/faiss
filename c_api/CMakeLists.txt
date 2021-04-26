@@ -30,12 +30,22 @@ set(FAISS_C_SRC
 )
 add_library(faiss_c ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/
-        FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY ${PROJECT_SOURCE_DIR}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/c_api/impl/
-        FILES_MATCHING PATTERN "*.h")
+
+function(faiss_install_headers headers p)
+  foreach(h ${headers})
+    get_filename_component(f ${h} DIRECTORY)
+    install(FILES ${h}
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/faiss/${p}/${f}
+    )
+  endforeach()
+endfunction()
+
+file(GLOB FAISS_C_API_HEADERS
+     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+     "*.h"
+     "impl/*.h")
+
+faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
 
 add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
