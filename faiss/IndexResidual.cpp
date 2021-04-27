@@ -104,7 +104,7 @@ void search_with_decompress(
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
 #pragma omp parallel for
-    for (size_t q = 0; q < res.nq; q++) {
+    for (int64_t q = 0; q < res.nq; q++) {
         SingleResultHandler resi(res);
         resi.begin(q);
         std::vector<float> tmp(ir.d);
