@@ -1,81 +1,37 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="structfaiss_1_1IndexRefine" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::IndexRefine</compoundname>
+  <compounddef id="structfaiss_1_1ResidualCoarseQuantizer" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ResidualCoarseQuantizer</compoundname>
     <basecompoundref refid="structfaiss_1_1Index" prot="public" virt="non-virtual">faiss::Index</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1IndexRefineFlat" prot="public" virt="non-virtual">faiss::IndexRefineFlat</derivedcompoundref>
-    <includes refid="IndexRefine_8h" local="no">IndexRefine.h</includes>
+    <includes refid="IndexResidual_8h" local="no">IndexResidual.h</includes>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::IndexRefine::base_index</definition>
+      <memberdef kind="variable" id="structfaiss_1_1ResidualCoarseQuantizer_1a9f0280224a6917134d93c951a4314685" prot="public" static="no" mutable="no">
+        <type>ResidualQuantizer</type>
+        <definition>ResidualQuantizer faiss::ResidualCoarseQuantizer::rq</definition>
         <argsstring></argsstring>
-        <name>base_index</name>
+        <name>rq</name>
         <briefdescription>
-<para>faster index to pre-select the vectors that should be filtered </para>
+<para>The residual quantizer used to encode the vectors. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="19" column="11" bodyfile="faiss/IndexRefine.h" bodystart="19" bodyend="-1"/>
+        <location file="faiss/IndexResidual.h" line="101" column="23" bodyfile="faiss/IndexResidual.h" bodystart="101" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::IndexRefine::refine_index</definition>
-        <argsstring></argsstring>
-        <name>refine_index</name>
-        <briefdescription>
-<para>refinement index </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="22" column="11" bodyfile="faiss/IndexRefine.h" bodystart="22" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1ae7f472c54df7253435355a4f65c3f479" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexRefine::own_fields</definition>
-        <argsstring></argsstring>
-        <name>own_fields</name>
-        <briefdescription>
-<para>should the base index be deallocated? </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="24" column="10" bodyfile="faiss/IndexRefine.h" bodystart="24" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a40b4d1cbf95190426fce28a63179e678" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::IndexRefine::own_refine_index</definition>
-        <argsstring></argsstring>
-        <name>own_refine_index</name>
-        <briefdescription>
-<para>same with the refinement index </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="25" column="10" bodyfile="faiss/IndexRefine.h" bodystart="25" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95" prot="public" static="no" mutable="no">
         <type>float</type>
-        <definition>float faiss::IndexRefine::k_factor</definition>
+        <definition>float faiss::ResidualCoarseQuantizer::beam_factor</definition>
         <argsstring></argsstring>
-        <name>k_factor</name>
-        <initializer>= 1</initializer>
+        <name>beam_factor</name>
         <briefdescription>
+<para>factor between the beam size and the search k </para>
         </briefdescription>
         <detaileddescription>
-<para>factor between k requested in search and the k requested from the base_index (should be &gt;= 1) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="29" column="11" bodyfile="faiss/IndexRefine.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexResidual.h" line="104" column="11" bodyfile="faiss/IndexResidual.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -163,44 +119,111 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a873d71af2ad5894ccda0d2319bf7e3b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1ad6bb3494dc22593782dc9e332ccb2947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexRefine::IndexRefine</definition>
-        <argsstring>(Index *base_index, Index *refine_index)</argsstring>
-        <name>IndexRefine</name>
+        <definition>faiss::ResidualCoarseQuantizer::ResidualCoarseQuantizer</definition>
+        <argsstring>(int d, size_t M, size_t nbits, MetricType metric=METRIC_L2)</argsstring>
+        <name>ResidualCoarseQuantizer</name>
         <param>
-          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>base_index</declname>
+          <type>int</type>
+          <declname>d</declname>
+          <briefdescription><para>dimensionality of the input vectors </para>
+</briefdescription>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>refine_index</declname>
+          <type>size_t</type>
+          <declname>M</declname>
+          <briefdescription><para>number of subquantizers </para>
+</briefdescription>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+          <briefdescription><para>number of bit per subvector index </para>
+</briefdescription>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+          <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
         </param>
         <briefdescription>
-<para>initialize from empty index </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimensionality of the input vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of subquantizers </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nbits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bit per subvector index </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexResidual.h" line="112" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a587834371f23f8a938a43449f5983002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ResidualCoarseQuantizer::ResidualCoarseQuantizer</definition>
+        <argsstring>(int d, const std::vector&lt; size_t &gt; &amp;nbits, MetricType metric=METRIC_L2)</argsstring>
+        <name>ResidualCoarseQuantizer</name>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; size_t &gt; &amp;</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+          <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
+        </param>
+        <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="32" column="5"/>
+        <location file="faiss/IndexResidual.h" line="118" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a80aa8975ad0091a1d0796e092b4734be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a77b30167d292d340a237702805cd01fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexRefine::IndexRefine</definition>
+        <definition>faiss::ResidualCoarseQuantizer::ResidualCoarseQuantizer</definition>
         <argsstring>()</argsstring>
-        <name>IndexRefine</name>
+        <name>ResidualCoarseQuantizer</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="34" column="5"/>
+        <location file="faiss/IndexResidual.h" line="123" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a65f7bfba74ec0be4dc3ab79fca55da0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexRefine::train</definition>
+        <definition>void faiss::ResidualCoarseQuantizer::train</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>train</name>
         <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
@@ -237,11 +260,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="36" column="10"/>
+        <location file="faiss/IndexResidual.h" line="125" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1ab16825a87158144191a285c78e76b3d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexRefine::add</definition>
+        <definition>void faiss::ResidualCoarseQuantizer::add</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>add</name>
         <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
@@ -254,46 +277,20 @@
           <declname>x</declname>
         </param>
         <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Add n vectors of dimension d to the index.</para>
-<para>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. <parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>x</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>input matrix, size n * d </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="38" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>void faiss::IndexRefine::reset</definition>
-        <argsstring>() override</argsstring>
-        <name>reset</name>
-        <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
-        <briefdescription>
-<para>removes all elements from the database. </para>
+<para>N/A. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="40" column="10"/>
+        <location file="faiss/IndexResidual.h" line="128" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a954fe37f8741fafda9a6aba740044dc4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1aa2caeaca675083d19d8ce0db4dc245ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexRefine::search</definition>
+        <definition>void faiss::ResidualCoarseQuantizer::search</definition>
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</argsstring>
         <name>search</name>
         <reimplements refid="structfaiss_1_1Index_1aced51b1ebc33c47ab3ae15ea906559a7">search</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexRefineFlat_1ad04444de1e2c26c463cc52f3c076dd41">search</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -348,61 +345,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="42" column="10"/>
+        <location file="faiss/IndexResidual.h" line="130" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a89f173258f36ae3c64b2d2faac6c0971" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexRefine::reconstruct</definition>
-        <argsstring>(idx_t key, float *recons) const override</argsstring>
-        <name>reconstruct</name>
-        <reimplements refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c">reconstruct</reimplements>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
-          <declname>key</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>recons</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Reconstruct a stored vector (or an approximation if lossy coding)</para>
-<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>key</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>id of the vector to reconstruct </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>recons</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>reconstucted vector (size d) </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="50" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1abe2783095540eff63ece8a3bfe7f60b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::IndexRefine::~IndexRefine</definition>
+        <definition>void faiss::ResidualCoarseQuantizer::reset</definition>
         <argsstring>() override</argsstring>
-        <name>~IndexRefine</name>
+        <name>reset</name>
+        <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
         <briefdescription>
+<para>N/A. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRefine.h" line="52" column="5"/>
+        <location file="faiss/IndexResidual.h" line="138" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -581,6 +539,58 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/Index.h" line="150" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Index::reconstruct</definition>
+        <argsstring>(idx_t key, float *recons) const</argsstring>
+        <name>reconstruct</name>
+        <reimplementedby refid="structfaiss_1_1IndexFlat_1ae4b33315752b62cff1626f9f967167b1">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a1c6827189741d6d596421fae6475f4da">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPQ_1a20913df3bfd8caa5187112641e8d9bc7">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a8fb8680f64465d643d96119da58099f3">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1Index2Layer_1af2e505c14e62234eb251fcb37ef012d2">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad690b0d256903730605ce36d64720fbf">reconstruct</reimplementedby>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>recons</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reconstruct a stored vector (or an approximation if lossy coding)</para>
+<para>this function may not be defined for some indexes <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of the vector to reconstruct </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recons</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reconstucted vector (size d) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="158" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1008,18 +1018,13 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> that queries in a base_index (a fast one) and refines the results with an exact search, hopefully improving the results. </para>
+<para>A &quot;virtual&quot; index where the elements are the residual quantizer centroids.</para>
+<para>Intended for use as a coarse quantizer in an <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
-        <label>faiss::IndexRefineFlat</label>
-        <link refid="structfaiss_1_1IndexRefineFlat"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="1">
-        <label>faiss::IndexRefine</label>
-        <link refid="structfaiss_1_1IndexRefine"/>
+        <label>faiss::ResidualCoarseQuantizer</label>
+        <link refid="structfaiss_1_1ResidualCoarseQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1030,13 +1035,9 @@
     </inheritancegraph>
     <collaborationgraph>
       <node id="1">
-        <label>faiss::IndexRefine</label>
-        <link refid="structfaiss_1_1IndexRefine"/>
+        <label>faiss::ResidualCoarseQuantizer</label>
+        <link refid="structfaiss_1_1ResidualCoarseQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
-        </childnode>
-        <childnode refid="2" relation="usage">
-          <edgelabel>refine_index</edgelabel>
-          <edgelabel>base_index</edgelabel>
         </childnode>
       </node>
       <node id="2">
@@ -1044,44 +1045,41 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexRefine.h" line="17" column="24" bodyfile="faiss/IndexRefine.h" bodystart="17" bodyend="53"/>
+    <location file="faiss/IndexResidual.h" line="99" column="36" bodyfile="faiss/IndexResidual.h" bodystart="99" bodyend="139"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>assign</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>base_index</name></member>
-      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>component_t</name></member>
-      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>compute_residual</name></member>
-      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>d</name></member>
-      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>idx_t</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a873d71af2ad5894ccda0d2319bf7e3b6" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>IndexRefine</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a80aa8975ad0091a1d0796e092b4734be" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>IndexRefine</name></member>
-      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>k_factor</name></member>
-      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>metric_type</name></member>
-      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>ntotal</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1ae7f472c54df7253435355a4f65c3f479" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>own_fields</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a40b4d1cbf95190426fce28a63179e678" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>own_refine_index</name></member>
-      <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>range_search</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>reconstruct_n</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>refine_index</name></member>
-      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>remove_ids</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>sa_decode</name></member>
-      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a954fe37f8741fafda9a6aba740044dc4" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>search</name></member>
-      <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexRefine</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1IndexRefine_1abe2783095540eff63ece8a3bfe7f60b6" prot="public" virt="non-virtual"><scope>faiss::IndexRefine</scope><name>~IndexRefine</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1ab16825a87158144191a285c78e76b3d1" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>assign</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>beam_factor</name></member>
+      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>compute_residual</name></member>
+      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>compute_residual_n</name></member>
+      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>idx_t</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>range_search</name></member>
+      <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>remove_ids</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a89f173258f36ae3c64b2d2faac6c0971" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1ad6bb3494dc22593782dc9e332ccb2947" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>ResidualCoarseQuantizer</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a587834371f23f8a938a43449f5983002" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>ResidualCoarseQuantizer</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a77b30167d292d340a237702805cd01fc" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>ResidualCoarseQuantizer</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a9f0280224a6917134d93c951a4314685" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>rq</name></member>
+      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>sa_code_size</name></member>
+      <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>sa_decode</name></member>
+      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>sa_encode</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1aa2caeaca675083d19d8ce0db4dc245ca" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>search</name></member>
+      <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a65f7bfba74ec0be4dc3ab79fca55da0c" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>~Index</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

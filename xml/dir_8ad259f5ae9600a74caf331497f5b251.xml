@@ -4,6 +4,7 @@
     <compoundname>faiss/utils</compoundname>
     <innerfile refid="AlignedTable_8h">AlignedTable.h</innerfile>
     <innerfile refid="distances_8h">distances.h</innerfile>
+    <innerfile refid="extra__distances-inl_8h">extra_distances-inl.h</innerfile>
     <innerfile refid="extra__distances_8h">extra_distances.h</innerfile>
     <innerfile refid="hamming-inl_8h">hamming-inl.h</innerfile>
     <innerfile refid="hamming_8h">hamming.h</innerfile>

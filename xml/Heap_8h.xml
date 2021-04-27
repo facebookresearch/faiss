@@ -74,6 +74,8 @@
       <node id="21">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
       <node id="9">
         <label>faiss/IndexIVFPQ.h</label>
@@ -87,13 +89,19 @@
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
-      <node id="22">
+      <node id="23">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
       <node id="18">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+      </node>
+      <node id="22">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexIVF.h</label>
@@ -125,7 +133,7 @@
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="23">
+      <node id="24">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
@@ -162,9 +170,9 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
         <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
       <node id="3">

@@ -25,6 +25,7 @@
     <includedby refid="VectorTransform_8h" local="no">faiss/VectorTransform.h</includedby>
     <includedby refid="IndexPreTransform_8h" local="no">faiss/IndexPreTransform.h</includedby>
     <includedby refid="IndexRefine_8h" local="no">faiss/IndexRefine.h</includedby>
+    <includedby refid="IndexResidual_8h" local="no">faiss/IndexResidual.h</includedby>
     <includedby refid="IndexShards_8h" local="no">faiss/IndexShards.h</includedby>
     <includedby refid="MetaIndexes_8h" local="no">faiss/MetaIndexes.h</includedby>
     <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
@@ -83,7 +84,7 @@
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
-      <node id="52">
+      <node id="53">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
@@ -146,6 +147,10 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+      </node>
+      <node id="52">
+        <label>faiss/IndexResidual.h</label>
+        <link refid="IndexResidual_8h_source"/>
       </node>
       <node id="22">
         <label>faiss/IndexIVF.h</label>
@@ -344,11 +349,13 @@
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
       </node>
       <node id="17">

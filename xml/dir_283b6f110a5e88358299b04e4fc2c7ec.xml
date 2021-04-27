@@ -36,6 +36,7 @@
     <innerfile refid="IndexPreTransform_8h">IndexPreTransform.h</innerfile>
     <innerfile refid="IndexRefine_8h">IndexRefine.h</innerfile>
     <innerfile refid="IndexReplicas_8h">IndexReplicas.h</innerfile>
+    <innerfile refid="IndexResidual_8h">IndexResidual.h</innerfile>
     <innerfile refid="IndexScalarQuantizer_8h">IndexScalarQuantizer.h</innerfile>
     <innerfile refid="IndexShards_8h">IndexShards.h</innerfile>
     <innerfile refid="IVFlib_8h">IVFlib.h</innerfile>

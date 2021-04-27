@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="83" column="23" bodyfile="faiss/IndexPQ.h" bodystart="83" bodyend="90"/>
+        <location file="faiss/IndexPQ.h" line="81" column="23" bodyfile="faiss/IndexPQ.h" bodystart="81" bodyend="88"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
         <type>int64_t</type>
@@ -119,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="28" column="22" bodyfile="faiss/IndexPQ.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="26" column="22" bodyfile="faiss/IndexPQ.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a490b64b12384951ed66548a3a48f91e5" prot="public" static="no" mutable="no">
         <type>std::vector&lt; uint8_t &gt;</type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="31" column="17" bodyfile="faiss/IndexPQ.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="29" column="17" bodyfile="faiss/IndexPQ.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1af616e1f3c7bff7f62c2607b8079da43f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -147,7 +147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="77" column="10" bodyfile="faiss/IndexPQ.h" bodystart="77" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="75" column="10" bodyfile="faiss/IndexPQ.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a820cec27d1ef14bf59fb288b2e143b6a" prot="public" static="no" mutable="no">
         <type>PolysemousTraining</type>
@@ -161,7 +161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="80" column="24" bodyfile="faiss/IndexPQ.h" bodystart="80" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="78" column="24" bodyfile="faiss/IndexPQ.h" bodystart="78" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a3fa0f0c6216e34930ef9110600f89fbd" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe" kindref="member">Search_type_t</ref></type>
@@ -174,7 +174,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="92" column="19" bodyfile="faiss/IndexPQ.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="90" column="19" bodyfile="faiss/IndexPQ.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1a553682b74c5b8ccb1ba0c44e1729db2d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -187,7 +187,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="96" column="10" bodyfile="faiss/IndexPQ.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="94" column="10" bodyfile="faiss/IndexPQ.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQ_1aff455f2adff6064939494dad6e3017bc" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -201,7 +201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="99" column="9" bodyfile="faiss/IndexPQ.h" bodystart="99" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="97" column="9" bodyfile="faiss/IndexPQ.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -350,7 +350,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="39" column="5"/>
+        <location file="faiss/IndexPQ.h" line="37" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a427d829a4c494b19b7e6efec2ce12bc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -363,7 +363,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="44" column="5"/>
+        <location file="faiss/IndexPQ.h" line="42" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a87898add5ab4d86ba901ca79778fc11e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -404,7 +404,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="46" column="10"/>
+        <location file="faiss/IndexPQ.h" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1ac72c9b93f8fe7e5ec27fbe26bb38a7bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -437,7 +437,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="48" column="10"/>
+        <location file="faiss/IndexPQ.h" line="46" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a491ba3ed34093513e6a850fbca0abdd2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -499,7 +499,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="50" column="10"/>
+        <location file="faiss/IndexPQ.h" line="48" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a25e17da885cf55d84b176b46f3ad25b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -514,7 +514,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="57" column="10"/>
+        <location file="faiss/IndexPQ.h" line="55" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a99b187b1231a700617f7b228ec348ade" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -551,7 +551,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="59" column="10"/>
+        <location file="faiss/IndexPQ.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a20913df3bfd8caa5187112641e8d9bc7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -592,7 +592,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="61" column="10"/>
+        <location file="faiss/IndexPQ.h" line="59" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1adf5573ec615caf66584e056a29452669" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -611,7 +611,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="63" column="12"/>
+        <location file="faiss/IndexPQ.h" line="61" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1ae312739a391a32d77fc87699f2dc894c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -626,7 +626,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="66" column="12"/>
+        <location file="faiss/IndexPQ.h" line="64" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -679,7 +679,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="68" column="10"/>
+        <location file="faiss/IndexPQ.h" line="66" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -732,7 +732,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="70" column="10"/>
+        <location file="faiss/IndexPQ.h" line="68" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1acb6744a8e64db9b01bfd58f4cf9fee77" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -748,7 +748,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="72" column="22"/>
+        <location file="faiss/IndexPQ.h" line="70" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a4d8792ee8942cd4897530f68169cea04" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -781,7 +781,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="102" column="10"/>
+        <location file="faiss/IndexPQ.h" line="100" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -824,7 +824,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="113" column="10"/>
+        <location file="faiss/IndexPQ.h" line="111" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -876,7 +876,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="126" column="10"/>
+        <location file="faiss/IndexPQ.h" line="124" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1235,7 +1235,7 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPQ.h" line="26" column="20" bodyfile="faiss/IndexPQ.h" bodystart="26" bodyend="127"/>
+    <location file="faiss/IndexPQ.h" line="24" column="20" bodyfile="faiss/IndexPQ.h" bodystart="24" bodyend="125"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPQ_1ac72c9b93f8fe7e5ec27fbe26bb38a7bf" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexPQ</scope><name>add_with_ids</name></member>
