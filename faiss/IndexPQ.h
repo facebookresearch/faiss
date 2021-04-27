@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #ifndef FAISS_INDEX_PQ_H
 #define FAISS_INDEX_PQ_H
 

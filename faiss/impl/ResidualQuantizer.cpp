@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include "faiss/impl/ResidualQuantizer.h"
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 
@@ -48,20 +49,20 @@ ResidualQuantizer::ResidualQuantizer(size_t d, size_t M, size_t nbits)
         : ResidualQuantizer(d, std::vector<size_t>(M, nbits)) {}
 
 void ResidualQuantizer::set_derived_values() {
-    code_size = 0;
+    tot_bits = 0;
     is_byte_aligned = true;
     centroid_offsets.resize(M + 1, 0);
     for (int i = 0; i < M; i++) {
         int nbit = nbits[i];
         size_t k = 1 << nbit;
         centroid_offsets[i + 1] = centroid_offsets[i] + k;
-        code_size += nbit;
+        tot_bits += nbit;
         if (nbit % 8 != 0) {
             is_byte_aligned = false;
         }
     }
     // convert bits to bytes
-    code_size = (code_size + 7) / 8;
+    code_size = (tot_bits + 7) / 8;
 }
 
 namespace {
@@ -327,10 +328,37 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
-    int cur_beam_size = 1;
+    std::vector<float> residuals(max_beam_size * n * d);
+    std::vector<int32_t> codes(max_beam_size * M * n);
+    std::vector<float> distances(max_beam_size * n);
 
-    std::vector<float> residuals(x, x + n * d);
+    refine_beam(
+            n,
+            1,
+            x,
+            max_beam_size,
+            codes.data(),
+            residuals.data(),
+            distances.data());
+
+    // pack only the first code of the beam (hence the ld_codes=M *
+    // cur_beam_size)
+    pack_codes(n, codes.data(), codes_out, M * max_beam_size);
+}
+
+void ResidualQuantizer::refine_beam(
+        size_t n,
+        size_t beam_size,
+        const float* x,
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_residuals,
+        float* out_distances) const {
+    int cur_beam_size = beam_size;
+
+    std::vector<float> residuals(x, x + n * d * beam_size);
     std::vector<int32_t> codes;
+    std::vector<float> distances;
     double t0 = getmillisecs();
 
     std::unique_ptr<Index> assign_index;
@@ -346,11 +374,11 @@ void ResidualQuantizer::compute_codes(
         const float* centroids_m =
                 this->centroids.data() + centroid_offsets[m] * d;
 
-        int new_beam_size = std::min(cur_beam_size * K, max_beam_size);
+        int new_beam_size = std::min(cur_beam_size * K, out_beam_size);
 
         std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
         std::vector<float> new_residuals(n * new_beam_size * d);
-        std::vector<float> distances(n * new_beam_size);
+        distances.resize(n * new_beam_size);
 
         beam_search_encode_step(
                 d,
@@ -389,9 +417,19 @@ void ResidualQuantizer::compute_codes(
         }
     }
 
-    // pack only the first code of the beam (hence the ld_codes=M *
-    // cur_beam_size)
-    pack_codes(n, codes.data(), codes_out, M * cur_beam_size);
+    if (out_codes) {
+        memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
+    }
+    if (out_residuals) {
+        memcpy(out_residuals,
+               residuals.data(),
+               residuals.size() * sizeof(residuals[0]));
+    }
+    if (out_distances) {
+        memcpy(out_distances,
+               distances.data(),
+               distances.size() * sizeof(distances[0]));
+    }
 }
 
 void ResidualQuantizer::pack_codes(
