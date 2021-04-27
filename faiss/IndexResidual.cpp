@@ -104,7 +104,7 @@ void search_with_decompress(
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
 #pragma omp parallel for
-    for (size_t q = 0; q < res.nq; q++) {
+    for (int64_t q = 0; q < res.nq; q++) {
         SingleResultHandler resi(res);
         resi.begin(q);
         std::vector<float> tmp(ir.d);
@@ -191,7 +191,7 @@ void ResidualCoarseQuantizer::train(idx_t n, const float* x) {
     ntotal = (idx_t)1 << rq.tot_bits;
 }
 
-void ResidualCoarseQuantizer::add(idx_t, const float* ) {
+void ResidualCoarseQuantizer::add(idx_t, const float*) {
     FAISS_THROW_MSG("not applicable");
 }
 
