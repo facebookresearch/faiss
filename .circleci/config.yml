@@ -76,7 +76,7 @@ jobs:
           command: |
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             python3 -c "import faiss; \
-                options = faiss.get_compile_options() \
+                options = faiss.get_compile_options(); \
                 assert '$OPT_LEVEL'.upper() in options"
       - run:
           name: Test python extension
