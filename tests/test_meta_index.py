@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # translation of test_meta_index.lua
 
+import sys
 import numpy as np
 import faiss
 import unittest
