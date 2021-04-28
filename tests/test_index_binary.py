@@ -6,6 +6,7 @@
 """this is a basic test script for simple indices work"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
 import numpy as np
 import unittest
 import faiss
