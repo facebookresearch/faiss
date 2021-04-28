@@ -104,6 +104,9 @@ jobs:
       OMP_NUM_THREADS: 10
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ea:af:e4:cc:96:1b:87:11:e2:88:88:80:8d:b4:cc:5c"
       - run:
           name: Install Homebrew packages
           command: |
