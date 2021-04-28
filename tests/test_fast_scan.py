@@ -34,7 +34,7 @@ class TestSearch(unittest.TestCase):
         # print(f'recall@1 = {recall_at_1:.3f}')
 
     @unittest.skipUnless('AVX2' in faiss.get_compile_options(),
-            "only test while building with avx2")
+        "only test while building with avx2")
     def test_PQ4_speed(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()
@@ -62,6 +62,11 @@ class TestSearch(unittest.TestCase):
         print('PQ16x4fs search time:', pqfs_t)
         self.assertLess(pqfs_t * 10, pq_t)
 
+    def test_compile_options(self):
+        options = faiss.get_compile_options()
+        options = options.split(' ')
+        for option in options:
+            assert option in ['AVX2', 'NEON', 'GENERIC']
 
 class TestRounding(unittest.TestCase):
 

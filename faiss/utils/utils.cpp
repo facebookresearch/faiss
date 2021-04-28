@@ -105,19 +105,13 @@ std::string get_compile_options() {
     std::string options;
 
 #ifdef __AVX2__
-    options += "AVX2 ";
+    options += "AVX2";
 #elif defined(__aarch64__)
-    options += "NEON ";
+    options += "NEON";
 #else
-    options += "GENERIC ";
+    options += "GENERIC";
 #endif
 
-    /// TODO: other compile options could be added here
-
-    // remove the trailing whitespace
-    if (options.size() > 0 && options.back() == ' ') {
-        options.pop_back();
-    }
     return options;
 }
 
