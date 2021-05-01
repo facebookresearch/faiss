@@ -69,7 +69,9 @@ struct LocalSearchQuantizer {
      */
     void decode(const uint8_t* code, float* x, size_t n) const;
 
-    float evaluate(const float *codebooks, const int32_t *codes, const float *x, size_t n) const;
+    void update_codebooks(const float *x, const int32_t *codes, size_t n);
+
+    float evaluate(const int32_t *codes, const float *x, size_t n) const;
 };
 
 
