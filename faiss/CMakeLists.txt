@@ -44,6 +44,7 @@ set(FAISS_SRC
   impl/AuxIndexStructures.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
+  impl/LocalSearchQuantizer.cpp
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
