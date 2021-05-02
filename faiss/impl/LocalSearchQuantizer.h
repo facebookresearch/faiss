@@ -35,6 +35,8 @@ struct LocalSearchQuantizer {
     size_t ils_iters; ///< number of iterations in local search
     size_t icm_iters; ///< number of iterations in icm
 
+    size_t nperts; ///< number of perturbation in icm
+
     std::vector<float> codebooks;
 
     LocalSearchQuantizer(
@@ -69,10 +71,21 @@ struct LocalSearchQuantizer {
      */
     void decode(const uint8_t* code, float* x, size_t n) const;
 
-    void update_codebooks(const float *x, const int32_t *codes, size_t n);
+    void update_codebooks(const float* x, const int32_t* codes, size_t n);
 
-    float evaluate(const int32_t *codes, const float *x, size_t n) const;
+    void icm_encode(const float* x, int32_t* codes, size_t n);
+
+    void perturb_codes(int32_t* codes, size_t n);
+
+    void compute_binary_terms(float* binaries);
+
+    void compute_unary_terms(const float* x, float* unaries, size_t n);
+
+    float evaluate(
+            const int32_t* codes,
+            const float* x,
+            size_t n,
+            float* objs = nullptr) const;
 };
-
 
 }; // namespace faiss
