@@ -24,15 +24,16 @@ struct LocalSearchQuantizer {
     size_t d;     ///< size of the input vectors
     size_t M;     ///< number of codebooks
     size_t nbits; ///< bits per subcode
+    size_t k;     ///< number of codes per codebook
 
     bool verbose; ///< verbose during training?
 
     size_t code_size; ///< code size in bytes
 
     size_t train_iters;  ///< number of iterations in training
-    size_t encode_iters; ///< number of iterations in encoding
 
-    size_t ils_iters; ///< number of iterations in local search
+    size_t encode_ils_iters; ///< number of iterations in local search while encoding
+    size_t train_ils_iters; ///< number of iterations in local search while training
     size_t icm_iters; ///< number of iterations in icm
 
     size_t nperts; ///< number of perturbation in icm
@@ -47,16 +48,6 @@ struct LocalSearchQuantizer {
     // Train the residual quantizer
     void train(size_t n, const float* x);
 
-    /** pack a series of code to bit-compact format
-     *
-     * @param ld_codes  leading dimension of codes
-     */
-    void pack_codes(
-            size_t n,
-            const int32_t* codes,
-            uint8_t* packed_codes,
-            int64_t ld_codes = -1) const;
-
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
@@ -64,22 +55,24 @@ struct LocalSearchQuantizer {
      */
     void compute_codes(const float* x, uint8_t* codes, size_t n) const;
 
+    void pack_codes(size_t n, const int32_t* codes, uint8_t* packed_codes) const;
+
     /** Decode a set of vectors
      *
      * @param codes  codes to decode, size n * code_size
      * @param x      output vectors, size n * d
      */
-    void decode(const uint8_t* code, float* x, size_t n) const;
+    void decode(const uint8_t* codes, float* x, size_t n) const;
 
     void update_codebooks(const float* x, const int32_t* codes, size_t n);
 
-    void icm_encode(const float* x, int32_t* codes, size_t n);
+    void icm_encode(const float* x, int32_t* codes, size_t n, size_t ils_iters) const;
 
-    void perturb_codes(int32_t* codes, size_t n);
+    void perturb_codes(int32_t* codes, size_t n) const;
 
-    void compute_binary_terms(float* binaries);
+    void compute_binary_terms(float* binaries) const;
 
-    void compute_unary_terms(const float* x, float* unaries, size_t n);
+    void compute_unary_terms(const float* x, float* unaries, size_t n) const;
 
     float evaluate(
             const int32_t* codes,
