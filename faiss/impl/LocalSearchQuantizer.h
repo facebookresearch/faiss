@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <random>
 #include <vector>
 
 // #include <faiss/Clustering.h>
@@ -24,18 +25,19 @@ struct LocalSearchQuantizer {
     size_t d;     ///< size of the input vectors
     size_t M;     ///< number of codebooks
     size_t nbits; ///< bits per subcode
-    size_t k;     ///< number of codes per codebook
+    size_t K;     ///< number of codes per codebook
 
     bool verbose; ///< verbose during training?
 
     size_t code_size; ///< code size in bytes
 
-    size_t train_iters;  ///< number of iterations in training
+    size_t train_iters; ///< number of iterations in training
 
-    size_t encode_ils_iters; ///< number of iterations in local search while encoding
-    size_t train_ils_iters; ///< number of iterations in local search while training
-    size_t icm_iters; ///< number of iterations in icm
+    size_t encode_ils_iters; ///< iterations of local search while encoding
+    size_t train_ils_iters;  ///< iterations of local search while training
+    size_t icm_iters;        ///< number of iterations in icm
 
+    float p;
     size_t nperts; ///< number of perturbation in icm
 
     std::vector<float> codebooks;
@@ -55,7 +57,8 @@ struct LocalSearchQuantizer {
      */
     void compute_codes(const float* x, uint8_t* codes, size_t n) const;
 
-    void pack_codes(size_t n, const int32_t* codes, uint8_t* packed_codes) const;
+    void pack_codes(size_t n, const int32_t* codes, uint8_t* packed_codes)
+            const;
 
     /** Decode a set of vectors
      *
@@ -66,7 +69,13 @@ struct LocalSearchQuantizer {
 
     void update_codebooks(const float* x, const int32_t* codes, size_t n);
 
-    void icm_encode(const float* x, int32_t* codes, size_t n, size_t ils_iters) const;
+    void icm_encode(const float* x, int32_t* codes, size_t n, size_t ils_iters)
+            const;
+
+    void perturb_codebooks(
+            float T,
+            const std::vector<float>& stddev,
+            std::mt19937& gen);
 
     void perturb_codes(int32_t* codes, size_t n) const;
 

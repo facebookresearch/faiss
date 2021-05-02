@@ -127,7 +127,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     verbose = false;
 
-    k = (1 << nbits);
+    K = (1 << nbits);
     code_size = M * (nbits / 8); // in bytes
 
     train_iters = 25;
@@ -136,25 +136,46 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     encode_ils_iters = 16;
 
+    p = 0.5f;
     nperts = 4;
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
     if (verbose) {
-        printf("Training LSQ++, with %zd subcodes on %zd %zdD vectors\n", M, n, d);
+        printf("Training LSQ++, with %zd subcodes on %zd %zdD vectors\n",
+               M,
+               n,
+               d);
     }
 
-    k = (1 << nbits);  // reset it
+    K = (1 << nbits); // reset it
 
-    codebooks.resize(M * k * d);       // [M, k, d]
+    codebooks.resize(M * K * d);       // [M, K, d]
     std::vector<int32_t> codes(n * M); // [n, M]
 
     std::mt19937 gen(12345);
-    random_int32(&codes, 0, k - 1, gen);
+    random_int32(&codes, 0, K - 1, gen);
 
     // TODO: add SR-D
     // cov = np.diag(np.cov(x.T))
     // mean = np.zeros((d,))
+    std::vector<float> stddev(d, 0);
+
+#pragma omp parallel for
+    for (size_t i = 0; i < d; i++) {
+        float mean = 0;
+        for (size_t j = 0; j < n; j++) {
+            mean += x[j * d + i];
+        }
+        mean = mean / n;
+
+        float sum = 0;
+        for (size_t j = 0; j < n; j++) {
+            float xi = x[j * d + i] - mean;
+            sum += xi * xi;
+        }
+        stddev[i] = sqrt(sum / n);
+    }
 
     if (verbose) {
         float obj = evaluate(codes.data(), x, n);
@@ -169,6 +190,10 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
             printf("iter %zd, after updating codebooks: obj = %lf\n", i, obj);
         }
 
+        // SR-D: perturb codebooks
+        float T = pow((1.0f - (i + 1.0f) / train_iters), p);
+        perturb_codebooks(T, stddev, gen);
+
         icm_encode(x, codes.data(), n, train_ils_iters);
     }
 
@@ -176,12 +201,24 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         float obj = evaluate(codes.data(), x, n);
         printf("After training: obj = %lf\n", obj);
     }
+}
 
-    printf("codebooks: ");
+void LocalSearchQuantizer::perturb_codebooks(
+        float T,
+        const std::vector<float>& stddev,
+        std::mt19937& gen) {
+    std::vector<std::normal_distribution<float>> distribs;
     for (size_t i = 0; i < d; i++) {
-        printf("%lf ", codebooks[i]);
+        distribs.emplace_back(0.0f, stddev[i]);
     }
-    printf("\n");
+
+    for (size_t m = 0; m < M; m++) {
+        for (size_t k = 0; k < K; k++) {
+            for (size_t i = 0; i < d; i++) {
+                codebooks[m * K * d + k * d + i] += T * distribs[i](gen) / M;
+            }
+        }
+    }
 }
 
 void LocalSearchQuantizer::compute_codes(
@@ -190,13 +227,7 @@ void LocalSearchQuantizer::compute_codes(
         size_t n) const {
     std::vector<int32_t> codes(n * M);
     std::mt19937 gen(1234);
-    random_int32(&codes, 0, k - 1, gen);
-
-    printf("codebooks: ");
-    for (size_t i = 0; i < d; i++) {
-        printf("%lf ", codebooks[i]);
-    }
-    printf("\n");
+    random_int32(&codes, 0, K - 1, gen);
 
     icm_encode(x, codes.data(), n, encode_ils_iters);
     pack_codes(n, codes.data(), codes_out);
@@ -206,7 +237,6 @@ void LocalSearchQuantizer::pack_codes(
         size_t n,
         const int32_t* codes,
         uint8_t* packed_codes) const {
-
 #pragma omp parallel for if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
         const int32_t* codes1 = codes + i * M;
@@ -217,14 +247,15 @@ void LocalSearchQuantizer::pack_codes(
     }
 }
 
-void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
+void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n)
+        const {
 #pragma omp parallel for if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(codes + i * code_size, code_size);
         float* xi = x + i * d;
         for (int m = 0; m < M; m++) {
             int code = bsr.read(nbits);
-            const float* c = codebooks.data() + (m * k + code) * d;
+            const float* c = codebooks.data() + (m * K + code) * d;
             if (m == 0) {
                 memcpy(xi, c, sizeof(float) * d);
             } else {
@@ -238,11 +269,11 @@ void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n) cons
  *
     Input:
         x: [n, d]
-        codebooks: [m, k, d]
+        codebooks: [m, K, d]
         b: [n, m]
     Formulation:
-        B = sparse(b): [n, m*k]
-        C: [m*k, d]
+        B = sparse(b): [n, m*K]
+        C: [m*K, d]
         L = (X - BC)^2
         X = BC
         => B'X = B'BC
@@ -254,24 +285,23 @@ void LocalSearchQuantizer::update_codebooks(
         const float* x,
         const int32_t* codes,
         size_t n) {
-
     // allocate memory
-    std::vector<float> bb(M * k * M * k, 0.0f); // [M * k, M * k]
-    std::vector<float> bx(M * k * d, 0.0f);     // [M * k, d]
+    std::vector<float> bb(M * K * M * K, 0.0f); // [M * K, M * K]
+    std::vector<float> bx(M * K * d, 0.0f);     // [M * K, d]
 
     // compute B'B
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++) {
         for (size_t m = 0; m < M; m++) {
             int32_t code1 = codes[i * M + m];
-            int32_t idx1 = m * k + code1;
-            bb[idx1 * M * k + idx1] += 1;
+            int32_t idx1 = m * K + code1;
+            bb[idx1 * M * K + idx1] += 1;
 
             for (size_t m2 = m + 1; m2 < M; m2++) {
                 int32_t code2 = codes[i * M + m2];
-                int32_t idx2 = m2 * k + code2;
-                bb[idx1 * M * k + idx2] += 1;
-                bb[idx2 * M * k + idx1] += 1;
+                int32_t idx2 = m2 * K + code2;
+                bb[idx1 * M * K + idx2] += 1;
+                bb[idx2 * M * K + idx1] += 1;
             }
         }
     }
@@ -281,7 +311,7 @@ void LocalSearchQuantizer::update_codebooks(
     for (size_t i = 0; i < n; i++) {
         for (size_t m = 0; m < M; m++) {
             int32_t code = codes[i * M + m];
-            float* data = bx.data() + (m * k + code) * d;
+            float* data = bx.data() + (m * K + code) * d;
             fvec_add(d, data, x + i * d, data);
         }
     }
@@ -289,14 +319,14 @@ void LocalSearchQuantizer::update_codebooks(
     // add a regularization term to B'B, make it inversible
     constexpr float lambda = 0.0001;
 #pragma omp parallel for
-    for (size_t i = 0; i < M * k; i++) {
-        bb[i * (M * k) + i] += lambda;
+    for (size_t i = 0; i < M * K; i++) {
+        bb[i * (M * K) + i] += lambda;
     }
 
     // C = inv(bb) @ bx
 
     // compute inv(bb)
-    fmat_inverse(bb.data(), M * k); // [M*k, M*k]
+    fmat_inverse(bb.data(), M * K); // [M*K, M*K]
 
     // compute inv(bb) @ bx
 
@@ -304,15 +334,15 @@ void LocalSearchQuantizer::update_codebooks(
     //
     // out = bb @ bx
     // out^T = bx^T @ bb^T
-    //         [d, M*k] @ [M*k, M*k]
+    //         [d, M*K] @ [M*K, M*K]
     //
     // out = alpha * op(A) * op(B) + beta * C
-    // [M*k, M*k] @ [M*k, d]
+    // [M*K, M*K] @ [M*K, d]
     FINTEGER nrows_A = d;
-    FINTEGER ncols_A = M * k;
+    FINTEGER ncols_A = M * K;
 
-    FINTEGER nrows_B = M * k;
-    FINTEGER ncols_B = M * k;
+    FINTEGER nrows_B = M * K;
+    FINTEGER ncols_B = M * K;
 
     float alpha = 1.0f;
     float beta = 0.0f;
@@ -336,10 +366,10 @@ void LocalSearchQuantizer::icm_encode(
         int32_t* codes,
         size_t n,
         size_t ils_iters) const {
-    std::vector<float> binaries(M * M * k * k); // [M, M, k, k]
+    std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
     compute_binary_terms(binaries.data());
 
-    std::vector<float> unaries(n * M * k); // [n, M, k]
+    std::vector<float> unaries(n * M * K); // [n, M, K]
     compute_unary_terms(x, unaries.data(), n);
 
     std::vector<int32_t> best_codes;
@@ -354,11 +384,11 @@ void LocalSearchQuantizer::icm_encode(
 
         for (size_t iter2 = 0; iter2 < icm_iters; iter2++) {
             for (size_t m = 0; m < M; m++) {
-                std::vector<float> objs(n * k);
+                std::vector<float> objs(n * K);
 #pragma omp parallel for
                 for (size_t i = 0; i < n; i++) {
-                    auto u = unaries.data() + i * (M * k) + m * k;
-                    memcpy(objs.data() + i * k, u, sizeof(float) * k);
+                    auto u = unaries.data() + i * (M * K) + m * K;
+                    memcpy(objs.data() + i * K, u, sizeof(float) * K);
                 }
 
                 for (size_t other_m = 0; other_m < M; other_m++) {
@@ -368,11 +398,11 @@ void LocalSearchQuantizer::icm_encode(
 
 #pragma omp parallel for
                     for (size_t i = 0; i < n; i++) {
-                        for (int32_t code = 0; code < k; code++) {
+                        for (int32_t code = 0; code < K; code++) {
                             int32_t code2 = codes[i * M + other_m];
-                            size_t binary_idx = m * M * k * k +
-                                    other_m * k * k + code * k + code2;
-                            objs[i * k + code] +=
+                            size_t binary_idx = m * M * K * K +
+                                    other_m * K * K + code * K + code2;
+                            objs[i * K + code] +=
                                     binaries[binary_idx]; // binaries[m,
                                                           // other_m, code,
                                                           // code2]
@@ -384,8 +414,8 @@ void LocalSearchQuantizer::icm_encode(
                 for (size_t i = 0; i < n; i++) {
                     float best_obj = HUGE_VALF;
                     int32_t best_code = 0;
-                    for (size_t code = 0; code < k; code++) {
-                        float obj = objs[i * k + code];
+                    for (size_t code = 0; code < K; code++) {
+                        float obj = objs[i * K + code];
                         if (obj < best_obj) {
                             best_obj = obj;
                             best_code = code;
@@ -419,9 +449,9 @@ void LocalSearchQuantizer::icm_encode(
 
         if (verbose) {
             printf("\tils_iter %zd: obj = %lf, n_betters = %zd\n",
-                iter1,
-                mean_obj,
-                n_betters);
+                   iter1,
+                   mean_obj,
+                   n_betters);
         }
     } // loop ils_iters
 }
@@ -431,7 +461,7 @@ void LocalSearchQuantizer::perturb_codes(int32_t* codes, size_t n) const {
         for (size_t j = 0; j < nperts; j++) {
             /// TODO: replace rand() by uniform_int_distribution
             size_t m = rand() % M;
-            codes[i * M + m] = rand() % k;
+            codes[i * M + m] = rand() % K;
         }
     }
 }
@@ -442,12 +472,12 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
         size_t m1 = m12 / M;
         size_t m2 = m12 % M;
 
-        for (size_t code1 = 0; code1 < k; code1++) {
-            for (size_t code2 = 0; code2 < k; code2++) {
-                const float* c1 = codebooks.data() + m1 * k * d + code1 * d;
-                const float* c2 = codebooks.data() + m2 * k * d + code2 * d;
+        for (size_t code1 = 0; code1 < K; code1++) {
+            for (size_t code2 = 0; code2 < K; code2++) {
+                const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
+                const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
                 float ip = fvec_inner_product(c1, c2, d);
-                binaries[m1 * M * k * k + m2 * k * k + code1 * k + code2] =
+                binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
                         ip * 2;
             }
         }
@@ -462,11 +492,11 @@ void LocalSearchQuantizer::compute_unary_terms(
     //
     // out = x @ codebooks^T
     // out^T = codebooks @ x^T
-    //         [m*k, d] @ [d, n]
+    //         [m*K, d] @ [d, n]
 
     // out = alpha * op(A) * op(B) + beta * C
-    // [M*k, M*k] @ [M*k, d]
-    FINTEGER nrows_A = M * k;
+    // [M*K, M*K] @ [M*K, d]
+    FINTEGER nrows_A = M * K;
     FINTEGER ncols_A = d;
 
     FINTEGER nrows_B = d;
@@ -488,13 +518,13 @@ void LocalSearchQuantizer::compute_unary_terms(
            unaries,
            &nrows_A); // nrows of output
 
-    std::vector<float> norms(M * k);
-    fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * k);
+    std::vector<float> norms(M * K);
+    fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
 
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++) {
-        float* u = unaries + i * (M * k);
-        fvec_add(M * k, u, norms.data(), u);
+        float* u = unaries + i * (M * K);
+        fvec_add(M * K, u, norms.data(), u);
     }
 }
 
@@ -514,7 +544,7 @@ float LocalSearchQuantizer::evaluate(
         const auto code = codes + i * M;
         const auto decoded_i = decoded_x.data() + i * d;
         for (size_t m = 0; m < M; m++) {
-            const auto c = codebooks.data() + m * k * d +
+            const auto c = codebooks.data() + m * K * d +
                     code[m] * d; // codebooks[m, code[m]]
             fvec_add(d, decoded_i, c, decoded_i);
         }
