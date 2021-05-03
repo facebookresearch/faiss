@@ -26,7 +26,7 @@ namespace faiss {
  * LSQ++: Lower running time and higher recall in multi-codebook quantization
  * Julieta Martinez, et al. ECCV 2018
  *
- * This implmentation is mostly translated from the Julia implementations
+ * This implementation is mostly translated from the Julia implementations
  * by Julieta Martinez:
  * (https://github.com/una-dinosauria/local-search-quantization,
  *  https://github.com/una-dinosauria/Rayuela.jl)
@@ -56,9 +56,9 @@ struct LocalSearchQuantizer {
     size_t icm_iters;        ///< number of iterations in icm
 
     float p;      ///< temperature factor
-    float lambda; ///< regularization factor
+    float lambd; ///< regularization factor
 
-    size_t chunk_size; ///< size to perform encoding at once
+    size_t chunk_size; ///< nb of vectors to encode at a time
 
     size_t nperts; ///< number of perturbation in each code
 
@@ -161,8 +161,7 @@ struct LocalSearchQuantizer {
             float* objs = nullptr) const;
 };
 
-/**
- *  A helper struct to count consuming time during training.
+/** A helper struct to count consuming time during training.
  *  It is NOT thread-safe.
  */
 struct LSQTimer {
@@ -174,29 +173,13 @@ struct LSQTimer {
         reset();
     }
 
-    double get(const std::string& name) {
-        return duration[name];
-    }
+    double get(const std::string& name);
 
-    void start(const std::string& name) {
-        FAISS_THROW_IF_NOT_MSG(!started[name], " timer is already running");
-        started[name] = true;
-        t0[name] = getmillisecs();
-    }
+    void start(const std::string& name);
 
-    void end(const std::string& name) {
-        FAISS_THROW_IF_NOT_MSG(started[name], " timer is not running");
-        double t1 = getmillisecs();
-        double sec = (t1 - t0[name]) / 1000;
-        duration[name] += sec;
-        started[name] = false;
-    }
+    void end(const std::string& name);
 
-    void reset() {
-        duration.clear();
-        t0.clear();
-        started.clear();
-    }
+    void reset();
 };
 
 FAISS_API extern LSQTimer lsq_timer; ///< timer to count consuming time

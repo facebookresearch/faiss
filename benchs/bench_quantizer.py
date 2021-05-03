@@ -11,9 +11,23 @@ from faiss.contrib.datasets import DatasetSIFT1M
 
 
 def eval_codec(q, xb):
+    t0 = time.time()
     codes = q.compute_codes(xb)
+    t1 = time.time()
     decoded = q.decode(codes)
-    return ((xb - decoded) ** 2).sum() / xb.shape[0]
+    return ((xb - decoded) ** 2).sum() / xb.shape[0], t1 - t0
+
+
+def eval_quantizer(q, xb, xt, name):
+    t0 = time.time()
+    q.train(xt)
+    t1 = time.time()
+    train_t = t1 - t0
+    err, encode_t = eval_codec(q, xb)
+    print(f'===== {name}:')
+    print(f'\tmean square error = {err}')
+    print(f'\ttraining time: {train_t} s')
+    print(f'\tencoding time: {encode_t} s')
 
 
 todo = sys.argv[1:]
@@ -28,26 +42,20 @@ nb, d = xb.shape
 nq, d = xq.shape
 nt, d = xt.shape
 
-M = 4
+M = 8
 nbits = 8
 
 if 'lsq' in todo:
     lsq = faiss.LocalSearchQuantizer(d, M, nbits)
     lsq.log_level = 2  # show detailed training progress
-    lsq.train(xt)
-    err_lsq = eval_codec(lsq, xb)
-    print('lsq:', err_lsq)
+    eval_quantizer(lsq, xb, xt, 'lsq')
 
 if 'pq' in todo:
     pq = faiss.ProductQuantizer(d, M, nbits)
-    pq.train(xt)
-    err_pq = eval_codec(pq, xb)
-    print('pq:', err_pq)
+    eval_quantizer(pq, xb, xt, 'pq')
 
 if 'rq' in todo:
     rq = faiss.ResidualQuantizer(d, M, nbits)
     rq.train_type = faiss.ResidualQuantizer.Train_default
     rq.verbose = True
-    rq.train(xt)
-    err_rq = eval_codec(rq, xb)
-    print('rq:', err_rq)
+    eval_quantizer(rq, xb, xt, 'rq')

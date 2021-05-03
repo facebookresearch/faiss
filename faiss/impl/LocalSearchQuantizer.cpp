@@ -136,7 +136,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     encode_ils_iters = 16;
 
     p = 0.5f;
-    lambda = 1e-4f;
+    lambd = 1e-4f;
 
     chunk_size = 10000;
     nperts = (M + 1) / 2;
@@ -328,7 +328,7 @@ void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n)
  * where ' denote transposed
  *
  * Add a regularization term to make B'B inversible:
- *     C = (B'B + lambda * I)^(-1)B'X
+ *     C = (B'B + lambd * I)^(-1)B'X
  */
 void LocalSearchQuantizer::update_codebooks(
         const float* x,
@@ -371,7 +371,7 @@ void LocalSearchQuantizer::update_codebooks(
     // add a regularization term to B'B
 #pragma omp parallel for
     for (size_t i = 0; i < M * K; i++) {
-        bb[i * (M * K) + i] += lambda;
+        bb[i * (M * K) + i] += lambd;
     }
 
     // compute (B'B)^(-1)
@@ -406,6 +406,24 @@ void LocalSearchQuantizer::update_codebooks(
     lsq_timer.end("update_codebooks");
 }
 
+/** encode using iterative conditional mode
+ *
+ * iterative conditional mode:
+ *     For every subcode ci (i = 1, ..., M) of a vector, we fix the other
+ *     subcodes cj (j != i) and then find the optimal value of ci such
+ *     that minimizing the objective function.
+
+ * objective function:
+ *     L = (X - \sum cj)^2, j = 1, ..., M
+ *     L = X^2 - 2X * \sum cj + (\sum cj)^2
+ *
+ * X^2 is negligable since it is the same for all possible value
+ * k of the m-th subcode.
+ *
+ * 2X * \sum cj is the unary term
+ * (\sum cj)^2 is the binary term
+ * These two terms can be precomputed and store in a look up table.
+ */
 void LocalSearchQuantizer::icm_encode(
         const float* x,
         int32_t* codes,
@@ -420,10 +438,10 @@ void LocalSearchQuantizer::icm_encode(
     for (size_t i = 0; i < n_chunks; i++) {
         size_t ni = std::min(chunk_size, n - i * chunk_size);
 
-        if (log_level == 2) {
+        if (log_level > 0) {
             printf("\r\ticm encoding %zd/%zd ...", i * chunk_size + ni, n);
             fflush(stdout);
-            if (i == n_chunks - 1 or i == 0) {
+            if (i == n_chunks - 1 || (i == 0 && log_level == 2)) {
                 printf("\n");
             }
         }
@@ -454,9 +472,11 @@ void LocalSearchQuantizer::icm_encode_partial(
 
     FAISS_THROW_IF_NOT(nperts <= M);
     for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
+        // add perturbation to codes
         perturb_codes(codes, n);
 
         for (size_t iter2 = 0; iter2 < icm_iters; iter2++) {
+            // condition on the m-th subcode
             for (size_t m = 0; m < M; m++) {
                 std::vector<float> objs(n * K);
 #pragma omp parallel for
@@ -465,6 +485,8 @@ void LocalSearchQuantizer::icm_encode_partial(
                     memcpy(objs.data() + i * K, u, sizeof(float) * K);
                 }
 
+                // compute objective function by adding unary
+                // and binary terms together
                 for (size_t other_m = 0; other_m < M; other_m++) {
                     if (other_m == m) {
                         continue;
@@ -482,6 +504,7 @@ void LocalSearchQuantizer::icm_encode_partial(
                     }
                 }
 
+                // find the optimal value of the m-th subcode
 #pragma omp parallel for
                 for (size_t i = 0; i < n; i++) {
                     float best_obj = HUGE_VALF;
@@ -504,6 +527,7 @@ void LocalSearchQuantizer::icm_encode_partial(
         size_t n_betters = 0;
         float mean_obj = 0.0f;
 
+        // select the best code for every vector xi
 #pragma omp parallel for reduction(+ : n_betters, mean_obj)
         for (size_t i = 0; i < n; i++) {
             if (icm_objs[i] < best_objs[i]) {
@@ -643,6 +667,30 @@ float LocalSearchQuantizer::evaluate(
 
     obj = obj / n;
     return obj;
+}
+
+double LSQTimer::get(const std::string& name) {
+    return duration[name];
+}
+
+void LSQTimer::start(const std::string& name) {
+    FAISS_THROW_IF_NOT_MSG(!started[name], " timer is already running");
+    started[name] = true;
+    t0[name] = getmillisecs();
+}
+
+void LSQTimer::end(const std::string& name) {
+    FAISS_THROW_IF_NOT_MSG(started[name], " timer is not running");
+    double t1 = getmillisecs();
+    double sec = (t1 - t0[name]) / 1000;
+    duration[name] += sec;
+    started[name] = false;
+}
+
+void LSQTimer::reset() {
+    duration.clear();
+    t0.clear();
+    started.clear();
 }
 
 } // namespace faiss

@@ -36,6 +36,8 @@ struct ResidualQuantizer {
     size_t code_size; ///< code size in bytes
     bool is_byte_aligned;
 
+    size_t chunk_size; ///< nb of vectors to encode at a time
+
     /// initialization
     enum train_type_t {
         Train_default,         ///< regular k-means
@@ -119,7 +121,8 @@ struct ResidualQuantizer {
             int new_beam_size,
             int32_t* new_codes,
             float* new_residuals = nullptr,
-            float* new_distances = nullptr) const;
+            float* new_distances = nullptr,
+            bool verb = false) const;
 };
 
 /** Encode a residual by sampling from a centroid table.
