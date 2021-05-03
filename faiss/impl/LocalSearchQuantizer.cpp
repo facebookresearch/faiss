@@ -140,6 +140,9 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     chunk_size = 10000;
     nperts = (M + 1) / 2;
+
+    random_seed = 0x12345;
+    std::srand(random_seed);
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
@@ -159,7 +162,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     codebooks.resize(M * K * d);
 
     // random intialize codes
-    std::mt19937 gen(12345);
+    std::mt19937 gen(random_seed);
     std::vector<int32_t> codes(n * M); // [n, M]
     random_int32(&codes, 0, K - 1, gen);
 
@@ -211,7 +214,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         }
 
         // refine codes
-        icm_encode(x, codes.data(), n, train_ils_iters);
+        icm_encode(x, codes.data(), n, train_ils_iters, gen);
 
         if (log_level > 0) {
             float obj = evaluate(codes.data(), x, n);
@@ -267,10 +270,10 @@ void LocalSearchQuantizer::compute_codes(
     }
 
     std::vector<int32_t> codes(n * M);
-    std::mt19937 gen(1234);
+    std::mt19937 gen(random_seed);
     random_int32(&codes, 0, K - 1, gen);
 
-    icm_encode(x, codes.data(), n, encode_ils_iters);
+    icm_encode(x, codes.data(), n, encode_ils_iters, gen);
     pack_codes(n, codes.data(), codes_out);
 
     if (log_level > 0) {
@@ -342,7 +345,6 @@ void LocalSearchQuantizer::update_codebooks(
     std::vector<float> bx(M * K * d, 0.0f);     // [M * K, d]
 
     // compute B'B
-#pragma omp parallel for
     for (size_t i = 0; i < n; i++) {
         for (size_t m = 0; m < M; m++) {
             int32_t code1 = codes[i * M + m];
@@ -359,7 +361,6 @@ void LocalSearchQuantizer::update_codebooks(
     }
 
     // compute BX
-#pragma omp parallel for
     for (size_t i = 0; i < n; i++) {
         for (size_t m = 0; m < M; m++) {
             int32_t code = codes[i * M + m];
@@ -428,7 +429,8 @@ void LocalSearchQuantizer::icm_encode(
         const float* x,
         int32_t* codes,
         size_t n,
-        size_t ils_iters) const {
+        size_t ils_iters,
+        std::mt19937 &gen) const {
     lsq_timer.start("icm_encode");
 
     std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
@@ -448,7 +450,7 @@ void LocalSearchQuantizer::icm_encode(
 
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
-        icm_encode_partial(i, xi, codesi, ni, binaries.data(), ils_iters);
+        icm_encode_partial(i, xi, codesi, ni, binaries.data(), ils_iters, gen);
     }
 
     lsq_timer.end("icm_encode");
@@ -460,7 +462,8 @@ void LocalSearchQuantizer::icm_encode_partial(
         int32_t* codes,
         size_t n,
         const float* binaries,
-        size_t ils_iters) const {
+        size_t ils_iters,
+        std::mt19937 &gen) const {
     std::vector<float> unaries(n * M * K); // [n, M, K]
     compute_unary_terms(x, unaries.data(), n);
 
@@ -473,7 +476,7 @@ void LocalSearchQuantizer::icm_encode_partial(
     FAISS_THROW_IF_NOT(nperts <= M);
     for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
         // add perturbation to codes
-        perturb_codes(codes, n);
+        perturb_codes(codes, n, gen);
 
         for (size_t iter2 = 0; iter2 < icm_iters; iter2++) {
             // condition on the m-th subcode
@@ -553,14 +556,16 @@ void LocalSearchQuantizer::icm_encode_partial(
     } // loop ils_iters
 }
 
-void LocalSearchQuantizer::perturb_codes(int32_t* codes, size_t n) const {
+void LocalSearchQuantizer::perturb_codes(int32_t* codes, size_t n, std::mt19937 &gen) const {
     lsq_timer.start("perturb_codes");
+
+    std::uniform_int_distribution<size_t> m_distrib(0, M - 1);
+    std::uniform_int_distribution<int32_t> k_distrib(0, K - 1);
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < nperts; j++) {
-            /// TODO: replace rand() by uniform_int_distribution
-            size_t m = rand() % M;
-            codes[i * M + m] = rand() % K;
+            size_t m = m_distrib(gen);
+            codes[i * M + m] = k_distrib(gen);
         }
     }
 
