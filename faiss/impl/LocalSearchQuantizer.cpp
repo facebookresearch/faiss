@@ -414,15 +414,16 @@ void LocalSearchQuantizer::icm_encode(
 
     const size_t n_chunks = (n + chunk_size - 1) / chunk_size;
     for (size_t i = 0; i < n_chunks; i++) {
+        size_t ni = std::min(chunk_size, n - i * chunk_size);
+
         if (log_level == 2) {
-            printf("\r\ticm encoding %zd/%zd ...", i + 1, n_chunks);
+            printf("\r\ticm encoding %zd/%zd ...", i * chunk_size + ni, n);
             fflush(stdout);
             if (i == n_chunks - 1 or i == 0) {
                 printf("\n");
             }
         }
 
-        size_t ni = std::min(chunk_size, n - i * chunk_size);
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
         icm_encode_partial(i, xi, codesi, ni, binaries.data(), ils_iters);
