@@ -18,12 +18,9 @@
 
 #include <algorithm>
 
-#include <faiss/IndexFlat.h>
-#include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/hamming.h>
+#include <faiss/utils/hamming.h> // BitstringWriter
 #include <faiss/utils/utils.h>
 
 extern "C" {
@@ -46,6 +43,7 @@ void sgetri_(
         FINTEGER* lwork,
         FINTEGER* info);
 
+// general matrix multiplication
 int sgemm_(
         const char* transa,
         const char* transb,
@@ -92,8 +90,6 @@ void fmat_inverse(float* a, int n) {
     delete[] workspace;
 }
 
-// void fmat_mutiply()
-
 void random_int32(
         std::vector<int32_t>* x,
         int32_t min,
@@ -131,7 +127,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     log_level = 0;
 
     K = (1 << nbits);
-    code_size = M * (nbits / 8); // in bytes
+    code_size = M * nbits / 8; // in bytes
 
     train_iters = 25;
     train_ils_iters = 8;
@@ -140,13 +136,16 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     encode_ils_iters = 16;
 
     p = 0.5f;
-    lambda = 0.0001f;
+    lambda = 1e-4f;
 
     chunk_size = 10000;
-    nperts = 4;
+    nperts = (M + 1) / 2;
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
+    FAISS_THROW_IF_NOT(K == (1 << nbits));
+    FAISS_THROW_IF_NOT(nperts <= M);
+
     lsq_timer.reset();
     if (log_level > 0) {
         lsq_timer.start("train");
@@ -156,15 +155,15 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
                d);
     }
 
-    K = (1 << nbits); // reset it
+    // allocate memory for codebooks, size [M, K, d]
+    codebooks.resize(M * K * d);
 
-    codebooks.resize(M * K * d);       // [M, K, d]
-    std::vector<int32_t> codes(n * M); // [n, M]
-
+    // random intialize codes
     std::mt19937 gen(12345);
+    std::vector<int32_t> codes(n * M); // [n, M]
     random_int32(&codes, 0, K - 1, gen);
 
-    // SR-D
+    // compute standard derivations of each dimension
     std::vector<float> stddev(d, 0);
 
 #pragma omp parallel for
@@ -189,6 +188,11 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     }
 
     for (size_t i = 0; i < train_iters; i++) {
+        // 1. update codebooks given x and codes
+        // 2. add perturbation to codebooks (SR-D)
+        // 3. refine codes given x and codebooks using icm
+
+        // update codebooks
         update_codebooks(x, codes.data(), n);
 
         if (log_level > 0) {
@@ -206,6 +210,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
             printf("\tafter perturbing codebooks: obj = %lf\n", obj);
         }
 
+        // refine codes
         icm_encode(x, codes.data(), n, train_ils_iters);
 
         if (log_level > 0) {
@@ -309,21 +314,21 @@ void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n)
     }
 }
 
-/**
+/** update codebooks given x and codes
  *
-    Input:
-        x: [n, d]
-        codebooks: [m, K, d]
-        b: [n, m]
-    Formulation:
-        B = sparse(b): [n, m*K]
-        C: [m*K, d]
-        L = (X - BC)^2
-        X = BC
-        => B'X = B'BC
-        => C = (B'B + lambda * I)^(-1) B' X
-
-        Let BB = B'B, BX = B'X
+ * Let B denote the sparse matrix of codes, size [n, M * K].
+ * Let C denote the codebooks, size [M * K, d].
+ * Let X denote the training vectors, size [n, d]
+ *
+ * objective function:
+ *     L = (X - BC)^2
+ *
+ * To minimize L, we have:
+ *     C = (B'B)^(-1)B'X
+ * where ' denote transposed
+ *
+ * Add a regularization term to make B'B inversible:
+ *     C = (B'B + lambda * I)^(-1)B'X
  */
 void LocalSearchQuantizer::update_codebooks(
         const float* x,
@@ -332,6 +337,7 @@ void LocalSearchQuantizer::update_codebooks(
     lsq_timer.start("update_codebooks");
 
     // allocate memory
+    // bb = B'B, bx = BX
     std::vector<float> bb(M * K * M * K, 0.0f); // [M * K, M * K]
     std::vector<float> bx(M * K * d, 0.0f);     // [M * K, d]
 
@@ -362,27 +368,19 @@ void LocalSearchQuantizer::update_codebooks(
         }
     }
 
-    // add a regularization term to B'B, make it inversible
+    // add a regularization term to B'B
 #pragma omp parallel for
     for (size_t i = 0; i < M * K; i++) {
         bb[i * (M * K) + i] += lambda;
     }
 
-    // C = inv(bb) @ bx
-
-    // compute inv(bb)
+    // compute (B'B)^(-1)
     fmat_inverse(bb.data(), M * K); // [M*K, M*K]
 
-    // compute inv(bb) @ bx
-
+    // compute C = (B'B)^(-1) @ BX
+    //
     // NOTE: LAPACK use column major order
-    //
-    // out = bb @ bx
-    // out^T = bx^T @ bb^T
-    //         [d, M*K] @ [M*K, M*K]
-    //
     // out = alpha * op(A) * op(B) + beta * C
-    // [M*K, M*K] @ [M*K, d]
     FINTEGER nrows_A = d;
     FINTEGER ncols_A = M * K;
 
@@ -478,10 +476,8 @@ void LocalSearchQuantizer::icm_encode_partial(
                             int32_t code2 = codes[i * M + other_m];
                             size_t binary_idx = m * M * K * K +
                                     other_m * K * K + code * K + code2;
-                            objs[i * K + code] +=
-                                    binaries[binary_idx]; // binaries[m,
-                                                          // other_m, code,
-                                                          // code2]
+                            // binaries[m, other_m, code, code2]
+                            objs[i * K + code] += binaries[binary_idx];
                         }
                     }
                 }
@@ -560,6 +556,7 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
                 const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
                 const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
                 float ip = fvec_inner_product(c1, c2, d);
+                // binaries[m1, m2, code1, code2] = ip * 2
                 binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
                         ip * 2;
             }
@@ -575,14 +572,10 @@ void LocalSearchQuantizer::compute_unary_terms(
         size_t n) const {
     lsq_timer.start("compute_unary_terms");
 
-    // NOTE: LAPACK use column major order
+    // compute x * codebooks^T
     //
-    // out = x @ codebooks^T
-    // out^T = codebooks @ x^T
-    //         [m*K, d] @ [d, n]
-
+    // NOTE: LAPACK use column major order
     // out = alpha * op(A) * op(B) + beta * C
-    // [M*K, M*K] @ [M*K, d]
     FINTEGER nrows_A = M * K;
     FINTEGER ncols_A = d;
 
@@ -633,8 +626,8 @@ float LocalSearchQuantizer::evaluate(
         const auto code = codes + i * M;
         const auto decoded_i = decoded_x.data() + i * d;
         for (size_t m = 0; m < M; m++) {
-            const auto c = codebooks.data() + m * K * d +
-                    code[m] * d; // codebooks[m, code[m]]
+            // c = codebooks[m, code[m]]
+            const auto c = codebooks.data() + m * K * d + code[m] * d;
             fvec_add(d, decoded_i, c, decoded_i);
         }
 

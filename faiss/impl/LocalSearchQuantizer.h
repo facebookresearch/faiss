@@ -9,14 +9,12 @@
 
 #include <stdint.h>
 
-#include <iostream>
 #include <random>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <faiss/utils/utils.h>
-// #include <faiss/Clustering.h>
 
 namespace faiss {
 
@@ -62,7 +60,7 @@ struct LocalSearchQuantizer {
 
     size_t chunk_size; ///< size to perform encoding at once
 
-    size_t nperts; ///< number of perturbations in each code
+    size_t nperts; ///< number of perturbation in each code
 
     std::vector<float> codebooks; ///< codebooks
 
@@ -120,7 +118,7 @@ struct LocalSearchQuantizer {
             const float* binaries,
             size_t ils_iters) const;
 
-    /** Add some perturbations to codebooks
+    /** Add some perturbation to codebooks
      *
      * @param T         temperature of simulated annealing
      * @param stddev    standard derivations of each dimension in training data
@@ -130,7 +128,7 @@ struct LocalSearchQuantizer {
             const std::vector<float>& stddev,
             std::mt19937& gen);
 
-    /** Add some perturbations to codes
+    /** Add some perturbation to codes
      *
      * @param codes codes to be perturbed, size n * M
      */
@@ -171,7 +169,6 @@ struct LSQTimer {
     std::unordered_map<std::string, double> duration;
     std::unordered_map<std::string, double> t0;
     std::unordered_map<std::string, bool> started;
-    // double t0;
 
     LSQTimer() {
         reset();
