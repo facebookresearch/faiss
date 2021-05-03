@@ -127,6 +127,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     this->M = M;
     this->nbits = nbits;
 
+    is_trained = false;
     log_level = 0;
 
     K = (1 << nbits);
@@ -223,6 +224,8 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
             printf("\t%s time: %lf s\n", it.first.data(), it.second);
         }
     }
+
+    is_trained = true;
 }
 
 void LocalSearchQuantizer::perturb_codebooks(
@@ -251,6 +254,7 @@ void LocalSearchQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
     if (log_level > 0) {
         lsq_timer.reset();
         printf("Encoding %zd vectors...\n", n);
@@ -287,6 +291,8 @@ void LocalSearchQuantizer::pack_codes(
 
 void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n)
         const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
+
 #pragma omp parallel for if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(codes + i * code_size, code_size);
