@@ -329,7 +329,6 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
-
     // split into chunks to avoid allocating too large memory
     size_t n_chunks = (n + chunk_size - 1) / chunk_size;
     bool verb = verbose;
@@ -347,7 +346,7 @@ void ResidualQuantizer::compute_codes(
 
         const float* xi = x + i * chunk_size * d;
         uint8_t* ci = codes_out + i * chunk_size * code_size;
-    
+
         std::vector<float> residuals(max_beam_size * ni * d);
         std::vector<int32_t> codes(max_beam_size * M * ni);
         std::vector<float> distances(max_beam_size * ni);
