@@ -360,15 +360,6 @@ void LocalSearchQuantizer::update_codebooks(
         }
     }
 
-    // compute BX
-    for (size_t i = 0; i < n; i++) {
-        for (size_t m = 0; m < M; m++) {
-            int32_t code = codes[i * M + m];
-            float* data = bx.data() + (m * K + code) * d;
-            fvec_add(d, data, x + i * d, data);
-        }
-    }
-
     // add a regularization term to B'B
 #pragma omp parallel for
     for (size_t i = 0; i < M * K; i++) {
@@ -377,6 +368,15 @@ void LocalSearchQuantizer::update_codebooks(
 
     // compute (B'B)^(-1)
     fmat_inverse(bb.data(), M * K); // [M*K, M*K]
+
+    // compute BX
+    for (size_t i = 0; i < n; i++) {
+        for (size_t m = 0; m < M; m++) {
+            int32_t code = codes[i * M + m];
+            float* data = bx.data() + (m * K + code) * d;
+            fvec_add(d, data, x + i * d, data);
+        }
+    }
 
     // compute C = (B'B)^(-1) @ BX
     //
@@ -430,7 +430,7 @@ void LocalSearchQuantizer::icm_encode(
         int32_t* codes,
         size_t n,
         size_t ils_iters,
-        std::mt19937 &gen) const {
+        std::mt19937& gen) const {
     lsq_timer.start("icm_encode");
 
     std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
@@ -463,7 +463,7 @@ void LocalSearchQuantizer::icm_encode_partial(
         size_t n,
         const float* binaries,
         size_t ils_iters,
-        std::mt19937 &gen) const {
+        std::mt19937& gen) const {
     std::vector<float> unaries(n * M * K); // [n, M, K]
     compute_unary_terms(x, unaries.data(), n);
 
@@ -556,7 +556,10 @@ void LocalSearchQuantizer::icm_encode_partial(
     } // loop ils_iters
 }
 
-void LocalSearchQuantizer::perturb_codes(int32_t* codes, size_t n, std::mt19937 &gen) const {
+void LocalSearchQuantizer::perturb_codes(
+        int32_t* codes,
+        size_t n,
+        std::mt19937& gen) const {
     lsq_timer.start("perturb_codes");
 
     std::uniform_int_distribution<size_t> m_distrib(0, M - 1);

@@ -55,13 +55,13 @@ struct LocalSearchQuantizer {
     size_t train_ils_iters;  ///< iterations of local search while training
     size_t icm_iters;        ///< number of iterations in icm
 
-    float p;      ///< temperature factor
+    float p;     ///< temperature factor
     float lambd; ///< regularization factor
 
     size_t chunk_size; ///< nb of vectors to encode at a time
 
-    int random_seed;  ///< seed for random generator
-    size_t nperts; ///< number of perturbation in each code
+    int random_seed; ///< seed for random generator
+    size_t nperts;   ///< number of perturbation in each code
 
     std::vector<float> codebooks; ///< codebooks
 
@@ -108,8 +108,12 @@ struct LocalSearchQuantizer {
      * @param codes  output codes, size n * M
      * @param ils_iters number of iterations of iterative local search
      */
-    void icm_encode(const float* x, int32_t* codes, size_t n, size_t ils_iters, std::mt19937 &gen)
-            const;
+    void icm_encode(
+            const float* x,
+            int32_t* codes,
+            size_t n,
+            size_t ils_iters,
+            std::mt19937& gen) const;
 
     void icm_encode_partial(
             size_t index,
@@ -118,7 +122,7 @@ struct LocalSearchQuantizer {
             size_t n,
             const float* binaries,
             size_t ils_iters,
-            std::mt19937 &gen) const;
+            std::mt19937& gen) const;
 
     /** Add some perturbation to codebooks
      *
@@ -134,7 +138,7 @@ struct LocalSearchQuantizer {
      *
      * @param codes codes to be perturbed, size n * M
      */
-    void perturb_codes(int32_t* codes, size_t n, std::mt19937 &gen) const;
+    void perturb_codes(int32_t* codes, size_t n, std::mt19937& gen) const;
 
     /** Compute binary terms
      *
