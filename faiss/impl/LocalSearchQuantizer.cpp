@@ -43,6 +43,18 @@ void sgetri_(
         FINTEGER* lwork,
         FINTEGER* info);
 
+// solves a system of linear equations
+void sgetrs_(
+        const char* trans,
+        FINTEGER* n,
+        FINTEGER* nrhs,
+        float* A,
+        FINTEGER* lda,
+        FINTEGER* ipiv,
+        float* b,
+        FINTEGER* ldb,
+        FINTEGER* info);
+
 // general matrix multiplication
 int sgemm_(
         const char* transa,
@@ -138,7 +150,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     encode_ils_iters = 16;
 
     p = 0.5f;
-    lambd = 1e-4f;
+    lambd = 1e-2f;
 
     chunk_size = 10000;
     nperts = (M + 1) / 2;
