@@ -51,8 +51,8 @@ struct LocalSearchQuantizer {
 
     size_t train_iters; ///< number of iterations in training
 
-    size_t encode_ils_iters; ///< iterations of local search while encoding
-    size_t train_ils_iters;  ///< iterations of local search while training
+    size_t encode_ils_iters; ///< iterations of local search in encoding
+    size_t train_ils_iters;  ///< iterations of local search in training
     size_t icm_iters;        ///< number of iterations in icm
 
     float p;     ///< temperature factor
@@ -123,6 +123,12 @@ struct LocalSearchQuantizer {
             const float* binaries,
             size_t ils_iters,
             std::mt19937& gen) const;
+
+    void icm_encode_step(
+            const float* unaries,
+            const float* binaries,
+            int32_t* codes,
+            size_t n) const;
 
     /** Add some perturbation to codebooks
      *
