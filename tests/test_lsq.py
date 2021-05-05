@@ -77,11 +77,70 @@ def icm_encode_step_ref(unaries, binaries, codes):
     return codes
 
 
+def decode_ref(x, codebooks, codes):
+    n, d = x.shape
+    _, M = codes.shape
+    decoded_x = np.zeros((n, d), dtype=np.float32)
+    for i in range(n):
+        for m in range(M):
+            decoded_x[i] += codebooks[m, codes[i, m]]
+
+    return decoded_x
+
+
+def icm_encode_ref(x, codebooks, codes):
+    n, d = x.shape
+    M, K, d = codebooks.shape
+
+    codes = codes.copy()
+    for m in range(M):
+        objs = np.zeros((n, K), dtype=np.float32)  # [n, K]
+        for code in range(K):
+            new_codes = codes.copy()
+            new_codes[:, m] = code
+
+            # decode x
+            decoded_x = decode_ref(x, codebooks, new_codes)
+            objs[:, code] = np.sum((x - decoded_x) ** 2, axis=1)
+
+        codes[:, m] = np.argmin(objs, axis=1)
+
+    return codes
+
+
 class TestComponents(unittest.TestCase):
 
-    def test_update_codebooks(self):
+    def test_decode(self):
+        """Test LSQ decode"""
         d = 32
-        n = 1000
+        n = 500
+        M = 4
+        nbits = 8
+        K = (1 << nbits)
+
+        rs = np.random.RandomState(123)
+        x = rs.rand(n, d).astype(np.float32)
+        codes = rs.randint(0, K, (n, M)).astype(np.int32)
+        lsq = faiss.LocalSearchQuantizer(d, M, nbits)
+        lsq.train(x)
+
+        # decode x
+        pack_codes = np.zeros((n, lsq.code_size)).astype(np.uint8)
+        decoded_x = np.zeros((n, d)).astype(np.float32)
+        lsq.pack_codes(n, faiss.swig_ptr(codes), faiss.swig_ptr(pack_codes))
+        lsq.decode_c(faiss.swig_ptr(pack_codes), faiss.swig_ptr(decoded_x), n)
+
+        # decode in Python
+        codebooks = faiss.vector_float_to_array(lsq.codebooks)
+        codebooks = codebooks.reshape(M, K, d).copy()
+        decoded_x_ref = decode_ref(x, codebooks, codes)
+
+        np.testing.assert_allclose(decoded_x, decoded_x_ref, rtol=1e-6)
+
+    def test_update_codebooks(self):
+        """Test codebooks updatation."""
+        d = 32
+        n = 500
         M = 4
         nbits = 8
         K = (1 << nbits)
@@ -110,7 +169,7 @@ class TestComponents(unittest.TestCase):
 
     def test_compute_binary_terms(self):
         d = 16
-        n = 1000
+        n = 500
         M = 4
         nbits = 8
         K = (1 << nbits)
@@ -132,7 +191,7 @@ class TestComponents(unittest.TestCase):
 
     def test_compute_unary_terms(self):
         d = 16
-        n = 1000
+        n = 500
         M = 4
         nbits = 8
         K = (1 << nbits)
@@ -154,7 +213,7 @@ class TestComponents(unittest.TestCase):
 
     def test_icm_encode_step(self):
         d = 16
-        n = 1000
+        n = 500
         M = 4
         nbits = 8
         K = (1 << nbits)
@@ -162,18 +221,59 @@ class TestComponents(unittest.TestCase):
         rs = np.random.RandomState(123)
         x = rs.rand(n, d).astype(np.float32)
 
+        # randomly generate codes, binary terms and unary terms
         codes = rs.randint(0, K, (n, M)).astype(np.int32)
         new_codes = codes.copy()
         unaries = rs.rand(n, M, K).astype(np.float32)
         binaries = rs.rand(M, M, K, K).astype(np.float32)
 
+        # do icm encoding given binary and unary terms
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
         lsq.icm_encode_step(
             faiss.swig_ptr(unaries),
             faiss.swig_ptr(binaries),
             faiss.swig_ptr(new_codes), n)
 
+        # do icm encoding given binary and unary terms in Python
         ref_codes = icm_encode_step_ref(unaries, binaries, codes)
+        np.testing.assert_array_equal(new_codes, ref_codes)
+
+    def test_icm_encode(self):
+        d = 16
+        n = 500
+        M = 4
+        nbits = 4
+        K = (1 << nbits)
+
+        rs = np.random.RandomState(123)
+        x = rs.rand(n, d).astype(np.float32)
+
+        lsq = faiss.LocalSearchQuantizer(d, M, nbits)
+        lsq.train(x)  # just for allocating memory for codebooks
+
+        # compute binary terms
+        binaries = np.zeros((M, M, K, K)).astype(np.float32)
+        lsq.compute_binary_terms(faiss.swig_ptr(binaries))
+
+        # compute unary terms
+        unaries = np.zeros((n, M, K)).astype(np.float32)
+        lsq.compute_unary_terms(faiss.swig_ptr(x), faiss.swig_ptr(unaries), n)
+
+        # randomly generate codes
+        codes = rs.randint(0, K, (n, M)).astype(np.int32)
+        new_codes = codes.copy()
+
+        # do icm encoding given binary and unary terms
+        lsq.icm_encode_step(
+            faiss.swig_ptr(unaries),
+            faiss.swig_ptr(binaries),
+            faiss.swig_ptr(new_codes), n)
+
+        # do icm encoding without pre-computed unary and bianry terms in Python
+        codebooks = faiss.vector_float_to_array(lsq.codebooks)
+        codebooks = codebooks.reshape(M, K, d).copy()
+        ref_codes = icm_encode_ref(x, codebooks, codes)
+
         np.testing.assert_array_equal(new_codes, ref_codes)
 
 
