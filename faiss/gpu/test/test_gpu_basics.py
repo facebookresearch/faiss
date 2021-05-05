@@ -420,5 +420,7 @@ class TestResidualQuantizer(unittest.TestCase):
 
         # np.testing.assert_array_equal(codes0, codes1)
 
+
+
 if __name__ == '__main__':
     unittest.main()

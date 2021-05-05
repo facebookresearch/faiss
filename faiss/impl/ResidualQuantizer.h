@@ -51,7 +51,7 @@ struct ResidualQuantizer {
     int max_beam_size;
 
     /// distance matrixes with beam search can get large, so use this
-    /// to batch computations.
+    /// to batch computations at encoding time.
     size_t max_mem_distances;
 
     /// clustering parameters
@@ -120,6 +120,14 @@ struct ResidualQuantizer {
             int32_t* new_codes,
             float* new_residuals = nullptr,
             float* new_distances = nullptr) const;
+
+    /** Beam search can consume a lot of memory. This function estimates the
+     * amount of mem used by refine_beam to adjust the batch size
+     *
+     * @param beam_size  if != -1, override the beam size
+     */
+    size_t memory_per_point(int beam_size = -1) const;
+
 };
 
 /** Encode a residual by sampling from a centroid table.

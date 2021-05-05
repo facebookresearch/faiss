@@ -314,3 +314,32 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
 
         np.testing.assert_equal(Dref, Dnew)
         np.testing.assert_equal(Iref, Inew)
+
+    def test_ivfsq(self):
+        ds = datasets.SyntheticDataset(32, 3000, 1000, 100)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        gt = ds.get_groundtruth(1)
+
+        # RQ 2x6 = 12 bits = 4096 centroids
+        index = faiss.index_factory(ds.d, "IVF1024(RCQ2x5),SQ8")
+        quantizer = faiss.downcast_index(index.quantizer)
+        rq = quantizer.rq
+        rq.train_type = faiss.ResidualQuantizer.Train_default
+
+        index.train(xt)
+        index.add(xb)
+
+        # make sure that increasing the nprobe increases accuracy
+
+        index.nprobe = 10
+        D, I = index.search(ds.get_queries(), 10)
+        r10 = (I == gt[None, :]).sum() / ds.nq
+
+        index.nprobe = 40
+        D, I = index.search(ds.get_queries(), 10)
+        r40 = (I == gt[None, :]).sum() / ds.nq
+
+        self.assertGreater(r40, r10)
