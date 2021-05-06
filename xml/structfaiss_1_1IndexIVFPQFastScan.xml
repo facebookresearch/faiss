@@ -1018,9 +1018,9 @@
         <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx)</argsstring>
         <name>add_core</name>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a8b7cf5317033d7083e2df631ccbb9cf1">add_core</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a95440ee97cbd8691eca8972d0cf19acc">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1a8c6c12781f333f70e1986007ed2e61e5">add_core</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a302345ef14f579532efb0f7fc5e55d26">add_core</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c">add_core</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>n</declname>

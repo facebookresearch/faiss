@@ -567,10 +567,10 @@
         </inbodydescription>
         <location file="faiss/IndexIVFPQR.h" line="42" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFPQR_1a95440ee97cbd8691eca8972d0cf19acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::IndexIVFPQR::add_core</definition>
-        <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx=nullptr)</argsstring>
+        <argsstring>(idx_t n, const float *x, const idx_t *xids, const idx_t *precomputed_idx) override</argsstring>
         <name>add_core</name>
         <reimplements refid="structfaiss_1_1IndexIVFPQ_1a8c6c12781f333f70e1986007ed2e61e5">add_core</reimplements>
         <param>
@@ -588,7 +588,6 @@
         <param>
           <type>const <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref> *</type>
           <declname>precomputed_idx</declname>
-          <defval>nullptr</defval>
         </param>
         <briefdescription>
 <para>same as add_with_ids, but optionally use the precomputed list ids </para>
@@ -2184,7 +2183,7 @@
     <location file="faiss/IndexIVFPQR.h" line="19" column="29" bodyfile="faiss/IndexIVFPQR.h" bodystart="19" bodyend="69"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>add</name></member>
-      <member refid="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>add_core</name></member>
+      <member refid="structfaiss_1_1IndexIVFPQR_1a95440ee97cbd8691eca8972d0cf19acc" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>add_core</name></member>
       <member refid="structfaiss_1_1IndexIVFPQ_1a8f3ee1073d04464acdc4ce12ea3440eb" prot="public" virt="non-virtual"><scope>faiss::IndexIVFPQR</scope><name>add_core_o</name></member>
       <member refid="structfaiss_1_1IndexIVFPQR_1ae526b4722b470a33643d40ef30cf27f7" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>add_with_ids</name></member>
       <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexIVFPQR</scope><name>assign</name></member>

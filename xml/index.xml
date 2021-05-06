@@ -2204,7 +2204,7 @@
     <member refid="structfaiss_1_1IndexIVFPQR_1aabe4bb3b249f15af977c954f36e81147" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexIVFPQR_1a68ed7cae5bec89fcdcb6a1d2addbd5a8" kind="function"><name>train_residual</name></member>
     <member refid="structfaiss_1_1IndexIVFPQR_1ae526b4722b470a33643d40ef30cf27f7" kind="function"><name>add_with_ids</name></member>
-    <member refid="structfaiss_1_1IndexIVFPQR_1a98fb389c786bb1fb6db47af13659082c" kind="function"><name>add_core</name></member>
+    <member refid="structfaiss_1_1IndexIVFPQR_1a95440ee97cbd8691eca8972d0cf19acc" kind="function"><name>add_core</name></member>
     <member refid="structfaiss_1_1IndexIVFPQR_1a66645a61eb106f718fb5c8a7bac1f070" kind="function"><name>reconstruct_from_offset</name></member>
     <member refid="structfaiss_1_1IndexIVFPQR_1a31a1fec2a88b410ea96ce5be7d527be9" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVFPQR_1a681e937fcfd9bd93cac5f9eff9d6021a" kind="function"><name>search_preassigned</name></member>
