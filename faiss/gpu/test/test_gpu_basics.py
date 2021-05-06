@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 import numpy as np
 import faiss
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 class ReferencedObject(unittest.TestCase):
 

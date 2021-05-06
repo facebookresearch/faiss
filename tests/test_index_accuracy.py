@@ -11,7 +11,7 @@ import numpy as np
 import unittest
 import faiss
 
-from common import Randu10k, get_dataset_2, Randu10kUnbalanced
+from common_faiss_tests import Randu10k, get_dataset_2, Randu10kUnbalanced
 
 ev = Randu10k()
 
