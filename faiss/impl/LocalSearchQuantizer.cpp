@@ -88,18 +88,15 @@ void fvec_add(size_t d, const float* a, const float* b, float* c) {
 }
 
 void fmat_inverse(float* a, int n) {
-    int* ipiv = new int[n];
-    int lwork = n * n;
-    float* workspace = new float[lwork];
     int info;
+    int lwork = n * n;
+    std::vector<int> ipiv(n);
+    std::vector<float> workspace(lwork);
 
-    sgetrf_(&n, &n, a, &n, ipiv, &info);
+    sgetrf_(&n, &n, a, &n, ipiv.data(), &info);
     FAISS_THROW_IF_NOT(info == 0);
-    sgetri_(&n, a, &n, ipiv, workspace, &lwork, &info);
+    sgetri_(&n, a, &n, ipiv.data(), workspace.data(), &lwork, &info);
     FAISS_THROW_IF_NOT(info == 0);
-
-    delete[] ipiv;
-    delete[] workspace;
 }
 
 void random_int32(
