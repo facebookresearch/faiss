@@ -18,7 +18,6 @@
 
 #include <algorithm>
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h> // BitstringWriter
 #include <faiss/utils/utils.h>
@@ -132,13 +131,15 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     this->d = d;
     this->M = M;
-    this->nbits = nbits;
+    this->nbits = std::vector<size_t>(M, nbits);
+
+    // set derived values
+    set_derived_values();
 
     is_trained = false;
-    log_level = 0;
+    verbose = false;
 
     K = (1 << nbits);
-    code_size = M * nbits / 8; // in bytes
 
     train_iters = 25;
     train_ils_iters = 8;
@@ -157,11 +158,11 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
-    FAISS_THROW_IF_NOT(K == (1 << nbits));
+    FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
     FAISS_THROW_IF_NOT(nperts <= M);
 
     lsq_timer.reset();
-    if (log_level > 0) {
+    if (verbose) {
         lsq_timer.start("train");
         printf("Training LSQ, with %zd subcodes on %zd %zdD vectors\n",
                M,
@@ -196,7 +197,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         stddev[i] = sqrt(sum / n);
     }
 
-    if (log_level > 0) {
+    if (verbose) {
         float obj = evaluate(codes.data(), x, n);
         printf("Before training: obj = %lf\n", obj);
     }
@@ -209,7 +210,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         // update codebooks
         update_codebooks(x, codes.data(), n);
 
-        if (log_level > 0) {
+        if (verbose) {
             float obj = evaluate(codes.data(), x, n);
             printf("iter %zd:\n", i);
             printf("\tafter updating codebooks: obj = %lf\n", obj);
@@ -219,7 +220,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         float T = pow((1.0f - (i + 1.0f) / train_iters), p);
         perturb_codebooks(T, stddev, gen);
 
-        if (log_level > 0) {
+        if (verbose) {
             float obj = evaluate(codes.data(), x, n);
             printf("\tafter perturbing codebooks: obj = %lf\n", obj);
         }
@@ -227,13 +228,13 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         // refine codes
         icm_encode(x, codes.data(), n, train_ils_iters, gen);
 
-        if (log_level > 0) {
+        if (verbose) {
             float obj = evaluate(codes.data(), x, n);
             printf("\tafter updating codes: obj = %lf\n", obj);
         }
     }
 
-    if (log_level > 0) {
+    if (verbose) {
         lsq_timer.end("train");
         float obj = evaluate(codes.data(), x, n);
         printf("After training: obj = %lf\n", obj);
@@ -274,7 +275,7 @@ void LocalSearchQuantizer::compute_codes(
         uint8_t* codes_out,
         size_t n) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
-    if (log_level > 0) {
+    if (verbose) {
         lsq_timer.reset();
         printf("Encoding %zd vectors...\n", n);
         lsq_timer.start("encode");
@@ -287,44 +288,10 @@ void LocalSearchQuantizer::compute_codes(
     icm_encode(x, codes.data(), n, encode_ils_iters, gen);
     pack_codes(n, codes.data(), codes_out);
 
-    if (log_level > 0) {
+    if (verbose) {
         lsq_timer.end("encode");
         double t = lsq_timer.get("encode");
         printf("Time to encode %zd vectors: %lf s\n", n, t);
-    }
-}
-
-void LocalSearchQuantizer::pack_codes(
-        size_t n,
-        const int32_t* codes,
-        uint8_t* packed_codes) const {
-#pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
-        const int32_t* codes1 = codes + i * M;
-        BitstringWriter bsw(packed_codes + i * code_size, code_size);
-        for (int m = 0; m < M; m++) {
-            bsw.write(codes1[m], nbits);
-        }
-    }
-}
-
-void LocalSearchQuantizer::decode(const uint8_t* codes, float* x, size_t n)
-        const {
-    FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
-
-#pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
-        BitstringReader bsr(codes + i * code_size, code_size);
-        float* xi = x + i * d;
-        for (int m = 0; m < M; m++) {
-            int code = bsr.read(nbits);
-            const float* c = codebooks.data() + (m * K + code) * d;
-            if (m == 0) {
-                memcpy(xi, c, sizeof(float) * d);
-            } else {
-                fvec_add(d, xi, c, xi);
-            }
-        }
     }
 }
 
@@ -451,10 +418,10 @@ void LocalSearchQuantizer::icm_encode(
     for (size_t i = 0; i < n_chunks; i++) {
         size_t ni = std::min(chunk_size, n - i * chunk_size);
 
-        if (log_level > 0) {
+        if (verbose) {
             printf("\r\ticm encoding %zd/%zd ...", i * chunk_size + ni, n);
             fflush(stdout);
-            if (i == n_chunks - 1 || (i == 0 && log_level == 2)) {
+            if (i == n_chunks - 1 || i == 0) {
                 printf("\n");
             }
         }
@@ -514,7 +481,7 @@ void LocalSearchQuantizer::icm_encode_partial(
 
         memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
 
-        if (log_level == 2 && index == 0) {
+        if (verbose && index == 0) {
             printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
                    iter1,
                    mean_obj,

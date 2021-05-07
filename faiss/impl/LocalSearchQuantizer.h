@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -35,19 +36,8 @@ namespace faiss {
  * `centroids` in PQ and RQ.
  */
 
-struct LocalSearchQuantizer {
-    size_t d;     ///< size of the input vectors
-    size_t M;     ///< number of codebooks
-    size_t nbits; ///< bits per subcode
-    size_t K;     ///< number of codes per codebook
-
-    bool is_trained; ///< is trained or not
-
-    ///< logging level
-    ///< 0 for no logging, 1 for basic logging, 2 for detailed logging
-    int log_level;
-
-    size_t code_size; ///< code size in bytes
+struct LocalSearchQuantizer : AdditiveQuantizer {
+    size_t K; ///< number of codes per codebook
 
     size_t train_iters; ///< number of iterations in training
 
@@ -63,37 +53,20 @@ struct LocalSearchQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
-    std::vector<float> codebooks; ///< codebooks
-
     LocalSearchQuantizer(
             size_t d,      /* dimensionality of the input vectors */
             size_t M,      /* number of subquantizers */
             size_t nbits); /* number of bit per subvector index */
 
     // Train the local search quantizer
-    void train(size_t n, const float* x);
+    void train(size_t n, const float* x) override;
 
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    void compute_codes(const float* x, uint8_t* codes, size_t n) const;
-
-    /** pack a series of code to bit-compact format
-     *
-     * @param codes  codes to be packed, size n * code_size
-     * @param packed_codes output bit-compact codes
-     */
-    void pack_codes(size_t n, const int32_t* codes, uint8_t* packed_codes)
-            const;
-
-    /** Decode a set of vectors
-     *
-     * @param codes  codes to decode, size n * code_size
-     * @param x      output vectors, size n * d
-     */
-    void decode(const uint8_t* codes, float* x, size_t n) const;
+    void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
 
     /** Update codebooks given encodings
      *
@@ -196,4 +169,4 @@ struct LSQTimer {
 
 FAISS_API extern LSQTimer lsq_timer; ///< timer to count consuming time
 
-}; // namespace faiss
+} // namespace faiss
