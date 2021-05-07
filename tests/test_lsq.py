@@ -112,10 +112,10 @@ class TestComponents(unittest.TestCase):
 
     def test_decode(self):
         """Test LSQ decode"""
-        d = 32
+        d = 16
         n = 500
         M = 4
-        nbits = 8
+        nbits = 6
         K = (1 << nbits)
 
         rs = np.random.RandomState(123)
@@ -139,10 +139,10 @@ class TestComponents(unittest.TestCase):
 
     def test_update_codebooks(self):
         """Test codebooks updatation."""
-        d = 32
+        d = 16
         n = 500
         M = 4
-        nbits = 8
+        nbits = 6
         K = (1 << nbits)
 
         # set a larger value to make the updating process more stable
@@ -171,7 +171,7 @@ class TestComponents(unittest.TestCase):
         d = 16
         n = 500
         M = 4
-        nbits = 8
+        nbits = 6
         K = (1 << nbits)
 
         rs = np.random.RandomState(123)
@@ -193,7 +193,7 @@ class TestComponents(unittest.TestCase):
         d = 16
         n = 500
         M = 4
-        nbits = 8
+        nbits = 6
         K = (1 << nbits)
 
         rs = np.random.RandomState(123)
@@ -215,7 +215,7 @@ class TestComponents(unittest.TestCase):
         d = 16
         n = 500
         M = 4
-        nbits = 8
+        nbits = 6
         K = (1 << nbits)
 
         rs = np.random.RandomState(123)

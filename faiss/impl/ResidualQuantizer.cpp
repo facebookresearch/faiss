@@ -325,6 +325,8 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
+
     size_t mem = memory_per_point();
     if (n > 1 && mem * n > max_mem_distances) {
         // then split queries to reduce temp memory
