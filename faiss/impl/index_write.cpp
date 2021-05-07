@@ -162,6 +162,7 @@ void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {
     WRITE1(rq->d);
     WRITE1(rq->M);
     WRITEVECTOR(rq->nbits);
+    WRITE1(rq->is_trained);
     WRITE1(rq->train_type);
     WRITE1(rq->max_beam_size);
     WRITEVECTOR(rq->codebooks);
