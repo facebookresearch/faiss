@@ -49,9 +49,9 @@ IndexResidual::IndexResidual(
 IndexResidual::IndexResidual() : IndexResidual(0, 0, 0) {}
 
 void IndexResidual::set_search_type(Search_type_t new_search_type) {
-    int norm_bits = new_search_type == ST_norm_float
-            ? 32
-            : new_search_type == ST_norm_qint8 ? 8 : 0;
+    int norm_bits = new_search_type == ST_norm_float ? 32
+            : new_search_type == ST_norm_qint8       ? 8
+                                                     : 0;
 
     FAISS_THROW_IF_NOT(ntotal == 0);
 
