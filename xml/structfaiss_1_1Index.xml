@@ -614,6 +614,7 @@
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1af2e505c14e62234eb251fcb37ef012d2">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ResidualCoarseQuantizer_1a006678e847aed9a6199ba157bf26685e">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad690b0d256903730605ce36d64720fbf">reconstruct</reimplementedby>
