@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # translation of test_meta_index.lua
 
+import sys
 import numpy as np
 import faiss
 import unittest
@@ -86,6 +87,13 @@ class Shards(unittest.TestCase):
         _Dref, Iref = ref_index.search(xq, k)
         print(Iref[:5, :6])
 
+        # there is a OpenMP bug in this configuration, so disable threading
+        if sys.platform == "darwin" and "Clang 12" in sys.version:
+            nthreads = faiss.omp_get_max_threads()
+            faiss.omp_set_num_threads(1)
+        else:
+            nthreads = None
+
         shard_index = faiss.IndexShards(d)
         shard_index_2 = faiss.IndexShards(d, True, False)
 
@@ -131,6 +139,8 @@ class Shards(unittest.TestCase):
             print('%d / %d differences' % (ndiff, nq * k))
             assert(ndiff < nq * k / 1000.)
 
+        if nthreads is not None:
+            faiss.omp_set_num_threads(nthreads)
 
 class Merge(unittest.TestCase):
 
