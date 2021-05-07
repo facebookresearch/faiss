@@ -32,7 +32,6 @@ ResidualQuantizer::ResidualQuantizer()
         : d(0),
           M(0),
           verbose(false),
-          chunk_size(10000),
           train_type(Train_progressive_dim),
           max_beam_size(30),
           max_mem_distances(5 * (size_t(1) << 30)), // 5 GiB
@@ -329,44 +328,22 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
-    // split into chunks to avoid allocating too large memory
-    size_t n_chunks = (n + chunk_size - 1) / chunk_size;
-    bool verb = verbose;
+    std::vector<float> residuals(max_beam_size * n * d);
+    std::vector<int32_t> codes(max_beam_size * M * n);
+    std::vector<float> distances(max_beam_size * n);
 
-    for (size_t i = 0; i < n_chunks; i++) {
-        size_t ni = std::min(chunk_size, n - i * chunk_size);
+    refine_beam(
+            n,
+            1,
+            x,
+            max_beam_size,
+            codes.data(),
+            residuals.data(),
+            distances.data());
 
-        if (verbose) {
-            printf("\rencoding %zd/%zd ...", i * chunk_size + ni, n);
-            fflush(stdout);
-            if (i == n_chunks - 1 || i == 0) {
-                printf("\n");
-            }
-        }
-
-        const float* xi = x + i * chunk_size * d;
-        uint8_t* ci = codes_out + i * chunk_size * code_size;
-
-        std::vector<float> residuals(max_beam_size * ni * d);
-        std::vector<int32_t> codes(max_beam_size * M * ni);
-        std::vector<float> distances(max_beam_size * ni);
-
-        refine_beam(
-                ni,
-                1,
-                xi,
-                max_beam_size,
-                codes.data(),
-                residuals.data(),
-                distances.data(),
-                verb);
-
-        // pack only the first code of the beam (hence the ld_codes=M *
-        // cur_beam_size)
-        pack_codes(ni, codes.data(), ci, M * max_beam_size);
-
-        verb = false; // only print msg of the first chunk
-    }
+    // pack only the first code of the beam (hence the ld_codes=M *
+    // cur_beam_size)
+    pack_codes(n, codes.data(), codes_out, M * max_beam_size);
 }
 
 void ResidualQuantizer::refine_beam(
@@ -376,8 +353,7 @@ void ResidualQuantizer::refine_beam(
         int out_beam_size,
         int32_t* out_codes,
         float* out_residuals,
-        float* out_distances,
-        bool verb) const {
+        float* out_distances) const {
     int cur_beam_size = beam_size;
 
     std::vector<float> residuals(x, x + n * d * beam_size);
@@ -426,17 +402,17 @@ void ResidualQuantizer::refine_beam(
 
         cur_beam_size = new_beam_size;
 
-        if (verbose && verb) {
+        if (verbose) {
             float sum_distances = 0;
             for (int j = 0; j < distances.size(); j++) {
                 sum_distances += distances[j];
             }
-            printf("\t[%.3f s] encode stage %d, %d bits, "
-                   "mean error %g, beam_size %d\n",
+            printf("[%.3f s] encode stage %d, %d bits, "
+                   "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
                    m,
                    int(nbits[m]),
-                   sum_distances / n,
+                   sum_distances,
                    cur_beam_size);
         }
     }
