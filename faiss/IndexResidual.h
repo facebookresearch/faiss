@@ -134,6 +134,8 @@ struct ResidualCoarseQuantizer : Index {
             float* distances,
             idx_t* labels) const override;
 
+    void reconstruct(idx_t key, float* recons) const override;
+
     /// N/A
     void reset() override;
 };

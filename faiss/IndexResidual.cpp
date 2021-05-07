@@ -6,6 +6,7 @@
  */
 
 #include <faiss/IndexResidual.h>
+#include "faiss/utils/utils.h"
 
 #include <cmath>
 #include <cstring>
@@ -14,6 +15,7 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -202,7 +204,32 @@ void ResidualCoarseQuantizer::search(
         float* distances,
         idx_t* labels) const {
     FAISS_THROW_IF_NOT(beam_factor >= 1.0);
+
     int beam_size = int(k * beam_factor);
+
+    size_t memory_per_point = rq.memory_per_point(beam_size);
+
+    /*
+
+    printf("mem per point %ld n=%d max_mem_distance=%ld mem_kb=%zd\n",
+        memory_per_point, int(n), rq.max_mem_distances, get_mem_usage_kb());
+    */
+    if (n > 1 && memory_per_point * n > rq.max_mem_distances) {
+        // then split queries to reduce temp memory
+        idx_t bs = rq.max_mem_distances / memory_per_point;
+        if (bs == 0) {
+            bs = 1;  // otherwise we can't do much
+        }
+        if (verbose) {
+            printf("ResidualCoarseQuantizer::search: run %d searches in batches of size %d\n", int(n), int(bs));
+        }
+        for (idx_t i0 = 0; i0 < n; i0 += bs) {
+            idx_t i1 = std::min(n, i0 + bs);
+            search (i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k);
+            InterruptCallback::check();
+        }
+        return;
+    }
 
     std::vector<int32_t> codes(beam_size * rq.M * n);
     std::vector<float> beam_distances(n * beam_size);
@@ -226,6 +253,24 @@ void ResidualCoarseQuantizer::search(
         }
     }
 }
+
+void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const
+{
+    for (int m = 0; m < rq.M; m++) {
+        int nbits = rq.nbits[m];
+        idx_t l = key & ((idx_t(1) << nbits) - 1);
+        key = key >> nbits;
+        const float *c = rq.centroids.data() + d * (rq.centroid_offsets[m] + l);
+        if (m == 0) {
+            memcpy(recons, c, sizeof(*c) * d);
+        } else {
+            for (int i = 0; i < d; i++) {
+                recons[i] += c[i];
+            }
+        }
+    }
+}
+
 
 void ResidualCoarseQuantizer::reset() {
     FAISS_THROW_MSG("not applicable");
