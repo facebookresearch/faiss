@@ -39,7 +39,6 @@ jobs:
       - image: beauby/faiss-circleci:cpu
     resource_class: << parameters.resource_class >>
     environment:
-      OPT_LEVEL: << parameters.opt_level >>
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
     steps:
@@ -71,13 +70,6 @@ jobs:
             make -C build -j swigfaiss
             cd build/faiss/python
             python3 setup.py build
-      - run:
-          name: Test optimization level
-          command: |
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            python3 -c "import faiss; \
-                options = faiss.get_compile_options(); \
-                assert '$OPT_LEVEL'.upper() in options"
       - run:
           name: Test python extension
           command: |

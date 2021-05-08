@@ -14,6 +14,15 @@ from faiss.contrib import datasets
 import platform
 
 
+class TestCompileOptions(unittest.TestCase):
+
+    def test_compile_options(self):
+        options = faiss.get_compile_options()
+        options = options.split(' ')
+        for option in options:
+            assert option in ['AVX2', 'NEON', 'GENERIC']
+
+
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
@@ -62,11 +71,6 @@ class TestSearch(unittest.TestCase):
         print('PQ16x4fs search time:', pqfs_t)
         self.assertLess(pqfs_t * 10, pq_t)
 
-    def test_compile_options(self):
-        options = faiss.get_compile_options()
-        options = options.split(' ')
-        for option in options:
-            assert option in ['AVX2', 'NEON', 'GENERIC']
 
 class TestRounding(unittest.TestCase):
 
