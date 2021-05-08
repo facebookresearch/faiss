@@ -5,10 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
-#ifndef FAISS_distances_h
-#define FAISS_distances_h
+#pragma once
 
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
@@ -55,4 +52,4 @@ DistanceComputer* get_extra_distance_computer(
 
 } // namespace faiss
 
-#endif
+#include <faiss/utils/extra_distances-inl.h>

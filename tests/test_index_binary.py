@@ -6,6 +6,7 @@
 """this is a basic test script for simple indices work"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
 import numpy as np
 import unittest
 import faiss
@@ -351,6 +352,13 @@ class TestReplicasAndShards(unittest.TestCase):
 
         Dref, Iref = index_ref.search(xq, 10)
 
+        # there is a OpenMP bug in this configuration, so disable threading
+        if sys.platform == "darwin" and "Clang 12" in sys.version:
+            nthreads = faiss.omp_get_max_threads()
+            faiss.omp_set_num_threads(1)
+        else:
+            nthreads = None
+
         nrep = 5
         index = faiss.IndexBinaryReplicas()
         for _i in range(nrep):
@@ -370,6 +378,9 @@ class TestReplicasAndShards(unittest.TestCase):
 
         index2.add(xb)
         D2, I2 = index2.search(xq, 10)
+
+        if nthreads is not None:
+            faiss.omp_set_num_threads(nthreads)
 
         self.assertTrue((Dref == D2).all())
         self.assertTrue((Iref == I2).all())

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 /* All distance functions for L2 and IP distances.
  * The actual functions are implemented in distances.cpp and distances_simd.cpp
  */
@@ -33,6 +31,7 @@ float fvec_inner_product(const float* x, const float* y, size_t d);
 /// L1 distance
 float fvec_L1(const float* x, const float* y, size_t d);
 
+/// infinity distance
 float fvec_Linf(const float* x, const float* y, size_t d);
 
 /** Compute pairwise distances between sets of vectors
@@ -77,13 +76,13 @@ float fvec_norm_L2sqr(const float* x, size_t d);
 
 /** compute the L2 norms for a set of vectors
  *
- * @param  ip       output norms, size nx
+ * @param  norms    output norms, size nx
  * @param  x        set of vectors, size nx * d
  */
-void fvec_norms_L2(float* ip, const float* x, size_t d, size_t nx);
+void fvec_norms_L2(float* norms, const float* x, size_t d, size_t nx);
 
-/// same as fvec_norms_L2, but computes square norms
-void fvec_norms_L2sqr(float* ip, const float* x, size_t d, size_t nx);
+/// same as fvec_norms_L2, but computes squared norms
+void fvec_norms_L2sqr(float* norms, const float* x, size_t d, size_t nx);
 
 /* L2-renormalize a set of vector. Nothing done if the vector is 0-normed */
 void fvec_renorm_L2(size_t d, size_t nx, float* x);
@@ -260,5 +259,9 @@ void compute_PQ_dis_tables_dsub2(
         const float* x,
         bool is_inner_product,
         float* dis_tables);
+
+/***************************************************************************
+ * Templatized versions of distance functions
+ ***************************************************************************/
 
 } // namespace faiss
