@@ -12,7 +12,12 @@
 
 namespace faiss {
 
-/** Interface of addtive quantizers */
+/** Abstract structure for additive quantizers
+ *
+ * Different from the product quantizer in which the decoded vector is the
+ * concatenation of M sub-vectors, additive quantizers sum M sub-vectors
+ * to get the decoded vector.
+ */
 struct AdditiveQuantizer {
     size_t d;                     ///< size of the input vectors
     size_t M;                     ///< number of codebooks
@@ -28,10 +33,10 @@ struct AdditiveQuantizer {
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
 
-    /// compute derived values when d, M and nbits have been set
+    ///< compute derived values when d, M and nbits have been set
     void set_derived_values();
 
-    // Train the additive quantizer
+    ///< Train the additive quantizer
     virtual void train(size_t n, const float* x);
 
     /** Encode a set of vectors

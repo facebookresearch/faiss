@@ -243,8 +243,8 @@ static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
     READ1(rq->d);
     READ1(rq->M);
     READVECTOR(rq->nbits);
-    READ1(rq->is_trained);
     rq->set_derived_values();
+    READ1(rq->is_trained);
     READ1(rq->train_type);
     READ1(rq->max_beam_size);
     READVECTOR(rq->codebooks);
