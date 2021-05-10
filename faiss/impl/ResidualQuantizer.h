@@ -127,7 +127,6 @@ struct ResidualQuantizer {
      * @param beam_size  if != -1, override the beam size
      */
     size_t memory_per_point(int beam_size = -1) const;
-
 };
 
 /** Encode a residual by sampling from a centroid table.

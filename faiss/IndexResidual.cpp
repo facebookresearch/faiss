@@ -218,14 +218,16 @@ void ResidualCoarseQuantizer::search(
         // then split queries to reduce temp memory
         idx_t bs = rq.max_mem_distances / memory_per_point;
         if (bs == 0) {
-            bs = 1;  // otherwise we can't do much
+            bs = 1; // otherwise we can't do much
         }
         if (verbose) {
-            printf("ResidualCoarseQuantizer::search: run %d searches in batches of size %d\n", int(n), int(bs));
+            printf("ResidualCoarseQuantizer::search: run %d searches in batches of size %d\n",
+                   int(n),
+                   int(bs));
         }
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
-            search (i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k);
+            search(i1 - i0, x + i0 * d, k, distances + i0 * k, labels + i0 * k);
             InterruptCallback::check();
         }
         return;
@@ -254,13 +256,12 @@ void ResidualCoarseQuantizer::search(
     }
 }
 
-void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const
-{
+void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const {
     for (int m = 0; m < rq.M; m++) {
         int nbits = rq.nbits[m];
         idx_t l = key & ((idx_t(1) << nbits) - 1);
         key = key >> nbits;
-        const float *c = rq.centroids.data() + d * (rq.centroid_offsets[m] + l);
+        const float* c = rq.centroids.data() + d * (rq.centroid_offsets[m] + l);
         if (m == 0) {
             memcpy(recons, c, sizeof(*c) * d);
         } else {
@@ -270,7 +271,6 @@ void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const
         }
     }
 }
-
 
 void ResidualCoarseQuantizer::reset() {
     FAISS_THROW_MSG("not applicable");

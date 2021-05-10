@@ -8,9 +8,9 @@
 // -*- c++ -*-
 
 #include "faiss/impl/ResidualQuantizer.h"
-#include "faiss/utils/utils.h"
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
+#include "faiss/utils/utils.h"
 
 #include <cstddef>
 #include <cstdio>
@@ -21,12 +21,12 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
-#include <faiss/impl/AuxIndexStructures.h>
 
 namespace faiss {
 
@@ -118,7 +118,8 @@ void beam_search_encode_step(
             assign_index->add(K, cent);
         }
 
-        // printf("beam_search_encode_step -- mem usage %zd\n", get_mem_usage_kb());
+        // printf("beam_search_encode_step -- mem usage %zd\n",
+        // get_mem_usage_kb());
         assign_index->search(
                 n * beam_size,
                 residuals,
@@ -334,28 +335,27 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
         beam_size = max_beam_size;
     }
     size_t mem;
-    mem = beam_size * d * 2 * sizeof(float);  // size for 2 beams at a time
-    mem += beam_size * beam_size * (sizeof(float) + sizeof(Index::idx_t)); // size for 1 beam search result
+    mem = beam_size * d * 2 * sizeof(float); // size for 2 beams at a time
+    mem += beam_size * beam_size *
+            (sizeof(float) +
+             sizeof(Index::idx_t)); // size for 1 beam search result
     return mem;
 }
-
-
 
 void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
-
     size_t mem = memory_per_point();
     if (n > 1 && mem * n > max_mem_distances) {
         // then split queries to reduce temp memory
         size_t bs = max_mem_distances / mem;
         if (bs == 0) {
-            bs = 1;  // otherwise we can't do much
+            bs = 1; // otherwise we can't do much
         }
         for (size_t i0 = 0; i0 < n; i0 += bs) {
             size_t i1 = std::min(n, i0 + bs);
-            compute_codes (x + i0 * d, codes_out + i0 * code_size, i1 - i0);
+            compute_codes(x + i0 * d, codes_out + i0 * code_size, i1 - i0);
         }
         return;
     }
