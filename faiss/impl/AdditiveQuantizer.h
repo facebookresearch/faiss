@@ -44,7 +44,8 @@ struct AdditiveQuantizer {
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    virtual void compute_codes(const float* x, uint8_t* codes, size_t n) const = 0;
+    virtual void compute_codes(const float* x, uint8_t* codes, size_t n)
+            const = 0;
 
     /** pack a series of code to bit-compact format
      *
