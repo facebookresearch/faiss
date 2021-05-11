@@ -52,15 +52,6 @@ void AdditiveQuantizer::set_derived_values() {
     code_size = (tot_bits + 7) / 8;
 }
 
-void AdditiveQuantizer::train(size_t n, const float* x) {
-    FAISS_THROW_MSG("Not implemented");
-}
-
-void AdditiveQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
-        const {
-    FAISS_THROW_MSG("Not implemented");
-}
-
 void AdditiveQuantizer::pack_codes(
         size_t n,
         const int32_t* codes,

@@ -37,14 +37,14 @@ struct AdditiveQuantizer {
     void set_derived_values();
 
     ///< Train the additive quantizer
-    virtual void train(size_t n, const float* x);
+    virtual void train(size_t n, const float* x) = 0;
 
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    virtual void compute_codes(const float* x, uint8_t* codes, size_t n) const;
+    virtual void compute_codes(const float* x, uint8_t* codes, size_t n) const = 0;
 
     /** pack a series of code to bit-compact format
      *

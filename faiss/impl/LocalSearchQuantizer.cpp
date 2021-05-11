@@ -99,13 +99,13 @@ void fmat_inverse(float* a, int n) {
 }
 
 void random_int32(
-        std::vector<int32_t>* x,
+        std::vector<int32_t>& x,
         int32_t min,
         int32_t max,
         std::mt19937& gen) {
     std::uniform_int_distribution<int32_t> distrib(min, max);
-    for (size_t i = 0; i < x->size(); i++) {
-        (*x)[i] = distrib(gen);
+    for (size_t i = 0; i < x.size(); i++) {
+        x[i] = distrib(gen);
     }
 }
 
@@ -151,7 +151,7 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     lambd = 1e-2f;
 
     chunk_size = 10000;
-    nperts = (M + 1) / 2;
+    nperts = 4;
 
     random_seed = 0x12345;
     std::srand(random_seed);
@@ -176,7 +176,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     // randomly intialize codes
     std::mt19937 gen(random_seed);
     std::vector<int32_t> codes(n * M); // [n, M]
-    random_int32(&codes, 0, K - 1, gen);
+    random_int32(codes, 0, K - 1, gen);
 
     // compute standard derivations of each dimension
     std::vector<float> stddev(d, 0);
@@ -283,7 +283,7 @@ void LocalSearchQuantizer::compute_codes(
 
     std::vector<int32_t> codes(n * M);
     std::mt19937 gen(random_seed);
-    random_int32(&codes, 0, K - 1, gen);
+    random_int32(codes, 0, K - 1, gen);
 
     icm_encode(x, codes.data(), n, encode_ils_iters, gen);
     pack_codes(n, codes.data(), codes_out);
@@ -339,7 +339,6 @@ void LocalSearchQuantizer::update_codebooks(
     }
 
     // add a regularization term to B'B
-#pragma omp parallel for
     for (int64_t i = 0; i < M * K; i++) {
         bb[i * (M * K) + i] += lambd;
     }
