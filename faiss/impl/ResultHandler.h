@@ -92,13 +92,14 @@ struct HeapResultHandler {
 
     /// add results for query i0..i1 and j0..j1
     void add_results(size_t j0, size_t j1, const T* dis_tab) {
-        // maybe parallel for
-        for (size_t i = i0; i < i1; i++) {
+#pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
             T* heap_dis = heap_dis_tab + i * k;
             TI* heap_ids = heap_ids_tab + i * k;
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
             T thresh = heap_dis[0];
             for (size_t j = j0; j < j1; j++) {
-                T dis = *dis_tab++;
+                T dis = dis_tab_i[j];
                 if (C::cmp(thresh, dis)) {
                     heap_replace_top<C>(k, heap_dis, heap_ids, dis, j);
                     thresh = heap_dis[0];
@@ -281,10 +282,12 @@ struct ReservoirResultHandler {
     /// add results for query i0..i1 and j0..j1
     void add_results(size_t j0, size_t j1, const T* dis_tab) {
         // maybe parallel for
-        for (size_t i = i0; i < i1; i++) {
+#pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
             ReservoirTopN<C>& reservoir = reservoirs[i - i0];
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
             for (size_t j = j0; j < j1; j++) {
-                T dis = *dis_tab++;
+                T dis = dis_tab_i[j];
                 reservoir.add(dis, j);
             }
         }

@@ -43,7 +43,7 @@ FAISS_DECLARE_INDEX_DOWNCAST(IndexIVF)
 /// number of possible key values
 FAISS_DECLARE_GETTER(IndexIVF, size_t, nlist)
 /// number of probes at query time
-FAISS_DECLARE_GETTER(IndexIVF, size_t, nprobe)
+FAISS_DECLARE_GETTER_SETTER(IndexIVF, size_t, nprobe)
 /// quantizer that maps vectors to inverted lists
 FAISS_DECLARE_GETTER(IndexIVF, FaissIndex*, quantizer)
 /**
@@ -54,7 +54,7 @@ FAISS_DECLARE_GETTER(IndexIVF, FaissIndex*, quantizer)
 FAISS_DECLARE_GETTER(IndexIVF, char, quantizer_trains_alone)
 
 /// whether object owns the quantizer
-FAISS_DECLARE_GETTER(IndexIVF, int, own_fields)
+FAISS_DECLARE_GETTER_SETTER(IndexIVF, int, own_fields)
 
 /** moves the entries from another dataset to self. On output,
  * other is empty. add_id is added to all moved ids (for

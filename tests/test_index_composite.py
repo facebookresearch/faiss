@@ -14,7 +14,7 @@ import shutil
 import tempfile
 import platform
 
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 class TestRemove(unittest.TestCase):
 

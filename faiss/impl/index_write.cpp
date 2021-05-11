@@ -9,6 +9,9 @@
 
 #include <faiss/index_io.h>
 
+#include <faiss/impl/io.h>
+#include <faiss/impl/io_macros.h>
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -38,6 +41,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -152,6 +156,15 @@ void write_ProductQuantizer(const ProductQuantizer* pq, IOWriter* f) {
     WRITE1(pq->M);
     WRITE1(pq->nbits);
     WRITEVECTOR(pq->centroids);
+}
+
+void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {
+    WRITE1(rq->d);
+    WRITE1(rq->M);
+    WRITEVECTOR(rq->nbits);
+    WRITE1(rq->train_type);
+    WRITE1(rq->max_beam_size);
+    WRITEVECTOR(rq->centroids);
 }
 
 static void write_ScalarQuantizer(const ScalarQuantizer* ivsc, IOWriter* f) {
@@ -323,6 +336,26 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxp->search_type);
         WRITE1(idxp->encode_signs);
         WRITE1(idxp->polysemous_ht);
+    } else if (
+            const IndexResidual* idxr =
+                    dynamic_cast<const IndexResidual*>(idx)) {
+        uint32_t h = fourcc("IxRQ");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_ResidualQuantizer(&idxr->rq, f);
+        WRITE1(idxr->search_type);
+        WRITE1(idxr->norm_min);
+        WRITE1(idxr->norm_max);
+        WRITE1(idxr->code_size);
+        WRITEVECTOR(idxr->codes);
+    } else if (
+            const ResidualCoarseQuantizer* idxr =
+                    dynamic_cast<const ResidualCoarseQuantizer*>(idx)) {
+        uint32_t h = fourcc("ImRQ");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_ResidualQuantizer(&idxr->rq, f);
+        WRITE1(idxr->beam_factor);
     } else if (
             const Index2Layer* idxp = dynamic_cast<const Index2Layer*>(idx)) {
         uint32_t h = fourcc("Ix2L");

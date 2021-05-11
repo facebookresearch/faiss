@@ -7,8 +7,10 @@
 
 // -*- c++ -*-
 
+#include "faiss/impl/ResidualQuantizer.h"
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
+#include "faiss/utils/utils.h"
 
 #include <cstddef>
 #include <cstdio>
@@ -19,6 +21,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
@@ -48,20 +51,20 @@ ResidualQuantizer::ResidualQuantizer(size_t d, size_t M, size_t nbits)
         : ResidualQuantizer(d, std::vector<size_t>(M, nbits)) {}
 
 void ResidualQuantizer::set_derived_values() {
-    code_size = 0;
+    tot_bits = 0;
     is_byte_aligned = true;
     centroid_offsets.resize(M + 1, 0);
     for (int i = 0; i < M; i++) {
         int nbit = nbits[i];
         size_t k = 1 << nbit;
         centroid_offsets[i + 1] = centroid_offsets[i] + k;
-        code_size += nbit;
+        tot_bits += nbit;
         if (nbit % 8 != 0) {
             is_byte_aligned = false;
         }
     }
     // convert bits to bytes
-    code_size = (code_size + 7) / 8;
+    code_size = (tot_bits + 7) / 8;
 }
 
 namespace {
@@ -107,13 +110,16 @@ void beam_search_encode_step(
         // search beam_size distances per query
         FAISS_THROW_IF_NOT(assign_index->d == d);
         cent_distances.resize(n * beam_size * new_beam_size);
+        cent_ids.resize(n * beam_size * new_beam_size);
         if (assign_index->ntotal != 0) {
             // then we assume the centroids are already added to the index
             FAISS_THROW_IF_NOT(assign_index->ntotal != K);
         } else {
             assign_index->add(K, cent);
         }
-        cent_ids.resize(n * beam_size * new_beam_size);
+
+        // printf("beam_search_encode_step -- mem usage %zd\n",
+        // get_mem_usage_kb());
         assign_index->search(
                 n * beam_size,
                 residuals,
@@ -126,9 +132,10 @@ void beam_search_encode_step(
         pairwise_L2sqr(
                 d, n * beam_size, residuals, K, cent, cent_distances.data());
     }
+    InterruptCallback::check();
 
 #pragma omp parallel for if (n > 100)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const int32_t* codes_i = codes + i * m * beam_size;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
         const float* residuals_i = residuals + i * d * beam_size;
@@ -323,14 +330,67 @@ void ResidualQuantizer::train(size_t n, const float* x) {
     }
 }
 
+size_t ResidualQuantizer::memory_per_point(int beam_size) const {
+    if (beam_size < 0) {
+        beam_size = max_beam_size;
+    }
+    size_t mem;
+    mem = beam_size * d * 2 * sizeof(float); // size for 2 beams at a time
+    mem += beam_size * beam_size *
+            (sizeof(float) +
+             sizeof(Index::idx_t)); // size for 1 beam search result
+    return mem;
+}
+
 void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
-    int cur_beam_size = 1;
+    size_t mem = memory_per_point();
+    if (n > 1 && mem * n > max_mem_distances) {
+        // then split queries to reduce temp memory
+        size_t bs = max_mem_distances / mem;
+        if (bs == 0) {
+            bs = 1; // otherwise we can't do much
+        }
+        for (size_t i0 = 0; i0 < n; i0 += bs) {
+            size_t i1 = std::min(n, i0 + bs);
+            compute_codes(x + i0 * d, codes_out + i0 * code_size, i1 - i0);
+        }
+        return;
+    }
 
-    std::vector<float> residuals(x, x + n * d);
+    std::vector<float> residuals(max_beam_size * n * d);
+    std::vector<int32_t> codes(max_beam_size * M * n);
+    std::vector<float> distances(max_beam_size * n);
+
+    refine_beam(
+            n,
+            1,
+            x,
+            max_beam_size,
+            codes.data(),
+            residuals.data(),
+            distances.data());
+
+    // pack only the first code of the beam (hence the ld_codes=M *
+    // max_beam_size)
+    pack_codes(n, codes.data(), codes_out, M * max_beam_size);
+}
+
+void ResidualQuantizer::refine_beam(
+        size_t n,
+        size_t beam_size,
+        const float* x,
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_residuals,
+        float* out_distances) const {
+    int cur_beam_size = beam_size;
+
+    std::vector<float> residuals(x, x + n * d * beam_size);
     std::vector<int32_t> codes;
+    std::vector<float> distances;
     double t0 = getmillisecs();
 
     std::unique_ptr<Index> assign_index;
@@ -346,11 +406,11 @@ void ResidualQuantizer::compute_codes(
         const float* centroids_m =
                 this->centroids.data() + centroid_offsets[m] * d;
 
-        int new_beam_size = std::min(cur_beam_size * K, max_beam_size);
+        int new_beam_size = std::min(cur_beam_size * K, out_beam_size);
 
         std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
         std::vector<float> new_residuals(n * new_beam_size * d);
-        std::vector<float> distances(n * new_beam_size);
+        distances.resize(n * new_beam_size);
 
         beam_search_encode_step(
                 d,
@@ -389,9 +449,19 @@ void ResidualQuantizer::compute_codes(
         }
     }
 
-    // pack only the first code of the beam (hence the ld_codes=M *
-    // cur_beam_size)
-    pack_codes(n, codes.data(), codes_out, M * cur_beam_size);
+    if (out_codes) {
+        memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
+    }
+    if (out_residuals) {
+        memcpy(out_residuals,
+               residuals.data(),
+               residuals.size() * sizeof(residuals[0]));
+    }
+    if (out_distances) {
+        memcpy(out_distances,
+               distances.data(),
+               distances.size() * sizeof(distances[0]));
+    }
 }
 
 void ResidualQuantizer::pack_codes(
@@ -403,7 +473,7 @@ void ResidualQuantizer::pack_codes(
         ld_codes = M;
     }
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const int32_t* codes1 = codes + i * ld_codes;
         BitstringWriter bsw(packed_codes + i * code_size, code_size);
         for (int m = 0; m < M; m++) {
@@ -415,7 +485,7 @@ void ResidualQuantizer::pack_codes(
 void ResidualQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
     // standard additive quantizer decoding
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         BitstringReader bsr(code + i * code_size, code_size);
         float* xi = x + i * d;
         for (int m = 0; m < M; m++) {

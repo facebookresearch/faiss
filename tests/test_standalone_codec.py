@@ -12,7 +12,7 @@ import faiss
 import tempfile
 import os
 
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 
 class TestEncodeDecode(unittest.TestCase):

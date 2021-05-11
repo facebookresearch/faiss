@@ -286,7 +286,7 @@ void exhaustive_L2sqr_blas(
                        ip_block.get(),
                        &nyi);
             }
-
+#pragma omp parallel for
             for (int64_t i = i0; i < i1; i++) {
                 float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
 

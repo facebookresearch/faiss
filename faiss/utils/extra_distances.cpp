@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
 
 #include <omp.h>
 #include <algorithm>
@@ -22,95 +22,6 @@ namespace faiss {
 /***************************************************************************
  * Distance functions (other than L2 and IP)
  ***************************************************************************/
-
-struct VectorDistanceL2 {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        return fvec_L2sqr(x, y, d);
-    }
-};
-
-struct VectorDistanceL1 {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        return fvec_L1(x, y, d);
-    }
-};
-
-struct VectorDistanceLinf {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        return fvec_Linf(x, y, d);
-        /*
-        float vmax = 0;
-        for (size_t i = 0; i < d; i++) {
-            float diff = fabs (x[i] - y[i]);
-            if (diff > vmax) vmax = diff;
-        }
-        return vmax;*/
-    }
-};
-
-struct VectorDistanceLp {
-    size_t d;
-    const float p;
-
-    float operator()(const float* x, const float* y) const {
-        float accu = 0;
-        for (size_t i = 0; i < d; i++) {
-            float diff = fabs(x[i] - y[i]);
-            accu += powf(diff, p);
-        }
-        return accu;
-    }
-};
-
-struct VectorDistanceCanberra {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        float accu = 0;
-        for (size_t i = 0; i < d; i++) {
-            float xi = x[i], yi = y[i];
-            accu += fabs(xi - yi) / (fabs(xi) + fabs(yi));
-        }
-        return accu;
-    }
-};
-
-struct VectorDistanceBrayCurtis {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        float accu_num = 0, accu_den = 0;
-        for (size_t i = 0; i < d; i++) {
-            float xi = x[i], yi = y[i];
-            accu_num += fabs(xi - yi);
-            accu_den += fabs(xi + yi);
-        }
-        return accu_num / accu_den;
-    }
-};
-
-struct VectorDistanceJensenShannon {
-    size_t d;
-
-    float operator()(const float* x, const float* y) const {
-        float accu = 0;
-
-        for (size_t i = 0; i < d; i++) {
-            float xi = x[i], yi = y[i];
-            float mi = 0.5 * (xi + yi);
-            float kl1 = -xi * log(mi / xi);
-            float kl2 = -yi * log(mi / yi);
-            accu += kl1 + kl2;
-        }
-        return 0.5 * accu;
-    }
-};
 
 namespace {
 
@@ -228,12 +139,12 @@ void pairwise_extra_distances(
         ldd = nb;
 
     switch (mt) {
-#define HANDLE_VAR(kw)                                   \
-    case METRIC_##kw: {                                  \
-        VectorDistance##kw vd = {(size_t)d};             \
-        pairwise_extra_distances_template(               \
-                vd, nq, xq, nb, xb, dis, ldq, ldb, ldd); \
-        break;                                           \
+#define HANDLE_VAR(kw)                                            \
+    case METRIC_##kw: {                                           \
+        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg}; \
+        pairwise_extra_distances_template(                        \
+                vd, nq, xq, nb, xb, dis, ldq, ldb, ldd);          \
+        break;                                                    \
     }
         HANDLE_VAR(L2);
         HANDLE_VAR(L1);
@@ -241,13 +152,8 @@ void pairwise_extra_distances(
         HANDLE_VAR(Canberra);
         HANDLE_VAR(BrayCurtis);
         HANDLE_VAR(JensenShannon);
+        HANDLE_VAR(Lp);
 #undef HANDLE_VAR
-        case METRIC_Lp: {
-            VectorDistanceLp vd = {(size_t)d, metric_arg};
-            pairwise_extra_distances_template(
-                    vd, nq, xq, nb, xb, dis, ldq, ldb, ldd);
-            break;
-        }
         default:
             FAISS_THROW_MSG("metric type not implemented");
     }
@@ -263,11 +169,11 @@ void knn_extra_metrics(
         float metric_arg,
         float_maxheap_array_t* res) {
     switch (mt) {
-#define HANDLE_VAR(kw)                                     \
-    case METRIC_##kw: {                                    \
-        VectorDistance##kw vd = {(size_t)d};               \
-        knn_extra_metrics_template(vd, x, y, nx, ny, res); \
-        break;                                             \
+#define HANDLE_VAR(kw)                                            \
+    case METRIC_##kw: {                                           \
+        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg}; \
+        knn_extra_metrics_template(vd, x, y, nx, ny, res);        \
+        break;                                                    \
     }
         HANDLE_VAR(L2);
         HANDLE_VAR(L1);
@@ -275,12 +181,8 @@ void knn_extra_metrics(
         HANDLE_VAR(Canberra);
         HANDLE_VAR(BrayCurtis);
         HANDLE_VAR(JensenShannon);
+        HANDLE_VAR(Lp);
 #undef HANDLE_VAR
-        case METRIC_Lp: {
-            VectorDistanceLp vd = {(size_t)d, metric_arg};
-            knn_extra_metrics_template(vd, x, y, nx, ny, res);
-            break;
-        }
         default:
             FAISS_THROW_MSG("metric type not implemented");
     }
@@ -293,10 +195,11 @@ DistanceComputer* get_extra_distance_computer(
         size_t nb,
         const float* xb) {
     switch (mt) {
-#define HANDLE_VAR(kw)                                                    \
-    case METRIC_##kw: {                                                   \
-        VectorDistance##kw vd = {(size_t)d};                              \
-        return new ExtraDistanceComputer<VectorDistance##kw>(vd, xb, nb); \
+#define HANDLE_VAR(kw)                                                 \
+    case METRIC_##kw: {                                                \
+        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg};      \
+        return new ExtraDistanceComputer<VectorDistance<METRIC_##kw>>( \
+                vd, xb, nb);                                           \
     }
         HANDLE_VAR(L2);
         HANDLE_VAR(L1);
@@ -304,12 +207,8 @@ DistanceComputer* get_extra_distance_computer(
         HANDLE_VAR(Canberra);
         HANDLE_VAR(BrayCurtis);
         HANDLE_VAR(JensenShannon);
+        HANDLE_VAR(Lp);
 #undef HANDLE_VAR
-        case METRIC_Lp: {
-            VectorDistanceLp vd = {(size_t)d, metric_arg};
-            return new ExtraDistanceComputer<VectorDistanceLp>(vd, xb, nb);
-            break;
-        }
         default:
             FAISS_THROW_MSG("metric type not implemented");
     }

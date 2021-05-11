@@ -28,7 +28,7 @@ struct IndexRefine : Index {
     /// the base_index (should be >= 1)
     float k_factor = 1;
 
-    /// intitialize from empty index
+    /// initialize from empty index
     IndexRefine(Index* base_index, Index* refine_index);
 
     IndexRefine();

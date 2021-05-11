@@ -46,6 +46,53 @@ FAISS_DECLARE_INDEX_DOWNCAST(IndexScalarQuantizer)
 
 FAISS_DECLARE_DESTRUCTOR(IndexScalarQuantizer)
 
+/** Opaque type for IndexIVFScalarQuantizer */
+FAISS_DECLARE_CLASS_INHERITED(IndexIVFScalarQuantizer, Index)
+
+FAISS_DECLARE_INDEX_DOWNCAST(IndexIVFScalarQuantizer)
+
+FAISS_DECLARE_DESTRUCTOR(IndexIVFScalarQuantizer)
+
+int faiss_IndexIVFScalarQuantizer_new(FaissIndexIVFScalarQuantizer** p_index);
+
+int faiss_IndexIVFScalarQuantizer_new_with(
+        FaissIndexIVFScalarQuantizer** p_index,
+        FaissIndex* quantizer,
+        idx_t d,
+        size_t nlist,
+        FaissQuantizerType qt);
+
+int faiss_IndexIVFScalarQuantizer_new_with_metric(
+        FaissIndexIVFScalarQuantizer** p_index,
+        FaissIndex* quantizer,
+        size_t d,
+        size_t nlist,
+        FaissQuantizerType qt,
+        FaissMetricType metric,
+        int encode_residual);
+
+/// number of possible key values
+FAISS_DECLARE_GETTER(IndexIVFScalarQuantizer, size_t, nlist)
+/// number of probes at query time
+FAISS_DECLARE_GETTER_SETTER(IndexIVFScalarQuantizer, size_t, nprobe)
+/// quantizer that maps vectors to inverted lists
+FAISS_DECLARE_GETTER(IndexIVFScalarQuantizer, FaissIndex*, quantizer)
+
+/// whether object owns the quantizer
+FAISS_DECLARE_GETTER_SETTER(IndexIVFScalarQuantizer, int, own_fields)
+
+int faiss_IndexIVFScalarQuantizer_add_core(
+        FaissIndexIVFScalarQuantizer* index,
+        idx_t n,
+        const float* x,
+        const idx_t* xids,
+        const idx_t* precomputed_idx);
+
+int faiss_IndexIVFScalarQuantizer_train_residual(
+        FaissIndexIVFScalarQuantizer* index,
+        idx_t n,
+        const float* x);
+
 #ifdef __cplusplus
 }
 #endif

@@ -46,7 +46,7 @@ struct IndexIVFPQR : IndexIVFPQ {
             idx_t n,
             const float* x,
             const idx_t* xids,
-            const idx_t* precomputed_idx = nullptr);
+            const idx_t* precomputed_idx) override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;

@@ -85,7 +85,7 @@ struct Index {
     /** Add n vectors of dimension d to the index.
      *
      * Vectors are implicitly assigned labels ntotal .. ntotal + n - 1
-     * This function slices the input vectors in chuncks smaller than
+     * This function slices the input vectors in chunks smaller than
      * blocksize_add and calls add_core.
      * @param x      input matrix, size n * d
      */

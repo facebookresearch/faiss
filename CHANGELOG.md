@@ -11,7 +11,7 @@ at the moment.
 - Serializing the indexes with the python pickle module
 - Support for the NNDescent k-NN graph building method
 - Support for the NSG graph indexing method
-- Begin support for residual quantizers
+- Residual quantizers: support as codec and unoptimized search
 
 ### Changed
 - The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.

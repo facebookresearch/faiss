@@ -33,6 +33,7 @@ set(FAISS_SRC
   IndexPreTransform.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
+  IndexResidual.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   MatrixStats.cpp

@@ -18,7 +18,8 @@ cmake -B _build \
       -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_BUILD_TYPE=Release .
 
-make -C _build -j $CPU_COUNT faiss faiss_avx2
+make -C _build -j $CPU_COUNT faiss
+make -C _build -j $CPU_COUNT faiss_avx2
 
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/

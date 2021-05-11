@@ -9,6 +9,8 @@
 
 #include <faiss/index_io.h>
 
+#include <faiss/impl/io_macros.h>
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -38,6 +40,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -234,6 +237,16 @@ static void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->nbits);
     pq->set_derived_values();
     READVECTOR(pq->centroids);
+}
+
+static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
+    READ1(rq->d);
+    READ1(rq->M);
+    READVECTOR(rq->nbits);
+    rq->set_derived_values();
+    READ1(rq->train_type);
+    READ1(rq->max_beam_size);
+    READVECTOR(rq->centroids);
 }
 
 static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
@@ -461,6 +474,22 @@ Index* read_index(IOReader* f, int io_flags) {
             idxp->metric_type = METRIC_L2;
         }
         idx = idxp;
+    } else if (h == fourcc("IxRQ")) {
+        IndexResidual* idxr = new IndexResidual();
+        read_index_header(idxr, f);
+        read_ResidualQuantizer(&idxr->rq, f);
+        READ1(idxr->search_type);
+        READ1(idxr->norm_min);
+        READ1(idxr->norm_max);
+        READ1(idxr->code_size);
+        READVECTOR(idxr->codes);
+        idx = idxr;
+    } else if (h == fourcc("ImRQ")) {
+        ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
+        read_index_header(idxr, f);
+        read_ResidualQuantizer(&idxr->rq, f);
+        READ1(idxr->beam_factor);
+        idx = idxr;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
         std::vector<std::vector<Index::idx_t>> ids;

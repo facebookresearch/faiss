@@ -119,6 +119,15 @@ int faiss_IndexRefineFlat_new(
 
 DEFINE_DESTRUCTOR(IndexRefineFlat)
 
+DEFINE_GETTER(IndexRefineFlat, int, own_fields)
+DEFINE_SETTER(IndexRefineFlat, int, own_fields)
+
+DEFINE_GETTER(IndexRefineFlat, int, own_refine_index)
+DEFINE_SETTER(IndexRefineFlat, int, own_refine_index)
+
+DEFINE_GETTER(IndexRefineFlat, float, k_factor)
+DEFINE_SETTER(IndexRefineFlat, float, k_factor)
+
 int faiss_IndexFlat1D_new(FaissIndexFlat1D** p_index) {
     try {
         IndexFlat1D* index = new IndexFlat1D();

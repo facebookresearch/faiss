@@ -12,7 +12,7 @@ from faiss.contrib.exhaustive_search import knn_ground_truth, range_ground_truth
 from faiss.contrib import evaluation
 
 
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 
 class TestComputeGT(unittest.TestCase):

@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 import numpy as np
 import faiss
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 class ReferencedObject(unittest.TestCase):
 
@@ -419,6 +419,8 @@ class TestResidualQuantizer(unittest.TestCase):
         self.assertTrue(0.9 * err_rq0 < err_rq1 < 1.1 * err_rq0)
 
         # np.testing.assert_array_equal(codes0, codes1)
+
+
 
 if __name__ == '__main__':
     unittest.main()

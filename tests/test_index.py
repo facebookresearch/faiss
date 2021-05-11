@@ -15,7 +15,7 @@ import os
 import re
 import warnings
 
-from common import get_dataset, get_dataset_2
+from common_faiss_tests import get_dataset, get_dataset_2
 
 class TestModuleInterface(unittest.TestCase):
 

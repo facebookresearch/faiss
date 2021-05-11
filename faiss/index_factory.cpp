@@ -11,10 +11,14 @@
  * implementation of Hyper-parameter auto-tuning
  */
 
+#include <faiss/index_factory.h>
+
 #include <faiss/AutoTune.h>
 
 #include <cinttypes>
 #include <cmath>
+
+#include <regex>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
@@ -35,6 +39,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -63,15 +68,19 @@ struct VTChain {
 
 /// what kind of training does this coarse quantizer require?
 char get_trains_alone(const Index* coarse_quantizer) {
-    return dynamic_cast<const IndexFlat*>(coarse_quantizer)
-            ? 0
-            :
-            // multi index just needs to be quantized
-            dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ? 1
-            : dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer)
-            ? 2
-            : 2; // for complicated indexes, we assume they can't be used as a
-                 // kmeans index
+    if (dynamic_cast<const IndexFlat*>(coarse_quantizer)) {
+        return 0;
+    }
+    // multi index just needs to be quantized
+    if (dynamic_cast<const MultiIndexQuantizer*>(coarse_quantizer) ||
+        dynamic_cast<const ResidualCoarseQuantizer*>(coarse_quantizer)) {
+        return 1;
+    }
+    if (dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer)) {
+        return 2;
+    }
+    return 2; // for complicated indexes, we assume they can't be used as a
+              // kmeans index
 }
 
 bool str_ends_with(const std::string& s, const std::string& suffix) {
@@ -220,7 +229,6 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             if (!parenthesis_ivf.empty()) {
                 coarse_quantizer_1 =
                         index_factory(d, parenthesis_ivf.c_str(), metric);
-
             } else if (metric == METRIC_L2) {
                 coarse_quantizer_1 = new IndexFlatL2(d);
             } else {
@@ -244,6 +252,25 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             ncentroids = int64_t(1) << (M * nbit);
             use_2layer = true;
 
+        } else if (std::regex_match(
+                           stok,
+                           std::regex(
+                                   "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*"))) {
+            std::vector<size_t> nbits;
+            std::smatch sm;
+            bool is_RCQ = stok.find("RCQ") == 0;
+            while (std::regex_search(
+                    stok, sm, std::regex("([0-9]+)x([0-9]+)"))) {
+                int M = std::stoi(sm[1].str());
+                int nbit = std::stoi(sm[2].str());
+                nbits.resize(nbits.size() + M, nbit);
+                stok = sm.suffix();
+            }
+            if (!is_RCQ) {
+                index_1 = new IndexResidual(d, nbits, metric);
+            } else {
+                index_1 = new ResidualCoarseQuantizer(d, nbits, metric);
+            }
         } else if (
                 !coarse_quantizer &&
                 sscanf(tok, "Residual%" PRId64, &ncentroids) == 1) {

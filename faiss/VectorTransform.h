@@ -43,7 +43,7 @@ struct VectorTransform {
      */
     virtual void train(idx_t n, const float* x);
 
-    /** apply the random roation, return new allocated matrix
+    /** apply the random rotation, return new allocated matrix
      * @param     x size n * d_in
      * @return    size n * d_out
      */
