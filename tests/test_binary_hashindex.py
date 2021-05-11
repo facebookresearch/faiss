@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import faiss
 
-from common import make_binary_dataset
+from common_faiss_tests import make_binary_dataset
 
 
 def bitvec_shuffle(a, order):
