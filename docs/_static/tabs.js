@@ -18,7 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Restore group tab selection from session
   const lastSelected = session.getItem('sphinx-tabs-last-selected');
-  if (lastSelected != null) selectGroupedTabs(lastSelected);
+  if (lastSelected != null) selectNamedTabs(lastSelected);
 });
 
 /**
@@ -58,16 +58,16 @@ function keyTabs(e) {
  */
 function changeTabs(e) {
   // Use this instead of the element that was clicked, in case it's a child
-  const selected = this.getAttribute("aria-selected") === "true";
+  const notSelected = this.getAttribute("aria-selected") === "false";
   const positionBefore = this.parentNode.getBoundingClientRect().top;
-  const closable = this.parentNode.classList.contains("closeable");
+  const notClosable = !this.parentNode.classList.contains("closeable");
 
   deselectTabList(this);
 
-  if (!selected || !closable) {
+  if (notSelected || notClosable) {
     selectTab(this);
     const name = this.getAttribute("name");
-    selectGroupedTabs(name, this.id);
+    selectNamedTabs(name, this.id);
 
     if (this.classList.contains("group-tab")) {
       // Persist during session
@@ -81,35 +81,17 @@ function changeTabs(e) {
   window.scrollTo(0, window.scrollY + positionDelta);
 }
 
-function selectTab(target) {
-  target.setAttribute("aria-selected", true);
+/**
+ * Select tab and show associated panel.
+ * @param  {Node} tab tab to select
+ */
+function selectTab(tab) {
+  tab.setAttribute("aria-selected", true);
 
   // Show the associated panel
   document
-    .getElementById(target.getAttribute("aria-controls"))
+    .getElementById(tab.getAttribute("aria-controls"))
     .removeAttribute("hidden");
-}
-
-/**
- * Select all other grouped tabs via tab name.
- * @param  {Node} name name of grouped tab to be selected
- * @param  {Node} clickedId id of clicked tab
- */
-function selectGroupedTabs(name, clickedId=null) {
-  const groupedTabs = document.querySelectorAll(`.sphinx-tabs-tab[name="${name}"]`);
-  const tabLists = Array.from(groupedTabs).map(tab => tab.parentNode);
-
-  tabLists
-    .forEach(tabList => {
-      // Don't want to change the tabList containing the clicked tab
-      const clickedTab = tabList.querySelector(`[id="${clickedId}"]`);
-      if (clickedTab === null ) {
-        // Select first tab with matching name
-        const tab = tabList.querySelector(`.sphinx-tabs-tab[name="${name}"]`);
-        deselectTabList(tab);
-        selectTab(tab);
-      }
-    })
 }
 
 /**
@@ -126,5 +108,34 @@ function deselectTabList(tab) {
 
   Array.from(grandparent.children)
     .slice(1)  // Skip tablist
-    .forEach(p => p.setAttribute("hidden", true));
+    .forEach(panel => panel.setAttribute("hidden", true));
 }
+
+/**
+ * Select grouped tabs with the same name, but no the tab
+ * with the given id.
+ * @param  {Node} name name of grouped tab to be selected
+ * @param  {Node} clickedId id of clicked tab
+ */
+function selectNamedTabs(name, clickedId=null) {
+  const groupedTabs = document.querySelectorAll(`.sphinx-tabs-tab[name="${name}"]`);
+  const tabLists = Array.from(groupedTabs).map(tab => tab.parentNode);
+
+  tabLists
+    .forEach(tabList => {
+      // Don't want to change the tabList containing the clicked tab
+      const clickedTab = tabList.querySelector(`[id="${clickedId}"]`);
+      if (clickedTab === null ) {
+        // Select first tab with matching name
+        const tab = tabList.querySelector(`.sphinx-tabs-tab[name="${name}"]`);
+        deselectTabList(tab);
+        selectTab(tab);
+      }
+    })
+}
+
+exports.keyTabs = keyTabs;
+exports.changeTabs = changeTabs;
+exports.selectTab = selectTab;
+exports.deselectTabList = deselectTabList;
+exports.selectNamedTabs = selectNamedTabs;

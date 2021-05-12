@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -288,8 +291,8 @@
   <div class="section" id="file-index-factory-h">
 <h1>File index_factory.h<a class="headerlink" href="#file-index-factory-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
-<dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -309,14 +312,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss13index_factoryEiPKc10MetricType">
-<span id="_CPPv3N5faiss13index_factoryEiPKc10MetricType"></span><span id="_CPPv2N5faiss13index_factoryEiPKc10MetricType"></span><span id="faiss::index_factory__i.cCP.MetricType"></span><span class="target" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">index_factory</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">description</span></em>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="pre">MetricType</span></a> <em><span class="pre">metric</span></em> <span class="pre">=</span> <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="pre">METRIC_L2</span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13index_factoryEiPKc10MetricType" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13index_factoryEiPKc10MetricType">
+<span id="_CPPv3N5faiss13index_factoryEiPKc10MetricType"></span><span id="_CPPv2N5faiss13index_factoryEiPKc10MetricType"></span><span id="faiss::index_factory__i.cCP.MetricType"></span><span class="target" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">index_factory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">description</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13index_factoryEiPKc10MetricType" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Build and index with the sequence of processing steps described in the string. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss20index_binary_factoryEiPKc">
-<span id="_CPPv3N5faiss20index_binary_factoryEiPKc"></span><span id="_CPPv2N5faiss20index_binary_factoryEiPKc"></span><span id="faiss::index_binary_factory__i.cCP"></span><span class="target" id="namespacefaiss_1a550ef4d89215226f02adad8f161457cf"></span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="pre">IndexBinary</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">index_binary_factory</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">description</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20index_binary_factoryEiPKc" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20index_binary_factoryEiPKc">
+<span id="_CPPv3N5faiss20index_binary_factoryEiPKc"></span><span id="_CPPv2N5faiss20index_binary_factoryEiPKc"></span><span id="faiss::index_binary_factory__i.cCP"></span><span class="target" id="namespacefaiss_1a550ef4d89215226f02adad8f161457cf"></span><a class="reference internal" href="IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">index_binary_factory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">description</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20index_binary_factoryEiPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>

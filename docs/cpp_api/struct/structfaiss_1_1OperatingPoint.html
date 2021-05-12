@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -331,33 +334,33 @@
   <div class="section" id="struct-faiss-operatingpoint">
 <h1>Struct faiss::OperatingPoint<a class="headerlink" href="#struct-faiss-operatingpoint" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
-<dt id="_CPPv4N5faiss14OperatingPointE">
-<span id="_CPPv3N5faiss14OperatingPointE"></span><span id="_CPPv2N5faiss14OperatingPointE"></span><span id="faiss::OperatingPoint"></span><span class="target" id="structfaiss_1_1OperatingPoint"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">OperatingPoint</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14OperatingPointE">
+<span id="_CPPv3N5faiss14OperatingPointE"></span><span id="_CPPv2N5faiss14OperatingPointE"></span><span id="faiss::OperatingPoint"></span><span class="target" id="structfaiss_1_1OperatingPoint"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">OperatingPoint</span></span></span><br /></dt>
 <dd><p>Maintains a list of experimental results. Each operating point is a (perf, t, key) triplet, where higher perf and lower t is better. The key field is an arbitrary identifier for the operating point.</p>
 <p>Includes primitives to extract the Pareto-optimal operating points in the (perf, t) space. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss14OperatingPoint4perfE">
-<span id="_CPPv3N5faiss14OperatingPoint4perfE"></span><span id="_CPPv2N5faiss14OperatingPoint4perfE"></span><span id="faiss::OperatingPoint::perf__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ad218d1641b6e32d043a215542485a457"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">perf</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14OperatingPoint4perfE">
+<span id="_CPPv3N5faiss14OperatingPoint4perfE"></span><span id="_CPPv2N5faiss14OperatingPoint4perfE"></span><span id="faiss::OperatingPoint::perf__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ad218d1641b6e32d043a215542485a457"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">perf</span></span></span><br /></dt>
 <dd><p>performance measure (output of a Criterion) </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss14OperatingPoint1tE">
-<span id="_CPPv3N5faiss14OperatingPoint1tE"></span><span id="_CPPv2N5faiss14OperatingPoint1tE"></span><span id="faiss::OperatingPoint::t__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1a886492ffe2b337539fadc798c8f4a6a8"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">t</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14OperatingPoint1tE">
+<span id="_CPPv3N5faiss14OperatingPoint1tE"></span><span id="_CPPv2N5faiss14OperatingPoint1tE"></span><span id="faiss::OperatingPoint::t__double"></span><span class="target" id="structfaiss_1_1OperatingPoint_1a886492ffe2b337539fadc798c8f4a6a8"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><br /></dt>
 <dd><p>corresponding execution time (ms) </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss14OperatingPoint3keyE">
-<span id="_CPPv3N5faiss14OperatingPoint3keyE"></span><span id="_CPPv2N5faiss14OperatingPoint3keyE"></span><span id="faiss::OperatingPoint::key__ss"></span><span class="target" id="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">key</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14OperatingPoint3keyE">
+<span id="_CPPv3N5faiss14OperatingPoint3keyE"></span><span id="_CPPv2N5faiss14OperatingPoint3keyE"></span><span id="faiss::OperatingPoint::key__ss"></span><span class="target" id="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">key</span></span></span><br /></dt>
 <dd><p>key that identifies this op pt </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss14OperatingPoint3cnoE">
-<span id="_CPPv3N5faiss14OperatingPoint3cnoE"></span><span id="_CPPv2N5faiss14OperatingPoint3cnoE"></span><span id="faiss::OperatingPoint::cno__int64_t"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1"></span><span class="pre">int64_t</span> <code class="sig-name descname"><span class="pre">cno</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14OperatingPoint3cnoE">
+<span id="_CPPv3N5faiss14OperatingPoint3cnoE"></span><span id="_CPPv2N5faiss14OperatingPoint3cnoE"></span><span id="faiss::OperatingPoint::cno__int64_t"></span><span class="target" id="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cno</span></span></span><br /></dt>
 <dd><p>integer identifer </p>
 </dd></dl>
 

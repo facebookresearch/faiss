@@ -130,7 +130,7 @@ ul.search li a {
     font-weight: bold;
 }
 
-ul.search li div.context {
+ul.search li p.context {
     color: #888;
     margin: 2px 0 0 30px;
     text-align: left;
@@ -508,6 +508,63 @@ table.hlist td {
     vertical-align: top;
 }
 
+/* -- object description styles --------------------------------------------- */
+
+.sig {
+	font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+}
+
+.sig-name, code.descname {
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.sig-name {
+	font-size: 1.1em;
+}
+
+code.descname {
+    font-size: 1.2em;
+}
+
+.sig-prename, code.descclassname {
+    background-color: transparent;
+}
+
+.optional {
+    font-size: 1.3em;
+}
+
+.sig-paren {
+    font-size: larger;
+}
+
+.sig-param.n {
+	font-style: italic;
+}
+
+/* C++ specific styling */
+
+.sig-inline.c-texpr,
+.sig-inline.cpp-texpr {
+	font-family: unset;
+}
+
+.sig.c   .k, .sig.c   .kt,
+.sig.cpp .k, .sig.cpp .kt {
+	color: #0033B3;
+}
+
+.sig.c   .m,
+.sig.cpp .m {
+	color: #1750EB;
+}
+
+.sig.c   .s, .sig.c   .sc,
+.sig.cpp .s, .sig.cpp .sc {
+	color: #067D17;
+}
+
 
 /* -- other body styles ----------------------------------------------------- */
 
@@ -632,14 +689,6 @@ rect.highlighted {
 dl.glossary dt {
     font-weight: bold;
     font-size: 1.1em;
-}
-
-.optional {
-    font-size: 1.3em;
-}
-
-.sig-paren {
-    font-size: larger;
 }
 
 .versionmodified {
@@ -771,7 +820,11 @@ div.code-block-caption code {
 table.highlighttable td.linenos,
 span.linenos,
 div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
-    user-select: none;
+  user-select: none;
+  -webkit-user-select: text; /* Safari fallback only */
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
 }
 
 div.code-block-caption span.caption-number {
@@ -784,16 +837,6 @@ div.code-block-caption span.caption-text {
 
 div.literal-block-wrapper {
     margin: 1em 0;
-}
-
-code.descname {
-    background-color: transparent;
-    font-weight: bold;
-    font-size: 1.2em;
-}
-
-code.descclassname {
-    background-color: transparent;
 }
 
 code.xref, a code {

@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -288,8 +291,8 @@
   <div class="section" id="file-metrictype-h">
 <h1>File MetricType.h<a class="headerlink" href="#file-metrictype-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
-<dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -309,55 +312,55 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
 <dl class="cpp enum">
-<dt id="_CPPv4N5faiss10MetricTypeE">
-<span id="_CPPv3N5faiss10MetricTypeE"></span><span id="_CPPv2N5faiss10MetricTypeE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752c"></span><em class="property"><span class="pre">enum</span> </em><code class="sig-name descname"><span class="pre">MetricType</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricTypeE">
+<span id="_CPPv3N5faiss10MetricTypeE"></span><span id="_CPPv2N5faiss10MetricTypeE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MetricType</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricTypeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The metric space for vector comparison for Faiss indices and algorithms.</p>
 <p>Most algorithms support both inner product and L2, with the flat (brute-force) indices supporting additional metric types for vector comparison. </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType20METRIC_INNER_PRODUCTE">
-<span id="_CPPv3N5faiss10MetricType20METRIC_INNER_PRODUCTE"></span><span id="_CPPv2N5faiss10MetricType20METRIC_INNER_PRODUCTE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_INNER_PRODUCT</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType20METRIC_INNER_PRODUCTE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType20METRIC_INNER_PRODUCTE">
+<span id="_CPPv3N5faiss10MetricType20METRIC_INNER_PRODUCTE"></span><span id="_CPPv2N5faiss10MetricType20METRIC_INNER_PRODUCTE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_INNER_PRODUCT</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType20METRIC_INNER_PRODUCTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>maximum inner product search </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType9METRIC_L2E">
-<span id="_CPPv3N5faiss10MetricType9METRIC_L2E"></span><span id="_CPPv2N5faiss10MetricType9METRIC_L2E"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_L2</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_L2E" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType9METRIC_L2E">
+<span id="_CPPv3N5faiss10MetricType9METRIC_L2E"></span><span id="_CPPv2N5faiss10MetricType9METRIC_L2E"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_L2</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_L2E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>squared L2 search </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType9METRIC_L1E">
-<span id="_CPPv3N5faiss10MetricType9METRIC_L1E"></span><span id="_CPPv2N5faiss10MetricType9METRIC_L1E"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752cad1ccd4c5874f8d03f77227b40e4777df"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_L1</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_L1E" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType9METRIC_L1E">
+<span id="_CPPv3N5faiss10MetricType9METRIC_L1E"></span><span id="_CPPv2N5faiss10MetricType9METRIC_L1E"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752cad1ccd4c5874f8d03f77227b40e4777df"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_L1</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_L1E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>L1 (aka cityblock) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType11METRIC_LinfE">
-<span id="_CPPv3N5faiss10MetricType11METRIC_LinfE"></span><span id="_CPPv2N5faiss10MetricType11METRIC_LinfE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca6eefdfaded6b0f0c51ed3a91acff01c3"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_Linf</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType11METRIC_LinfE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType11METRIC_LinfE">
+<span id="_CPPv3N5faiss10MetricType11METRIC_LinfE"></span><span id="_CPPv2N5faiss10MetricType11METRIC_LinfE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca6eefdfaded6b0f0c51ed3a91acff01c3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_Linf</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType11METRIC_LinfE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>infinity distance </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType9METRIC_LpE">
-<span id="_CPPv3N5faiss10MetricType9METRIC_LpE"></span><span id="_CPPv2N5faiss10MetricType9METRIC_LpE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca948cb1a3b5ec11c028c0be6a5dbd908c"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_Lp</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_LpE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType9METRIC_LpE">
+<span id="_CPPv3N5faiss10MetricType9METRIC_LpE"></span><span id="_CPPv2N5faiss10MetricType9METRIC_LpE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca948cb1a3b5ec11c028c0be6a5dbd908c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_Lp</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType9METRIC_LpE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>L_p distance, p is given by a <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">faiss::Index</span></a> metric_arg </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType15METRIC_CanberraE">
-<span id="_CPPv3N5faiss10MetricType15METRIC_CanberraE"></span><span id="_CPPv2N5faiss10MetricType15METRIC_CanberraE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_Canberra</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType15METRIC_CanberraE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType15METRIC_CanberraE">
+<span id="_CPPv3N5faiss10MetricType15METRIC_CanberraE"></span><span id="_CPPv2N5faiss10MetricType15METRIC_CanberraE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_Canberra</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType15METRIC_CanberraE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>some additional metrics defined in scipy.spatial.distance </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType17METRIC_BrayCurtisE">
-<span id="_CPPv3N5faiss10MetricType17METRIC_BrayCurtisE"></span><span id="_CPPv2N5faiss10MetricType17METRIC_BrayCurtisE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752caeaa8e44a2c8ecdc7a84a9d052da8b9ea"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_BrayCurtis</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType17METRIC_BrayCurtisE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType17METRIC_BrayCurtisE">
+<span id="_CPPv3N5faiss10MetricType17METRIC_BrayCurtisE"></span><span id="_CPPv2N5faiss10MetricType17METRIC_BrayCurtisE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752caeaa8e44a2c8ecdc7a84a9d052da8b9ea"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_BrayCurtis</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType17METRIC_BrayCurtisE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
-<dt id="_CPPv4N5faiss10MetricType20METRIC_JensenShannonE">
-<span id="_CPPv3N5faiss10MetricType20METRIC_JensenShannonE"></span><span id="_CPPv2N5faiss10MetricType20METRIC_JensenShannonE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca0ed6b1105d1f075fb996657320bed012"></span><em class="property"><span class="pre">enumerator</span> </em><code class="sig-name descname"><span class="pre">METRIC_JensenShannon</span></code><a class="headerlink" href="#_CPPv4N5faiss10MetricType20METRIC_JensenShannonE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType20METRIC_JensenShannonE">
+<span id="_CPPv3N5faiss10MetricType20METRIC_JensenShannonE"></span><span id="_CPPv2N5faiss10MetricType20METRIC_JensenShannonE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca0ed6b1105d1f075fb996657320bed012"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_JensenShannon</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType20METRIC_JensenShannonE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>

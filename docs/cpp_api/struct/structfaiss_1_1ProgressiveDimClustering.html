@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -331,8 +334,8 @@
   <div class="section" id="struct-faiss-progressivedimclustering">
 <h1>Struct faiss::ProgressiveDimClustering<a class="headerlink" href="#struct-faiss-progressivedimclustering" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
-<dt id="_CPPv4N5faiss24ProgressiveDimClusteringE">
-<span id="_CPPv3N5faiss24ProgressiveDimClusteringE"></span><span id="_CPPv2N5faiss24ProgressiveDimClusteringE"></span><span id="faiss::ProgressiveDimClustering"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">ProgressiveDimClustering</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss34ProgressiveDimClusteringParametersE" title="faiss::ProgressiveDimClusteringParameters"><span class="pre">ProgressiveDimClusteringParameters</span></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClusteringE">
+<span id="_CPPv3N5faiss24ProgressiveDimClusteringE"></span><span id="_CPPv2N5faiss24ProgressiveDimClusteringE"></span><span id="faiss::ProgressiveDimClustering"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ProgressiveDimClustering</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss34ProgressiveDimClusteringParametersE" title="faiss::ProgressiveDimClusteringParameters"><span class="n"><span class="pre">ProgressiveDimClusteringParameters</span></span></a><br /></dt>
 <dd><p>K-means clustering with progressive dimensions used</p>
 <p>The clustering first happens in dim 1, then with exponentially increasing dimension until d (I steps). This is typically applied after a PCA transformation (optional). Reference:</p>
 <p><p>“Improved Residual Vector Quantization for High-dimensional Approximate</p>
@@ -343,134 +346,134 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering5idx_tE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering5idx_tE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5idx_tE"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a060b6d0f13c9de921f92707dd93b20cc"></span><em class="property"><span class="pre">using</span> </em><code class="sig-name descname"><span class="pre">idx_t</span></code> <span class="pre">=</span> <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="pre">Index</span></a><span class="pre">::</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="pre">idx_t</span></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering5idx_tE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering5idx_tE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5idx_tE"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a060b6d0f13c9de921f92707dd93b20cc"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idx_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii"></span><span id="faiss::ProgressiveDimClustering::ProgressiveDimClustering__i.i"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0"></span><code class="sig-name descname"><span class="pre">ProgressiveDimClustering</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">int</span> <em><span class="pre">k</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEii"></span><span id="faiss::ProgressiveDimClustering::ProgressiveDimClustering__i.i"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0"></span><span class="sig-name descname"><span class="n"><span class="pre">ProgressiveDimClustering</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters"></span><span id="faiss::ProgressiveDimClustering::ProgressiveDimClustering__i.i.ProgressiveDimClusteringParametersCR"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01"></span><code class="sig-name descname"><span class="pre">ProgressiveDimClustering</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">int</span> <em><span class="pre">k</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss34ProgressiveDimClusteringParametersE" title="faiss::ProgressiveDimClusteringParameters"><span class="pre">ProgressiveDimClusteringParameters</span></a> <span class="pre">&amp;</span><em><span class="pre">cp</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering24ProgressiveDimClusteringEiiRK34ProgressiveDimClusteringParameters"></span><span id="faiss::ProgressiveDimClustering::ProgressiveDimClustering__i.i.ProgressiveDimClusteringParametersCR"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01"></span><span class="sig-name descname"><span class="n"><span class="pre">ProgressiveDimClustering</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss34ProgressiveDimClusteringParametersE" title="faiss::ProgressiveDimClusteringParameters"><span class="n"><span class="pre">ProgressiveDimClusteringParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cp</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory"></span><span id="faiss::ProgressiveDimClustering::train__idx_t.floatCP.ProgressiveDimIndexFactoryR"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">train</span></code><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ProgressiveDimClustering5idx_tE" title="faiss::ProgressiveDimClustering::idx_t"><span class="pre">idx_t</span></a> <em><span class="pre">n</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">float</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss26ProgressiveDimIndexFactoryE" title="faiss::ProgressiveDimIndexFactory"><span class="pre">ProgressiveDimIndexFactory</span></a> <span class="pre">&amp;</span><em><span class="pre">factory</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5trainE5idx_tPKfR26ProgressiveDimIndexFactory"></span><span id="faiss::ProgressiveDimClustering::train__idx_t.floatCP.ProgressiveDimIndexFactoryR"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ProgressiveDimClustering5idx_tE" title="faiss::ProgressiveDimClustering::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss26ProgressiveDimIndexFactoryE" title="faiss::ProgressiveDimIndexFactory"><span class="n"><span class="pre">ProgressiveDimIndexFactory</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">factory</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss24ProgressiveDimClusteringD0Ev">
-<span id="_CPPv3N5faiss24ProgressiveDimClusteringD0Ev"></span><span id="_CPPv2N5faiss24ProgressiveDimClusteringD0Ev"></span><span id="faiss::ProgressiveDimClustering::~ProgressiveDimClustering"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629"></span><em class="property"><span class="pre">inline</span></em> <em class="property"><span class="pre">virtual</span></em> <code class="sig-name descname"><span class="pre">~ProgressiveDimClustering</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClusteringD0Ev">
+<span id="_CPPv3N5faiss24ProgressiveDimClusteringD0Ev"></span><span id="_CPPv2N5faiss24ProgressiveDimClusteringD0Ev"></span><span id="faiss::ProgressiveDimClustering::~ProgressiveDimClustering"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ProgressiveDimClustering</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering1dE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering1dE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering1dE"></span><span id="faiss::ProgressiveDimClustering::d__s"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">d</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering1dE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering1dE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering1dE"></span><span id="faiss::ProgressiveDimClustering::d__s"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d</span></span></span><br /></dt>
 <dd><p>dimension of the vectors </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering1kE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering1kE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering1kE"></span><span id="faiss::ProgressiveDimClustering::k__s"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">k</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering1kE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering1kE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering1kE"></span><span id="faiss::ProgressiveDimClustering::k__s"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><br /></dt>
 <dd><p>nb of centroids </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering9centroidsE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering9centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9centroidsE"></span><span id="faiss::ProgressiveDimClustering::centroids__std::vector:float:"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><span class="pre">float</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">centroids</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering9centroidsE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering9centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9centroidsE"></span><span id="faiss::ProgressiveDimClustering::centroids__std::vector:float:"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroids</span></span></span><br /></dt>
 <dd><p>centroids (k * d) </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering15iteration_statsE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering15iteration_statsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering15iteration_statsE"></span><span id="faiss::ProgressiveDimClustering::iteration_stats__std::vector:ClusteringIterationStats:"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">vector</span><span class="pre">&lt;</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ClusteringIterationStatsE" title="faiss::ClusteringIterationStats"><span class="pre">ClusteringIterationStats</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">iteration_stats</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering15iteration_statsE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering15iteration_statsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering15iteration_statsE"></span><span id="faiss::ProgressiveDimClustering::iteration_stats__std::vector:ClusteringIterationStats:"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss24ClusteringIterationStatsE" title="faiss::ClusteringIterationStats"><span class="n"><span class="pre">ClusteringIterationStats</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iteration_stats</span></span></span><br /></dt>
 <dd><p>stats at every iteration of clustering </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering21progressive_dim_stepsE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering21progressive_dim_stepsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering21progressive_dim_stepsE"></span><span id="faiss::ProgressiveDimClustering::progressive_dim_steps__i"></span><span class="target" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">progressive_dim_steps</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering21progressive_dim_stepsE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering21progressive_dim_stepsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering21progressive_dim_stepsE"></span><span id="faiss::ProgressiveDimClustering::progressive_dim_steps__i"></span><span class="target" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">progressive_dim_steps</span></span></span><br /></dt>
 <dd><p>number of incremental steps </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering9apply_pcaE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering9apply_pcaE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9apply_pcaE"></span><span id="faiss::ProgressiveDimClustering::apply_pca__b"></span><span class="target" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">apply_pca</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering9apply_pcaE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering9apply_pcaE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9apply_pcaE"></span><span id="faiss::ProgressiveDimClustering::apply_pca__b"></span><span class="target" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_pca</span></span></span><br /></dt>
 <dd><p>apply PCA on input </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering5niterE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering5niterE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5niterE"></span><span id="faiss::ProgressiveDimClustering::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">niter</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering5niterE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering5niterE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5niterE"></span><span id="faiss::ProgressiveDimClustering::niter__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">niter</span></span></span><br /></dt>
 <dd><p>clustering iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering5nredoE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering5nredoE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5nredoE"></span><span id="faiss::ProgressiveDimClustering::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">nredo</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering5nredoE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering5nredoE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering5nredoE"></span><span id="faiss::ProgressiveDimClustering::nredo__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nredo</span></span></span><br /></dt>
 <dd><p>redo clustering this many times and keep best </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering7verboseE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering7verboseE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering7verboseE"></span><span id="faiss::ProgressiveDimClustering::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">verbose</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering7verboseE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering7verboseE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering7verboseE"></span><span id="faiss::ProgressiveDimClustering::verbose__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering9sphericalE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering9sphericalE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9sphericalE"></span><span id="faiss::ProgressiveDimClustering::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">spherical</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering9sphericalE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering9sphericalE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering9sphericalE"></span><span id="faiss::ProgressiveDimClustering::spherical__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">spherical</span></span></span><br /></dt>
 <dd><p>do we want normalized centroids? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering13int_centroidsE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering13int_centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering13int_centroidsE"></span><span id="faiss::ProgressiveDimClustering::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">int_centroids</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering13int_centroidsE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering13int_centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering13int_centroidsE"></span><span id="faiss::ProgressiveDimClustering::int_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_centroids</span></span></span><br /></dt>
 <dd><p>round centroids coordinates to integer </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering12update_indexE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering12update_indexE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering12update_indexE"></span><span id="faiss::ProgressiveDimClustering::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">update_index</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering12update_indexE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering12update_indexE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering12update_indexE"></span><span id="faiss::ProgressiveDimClustering::update_index__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_index</span></span></span><br /></dt>
 <dd><p>re-train index after each iteration? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering16frozen_centroidsE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering16frozen_centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering16frozen_centroidsE"></span><span id="faiss::ProgressiveDimClustering::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">frozen_centroids</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering16frozen_centroidsE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering16frozen_centroidsE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering16frozen_centroidsE"></span><span id="faiss::ProgressiveDimClustering::frozen_centroids__b"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">frozen_centroids</span></span></span><br /></dt>
 <dd><p>use the centroids provided as input and do not change them during iterations </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering23min_points_per_centroidE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering23min_points_per_centroidE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering23min_points_per_centroidE"></span><span id="faiss::ProgressiveDimClustering::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">min_points_per_centroid</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering23min_points_per_centroidE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering23min_points_per_centroidE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering23min_points_per_centroidE"></span><span id="faiss::ProgressiveDimClustering::min_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_points_per_centroid</span></span></span><br /></dt>
 <dd><p>otherwise you get a warning </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering23max_points_per_centroidE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering23max_points_per_centroidE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering23max_points_per_centroidE"></span><span id="faiss::ProgressiveDimClustering::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">max_points_per_centroid</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering23max_points_per_centroidE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering23max_points_per_centroidE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering23max_points_per_centroidE"></span><span id="faiss::ProgressiveDimClustering::max_points_per_centroid__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_points_per_centroid</span></span></span><br /></dt>
 <dd><p>to limit size of dataset </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering4seedE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering4seedE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering4seedE"></span><span id="faiss::ProgressiveDimClustering::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">seed</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering4seedE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering4seedE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering4seedE"></span><span id="faiss::ProgressiveDimClustering::seed__i"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seed</span></span></span><br /></dt>
 <dd><p>seed for the random number generator </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss24ProgressiveDimClustering17decode_block_sizeE">
-<span id="_CPPv3N5faiss24ProgressiveDimClustering17decode_block_sizeE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering17decode_block_sizeE"></span><span id="faiss::ProgressiveDimClustering::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">decode_block_size</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClustering17decode_block_sizeE">
+<span id="_CPPv3N5faiss24ProgressiveDimClustering17decode_block_sizeE"></span><span id="_CPPv2N5faiss24ProgressiveDimClustering17decode_block_sizeE"></span><span id="faiss::ProgressiveDimClustering::decode_block_size__s"></span><span class="target" id="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_block_size</span></span></span><br /></dt>
 <dd><p>how many vectors at a time to decode </p>
 </dd></dl>
 

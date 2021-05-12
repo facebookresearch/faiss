@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -288,8 +291,8 @@
   <div class="section" id="file-gpucloneroptions-h">
 <h1>File GpuClonerOptions.h<a class="headerlink" href="#file-gpucloneroptions-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
-<dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -307,62 +310,62 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
-<dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><br /></dt>
 <dd><dl class="cpp struct">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptionsE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptionsE"></span><span id="faiss::gpu::GpuClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">GpuClonerOptions</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptionsE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptionsE"></span><span id="faiss::gpu::GpuClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuClonerOptions</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><em>#include &lt;GpuClonerOptions.h&gt;</em><p>set some options on how to copy to GPU </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"><span class="std std-ref">faiss::gpu::GpuMultipleClonerOptions</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1ToGpuCloner.html#structfaiss_1_1gpu_1_1ToGpuCloner"><span class="std std-ref">faiss::gpu::ToGpuCloner</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="faiss::gpu::GpuClonerOptions::GpuClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c"></span><code class="sig-name descname"><span class="pre">GpuClonerOptions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="faiss::gpu::GpuClonerOptions::GpuClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuClonerOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions14indicesOptionsE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions14indicesOptionsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions14indicesOptionsE"></span><span id="faiss::gpu::GpuClonerOptions::indicesOptions__IndicesOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e"></span><a class="reference internal" href="GpuIndicesOptions_8h.html#_CPPv4N5faiss3gpu14IndicesOptionsE" title="faiss::gpu::IndicesOptions"><span class="pre">IndicesOptions</span></a> <code class="sig-name descname"><span class="pre">indicesOptions</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions14indicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions14indicesOptionsE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions14indicesOptionsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions14indicesOptionsE"></span><span id="faiss::gpu::GpuClonerOptions::indicesOptions__IndicesOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e"></span><a class="reference internal" href="GpuIndicesOptions_8h.html#_CPPv4N5faiss3gpu14IndicesOptionsE" title="faiss::gpu::IndicesOptions"><span class="n"><span class="pre">IndicesOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indicesOptions</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions14indicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE"></span><span id="faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">useFloat16CoarseQuantizer</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE"></span><span id="faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">useFloat16CoarseQuantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions25useFloat16CoarseQuantizerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>is the coarse quantizer in float16? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions10useFloat16E">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions10useFloat16E"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions10useFloat16E"></span><span id="faiss::gpu::GpuClonerOptions::useFloat16__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">useFloat16</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions10useFloat16E" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions10useFloat16E">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions10useFloat16E"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions10useFloat16E"></span><span id="faiss::gpu::GpuClonerOptions::useFloat16__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">useFloat16</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions10useFloat16E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>for <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFFlat"><span class="std std-ref">GpuIndexIVFFlat</span></a>, is storage in float16? for <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFPQ"><span class="std std-ref">GpuIndexIVFPQ</span></a>, are intermediate calculations in float16? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions14usePrecomputedE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions14usePrecomputedE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions14usePrecomputedE"></span><span id="faiss::gpu::GpuClonerOptions::usePrecomputed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">usePrecomputed</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions14usePrecomputedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions14usePrecomputedE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions14usePrecomputedE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions14usePrecomputedE"></span><span id="faiss::gpu::GpuClonerOptions::usePrecomputed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">usePrecomputed</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions14usePrecomputedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>use precomputed tables? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions11reserveVecsE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions11reserveVecsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions11reserveVecsE"></span><span id="faiss::gpu::GpuClonerOptions::reserveVecs__l"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04"></span><span class="pre">long</span> <code class="sig-name descname"><span class="pre">reserveVecs</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions11reserveVecsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions11reserveVecsE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions11reserveVecsE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions11reserveVecsE"></span><span id="faiss::gpu::GpuClonerOptions::reserveVecs__l"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reserveVecs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions11reserveVecsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>reserve vectors in the invfiles? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions15storeTransposedE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions15storeTransposedE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions15storeTransposedE"></span><span id="faiss::gpu::GpuClonerOptions::storeTransposed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">storeTransposed</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions15storeTransposedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions15storeTransposedE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions15storeTransposedE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions15storeTransposedE"></span><span id="faiss::gpu::GpuClonerOptions::storeTransposed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">storeTransposed</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions15storeTransposedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>For <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">GpuIndexFlat</span></a>, store data in transposed layout? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu16GpuClonerOptions7verboseE">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions7verboseE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions7verboseE"></span><span id="faiss::gpu::GpuClonerOptions::verbose__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">verbose</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions7verboseE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions7verboseE">
+<span id="_CPPv3N5faiss3gpu16GpuClonerOptions7verboseE"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions7verboseE"></span><span id="faiss::gpu::GpuClonerOptions::verbose__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions7verboseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set verbose options on the index. </p>
 </dd></dl>
 
@@ -370,70 +373,70 @@
 </dd></dl>
 
 <dl class="cpp struct">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">GpuMultipleClonerOptions</span></code> <span class="pre">:</span> <em class="property"><span class="pre">public</span></em> <a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><span class="pre">::</span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="pre">gpu</span></a><span class="pre">::</span><a class="reference internal" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="faiss::gpu::GpuClonerOptions"><span class="pre">GpuClonerOptions</span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="faiss::gpu::GpuClonerOptions"><span class="n"><span class="pre">GpuClonerOptions</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html#structfaiss_1_1gpu_1_1ToGpuClonerMultiple"><span class="std std-ref">faiss::gpu::ToGpuClonerMultiple</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="faiss::gpu::GpuMultipleClonerOptions::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1abd3d51458ecb2161a27f118086d4cd15"></span><code class="sig-name descname"><span class="pre">GpuMultipleClonerOptions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="faiss::gpu::GpuMultipleClonerOptions::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1abd3d51458ecb2161a27f118086d4cd15"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions5shardE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions5shardE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions5shardE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::shard__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a7c5bd7a840f6641d5d68699f4416d79d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">shard</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions5shardE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions5shardE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions5shardE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions5shardE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::shard__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a7c5bd7a840f6641d5d68699f4416d79d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shard</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions5shardE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Whether to shard the index across GPUs, versus replication across GPUs </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::shard_type__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a9548f823297298b0a78109dec7feb45e"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">shard_type</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::shard_type__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a9548f823297298b0a78109dec7feb45e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shard_type</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae"><span class="std std-ref">IndexIVF::copy_subset_to</span></a> subset type. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::indicesOptions__IndicesOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e"></span><a class="reference internal" href="GpuIndicesOptions_8h.html#_CPPv4N5faiss3gpu14IndicesOptionsE" title="faiss::gpu::IndicesOptions"><span class="pre">IndicesOptions</span></a> <code class="sig-name descname"><span class="pre">indicesOptions</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::indicesOptions__IndicesOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e"></span><a class="reference internal" href="GpuIndicesOptions_8h.html#_CPPv4N5faiss3gpu14IndicesOptionsE" title="faiss::gpu::IndicesOptions"><span class="n"><span class="pre">IndicesOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">indicesOptions</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14indicesOptionsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>how should indices be stored on index types that support indices (anything but GpuIndexFlat*)? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::useFloat16CoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">useFloat16CoarseQuantizer</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::useFloat16CoarseQuantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">useFloat16CoarseQuantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions25useFloat16CoarseQuantizerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>is the coarse quantizer in float16? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E"></span><span id="faiss::gpu::GpuMultipleClonerOptions::useFloat16__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">useFloat16</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E"></span><span id="faiss::gpu::GpuMultipleClonerOptions::useFloat16__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">useFloat16</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10useFloat16E" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>for <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFFlat"><span class="std std-ref">GpuIndexIVFFlat</span></a>, is storage in float16? for <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexIVFPQ"><span class="std std-ref">GpuIndexIVFPQ</span></a>, are intermediate calculations in float16? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::usePrecomputed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">usePrecomputed</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::usePrecomputed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">usePrecomputed</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions14usePrecomputedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>use precomputed tables? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::reserveVecs__l"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04"></span><span class="pre">long</span> <code class="sig-name descname"><span class="pre">reserveVecs</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::reserveVecs__l"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reserveVecs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions11reserveVecsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>reserve vectors in the invfiles? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::storeTransposed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">storeTransposed</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::storeTransposed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">storeTransposed</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions15storeTransposedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>For <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndexFlat"><span class="std std-ref">GpuIndexFlat</span></a>, store data in transposed layout? </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions7verboseE">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions7verboseE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions7verboseE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::verbose__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">verbose</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions7verboseE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions7verboseE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions7verboseE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions7verboseE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::verbose__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions7verboseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set verbose options on the index. </p>
 </dd></dl>
 

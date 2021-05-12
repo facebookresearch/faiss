@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -288,8 +291,8 @@
   <div class="section" id="file-stackdevicememory-h">
 <h1>File StackDeviceMemory.h<a class="headerlink" href="#file-stackdevicememory-h" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp type">
-<dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -307,142 +310,142 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
-<dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><br /></dt>
 <dd><dl class="cpp class">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemoryE">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemoryE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemoryE"></span><span id="faiss::gpu::StackDeviceMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">StackDeviceMemory</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemoryE">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemoryE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemoryE"></span><span id="faiss::gpu::StackDeviceMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StackDeviceMemory</span></span></span><br /></dt>
 <dd><em>#include &lt;StackDeviceMemory.h&gt;</em><p>Device memory manager that provides temporary memory allocations out of a region of memory, for a single device </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t"></span><span id="faiss::gpu::StackDeviceMemory::StackDeviceMemory__GpuResourcesP.i.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd"></span><code class="sig-name descname"><span class="pre">StackDeviceMemory</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="pre">GpuResources</span></a> <span class="pre">*</span><em><span class="pre">res</span></em>, <span class="pre">int</span> <em><span class="pre">device</span></em>, <span class="pre">size_t</span> <em><span class="pre">allocPerDevice</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEP12GpuResourcesi6size_t"></span><span id="faiss::gpu::StackDeviceMemory::StackDeviceMemory__GpuResourcesP.i.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a0b23b6f143696a118db874ea55dcf7bd"></span><span class="sig-name descname"><span class="n"><span class="pre">StackDeviceMemory</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allocPerDevice</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Allocate a new region of memory that we manage. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb"></span><span id="faiss::gpu::StackDeviceMemory::StackDeviceMemory__i.voidP.s.b"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1afd7a84b8cd1f747d873cdd1ab07e8a4b"></span><code class="sig-name descname"><span class="pre">StackDeviceMemory</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">p</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">bool</span> <em><span class="pre">isOwner</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory17StackDeviceMemoryEiPv6size_tb"></span><span id="faiss::gpu::StackDeviceMemory::StackDeviceMemory__i.voidP.s.b"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1afd7a84b8cd1f747d873cdd1ab07e8a4b"></span><span class="sig-name descname"><span class="n"><span class="pre">StackDeviceMemory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isOwner</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Manage a region of memory for a particular device, with or without ownership </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemoryD0Ev">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemoryD0Ev"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemoryD0Ev"></span><span id="faiss::gpu::StackDeviceMemory::~StackDeviceMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab9c08b79317d9d2dae9208b41dba7826"></span><code class="sig-name descname"><span class="pre">~StackDeviceMemory</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemoryD0Ev">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemoryD0Ev"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemoryD0Ev"></span><span id="faiss::gpu::StackDeviceMemory::~StackDeviceMemory"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab9c08b79317d9d2dae9208b41dba7826"></span><span class="sig-name descname"><span class="n"><span class="pre">~StackDeviceMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4NK5faiss3gpu17StackDeviceMemory9getDeviceEv">
-<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory9getDeviceEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory9getDeviceEv"></span><span id="faiss::gpu::StackDeviceMemory::getDeviceC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab4d6a319417fb80e56cce4d28124ea89"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu17StackDeviceMemory9getDeviceEv">
+<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory9getDeviceEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory9getDeviceEv"></span><span id="faiss::gpu::StackDeviceMemory::getDeviceC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ab4d6a319417fb80e56cce4d28124ea89"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t"></span><span id="faiss::gpu::StackDeviceMemory::allocMemory__cudaStream_t.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa"></span><span class="pre">void</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">allocMemory</span></code><span class="sig-paren">(</span><span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory11allocMemoryE12cudaStream_t6size_t"></span><span id="faiss::gpu::StackDeviceMemory::allocMemory__cudaStream_t.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a24c4533f998df2a186ab6588257dd5fa"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">allocMemory</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>All allocations requested should be a multiple of 16 bytes. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv"></span><span id="faiss::gpu::StackDeviceMemory::deallocMemory__i.cudaStream_t.s.voidP"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">deallocMemory</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em>, <span class="pre">cudaStream_t</span>, <span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">p</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory13deallocMemoryEi12cudaStream_t6size_tPv"></span><span id="faiss::gpu::StackDeviceMemory::deallocMemory__i.cudaStream_t.s.voidP"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a59d4cd8b4ef1b4968c5954c2c778d83f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocMemory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv">
-<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv"></span><span id="faiss::gpu::StackDeviceMemory::getSizeAvailableC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a58431176d97b990ab8144bb30d7c2bd5"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">getSizeAvailable</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv">
+<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory16getSizeAvailableEv"></span><span id="faiss::gpu::StackDeviceMemory::getSizeAvailableC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a58431176d97b990ab8144bb30d7c2bd5"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getSizeAvailable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4NK5faiss3gpu17StackDeviceMemory8toStringEv">
-<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory8toStringEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory8toStringEv"></span><span id="faiss::gpu::StackDeviceMemory::toStringC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1adc327179a0f60e889bad08dfb0ad5b0d"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">toString</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu17StackDeviceMemory8toStringEv">
+<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory8toStringEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory8toStringEv"></span><span id="faiss::gpu::StackDeviceMemory::toStringC"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1adc327179a0f60e889bad08dfb0ad5b0d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">toString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory7device_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory7device_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory7device_E"></span><span id="faiss::gpu::StackDeviceMemory::device___i"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">device_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory7device_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory7device_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory7device_E"></span><span id="faiss::gpu::StackDeviceMemory::device___i"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1ac54f49a3be6b7fe4f1fc70094075d875"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device_</span></span></span><br /></dt>
 <dd><p>Our device. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory6stack_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory6stack_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory6stack_E"></span><span id="faiss::gpu::StackDeviceMemory::stack___Stack"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1StackDeviceMemory.html#_CPPv4N5faiss3gpu17StackDeviceMemory5StackE" title="faiss::gpu::StackDeviceMemory::Stack"><span class="pre">Stack</span></a> <code class="sig-name descname"><span class="pre">stack_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory6stack_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory6stack_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory6stack_E"></span><span id="faiss::gpu::StackDeviceMemory::stack___Stack"></span><span class="target" id="classfaiss_1_1gpu_1_1StackDeviceMemory_1a323a632f397eaf3df3034595762c6a29"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1StackDeviceMemory.html#_CPPv4N5faiss3gpu17StackDeviceMemory5StackE" title="faiss::gpu::StackDeviceMemory::Stack"><span class="n"><span class="pre">Stack</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stack_</span></span></span><br /></dt>
 <dd><p>Memory stack. </p>
 </dd></dl>
 
 </div>
 <dl class="cpp struct">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5RangeE">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5RangeE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5RangeE"></span><span id="faiss::gpu::StackDeviceMemory::Range"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">Range</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5RangeE">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5RangeE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5RangeE"></span><span id="faiss::gpu::StackDeviceMemory::Range"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Range</span></span></span><br /></dt>
 <dd><em>#include &lt;StackDeviceMemory.h&gt;</em><p>Previous allocation ranges and the streams for which synchronization is required </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Range::Range__cP.cP.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">Range</span></code><span class="sig-paren">(</span><span class="pre">char</span> <span class="pre">*</span><em><span class="pre">s</span></em>, <span class="pre">char</span> <span class="pre">*</span><em><span class="pre">e</span></em>, <span class="pre">cudaStream_t</span> <em><span class="pre">str</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range5RangeEPcPc12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Range::Range__cP.cP.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a02f1fe4dc4d707011090e3e925e9d9ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Range</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">e</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range6start_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range6start_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range6start_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::start___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a421e4893035861050a391d0088df815a"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">start_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range6start_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range6start_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range6start_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::start___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1a421e4893035861050a391d0088df815a"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">start_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range4end_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range4end_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range4end_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::end___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">end_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range4end_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range4end_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range4end_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::end___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1ab822fde6b35d02fa17b291db81e72c1f"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">end_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range7stream_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range7stream_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range7stream_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::stream___cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1acca587483d1cb6776c200b11f518a34c"></span><span class="pre">cudaStream_t</span> <code class="sig-name descname"><span class="pre">stream_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Range7stream_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Range7stream_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Range7stream_E"></span><span id="faiss::gpu::StackDeviceMemory::Range::stream___cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range_1acca587483d1cb6776c200b11f518a34c"></span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stream_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
 </dd></dl>
 
 <dl class="cpp struct">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5StackE">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5StackE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5StackE"></span><span id="faiss::gpu::StackDeviceMemory::Stack"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">Stack</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5StackE">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5StackE"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5StackE"></span><span id="faiss::gpu::StackDeviceMemory::Stack"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Stack</span></span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::Stack__GpuResourcesP.i.s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ab6afe6dad139fe3759c2835e31475e93"></span><code class="sig-name descname"><span class="pre">Stack</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="pre">GpuResources</span></a> <span class="pre">*</span><em><span class="pre">res</span></em>, <span class="pre">int</span> <em><span class="pre">device</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack5StackEP12GpuResourcesi6size_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::Stack__GpuResourcesP.i.s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ab6afe6dad139fe3759c2835e31475e93"></span><span class="sig-name descname"><span class="n"><span class="pre">Stack</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Constructor that allocates memory via cudaMalloc. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5StackD0Ev">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5StackD0Ev"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5StackD0Ev"></span><span id="faiss::gpu::StackDeviceMemory::Stack::~Stack"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a79be10f299ef6152040bff6c0cdd51ca"></span><code class="sig-name descname"><span class="pre">~Stack</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5StackD0Ev">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5StackD0Ev"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5StackD0Ev"></span><span id="faiss::gpu::StackDeviceMemory::Stack::~Stack"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a79be10f299ef6152040bff6c0cdd51ca"></span><span class="sig-name descname"><span class="n"><span class="pre">~Stack</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv">
-<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv"></span><span id="faiss::gpu::StackDeviceMemory::Stack::getSizeAvailableC"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">getSizeAvailable</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv">
+<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory5Stack16getSizeAvailableEv"></span><span id="faiss::gpu::StackDeviceMemory::Stack::getSizeAvailableC"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a897d537bc1505843de36e104c1c9163c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getSizeAvailable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Returns how much size is available for an allocation without calling cudaMalloc </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::getAlloc__s.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">getAlloc</span></code><span class="sig-paren">(</span><span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack8getAllocE6size_t12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::getAlloc__s.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a2ff2675de5f5dbfc50d8ca8400845396"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getAlloc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Obtains an allocation; all allocations are guaranteed to be 16 byte aligned </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::returnAlloc__cP.s.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">returnAlloc</span></code><span class="sig-paren">(</span><span class="pre">char</span> <span class="pre">*</span><em><span class="pre">p</span></em>, <span class="pre">size_t</span> <em><span class="pre">size</span></em>, <span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack11returnAllocEPc6size_t12cudaStream_t"></span><span id="faiss::gpu::StackDeviceMemory::Stack::returnAlloc__cP.s.cudaStream_t"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a5c652c126c2bf37149995cdb9d46a382"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">returnAlloc</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Returns an allocation. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv">
-<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv"></span><span id="faiss::gpu::StackDeviceMemory::Stack::toStringC"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">toString</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property"><span class="pre">const</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv">
+<span id="_CPPv3NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv"></span><span id="_CPPv2NK5faiss3gpu17StackDeviceMemory5Stack8toStringEv"></span><span id="faiss::gpu::StackDeviceMemory::Stack::toStringC"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a85a65314a9a97a91d36bf1398f07f17d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">toString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Returns the stack state. </p>
 </dd></dl>
 
@@ -450,55 +453,55 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack4res_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack4res_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack4res_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::res___GpuResourcesP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="pre">GpuResources</span></a> <span class="pre">*</span><code class="sig-name descname"><span class="pre">res_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack4res_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack4res_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack4res_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::res___GpuResourcesP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9b05d832e1643160a35bc02066a2c7b1"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResources.html#_CPPv4N5faiss3gpu12GpuResourcesE" title="faiss::gpu::GpuResources"><span class="n"><span class="pre">GpuResources</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">res_</span></span></span><br /></dt>
 <dd><p>Our <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResources"><span class="std std-ref">GpuResources</span></a> object. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack7device_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack7device_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack7device_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::device___i"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">device_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack7device_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack7device_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack7device_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::device___i"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a0950e30ddd0008367a0fb109db9c01b9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device_</span></span></span><br /></dt>
 <dd><p>Device this allocation is on. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack6alloc_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack6alloc_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack6alloc_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::alloc___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">alloc_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack6alloc_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack6alloc_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack6alloc_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::alloc___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">alloc_</span></span></span><br /></dt>
 <dd><p>Where our temporary memory buffer is allocated; we allocate starting 16 bytes into this </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::allocSize___s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">allocSize_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack10allocSize_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::allocSize___s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocSize_</span></span></span><br /></dt>
 <dd><p>Total size of our allocation. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack6start_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack6start_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack6start_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::start___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">start_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack6start_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack6start_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack6start_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::start___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aed64654e7d498114fdd48a6f1cdb1aa2"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">start_</span></span></span><br /></dt>
 <dd><p>Our temporary memory region; [start_, end_) is valid. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack4end_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack4end_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack4end_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::end___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a1db5eeb343fc59b9dc3f0303558c692b"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">end_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack4end_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack4end_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack4end_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::end___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a1db5eeb343fc59b9dc3f0303558c692b"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">end_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack5head_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack5head_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack5head_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::head___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff"></span><span class="pre">char</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">head_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack5head_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack5head_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack5head_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::head___cP"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a140d3dc4577883704708ecca493813ff"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">head_</span></span></span><br /></dt>
 <dd><p><a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html#structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack"><span class="std std-ref">Stack</span></a> head within [start, end) </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::lastUsers___std::list:Range:"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e"></span><span class="pre">std</span><span class="pre">::</span><span class="pre">list</span><span class="pre">&lt;</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1StackDeviceMemory.html#_CPPv4N5faiss3gpu17StackDeviceMemory5RangeE" title="faiss::gpu::StackDeviceMemory::Range"><span class="pre">Range</span></a><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">lastUsers_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack10lastUsers_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::lastUsers___std::list:Range:"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1a9fc42fbbe671faee41ea85a68bdb6b1e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1StackDeviceMemory.html#_CPPv4N5faiss3gpu17StackDeviceMemory5RangeE" title="faiss::gpu::StackDeviceMemory::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lastUsers_</span></span></span><br /></dt>
 <dd><p>List of previous last users of allocations on our stack, for possible synchronization purposes </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E">
-<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::highWaterMemoryUsed___s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">highWaterMemoryUsed_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E">
+<span id="_CPPv3N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E"></span><span id="_CPPv2N5faiss3gpu17StackDeviceMemory5Stack20highWaterMemoryUsed_E"></span><span id="faiss::gpu::StackDeviceMemory::Stack::highWaterMemoryUsed___s"></span><span class="target" id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1aa05c1f4a5280fe723c9888937182df75"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">highWaterMemoryUsed_</span></span></span><br /></dt>
 <dd><p>What’s the high water mark in terms of memory used from the temporary buffer? </p>
 </dd></dl>
 

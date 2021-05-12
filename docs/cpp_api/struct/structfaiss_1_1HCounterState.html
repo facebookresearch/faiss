@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -331,58 +334,58 @@
   <div class="section" id="struct-faiss-hcounterstate">
 <h1>Struct faiss::HCounterState<a class="headerlink" href="#struct-faiss-hcounterstate" title="Permalink to this headline">¶</a></h1>
 <dl class="cpp struct">
-<dt id="_CPPv4I0EN5faiss13HCounterStateE">
-<span id="_CPPv3I0EN5faiss13HCounterStateE"></span><span id="_CPPv2I0EN5faiss13HCounterStateE"></span><span class="pre">template&lt;</span><span class="pre">class</span> <code class="sig-name descname"><span class="pre">HammingComputer</span></code><span class="pre">&gt;</span><br /><span class="target" id="structfaiss_1_1HCounterState"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="pre">faiss</span></a><code class="sig-prename descclassname"><span class="pre">::</span></code></code><code class="sig-name descname"><span class="pre">HCounterState</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss13HCounterStateE">
+<span id="_CPPv3I0EN5faiss13HCounterStateE"></span><span id="_CPPv2I0EN5faiss13HCounterStateE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputer</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1HCounterState"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">HCounterState</span></span></span><br /></dt>
 <dd><p>This class maintains a list of best distances seen so far.</p>
 <p>Since the distances are in a limited range (0 to nbit), the object maintains one list per possible distance, and fills in only the n-first lists, such that the sum of sizes of the n lists is below k. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii">
-<span id="_CPPv3N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii"></span><span id="_CPPv2N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii"></span><span id="faiss::HCounterState::HCounterState__iP.int64_tP.uint8_tCP.i.i"></span><span class="target" id="structfaiss_1_1HCounterState_1a83bb9102d3f4a543ab5a95d51e539c23"></span><em class="property"><span class="pre">inline</span></em> <code class="sig-name descname"><span class="pre">HCounterState</span></code><span class="sig-paren">(</span><span class="pre">int</span> <span class="pre">*</span><em><span class="pre">counters</span></em>, <span class="pre">int64_t</span> <span class="pre">*</span><em><span class="pre">ids_per_dis</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">x</span></em>, <span class="pre">int</span> <em><span class="pre">d</span></em>, <span class="pre">int</span> <em><span class="pre">k</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii">
+<span id="_CPPv3N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii"></span><span id="_CPPv2N5faiss13HCounterState13HCounterStateEPiP7int64_tPK7uint8_tii"></span><span id="faiss::HCounterState::HCounterState__iP.int64_tP.uint8_tCP.i.i"></span><span class="target" id="structfaiss_1_1HCounterState_1a83bb9102d3f4a543ab5a95d51e539c23"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HCounterState</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">counters</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids_per_dis</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss13HCounterState14update_counterEPK7uint8_t6size_t">
-<span id="_CPPv3N5faiss13HCounterState14update_counterEPK7uint8_t6size_t"></span><span id="_CPPv2N5faiss13HCounterState14update_counterEPK7uint8_t6size_t"></span><span id="faiss::HCounterState::update_counter__uint8_tCP.s"></span><span class="target" id="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">update_counter</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">uint8_t</span> <span class="pre">*</span><em><span class="pre">y</span></em>, <span class="pre">size_t</span> <em><span class="pre">j</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState14update_counterEPK7uint8_t6size_t">
+<span id="_CPPv3N5faiss13HCounterState14update_counterEPK7uint8_t6size_t"></span><span id="_CPPv2N5faiss13HCounterState14update_counterEPK7uint8_t6size_t"></span><span id="faiss::HCounterState::update_counter__uint8_tCP.s"></span><span class="target" id="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_counter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState8countersE">
-<span id="_CPPv3N5faiss13HCounterState8countersE"></span><span id="_CPPv2N5faiss13HCounterState8countersE"></span><span id="faiss::HCounterState::counters__iP"></span><span class="target" id="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe"></span><span class="pre">int</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">counters</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState8countersE">
+<span id="_CPPv3N5faiss13HCounterState8countersE"></span><span id="_CPPv2N5faiss13HCounterState8countersE"></span><span id="faiss::HCounterState::counters__iP"></span><span class="target" id="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">counters</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState11ids_per_disE">
-<span id="_CPPv3N5faiss13HCounterState11ids_per_disE"></span><span id="_CPPv2N5faiss13HCounterState11ids_per_disE"></span><span id="faiss::HCounterState::ids_per_dis__int64_tP"></span><span class="target" id="structfaiss_1_1HCounterState_1a034efca2fb54bc2c45488259f5e47365"></span><span class="pre">int64_t</span> <span class="pre">*</span><code class="sig-name descname"><span class="pre">ids_per_dis</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState11ids_per_disE">
+<span id="_CPPv3N5faiss13HCounterState11ids_per_disE"></span><span id="_CPPv2N5faiss13HCounterState11ids_per_disE"></span><span id="faiss::HCounterState::ids_per_dis__int64_tP"></span><span class="target" id="structfaiss_1_1HCounterState_1a034efca2fb54bc2c45488259f5e47365"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ids_per_dis</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState2hcE">
-<span id="_CPPv3N5faiss13HCounterState2hcE"></span><span id="_CPPv2N5faiss13HCounterState2hcE"></span><span id="faiss::HCounterState::hc__HammingComputer"></span><span class="target" id="structfaiss_1_1HCounterState_1ac8aa41122bfbca508167f6c62f2b8701"></span><a class="reference internal" href="../file/hamming-inl_8h.html#_CPPv4I0EN5faiss13HCounterStateE" title="faiss::HCounterState::HammingComputer"><span class="pre">HammingComputer</span></a> <code class="sig-name descname"><span class="pre">hc</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState2hcE">
+<span id="_CPPv3N5faiss13HCounterState2hcE"></span><span id="_CPPv2N5faiss13HCounterState2hcE"></span><span id="faiss::HCounterState::hc__HammingComputer"></span><span class="target" id="structfaiss_1_1HCounterState_1ac8aa41122bfbca508167f6c62f2b8701"></span><a class="reference internal" href="../file/hamming-inl_8h.html#_CPPv4I0EN5faiss13HCounterStateE" title="faiss::HCounterState::HammingComputer"><span class="n"><span class="pre">HammingComputer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hc</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState5thresE">
-<span id="_CPPv3N5faiss13HCounterState5thresE"></span><span id="_CPPv2N5faiss13HCounterState5thresE"></span><span id="faiss::HCounterState::thres__i"></span><span class="target" id="structfaiss_1_1HCounterState_1af064903b7159141e0997d00be5790a96"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">thres</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState5thresE">
+<span id="_CPPv3N5faiss13HCounterState5thresE"></span><span id="_CPPv2N5faiss13HCounterState5thresE"></span><span id="faiss::HCounterState::thres__i"></span><span class="target" id="structfaiss_1_1HCounterState_1af064903b7159141e0997d00be5790a96"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thres</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState8count_ltE">
-<span id="_CPPv3N5faiss13HCounterState8count_ltE"></span><span id="_CPPv2N5faiss13HCounterState8count_ltE"></span><span id="faiss::HCounterState::count_lt__i"></span><span class="target" id="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">count_lt</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState8count_ltE">
+<span id="_CPPv3N5faiss13HCounterState8count_ltE"></span><span id="_CPPv2N5faiss13HCounterState8count_ltE"></span><span id="faiss::HCounterState::count_lt__i"></span><span class="target" id="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">count_lt</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState8count_eqE">
-<span id="_CPPv3N5faiss13HCounterState8count_eqE"></span><span id="_CPPv2N5faiss13HCounterState8count_eqE"></span><span id="faiss::HCounterState::count_eq__i"></span><span class="target" id="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">count_eq</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState8count_eqE">
+<span id="_CPPv3N5faiss13HCounterState8count_eqE"></span><span id="_CPPv2N5faiss13HCounterState8count_eqE"></span><span id="faiss::HCounterState::count_eq__i"></span><span class="target" id="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">count_eq</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss13HCounterState1kE">
-<span id="_CPPv3N5faiss13HCounterState1kE"></span><span id="_CPPv2N5faiss13HCounterState1kE"></span><span id="faiss::HCounterState::k__i"></span><span class="target" id="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">k</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13HCounterState1kE">
+<span id="_CPPv3N5faiss13HCounterState1kE"></span><span id="_CPPv2N5faiss13HCounterState1kE"></span><span id="faiss::HCounterState::k__i"></span><span class="target" id="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>

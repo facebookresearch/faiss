@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
 
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -290,21 +293,21 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
-<dt id="c.CUDA_VERIFY">
-<span class="target" id="DeviceUtils_8h_1a138cee0b36cbee13b75739fe4b96c790"></span><code class="sig-name descname"><span class="pre">CUDA_VERIFY</span></code><span class="sig-paren">(</span><em><span class="pre">X</span></em><span class="sig-paren">)</span><a class="headerlink" href="#c.CUDA_VERIFY" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="c.CUDA_VERIFY">
+<span class="target" id="DeviceUtils_8h_1a138cee0b36cbee13b75739fe4b96c790"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDA_VERIFY</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">X</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.CUDA_VERIFY" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Wrapper to test return status of CUDA functions. </p>
 </dd></dl>
 
 <dl class="cpp macro">
-<dt id="c.CUDA_TEST_ERROR">
-<span class="target" id="DeviceUtils_8h_1a5c840d06d8e05735ee2902b93ab62512"></span><code class="sig-name descname"><span class="pre">CUDA_TEST_ERROR</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.CUDA_TEST_ERROR" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="c.CUDA_TEST_ERROR">
+<span class="target" id="DeviceUtils_8h_1a5c840d06d8e05735ee2902b93ab62512"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDA_TEST_ERROR</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.CUDA_TEST_ERROR" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Wrapper to synchronously probe for CUDA errors. </p>
 </dd></dl>
 
 </div>
 <dl class="cpp type">
-<dt id="_CPPv45faiss">
-<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">faiss</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv45faiss">
+<span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
 <dd><p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</p>
 <p>Throughout the library, vectors are provided as float * pointers. Most algorithms can be optimized when several vectors are processed (added/searched) together in a batch. In this case, they are passed in as a matrix. When n vectors of size d are provided as float * x, component j of vector i is</p>
@@ -322,259 +325,259 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
-<dt id="_CPPv4N5faiss3gpuE">
-<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">gpu</span></code><a class="headerlink" href="#_CPPv4N5faiss3gpuE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpuE">
+<span id="_CPPv3N5faiss3gpuE"></span><span id="_CPPv2N5faiss3gpuE"></span><span id="faiss::gpu"></span><span class="target" id="namespacefaiss_1_1gpu"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gpu</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpuE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu16getCurrentDeviceEv">
-<span id="_CPPv3N5faiss3gpu16getCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu16getCurrentDeviceEv"></span><span id="faiss::gpu::getCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a18ddaf734a629ded5ad2a2f235937298"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getCurrentDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16getCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16getCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu16getCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu16getCurrentDeviceEv"></span><span id="faiss::gpu::getCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a18ddaf734a629ded5ad2a2f235937298"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16getCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the current thread-local GPU device. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu16setCurrentDeviceEi">
-<span id="_CPPv3N5faiss3gpu16setCurrentDeviceEi"></span><span id="_CPPv2N5faiss3gpu16setCurrentDeviceEi"></span><span id="faiss::gpu::setCurrentDevice__i"></span><span class="target" id="DeviceUtils_8h_1abf0b5b971122c7c024f70a2e690870ea"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">setCurrentDevice</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16setCurrentDeviceEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16setCurrentDeviceEi">
+<span id="_CPPv3N5faiss3gpu16setCurrentDeviceEi"></span><span id="_CPPv2N5faiss3gpu16setCurrentDeviceEi"></span><span id="faiss::gpu::setCurrentDevice__i"></span><span class="target" id="DeviceUtils_8h_1abf0b5b971122c7c024f70a2e690870ea"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16setCurrentDeviceEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Sets the current thread-local GPU device. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu13getNumDevicesEv">
-<span id="_CPPv3N5faiss3gpu13getNumDevicesEv"></span><span id="_CPPv2N5faiss3gpu13getNumDevicesEv"></span><span id="faiss::gpu::getNumDevices"></span><span class="target" id="DeviceUtils_8h_1aaeb2757087735aef66e7ec5ba134530a"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getNumDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13getNumDevicesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13getNumDevicesEv">
+<span id="_CPPv3N5faiss3gpu13getNumDevicesEv"></span><span id="_CPPv2N5faiss3gpu13getNumDevicesEv"></span><span id="faiss::gpu::getNumDevices"></span><span class="target" id="DeviceUtils_8h_1aaeb2757087735aef66e7ec5ba134530a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getNumDevices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13getNumDevicesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the number of available GPU devices. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu13profilerStartEv">
-<span id="_CPPv3N5faiss3gpu13profilerStartEv"></span><span id="_CPPv2N5faiss3gpu13profilerStartEv"></span><span id="faiss::gpu::profilerStart"></span><span class="target" id="DeviceUtils_8h_1aaf3d8c41cb926052dcdf4988a323bc3b"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">profilerStart</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13profilerStartEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13profilerStartEv">
+<span id="_CPPv3N5faiss3gpu13profilerStartEv"></span><span id="_CPPv2N5faiss3gpu13profilerStartEv"></span><span id="faiss::gpu::profilerStart"></span><span class="target" id="DeviceUtils_8h_1aaf3d8c41cb926052dcdf4988a323bc3b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">profilerStart</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13profilerStartEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Starts the CUDA profiler (exposed via SWIG) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu12profilerStopEv">
-<span id="_CPPv3N5faiss3gpu12profilerStopEv"></span><span id="_CPPv2N5faiss3gpu12profilerStopEv"></span><span id="faiss::gpu::profilerStop"></span><span class="target" id="DeviceUtils_8h_1aee97ca97dec791446ce147f0fe68db74"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">profilerStop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu12profilerStopEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu12profilerStopEv">
+<span id="_CPPv3N5faiss3gpu12profilerStopEv"></span><span id="_CPPv2N5faiss3gpu12profilerStopEv"></span><span id="faiss::gpu::profilerStop"></span><span class="target" id="DeviceUtils_8h_1aee97ca97dec791446ce147f0fe68db74"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">profilerStop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu12profilerStopEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stops the CUDA profiler (exposed via SWIG) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu21synchronizeAllDevicesEv">
-<span id="_CPPv3N5faiss3gpu21synchronizeAllDevicesEv"></span><span id="_CPPv2N5faiss3gpu21synchronizeAllDevicesEv"></span><span id="faiss::gpu::synchronizeAllDevices"></span><span class="target" id="DeviceUtils_8h_1a9aa4762fd8451c5f9b67072f4a4880e2"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">synchronizeAllDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu21synchronizeAllDevicesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu21synchronizeAllDevicesEv">
+<span id="_CPPv3N5faiss3gpu21synchronizeAllDevicesEv"></span><span id="_CPPv2N5faiss3gpu21synchronizeAllDevicesEv"></span><span id="faiss::gpu::synchronizeAllDevices"></span><span class="target" id="DeviceUtils_8h_1a9aa4762fd8451c5f9b67072f4a4880e2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">synchronizeAllDevices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu21synchronizeAllDevicesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Synchronizes the CPU against all devices (equivalent to cudaDeviceSynchronize for each device) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu19getDevicePropertiesEi">
-<span id="_CPPv3N5faiss3gpu19getDevicePropertiesEi"></span><span id="_CPPv2N5faiss3gpu19getDevicePropertiesEi"></span><span id="faiss::gpu::getDeviceProperties__i"></span><span class="target" id="DeviceUtils_8h_1a5ccce882c56a92a4830ce2fc7bedbc72"></span><em class="property"><span class="pre">const</span></em> <span class="pre">cudaDeviceProp</span> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">getDeviceProperties</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu19getDevicePropertiesEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19getDevicePropertiesEi">
+<span id="_CPPv3N5faiss3gpu19getDevicePropertiesEi"></span><span id="_CPPv2N5faiss3gpu19getDevicePropertiesEi"></span><span id="faiss::gpu::getDeviceProperties__i"></span><span class="target" id="DeviceUtils_8h_1a5ccce882c56a92a4830ce2fc7bedbc72"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">cudaDeviceProp</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getDeviceProperties</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu19getDevicePropertiesEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns a cached cudaDeviceProp for the given device. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu26getCurrentDevicePropertiesEv">
-<span id="_CPPv3N5faiss3gpu26getCurrentDevicePropertiesEv"></span><span id="_CPPv2N5faiss3gpu26getCurrentDevicePropertiesEv"></span><span id="faiss::gpu::getCurrentDeviceProperties"></span><span class="target" id="DeviceUtils_8h_1af758bcee021c4fd616724dbf287e292a"></span><em class="property"><span class="pre">const</span></em> <span class="pre">cudaDeviceProp</span> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">getCurrentDeviceProperties</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu26getCurrentDevicePropertiesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu26getCurrentDevicePropertiesEv">
+<span id="_CPPv3N5faiss3gpu26getCurrentDevicePropertiesEv"></span><span id="_CPPv2N5faiss3gpu26getCurrentDevicePropertiesEv"></span><span id="faiss::gpu::getCurrentDeviceProperties"></span><span class="target" id="DeviceUtils_8h_1af758bcee021c4fd616724dbf287e292a"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">cudaDeviceProp</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getCurrentDeviceProperties</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu26getCurrentDevicePropertiesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the cached cudaDeviceProp for the current device. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu13getMaxThreadsEi">
-<span id="_CPPv3N5faiss3gpu13getMaxThreadsEi"></span><span id="_CPPv2N5faiss3gpu13getMaxThreadsEi"></span><span id="faiss::gpu::getMaxThreads__i"></span><span class="target" id="DeviceUtils_8h_1aec530c2ba3468b1edd6e9eceb864e797"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getMaxThreads</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13getMaxThreadsEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13getMaxThreadsEi">
+<span id="_CPPv3N5faiss3gpu13getMaxThreadsEi"></span><span id="_CPPv2N5faiss3gpu13getMaxThreadsEi"></span><span id="faiss::gpu::getMaxThreads__i"></span><span class="target" id="DeviceUtils_8h_1aec530c2ba3468b1edd6e9eceb864e797"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMaxThreads</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu13getMaxThreadsEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the maximum number of threads available for the given GPU device </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu26getMaxThreadsCurrentDeviceEv">
-<span id="_CPPv3N5faiss3gpu26getMaxThreadsCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu26getMaxThreadsCurrentDeviceEv"></span><span id="faiss::gpu::getMaxThreadsCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a7aa4505c9349ef84ae046e7973107366"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getMaxThreadsCurrentDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu26getMaxThreadsCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu26getMaxThreadsCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu26getMaxThreadsCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu26getMaxThreadsCurrentDeviceEv"></span><span id="faiss::gpu::getMaxThreadsCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a7aa4505c9349ef84ae046e7973107366"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMaxThreadsCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu26getMaxThreadsCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Equivalent to getMaxThreads(getCurrentDevice()) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu23getMaxSharedMemPerBlockEi">
-<span id="_CPPv3N5faiss3gpu23getMaxSharedMemPerBlockEi"></span><span id="_CPPv2N5faiss3gpu23getMaxSharedMemPerBlockEi"></span><span id="faiss::gpu::getMaxSharedMemPerBlock__i"></span><span class="target" id="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">getMaxSharedMemPerBlock</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu23getMaxSharedMemPerBlockEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu23getMaxSharedMemPerBlockEi">
+<span id="_CPPv3N5faiss3gpu23getMaxSharedMemPerBlockEi"></span><span id="_CPPv2N5faiss3gpu23getMaxSharedMemPerBlockEi"></span><span id="faiss::gpu::getMaxSharedMemPerBlock__i"></span><span class="target" id="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMaxSharedMemPerBlock</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu23getMaxSharedMemPerBlockEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the maximum smem available for the given GPU device. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv">
-<span id="_CPPv3N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv"></span><span id="faiss::gpu::getMaxSharedMemPerBlockCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3"></span><span class="pre">size_t</span> <code class="sig-name descname"><span class="pre">getMaxSharedMemPerBlockCurrentDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv"></span><span id="faiss::gpu::getMaxSharedMemPerBlockCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMaxSharedMemPerBlockCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu36getMaxSharedMemPerBlockCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Equivalent to getMaxSharedMemPerBlock(getCurrentDevice()) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu19getDeviceForAddressEPKv">
-<span id="_CPPv3N5faiss3gpu19getDeviceForAddressEPKv"></span><span id="_CPPv2N5faiss3gpu19getDeviceForAddressEPKv"></span><span id="faiss::gpu::getDeviceForAddress__voidCP"></span><span class="target" id="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getDeviceForAddress</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">void</span> <span class="pre">*</span><em><span class="pre">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu19getDeviceForAddressEPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu19getDeviceForAddressEPKv">
+<span id="_CPPv3N5faiss3gpu19getDeviceForAddressEPKv"></span><span id="_CPPv2N5faiss3gpu19getDeviceForAddressEPKv"></span><span id="faiss::gpu::getDeviceForAddress__voidCP"></span><span class="target" id="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDeviceForAddress</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu19getDeviceForAddressEPKv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>For a given pointer, returns whether or not it is located on a device (deviceId &gt;= 0) or the host (-1). </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu24getFullUnifiedMemSupportEi">
-<span id="_CPPv3N5faiss3gpu24getFullUnifiedMemSupportEi"></span><span id="_CPPv2N5faiss3gpu24getFullUnifiedMemSupportEi"></span><span id="faiss::gpu::getFullUnifiedMemSupport__i"></span><span class="target" id="DeviceUtils_8h_1ae57d0b0e0c7d5529d4aee4cbd432a474"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">getFullUnifiedMemSupport</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24getFullUnifiedMemSupportEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24getFullUnifiedMemSupportEi">
+<span id="_CPPv3N5faiss3gpu24getFullUnifiedMemSupportEi"></span><span id="_CPPv2N5faiss3gpu24getFullUnifiedMemSupportEi"></span><span id="faiss::gpu::getFullUnifiedMemSupport__i"></span><span class="target" id="DeviceUtils_8h_1ae57d0b0e0c7d5529d4aee4cbd432a474"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFullUnifiedMemSupport</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24getFullUnifiedMemSupportEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Does the given device support full unified memory sharing host memory? </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv">
-<span id="_CPPv3N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv"></span><span id="faiss::gpu::getFullUnifiedMemSupportCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">getFullUnifiedMemSupportCurrentDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv"></span><span id="faiss::gpu::getFullUnifiedMemSupportCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFullUnifiedMemSupportCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu37getFullUnifiedMemSupportCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Equivalent to getFullUnifiedMemSupport(getCurrentDevice()) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu20getTensorCoreSupportEi">
-<span id="_CPPv3N5faiss3gpu20getTensorCoreSupportEi"></span><span id="_CPPv2N5faiss3gpu20getTensorCoreSupportEi"></span><span id="faiss::gpu::getTensorCoreSupport__i"></span><span class="target" id="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">getTensorCoreSupport</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20getTensorCoreSupportEi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20getTensorCoreSupportEi">
+<span id="_CPPv3N5faiss3gpu20getTensorCoreSupportEi"></span><span id="_CPPv2N5faiss3gpu20getTensorCoreSupportEi"></span><span id="faiss::gpu::getTensorCoreSupport__i"></span><span class="target" id="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getTensorCoreSupport</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu20getTensorCoreSupportEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Does the given device support tensor core operations? </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv">
-<span id="_CPPv3N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv"></span><span id="faiss::gpu::getTensorCoreSupportCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817"></span><span class="pre">bool</span> <code class="sig-name descname"><span class="pre">getTensorCoreSupportCurrentDevice</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv"></span><span id="faiss::gpu::getTensorCoreSupportCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getTensorCoreSupportCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu33getTensorCoreSupportCurrentDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Equivalent to getTensorCoreSupport(getCurrentDevice()) </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu16getMaxKSelectionEv">
-<span id="_CPPv3N5faiss3gpu16getMaxKSelectionEv"></span><span id="_CPPv2N5faiss3gpu16getMaxKSelectionEv"></span><span id="faiss::gpu::getMaxKSelection"></span><span class="target" id="DeviceUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">getMaxKSelection</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16getMaxKSelectionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16getMaxKSelectionEv">
+<span id="_CPPv3N5faiss3gpu16getMaxKSelectionEv"></span><span id="_CPPv2N5faiss3gpu16getMaxKSelectionEv"></span><span id="faiss::gpu::getMaxKSelection"></span><span class="target" id="DeviceUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMaxKSelection</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16getMaxKSelectionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Returns the maximum k-selection value supported based on the CUDA SDK that we were compiled with. .cu files can use DeviceDefs.cuh, but this is for non-CUDA files </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2">
-<span id="_CPPv3I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span id="_CPPv2I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">L1</span></code><span class="pre">,</span> <span class="pre">typename</span> <code class="sig-name descname"><span class="pre">L2</span></code><span class="pre">&gt;</span><br /><span class="target" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">streamWaitBase</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L1"><span class="pre">L1</span></a> <span class="pre">&amp;</span><em><span class="pre">listWaiting</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L2"><span class="pre">L2</span></a> <span class="pre">&amp;</span><em><span class="pre">listWaitOn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2">
+<span id="_CPPv3I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span id="_CPPv2I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWaitBase</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L1"><span class="n"><span class="pre">L1</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">listWaiting</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L2"><span class="n"><span class="pre">L2</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">listWaitOn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Call for a collection of streams to wait on. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE">
-<span id="_CPPv3I0EN5faiss3gpu10streamWaitERK2L1RKNSt16initializer_listI12cudaStream_tEE"></span><span id="_CPPv2I0EN5faiss3gpu10streamWaitERK2L1RKNSt16initializer_listI12cudaStream_tEE"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">L1</span></code><span class="pre">&gt;</span><br /><span class="target" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">streamWait</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE" title="faiss::gpu::streamWait::L1"><span class="pre">L1</span></a> <span class="pre">&amp;</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">initializer_list</span><span class="pre">&lt;</span><span class="pre">cudaStream_t</span><span class="pre">&gt;</span> <span class="pre">&amp;</span><em><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE">
+<span id="_CPPv3I0EN5faiss3gpu10streamWaitERK2L1RKNSt16initializer_listI12cudaStream_tEE"></span><span id="_CPPv2I0EN5faiss3gpu10streamWaitERK2L1RKNSt16initializer_listI12cudaStream_tEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L1</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWait</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE" title="faiss::gpu::streamWait::L1"><span class="n"><span class="pre">L1</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">cudaStream_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRK2L1RKNSt16initializer_listI12cudaStream_tEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>These versions allow usage of initializer_list as arguments, since otherwise {…} doesn’t have a type </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2">
-<span id="_CPPv3I0EN5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERK2L2"></span><span id="_CPPv2I0EN5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERK2L2"></span><span class="pre">template&lt;</span><span class="pre">typename</span> <code class="sig-name descname"><span class="pre">L2</span></code><span class="pre">&gt;</span><br /><span class="target" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">streamWait</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">initializer_list</span><span class="pre">&lt;</span><span class="pre">cudaStream_t</span><span class="pre">&gt;</span> <span class="pre">&amp;</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <a class="reference internal" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2" title="faiss::gpu::streamWait::L2"><span class="pre">L2</span></a> <span class="pre">&amp;</span><em><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2">
+<span id="_CPPv3I0EN5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERK2L2"></span><span id="_CPPv2I0EN5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERK2L2"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWait</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">cudaStream_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2" title="faiss::gpu::streamWait::L2"><span class="n"><span class="pre">L2</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5faiss3gpu10streamWaitEvRKNSt16initializer_listI12cudaStream_tEERK2L2" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE">
-<span id="_CPPv3N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE"></span><span id="_CPPv2N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE"></span><span id="faiss::gpu::streamWait__std::initializer_list:cudaStream_t:CR.std::initializer_list:cudaStream_t:CR"></span><span class="target" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">void</span> <code class="sig-name descname"><span class="pre">streamWait</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">initializer_list</span><span class="pre">&lt;</span><span class="pre">cudaStream_t</span><span class="pre">&gt;</span> <span class="pre">&amp;</span><em><span class="pre">a</span></em>, <em class="property"><span class="pre">const</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">initializer_list</span><span class="pre">&lt;</span><span class="pre">cudaStream_t</span><span class="pre">&gt;</span> <span class="pre">&amp;</span><em><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE">
+<span id="_CPPv3N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE"></span><span id="_CPPv2N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE"></span><span id="faiss::gpu::streamWait__std::initializer_list:cudaStream_t:CR.std::initializer_list:cudaStream_t:CR"></span><span class="target" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWait</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">cudaStream_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">cudaStream_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu10streamWaitERKNSt16initializer_listI12cudaStream_tEERKNSt16initializer_listI12cudaStream_tEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <dl class="cpp class">
-<dt id="_CPPv4N5faiss3gpu17CublasHandleScopeE">
-<span id="_CPPv3N5faiss3gpu17CublasHandleScopeE"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeE"></span><span id="faiss::gpu::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">CublasHandleScope</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17CublasHandleScopeE">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScopeE"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeE"></span><span id="faiss::gpu::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CublasHandleScope</span></span></span><br /></dt>
 <dd><em>#include &lt;DeviceUtils.h&gt;</em><p>RAII object to manage a cublasHandle_t. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv">
-<span id="_CPPv3N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="faiss::gpu::CublasHandleScope::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7"></span><code class="sig-name descname"><span class="pre">CublasHandleScope</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope17CublasHandleScopeEv"></span><span id="faiss::gpu::CublasHandleScope::CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a7bcf61f669741a93cab18a0fa71b8df7"></span><span class="sig-name descname"><span class="n"><span class="pre">CublasHandleScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17CublasHandleScopeD0Ev">
-<span id="_CPPv3N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="faiss::gpu::CublasHandleScope::~CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1aebc00829e05d127f84f6502c61911109"></span><code class="sig-name descname"><span class="pre">~CublasHandleScope</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17CublasHandleScopeD0Ev">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScopeD0Ev"></span><span id="faiss::gpu::CublasHandleScope::~CublasHandleScope"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1aebc00829e05d127f84f6502c61911109"></span><span class="sig-name descname"><span class="n"><span class="pre">~CublasHandleScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu17CublasHandleScope3getEv">
-<span id="_CPPv3N5faiss3gpu17CublasHandleScope3getEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope3getEv"></span><span id="faiss::gpu::CublasHandleScope::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1ad72c3f76d76df0a5b8947b4a07a37cb5"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">cublasHandle_t</span> <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17CublasHandleScope3getEv">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope3getEv"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope3getEv"></span><span id="faiss::gpu::CublasHandleScope::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1ad72c3f76d76df0a5b8947b4a07a37cb5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">cublasHandle_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu17CublasHandleScope11blasHandle_E">
-<span id="_CPPv3N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="faiss::gpu::CublasHandleScope::blasHandle___cublasHandle_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1"></span><span class="pre">cublasHandle_t</span> <code class="sig-name descname"><span class="pre">blasHandle_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17CublasHandleScope11blasHandle_E">
+<span id="_CPPv3N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="_CPPv2N5faiss3gpu17CublasHandleScope11blasHandle_E"></span><span id="faiss::gpu::CublasHandleScope::blasHandle___cublasHandle_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CublasHandleScope_1a990a8e8805606bba7a6450404c6d05d1"></span><span class="n"><span class="pre">cublasHandle_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">blasHandle_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
 </dd></dl>
 
 <dl class="cpp class">
-<dt id="_CPPv4N5faiss3gpu9CudaEventE">
-<span id="_CPPv3N5faiss3gpu9CudaEventE"></span><span id="_CPPv2N5faiss3gpu9CudaEventE"></span><span id="faiss::gpu::CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">CudaEvent</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventE">
+<span id="_CPPv3N5faiss3gpu9CudaEventE"></span><span id="_CPPv2N5faiss3gpu9CudaEventE"></span><span id="faiss::gpu::CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="faiss::gpu::CudaEvent::CudaEvent__cudaStream_t.b"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">CudaEvent</span></code><span class="sig-paren">(</span><span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em>, <span class="pre">bool</span> <em><span class="pre">timer</span></em> <span class="pre">=</span> <span class="pre">false</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb">
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="faiss::gpu::CudaEvent::CudaEvent__cudaStream_t.b"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timer</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Creates an event and records it in this stream. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventCR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad72ad67f6eb35e7716ef153a6d212dc7"></span><code class="sig-name descname"><span class="pre">CudaEvent</span></code><span class="sig-paren">(</span><em class="property"><span class="pre">const</span></em> <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><em><span class="pre">event</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent">
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventCR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad72ad67f6eb35e7716ef153a6d212dc7"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd"></span><code class="sig-name descname"><span class="pre">CudaEvent</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">event</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">noexcept</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent">
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEventD0Ev">
-<span id="_CPPv3N5faiss3gpu9CudaEventD0Ev"></span><span id="_CPPv2N5faiss3gpu9CudaEventD0Ev"></span><span id="faiss::gpu::CudaEvent::~CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a6ab1e9050459d4509daf294eb6e50ea3"></span><code class="sig-name descname"><span class="pre">~CudaEvent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventD0Ev">
+<span id="_CPPv3N5faiss3gpu9CudaEventD0Ev"></span><span id="_CPPv2N5faiss3gpu9CudaEventD0Ev"></span><span id="faiss::gpu::CudaEvent::~CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a6ab1e9050459d4509daf294eb6e50ea3"></span><span class="sig-name descname"><span class="n"><span class="pre">~CudaEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent3getEv">
-<span id="_CPPv3N5faiss3gpu9CudaEvent3getEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent3getEv"></span><span id="faiss::gpu::CudaEvent::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1adfd9acdace7565145c339c7a3241e151"></span><em class="property"><span class="pre">inline</span></em> <span class="pre">cudaEvent_t</span> <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent3getEv">
+<span id="_CPPv3N5faiss3gpu9CudaEvent3getEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent3getEv"></span><span id="faiss::gpu::CudaEvent::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1adfd9acdace7565145c339c7a3241e151"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="faiss::gpu::CudaEvent::streamWaitOnEvent__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">streamWaitOnEvent</span></code><span class="sig-paren">(</span><span class="pre">cudaStream_t</span> <em><span class="pre">stream</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t">
+<span id="_CPPv3N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="faiss::gpu::CudaEvent::streamWaitOnEvent__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Wait on this event in this stream. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent14cpuWaitOnEventEv">
-<span id="_CPPv3N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="faiss::gpu::CudaEvent::cpuWaitOnEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57"></span><span class="pre">void</span> <code class="sig-name descname"><span class="pre">cpuWaitOnEvent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent14cpuWaitOnEventEv">
+<span id="_CPPv3N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="faiss::gpu::CudaEvent::cpuWaitOnEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cpuWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Have the CPU wait for the completion of this event. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEventaSERR9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><span class="pre">&amp;</span><em><span class="pre">event</span></em><span class="sig-paren">)</span> <em class="property"><span class="pre">noexcept</span></em><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventaSERR9CudaEvent">
+<span id="_CPPv3N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu9CudaEventaSER9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a204899e640da688e4c5c526656ab0ffc"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><code class="sig-name descname"><span class="pre">operator=</span></code><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="pre">CudaEvent</span></a> <span class="pre">&amp;</span><em><span class="pre">event</span></em><span class="sig-paren">)</span> <span class="pre">=</span> <span class="pre">delete</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventaSER9CudaEvent">
+<span id="_CPPv3N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a204899e640da688e4c5c526656ab0ffc"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1CudaEvent.html#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu9CudaEvent6event_E">
-<span id="_CPPv3N5faiss3gpu9CudaEvent6event_E"></span><span id="_CPPv2N5faiss3gpu9CudaEvent6event_E"></span><span id="faiss::gpu::CudaEvent::event___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a8aaeb33f793e5495ca2d12f76602b4e2"></span><span class="pre">cudaEvent_t</span> <code class="sig-name descname"><span class="pre">event_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent6event_E">
+<span id="_CPPv3N5faiss3gpu9CudaEvent6event_E"></span><span id="_CPPv2N5faiss3gpu9CudaEvent6event_E"></span><span id="faiss::gpu::CudaEvent::event___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a8aaeb33f793e5495ca2d12f76602b4e2"></span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">event_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
 </dd></dl>
 
 <dl class="cpp class">
-<dt id="_CPPv4N5faiss3gpu11DeviceScopeE">
-<span id="_CPPv3N5faiss3gpu11DeviceScopeE"></span><span id="_CPPv2N5faiss3gpu11DeviceScopeE"></span><span id="faiss::gpu::DeviceScope"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope"></span><em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DeviceScope</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11DeviceScopeE">
+<span id="_CPPv3N5faiss3gpu11DeviceScopeE"></span><span id="_CPPv2N5faiss3gpu11DeviceScopeE"></span><span id="faiss::gpu::DeviceScope"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceScope</span></span></span><br /></dt>
 <dd><em>#include &lt;DeviceUtils.h&gt;</em><p>RAII object to set the current device, and restore the previous device upon destruction </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu11DeviceScope11DeviceScopeEi">
-<span id="_CPPv3N5faiss3gpu11DeviceScope11DeviceScopeEi"></span><span id="_CPPv2N5faiss3gpu11DeviceScope11DeviceScopeEi"></span><span id="faiss::gpu::DeviceScope::DeviceScope__i"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9"></span><em class="property"><span class="pre">explicit</span></em> <code class="sig-name descname"><span class="pre">DeviceScope</span></code><span class="sig-paren">(</span><span class="pre">int</span> <em><span class="pre">device</span></em><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11DeviceScope11DeviceScopeEi">
+<span id="_CPPv3N5faiss3gpu11DeviceScope11DeviceScopeEi"></span><span id="_CPPv2N5faiss3gpu11DeviceScope11DeviceScopeEi"></span><span id="faiss::gpu::DeviceScope::DeviceScope__i"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceScope</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N5faiss3gpu11DeviceScopeD0Ev">
-<span id="_CPPv3N5faiss3gpu11DeviceScopeD0Ev"></span><span id="_CPPv2N5faiss3gpu11DeviceScopeD0Ev"></span><span id="faiss::gpu::DeviceScope::~DeviceScope"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a418b10428f83a90c6b7fc4aad6cd9cfe"></span><code class="sig-name descname"><span class="pre">~DeviceScope</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11DeviceScopeD0Ev">
+<span id="_CPPv3N5faiss3gpu11DeviceScopeD0Ev"></span><span id="_CPPv2N5faiss3gpu11DeviceScopeD0Ev"></span><span id="faiss::gpu::DeviceScope::~DeviceScope"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a418b10428f83a90c6b7fc4aad6cd9cfe"></span><span class="sig-name descname"><span class="n"><span class="pre">~DeviceScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
-<dt id="_CPPv4N5faiss3gpu11DeviceScope11prevDevice_E">
-<span id="_CPPv3N5faiss3gpu11DeviceScope11prevDevice_E"></span><span id="_CPPv2N5faiss3gpu11DeviceScope11prevDevice_E"></span><span id="faiss::gpu::DeviceScope::prevDevice___i"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c"></span><span class="pre">int</span> <code class="sig-name descname"><span class="pre">prevDevice_</span></code><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu11DeviceScope11prevDevice_E">
+<span id="_CPPv3N5faiss3gpu11DeviceScope11prevDevice_E"></span><span id="_CPPv2N5faiss3gpu11DeviceScope11prevDevice_E"></span><span id="faiss::gpu::DeviceScope::prevDevice___i"></span><span class="target" id="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prevDevice_</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
