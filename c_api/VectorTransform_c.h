@@ -93,7 +93,7 @@ FAISS_DECLARE_GETTER(LinearTransform, int, have_bias)
 /// Getter for is_orthonormal
 FAISS_DECLARE_GETTER(LinearTransform, int, is_orthonormal)
 
-FAISS_DECLARE_CLASS_INHERITED(RandomRotationMatrix, LinearTransform)
+FAISS_DECLARE_CLASS_INHERITED(RandomRotationMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(RandomRotationMatrix)
 
 int faiss_RandomRotationMatrix_new_with(
@@ -101,7 +101,7 @@ int faiss_RandomRotationMatrix_new_with(
         int d_in,
         int d_out);
 
-FAISS_DECLARE_CLASS_INHERITED(PCAMatrix, LinearTransform)
+FAISS_DECLARE_CLASS_INHERITED(PCAMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(PCAMatrix)
 
 int faiss_PCAMatrix_new_with(
@@ -117,7 +117,7 @@ FAISS_DECLARE_GETTER(PCAMatrix, float, eigen_power)
 /// Getter for random_rotation
 FAISS_DECLARE_GETTER(PCAMatrix, int, random_rotation)
 
-FAISS_DECLARE_CLASS_INHERITED(ITQMatrix, LinearTransform)
+FAISS_DECLARE_CLASS_INHERITED(ITQMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(ITQMatrix)
 
 int faiss_ITQMatrix_new_with(FaissITQMatrix** p_vt, int d);
@@ -134,7 +134,7 @@ int faiss_ITQTransform_new_with(
 /// Getter for do_pca
 FAISS_DECLARE_GETTER(ITQTransform, int, do_pca)
 
-FAISS_DECLARE_CLASS_INHERITED(OPQMatrix, LinearTransform)
+FAISS_DECLARE_CLASS_INHERITED(OPQMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(OPQMatrix)
 
 int faiss_OPQMatrix_new_with(FaissOPQMatrix** p_vt, int d, int M, int d2);
