@@ -93,9 +93,8 @@ jobs:
           name: Conda build
           command: |
             conda install -y -q conda-build
-            conda install -c pytorch pytorch
             cd conda
-            conda build faiss --python 3.7
+            conda build faiss --python 3.7 -c pytorch
 
   build_osx:
     macos:
@@ -158,9 +157,8 @@ jobs:
           name: Build/test
           command: |
             conda install conda-build
-            conda install -c pytorch pytorch
             cd conda
-            conda build faiss --python 3.7
+            conda build faiss --python 3.7 -c pytorch
 
   build_linux_gpu:
     machine:
