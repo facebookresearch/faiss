@@ -26,7 +26,7 @@ source:
 outputs:
   - name: libfaiss
     script: build-lib.sh   # [not win]
-    script: build-lib.bat  # [win]
+#    script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu"
       run_exports:
@@ -49,7 +49,7 @@ outputs:
 
   - name: faiss-cpu
     script: build-pkg.sh   # [not win]
-    script: build-pkg.bat  # [win]
+#    script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu"
     requirements:
