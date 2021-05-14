@@ -34,7 +34,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - llvm-openmp  # [osx]
+#        - llvm-openmp  # [osx]
         - cmake >=3.17
         - make  # [not win]
       host:
@@ -45,7 +45,7 @@ outputs:
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
-        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+#        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-cpu
     script: build-pkg.sh   # [not win]
