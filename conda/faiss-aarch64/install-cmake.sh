@@ -6,5 +6,5 @@
 
 set -e
 
-wget -O - https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1-Linux-x86_64.tar.gz | tar xzf -
-cp -R cmake-3.17.1-Linux-x86_64/* $PREFIX
+wget -O - https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2-linux-aarch64.tar.gz | tar xzf -
+cp -R cmake-3.20.2-linux-aarch64/* $PREFIX
