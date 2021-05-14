@@ -13,7 +13,6 @@ cmake -B _build \
       -DBUILD_TESTING=OFF \
       -DFAISS_ENABLE_GPU=OFF \
       -DFAISS_ENABLE_PYTHON=OFF \
-      -DBLA_VENDOR=Intel10_64lp \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 

@@ -38,9 +38,9 @@ outputs:
         - cmake >=3.17
         - make  # [not win]
       host:
-        - mkl =2018
+        - openblas =*=openmp*
       run:
-        - mkl >=2018
+        - openblas =*=openmp*
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
