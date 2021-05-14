@@ -44,7 +44,6 @@ outputs:
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
-        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
