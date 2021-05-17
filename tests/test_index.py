@@ -1007,15 +1007,19 @@ class TestValidIndexParams(unittest.TestCase):
 class TestLargeRangeSearch(unittest.TestCase):
 
     def test_range_search(self):
-         d = 256
-         nq = 16
-         nb = 1000000
+        # see https://github.com/facebookresearch/faiss/issues/1889
+        d = 256
+        nq = 16
+        nb = 1000000
 
-         index = faiss.IndexFlatL2(d)
-         xb = np.zeros((nb, d), dtype="float32")
-         index.add(xb)
+        # faiss.cvar.distance_compute_blas_threshold = 10
+        faiss.omp_set_num_threads(1)
 
-         xq = np.zeros((nq, d), dtype="float32")
-         lims, D, I = index.range_search(xq, 1.0)
-         print(len(D))
-         assert len(D) == len(xb) * len(xq)
+        index = faiss.IndexFlatL2(d)
+        xb = np.zeros((nb, d), dtype="float32")
+        index.add(xb)
+
+        xq = np.zeros((nq, d), dtype="float32")
+        lims, D, I = index.range_search(xq, 1.0)
+        print(len(D))
+        assert len(D) == len(xb) * len(xq)
