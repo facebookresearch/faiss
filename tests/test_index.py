@@ -1007,7 +1007,7 @@ class TestValidIndexParams(unittest.TestCase):
 class TestLargeRangeSearch(unittest.TestCase):
 
     def test_range_search(self):
-        # see https://github.com/facebookresearch/faiss/issues/1889
+        # test for https://github.com/facebookresearch/faiss/issues/1889
         d = 256
         nq = 16
         nb = 1000000
@@ -1021,5 +1021,5 @@ class TestLargeRangeSearch(unittest.TestCase):
 
         xq = np.zeros((nq, d), dtype="float32")
         lims, D, I = index.range_search(xq, 1.0)
-        print(len(D))
+
         assert len(D) == len(xb) * len(xq)
