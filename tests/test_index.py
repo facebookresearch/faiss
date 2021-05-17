@@ -1002,3 +1002,22 @@ class TestValidIndexParams(unittest.TestCase):
 
         self.assertEqual(D.shape[0], nq)
         self.assertEqual(D.shape[1], k)
+
+        
+ class TestLargeRangeSearch(unittest.TestCase):
+
+     def test_range_search(self): 
+         d = 64
+         nq = 4
+         nb = 1000000
+
+         index = faiss.IndexFlatL2(d)
+         xb = np.zeros((nb, d), dtype="float32")
+         index.add(xb)
+
+         xq = np.zeros((nq, d), dtype="float32")
+         lims, D, I = index.range_search(xq, 1.0)
+         print(len(D))
+         assert len(D) == len(xb) * len(xq)
+    
+    
