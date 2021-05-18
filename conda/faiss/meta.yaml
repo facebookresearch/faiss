@@ -31,8 +31,6 @@ outputs:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
-      ignore_run_exports:
-        - mkl  # [osx]
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -40,11 +38,9 @@ outputs:
         - cmake >=3.17
         - make  # [not win]
       host:
-        - mkl-devel >=2018
-        - blas =*=mkl
+        - mkl =2018
       run:
         - mkl >=2018
-        - blas =*=mkl
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
@@ -65,11 +61,11 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy 1.11.*
+        - numpy =1.11
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - {{ pin_compatible('numpy') }}
+        - numpy >=1.11,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
