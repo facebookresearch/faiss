@@ -183,6 +183,6 @@ struct ZnSphereCodecAlt : ZnSphereCodec {
     void decode(uint64_t code, float* c) const override;
 };
 
-}; // namespace faiss
+} // namespace faiss
 
 #endif
