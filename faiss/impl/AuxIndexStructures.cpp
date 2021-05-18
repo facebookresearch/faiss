@@ -35,6 +35,9 @@ RangeSearchResult::RangeSearchResult(idx_t nq, bool alloc_lims) : nq(nq) {
 /// called when lims contains the nb of elements result entries
 /// for each query
 void RangeSearchResult::do_allocation() {
+    // works only if all the partial results are aggregated
+    // simulatenously
+    FAISS_THROW_IF_NOT(labels == nullptr && distances == nullptr);
     size_t ofs = 0;
     for (int i = 0; i < nq; i++) {
         size_t n = lims[i];
