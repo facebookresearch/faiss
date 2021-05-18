@@ -17,6 +17,8 @@
 #include <faiss/gpu/utils/LoadStoreOperators.cuh>
 #include <faiss/gpu/utils/MathOperators.cuh>
 #include <faiss/gpu/utils/WarpPackedBits.cuh>
+
+#include <algorithm>
 #include <limits>
 
 namespace faiss {
