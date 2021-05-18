@@ -39,12 +39,10 @@ outputs:
         - cmake >=3.18
         - make  # [not win]
       host:
-        - mkl-devel >=2018
-        - blas =*=mkl
+        - mkl =2018
         - cudatoolkit {{ cudatoolkit }}
       run:
         - mkl >=2018
-        - blas =*=mkl
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       commands:
@@ -65,11 +63,11 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy 1.11.*
+        - numpy =1.11
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - {{ pin_compatible('numpy') }}
+        - numpy >=1.11,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
