@@ -13,6 +13,8 @@
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
+#include <algorithm>
+
 namespace faiss {
 namespace gpu {
 

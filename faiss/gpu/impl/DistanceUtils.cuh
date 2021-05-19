@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <faiss/gpu/utils/Tensor.cuh>
 
 //
