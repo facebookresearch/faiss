@@ -76,6 +76,7 @@ outputs:
         - pytorch
       commands:
         - python -m unittest discover tests/
+        - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -m unittest discover faiss/gpu/test/
         - sh test_cpu_dispatch.sh  # [linux]
       files:
