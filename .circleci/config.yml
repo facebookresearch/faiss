@@ -50,24 +50,24 @@ jobs:
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
-            make -C build -j faiss
+            make -C build -j3 faiss
       - when:
           condition:
             equal: [ "avx2", << parameters.opt_level >> ]
           steps:
             - run:
                 name: Build faiss_avx2 library
-                command: make -C build -j faiss_avx2 swigfaiss_avx2
+                command: make -C build -j3 faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
           command: |
-            make -C build -j faiss_test
+            make -C build -j3 faiss_test
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Build python extension
           command: |
-            make -C build -j swigfaiss
+            make -C build -j3 swigfaiss
             cd build/faiss/python
             python3 setup.py build
       - run:
