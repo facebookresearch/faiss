@@ -1,0 +1,82 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set number = GIT_DESCRIBE_NUMBER %}
+
+package:
+  name: faiss-pkg
+  version: {{ version }}
+
+build:
+  number: {{ number }}
+
+about:
+  home: https://github.com/facebookresearch/faiss
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A library for efficient similarity search and clustering of dense vectors.
+
+source:
+  git_url: ../../
+
+outputs:
+  - name: libfaiss
+    script: build-lib.sh   # [not win]
+    script: build-lib.bat  # [win]
+    build:
+      string: "h{{ PKG_HASH }}_{{ number }}_cpu"
+      run_exports:
+        - {{ pin_compatible('libfaiss', exact=True) }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - llvm-openmp  # [osx]
+        - cmake >=3.17
+        - make  # [not win]
+      host:
+        - mkl =2018
+      run:
+        - mkl >=2018
+    test:
+      commands:
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [not win]
+        - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+        - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+
+  - name: faiss-cpu
+    script: build-pkg.sh   # [not win]
+    script: build-pkg.bat  # [win]
+    build:
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu"
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - swig
+        - cmake >=3.17
+        - make  # [not win]
+      host:
+        - python {{ python }}
+        - numpy =1.11
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+      run:
+        - python {{ python }}
+        - numpy >=1.11,<2
+        - {{ pin_subpackage('libfaiss', exact=True) }}
+    test:
+      requires:
+        - numpy
+        - scipy
+        - pytorch
+      commands:
+        - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
+        - sh test_cpu_dispatch.sh  # [linux]
+      files:
+        - test_cpu_dispatch.sh  # [linux]
+      source_files:
+        - tests/

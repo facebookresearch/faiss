@@ -1,0 +1,19 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+FROM nvidia/cuda:10.2-devel-ubuntu18.04
+
+RUN apt-get update && apt-get install -y wget git
+
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+        bash Miniconda3-latest-Linux-x86_64.sh -b -p ~/miniconda3
+ENV PATH="/root/miniconda3/condabin:${PATH}"
+
+RUN conda install conda-build
+
+COPY ./ faiss
+WORKDIR /faiss/conda
+
+RUN conda build faiss --no-anaconda-upload -c pytorch
