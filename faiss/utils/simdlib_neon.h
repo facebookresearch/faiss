@@ -263,6 +263,8 @@ struct simd16uint16 {
     // shift must be known at compile time
     simd16uint16 operator>>(const int shift) const {
         switch (shift) {
+            case 0:
+                return *this;
             case 1:
                 return simd16uint16{detail::simdlib::unary_func(
                         data, detail::simdlib::vshrq<1>)};
@@ -309,13 +311,15 @@ struct simd16uint16 {
                 return simd16uint16{detail::simdlib::unary_func(
                         data, detail::simdlib::vshrq<15>)};
             default:
-                return *this;
+                FAISS_THROW_FMT("Invalid shift %d", shift);
         }
     }
 
     // shift must be known at compile time
     simd16uint16 operator<<(const int shift) const {
         switch (shift) {
+            case 0:
+                return *this;
             case 1:
                 return simd16uint16{detail::simdlib::unary_func(
                         data, detail::simdlib::vshlq<1>)};
@@ -362,7 +366,7 @@ struct simd16uint16 {
                 return simd16uint16{detail::simdlib::unary_func(
                         data, detail::simdlib::vshlq<15>)};
             default:
-                return *this;
+                FAISS_THROW_FMT("Invalid shift %d", shift);
         }
     }
 
