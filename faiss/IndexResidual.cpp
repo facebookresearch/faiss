@@ -8,6 +8,7 @@
 #include <faiss/IndexResidual.h>
 #include "faiss/utils/utils.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 

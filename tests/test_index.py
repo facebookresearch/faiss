@@ -1002,3 +1002,24 @@ class TestValidIndexParams(unittest.TestCase):
 
         self.assertEqual(D.shape[0], nq)
         self.assertEqual(D.shape[1], k)
+
+
+class TestLargeRangeSearch(unittest.TestCase):
+
+    def test_range_search(self):
+        # test for https://github.com/facebookresearch/faiss/issues/1889
+        d = 256
+        nq = 16
+        nb = 1000000
+
+        # faiss.cvar.distance_compute_blas_threshold = 10
+        faiss.omp_set_num_threads(1)
+
+        index = faiss.IndexFlatL2(d)
+        xb = np.zeros((nb, d), dtype="float32")
+        index.add(xb)
+
+        xq = np.zeros((nq, d), dtype="float32")
+        lims, D, I = index.range_search(xq, 1.0)
+
+        assert len(D) == len(xb) * len(xq)

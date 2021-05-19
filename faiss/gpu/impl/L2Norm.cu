@@ -16,6 +16,8 @@
 #include <faiss/gpu/utils/PtxUtils.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
 
+#include <algorithm>
+
 namespace faiss {
 namespace gpu {
 
