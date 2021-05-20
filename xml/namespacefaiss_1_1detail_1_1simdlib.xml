@@ -537,6 +537,54 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_neon.h" line="171" column="24" bodyfile="faiss/utils/simdlib_neon.h" bodystart="171" bodyend="182"/>
       </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1a67d40155ddbd045cec3a5e1a4b4978af" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::uint8_t</type>
+            <declname>Shift</declname>
+            <defname>Shift</defname>
+          </param>
+        </templateparamlist>
+        <type>uint16x8_t</type>
+        <definition>static uint16x8_t faiss::detail::simdlib::vshlq</definition>
+        <argsstring>(uint16x8_t vec)</argsstring>
+        <name>vshlq</name>
+        <param>
+          <type>uint16x8_t</type>
+          <declname>vec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="185" column="26" bodyfile="faiss/utils/simdlib_neon.h" bodystart="185" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="simdlib__neon_8h_1ad44a584d601e8deadd14e5406c1f15b0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::uint8_t</type>
+            <declname>Shift</declname>
+            <defname>Shift</defname>
+          </param>
+        </templateparamlist>
+        <type>uint16x8_t</type>
+        <definition>static uint16x8_t faiss::detail::simdlib::vshrq</definition>
+        <argsstring>(uint16x8_t vec)</argsstring>
+        <name>vshrq</name>
+        <param>
+          <type>uint16x8_t</type>
+          <declname>vec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_neon.h" line="190" column="26" bodyfile="faiss/utils/simdlib_neon.h" bodystart="190" bodyend="192"/>
+      </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>

@@ -4509,6 +4509,8 @@
     <member refid="simdlib__neon_8h_1abb45baa820a1cc05c130c552a73b470f" kind="function"><name>binary_func</name></member>
     <member refid="simdlib__neon_8h_1ad026e84d722ca1800cbcd1e62a7bd1ce" kind="function"><name>vmovmask_u8</name></member>
     <member refid="simdlib__neon_8h_1a50f928e67de705ccbe14bd1f77a79ac5" kind="function"><name>cmp_xe32</name></member>
+    <member refid="simdlib__neon_8h_1a67d40155ddbd045cec3a5e1a4b4978af" kind="function"><name>vshlq</name></member>
+    <member refid="simdlib__neon_8h_1ad44a584d601e8deadd14e5406c1f15b0" kind="function"><name>vshrq</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1gpu" kind="namespace"><name>faiss::gpu</name>
     <member refid="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
