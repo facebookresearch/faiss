@@ -60,12 +60,12 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy =1.11
+        - numpy =1.16.5
         - openblas =*=openmp*
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - numpy >=1.11,<2
+        - numpy >=1.16.5,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
