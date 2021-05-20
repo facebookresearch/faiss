@@ -61,6 +61,7 @@ outputs:
       host:
         - python {{ python }}
         - numpy =1.11
+        - openblas =*=openmp*
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
