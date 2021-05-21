@@ -31,7 +31,7 @@ namespace faiss {
  *
  *  Yu. A. Malkov, D. A. Yashunin, arXiv 2017
  *
- * This implmentation is heavily influenced by the NMSlib
+ * This implementation is heavily influenced by the NMSlib
  * implementation by Yury Malkov and Leonid Boystov
  * (https://github.com/searchivarius/nmslib)
  *
