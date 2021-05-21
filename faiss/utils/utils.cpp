@@ -32,6 +32,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 
 #ifndef FINTEGER
@@ -99,6 +100,25 @@ int sgemv_(
  **************************************************/
 
 namespace faiss {
+
+std::string get_compile_options() {
+    std::string options;
+
+    // this flag is set by GCC and Clang
+#ifdef __OPTIMIZE__
+    options += "OPTIMIZE ";
+#endif
+
+#ifdef __AVX2__
+    options += "AVX2";
+#elif defined(__aarch64__)
+    options += "NEON";
+#else
+    options += "GENERIC";
+#endif
+
+    return options;
+}
 
 #ifdef _MSC_VER
 double getmillisecs() {
