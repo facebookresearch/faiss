@@ -262,7 +262,7 @@ void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const {
         int nbits = rq.nbits[m];
         idx_t l = key & ((idx_t(1) << nbits) - 1);
         key = key >> nbits;
-        const float* c = rq.centroids.data() + d * (rq.centroid_offsets[m] + l);
+        const float* c = rq.codebooks.data() + d * (rq.codebook_offsets[m] + l);
         if (m == 0) {
             memcpy(recons, c, sizeof(*c) * d);
         } else {

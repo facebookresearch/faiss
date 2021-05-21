@@ -47,7 +47,9 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/AdditiveQuantizer.cpp
   impl/ResidualQuantizer.cpp
+  impl/LocalSearchQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
@@ -121,6 +123,9 @@ set(FAISS_HEADERS
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
+  impl/AdditiveQuantizer.h
+  impl/ResidualQuantizer.h
+  impl/LocalSearchQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h

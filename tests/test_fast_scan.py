@@ -5,6 +5,7 @@
 
 
 import unittest
+import time
 
 import numpy as np
 import faiss
@@ -13,8 +14,16 @@ from faiss.contrib import datasets
 import platform
 
 
-class TestSearch(unittest.TestCase):
+class TestCompileOptions(unittest.TestCase):
 
+    def test_compile_options(self):
+        options = faiss.get_compile_options()
+        options = options.split(' ')
+        for option in options:
+            assert option in ['AVX2', 'NEON', 'GENERIC', 'OPTIMIZE']
+
+
+class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
@@ -23,7 +32,7 @@ class TestSearch(unittest.TestCase):
         index_gt.add(ds.get_database())
         Dref, Iref = index_gt.search(ds.get_queries(), 10)
 
-        index = faiss.index_factory(32, 'PQ16x4')
+        index = faiss.index_factory(32, 'PQ16x4fs')
         index.train(ds.get_train())
         index.add(ds.get_database())
         Da, Ia = index.search(ds.get_queries(), 10)
@@ -32,6 +41,44 @@ class TestSearch(unittest.TestCase):
         recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
         assert recall_at_1 > 0.6
         # print(f'recall@1 = {recall_at_1:.3f}')
+
+
+    # This is an experiment to see if we can catch performance
+    # regressions. It runs 2 codes, one should be faster than the
+    # other by a factor ~10 in opt mode. We check for a factor 5.
+    # hopefully the jitter in executtion time will not produce
+    # too many spurious test failures. Unoptimized timings are
+    # not exploitable, hence the flag test on that as well.
+    @unittest.skipUnless(
+        'AVX2' in faiss.get_compile_options() and
+        "OPTIMIZE" in faiss.get_compile_options(),
+        "only test while building with avx2")
+    def test_PQ4_speed(self):
+        ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
+        xt = ds.get_train()
+        xb = ds.get_database()
+        xq = ds.get_queries()
+
+        index = faiss.index_factory(32, 'PQ16x4')
+        index.train(xt)
+        index.add(xb)
+
+        t0 = time.time()
+        D1, I1 = index.search(xq, 10)
+        t1 = time.time()
+        pq_t = t1 - t0
+        print('PQ16x4 search time:', pq_t)
+
+        index2 = faiss.index_factory(32, 'PQ16x4fs')
+        index2.train(xt)
+        index2.add(xb)
+
+        t0 = time.time()
+        D2, I2 = index2.search(xq, 10)
+        t1 = time.time()
+        pqfs_t = t1 - t0
+        print('PQ16x4fs search time:', pqfs_t)
+        self.assertLess(pqfs_t * 5, pq_t)
 
 
 class TestRounding(unittest.TestCase):
