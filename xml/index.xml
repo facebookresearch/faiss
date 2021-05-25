@@ -3660,12 +3660,14 @@
   <compound refid="structfaiss_1_1ResidualCoarseQuantizer" kind="struct"><name>faiss::ResidualCoarseQuantizer</name>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a9f0280224a6917134d93c951a4314685" kind="variable"><name>rq</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95" kind="variable"><name>beam_factor</name></member>
+    <member refid="structfaiss_1_1ResidualCoarseQuantizer_1ad8d63e25dd703b3909470c3301738014" kind="variable"><name>centroid_norms</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
     <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
     <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a7adca487baed1359939c33725f7b0f90" kind="function"><name>set_beam_factor</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1ad6bb3494dc22593782dc9e332ccb2947" kind="function"><name>ResidualCoarseQuantizer</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a587834371f23f8a938a43449f5983002" kind="function"><name>ResidualCoarseQuantizer</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a77b30167d292d340a237702805cd01fc" kind="function"><name>ResidualCoarseQuantizer</name></member>
