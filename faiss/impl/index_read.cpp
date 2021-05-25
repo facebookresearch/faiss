@@ -490,6 +490,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(idxr, f);
         read_ResidualQuantizer(&idxr->rq, f);
         READ1(idxr->beam_factor);
+        idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
