@@ -913,7 +913,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
 
     /// compute distance of vector i to current query
     float operator()(idx_t i) final {
-        return compute_distance(q, codes + i * code_size);
+        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -921,7 +921,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
                 codes + i * code_size, codes + j * code_size);
     }
 
-    float query_to_code(const uint8_t* code) const {
+    float query_to_code(const uint8_t* code) const final {
         return compute_distance(q, code);
     }
 };
@@ -965,7 +965,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
     /// compute distance of vector i to current query
     float operator()(idx_t i) final {
-        return compute_distance(q, codes + i * code_size);
+        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -973,7 +973,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
                 codes + i * code_size, codes + j * code_size);
     }
 
-    float query_to_code(const uint8_t* code) const {
+    float query_to_code(const uint8_t* code) const final {
         return compute_distance(q, code);
     }
 };
@@ -1023,7 +1023,7 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
 
     /// compute distance of vector i to current query
     float operator()(idx_t i) final {
-        return compute_distance(q, codes + i * code_size);
+        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1031,7 +1031,7 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
                 codes + i * code_size, codes + j * code_size);
     }
 
-    float query_to_code(const uint8_t* code) const {
+    float query_to_code(const uint8_t* code) const final {
         return compute_code_distance(tmp.data(), code);
     }
 };
@@ -1091,7 +1091,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
     /// compute distance of vector i to current query
     float operator()(idx_t i) final {
-        return compute_distance(q, codes + i * code_size);
+        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1099,7 +1099,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
                 codes + i * code_size, codes + j * code_size);
     }
 
-    float query_to_code(const uint8_t* code) const {
+    float query_to_code(const uint8_t* code) const final {
         return compute_code_distance(tmp.data(), code);
     }
 };

@@ -27,6 +27,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -79,6 +80,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
     TRYCLONE(IndexLattice, index)
+    TRYCLONE(IndexResidual, index)
     TRYCLONE(IndexScalarQuantizer, index)
     TRYCLONE(MultiIndexQuantizer, index)
     if (const IndexIVF* ivf = dynamic_cast<const IndexIVF*>(index)) {

@@ -244,9 +244,10 @@ static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
     READ1(rq->M);
     READVECTOR(rq->nbits);
     rq->set_derived_values();
+    READ1(rq->is_trained);
     READ1(rq->train_type);
     READ1(rq->max_beam_size);
-    READVECTOR(rq->centroids);
+    READVECTOR(rq->codebooks);
 }
 
 static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
@@ -489,6 +490,7 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(idxr, f);
         read_ResidualQuantizer(&idxr->rq, f);
         READ1(idxr->beam_factor);
+        idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
