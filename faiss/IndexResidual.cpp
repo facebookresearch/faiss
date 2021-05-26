@@ -6,7 +6,6 @@
  */
 
 #include <faiss/IndexResidual.h>
-#include "faiss/utils/utils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -198,13 +197,35 @@ void ResidualCoarseQuantizer::add(idx_t, const float*) {
     FAISS_THROW_MSG("not applicable");
 }
 
+void ResidualCoarseQuantizer::set_beam_factor(float new_beam_factor) {
+    centroid_norms.resize(0);
+    beam_factor = new_beam_factor;
+    if (new_beam_factor > 0) {
+        FAISS_THROW_IF_NOT(new_beam_factor >= 1.0);
+        return;
+    }
+
+    if (metric_type == METRIC_L2) {
+        centroid_norms.resize((size_t)1 << rq.tot_bits);
+        rq.compute_centroid_norms(centroid_norms.data());
+    }
+}
+
 void ResidualCoarseQuantizer::search(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    FAISS_THROW_IF_NOT(beam_factor >= 1.0);
+    if (beam_factor < 0) {
+        if (metric_type == METRIC_INNER_PRODUCT) {
+            rq.knn_exact_inner_product(n, x, k, distances, labels);
+        } else if (metric_type == METRIC_L2) {
+            FAISS_THROW_IF_NOT(centroid_norms.size() == ntotal);
+            rq.knn_exact_L2(n, x, k, distances, labels, centroid_norms.data());
+        }
+        return;
+    }
 
     int beam_size = int(k * beam_factor);
 
@@ -249,8 +270,10 @@ void ResidualCoarseQuantizer::search(
         const int32_t* codes_i = codes.data() + beam_size * i * rq.M;
         for (idx_t j = 0; j < k; j++) {
             idx_t l = 0;
+            int shift = 0;
             for (int m = 0; m < rq.M; m++) {
-                l = (l << rq.nbits[m]) | *codes_i++;
+                l |= (*codes_i++) << shift;
+                shift += rq.nbits[m];
             }
             labels[i * k + j] = l;
         }
@@ -258,19 +281,7 @@ void ResidualCoarseQuantizer::search(
 }
 
 void ResidualCoarseQuantizer::reconstruct(idx_t key, float* recons) const {
-    for (int m = 0; m < rq.M; m++) {
-        int nbits = rq.nbits[m];
-        idx_t l = key & ((idx_t(1) << nbits) - 1);
-        key = key >> nbits;
-        const float* c = rq.codebooks.data() + d * (rq.codebook_offsets[m] + l);
-        if (m == 0) {
-            memcpy(recons, c, sizeof(*c) * d);
-        } else {
-            for (int i = 0; i < d; i++) {
-                recons[i] += c[i];
-            }
-        }
-    }
+    rq.decode_64bit(key, recons);
 }
 
 void ResidualCoarseQuantizer::reset() {
