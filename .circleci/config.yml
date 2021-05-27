@@ -162,6 +162,57 @@ jobs:
             cd conda
             conda build faiss --python 3.7
 
+  build_arm:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    parameters:
+      opt_level:
+        type: string
+        default: generic
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y swig python3
+            pip3 install numpy scipy torch pytest cmake
+      - run:
+          name: Build faiss library
+          command: |
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
+                  -DFAISS_ENABLE_C_API=ON \
+                  -DCMAKE_BUILD_TYPE=Release .
+            make -C build -j3 faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j3 faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j3 swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            python3 -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -C build -j faiss_c
+
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
@@ -296,6 +347,8 @@ workflows:
           name: OSX
       - build_windows:
           name: Windows
+      - build_arm:
+          name: ARM64
       - deploy_linux:
           name: Linux packages
           filters:
