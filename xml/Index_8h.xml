@@ -466,7 +466,7 @@
       </memberdef>
       <memberdef kind="define" id="Index_8h_1abaa30cb4993a34c8e9b3b5057529613a" prot="public" static="no">
         <name>FAISS_VERSION_PATCH</name>
-        <initializer>0</initializer>
+        <initializer>1</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -501,7 +501,7 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MAJOR<sp/>1</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MINOR<sp/>7</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>1</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="23"><highlight class="comment">/**</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>@namespace<sp/>faiss</highlight></codeline>
