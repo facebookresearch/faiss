@@ -42,7 +42,8 @@ outputs:
         - mkl =2018
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl >=2018
+        - mkl >=2018  # [not win]
+        - mkl >=2018,<2021  # [win]
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       commands:

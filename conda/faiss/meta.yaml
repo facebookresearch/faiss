@@ -40,7 +40,8 @@ outputs:
       host:
         - mkl =2018
       run:
-        - mkl >=2018
+        - mkl >=2018  # [not win]
+        - mkl >=2018,<2021  # [win]
     test:
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
