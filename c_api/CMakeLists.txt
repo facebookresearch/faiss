@@ -27,6 +27,7 @@ set(FAISS_C_SRC
   index_factory_c.cpp
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
+  utils/distances_c.cpp
 )
 add_library(faiss_c ${FAISS_C_SRC})
 target_link_libraries(faiss_c PRIVATE faiss)
@@ -43,7 +44,8 @@ endfunction()
 file(GLOB FAISS_C_API_HEADERS
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
      "*.h"
-     "impl/*.h")
+     "impl/*.h"
+     "utils/*.h")
 
 faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
 
