@@ -68,6 +68,6 @@ struct IndexIVFSpectralHash : IndexIVF {
     ~IndexIVFSpectralHash() override;
 };
 
-}; // namespace faiss
+} // namespace faiss
 
 #endif

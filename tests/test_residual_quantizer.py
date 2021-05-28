@@ -16,6 +16,7 @@ def pairwise_distances(a, b):
     bnorms = (b ** 2).sum(1)
     return anorms.reshape(-1, 1) + bnorms - 2 * a @ b.T
 
+
 def beam_search_encode_step_ref(cent, residuals, codes, L):
     """ Reference beam search implementation
     encodes a residual table.
@@ -323,7 +324,7 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
 
         gt = ds.get_groundtruth(1)
 
-        # RQ 2x6 = 12 bits = 4096 centroids
+        # RQ 2x5 = 10 bits = 1024 centroids
         index = faiss.index_factory(ds.d, "IVF1024(RCQ2x5),SQ8")
         quantizer = faiss.downcast_index(index.quantizer)
         rq = quantizer.rq
@@ -343,3 +344,88 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         r40 = (I == gt[None, :]).sum() / ds.nq
 
         self.assertGreater(r40, r10)
+
+    def test_rcq_LUT(self):
+        ds = datasets.SyntheticDataset(32, 3000, 1000, 100)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        # RQ 2x5 = 10 bits = 1024 centroids
+        index = faiss.index_factory(ds.d, "IVF1024(RCQ2x5),SQ8")
+
+        quantizer = faiss.downcast_index(index.quantizer)
+        rq = quantizer.rq
+        rq.train_type = faiss.ResidualQuantizer.Train_default
+
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 10
+
+        # set exact centroids as coarse quantizer
+        all_centroids = quantizer.reconstruct_n(0, quantizer.ntotal)
+        q2 = faiss.IndexFlatL2(32)
+        q2.add(all_centroids)
+        index.quantizer = q2
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        index.quantizer = quantizer
+
+        # search with LUT
+        quantizer.set_beam_factor(-1)
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+        np.testing.assert_array_equal(Iref, Inew)
+
+
+class TestAdditiveQuantizerWithLUT(unittest.TestCase):
+
+    def test_RCQ_knn(self):
+        ds = datasets.SyntheticDataset(32, 1000, 0, 123)
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        # RQ 3+4+5 = 12 bits = 4096 centroids
+        rcq = faiss.index_factory(ds.d, "RCQ1x3_1x4_1x5")
+        rcq.train(xt)
+
+        aq = rcq.rq
+
+        cents = rcq.reconstruct_n(0, rcq.ntotal)
+
+        sp = faiss.swig_ptr
+
+        # test norms computation
+
+        norms_ref = (cents ** 2).sum(1)
+        norms = np.zeros(1 << aq.tot_bits, dtype="float32")
+        aq.compute_centroid_norms(sp(norms))
+
+        np.testing.assert_array_almost_equal(norms, norms_ref, decimal=5)
+
+        # test IP search
+
+        Dref, Iref = faiss.knn(
+            xq, cents, 10,
+            metric=faiss.METRIC_INNER_PRODUCT
+        )
+
+        Dnew = np.zeros_like(Dref)
+        Inew = np.zeros_like(Iref)
+
+        aq.knn_exact_inner_product(len(xq), sp(xq), 10, sp(Dnew), sp(Inew))
+
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+        np.testing.assert_array_equal(Iref, Inew)
+
+        # test L2 search
+
+        Dref, Iref = faiss.knn(xq, cents, 10, metric=faiss.METRIC_L2)
+
+        Dnew = np.zeros_like(Dref)
+        Inew = np.zeros_like(Iref)
+
+        aq.knn_exact_L2(len(xq), sp(xq), 10, sp(Dnew), sp(Inew), sp(norms))
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)

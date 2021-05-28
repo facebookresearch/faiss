@@ -31,13 +31,14 @@
 namespace faiss {
 
 ResidualQuantizer::ResidualQuantizer()
-        : d(0),
-          M(0),
-          verbose(false),
-          train_type(Train_progressive_dim),
+        : train_type(Train_progressive_dim),
           max_beam_size(30),
           max_mem_distances(5 * (size_t(1) << 30)), // 5 GiB
-          assign_index_factory(nullptr) {}
+          assign_index_factory(nullptr) {
+    d = 0;
+    M = 0;
+    verbose = false;
+}
 
 ResidualQuantizer::ResidualQuantizer(size_t d, const std::vector<size_t>& nbits)
         : ResidualQuantizer() {
@@ -50,35 +51,11 @@ ResidualQuantizer::ResidualQuantizer(size_t d, const std::vector<size_t>& nbits)
 ResidualQuantizer::ResidualQuantizer(size_t d, size_t M, size_t nbits)
         : ResidualQuantizer(d, std::vector<size_t>(M, nbits)) {}
 
-void ResidualQuantizer::set_derived_values() {
-    tot_bits = 0;
-    is_byte_aligned = true;
-    centroid_offsets.resize(M + 1, 0);
-    for (int i = 0; i < M; i++) {
-        int nbit = nbits[i];
-        size_t k = 1 << nbit;
-        centroid_offsets[i + 1] = centroid_offsets[i] + k;
-        tot_bits += nbit;
-        if (nbit % 8 != 0) {
-            is_byte_aligned = false;
-        }
-    }
-    // convert bits to bytes
-    code_size = (tot_bits + 7) / 8;
-}
-
 namespace {
 
 void fvec_sub(size_t d, const float* a, const float* b, float* c) {
     for (size_t i = 0; i < d; i++) {
         c[i] = a[i] - b[i];
-    }
-}
-
-// c and a and b can overlap
-void fvec_add(size_t d, const float* a, const float* b, float* c) {
-    for (size_t i = 0; i < d; i++) {
-        c[i] = a[i] + b[i];
     }
 }
 
@@ -112,7 +89,7 @@ void beam_search_encode_step(
         cent_distances.resize(n * beam_size * new_beam_size);
         cent_ids.resize(n * beam_size * new_beam_size);
         if (assign_index->ntotal != 0) {
-            // then we assume the centroids are already added to the index
+            // then we assume the codebooks are already added to the index
             FAISS_THROW_IF_NOT(assign_index->ntotal != K);
         } else {
             assign_index->add(K, cent);
@@ -217,7 +194,7 @@ void beam_search_encode_step(
 }
 
 void ResidualQuantizer::train(size_t n, const float* x) {
-    centroids.resize(d * centroid_offsets.back());
+    codebooks.resize(d * codebook_offsets.back());
 
     if (verbose) {
         printf("Training ResidualQuantizer, with %zd steps on %zd %zdD vectors\n",
@@ -249,7 +226,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         }
         train_type_t tt = train_type_t(train_type & ~Train_top_beam);
 
-        std::vector<float> centroids;
+        std::vector<float> codebooks;
         float obj = 0;
 
         std::unique_ptr<Index> assign_index;
@@ -264,7 +241,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                     train_residuals.size() / d,
                     train_residuals.data(),
                     *assign_index.get());
-            centroids.swap(clus.centroids);
+            codebooks.swap(clus.centroids);
             assign_index->reset();
             obj = clus.iteration_stats.back().obj;
         } else if (tt == Train_progressive_dim) {
@@ -274,17 +251,17 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                     train_residuals.size() / d,
                     train_residuals.data(),
                     assign_index_factory ? *assign_index_factory : default_fac);
-            centroids.swap(clus.centroids);
+            codebooks.swap(clus.centroids);
             obj = clus.iteration_stats.back().obj;
         } else {
             FAISS_THROW_MSG("train type not supported");
         }
 
-        memcpy(this->centroids.data() + centroid_offsets[m] * d,
-               centroids.data(),
-               centroids.size() * sizeof(centroids[0]));
+        memcpy(this->codebooks.data() + codebook_offsets[m] * d,
+               codebooks.data(),
+               codebooks.size() * sizeof(codebooks[0]));
 
-        // quantize using the new centroids
+        // quantize using the new codebooks
 
         int new_beam_size = std::min(cur_beam_size * K, max_beam_size);
         std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
@@ -294,7 +271,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         beam_search_encode_step(
                 d,
                 K,
-                centroids.data(),
+                codebooks.data(),
                 n,
                 cur_beam_size,
                 residuals.data(),
@@ -328,6 +305,8 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         }
         cur_beam_size = new_beam_size;
     }
+
+    is_trained = true;
 }
 
 size_t ResidualQuantizer::memory_per_point(int beam_size) const {
@@ -346,6 +325,8 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
+
     size_t mem = memory_per_point();
     if (n > 1 && mem * n > max_mem_distances) {
         // then split queries to reduce temp memory
@@ -403,8 +384,8 @@ void ResidualQuantizer::refine_beam(
     for (int m = 0; m < M; m++) {
         int K = 1 << nbits[m];
 
-        const float* centroids_m =
-                this->centroids.data() + centroid_offsets[m] * d;
+        const float* codebooks_m =
+                this->codebooks.data() + codebook_offsets[m] * d;
 
         int new_beam_size = std::min(cur_beam_size * K, out_beam_size);
 
@@ -415,7 +396,7 @@ void ResidualQuantizer::refine_beam(
         beam_search_encode_step(
                 d,
                 K,
-                centroids_m,
+                codebooks_m,
                 n,
                 cur_beam_size,
                 residuals.data(),
@@ -461,42 +442,6 @@ void ResidualQuantizer::refine_beam(
         memcpy(out_distances,
                distances.data(),
                distances.size() * sizeof(distances[0]));
-    }
-}
-
-void ResidualQuantizer::pack_codes(
-        size_t n,
-        const int32_t* codes,
-        uint8_t* packed_codes,
-        int64_t ld_codes) const {
-    if (ld_codes == -1) {
-        ld_codes = M;
-    }
-#pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
-        const int32_t* codes1 = codes + i * ld_codes;
-        BitstringWriter bsw(packed_codes + i * code_size, code_size);
-        for (int m = 0; m < M; m++) {
-            bsw.write(codes1[m], nbits[m]);
-        }
-    }
-}
-
-void ResidualQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
-    // standard additive quantizer decoding
-#pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
-        BitstringReader bsr(code + i * code_size, code_size);
-        float* xi = x + i * d;
-        for (int m = 0; m < M; m++) {
-            int idx = bsr.read(nbits[m]);
-            const float* c = centroids.data() + d * (centroid_offsets[m] + idx);
-            if (m == 0) {
-                memcpy(xi, c, sizeof(*x) * d);
-            } else {
-                fvec_add(d, xi, c, xi);
-            }
-        }
     }
 }
 

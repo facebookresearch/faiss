@@ -96,8 +96,6 @@ FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
 
 FAISS_DECLARE_GETTER_SETTER(IndexRefineFlat, int, own_fields)
 
-FAISS_DECLARE_GETTER_SETTER(IndexRefineFlat, int, own_refine_index)
-
 /// factor between k requested in search and the k requested from
 /// the base_index (should be >= 1)
 FAISS_DECLARE_GETTER_SETTER(IndexRefineFlat, float, k_factor)

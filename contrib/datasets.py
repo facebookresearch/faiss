@@ -122,7 +122,8 @@ for dataset_basedir in (
     if os.path.exists(dataset_basedir):
         break
 else:
-    dataset_basedir = None
+    # users can link their data directory to `./data`
+    dataset_basedir = 'data/'
 
 
 class DatasetSIFT1M(Dataset):

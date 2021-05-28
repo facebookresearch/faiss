@@ -104,34 +104,25 @@ void exhaustive_inner_product_seq(
         size_t nx,
         size_t ny,
         ResultHandler& res) {
-    size_t check_period = InterruptCallback::get_period_hint(ny * d);
-
-    check_period *= omp_get_max_threads();
-
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
-    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-        size_t i1 = std::min(i0 + check_period, nx);
-
 #pragma omp parallel
-        {
-            SingleResultHandler resi(res);
+    {
+        SingleResultHandler resi(res);
 #pragma omp for
-            for (int64_t i = i0; i < i1; i++) {
-                const float* x_i = x + i * d;
-                const float* y_j = y;
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
 
-                resi.begin(i);
+            resi.begin(i);
 
-                for (size_t j = 0; j < ny; j++) {
-                    float ip = fvec_inner_product(x_i, y_j, d);
-                    resi.add_result(ip, j);
-                    y_j += d;
-                }
-                resi.end();
+            for (size_t j = 0; j < ny; j++) {
+                float ip = fvec_inner_product(x_i, y_j, d);
+                resi.add_result(ip, j);
+                y_j += d;
             }
+            resi.end();
         }
-        InterruptCallback::check();
     }
 }
 
@@ -143,32 +134,25 @@ void exhaustive_L2sqr_seq(
         size_t nx,
         size_t ny,
         ResultHandler& res) {
-    size_t check_period = InterruptCallback::get_period_hint(ny * d);
-    check_period *= omp_get_max_threads();
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
 
-    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-        size_t i1 = std::min(i0 + check_period, nx);
-
 #pragma omp parallel
-        {
-            SingleResultHandler resi(res);
+    {
+        SingleResultHandler resi(res);
 #pragma omp for
-            for (int64_t i = i0; i < i1; i++) {
-                const float* x_i = x + i * d;
-                const float* y_j = y;
-                resi.begin(i);
-                for (size_t j = 0; j < ny; j++) {
-                    float disij = fvec_L2sqr(x_i, y_j, d);
-                    resi.add_result(disij, j);
-                    y_j += d;
-                }
-                resi.end();
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            resi.begin(i);
+            for (size_t j = 0; j < ny; j++) {
+                float disij = fvec_L2sqr(x_i, y_j, d);
+                resi.add_result(disij, j);
+                y_j += d;
             }
+            resi.end();
         }
-        InterruptCallback::check();
     }
-};
+}
 
 /** Find the nearest neighbors for nx queries in a set of ny vectors */
 template <class ResultHandler>

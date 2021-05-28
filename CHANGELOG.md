@@ -5,19 +5,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project DOES NOT adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 at the moment.
 
+We try to indicate most contributions here with the contributor names who are not part of
+the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
+
 ## [Unreleased]
+
+## [1.7.1] - 2021-05-27
 ### Added
 - Support for building C bindings through the `FAISS_ENABLE_C_API` CMake option.
 - Serializing the indexes with the python pickle module
-- Support for the NNDescent k-NN graph building method
-- Support for the NSG graph indexing method
+- Support for the NNDescent k-NN graph building method (by @KinglittleQ)
+- Support for the NSG graph indexing method (by @KinglittleQ)
 - Residual quantizers: support as codec and unoptimized search
+- Support for 4-bit PQ implementation for ARM (by @vorj, @n-miyamoto-fixstars, @LWisteria, and @matsui528)
+- Implementation of Local Search Quantization (by @KinglittleQ)
 
 ### Changed
 - The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
 Also the metric argument was called distance_type.
 - The typed vectors (LongVector, LongLongVector, etc.) of the SWIG interface have
-been deprecated. They have been replaced with Int32Vector, Int64Vector, etc.
+been deprecated. They have been replaced with Int32Vector, Int64Vector, etc. (by h-vetinari)
 
 ### Fixed
 - Fixed a bug causing kNN search functions for IndexBinaryHash and
@@ -194,7 +201,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/facebookresearch/faiss/compare/v1.6.5...v1.7.0
 [1.6.5]: https://github.com/facebookresearch/faiss/compare/v1.6.4...v1.6.5
 [1.6.4]: https://github.com/facebookresearch/faiss/compare/v1.6.3...v1.6.4

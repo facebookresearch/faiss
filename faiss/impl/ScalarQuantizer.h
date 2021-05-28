@@ -111,6 +111,8 @@ struct ScalarQuantizer {
         size_t code_size;
 
         SQDistanceComputer() : q(nullptr), codes(nullptr), code_size(0) {}
+
+        virtual float query_to_code(const uint8_t* code) const = 0;
     };
 
     SQDistanceComputer* get_distance_computer(

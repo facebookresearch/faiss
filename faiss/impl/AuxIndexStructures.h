@@ -271,6 +271,6 @@ struct VisitedTable {
     }
 };
 
-}; // namespace faiss
+} // namespace faiss
 
 #endif

@@ -101,7 +101,14 @@ struct ResidualCoarseQuantizer : Index {
     ResidualQuantizer rq;
 
     /// factor between the beam size and the search k
+    /// if negative, use exact search-to-centroid
     float beam_factor;
+
+    /// norms of centroids, useful for knn-search
+    std::vector<float> centroid_norms;
+
+    /// computes centroid norms if required
+    void set_beam_factor(float new_beam_factor);
 
     /** Constructor.
      *

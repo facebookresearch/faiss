@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 #include <faiss/Clustering.h>
+#include <faiss/impl/AdditiveQuantizer.h>
 
 namespace faiss {
 
@@ -22,20 +22,7 @@ namespace faiss {
  * as the compact output (n, code_size).
  */
 
-struct ResidualQuantizer {
-    size_t d;                  ///< size of the input vectors
-    size_t M;                  ///< number of steps
-    std::vector<size_t> nbits; ///< bits for each step
-
-    bool verbose; ///< verbose during training?
-
-    // derived values
-    std::vector<size_t> centroid_offsets;
-
-    size_t tot_bits;  ///< total number of bits
-    size_t code_size; ///< code size in bytes
-    bool is_byte_aligned;
-
+struct ResidualQuantizer : AdditiveQuantizer {
     /// initialization
     enum train_type_t {
         Train_default,         ///< regular k-means
@@ -60,9 +47,6 @@ struct ResidualQuantizer {
     /// if non-NULL, use this index for assignment
     ProgressiveDimIndexFactory* assign_index_factory;
 
-    /// size d * centroid_offsets.end()
-    std::vector<float> centroids;
-
     ResidualQuantizer(size_t d, const std::vector<size_t>& nbits);
 
     ResidualQuantizer(
@@ -72,35 +56,15 @@ struct ResidualQuantizer {
 
     ResidualQuantizer();
 
-    /// compute derived values when d, M and nbits have been set
-    void set_derived_values();
-
     // Train the residual quantizer
-    void train(size_t n, const float* x);
-
-    /** pack a series of code to bit-compact format
-     *
-     * @param ld_codes  leading dimension of codes
-     */
-    void pack_codes(
-            size_t n,
-            const int32_t* codes,
-            uint8_t* packed_codes,
-            int64_t ld_codes = -1) const;
+    void train(size_t n, const float* x) override;
 
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    void compute_codes(const float* x, uint8_t* codes, size_t n) const;
-
-    /** Decode a set of vectors
-     *
-     * @param codes  codes to decode, size n * code_size
-     * @param x      output vectors, size n * d
-     */
-    void decode(const uint8_t* code, float* x, size_t n) const;
+    void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
 
     /** lower-level encode function
      *

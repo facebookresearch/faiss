@@ -17,6 +17,7 @@
 #define FAISS_utils_h
 
 #include <stdint.h>
+#include <string>
 
 #ifdef _MSC_VER
 #define strtok_r strtok_s
@@ -25,6 +26,13 @@
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
+
+/****************************************************************************
+ * Get compile specific variables
+ ***************************************************************************/
+
+/// get compile options
+std::string get_compile_options();
 
 /**************************************************
  * Get some stats about the system

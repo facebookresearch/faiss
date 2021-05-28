@@ -31,7 +31,7 @@ namespace faiss {
  *
  *  Cong Fu, Chao Xiang, Changxu Wang, Deng Cai, VLDB 2019
  *
- * This implmentation is heavily influenced by the NSG
+ * This implementation is heavily influenced by the NSG
  * implementation by ZJULearning Group
  * (https://github.com/zjulearning/nsg)
  *
