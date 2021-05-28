@@ -26,7 +26,6 @@ DEFINE_SETTER(IndexIDMap2, int, own_fields)
 
 DEFINE_INDEX_DOWNCAST(IndexIDMap2)
 
-
 int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index) {
     try {
         auto out = new IndexIDMap(reinterpret_cast<Index*>(index));

@@ -139,9 +139,9 @@ void faiss_IndexIVF_invlists_get_ids(
         idx_t* invlist);
 
 typedef struct FaissIndexIVFStats {
-    size_t nq;    // nb of queries run
-    size_t nlist; // nb of inverted lists scanned
-    size_t ndis;  // nb of distances computed
+    size_t nq;                // nb of queries run
+    size_t nlist;             // nb of inverted lists scanned
+    size_t ndis;              // nb of distances computed
     size_t nheap_updates;     // nb of times the heap was updated
     double quantization_time; // time spent quantizing vectors (in ms)
     double search_time;       // time spent searching lists (in ms)

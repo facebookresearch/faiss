@@ -15,10 +15,12 @@
 extern "C" {
 #endif
 
-/// Setter of threshold value on nx above which we switch to BLAS to compute distances
+/// Setter of threshold value on nx above which we switch to BLAS to compute
+/// distances
 void faiss_set_distance_compute_blas_threshold(int value);
 
-/// Getter of threshold value on nx above which we switch to BLAS to compute distances
+/// Getter of threshold value on nx above which we switch to BLAS to compute
+/// distances
 int faiss_get_distance_compute_blas_threshold();
 
 /// Setter of block sizes value for BLAS distance computations
@@ -40,7 +42,6 @@ void faiss_set_distance_compute_min_k_reservoir(int value);
 /// Getter of number of results we switch to a reservoir to collect results
 /// rather than a heap
 int faiss_get_distance_compute_min_k_reservoir();
-
 
 #ifdef __cplusplus
 }
