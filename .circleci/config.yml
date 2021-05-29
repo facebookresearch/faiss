@@ -172,20 +172,27 @@ jobs:
         default: generic
     environment:
       OMP_NUM_THREADS: 10
+      CONDA_HOME: /home/circleci/miniconda3
+      PYTHON: /home/circleci/miniconda3/bin/python
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -y swig python3
-            pip3 install numpy==1.19 scipy torch pytest cmake
+            sudo apt-get update && sudo apt-get install -y swig
+            wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-aarch64.sh
+            bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
+            pip3 install cmake
+            $CONDA_HOME/bin/conda install -y numpy scipy
+            $CONDA_HOME/bin/pip install pytest torch
       - run:
           name: Build faiss library
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
-                  -DCMAKE_BUILD_TYPE=Release .
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DPython_EXECUTABLE=$PYTHON .
             make -C build -j3 faiss
       - run:
           name: Test faiss library
@@ -198,14 +205,14 @@ jobs:
           command: |
             make -C build -j3 swigfaiss
             cd build/faiss/python
-            python3 setup.py build
+            $PYTHON setup.py build
       - run:
           name: Test python extension
           command: |
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            python3 -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+            $PYTHON -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
+            $PYTHON -m pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            $PYTHON -m pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
       - run:
