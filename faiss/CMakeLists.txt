@@ -106,6 +106,7 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
+  IndexResidual.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h
@@ -115,17 +116,18 @@ set(FAISS_HEADERS
   clone_index.h
   index_factory.h
   index_io.h
+  impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
+  impl/LocalSearchQuantizer.h
+  impl/NNDescent.h
   impl/NSG.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
-  impl/AdditiveQuantizer.h
   impl/ResidualQuantizer.h
-  impl/LocalSearchQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
   impl/ThreadedIndex-inl.h
@@ -133,7 +135,6 @@ set(FAISS_HEADERS
   impl/io.h
   impl/io_macros.h
   impl/lattice_Zn.h
-  impl/NNDescent.h
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/simd_result_handlers.h
@@ -145,6 +146,7 @@ set(FAISS_HEADERS
   utils/Heap.h
   utils/WorkerThread.h
   utils/distances.h
+  utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/hamming-inl.h
   utils/hamming.h
