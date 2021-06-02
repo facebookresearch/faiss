@@ -26,7 +26,7 @@ FAISS_DECLARE_GETTER_SETTER(IndexIDMap, int, own_fields)
 int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index);
 
 /** attempt a dynamic cast to a IDMap, thus checking
- * check whether the underlying index type is `IndexIDMap`.
+ * whether the underlying index type is `IndexIDMap`.
  *
  * @param index opaque pointer to index object
  * @return the same pointer if the index is a IDMap index, NULL otherwise
@@ -58,7 +58,7 @@ int faiss_IndexIDMap2_new(FaissIndexIDMap2** p_index, FaissIndex* index);
 int faiss_IndexIDMap2_construct_rev_map(FaissIndexIDMap2* index);
 
 /** attempt a dynamic cast to a IDMap2, thus checking
- * check whether the underlying index type is `IndexIDMap`.
+ * whether the underlying index type is `IndexIDMap`.
  *
  * @param index opaque pointer to index object
  * @return the same pointer if the index is a IDMap2 index, NULL otherwise
