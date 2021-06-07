@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 
 package:
@@ -28,7 +29,7 @@ outputs:
     script: build-lib.sh   # [not win]
     script: build-lib.bat  # [win]
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cpu"
+      string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
     requirements:
@@ -53,7 +54,7 @@ outputs:
     script: build-pkg.sh   # [not win]
     script: build-pkg.bat  # [win]
     build:
-      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
     requirements:
       build:
         - {{ compiler('cxx') }}

@@ -193,6 +193,8 @@ jobs:
             conda config --set anaconda_upload yes
       - run:
           name: Build packages
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
           command: |
             cd conda
             conda build faiss --user pytorch --label <<parameters.label>>
@@ -217,6 +219,7 @@ jobs:
           command: |
             docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
             docker run --gpus all \
+              -e PACKAGE_TYPE="<<parameters.label>>" \
               -e CUDA_ARCHS="<<parameters.cuda_archs>>" \
               -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
               faiss \
@@ -246,6 +249,8 @@ jobs:
             curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
       - run:
           name: Build packages
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
@@ -268,6 +273,8 @@ jobs:
             conda config --set anaconda_upload yes
       - run:
           name: Build packages
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
           command: |
             cd conda
             conda build faiss --user pytorch --label <<parameters.label>>
