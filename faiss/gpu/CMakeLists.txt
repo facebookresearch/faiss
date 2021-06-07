@@ -117,6 +117,7 @@ set(FAISS_GPU_HEADERS
   impl/PQScanMultiPassPrecomputed.cuh
   impl/RemapIndices.h
   impl/VectorResidual.cuh
+  impl/scan/IVFInterleavedImpl.cuh
   utils/BlockSelectKernel.cuh
   utils/Comparators.cuh
   utils/ConversionOperators.cuh
