@@ -160,6 +160,64 @@ jobs:
             cd conda
             conda build faiss --python 3.7 -c pytorch
 
+  build_arm:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    parameters:
+      opt_level:
+        type: string
+        default: generic
+    environment:
+      OMP_NUM_THREADS: 10
+      CONDA_HOME: /home/circleci/miniconda3
+      PYTHON: /home/circleci/miniconda3/bin/python
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y swig
+            wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-aarch64.sh
+            bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
+            pip3 install cmake
+            $CONDA_HOME/bin/conda install -y numpy scipy
+            $CONDA_HOME/bin/pip install pytest torch
+      - run:
+          name: Build faiss library
+          command: |
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
+                  -DFAISS_ENABLE_C_API=ON \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DPython_EXECUTABLE=$PYTHON .
+            make -C build -j3 faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j3 faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j3 swigfaiss
+            cd build/faiss/python
+            $PYTHON setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            $PYTHON -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
+            $PYTHON -m pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            $PYTHON -m pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -C build -j faiss_c
+
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
@@ -301,6 +359,8 @@ workflows:
           name: OSX
       - build_windows:
           name: Windows
+      - build_arm:
+          name: ARM64
       - deploy_linux:
           name: Linux packages
           filters:
