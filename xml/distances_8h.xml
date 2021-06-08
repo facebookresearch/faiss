@@ -138,7 +138,7 @@
 <codeline lineno="40"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>query<sp/>vectors</highlight></codeline>
 <codeline lineno="41"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/>nb<sp/>of<sp/>database<sp/>vectors</highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/>*<sp/>@param<sp/>xq<sp/><sp/><sp/><sp/>query<sp/>vectors<sp/>(size<sp/>nq<sp/>*<sp/>d)</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/>*<sp/>@param<sp/>xb<sp/><sp/><sp/><sp/>database<sp/>vectros<sp/>(size<sp/>nb<sp/>*<sp/>d)</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/>*<sp/>@param<sp/>xb<sp/><sp/><sp/><sp/>database<sp/>vectors<sp/>(size<sp/>nb<sp/>*<sp/>d)</highlight></codeline>
 <codeline lineno="44"><highlight class="comment"><sp/>*<sp/>@param<sp/>dis<sp/><sp/><sp/>output<sp/>distances<sp/>(size<sp/>nq<sp/>*<sp/>nb)</highlight></codeline>
 <codeline lineno="45"><highlight class="comment"><sp/>*<sp/>@param<sp/>ldq,ldb,<sp/>ldd<sp/>strides<sp/>for<sp/>the<sp/>matrices</highlight></codeline>
 <codeline lineno="46"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -161,7 +161,7 @@
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>compute<sp/>ny<sp/>square<sp/>L2<sp/>distance<sp/>bewteen<sp/>x<sp/>and<sp/>a<sp/>set<sp/>of<sp/>contiguous<sp/>y<sp/>vectors<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>compute<sp/>ny<sp/>square<sp/>L2<sp/>distance<sp/>between<sp/>x<sp/>and<sp/>a<sp/>set<sp/>of<sp/>contiguous<sp/>y<sp/>vectors<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="67"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fvec_L2sqr_ny(</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis,</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
@@ -185,7 +185,7 @@
 <codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>L2-renormalize<sp/>a<sp/>set<sp/>of<sp/>vector.<sp/>Nothing<sp/>done<sp/>if<sp/>the<sp/>vector<sp/>is<sp/>0-normed<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="88"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fvec_renorm_L2(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>exists<sp/>because<sp/>the<sp/>Torch<sp/>counterpart<sp/>is<sp/>extremly<sp/>slow</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>exists<sp/>because<sp/>the<sp/>Torch<sp/>counterpart<sp/>is<sp/>extremely<sp/>slow</highlight></codeline>
 <codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/>(not<sp/>multi-threaded<sp/>+<sp/>unexpected<sp/>overhead<sp/>even<sp/>in<sp/>single<sp/>thread).</highlight></codeline>
 <codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/>It<sp/>is<sp/>here<sp/>to<sp/>implement<sp/>the<sp/>usual<sp/>property<sp/>|x-y|^2=|x|^2+|y|^2-2&lt;x|y&gt;<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="93"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>inner_product_to_L2sqr(</highlight></codeline>
