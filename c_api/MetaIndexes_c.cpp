@@ -19,6 +19,13 @@ using faiss::IndexIDMap2;
 DEFINE_GETTER(IndexIDMap, int, own_fields)
 DEFINE_SETTER(IndexIDMap, int, own_fields)
 
+DEFINE_INDEX_DOWNCAST(IndexIDMap)
+
+DEFINE_GETTER(IndexIDMap2, int, own_fields)
+DEFINE_SETTER(IndexIDMap2, int, own_fields)
+
+DEFINE_INDEX_DOWNCAST(IndexIDMap2)
+
 int faiss_IndexIDMap_new(FaissIndexIDMap** p_index, FaissIndex* index) {
     try {
         auto out = new IndexIDMap(reinterpret_cast<Index*>(index));

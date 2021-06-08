@@ -125,3 +125,7 @@ void faiss_IndexIVF_invlists_get_ids(
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats) {
     reinterpret_cast<IndexIVFStats*>(stats)->reset();
 }
+
+FaissIndexIVFStats* faiss_get_indexIVF_stats() {
+    return reinterpret_cast<FaissIndexIVFStats*>(&faiss::indexIVF_stats);
+}
