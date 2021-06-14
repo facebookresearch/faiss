@@ -25,6 +25,7 @@ DEFINE_GETTER(Clustering, int, niter)
 DEFINE_GETTER(Clustering, int, nredo)
 DEFINE_GETTER(Clustering, int, verbose)
 DEFINE_GETTER(Clustering, int, spherical)
+DEFINE_GETTER(Clustering, int, int_centroids)
 DEFINE_GETTER(Clustering, int, update_index)
 DEFINE_GETTER(Clustering, int, frozen_centroids)
 
@@ -32,6 +33,7 @@ DEFINE_GETTER(Clustering, int, min_points_per_centroid)
 DEFINE_GETTER(Clustering, int, max_points_per_centroid)
 
 DEFINE_GETTER(Clustering, int, seed)
+DEFINE_GETTER(Clustering, size_t, decode_block_size)
 
 /// getter for d
 DEFINE_GETTER(Clustering, size_t, d)
@@ -54,8 +56,10 @@ void faiss_ClusteringParameters_init(FaissClusteringParameters* params) {
     params->nredo = d.nredo;
     params->seed = d.seed;
     params->spherical = d.spherical;
+    params->int_centroids = d.int_centroids;
     params->update_index = d.update_index;
     params->verbose = d.verbose;
+    params->decode_block_size = d.decode_block_size;
 }
 
 // This conversion is required because the two types are not memory-compatible
@@ -70,7 +74,9 @@ inline ClusteringParameters from_faiss_c(
     o.seed = params->seed;
     o.spherical = params->spherical;
     o.update_index = params->update_index;
+    o.int_centroids = params->int_centroids;
     o.verbose = params->verbose;
+    o.decode_block_size = params->decode_block_size;
     return o;
 }
 
