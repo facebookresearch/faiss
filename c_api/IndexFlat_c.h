@@ -93,6 +93,7 @@ int faiss_IndexRefineFlat_new(
         FaissIndex* base_index);
 
 FAISS_DECLARE_DESTRUCTOR(IndexRefineFlat)
+FAISS_DECLARE_INDEX_DOWNCAST(IndexRefineFlat)
 
 FAISS_DECLARE_GETTER_SETTER(IndexRefineFlat, int, own_fields)
 

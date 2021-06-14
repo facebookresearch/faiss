@@ -118,6 +118,7 @@ int faiss_IndexRefineFlat_new(
 }
 
 DEFINE_DESTRUCTOR(IndexRefineFlat)
+DEFINE_INDEX_DOWNCAST(IndexRefineFlat)
 
 DEFINE_GETTER(IndexRefineFlat, int, own_fields)
 DEFINE_SETTER(IndexRefineFlat, int, own_fields)
