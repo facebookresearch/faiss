@@ -35,7 +35,7 @@ typedef struct FaissClusteringParameters {
     int min_points_per_centroid; ///< otherwise you get a warning
     int max_points_per_centroid; ///< to limit size of dataset
 
-    int seed; ///< seed for the random number generator
+    int seed;                 ///< seed for the random number generator
     size_t decode_block_size; ///< how many vectors at a time to decode
 } FaissClusteringParameters;
 

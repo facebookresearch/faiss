@@ -39,7 +39,9 @@ int faiss_IndexPreTransform_new_with_transform(
         FaissVectorTransform* ltrans,
         FaissIndex* index);
 
-int faiss_IndexPreTransform_prepend_transform(FaissIndexPreTransform* index, FaissVectorTransform* ltrans);
+int faiss_IndexPreTransform_prepend_transform(
+        FaissIndexPreTransform* index,
+        FaissVectorTransform* ltrans);
 
 #ifdef __cplusplus
 }
