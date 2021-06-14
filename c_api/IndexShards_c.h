@@ -35,6 +35,8 @@ int faiss_IndexShards_new_with_options(
 
 int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard);
 
+int faiss_IndexShards_remove_shard(FaissIndexShards* index, FaissIndex* shard);
+
 FaissIndex* faiss_IndexShards_at(FaissIndexShards* index, int i);
 
 #ifdef __cplusplus
