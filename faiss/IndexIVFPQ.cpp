@@ -584,7 +584,7 @@ struct QueryTables {
     // field specific to query
     const float* qi;
 
-    // query-specific intialization
+    // query-specific initialization
     void init_query(const float* qi) {
         this->qi = qi;
         if (metric_type == METRIC_INNER_PRODUCT)
