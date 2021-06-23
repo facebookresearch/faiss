@@ -384,7 +384,7 @@
 <codeline lineno="150"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;<sp/>precomputed_tables_max_bytes),<sp/>set<sp/>use_precomputed_table<sp/>on</highlight></codeline>
 <codeline lineno="151"><highlight class="comment"><sp/>*<sp/>output<sp/>=1:<sp/>tables<sp/>that<sp/>work<sp/>for<sp/>all<sp/>quantizers<sp/>(size<sp/>256<sp/>*<sp/>nlist<sp/>*<sp/>M)<sp/>=2:</highlight></codeline>
 <codeline lineno="152"><highlight class="comment"><sp/>*<sp/>specific<sp/>version<sp/>for<sp/>MultiIndexQuantizer<sp/>(much<sp/>more<sp/>compact)</highlight></codeline>
-<codeline lineno="153"><highlight class="comment"><sp/>*<sp/>@param<sp/>precomputed_table<sp/>precomputed<sp/>table<sp/>to<sp/>intialize</highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/>*<sp/>@param<sp/>precomputed_table<sp/>precomputed<sp/>table<sp/>to<sp/>initialize</highlight></codeline>
 <codeline lineno="154"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="155"><highlight class="normal"></highlight></codeline>
 <codeline lineno="156"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a08f648e8a7cb35af103a982fee81986e" kindref="member">initialize_IVFPQ_precomputed_table</ref>(</highlight></codeline>

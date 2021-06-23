@@ -1228,7 +1228,7 @@
 <parametername>precomputed_table</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>precomputed table to intialize </para>
+<para>precomputed table to initialize </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
