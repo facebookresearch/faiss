@@ -132,6 +132,8 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     p = 0.5f;
     lambd = 1e-2f;
+    lambd_multiplier = 2;
+    max_lambd = 10;
 
     chunk_size = 10000;
     nperts = 4;
@@ -180,8 +182,9 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         stddev[i] = sqrtf(sum / n);
     }
 
+    float obj = evaluate(codes.data(), x, n);
+    float prev_obj = obj;
     if (verbose) {
-        float obj = evaluate(codes.data(), x, n);
         printf("Before training: obj = %lf\n", obj);
     }
 
@@ -191,10 +194,21 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         // 3. refine codes given x and codebooks using icm
 
         // update codebooks
-        update_codebooks(x, codes.data(), n);
+        while (true) {
+            update_codebooks(x, codes.data(), n);
+            obj = evaluate(codes.data(), x, n);
+            if (obj > prev_obj && lambd < max_lambd) {
+                float old_lambd = lambd;
+                lambd *= lambd_multiplier;
+                if (verbose) {
+                    printf("\tlambd: %lf -> %lf\n", old_lambd, lambd);
+                }
+            } else {
+                break;
+            }
+        }
 
         if (verbose) {
-            float obj = evaluate(codes.data(), x, n);
             printf("iter %zd:\n", i);
             printf("\tafter updating codebooks: obj = %lf\n", obj);
         }
@@ -204,15 +218,16 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         perturb_codebooks(T, stddev, gen);
 
         if (verbose) {
-            float obj = evaluate(codes.data(), x, n);
+            obj = evaluate(codes.data(), x, n);
             printf("\tafter perturbing codebooks: obj = %lf\n", obj);
         }
 
         // refine codes
         icm_encode(x, codes.data(), n, train_ils_iters, gen);
 
+        obj = evaluate(codes.data(), x, n);
+        prev_obj = obj;
         if (verbose) {
-            float obj = evaluate(codes.data(), x, n);
             printf("\tafter updating codes: obj = %lf\n", obj);
         }
     }

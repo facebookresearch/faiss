@@ -308,3 +308,28 @@ class TestLocalSearchQuantizer(unittest.TestCase):
 
         print(err_lsq, err_pq)
         self.assertLess(err_lsq, err_pq)
+
+    def test_autotune_lambd(self):
+        ds = datasets.SyntheticDataset(4, 10000, 1000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 8
+        nbits = 2
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.lambd = 0.0001
+        lsq.train(xt)
+        err1 = eval_codec(lsq, xb)
+        print(lsq.lambd)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.lambd = 0.0001
+        lsq.max_lambd = 0  # do not tune lambd
+        lsq.train(xt)
+        err2 = eval_codec(lsq, xb)
+        print(lsq.lambd)
+
+        print(err1, err2)
+        self.assertLess(err1, err2)

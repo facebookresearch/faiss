@@ -45,8 +45,10 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     size_t train_ils_iters;  ///< iterations of local search in training
     size_t icm_iters;        ///< number of iterations in icm
 
-    float p;     ///< temperature factor
-    float lambd; ///< regularization factor
+    float p;                ///< temperature factor
+    float lambd;            ///< regularization factor
+    float lambd_multiplier; ///< lambd multiplier
+    float max_lambd;        ///< max lambd
 
     size_t chunk_size; ///< nb of vectors to encode at a time
 
