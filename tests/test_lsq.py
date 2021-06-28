@@ -319,13 +319,13 @@ class TestLocalSearchQuantizer(unittest.TestCase):
         nbits = 2
 
         lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
-        lsq.lambd = 0.0001
+        lsq.lambd = 0.0005
         lsq.train(xt)
         err1 = eval_codec(lsq, xb)
         print(lsq.lambd)
 
         lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
-        lsq.lambd = 0.0001
+        lsq.lambd = 0.0005
         lsq.max_lambd = 0  # do not tune lambd
         lsq.train(xt)
         err2 = eval_codec(lsq, xb)
