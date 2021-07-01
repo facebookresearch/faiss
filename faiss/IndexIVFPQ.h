@@ -150,7 +150,7 @@ struct IndexIVFPQ : IndexIVF {
  *            < precomputed_tables_max_bytes), set use_precomputed_table on
  * output =1: tables that work for all quantizers (size 256 * nlist * M) =2:
  * specific version for MultiIndexQuantizer (much more compact)
- * @param precomputed_table precomputed table to intialize
+ * @param precomputed_table precomputed table to initialize
  */
 
 void initialize_IVFPQ_precomputed_table(

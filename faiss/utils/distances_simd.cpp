@@ -9,6 +9,7 @@
 
 #include <faiss/utils/distances.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>

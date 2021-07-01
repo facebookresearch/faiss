@@ -49,6 +49,14 @@ int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard) {
     CATCH_AND_HANDLE
 }
 
+int faiss_IndexShards_remove_shard(FaissIndexShards* index, FaissIndex* shard) {
+    try {
+        reinterpret_cast<IndexShards*>(index)->remove_shard(
+                reinterpret_cast<Index*>(shard));
+    }
+    CATCH_AND_HANDLE
+}
+
 FaissIndex* faiss_IndexShards_at(FaissIndexShards* index, int i) {
     auto shard = reinterpret_cast<IndexShards*>(index)->at(i);
     return reinterpret_cast<FaissIndex*>(shard);

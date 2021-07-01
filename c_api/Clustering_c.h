@@ -27,6 +27,7 @@ typedef struct FaissClusteringParameters {
 
     int verbose;          ///< (bool)
     int spherical;        ///< (bool) do we want normalized centroids?
+    int int_centroids;    ///< (bool) round centroids coordinates to integer
     int update_index;     ///< (bool) update index after each iteration?
     int frozen_centroids; ///< (bool) use the centroids provided as input and do
                           ///< not change them during iterations
@@ -34,7 +35,8 @@ typedef struct FaissClusteringParameters {
     int min_points_per_centroid; ///< otherwise you get a warning
     int max_points_per_centroid; ///< to limit size of dataset
 
-    int seed; ///< seed for the random number generator
+    int seed;                 ///< seed for the random number generator
+    size_t decode_block_size; ///< how many vectors at a time to decode
 } FaissClusteringParameters;
 
 /// Sets the ClusteringParameters object with reasonable defaults
@@ -60,6 +62,7 @@ FAISS_DECLARE_GETTER(Clustering, int, niter)
 FAISS_DECLARE_GETTER(Clustering, int, nredo)
 FAISS_DECLARE_GETTER(Clustering, int, verbose)
 FAISS_DECLARE_GETTER(Clustering, int, spherical)
+FAISS_DECLARE_GETTER(Clustering, int, int_centroids)
 FAISS_DECLARE_GETTER(Clustering, int, update_index)
 FAISS_DECLARE_GETTER(Clustering, int, frozen_centroids)
 
@@ -67,6 +70,7 @@ FAISS_DECLARE_GETTER(Clustering, int, min_points_per_centroid)
 FAISS_DECLARE_GETTER(Clustering, int, max_points_per_centroid)
 
 FAISS_DECLARE_GETTER(Clustering, int, seed)
+FAISS_DECLARE_GETTER(Clustering, size_t, decode_block_size)
 
 /// getter for d
 FAISS_DECLARE_GETTER(Clustering, size_t, d)

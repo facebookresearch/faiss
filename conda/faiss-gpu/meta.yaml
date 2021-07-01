@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 
 package:
@@ -27,7 +28,7 @@ outputs:
   - name: libfaiss
     script: build-lib.sh
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
@@ -55,7 +56,7 @@ outputs:
   - name: faiss-gpu
     script: build-pkg.sh
     build:
-      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
         - {{ compiler('cxx') }}

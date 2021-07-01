@@ -68,7 +68,7 @@ int faiss_Index_train(FaissIndex* index, idx_t n, const float* x);
 /** Add n vectors of dimension d to the index.
  *
  * Vectors are implicitly assigned labels ntotal .. ntotal + n - 1
- * This function slices the input vectors in chuncks smaller than
+ * This function slices the input vectors in chunks smaller than
  * blocksize_add and calls add_core.
  * @param index  opaque pointer to index object
  * @param x      input matrix, size n * d
@@ -158,7 +158,7 @@ int faiss_Index_remove_ids(
  * this function may not be defined for some indexes
  * @param index       opaque pointer to index object
  * @param key         id of the vector to reconstruct
- * @param recons      reconstucted vector (size d)
+ * @param recons      reconstructed vector (size d)
  */
 int faiss_Index_reconstruct(const FaissIndex* index, idx_t key, float* recons);
 
@@ -166,7 +166,7 @@ int faiss_Index_reconstruct(const FaissIndex* index, idx_t key, float* recons);
  *
  * this function may not be defined for some indexes
  * @param index       opaque pointer to index object
- * @param recons      reconstucted vector (size ni * d)
+ * @param recons      reconstructed vector (size ni * d)
  */
 int faiss_Index_reconstruct_n(
         const FaissIndex* index,

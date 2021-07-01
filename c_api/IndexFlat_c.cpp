@@ -69,6 +69,9 @@ int faiss_IndexFlat_compute_distance_subset(
     CATCH_AND_HANDLE
 }
 
+DEFINE_DESTRUCTOR(IndexFlatIP)
+DEFINE_INDEX_DOWNCAST(IndexFlatIP)
+
 int faiss_IndexFlatIP_new(FaissIndexFlatIP** p_index) {
     try {
         IndexFlatIP* index = new IndexFlatIP();
@@ -86,6 +89,9 @@ int faiss_IndexFlatIP_new_with(FaissIndexFlatIP** p_index, idx_t d) {
     }
     CATCH_AND_HANDLE
 }
+
+DEFINE_DESTRUCTOR(IndexFlatL2)
+DEFINE_INDEX_DOWNCAST(IndexFlatL2)
 
 int faiss_IndexFlatL2_new(FaissIndexFlatL2** p_index) {
     try {
@@ -118,12 +124,16 @@ int faiss_IndexRefineFlat_new(
 }
 
 DEFINE_DESTRUCTOR(IndexRefineFlat)
+DEFINE_INDEX_DOWNCAST(IndexRefineFlat)
 
 DEFINE_GETTER(IndexRefineFlat, int, own_fields)
 DEFINE_SETTER(IndexRefineFlat, int, own_fields)
 
 DEFINE_GETTER(IndexRefineFlat, float, k_factor)
 DEFINE_SETTER(IndexRefineFlat, float, k_factor)
+
+DEFINE_DESTRUCTOR(IndexFlat1D)
+DEFINE_INDEX_DOWNCAST(IndexFlat1D)
 
 int faiss_IndexFlat1D_new(FaissIndexFlat1D** p_index) {
     try {

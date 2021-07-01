@@ -40,7 +40,7 @@ float fvec_Linf(const float* x, const float* y, size_t d);
  * @param nq    nb of query vectors
  * @param nb    nb of database vectors
  * @param xq    query vectors (size nq * d)
- * @param xb    database vectros (size nb * d)
+ * @param xb    database vectors (size nb * d)
  * @param dis   output distances (size nq * nb)
  * @param ldq,ldb, ldd strides for the matrices
  */
@@ -63,7 +63,7 @@ void fvec_inner_products_ny(
         size_t d,
         size_t ny);
 
-/* compute ny square L2 distance bewteen x and a set of contiguous y vectors */
+/* compute ny square L2 distance between x and a set of contiguous y vectors */
 void fvec_L2sqr_ny(
         float* dis,
         const float* x,
@@ -87,7 +87,7 @@ void fvec_norms_L2sqr(float* norms, const float* x, size_t d, size_t nx);
 /* L2-renormalize a set of vector. Nothing done if the vector is 0-normed */
 void fvec_renorm_L2(size_t d, size_t nx, float* x);
 
-/* This function exists because the Torch counterpart is extremly slow
+/* This function exists because the Torch counterpart is extremely slow
    (not multi-threaded + unexpected overhead even in single thread).
    It is here to implement the usual property |x-y|^2=|x|^2+|y|^2-2<x|y>  */
 void inner_product_to_L2sqr(

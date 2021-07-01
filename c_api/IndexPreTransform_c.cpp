@@ -58,4 +58,14 @@ int faiss_IndexPreTransform_new_with_transform(
     }
     CATCH_AND_HANDLE
 }
+
+int faiss_IndexPreTransform_prepend_transform(
+        FaissIndexPreTransform* index,
+        FaissVectorTransform* ltrans) {
+    try {
+        auto lt = reinterpret_cast<VectorTransform*>(ltrans);
+        reinterpret_cast<IndexPreTransform*>(index)->prepend_transform(lt);
+    }
+    CATCH_AND_HANDLE
+}
 }

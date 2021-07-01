@@ -50,9 +50,10 @@ class TestSearch(unittest.TestCase):
     # too many spurious test failures. Unoptimized timings are
     # not exploitable, hence the flag test on that as well.
     @unittest.skipUnless(
-        'AVX2' in faiss.get_compile_options() and
+        ('AVX2' in faiss.get_compile_options() or
+        'NEON' in faiss.get_compile_options()) and
         "OPTIMIZE" in faiss.get_compile_options(),
-        "only test while building with avx2")
+        "only test while building with avx2 or neon")
     def test_PQ4_speed(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()
