@@ -138,11 +138,23 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
 
     random_seed = 0x12345;
     std::srand(random_seed);
+
+    icm_encoder = nullptr;
+}
+
+LocalSearchQuantizer::~LocalSearchQuantizer() {
+    delete icm_encoder;
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
     FAISS_THROW_IF_NOT(nperts <= M);
+
+    if (icm_encoder == nullptr) {
+        icm_encoder = new LSQIcmEncoder(M, K);
+    } else {
+        icm_encoder->init(M, K);
+    }
 
     lsq_timer.reset();
     if (verbose) {
@@ -395,6 +407,7 @@ void LocalSearchQuantizer::icm_encode(
 
     std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
     compute_binary_terms(binaries.data());
+    icm_encoder->set_binary_term(binaries.data());
 
     const size_t n_chunks = (n + chunk_size - 1) / chunk_size;
     for (size_t i = 0; i < n_chunks; i++) {
@@ -410,7 +423,7 @@ void LocalSearchQuantizer::icm_encode(
 
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
-        icm_encode_partial(i, xi, codesi, ni, binaries.data(), ils_iters, gen);
+        icm_encode_partial(i, xi, codesi, ni, ils_iters, gen);
     }
 
     lsq_timer.end("icm_encode");
@@ -421,11 +434,12 @@ void LocalSearchQuantizer::icm_encode_partial(
         const float* x,
         int32_t* codes,
         size_t n,
-        const float* binaries,
         size_t ils_iters,
         std::mt19937& gen) const {
     std::vector<float> unaries(n * M * K); // [n, M, K]
     compute_unary_terms(x, unaries.data(), n);
+
+    icm_encoder->set_unary_term(unaries.data());
 
     std::vector<int32_t> best_codes;
     best_codes.assign(codes, codes + n * M);
@@ -439,7 +453,7 @@ void LocalSearchQuantizer::icm_encode_partial(
         perturb_codes(codes, n, gen);
 
         for (size_t iter2 = 0; iter2 < icm_iters; iter2++) {
-            icm_encode_step(unaries.data(), binaries, codes, n);
+            icm_encoder->encode(codes, n);
         }
 
         std::vector<float> icm_objs(n, 0.0f);
@@ -471,57 +485,6 @@ void LocalSearchQuantizer::icm_encode_partial(
                    n);
         }
     } // loop ils_iters
-}
-
-void LocalSearchQuantizer::icm_encode_step(
-        const float* unaries,
-        const float* binaries,
-        int32_t* codes,
-        size_t n) const {
-    // condition on the m-th subcode
-    for (size_t m = 0; m < M; m++) {
-        std::vector<float> objs(n * K);
-#pragma omp parallel for
-        for (int64_t i = 0; i < n; i++) {
-            auto u = unaries + i * (M * K) + m * K;
-            memcpy(objs.data() + i * K, u, sizeof(float) * K);
-        }
-
-        // compute objective function by adding unary
-        // and binary terms together
-        for (size_t other_m = 0; other_m < M; other_m++) {
-            if (other_m == m) {
-                continue;
-            }
-
-#pragma omp parallel for
-            for (int64_t i = 0; i < n; i++) {
-                for (int32_t code = 0; code < K; code++) {
-                    int32_t code2 = codes[i * M + other_m];
-                    size_t binary_idx =
-                            m * M * K * K + other_m * K * K + code * K + code2;
-                    // binaries[m, other_m, code, code2]
-                    objs[i * K + code] += binaries[binary_idx];
-                }
-            }
-        }
-
-        // find the optimal value of the m-th subcode
-#pragma omp parallel for
-        for (int64_t i = 0; i < n; i++) {
-            float best_obj = HUGE_VALF;
-            int32_t best_code = 0;
-            for (size_t code = 0; code < K; code++) {
-                float obj = objs[i * K + code];
-                if (obj < best_obj) {
-                    best_obj = obj;
-                    best_code = code;
-                }
-            }
-            codes[i * M + m] = best_code;
-        }
-
-    } // loop M
 }
 
 void LocalSearchQuantizer::perturb_codes(
@@ -643,6 +606,57 @@ float LocalSearchQuantizer::evaluate(
 
     obj = obj / n;
     return obj;
+}
+
+void LSQIcmEncoder::encode(int32_t* codes, size_t n) {
+    FAISS_THROW_IF_NOT(M != 0 && K != 0);
+    FAISS_THROW_IF_NOT(unaries != nullptr);
+    FAISS_THROW_IF_NOT(binaries != nullptr);
+
+    // condition on the m-th subcode
+    for (size_t m = 0; m < M; m++) {
+        std::vector<float> objs(n * K);
+#pragma omp parallel for
+        for (int64_t i = 0; i < n; i++) {
+            auto u = unaries + i * (M * K) + m * K;
+            memcpy(objs.data() + i * K, u, sizeof(float) * K);
+        }
+
+        // compute objective function by adding unary
+        // and binary terms together
+        for (size_t other_m = 0; other_m < M; other_m++) {
+            if (other_m == m) {
+                continue;
+            }
+
+#pragma omp parallel for
+            for (int64_t i = 0; i < n; i++) {
+                for (int32_t code = 0; code < K; code++) {
+                    int32_t code2 = codes[i * M + other_m];
+                    size_t binary_idx =
+                            m * M * K * K + other_m * K * K + code * K + code2;
+                    // binaries[m, other_m, code, code2]
+                    objs[i * K + code] += binaries[binary_idx];
+                }
+            }
+        }
+
+        // find the optimal value of the m-th subcode
+#pragma omp parallel for
+        for (int64_t i = 0; i < n; i++) {
+            float best_obj = HUGE_VALF;
+            int32_t best_code = 0;
+            for (size_t code = 0; code < K; code++) {
+                float obj = objs[i * K + code];
+                if (obj < best_obj) {
+                    best_obj = obj;
+                    best_code = code;
+                }
+            }
+            codes[i * M + m] = best_code;
+        }
+
+    } // loop M
 }
 
 double LSQTimer::get(const std::string& name) {

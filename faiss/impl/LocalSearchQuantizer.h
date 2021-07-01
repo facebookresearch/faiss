@@ -19,6 +19,8 @@
 
 namespace faiss {
 
+struct LSQIcmEncoder;
+
 /** Implementation of LSQ/LSQ++ described in the following two papers:
  *
  * Revisiting additive quantization
@@ -53,10 +55,14 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
+    LSQIcmEncoder* icm_encoder;
+
     LocalSearchQuantizer(
             size_t d,      /* dimensionality of the input vectors */
             size_t M,      /* number of subquantizers */
             size_t nbits); /* number of bit per subvector index */
+
+    ~LocalSearchQuantizer();
 
     // Train the local search quantizer
     void train(size_t n, const float* x) override;
@@ -93,15 +99,8 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             const float* x,
             int32_t* codes,
             size_t n,
-            const float* binaries,
             size_t ils_iters,
             std::mt19937& gen) const;
-
-    void icm_encode_step(
-            const float* unaries,
-            const float* binaries,
-            int32_t* codes,
-            size_t n) const;
 
     /** Add some perturbation to codebooks
      *
@@ -144,6 +143,32 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             const float* x,
             size_t n,
             float* objs = nullptr) const;
+};
+
+struct LSQIcmEncoder {
+    const float* unaries = nullptr;
+    const float* binaries = nullptr;
+    size_t M;
+    size_t K;
+
+    LSQIcmEncoder() : M(0), K(0) {}
+
+    LSQIcmEncoder(size_t M, size_t K) : M(M), K(K) {}
+
+    void init(size_t M, size_t K) {
+        this->M = M;
+        this->K = K;
+    }
+
+    virtual void set_unary_term(const float* unaries) {
+        this->unaries = unaries;
+    }
+
+    virtual void set_binary_term(const float* binaries) {
+        this->binaries = binaries;
+    }
+
+    virtual void encode(int32_t* codes, size_t n);
 };
 
 /** A helper struct to count consuming time during training.
