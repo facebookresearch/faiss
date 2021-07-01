@@ -614,10 +614,12 @@ void gpu_sync_all_devices()
     DOWNCAST (RemapDimensionsTransform)
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
+    DOWNCAST (ITQMatrix)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
     DOWNCAST (CenteringTransform)
+    DOWNCAST (ITQTransform)
     DOWNCAST (VectorTransform)
     {
         assert(false);
