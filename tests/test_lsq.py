@@ -172,7 +172,7 @@ class TestComponents(unittest.TestCase):
         np.testing.assert_allclose(new_codebooks, ref_codebooks, atol=1e-3)
 
     def test_update_codebooks_with_double(self):
-        """If the data is not zero-centering, it would be much accurate to
+        """If the data is not zero-centering, it would be more accurate to
         use double-precision floating-point numbers."""
         ds = datasets.SyntheticDataset(16, 1000, 1000, 0)
 
