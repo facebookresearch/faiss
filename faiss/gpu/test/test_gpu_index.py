@@ -473,7 +473,7 @@ class TestLSQIcmEncoder(unittest.TestCase):
 
     def test_training(self):
         """check that the error is in the same as cpu."""
-        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 0)
 
         xt = ds.get_train()
         xb = ds.get_database()
@@ -490,7 +490,7 @@ class TestLSQIcmEncoder(unittest.TestCase):
         lsq.icm_encoder_factory = faiss.GpuLSQIcmEncoderFactory()
         err_gpu = self.eval_codec(lsq, xb)
 
-        # 13590.844 vs 13590.844
+        # 13811.181 vs 13811.181
         print(err_cpu, err_gpu)
         self.assertLess(err_gpu, err_cpu * 1.05)
 

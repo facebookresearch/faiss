@@ -152,7 +152,6 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
     FAISS_THROW_IF_NOT(nperts <= M);
 
-
     lsq_timer.reset();
     if (verbose) {
         lsq_timer.start("train");

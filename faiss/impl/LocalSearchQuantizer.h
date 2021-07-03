@@ -56,7 +56,7 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
-    LSQIcmEncoder *icm_encoder;
+    LSQIcmEncoder* icm_encoder;
     LSQIcmEncoderFactory* icm_encoder_factory;
 
     LocalSearchQuantizer(
@@ -199,7 +199,5 @@ struct LSQTimer {
 
     void reset();
 };
-
-// FAISS_API extern LSQTimer lsq_timer; ///< timer to count consuming time
 
 } // namespace faiss

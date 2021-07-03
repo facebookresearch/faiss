@@ -166,7 +166,8 @@ void IcmEncoder::encode_impl(int32_t* codes_host, size_t n) const {
     auto stream = res->getDefaultStreamCurrentDevice();
     auto codes = toDeviceTemporary<int32_t, 2>(
             res.get(), device, codes_host, stream, {int(n), int(M)});
-    size_t smem = sizeof(Pair<float, int>) * (kCodebookSize + kWarpSize - 1) / kWarpSize;
+    size_t smem = sizeof(Pair<float, int>) * (kCodebookSize + kWarpSize - 1) /
+            kWarpSize;
 
 #pragma unroll
     for (size_t m = 0; m < kNumCodebooks; m++) {
