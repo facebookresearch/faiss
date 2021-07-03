@@ -439,7 +439,7 @@ void LocalSearchQuantizer::icm_encode_partial(
     std::vector<float> unaries(n * M * K); // [n, M, K]
     compute_unary_terms(x, unaries.data(), n);
 
-    icm_encoder->set_unary_term(unaries.data());
+    icm_encoder->set_unary_term(n, unaries.data());
 
     std::vector<int32_t> best_codes;
     best_codes.assign(codes, codes + n * M);
@@ -608,7 +608,7 @@ float LocalSearchQuantizer::evaluate(
     return obj;
 }
 
-void LSQIcmEncoder::encode(int32_t* codes, size_t n) {
+void LSQIcmEncoder::encode(int32_t* codes, size_t n) const {
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
     FAISS_THROW_IF_NOT(unaries != nullptr);
     FAISS_THROW_IF_NOT(binaries != nullptr);

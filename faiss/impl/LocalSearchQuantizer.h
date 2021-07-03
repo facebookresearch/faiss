@@ -160,7 +160,7 @@ struct LSQIcmEncoder {
         this->K = K;
     }
 
-    virtual void set_unary_term(const float* unaries) {
+    virtual void set_unary_term(size_t n, const float* unaries) {
         this->unaries = unaries;
     }
 
@@ -168,7 +168,7 @@ struct LSQIcmEncoder {
         this->binaries = binaries;
     }
 
-    virtual void encode(int32_t* codes, size_t n);
+    virtual void encode(int32_t* codes, size_t n) const;
 };
 
 /** A helper struct to count consuming time during training.
@@ -192,6 +192,6 @@ struct LSQTimer {
     void reset();
 };
 
-FAISS_API extern LSQTimer lsq_timer; ///< timer to count consuming time
+// FAISS_API extern LSQTimer lsq_timer; ///< timer to count consuming time
 
 } // namespace faiss
