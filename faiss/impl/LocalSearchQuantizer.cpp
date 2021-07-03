@@ -140,9 +140,11 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     std::srand(random_seed);
 
     icm_encoder = nullptr;
+    icm_encoder_factory = nullptr;
 }
 
 LocalSearchQuantizer::~LocalSearchQuantizer() {
+    delete icm_encoder_factory;
     delete icm_encoder;
 }
 
@@ -150,11 +152,6 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
     FAISS_THROW_IF_NOT(nperts <= M);
 
-    if (icm_encoder == nullptr) {
-        icm_encoder = new LSQIcmEncoder(M, K);
-    } else {
-        icm_encoder->init(M, K);
-    }
 
     lsq_timer.reset();
     if (verbose) {
@@ -164,6 +161,8 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
                n,
                d);
     }
+
+    set_icm_encoder();
 
     // allocate memory for codebooks, size [M, K, d]
     codebooks.resize(M * K * d);
@@ -606,6 +605,15 @@ float LocalSearchQuantizer::evaluate(
 
     obj = obj / n;
     return obj;
+}
+
+void LocalSearchQuantizer::set_icm_encoder() {
+    if (icm_encoder_factory == nullptr) {
+        icm_encoder_factory = new LSQIcmEncoderFactory();
+    }
+    if (icm_encoder == nullptr) {
+        icm_encoder = icm_encoder_factory->get(M, K);
+    }
 }
 
 void LSQIcmEncoder::encode(int32_t* codes, size_t n) const {

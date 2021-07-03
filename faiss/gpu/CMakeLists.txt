@@ -9,7 +9,7 @@ set(FAISS_GPU_SRC
   GpuCloner.cpp
   GpuClonerOptions.cpp
   GpuDistance.cu
-  GpuICM.cu
+  GpuLSQIcmEncoder.cu
   GpuIndex.cu
   GpuIndexBinaryFlat.cu
   GpuIndexFlat.cu
@@ -82,7 +82,7 @@ set(FAISS_GPU_HEADERS
   GpuCloner.h
   GpuClonerOptions.h
   GpuDistance.h
-  GpuICM.h
+  GpuLSQIcmEncoder.h
   GpuFaissAssert.h
   GpuIndex.h
   GpuIndexBinaryFlat.h

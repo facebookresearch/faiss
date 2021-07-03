@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <memory>
 
 namespace faiss {
 namespace gpu {
@@ -16,10 +17,8 @@ class GpuResourcesProvider;
 struct IcmEncoder;
 
 class GpuLSQIcmEncoder : public LSQIcmEncoder {
-public:
-    GpuLSQIcmEncoder(GpuResourcesProvider* prov);
-
-    ~GpuLSQIcmEncoder();
+   public:
+    GpuLSQIcmEncoder(size_t M, size_t K, GpuResourcesProvider* prov);
 
     void set_unary_term(size_t n, const float* unaries) override;
 
@@ -27,8 +26,16 @@ public:
 
     void encode(int32_t* codes, size_t n) const override;
 
-private:
+   private:
     IcmEncoder* encoder;
+};
+
+struct GpuLSQIcmEncoderFactory : public LSQIcmEncoderFactory {
+    GpuLSQIcmEncoderFactory();
+
+    LSQIcmEncoder* get(size_t M, size_t K) override;
+
+    GpuResourcesProvider* prov;
 };
 
 } // namespace gpu

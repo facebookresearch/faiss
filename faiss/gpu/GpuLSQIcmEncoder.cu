@@ -5,16 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/gpu/GpuICM.h>
-#include <faiss/gpu/impl/ICM.cuh>
+#include <faiss/gpu/GpuLSQIcmEncoder.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/impl/ICM.cuh>
 
 namespace faiss {
 namespace gpu {
 
-GpuLSQIcmEncoder::GpuLSQIcmEncoder(GpuResourcesProvider* prov) : encoder(new IcmEncoder(prov)) {}
-
-GpuLSQIcmEncoder::~GpuLSQIcmEncoder() { delete encoder; }
+GpuLSQIcmEncoder::GpuLSQIcmEncoder(
+        size_t M,
+        size_t K,
+        GpuResourcesProvider* prov)
+        : LSQIcmEncoder(M, K), encoder(new IcmEncoder(M, K, prov)) {}
 
 void GpuLSQIcmEncoder::set_unary_term(size_t n, const float* unaries) {
     encoder->set_unary_term(n, unaries);
@@ -28,6 +31,13 @@ void GpuLSQIcmEncoder::encode(int32_t* codes, size_t n) const {
     encoder->encode(codes, n);
 }
 
+GpuLSQIcmEncoderFactory::GpuLSQIcmEncoderFactory() {
+    prov = new StandardGpuResources();
+}
+
+LSQIcmEncoder* GpuLSQIcmEncoderFactory::get(size_t M, size_t K) {
+    return new GpuLSQIcmEncoder(M, K, prov);
+}
+
 } // namespace gpu
 } // namespace faiss
- 

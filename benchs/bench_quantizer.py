@@ -50,17 +50,14 @@ nbits = 8
 
 if 'lsq' in todo:
     lsq = faiss.LocalSearchQuantizer(d, M, nbits)
-    lsq.verbose = True  # show detailed training progress
+    lsq.verbose = True
     eval_quantizer(lsq, xb, xt, 'lsq')
 
 if 'lsq-gpu' in todo:
     lsq = faiss.LocalSearchQuantizer(d, M, nbits)
-    res = faiss.StandardGpuResources()
-    encoder = faiss.GpuLSQIcmEncoder(res)
-    lsq.icm_encoder = encoder
-
-    lsq.verbose = True  # show detailed training progress
-    eval_quantizer(lsq, xb, xt, 'lsq')
+    lsq.icm_encoder_factory = faiss.GpuLSQIcmEncoderFactory()
+    lsq.verbose = True
+    eval_quantizer(lsq, xb, xt, 'lsq-gpu')
 
 if 'pq' in todo:
     pq = faiss.ProductQuantizer(d, M, nbits)

@@ -20,6 +20,7 @@
 namespace faiss {
 
 struct LSQIcmEncoder;
+struct LSQIcmEncoderFactory;
 
 /** Implementation of LSQ/LSQ++ described in the following two papers:
  *
@@ -55,7 +56,8 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
-    LSQIcmEncoder* icm_encoder;
+    LSQIcmEncoder *icm_encoder;
+    LSQIcmEncoderFactory* icm_encoder_factory;
 
     LocalSearchQuantizer(
             size_t d,      /* dimensionality of the input vectors */
@@ -143,6 +145,8 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             const float* x,
             size_t n,
             float* objs = nullptr) const;
+
+    void set_icm_encoder();
 };
 
 struct LSQIcmEncoder {
@@ -150,8 +154,6 @@ struct LSQIcmEncoder {
     const float* binaries = nullptr;
     size_t M;
     size_t K;
-
-    LSQIcmEncoder() : M(0), K(0) {}
 
     LSQIcmEncoder(size_t M, size_t K) : M(M), K(K) {}
 
@@ -169,6 +171,12 @@ struct LSQIcmEncoder {
     }
 
     virtual void encode(int32_t* codes, size_t n) const;
+};
+
+struct LSQIcmEncoderFactory {
+    virtual LSQIcmEncoder* get(size_t M, size_t K) {
+        return new LSQIcmEncoder(M, K);
+    }
 };
 
 /** A helper struct to count consuming time during training.
