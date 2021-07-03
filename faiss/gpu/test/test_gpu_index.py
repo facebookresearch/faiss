@@ -10,6 +10,7 @@ import time
 import unittest
 import numpy as np
 import faiss
+from faiss.contrib import datasets
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -460,6 +461,38 @@ class TestInvalidParams(unittest.TestCase):
         idx.setNumProbes(3)
         _, I = idx.search(xb[10:20], k)
         self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+
+class TestLSQIcmEncoder(unittest.TestCase):
+
+    @staticmethod
+    def eval_codec(q, xb):
+        codes = q.compute_codes(xb)
+        decoded = q.decode(codes)
+        return ((xb - decoded) ** 2).sum()
+
+    def test_training(self):
+        """check that the error is in the same as cpu."""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 8
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_cpu = self.eval_codec(lsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        lsq.icm_encoder_factory = faiss.GpuLSQIcmEncoderFactory()
+        err_gpu = self.eval_codec(lsq, xb)
+
+        # 13590.844 vs 13590.844
+        print(err_cpu, err_gpu)
+        self.assertLess(err_gpu, err_cpu * 1.05)
 
 
 if __name__ == '__main__':
