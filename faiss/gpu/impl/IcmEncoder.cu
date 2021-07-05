@@ -204,7 +204,7 @@ void IcmEncoderImpl::encodeImpl(
     DeviceTensor<float, 1, true> objs(
             res.get(), makeTempAlloc(AllocType::Other, stream), {n});
 
-    int smem = sizeof(float) * (dims + kWarpSize - 1) / kWarpSize;
+    const int smem = sizeof(float) * (dims + kWarpSize - 1) / kWarpSize;
     runEvaluate<K><<<n, dims, smem, stream>>>(
             x.data(),
             codebooks.data(),
@@ -221,15 +221,13 @@ void IcmEncoderImpl::encodeImpl(
         runPerturbCodes<K><<<numBlocks, blockSize, 0, stream>>>(
                 gen(), codes.data(), n, M, nperts);
 
-        smem = sizeof(Pair<float, int>) * (K + kWarpSize - 1) / kWarpSize;
         for (int j = 0; j < icmIters; j++) {
             for (int m = 0; m < M; m++) {
-                runIcmEncodeStep<K><<<n, K, smem, stream>>>(
+                runIcmEncodeStep<K><<<n, K, 0, stream>>>(
                         uterm[m].data(), bterm[m].data(), codes.data(), M, m);
             }
         }
 
-        smem = sizeof(float) * (dims + kWarpSize - 1) / kWarpSize;
         runEvaluate<K><<<n, dims, smem, stream>>>(
                 x.data(),
                 codebooks.data(),
