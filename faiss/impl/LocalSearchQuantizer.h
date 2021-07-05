@@ -19,8 +19,70 @@
 
 namespace faiss {
 
-struct LSQIcmEncoder;
-struct LSQIcmEncoderFactory;
+namespace lsq {
+
+struct IcmEncoder {
+    const float* unaries = nullptr;
+    const float* binaries = nullptr;
+    size_t M;
+    size_t K;
+    bool verbose = false;
+
+    IcmEncoder(size_t M, size_t K) : M(M), K(K) {}
+    virtual ~IcmEncoder() {}
+
+    void init(size_t M, size_t K) {
+        this->M = M;
+        this->K = K;
+    }
+
+    virtual void set_unary_term(size_t n, const float* unaries) {
+        this->unaries = unaries;
+    }
+
+    virtual void set_binary_term(const float* binaries) {
+        this->binaries = binaries;
+    }
+
+    virtual void encode(
+            const float* x,
+            const float* codebooks,
+            int32_t* codes,
+            std::mt19937& gen,
+            size_t n,
+            size_t d,
+            size_t nperts,
+            size_t ils_iters,
+            size_t icm_iters) const;
+
+    void icm_encode(int32_t* codes, size_t n, size_t n_iters) const;
+
+    float evaluate(
+            const float* codebooks,
+            const int32_t* codes,
+            const float* x,
+            size_t n,
+            size_t d,
+            float* objs = nullptr) const;
+
+    /** Add some perturbation to codes
+     *
+     * @param codes codes to be perturbed, size n * M
+     */
+    void perturb_codes(
+            int32_t* codes,
+            size_t n,
+            size_t nperts,
+            std::mt19937& gen) const;
+};
+
+struct IcmEncoderFactory {
+    virtual IcmEncoder* get(size_t M, size_t K) {
+        return new IcmEncoder(M, K);
+    }
+};
+
+} // namespace lsq
 
 /** Implementation of LSQ/LSQ++ described in the following two papers:
  *
@@ -38,7 +100,6 @@ struct LSQIcmEncoderFactory;
  * The trained codes are stored in `codebooks` which is called
  * `centroids` in PQ and RQ.
  */
-
 struct LocalSearchQuantizer : AdditiveQuantizer {
     size_t K; ///< number of codes per codebook
 
@@ -96,14 +157,6 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             size_t ils_iters,
             std::mt19937& gen) const;
 
-    void icm_encode_partial(
-            size_t index,
-            const float* x,
-            int32_t* codes,
-            size_t n,
-            size_t ils_iters,
-            std::mt19937& gen) const;
-
     /** Add some perturbation to codebooks
      *
      * @param T         temperature of simulated annealing
@@ -113,12 +166,6 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             float T,
             const std::vector<float>& stddev,
             std::mt19937& gen);
-
-    /** Add some perturbation to codes
-     *
-     * @param codes codes to be perturbed, size n * M
-     */
-    void perturb_codes(int32_t* codes, size_t n, std::mt19937& gen) const;
 
     /** Compute binary terms
      *
@@ -147,36 +194,6 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             float* objs = nullptr) const;
 
     void set_icm_encoder();
-};
-
-struct LSQIcmEncoder {
-    const float* unaries = nullptr;
-    const float* binaries = nullptr;
-    size_t M;
-    size_t K;
-
-    LSQIcmEncoder(size_t M, size_t K) : M(M), K(K) {}
-
-    void init(size_t M, size_t K) {
-        this->M = M;
-        this->K = K;
-    }
-
-    virtual void set_unary_term(size_t n, const float* unaries) {
-        this->unaries = unaries;
-    }
-
-    virtual void set_binary_term(const float* binaries) {
-        this->binaries = binaries;
-    }
-
-    virtual void encode(int32_t* codes, size_t n) const;
-};
-
-struct LSQIcmEncoderFactory {
-    virtual LSQIcmEncoder* get(size_t M, size_t K) {
-        return new LSQIcmEncoder(M, K);
-    }
 };
 
 /** A helper struct to count consuming time during training.

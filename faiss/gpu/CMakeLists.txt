@@ -9,7 +9,7 @@ set(FAISS_GPU_SRC
   GpuCloner.cpp
   GpuClonerOptions.cpp
   GpuDistance.cu
-  GpuLSQIcmEncoder.cu
+  GpuIcmEncoder.cu
   GpuIndex.cu
   GpuIndexBinaryFlat.cu
   GpuIndexFlat.cu
@@ -47,7 +47,7 @@ set(FAISS_GPU_SRC
   impl/scan/IVFInterleaved512.cu
   impl/scan/IVFInterleaved1024.cu
   impl/scan/IVFInterleaved2048.cu
-  impl/ICM.cu
+  impl/IcmEncoder.cu
   utils/BlockSelectFloat.cu
   utils/DeviceUtils.cu
   utils/StackDeviceMemory.cpp
@@ -82,7 +82,7 @@ set(FAISS_GPU_HEADERS
   GpuCloner.h
   GpuClonerOptions.h
   GpuDistance.h
-  GpuLSQIcmEncoder.h
+  GpuIcmEncoder.h
   GpuFaissAssert.h
   GpuIndex.h
   GpuIndexBinaryFlat.h
@@ -121,7 +121,7 @@ set(FAISS_GPU_HEADERS
   impl/RemapIndices.h
   impl/VectorResidual.cuh
   impl/scan/IVFInterleavedImpl.cuh
-  impl/ICM.cuh
+  impl/IcmEncoder.cuh
   utils/BlockSelectKernel.cuh
   utils/Comparators.cuh
   utils/ConversionOperators.cuh

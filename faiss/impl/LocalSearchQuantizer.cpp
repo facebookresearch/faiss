@@ -103,6 +103,41 @@ void random_int32(
     }
 }
 
+float evaluate_codes(
+        const float* codebooks,
+        const int32_t* codes,
+        const float* x,
+        size_t n,
+        size_t d,
+        size_t M,
+        size_t K,
+        float* objs) {
+    // decode
+    std::vector<float> decoded_x(n * d, 0.0f);
+    float obj = 0.0f;
+
+#pragma omp parallel for reduction(+ : obj)
+    for (int64_t i = 0; i < n; i++) {
+        const auto code = codes + i * M;
+        const auto decoded_i = decoded_x.data() + i * d;
+        for (size_t m = 0; m < M; m++) {
+            // c = codebooks[m, code[m]]
+            const auto c = codebooks + m * K * d + code[m] * d;
+            fvec_add(d, decoded_i, c, decoded_i);
+        }
+
+        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
+        obj += err;
+
+        if (objs) {
+            objs[i] = err;
+        }
+    }
+
+    obj = obj / n;
+    return obj;
+}
+
 } // anonymous namespace
 
 namespace faiss {
@@ -403,7 +438,9 @@ void LocalSearchQuantizer::icm_encode(
         std::mt19937& gen) const {
     lsq_timer.start("icm_encode");
 
-    std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
+    std::vector<float> binaries(M * M * K * K);     // [M, M, K, K]
+    std::vector<float> unaries(chunk_size * M * K); // [M, n, K]
+
     compute_binary_terms(binaries.data());
     icm_encoder->set_binary_term(binaries.data());
 
@@ -421,87 +458,23 @@ void LocalSearchQuantizer::icm_encode(
 
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
-        icm_encode_partial(i, xi, codesi, ni, ils_iters, gen);
+
+        compute_unary_terms(xi, unaries.data(), ni);
+        icm_encoder->set_unary_term(ni, unaries.data());
+        icm_encoder->verbose = (verbose && i == 0);
+        icm_encoder->encode(
+                xi,
+                codebooks.data(),
+                codesi,
+                gen,
+                ni,
+                d,
+                nperts,
+                ils_iters,
+                icm_iters);
     }
 
     lsq_timer.end("icm_encode");
-}
-
-void LocalSearchQuantizer::icm_encode_partial(
-        size_t index,
-        const float* x,
-        int32_t* codes,
-        size_t n,
-        size_t ils_iters,
-        std::mt19937& gen) const {
-    std::vector<float> unaries(n * M * K); // [n, M, K]
-    compute_unary_terms(x, unaries.data(), n);
-
-    icm_encoder->set_unary_term(n, unaries.data());
-
-    std::vector<int32_t> best_codes;
-    best_codes.assign(codes, codes + n * M);
-
-    std::vector<float> best_objs(n, 0.0f);
-    evaluate(codes, x, n, best_objs.data());
-
-    FAISS_THROW_IF_NOT(nperts <= M);
-    for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
-        // add perturbation to codes
-        perturb_codes(codes, n, gen);
-
-        for (size_t iter2 = 0; iter2 < icm_iters; iter2++) {
-            icm_encoder->encode(codes, n);
-        }
-
-        std::vector<float> icm_objs(n, 0.0f);
-        evaluate(codes, x, n, icm_objs.data());
-        size_t n_betters = 0;
-        float mean_obj = 0.0f;
-
-        // select the best code for every vector xi
-#pragma omp parallel for reduction(+ : n_betters, mean_obj)
-        for (int64_t i = 0; i < n; i++) {
-            if (icm_objs[i] < best_objs[i]) {
-                best_objs[i] = icm_objs[i];
-                memcpy(best_codes.data() + i * M,
-                       codes + i * M,
-                       sizeof(int32_t) * M);
-                n_betters += 1;
-            }
-            mean_obj += best_objs[i];
-        }
-        mean_obj /= n;
-
-        memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
-
-        if (verbose && index == 0) {
-            printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
-                   iter1,
-                   mean_obj,
-                   n_betters,
-                   n);
-        }
-    } // loop ils_iters
-}
-
-void LocalSearchQuantizer::perturb_codes(
-        int32_t* codes,
-        size_t n,
-        std::mt19937& gen) const {
-    lsq_timer.start("perturb_codes");
-
-    std::uniform_int_distribution<size_t> m_distrib(0, M - 1);
-    std::uniform_int_distribution<int32_t> k_distrib(0, K - 1);
-
-    for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < nperts; j++) {
-            size_t m = m_distrib(gen);
-            codes[i * M + m] = k_distrib(gen);
-        }
-    }
-
-    lsq_timer.end("perturb_codes");
 }
 
 void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
@@ -529,43 +502,48 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
 
 void LocalSearchQuantizer::compute_unary_terms(
         const float* x,
-        float* unaries,
+        float* unaries, // [M, n, K]
         size_t n) const {
     lsq_timer.start("compute_unary_terms");
 
-    // compute x * codebooks^T
+    // compute x * codebook^T for each codebook
     //
     // NOTE: LAPACK use column major order
     // out = alpha * op(A) * op(B) + beta * C
-    FINTEGER nrows_A = M * K;
-    FINTEGER ncols_A = d;
 
-    FINTEGER nrows_B = d;
-    FINTEGER ncols_B = n;
+    for (size_t m = 0; m < M; m++) {
+        FINTEGER nrows_A = K;
+        FINTEGER ncols_A = d;
 
-    float alpha = -2.0f;
-    float beta = 0.0f;
-    sgemm_("Transposed",
-           "Not Transposed",
-           &nrows_A, // nrows of op(A)
-           &ncols_B, // ncols of op(B)
-           &ncols_A, // ncols of op(A)
-           &alpha,
-           codebooks.data(),
-           &ncols_A, // nrows of A
-           x,
-           &nrows_B, // nrows of B
-           &beta,
-           unaries,
-           &nrows_A); // nrows of output
+        FINTEGER nrows_B = d;
+        FINTEGER ncols_B = n;
+
+        float alpha = -2.0f;
+        float beta = 0.0f;
+        sgemm_("Transposed",
+               "Not Transposed",
+               &nrows_A, // nrows of op(A)
+               &ncols_B, // ncols of op(B)
+               &ncols_A, // ncols of op(A)
+               &alpha,
+               codebooks.data() + m * K * d,
+               &ncols_A, // nrows of A
+               x,
+               &nrows_B, // nrows of B
+               &beta,
+               unaries + m * n * K,
+               &nrows_A); // nrows of output
+    }
 
     std::vector<float> norms(M * K);
     fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++) {
-        float* u = unaries + i * (M * K);
-        fvec_add(M * K, u, norms.data(), u);
+        for (size_t m = 0; m < M; m++) {
+            float* u = unaries + m * n * K + i * K;
+            fvec_add(K, u, norms.data() + m * K, u);
+        }
     }
 
     lsq_timer.end("compute_unary_terms");
@@ -576,95 +554,160 @@ float LocalSearchQuantizer::evaluate(
         const float* x,
         size_t n,
         float* objs) const {
-    lsq_timer.start("evaluate");
-
-    // decode
-    std::vector<float> decoded_x(n * d, 0.0f);
-    float obj = 0.0f;
-
-#pragma omp parallel for reduction(+ : obj)
-    for (int64_t i = 0; i < n; i++) {
-        const auto code = codes + i * M;
-        const auto decoded_i = decoded_x.data() + i * d;
-        for (size_t m = 0; m < M; m++) {
-            // c = codebooks[m, code[m]]
-            const auto c = codebooks.data() + m * K * d + code[m] * d;
-            fvec_add(d, decoded_i, c, decoded_i);
-        }
-
-        float err = fvec_L2sqr(x + i * d, decoded_i, d);
-        obj += err;
-
-        if (objs) {
-            objs[i] = err;
-        }
-    }
-
-    lsq_timer.end("evaluate");
-
-    obj = obj / n;
+    float obj = evaluate_codes(codebooks.data(), codes, x, n, d, M, K, objs);
     return obj;
 }
 
 void LocalSearchQuantizer::set_icm_encoder() {
     if (icm_encoder_factory == nullptr) {
-        icm_encoder_factory = new LSQIcmEncoderFactory();
+        icm_encoder_factory = new lsq::IcmEncoderFactory();
     }
     if (icm_encoder == nullptr) {
         icm_encoder = icm_encoder_factory->get(M, K);
     }
 }
 
-void LSQIcmEncoder::encode(int32_t* codes, size_t n) const {
+namespace lsq {
+
+void IcmEncoder::encode(
+        const float* x,
+        const float* codebooks,
+        int32_t* codes,
+        std::mt19937& gen,
+        size_t n,
+        size_t d,
+        size_t nperts,
+        size_t ils_iters,
+        size_t icm_iters) const {
+    std::vector<int32_t> best_codes;
+    best_codes.assign(codes, codes + n * M);
+
+    std::vector<float> best_objs(n, 0.0f);
+    evaluate(codebooks, codes, x, n, d, best_objs.data());
+
+    FAISS_THROW_IF_NOT(nperts <= M);
+    for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
+        // add perturbation to codes
+        perturb_codes(codes, n, nperts, gen);
+
+        icm_encode(codes, n, icm_iters);
+
+        std::vector<float> icm_objs(n, 0.0f);
+        evaluate(codebooks, codes, x, n, d, icm_objs.data());
+        size_t n_betters = 0;
+        float mean_obj = 0.0f;
+
+        // select the best code for every vector xi
+#pragma omp parallel for reduction(+ : n_betters, mean_obj)
+        for (int64_t i = 0; i < n; i++) {
+            if (icm_objs[i] < best_objs[i]) {
+                best_objs[i] = icm_objs[i];
+                memcpy(best_codes.data() + i * M,
+                       codes + i * M,
+                       sizeof(int32_t) * M);
+                n_betters += 1;
+            }
+            mean_obj += best_objs[i];
+        }
+        mean_obj /= n;
+
+        memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
+
+        if (verbose) {
+            printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
+                   iter1,
+                   mean_obj,
+                   n_betters,
+                   n);
+        }
+    } // loop ils_iters
+}
+
+void IcmEncoder::icm_encode(int32_t* codes, size_t n, size_t n_iters) const {
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
     FAISS_THROW_IF_NOT(unaries != nullptr);
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
-    // condition on the m-th subcode
-    for (size_t m = 0; m < M; m++) {
-        std::vector<float> objs(n * K);
-#pragma omp parallel for
-        for (int64_t i = 0; i < n; i++) {
-            auto u = unaries + i * (M * K) + m * K;
-            memcpy(objs.data() + i * K, u, sizeof(float) * K);
-        }
-
-        // compute objective function by adding unary
-        // and binary terms together
-        for (size_t other_m = 0; other_m < M; other_m++) {
-            if (other_m == m) {
-                continue;
-            }
-
+    for (size_t iter = 0; iter < n_iters; iter++) {
+        // condition on the m-th subcode
+        for (size_t m = 0; m < M; m++) {
+            std::vector<float> objs(n * K);
 #pragma omp parallel for
             for (int64_t i = 0; i < n; i++) {
-                for (int32_t code = 0; code < K; code++) {
-                    int32_t code2 = codes[i * M + other_m];
-                    size_t binary_idx =
-                            m * M * K * K + other_m * K * K + code * K + code2;
-                    // binaries[m, other_m, code, code2]
-                    objs[i * K + code] += binaries[binary_idx];
-                }
+                auto u = unaries + m * n * K + i * K;
+                memcpy(objs.data() + i * K, u, sizeof(float) * K);
             }
-        }
 
-        // find the optimal value of the m-th subcode
+            // compute objective function by adding unary
+            // and binary terms together
+            for (size_t other_m = 0; other_m < M; other_m++) {
+                if (other_m == m) {
+                    continue;
+                }
+
 #pragma omp parallel for
-        for (int64_t i = 0; i < n; i++) {
-            float best_obj = HUGE_VALF;
-            int32_t best_code = 0;
-            for (size_t code = 0; code < K; code++) {
-                float obj = objs[i * K + code];
-                if (obj < best_obj) {
-                    best_obj = obj;
-                    best_code = code;
+                for (int64_t i = 0; i < n; i++) {
+                    for (int32_t code = 0; code < K; code++) {
+                        int32_t code2 = codes[i * M + other_m];
+                        size_t binary_idx = m * M * K * K + other_m * K * K +
+                                code * K + code2;
+                        // binaries[m, other_m, code, code2]
+                        objs[i * K + code] += binaries[binary_idx];
+                    }
                 }
             }
-            codes[i * M + m] = best_code;
-        }
 
-    } // loop M
+            // find the optimal value of the m-th subcode
+#pragma omp parallel for
+            for (int64_t i = 0; i < n; i++) {
+                float best_obj = HUGE_VALF;
+                int32_t best_code = 0;
+                for (size_t code = 0; code < K; code++) {
+                    float obj = objs[i * K + code];
+                    if (obj < best_obj) {
+                        best_obj = obj;
+                        best_code = code;
+                    }
+                }
+                codes[i * M + m] = best_code;
+            }
+
+        } // loop M
+    }
 }
+
+float IcmEncoder::evaluate(
+        const float* codebooks,
+        const int32_t* codes,
+        const float* x,
+        size_t n,
+        size_t d,
+        float* objs) const {
+    float obj = evaluate_codes(codebooks, codes, x, n, d, M, K, objs);
+    return obj;
+}
+
+void IcmEncoder::perturb_codes(
+        int32_t* codes,
+        size_t n,
+        size_t nperts,
+        std::mt19937& gen) const {
+    lsq_timer.start("perturb_codes");
+
+    std::uniform_int_distribution<size_t> m_distrib(0, M - 1);
+    std::uniform_int_distribution<int32_t> k_distrib(0, K - 1);
+
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < nperts; j++) {
+            size_t m = m_distrib(gen);
+            codes[i * M + m] = k_distrib(gen);
+        }
+    }
+
+    lsq_timer.end("perturb_codes");
+}
+
+} // namespace lsq
 
 double LSQTimer::get(const std::string& name) {
     return duration[name];
