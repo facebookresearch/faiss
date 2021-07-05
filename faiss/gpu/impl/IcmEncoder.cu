@@ -151,9 +151,9 @@ IcmEncoderImpl::IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov)
 }
 
 void IcmEncoderImpl::set_unary_term(int n, const float* unaries) {
+    // TODO: compute unary terms in gpu directly
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
-
     uterm = toDeviceNonTemporary<float, 3>(
             res.get(), device, const_cast<float*>(unaries), stream, {M, n, K});
 }
@@ -185,8 +185,6 @@ void IcmEncoderImpl::encodeImpl(
 
     auto codes = toDeviceTemporary<int32_t, 2>(
             res.get(), device, const_cast<int32_t*>(codesHost), stream, {n, M});
-    auto bestCodes = toDeviceTemporary<int32_t, 2>(
-            res.get(), device, const_cast<int32_t*>(codesHost), stream, {n, M});
     auto x = toDeviceTemporary<float, 2>(
             res.get(), device, const_cast<float*>(xHost), stream, {n, dims});
     auto codebooks = toDeviceTemporary<float, 3>(
@@ -195,6 +193,10 @@ void IcmEncoderImpl::encodeImpl(
             const_cast<float*>(codebooksHost),
             stream,
             {M, K, dims});
+
+    DeviceTensor<int32_t, 2, true> bestCodes(
+            res.get(), makeTempAlloc(AllocType::Other, stream), {n, M});
+    fromDevice<int32_t, 2>(codes, bestCodes.data(), stream);
 
     DeviceTensor<float, 1, true> bestObjs(
             res.get(), makeTempAlloc(AllocType::Other, stream), {n});
