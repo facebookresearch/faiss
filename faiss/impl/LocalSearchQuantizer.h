@@ -117,8 +117,7 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
-    LSQIcmEncoder* icm_encoder;
-    LSQIcmEncoderFactory* icm_encoder_factory;
+    lsq::IcmEncoderFactory* icm_encoder_factory;
 
     LocalSearchQuantizer(
             size_t d,      /* dimensionality of the input vectors */
@@ -192,8 +191,6 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             const float* x,
             size_t n,
             float* objs = nullptr) const;
-
-    void set_icm_encoder();
 };
 
 /** A helper struct to count consuming time during training.

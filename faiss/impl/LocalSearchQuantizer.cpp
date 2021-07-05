@@ -174,13 +174,11 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     random_seed = 0x12345;
     std::srand(random_seed);
 
-    icm_encoder = nullptr;
     icm_encoder_factory = nullptr;
 }
 
 LocalSearchQuantizer::~LocalSearchQuantizer() {
     delete icm_encoder_factory;
-    delete icm_encoder;
 }
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
@@ -195,8 +193,6 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
                n,
                d);
     }
-
-    set_icm_encoder();
 
     // allocate memory for codebooks, size [M, K, d]
     codebooks.resize(M * K * d);
@@ -438,6 +434,14 @@ void LocalSearchQuantizer::icm_encode(
         std::mt19937& gen) const {
     lsq_timer.start("icm_encode");
 
+    auto factory = icm_encoder_factory;
+    std::unique_ptr<lsq::IcmEncoder> icm_encoder;
+    if (factory == nullptr) {
+        icm_encoder.reset(lsq::IcmEncoderFactory().get(M, K));
+    } else {
+        icm_encoder.reset(factory->get(M, K));
+    }
+
     std::vector<float> binaries(M * M * K * K);     // [M, M, K, K]
     std::vector<float> unaries(chunk_size * M * K); // [M, n, K]
 
@@ -556,15 +560,6 @@ float LocalSearchQuantizer::evaluate(
         float* objs) const {
     float obj = evaluate_codes(codebooks.data(), codes, x, n, d, M, K, objs);
     return obj;
-}
-
-void LocalSearchQuantizer::set_icm_encoder() {
-    if (icm_encoder_factory == nullptr) {
-        icm_encoder_factory = new lsq::IcmEncoderFactory();
-    }
-    if (icm_encoder == nullptr) {
-        icm_encoder = icm_encoder_factory->get(M, K);
-    }
 }
 
 namespace lsq {
