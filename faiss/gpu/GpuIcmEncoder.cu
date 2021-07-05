@@ -20,11 +20,11 @@ GpuIcmEncoder::GpuIcmEncoder(
         : lsq::IcmEncoder(M, K), encoder(new IcmEncoderImpl(M, K, prov)) {}
 
 void GpuIcmEncoder::set_unary_term(size_t n, const float* unaries) {
-    encoder->set_unary_term(n, unaries);
+    encoder->setUnaryTerm(n, unaries);
 }
 
 void GpuIcmEncoder::set_binary_term(const float* binaries) {
-    encoder->set_binary_term(binaries);
+    encoder->setBinaryTerm(binaries);
 }
 
 void GpuIcmEncoder::encode(

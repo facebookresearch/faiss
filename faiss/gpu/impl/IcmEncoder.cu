@@ -150,7 +150,7 @@ IcmEncoderImpl::IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov)
     res = prov->getResources();
 }
 
-void IcmEncoderImpl::set_unary_term(int n, const float* unaries) {
+void IcmEncoderImpl::setUnaryTerm(int n, const float* unaries) {
     // TODO: compute unary terms in gpu directly
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
@@ -158,7 +158,7 @@ void IcmEncoderImpl::set_unary_term(int n, const float* unaries) {
             res.get(), device, const_cast<float*>(unaries), stream, {M, n, K});
 }
 
-void IcmEncoderImpl::set_binary_term(const float* binaries) {
+void IcmEncoderImpl::setBinaryTerm(const float* binaries) {
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
     bterm = toDeviceNonTemporary<float, 4>(

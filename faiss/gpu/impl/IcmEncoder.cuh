@@ -24,9 +24,9 @@ struct IcmEncoderImpl {
 
     IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov);
 
-    void set_unary_term(int n, const float* unaries);
+    void setUnaryTerm(int n, const float* unaries);
 
-    void set_binary_term(const float* binaries);
+    void setBinaryTerm(const float* binaries);
 
     template <int K>
     void encodeImpl(
