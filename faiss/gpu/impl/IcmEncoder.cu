@@ -15,7 +15,7 @@
 #include <faiss/gpu/utils/Pair.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
 
-#include <faiss/utils/distances.h>
+#include <faiss/gpu/impl/L2Norm.cuh>
 #include <faiss/gpu/utils/MatrixMult.cuh>
 
 #include <curand_kernel.h>
@@ -145,20 +145,66 @@ __global__ void runSelectBest(
     }
 }
 
-IcmEncoderImpl::IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov)
-        : M(M), K(K), prov(prov) {
+__global__ void runNormAdd(float* bterm, const float* norm, int K) {
+    int id = blockIdx.x;
+    int code = threadIdx.x;
+
+    bterm[id * K + code] += norm[code];
+}
+
+void IcmEncoderImpl::computeUnaryTerms(
+        float* bterm,           // output, [M, n, K]
+        const float* x,         // [n, d]
+        const float* codebooks, // [M, K, d]
+        int n,
+        int dims) const {
+    auto stream = res->getDefaultStreamCurrentDevice();
+
+    DeviceTensor<float, 2, true> vecs(const_cast<float*>(x), {n, dims});
+    for (int m = 0; m < M; m++) {
+        auto cPtr = const_cast<float*>(codebooks + m * K * dims);
+        auto bPtr = bterm + m * n * K;
+        DeviceTensor<float, 2, true> ci(cPtr, {K, dims});
+        DeviceTensor<float, 2, true> bi(bPtr, {n, K});
+        runMatrixMult(
+                bi,
+                false,
+                vecs,
+                false,
+                ci,
+                true,
+                -2.0f,
+                0.0f,
+                res->getBlasHandleCurrentDevice(),
+                stream);
+    }
+
+    DeviceTensor<float, 2, true> c(
+            const_cast<float*>(codebooks), {M * K, dims});
+    DeviceTensor<float, 1, true> norm(
+            res.get(), makeTempAlloc(AllocType::Other, stream), {M * K});
+    runL2Norm(c, true, norm, true, stream);
+
+    for (int m = 0; m < M; m++) {
+        auto bPtr = bterm + m * n * K;
+        auto nPtr = norm.data() + m * K;
+        runNormAdd<<<n, K, 0, stream>>>(bPtr, nPtr, K);
+    }
+}
+
+IcmEncoderImpl::IcmEncoderImpl(
+        int M,
+        int K,
+        GpuResourcesProvider* prov,
+        int device)
+        : M(M), K(K), prov(prov), device(device) {
     res = prov->getResources();
 }
 
-void IcmEncoderImpl::setUnaryTerm(int n, const float* unaries) {
-    // TODO: compute unary terms in gpu directly
-    auto device = getCurrentDevice();
-    auto stream = res->getDefaultStreamCurrentDevice();
-    uterm = toDeviceNonTemporary<float, 3>(
-            res.get(), device, const_cast<float*>(unaries), stream, {M, n, K});
-}
+void IcmEncoderImpl::setUnaryTerm(int n, const float* unaries) {}
 
 void IcmEncoderImpl::setBinaryTerm(const float* binaries) {
+    DeviceScope scope(device);
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
     bterm = toDeviceNonTemporary<float, 4>(
@@ -180,6 +226,7 @@ void IcmEncoderImpl::encodeImpl(
         int nperts,
         int ilsIters,
         int icmIters) const {
+    DeviceScope scope(device);
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
 
@@ -193,6 +240,10 @@ void IcmEncoderImpl::encodeImpl(
             const_cast<float*>(codebooksHost),
             stream,
             {M, K, dims});
+
+    DeviceTensor<float, 3, true> uterm(
+            res.get(), makeTempAlloc(AllocType::Other, stream), {M, n, K});
+    computeUnaryTerms(uterm.data(), x.data(), codebooks.data(), n, dims);
 
     DeviceTensor<int32_t, 2, true> bestCodes(
             res.get(), makeTempAlloc(AllocType::Other, stream), {n, M});

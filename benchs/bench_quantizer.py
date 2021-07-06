@@ -55,10 +55,9 @@ if 'lsq' in todo:
 
 if 'lsq-gpu' in todo:
     lsq = faiss.LocalSearchQuantizer(d, M, nbits)
-    lsq.icm_encoder_factory = faiss.GpuIcmEncoderFactory()
+    lsq.icm_encoder_factory = faiss.GpuIcmEncoderFactory(2)  # 2 gpus
     lsq.verbose = True
     # lsq.chunk_size = 100000
-    # lsq.train_iters = 8
     eval_quantizer(lsq, xb, xt, 'lsq-gpu')
 
 if 'pq' in todo:

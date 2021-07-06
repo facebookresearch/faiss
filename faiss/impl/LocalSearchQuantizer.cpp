@@ -463,8 +463,8 @@ void LocalSearchQuantizer::icm_encode(
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
 
-        compute_unary_terms(xi, unaries.data(), ni);
-        icm_encoder->set_unary_term(ni, unaries.data());
+        // compute_unary_terms(xi, unaries.data(), ni);
+        // icm_encoder->set_unary_term(ni, unaries.data());
         icm_encoder->verbose = (verbose && i == 0);
         icm_encoder->encode(
                 xi,

@@ -17,16 +17,23 @@ namespace gpu {
 
 struct IcmEncoderImpl {
     int M, K;
-    DeviceTensor<float, 3, true> uterm;
     DeviceTensor<float, 4, true> bterm;
     GpuResourcesProvider* prov;
     std::shared_ptr<GpuResources> res;
+    int device;
 
-    IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov);
+    IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov, int device);
 
     void setUnaryTerm(int n, const float* unaries);
 
     void setBinaryTerm(const float* binaries);
+
+    void computeUnaryTerms(
+            float* bterm,
+            const float* x,
+            const float* codebooks,
+            int n,
+            int dims) const;
 
     template <int K>
     void encodeImpl(
