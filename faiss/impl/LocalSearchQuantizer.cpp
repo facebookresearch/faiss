@@ -103,41 +103,6 @@ void random_int32(
     }
 }
 
-float evaluate_codes(
-        const float* codebooks,
-        const int32_t* codes,
-        const float* x,
-        size_t n,
-        size_t d,
-        size_t M,
-        size_t K,
-        float* objs) {
-    // decode
-    std::vector<float> decoded_x(n * d, 0.0f);
-    float obj = 0.0f;
-
-#pragma omp parallel for reduction(+ : obj)
-    for (int64_t i = 0; i < n; i++) {
-        const auto code = codes + i * M;
-        const auto decoded_i = decoded_x.data() + i * d;
-        for (size_t m = 0; m < M; m++) {
-            // c = codebooks[m, code[m]]
-            const auto c = codebooks + m * K * d + code[m] * d;
-            fvec_add(d, decoded_i, c, decoded_i);
-        }
-
-        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
-        obj += err;
-
-        if (objs) {
-            objs[i] = err;
-        }
-    }
-
-    obj = obj / n;
-    return obj;
-}
-
 } // anonymous namespace
 
 namespace faiss {
