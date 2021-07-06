@@ -19,26 +19,20 @@
 
 namespace faiss {
 
+struct LocalSearchQuantizer;
+
 namespace lsq {
 
 struct IcmEncoder {
-    const float* unaries = nullptr;
     const float* binaries = nullptr;
     size_t M;
     size_t K;
     bool verbose = false;
+    const LocalSearchQuantizer *lsq = nullptr;
 
-    IcmEncoder(size_t M, size_t K) : M(M), K(K) {}
+    IcmEncoder(const LocalSearchQuantizer *lsq);
+
     virtual ~IcmEncoder() {}
-
-    void init(size_t M, size_t K) {
-        this->M = M;
-        this->K = K;
-    }
-
-    virtual void set_unary_term(size_t n, const float* unaries) {
-        this->unaries = unaries;
-    }
 
     virtual void set_binary_term(const float* binaries) {
         this->binaries = binaries;
@@ -55,15 +49,7 @@ struct IcmEncoder {
             size_t ils_iters,
             size_t icm_iters) const;
 
-    void icm_encode(int32_t* codes, size_t n, size_t n_iters) const;
-
-    float evaluate(
-            const float* codebooks,
-            const int32_t* codes,
-            const float* x,
-            size_t n,
-            size_t d,
-            float* objs = nullptr) const;
+    void icm_encode(int32_t* codes, float *unaries, size_t n, size_t n_iters) const;
 
     /** Add some perturbation to codes
      *
@@ -77,8 +63,8 @@ struct IcmEncoder {
 };
 
 struct IcmEncoderFactory {
-    virtual IcmEncoder* get(size_t M, size_t K) {
-        return new IcmEncoder(M, K);
+    virtual IcmEncoder* get(const LocalSearchQuantizer *lsq) {
+        return new IcmEncoder(lsq);
     }
 };
 

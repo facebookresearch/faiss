@@ -437,9 +437,9 @@ void LocalSearchQuantizer::icm_encode(
     auto factory = icm_encoder_factory;
     std::unique_ptr<lsq::IcmEncoder> icm_encoder;
     if (factory == nullptr) {
-        icm_encoder.reset(lsq::IcmEncoderFactory().get(M, K));
+        icm_encoder.reset(lsq::IcmEncoderFactory().get(this));
     } else {
-        icm_encoder.reset(factory->get(M, K));
+        icm_encoder.reset(factory->get(this));
     }
 
     std::vector<float> binaries(M * M * K * K);     // [M, M, K, K]
@@ -558,11 +558,35 @@ float LocalSearchQuantizer::evaluate(
         const float* x,
         size_t n,
         float* objs) const {
-    float obj = evaluate_codes(codebooks.data(), codes, x, n, d, M, K, objs);
+    // decode
+    std::vector<float> decoded_x(n * d, 0.0f);
+    float obj = 0.0f;
+
+#pragma omp parallel for reduction(+ : obj)
+    for (int64_t i = 0; i < n; i++) {
+        const auto code = codes + i * M;
+        const auto decoded_i = decoded_x.data() + i * d;
+        for (size_t m = 0; m < M; m++) {
+            // c = codebooks[m, code[m]]
+            const auto c = codebooks.data() + m * K * d + code[m] * d;
+            fvec_add(d, decoded_i, c, decoded_i);
+        }
+
+        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
+        obj += err;
+
+        if (objs) {
+            objs[i] = err;
+        }
+    }
+
+    obj = obj / n;
     return obj;
 }
 
 namespace lsq {
+
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer *lsq) : M(lsq->M), K(lsq->K), lsq(lsq) {}
 
 void IcmEncoder::encode(
         const float* x,
@@ -574,21 +598,25 @@ void IcmEncoder::encode(
         size_t nperts,
         size_t ils_iters,
         size_t icm_iters) const {
+
+    std::vector<float> unaries(n * M * K); // [M, n, K]
+    lsq->compute_unary_terms(x, unaries.data(), n);
+    
     std::vector<int32_t> best_codes;
     best_codes.assign(codes, codes + n * M);
 
     std::vector<float> best_objs(n, 0.0f);
-    evaluate(codebooks, codes, x, n, d, best_objs.data());
+    lsq->evaluate(codes, x, n, best_objs.data());
 
     FAISS_THROW_IF_NOT(nperts <= M);
     for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
         // add perturbation to codes
         perturb_codes(codes, n, nperts, gen);
 
-        icm_encode(codes, n, icm_iters);
+        icm_encode(codes, unaries.data(), n, icm_iters);
 
         std::vector<float> icm_objs(n, 0.0f);
-        evaluate(codebooks, codes, x, n, d, icm_objs.data());
+        lsq->evaluate(codes, x, n, icm_objs.data());
         size_t n_betters = 0;
         float mean_obj = 0.0f;
 
@@ -618,9 +646,8 @@ void IcmEncoder::encode(
     } // loop ils_iters
 }
 
-void IcmEncoder::icm_encode(int32_t* codes, size_t n, size_t n_iters) const {
+void IcmEncoder::icm_encode(int32_t* codes, float *unaries, size_t n, size_t n_iters) const {
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
-    FAISS_THROW_IF_NOT(unaries != nullptr);
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
     for (size_t iter = 0; iter < n_iters; iter++) {
@@ -669,17 +696,6 @@ void IcmEncoder::icm_encode(int32_t* codes, size_t n, size_t n_iters) const {
 
         } // loop M
     }
-}
-
-float IcmEncoder::evaluate(
-        const float* codebooks,
-        const int32_t* codes,
-        const float* x,
-        size_t n,
-        size_t d,
-        float* objs) const {
-    float obj = evaluate_codes(codebooks, codes, x, n, d, M, K, objs);
-    return obj;
 }
 
 void IcmEncoder::perturb_codes(

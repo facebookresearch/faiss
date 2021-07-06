@@ -8,7 +8,6 @@
 #pragma once
 
 #include <faiss/impl/LocalSearchQuantizer.h>
-#include <faiss/utils/WorkerThread.h>
 
 namespace faiss {
 namespace gpu {
@@ -20,14 +19,11 @@ struct IcmEncoderShards;
 class GpuIcmEncoder : public lsq::IcmEncoder {
    public:
     GpuIcmEncoder(
-            size_t M,
-            size_t K,
+            const LocalSearchQuantizer* lsq,
             const std::vector<GpuResourcesProvider*>& provs,
             const std::vector<int>& devices);
 
     ~GpuIcmEncoder();
-
-    void set_unary_term(size_t n, const float* unaries) override;
 
     void set_binary_term(const float* binaries) override;
 
@@ -50,7 +46,7 @@ class GpuIcmEncoder : public lsq::IcmEncoder {
 struct GpuIcmEncoderFactory : public lsq::IcmEncoderFactory {
     GpuIcmEncoderFactory(int ngpus = 1);
 
-    lsq::IcmEncoder* get(size_t M, size_t K) override;
+    lsq::IcmEncoder* get(const LocalSearchQuantizer* lsq) override;
 
     std::vector<GpuResourcesProvider*> provs;
     std::vector<int> devices;

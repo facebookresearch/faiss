@@ -7,9 +7,9 @@
 
 #include <faiss/gpu/GpuIcmEncoder.h>
 
-#include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/impl/IcmEncoder.cuh>
+#include <faiss/utils/WorkerThread.h>
 
 #include <algorithm>
 
@@ -17,16 +17,17 @@ namespace faiss {
 namespace gpu {
 
 struct IcmEncoderShards {
-    std::vector<std::pair<IcmEncoderImpl*, std::unique_ptr<WorkerThread>>>
+    std::vector<std::pair<std::unique_ptr<IcmEncoderImpl>, std::unique_ptr<WorkerThread>>>
             workers;
 
     void add(IcmEncoderImpl* encoder) {
         workers.emplace_back(std::make_pair(
-                encoder, std::unique_ptr<WorkerThread>(new WorkerThread)));
+            std::unique_ptr<IcmEncoderImpl>(encoder),
+            std::unique_ptr<WorkerThread>(new WorkerThread)));
     }
 
     IcmEncoderImpl* at(int idx) {
-        return workers[idx].first;
+        return workers[idx].first.get();
     }
 
     void runOnShards(std::function<void(int, IcmEncoderImpl*)> f) {
@@ -34,7 +35,7 @@ struct IcmEncoderShards {
 
         for (int i = 0; i < this->workers.size(); ++i) {
             auto& p = this->workers[i];
-            auto encoder = p.first;
+            auto encoder = p.first.get();
             v.emplace_back(p.second->add([f, i, encoder]() { f(i, encoder); }));
         }
 
@@ -50,11 +51,10 @@ struct IcmEncoderShards {
 };
 
 GpuIcmEncoder::GpuIcmEncoder(
-        size_t M,
-        size_t K,
+        const LocalSearchQuantizer* lsq,
         const std::vector<GpuResourcesProvider*>& provs,
         const std::vector<int>& devices)
-        : lsq::IcmEncoder(M, K) {
+        : lsq::IcmEncoder(lsq) {
     shards = new IcmEncoderShards();
     for (size_t i = 0; i < provs.size(); i++) {
         shards->add(new IcmEncoderImpl(M, K, provs[i], devices[i]));
@@ -65,21 +65,9 @@ GpuIcmEncoder::~GpuIcmEncoder() {
     delete shards;
 }
 
-void GpuIcmEncoder::set_unary_term(size_t n, const float* unaries) {
-    size_t nshards = shards->size();
-    size_t shard_size = (n + nshards - 1) / nshards;
-
-    auto fn = [=](int idx, IcmEncoderImpl* encoder) {
-        size_t ni = std::min(shard_size, n - idx * shard_size);
-        auto ui = unaries + idx * shard_size * M * K;
-        encoder->setUnaryTerm(ni, ui);
-    };
-    shards->runOnShards(fn);
-}
-
 void GpuIcmEncoder::set_binary_term(const float* binaries) {
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
-        encoder->setBinaryTerm(binaries);
+        encoder->setBinaryTerm(lsq->codebooks.data(), lsq->d);
     };
     shards->runOnShards(fn);
 }
@@ -115,8 +103,8 @@ GpuIcmEncoderFactory::GpuIcmEncoderFactory(int ngpus) {
     }
 }
 
-lsq::IcmEncoder* GpuIcmEncoderFactory::get(size_t M, size_t K) {
-    return new GpuIcmEncoder(M, K, provs, devices);
+lsq::IcmEncoder* GpuIcmEncoderFactory::get(const LocalSearchQuantizer* lsq) {
+    return new GpuIcmEncoder(lsq, provs, devices);
 }
 
 } // namespace gpu

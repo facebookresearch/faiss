@@ -9,14 +9,13 @@
 
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/impl/L2Norm.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/MatrixMult.cuh>
 #include <faiss/gpu/utils/Pair.cuh>
 #include <faiss/gpu/utils/Reductions.cuh>
-
-#include <faiss/gpu/impl/L2Norm.cuh>
-#include <faiss/gpu/utils/MatrixMult.cuh>
 
 #include <curand_kernel.h>
 
@@ -29,12 +28,12 @@ namespace gpu {
  * subcodes cj (j != i) and then find the optimal value of ci such
  * that minimizing the objective function.
  *
- * @param uterm     precomputed unary terms, size (n, M, K)
- * @param bterm     precomputed binary terms, size (M1, M2, K1, K2)
- * @param codes output vector encodings, size (n, M)
- * @param M     number of codebooks
- * @param m     identify which subcode to condition on
- * @param K     number of codewords in a codebook
+ * @param uterm  precomputed unary terms, size (n, M, K)
+ * @param bterm  precomputed binary terms, size (M1, M2, K1, K2)
+ * @param codes  output vector encodings, size (n, M)
+ * @param M      number of codebooks
+ * @param m      identify which subcode to condition on
+ * @param K      number of codewords in a codebook
  */
 template <int K>
 __global__ void runIcmEncodeStep(
@@ -43,13 +42,14 @@ __global__ void runIcmEncodeStep(
         int32_t* codes,
         int M,
         int m) {
+    using KVPair = Pair<float, int>;
     constexpr int smemSize = (K + kWarpSize - 1) / kWarpSize;
 
     int id = blockIdx.x;
     int code = threadIdx.x;
-    __shared__ Pair<float, int> smem[smemSize];
+    __shared__ KVPair smem[smemSize];
 
-    Pair<float, int> obj(0.0f, code);
+    KVPair obj(0.0f, code);
     obj.k = uterm[id * K + code];
 
     // unrolling this loop does not improve speed
@@ -62,8 +62,8 @@ __global__ void runIcmEncodeStep(
     }
 
     __syncthreads();
-    obj = blockReduceAll<Pair<float, int>, Min<Pair<float, int>>, false, false>(
-            obj, Min<Pair<float, int>>(), smem);
+    obj = blockReduceAll<KVPair, Min<KVPair>, false, false>(
+            obj, Min<KVPair>(), smem);
 
     if (code == 0) {
         codes[id * M + m] = obj.v;
@@ -153,17 +153,18 @@ __global__ void runNormAdd(float* bterm, const float* norm, int K) {
 }
 
 void IcmEncoderImpl::computeUnaryTerms(
-        float* bterm,           // output, [M, n, K]
+        float* uterm,           // output, [M, n, K]
         const float* x,         // [n, d]
         const float* codebooks, // [M, K, d]
         int n,
         int dims) const {
     auto stream = res->getDefaultStreamCurrentDevice();
+    auto handle = res->getBlasHandleCurrentDevice();
 
     DeviceTensor<float, 2, true> vecs(const_cast<float*>(x), {n, dims});
     for (int m = 0; m < M; m++) {
         auto cPtr = const_cast<float*>(codebooks + m * K * dims);
-        auto bPtr = bterm + m * n * K;
+        auto bPtr = uterm + m * n * K;
         DeviceTensor<float, 2, true> ci(cPtr, {K, dims});
         DeviceTensor<float, 2, true> bi(bPtr, {n, K});
         runMatrixMult(
@@ -175,7 +176,7 @@ void IcmEncoderImpl::computeUnaryTerms(
                 true,
                 -2.0f,
                 0.0f,
-                res->getBlasHandleCurrentDevice(),
+                handle,
                 stream);
     }
 
@@ -186,11 +187,43 @@ void IcmEncoderImpl::computeUnaryTerms(
     runL2Norm(c, true, norm, true, stream);
 
     for (int m = 0; m < M; m++) {
-        auto bPtr = bterm + m * n * K;
+        auto bPtr = uterm + m * n * K;
         auto nPtr = norm.data() + m * K;
         runNormAdd<<<n, K, 0, stream>>>(bPtr, nPtr, K);
     }
 }
+
+void IcmEncoderImpl::computeBinaryTerms(
+        float* bterm,  // output, [M, M, K, K]
+        const float* codebooks,  // [M, K, d]
+        int dims) const {
+
+    auto stream = res->getDefaultStreamCurrentDevice();
+    auto handle = res->getBlasHandleCurrentDevice();
+
+    for (int m1 = 0; m1 < M; m1++) {
+        for (int m2 = 0; m2 < M; m2++) {
+            auto ptr1 = const_cast<float*>(codebooks + m1 * K * dims);
+            auto ptr2 = const_cast<float*>(codebooks + m2 * K * dims);
+            auto ptr3 = bterm + m1 * M * K * K + m2 * K * K;
+            DeviceTensor<float, 2, true> c1(ptr1, {K, dims});
+            DeviceTensor<float, 2, true> c2(ptr2, {K, dims});
+            DeviceTensor<float, 2, true> b(ptr3, {K, K});
+            runMatrixMult(
+                    b,
+                    false,
+                    c1,
+                    false,
+                    c2,
+                    true,
+                    2.0f,
+                    0.0f,
+                    handle,
+                    stream);
+        }
+    }
+}
+
 
 IcmEncoderImpl::IcmEncoderImpl(
         int M,
@@ -201,18 +234,26 @@ IcmEncoderImpl::IcmEncoderImpl(
     res = prov->getResources();
 }
 
-void IcmEncoderImpl::setUnaryTerm(int n, const float* unaries) {}
-
-void IcmEncoderImpl::setBinaryTerm(const float* binaries) {
+void IcmEncoderImpl::setBinaryTerm(const float* codebooksHost, int dims) {
     DeviceScope scope(device);
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
-    bterm = toDeviceNonTemporary<float, 4>(
+
+    codebooks = toDeviceNonTemporary<float, 3>(
             res.get(),
             device,
-            const_cast<float*>(binaries),
+            const_cast<float*>(codebooksHost),
             stream,
-            {M, M, K, K});
+            {M, K, dims});
+    // bterm = toDeviceNonTemporary<float, 4>(
+    //         res.get(),
+    //         device,
+    //         const_cast<float*>(binaries),
+    //         stream,
+    //         {M, M, K, K});
+    bterm = DeviceTensor<float, 4, true>(
+            res.get(), makeDevAlloc(AllocType::Other, stream), {M, M, K, K});
+    computeBinaryTerms(bterm.data(), codebooks.data(), dims);
 }
 
 template <int K>
@@ -234,12 +275,12 @@ void IcmEncoderImpl::encodeImpl(
             res.get(), device, const_cast<int32_t*>(codesHost), stream, {n, M});
     auto x = toDeviceTemporary<float, 2>(
             res.get(), device, const_cast<float*>(xHost), stream, {n, dims});
-    auto codebooks = toDeviceTemporary<float, 3>(
-            res.get(),
-            device,
-            const_cast<float*>(codebooksHost),
-            stream,
-            {M, K, dims});
+    // auto codebooks = toDeviceTemporary<float, 3>(
+    //         res.get(),
+    //         device,
+    //         const_cast<float*>(codebooksHost),
+    //         stream,
+    //         {M, K, dims});
 
     DeviceTensor<float, 3, true> uterm(
             res.get(), makeTempAlloc(AllocType::Other, stream), {M, n, K});
