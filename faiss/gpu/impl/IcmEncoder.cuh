@@ -24,7 +24,12 @@ struct IcmEncoderImpl {
     DeviceTensor<float, 4, true> bterm;
     DeviceTensor<float, 3, true> codebooks;
 
-    IcmEncoderImpl(int M, int K, int dims, GpuResourcesProvider* prov, int device);
+    IcmEncoderImpl(
+            int M,
+            int K,
+            int dims,
+            GpuResourcesProvider* prov,
+            int device);
 
     ~IcmEncoderImpl() {}
 
@@ -38,6 +43,7 @@ struct IcmEncoderImpl {
 
     void computeBinaryTerms(float* bterm, const float* codebooks) const;
 
+    template <int M>
     void encodeImpl(
             int32_t* codes,
             const float* x,

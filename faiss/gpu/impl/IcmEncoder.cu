@@ -37,24 +37,22 @@ extern __shared__ char smem[];
  * @param K      number of codewords in a codebook
  * @param m      identify which subcode to condition on
  */
+template <int M>
 __global__ void runIcmEncodeStep(
         const float* uterm,
         const float* bterm,
         int32_t* codes,
-        int M,
         int K,
         int m) {
     using KVPair = Pair<float, int>;
-    // constexpr int smemSize = (K + kWarpSize - 1) / kWarpSize;
 
     int id = blockIdx.x;
     int code = threadIdx.x;
-    // __shared__ KVPair smem[smemSize];
 
     KVPair obj(0.0f, code);
     obj.k = uterm[id * K + code];
 
-    // unrolling this loop does not improve speed
+#pragma unroll
     for (int m2 = 0; m2 < M; m2++) {
         if (m2 == m) {
             continue;
@@ -72,22 +70,20 @@ __global__ void runIcmEncodeStep(
     }
 }
 
-__global__ void runEvaluate(
+template <int M>
+__global__ void runEvaluation(
         const float* x,
         const float* codebooks,
         const int32_t* codes,
         float* obj, // output
         int n,
-        int M,
         int K,
         int dims) {
     int id = blockIdx.x; // index of the vector
     int d = threadIdx.x; // dimension
-    // extern __shared__ float smem[];
-
     float acc = 0.0f;
 
-    // TODO: unroll M ?
+#pragma unroll
     for (int m = 0; m < M; m++) {
         int32_t code = codes[id * M + m];
         acc += codebooks[m * K * dims + code * dims + d];
@@ -104,11 +100,11 @@ __global__ void runEvaluate(
     }
 }
 
-__global__ void runPerturbCodes(
+template <int M>
+__global__ void runCodesPerturbation(
         int seed,
         int32_t* codes,
         int n,
-        int M,
         int K,
         int nperts) {
     int id = blockIdx.x * blockDim.x + threadIdx.x; // index of the vector
@@ -128,13 +124,13 @@ __global__ void runPerturbCodes(
     }
 }
 
-__global__ void runSelectBest(
+template <int M>
+__global__ void runCodesSelection(
         int32_t* bestCodes,
         float* bestObjs,
         const int32_t* codes,
         const float* objs,
-        int n,
-        int M) {
+        int n) {
     int id = blockIdx.x * blockDim.x + threadIdx.x; // index of the vector
 
     if (id >= n || objs[id] >= bestObjs[id]) {
@@ -142,12 +138,13 @@ __global__ void runSelectBest(
     }
 
     bestObjs[id] = objs[id];
+#pragma unroll
     for (int m = 0; m < M; m++) {
         bestCodes[id * M + m] = codes[id * M + m];
     }
 }
 
-__global__ void runNormAdd(float* bterm, const float* norm, int K) {
+__global__ void runNormAddition(float* bterm, const float* norm, int K) {
     int id = blockIdx.x;
     int code = threadIdx.x;
 
@@ -191,7 +188,7 @@ void IcmEncoderImpl::computeUnaryTerms(
     for (int m = 0; m < M; m++) {
         auto bPtr = uterm + m * n * K;
         auto nPtr = norm.data() + m * K;
-        runNormAdd<<<n, K, 0, stream>>>(bPtr, nPtr, K);
+        runNormAddition<<<n, K, 0, stream>>>(bPtr, nPtr, K);
     }
 }
 
@@ -214,7 +211,6 @@ void IcmEncoderImpl::computeBinaryTerms(float* bterm, const float* codebooks)
     }
 }
 
-
 void IcmEncoderImpl::setBinaryTerm(const float* codebooksHost) {
     DeviceScope scope(device);
     auto device = getCurrentDevice();
@@ -231,6 +227,7 @@ void IcmEncoderImpl::setBinaryTerm(const float* codebooksHost) {
     computeBinaryTerms(bterm.data(), codebooks.data());
 }
 
+template <int M>
 void IcmEncoderImpl::encodeImpl(
         int32_t* codesHost,
         const float* xHost,
@@ -268,13 +265,12 @@ void IcmEncoderImpl::encodeImpl(
     const int encodeSmem =
             sizeof(Pair<float, int>) * (K + kWarpSize - 1) / kWarpSize;
 
-    runEvaluate<<<n, dims, evaluateSmem, stream>>>(
+    runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
             x.data(),
             codebooks.data(),
             codes.data(),
             bestObjs.data(),
             n,
-            M,
             K,
             dims);
 
@@ -282,38 +278,31 @@ void IcmEncoderImpl::encodeImpl(
     int numBlocks = (n + blockSize - 1) / blockSize;
 
     for (int i = 0; i < ilsIters; i++) {
-        runPerturbCodes<<<numBlocks, blockSize, 0, stream>>>(
-                gen(), codes.data(), n, M, K, nperts);
+        runCodesPerturbation<M><<<numBlocks, blockSize, 0, stream>>>(
+                gen(), codes.data(), n, K, nperts);
 
         for (int j = 0; j < icmIters; j++) {
             for (int m = 0; m < M; m++) {
-                runIcmEncodeStep<<<n, K, encodeSmem, stream>>>(
-                        uterm[m].data(),
-                        bterm[m].data(),
-                        codes.data(),
-                        M,
-                        K,
-                        m);
+                runIcmEncodeStep<M><<<n, K, encodeSmem, stream>>>(
+                        uterm[m].data(), bterm[m].data(), codes.data(), K, m);
             }
         }
 
-        runEvaluate<<<n, dims, evaluateSmem, stream>>>(
+        runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
                 x.data(),
                 codebooks.data(),
                 codes.data(),
                 objs.data(),
                 n,
-                M,
                 K,
                 dims);
 
-        runSelectBest<<<numBlocks, blockSize, 0, stream>>>(
+        runCodesSelection<M><<<numBlocks, blockSize, 0, stream>>>(
                 bestCodes.data(),
                 bestObjs.data(),
                 codes.data(),
                 objs.data(),
-                n,
-                M);
+                n);
 
         codes.copyFrom(bestCodes, stream);
     }
@@ -331,10 +320,90 @@ void IcmEncoderImpl::encode(
         int nperts,
         int ilsIters,
         int icmIters) const {
-    FAISS_THROW_IF_NOT(K <= (1 << 16));
+    FAISS_THROW_IF_NOT(M <= 64);
 
-    encodeImpl(
-            codes, x, codebooks, gen, n, K, nperts, ilsIters, icmIters);
+#define DISPATCH_M(m)                                                        \
+    case m:                                                                  \
+        encodeImpl<m>(                                                       \
+                codes, x, codebooks, gen, n, K, nperts, ilsIters, icmIters); \
+        break
+
+    switch (M) {
+        DISPATCH_M(1);
+        DISPATCH_M(2);
+        DISPATCH_M(4);
+        DISPATCH_M(8);
+        DISPATCH_M(16);
+        DISPATCH_M(32);
+        DISPATCH_M(64);
+        DISPATCH_M(128);
+
+        DISPATCH_M(3);
+
+        DISPATCH_M(5);
+        DISPATCH_M(6);
+        DISPATCH_M(7);
+
+        DISPATCH_M(9);
+        DISPATCH_M(10);
+        DISPATCH_M(11);
+        DISPATCH_M(12);
+        DISPATCH_M(13);
+        DISPATCH_M(14);
+        DISPATCH_M(15);
+
+        DISPATCH_M(17);
+        DISPATCH_M(18);
+        DISPATCH_M(19);
+        DISPATCH_M(20);
+        DISPATCH_M(21);
+        DISPATCH_M(22);
+        DISPATCH_M(23);
+        DISPATCH_M(24);
+        DISPATCH_M(25);
+        DISPATCH_M(26);
+        DISPATCH_M(27);
+        DISPATCH_M(28);
+        DISPATCH_M(29);
+        DISPATCH_M(30);
+        DISPATCH_M(31);
+
+        DISPATCH_M(33);
+        DISPATCH_M(34);
+        DISPATCH_M(35);
+        DISPATCH_M(36);
+        DISPATCH_M(37);
+        DISPATCH_M(38);
+        DISPATCH_M(39);
+        DISPATCH_M(40);
+        DISPATCH_M(41);
+        DISPATCH_M(42);
+        DISPATCH_M(43);
+        DISPATCH_M(44);
+        DISPATCH_M(45);
+        DISPATCH_M(46);
+        DISPATCH_M(47);
+        DISPATCH_M(48);
+        DISPATCH_M(49);
+        DISPATCH_M(50);
+        DISPATCH_M(51);
+        DISPATCH_M(52);
+        DISPATCH_M(53);
+        DISPATCH_M(54);
+        DISPATCH_M(55);
+        DISPATCH_M(56);
+        DISPATCH_M(57);
+        DISPATCH_M(58);
+        DISPATCH_M(59);
+        DISPATCH_M(60);
+        DISPATCH_M(61);
+        DISPATCH_M(62);
+        DISPATCH_M(63);
+
+        default:
+            FAISS_THROW_MSG("Invalid number of codebooks");
+    }
+#undef DISPATCH_M
 }
 
 } // namespace gpu
