@@ -16,50 +16,45 @@ namespace faiss {
 namespace gpu {
 
 struct IcmEncoderImpl {
-    int M, K;
+    int M, K, dims;
     GpuResourcesProvider* prov;
     std::shared_ptr<GpuResources> res;
     int device;
+
     DeviceTensor<float, 4, true> bterm;
     DeviceTensor<float, 3, true> codebooks;
 
-    IcmEncoderImpl(int M, int K, GpuResourcesProvider* prov, int device);
+    IcmEncoderImpl(int M, int K, int dims, GpuResourcesProvider* prov, int device);
 
     ~IcmEncoderImpl() {}
 
-    void setBinaryTerm(const float* codebooks, int dims);
+    void setBinaryTerm(const float* codebooks);
 
     void computeUnaryTerms(
             float* bterm,
             const float* x,
             const float* codebooks,
-            int n,
-            int dims) const;
+            int n) const;
 
-    void computeBinaryTerms(
-            float* bterm,
-            const float* codebooks,
-            int dims) const;
+    void computeBinaryTerms(float* bterm, const float* codebooks) const;
 
-    template <int K>
     void encodeImpl(
+            int32_t* codes,
             const float* x,
             const float* codebooks,
-            int32_t* codes,
             std::mt19937& gen,
             int n,
-            int dims,
+            int K,
             int nperts,
             int ilsIters,
             int icmIters) const;
 
     void encode(
+            int32_t* codes,
             const float* x,
             const float* codebooks,
-            int32_t* codes,
             std::mt19937& gen,
             int n,
-            int dims,
             int nperts,
             int ilsIters,
             int icmIters) const;

@@ -8,8 +8,8 @@
 #include <faiss/gpu/GpuIcmEncoder.h>
 
 #include <faiss/gpu/StandardGpuResources.h>
-#include <faiss/gpu/impl/IcmEncoder.cuh>
 #include <faiss/utils/WorkerThread.h>
+#include <faiss/gpu/impl/IcmEncoder.cuh>
 
 #include <algorithm>
 
@@ -17,13 +17,15 @@ namespace faiss {
 namespace gpu {
 
 struct IcmEncoderShards {
-    std::vector<std::pair<std::unique_ptr<IcmEncoderImpl>, std::unique_ptr<WorkerThread>>>
+    std::vector<std::pair<
+            std::unique_ptr<IcmEncoderImpl>,
+            std::unique_ptr<WorkerThread>>>
             workers;
 
     void add(IcmEncoderImpl* encoder) {
         workers.emplace_back(std::make_pair(
-            std::unique_ptr<IcmEncoderImpl>(encoder),
-            std::unique_ptr<WorkerThread>(new WorkerThread)));
+                std::unique_ptr<IcmEncoderImpl>(encoder),
+                std::unique_ptr<WorkerThread>(new WorkerThread)));
     }
 
     IcmEncoderImpl* at(int idx) {
@@ -57,7 +59,7 @@ GpuIcmEncoder::GpuIcmEncoder(
         : lsq::IcmEncoder(lsq) {
     shards = new IcmEncoderShards();
     for (size_t i = 0; i < provs.size(); i++) {
-        shards->add(new IcmEncoderImpl(M, K, provs[i], devices[i]));
+        shards->add(new IcmEncoderImpl(lsq->M, lsq->K, lsq->d, provs[i], devices[i]));
     }
 }
 
@@ -65,33 +67,38 @@ GpuIcmEncoder::~GpuIcmEncoder() {
     delete shards;
 }
 
-void GpuIcmEncoder::set_binary_term(const float* binaries) {
+void GpuIcmEncoder::set_binary_term(float* binaries) {
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
-        encoder->setBinaryTerm(lsq->codebooks.data(), lsq->d);
+        encoder->setBinaryTerm(lsq->codebooks.data());
     };
     shards->runOnShards(fn);
 }
 
 void GpuIcmEncoder::encode(
-        const float* x,
-        const float* codebooks,
         int32_t* codes,
+        const float* x,
         std::mt19937& gen,
         size_t n,
-        size_t d,
-        size_t nperts,
-        size_t ils_iters,
-        size_t icm_iters) const {
+        size_t ils_iters) const {
     size_t nshards = shards->size();
     size_t shard_size = (n + nshards - 1) / nshards;
+
+    auto codebooks = lsq->codebooks.data();
+    auto M = lsq->M;
+    auto d = lsq->d;
+    auto nperts = lsq->nperts;
+    auto icm_iters = lsq->icm_iters;
+
+    auto seed = gen();
+
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         size_t i0 = idx * shard_size;
         size_t ni = std::min(shard_size, n - i0);
         auto xi = x + i0 * d;
         auto ci = codes + i0 * M;
-        std::mt19937 geni(idx);
+        std::mt19937 geni(idx + seed);
         encoder->encode(
-                xi, codebooks, ci, geni, ni, d, nperts, ils_iters, icm_iters);
+                ci, xi, codebooks, geni, ni, nperts, ils_iters, icm_iters);
     };
     shards->runOnShards(fn);
 }

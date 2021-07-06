@@ -142,7 +142,8 @@ float evaluate_codes(
 
 namespace faiss {
 
-LSQTimer lsq_timer;
+lsq::LSQTimer lsq_timer;
+using lsq::LSQTimerScope;
 
 LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     FAISS_THROW_IF_NOT((M * nbits) % 8 == 0);
@@ -186,8 +187,8 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(nperts <= M);
 
     lsq_timer.reset();
+    LSQTimerScope scope(&lsq_timer, "train");
     if (verbose) {
-        lsq_timer.start("train");
         printf("Training LSQ, with %zd subcodes on %zd %zdD vectors\n",
                M,
                n,
@@ -250,7 +251,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         }
 
         // refine codes
-        icm_encode(x, codes.data(), n, train_ils_iters, gen);
+        icm_encode(codes.data(), x, n, train_ils_iters, gen);
 
         if (verbose) {
             float obj = evaluate(codes.data(), x, n);
@@ -259,13 +260,13 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     }
 
     if (verbose) {
-        lsq_timer.end("train");
         float obj = evaluate(codes.data(), x, n);
+        scope.finish();
         printf("After training: obj = %lf\n", obj);
 
         printf("Time statistic:\n");
-        for (const auto& it : lsq_timer.duration) {
-            printf("\t%s time: %lf s\n", it.first.data(), it.second);
+        for (const auto& it : lsq_timer.t) {
+            printf("\t%s time: %lf s\n", it.first.data(), it.second / 1000);
         }
     }
 
@@ -276,7 +277,7 @@ void LocalSearchQuantizer::perturb_codebooks(
         float T,
         const std::vector<float>& stddev,
         std::mt19937& gen) {
-    lsq_timer.start("perturb_codebooks");
+    LSQTimerScope scope(&lsq_timer, "perturb_codebooks");
 
     std::vector<std::normal_distribution<float>> distribs;
     for (size_t i = 0; i < d; i++) {
@@ -290,8 +291,6 @@ void LocalSearchQuantizer::perturb_codebooks(
             }
         }
     }
-
-    lsq_timer.end("perturb_codebooks");
 }
 
 void LocalSearchQuantizer::compute_codes(
@@ -299,23 +298,26 @@ void LocalSearchQuantizer::compute_codes(
         uint8_t* codes_out,
         size_t n) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
+
+    lsq_timer.reset();
+    LSQTimerScope scope(&lsq_timer, "encode");
     if (verbose) {
-        lsq_timer.reset();
         printf("Encoding %zd vectors...\n", n);
-        lsq_timer.start("encode");
     }
 
     std::vector<int32_t> codes(n * M);
     std::mt19937 gen(random_seed);
     random_int32(codes, 0, K - 1, gen);
 
-    icm_encode(x, codes.data(), n, encode_ils_iters, gen);
+    icm_encode(codes.data(), x, n, encode_ils_iters, gen);
     pack_codes(n, codes.data(), codes_out);
 
     if (verbose) {
-        lsq_timer.end("encode");
-        double t = lsq_timer.get("encode");
-        printf("Time to encode %zd vectors: %lf s\n", n, t);
+        scope.finish();
+        printf("Time statistic:\n");
+        for (const auto& it : lsq_timer.t) {
+            printf("\t%s time: %lf s\n", it.first.data(), it.second / 1000);
+        }
     }
 }
 
@@ -339,7 +341,7 @@ void LocalSearchQuantizer::update_codebooks(
         const float* x,
         const int32_t* codes,
         size_t n) {
-    lsq_timer.start("update_codebooks");
+    LSQTimerScope scope(&lsq_timer, "update_codebooks");
 
     // allocate memory
     // bb = B'B, bx = BX
@@ -404,8 +406,6 @@ void LocalSearchQuantizer::update_codebooks(
            &beta,
            codebooks.data(),
            &nrows_A); // nrows of output
-
-    lsq_timer.end("update_codebooks");
 }
 
 /** encode using iterative conditional mode
@@ -427,12 +427,12 @@ void LocalSearchQuantizer::update_codebooks(
  * These two terms can be precomputed and store in a look up table.
  */
 void LocalSearchQuantizer::icm_encode(
-        const float* x,
         int32_t* codes,
+        const float* x,
         size_t n,
         size_t ils_iters,
         std::mt19937& gen) const {
-    lsq_timer.start("icm_encode");
+    LSQTimerScope scope(&lsq_timer, "icm_encode");
 
     auto factory = icm_encoder_factory;
     std::unique_ptr<lsq::IcmEncoder> icm_encoder;
@@ -442,10 +442,8 @@ void LocalSearchQuantizer::icm_encode(
         icm_encoder.reset(factory->get(this));
     }
 
-    std::vector<float> binaries(M * M * K * K);     // [M, M, K, K]
-    std::vector<float> unaries(chunk_size * M * K); // [M, n, K]
-
-    compute_binary_terms(binaries.data());
+    // precompute binary term for all chunks
+    std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
     icm_encoder->set_binary_term(binaries.data());
 
     const size_t n_chunks = (n + chunk_size - 1) / chunk_size;
@@ -463,160 +461,37 @@ void LocalSearchQuantizer::icm_encode(
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
 
-        // compute_unary_terms(xi, unaries.data(), ni);
-        // icm_encoder->set_unary_term(ni, unaries.data());
         icm_encoder->verbose = (verbose && i == 0);
-        icm_encoder->encode(
-                xi,
-                codebooks.data(),
-                codesi,
-                gen,
-                ni,
-                d,
-                nperts,
-                ils_iters,
-                icm_iters);
+        icm_encoder->encode(codesi, xi, gen, ni, ils_iters);
     }
-
-    lsq_timer.end("icm_encode");
 }
 
-void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
-    lsq_timer.start("compute_binary_terms");
-
-#pragma omp parallel for
-    for (int64_t m12 = 0; m12 < M * M; m12++) {
-        size_t m1 = m12 / M;
-        size_t m2 = m12 % M;
-
-        for (size_t code1 = 0; code1 < K; code1++) {
-            for (size_t code2 = 0; code2 < K; code2++) {
-                const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
-                const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
-                float ip = fvec_inner_product(c1, c2, d);
-                // binaries[m1, m2, code1, code2] = ip * 2
-                binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
-                        ip * 2;
-            }
-        }
-    }
-
-    lsq_timer.end("compute_binary_terms");
-}
-
-void LocalSearchQuantizer::compute_unary_terms(
-        const float* x,
-        float* unaries, // [M, n, K]
-        size_t n) const {
-    lsq_timer.start("compute_unary_terms");
-
-    // compute x * codebook^T for each codebook
-    //
-    // NOTE: LAPACK use column major order
-    // out = alpha * op(A) * op(B) + beta * C
-
-    for (size_t m = 0; m < M; m++) {
-        FINTEGER nrows_A = K;
-        FINTEGER ncols_A = d;
-
-        FINTEGER nrows_B = d;
-        FINTEGER ncols_B = n;
-
-        float alpha = -2.0f;
-        float beta = 0.0f;
-        sgemm_("Transposed",
-               "Not Transposed",
-               &nrows_A, // nrows of op(A)
-               &ncols_B, // ncols of op(B)
-               &ncols_A, // ncols of op(A)
-               &alpha,
-               codebooks.data() + m * K * d,
-               &ncols_A, // nrows of A
-               x,
-               &nrows_B, // nrows of B
-               &beta,
-               unaries + m * n * K,
-               &nrows_A); // nrows of output
-    }
-
-    std::vector<float> norms(M * K);
-    fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
-
-#pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
-        for (size_t m = 0; m < M; m++) {
-            float* u = unaries + m * n * K + i * K;
-            fvec_add(K, u, norms.data() + m * K, u);
-        }
-    }
-
-    lsq_timer.end("compute_unary_terms");
-}
-
-float LocalSearchQuantizer::evaluate(
-        const int32_t* codes,
-        const float* x,
-        size_t n,
-        float* objs) const {
-    // decode
-    std::vector<float> decoded_x(n * d, 0.0f);
-    float obj = 0.0f;
-
-#pragma omp parallel for reduction(+ : obj)
-    for (int64_t i = 0; i < n; i++) {
-        const auto code = codes + i * M;
-        const auto decoded_i = decoded_x.data() + i * d;
-        for (size_t m = 0; m < M; m++) {
-            // c = codebooks[m, code[m]]
-            const auto c = codebooks.data() + m * K * d + code[m] * d;
-            fvec_add(d, decoded_i, c, decoded_i);
-        }
-
-        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
-        obj += err;
-
-        if (objs) {
-            objs[i] = err;
-        }
-    }
-
-    obj = obj / n;
-    return obj;
-}
-
-namespace lsq {
-
-IcmEncoder::IcmEncoder(const LocalSearchQuantizer *lsq) : M(lsq->M), K(lsq->K), lsq(lsq) {}
-
-void IcmEncoder::encode(
-        const float* x,
-        const float* codebooks,
+void LocalSearchQuantizer::icm_encode_impl(
         int32_t* codes,
+        const float* x,
+        const float* binaries,
         std::mt19937& gen,
         size_t n,
-        size_t d,
-        size_t nperts,
         size_t ils_iters,
-        size_t icm_iters) const {
-
+        bool verbose) const {
     std::vector<float> unaries(n * M * K); // [M, n, K]
-    lsq->compute_unary_terms(x, unaries.data(), n);
-    
+    compute_unary_terms(x, unaries.data(), n);
+
     std::vector<int32_t> best_codes;
     best_codes.assign(codes, codes + n * M);
 
     std::vector<float> best_objs(n, 0.0f);
-    lsq->evaluate(codes, x, n, best_objs.data());
+    evaluate(codes, x, n, best_objs.data());
 
     FAISS_THROW_IF_NOT(nperts <= M);
     for (size_t iter1 = 0; iter1 < ils_iters; iter1++) {
         // add perturbation to codes
-        perturb_codes(codes, n, nperts, gen);
+        perturb_codes(codes, n, gen);
 
-        icm_encode(codes, unaries.data(), n, icm_iters);
+        icm_encode_step(codes, unaries.data(), binaries, n, icm_iters);
 
         std::vector<float> icm_objs(n, 0.0f);
-        lsq->evaluate(codes, x, n, icm_objs.data());
+        evaluate(codes, x, n, icm_objs.data());
         size_t n_betters = 0;
         float mean_obj = 0.0f;
 
@@ -646,7 +521,12 @@ void IcmEncoder::encode(
     } // loop ils_iters
 }
 
-void IcmEncoder::icm_encode(int32_t* codes, float *unaries, size_t n, size_t n_iters) const {
+void LocalSearchQuantizer::icm_encode_step(
+        int32_t* codes,
+        const float* unaries,
+        const float* binaries,
+        size_t n,
+        size_t n_iters) const {
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
@@ -698,12 +578,11 @@ void IcmEncoder::icm_encode(int32_t* codes, float *unaries, size_t n, size_t n_i
     }
 }
 
-void IcmEncoder::perturb_codes(
+void LocalSearchQuantizer::perturb_codes(
         int32_t* codes,
         size_t n,
-        size_t nperts,
         std::mt19937& gen) const {
-    lsq_timer.start("perturb_codes");
+    LSQTimerScope scope(&lsq_timer, "perturb_codes");
 
     std::uniform_int_distribution<size_t> m_distrib(0, M - 1);
     std::uniform_int_distribution<int32_t> k_distrib(0, K - 1);
@@ -714,34 +593,165 @@ void IcmEncoder::perturb_codes(
             codes[i * M + m] = k_distrib(gen);
         }
     }
-
-    lsq_timer.end("perturb_codes");
 }
 
-} // namespace lsq
+void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
+    LSQTimerScope scope(&lsq_timer, "compute_binary_terms");
+
+#pragma omp parallel for
+    for (int64_t m12 = 0; m12 < M * M; m12++) {
+        size_t m1 = m12 / M;
+        size_t m2 = m12 % M;
+
+        for (size_t code1 = 0; code1 < K; code1++) {
+            for (size_t code2 = 0; code2 < K; code2++) {
+                const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
+                const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
+                float ip = fvec_inner_product(c1, c2, d);
+                // binaries[m1, m2, code1, code2] = ip * 2
+                binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
+                        ip * 2;
+            }
+        }
+    }
+}
+
+void LocalSearchQuantizer::compute_unary_terms(
+        const float* x,
+        float* unaries, // [M, n, K]
+        size_t n) const {
+    LSQTimerScope scope(&lsq_timer, "compute_unary_terms");
+
+    // compute x * codebook^T for each codebook
+    //
+    // NOTE: LAPACK use column major order
+    // out = alpha * op(A) * op(B) + beta * C
+
+    for (size_t m = 0; m < M; m++) {
+        FINTEGER nrows_A = K;
+        FINTEGER ncols_A = d;
+
+        FINTEGER nrows_B = d;
+        FINTEGER ncols_B = n;
+
+        float alpha = -2.0f;
+        float beta = 0.0f;
+        sgemm_("Transposed",
+               "Not Transposed",
+               &nrows_A, // nrows of op(A)
+               &ncols_B, // ncols of op(B)
+               &ncols_A, // ncols of op(A)
+               &alpha,
+               codebooks.data() + m * K * d,
+               &ncols_A, // nrows of A
+               x,
+               &nrows_B, // nrows of B
+               &beta,
+               unaries + m * n * K,
+               &nrows_A); // nrows of output
+    }
+
+    std::vector<float> norms(M * K);
+    fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
+
+#pragma omp parallel for
+    for (int64_t i = 0; i < n; i++) {
+        for (size_t m = 0; m < M; m++) {
+            float* u = unaries + m * n * K + i * K;
+            fvec_add(K, u, norms.data() + m * K, u);
+        }
+    }
+}
+
+float LocalSearchQuantizer::evaluate(
+        const int32_t* codes,
+        const float* x,
+        size_t n,
+        float* objs) const {
+    LSQTimerScope scope(&lsq_timer, "evaluate");
+
+    // decode
+    std::vector<float> decoded_x(n * d, 0.0f);
+    float obj = 0.0f;
+
+#pragma omp parallel for reduction(+ : obj)
+    for (int64_t i = 0; i < n; i++) {
+        const auto code = codes + i * M;
+        const auto decoded_i = decoded_x.data() + i * d;
+        for (size_t m = 0; m < M; m++) {
+            // c = codebooks[m, code[m]]
+            const auto c = codebooks.data() + m * K * d + code[m] * d;
+            fvec_add(d, decoded_i, c, decoded_i);
+        }
+
+        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
+        obj += err;
+
+        if (objs) {
+            objs[i] = err;
+        }
+    }
+
+    obj = obj / n;
+    return obj;
+}
+
+namespace lsq {
+
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq) : lsq(lsq) {}
+
+void IcmEncoder::set_binary_term(float* binaries) {
+    lsq->compute_binary_terms(binaries);
+    this->binaries = binaries;
+}
+
+void IcmEncoder::encode(
+        int32_t* codes,
+        const float* x,
+        std::mt19937& gen,
+        size_t n,
+        size_t ils_iters) const {
+
+    lsq->icm_encode_impl(codes, x, binaries, gen, n, ils_iters, verbose);
+}
 
 double LSQTimer::get(const std::string& name) {
-    return duration[name];
+    if (t.count(name) == 0) {
+        return 0.0;
+    } else {
+        return t[name];
+    }
 }
 
-void LSQTimer::start(const std::string& name) {
-    FAISS_THROW_IF_NOT_MSG(!started[name], " timer is already running");
-    started[name] = true;
-    t0[name] = getmillisecs();
-}
-
-void LSQTimer::end(const std::string& name) {
-    FAISS_THROW_IF_NOT_MSG(started[name], " timer is not running");
-    double t1 = getmillisecs();
-    double sec = (t1 - t0[name]) / 1000;
-    duration[name] += sec;
-    started[name] = false;
+void LSQTimer::add(const std::string& name, double delta) {
+    if (t.count(name) == 0) {
+        t[name] = delta;
+    } else {
+        t[name] += delta;
+    }
 }
 
 void LSQTimer::reset() {
-    duration.clear();
-    t0.clear();
-    started.clear();
+    t.clear();
 }
+
+LSQTimerScope::LSQTimerScope(LSQTimer* timer, std::string name)
+        : timer(timer), name(name), finished(false) {
+    t0 = getmillisecs();
+}
+
+void LSQTimerScope::finish() {
+    if (!finished) {
+        auto delta = getmillisecs() - t0;
+        timer->add(name, delta);
+        finished = true;
+    }
+}
+
+LSQTimerScope::~LSQTimerScope() {
+    finish();
+}
+
+} // namespace lsq
 
 } // namespace faiss

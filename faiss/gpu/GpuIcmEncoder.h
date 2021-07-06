@@ -25,18 +25,14 @@ class GpuIcmEncoder : public lsq::IcmEncoder {
 
     ~GpuIcmEncoder();
 
-    void set_binary_term(const float* binaries) override;
+    void set_binary_term(float* binaries) override;
 
     void encode(
-            const float* x,
-            const float* codebooks,
             int32_t* codes,
+            const float* x,
             std::mt19937& gen,
             size_t n,
-            size_t d,
-            size_t nperts,
-            size_t ils_iters,
-            size_t icm_iters) const override;
+            size_t ils_iters) const override;
 
    private:
     // IcmEncoderImpl* encoder;
