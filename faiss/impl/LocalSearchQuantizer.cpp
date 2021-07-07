@@ -42,18 +42,6 @@ void sgetri_(
         FINTEGER* lwork,
         FINTEGER* info);
 
-// solves a system of linear equations
-void sgetrs_(
-        const char* trans,
-        FINTEGER* n,
-        FINTEGER* nrhs,
-        float* A,
-        FINTEGER* lda,
-        FINTEGER* ipiv,
-        float* b,
-        FINTEGER* ldb,
-        FINTEGER* info);
-
 // general matrix multiplication
 int sgemm_(
         const char* transa,
@@ -68,6 +56,41 @@ int sgemm_(
         FINTEGER* ldb,
         float* beta,
         float* c,
+        FINTEGER* ldc);
+
+// LU decomoposition of a general matrix
+void dgetrf_(
+        FINTEGER* m,
+        FINTEGER* n,
+        double* a,
+        FINTEGER* lda,
+        FINTEGER* ipiv,
+        FINTEGER* info);
+
+// generate inverse of a matrix given its LU decomposition
+void dgetri_(
+        FINTEGER* n,
+        double* a,
+        FINTEGER* lda,
+        FINTEGER* ipiv,
+        double* work,
+        FINTEGER* lwork,
+        FINTEGER* info);
+
+// general matrix multiplication
+int dgemm_(
+        const char* transa,
+        const char* transb,
+        FINTEGER* m,
+        FINTEGER* n,
+        FINTEGER* k,
+        const double* alpha,
+        const double* a,
+        FINTEGER* lda,
+        const double* b,
+        FINTEGER* ldb,
+        double* beta,
+        double* c,
         FINTEGER* ldc);
 }
 
@@ -89,6 +112,25 @@ void fmat_inverse(float* a, int n) {
     sgetrf_(&n, &n, a, &n, ipiv.data(), &info);
     FAISS_THROW_IF_NOT(info == 0);
     sgetri_(&n, a, &n, ipiv.data(), workspace.data(), &lwork, &info);
+    FAISS_THROW_IF_NOT(info == 0);
+}
+
+// c and a and b can overlap
+void dfvec_add(size_t d, const double* a, const float* b, double* c) {
+    for (size_t i = 0; i < d; i++) {
+        c[i] = a[i] + b[i];
+    }
+}
+
+void dmat_inverse(double* a, int n) {
+    int info;
+    int lwork = n * n;
+    std::vector<int> ipiv(n);
+    std::vector<double> workspace(lwork);
+
+    dgetrf_(&n, &n, a, &n, ipiv.data(), &info);
+    FAISS_THROW_IF_NOT(info == 0);
+    dgetri_(&n, a, &n, ipiv.data(), workspace.data(), &lwork, &info);
     FAISS_THROW_IF_NOT(info == 0);
 }
 
@@ -300,69 +342,142 @@ void LocalSearchQuantizer::update_codebooks(
         size_t n) {
     lsq_timer.start("update_codebooks");
 
-    // allocate memory
-    // bb = B'B, bx = BX
-    std::vector<float> bb(M * K * M * K, 0.0f); // [M * K, M * K]
-    std::vector<float> bx(M * K * d, 0.0f);     // [M * K, d]
+    if (!update_codebooks_with_double) {
+        // allocate memory
+        // bb = B'B, bx = BX
+        std::vector<float> bb(M * K * M * K, 0.0f); // [M * K, M * K]
+        std::vector<float> bx(M * K * d, 0.0f);     // [M * K, d]
 
-    // compute B'B
-    for (size_t i = 0; i < n; i++) {
-        for (size_t m = 0; m < M; m++) {
-            int32_t code1 = codes[i * M + m];
-            int32_t idx1 = m * K + code1;
-            bb[idx1 * M * K + idx1] += 1;
+        // compute B'B
+        for (size_t i = 0; i < n; i++) {
+            for (size_t m = 0; m < M; m++) {
+                int32_t code1 = codes[i * M + m];
+                int32_t idx1 = m * K + code1;
+                bb[idx1 * M * K + idx1] += 1;
 
-            for (size_t m2 = m + 1; m2 < M; m2++) {
-                int32_t code2 = codes[i * M + m2];
-                int32_t idx2 = m2 * K + code2;
-                bb[idx1 * M * K + idx2] += 1;
-                bb[idx2 * M * K + idx1] += 1;
+                for (size_t m2 = m + 1; m2 < M; m2++) {
+                    int32_t code2 = codes[i * M + m2];
+                    int32_t idx2 = m2 * K + code2;
+                    bb[idx1 * M * K + idx2] += 1;
+                    bb[idx2 * M * K + idx1] += 1;
+                }
             }
         }
-    }
 
-    // add a regularization term to B'B
-    for (int64_t i = 0; i < M * K; i++) {
-        bb[i * (M * K) + i] += lambd;
-    }
+        // add a regularization term to B'B
+        for (int64_t i = 0; i < M * K; i++) {
+            bb[i * (M * K) + i] += lambd;
+        }
 
-    // compute (B'B)^(-1)
-    fmat_inverse(bb.data(), M * K); // [M*K, M*K]
+        // compute (B'B)^(-1)
+        fmat_inverse(bb.data(), M * K); // [M*K, M*K]
 
-    // compute BX
-    for (size_t i = 0; i < n; i++) {
-        for (size_t m = 0; m < M; m++) {
-            int32_t code = codes[i * M + m];
-            float* data = bx.data() + (m * K + code) * d;
-            fvec_add(d, data, x + i * d, data);
+        // compute BX
+        for (size_t i = 0; i < n; i++) {
+            for (size_t m = 0; m < M; m++) {
+                int32_t code = codes[i * M + m];
+                float* data = bx.data() + (m * K + code) * d;
+                fvec_add(d, data, x + i * d, data);
+            }
+        }
+
+        // compute C = (B'B)^(-1) @ BX
+        //
+        // NOTE: LAPACK use column major order
+        // out = alpha * op(A) * op(B) + beta * C
+        FINTEGER nrows_A = d;
+        FINTEGER ncols_A = M * K;
+
+        FINTEGER nrows_B = M * K;
+        FINTEGER ncols_B = M * K;
+
+        float alpha = 1.0f;
+        float beta = 0.0f;
+        sgemm_("Not Transposed",
+               "Not Transposed",
+               &nrows_A, // nrows of op(A)
+               &ncols_B, // ncols of op(B)
+               &ncols_A, // ncols of op(A)
+               &alpha,
+               bx.data(),
+               &nrows_A, // nrows of A
+               bb.data(),
+               &nrows_B, // nrows of B
+               &beta,
+               codebooks.data(),
+               &nrows_A); // nrows of output
+
+    } else {
+        // allocate memory
+        // bb = B'B, bx = BX
+        std::vector<double> bb(M * K * M * K, 0.0f); // [M * K, M * K]
+        std::vector<double> bx(M * K * d, 0.0f);     // [M * K, d]
+
+        // compute B'B
+        for (size_t i = 0; i < n; i++) {
+            for (size_t m = 0; m < M; m++) {
+                int32_t code1 = codes[i * M + m];
+                int32_t idx1 = m * K + code1;
+                bb[idx1 * M * K + idx1] += 1;
+
+                for (size_t m2 = m + 1; m2 < M; m2++) {
+                    int32_t code2 = codes[i * M + m2];
+                    int32_t idx2 = m2 * K + code2;
+                    bb[idx1 * M * K + idx2] += 1;
+                    bb[idx2 * M * K + idx1] += 1;
+                }
+            }
+        }
+
+        // add a regularization term to B'B
+        for (int64_t i = 0; i < M * K; i++) {
+            bb[i * (M * K) + i] += lambd;
+        }
+
+        // compute (B'B)^(-1)
+        dmat_inverse(bb.data(), M * K); // [M*K, M*K]
+
+        // compute BX
+        for (size_t i = 0; i < n; i++) {
+            for (size_t m = 0; m < M; m++) {
+                int32_t code = codes[i * M + m];
+                double* data = bx.data() + (m * K + code) * d;
+                dfvec_add(d, data, x + i * d, data);
+            }
+        }
+
+        // compute C = (B'B)^(-1) @ BX
+        //
+        // NOTE: LAPACK use column major order
+        // out = alpha * op(A) * op(B) + beta * C
+        FINTEGER nrows_A = d;
+        FINTEGER ncols_A = M * K;
+
+        FINTEGER nrows_B = M * K;
+        FINTEGER ncols_B = M * K;
+
+        std::vector<double> d_codebooks(M * K * d);
+
+        double alpha = 1.0f;
+        double beta = 0.0f;
+        dgemm_("Not Transposed",
+               "Not Transposed",
+               &nrows_A, // nrows of op(A)
+               &ncols_B, // ncols of op(B)
+               &ncols_A, // ncols of op(A)
+               &alpha,
+               bx.data(),
+               &nrows_A, // nrows of A
+               bb.data(),
+               &nrows_B, // nrows of B
+               &beta,
+               d_codebooks.data(),
+               &nrows_A); // nrows of output
+
+        for (size_t i = 0; i < M * K * d; i++) {
+            codebooks[i] = (float)d_codebooks[i];
         }
     }
-
-    // compute C = (B'B)^(-1) @ BX
-    //
-    // NOTE: LAPACK use column major order
-    // out = alpha * op(A) * op(B) + beta * C
-    FINTEGER nrows_A = d;
-    FINTEGER ncols_A = M * K;
-
-    FINTEGER nrows_B = M * K;
-    FINTEGER ncols_B = M * K;
-
-    float alpha = 1.0f;
-    float beta = 0.0f;
-    sgemm_("Not Transposed",
-           "Not Transposed",
-           &nrows_A, // nrows of op(A)
-           &ncols_B, // ncols of op(B)
-           &ncols_A, // ncols of op(A)
-           &alpha,
-           bx.data(),
-           &nrows_A, // nrows of A
-           bb.data(),
-           &nrows_B, // nrows of B
-           &beta,
-           codebooks.data(),
-           &nrows_A); // nrows of output
 
     lsq_timer.end("update_codebooks");
 }
