@@ -36,14 +36,31 @@ struct IcmEncoderImpl {
 
     ~IcmEncoderImpl() {}
 
+    ///< copy codebooks to device memory and compute unary terms
     void setBinaryTerm(const float* codebooks);
 
+    /** Compute unary terms.
+     *
+     * uterm[i] = x * codebook[i]^T, i = 1,...,M
+     *
+     * @param uterm     output unary terms, size [M, n, K]
+     * @param x         input vectors, size [n, dims]
+     * @param codebooks codebooks, size [M, K, dims]
+     * @param n         number of input vectors
+     */
     void computeUnaryTerms(
             float* bterm,
             const float* x,
             const float* codebooks,
             int n) const;
 
+    /** Compute binary terms.
+     *
+     * bterm[i][j] = codebooks[i] * codebooks[j]^T. i, j = 1,...,M
+     *
+     * @param bterm     output binary terms, size [M, M, K, K]
+     * @param codebooks codebooks, size [M, K, dims]
+     */
     void computeBinaryTerms(float* bterm, const float* codebooks) const;
 
     template <int M>
@@ -58,6 +75,7 @@ struct IcmEncoderImpl {
             int ilsIters,
             int icmIters) const;
 
+    ///< icm encode method
     void encode(
             int32_t* codes,
             const float* x,

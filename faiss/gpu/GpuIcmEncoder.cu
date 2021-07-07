@@ -59,6 +59,7 @@ GpuIcmEncoder::GpuIcmEncoder(
         const std::vector<GpuResourcesProvider*>& provs,
         const std::vector<int>& devices)
         : lsq::IcmEncoder(lsq), shards(new IcmEncoderShards()) {
+    // create an IcmEncoderImpl instance for each device.
     for (size_t i = 0; i < provs.size(); i++) {
         shards->add(new IcmEncoderImpl(
                 lsq->M, lsq->K, lsq->d, provs[i], devices[i]));
@@ -91,7 +92,7 @@ void GpuIcmEncoder::encode(
 
     auto seed = gen();
 
-    // split input data to different device
+    // split input data
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         size_t i0 = idx * shard_size;
         size_t ni = std::min(shard_size, n - i0);

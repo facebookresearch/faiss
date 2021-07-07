@@ -17,6 +17,11 @@ namespace gpu {
 class GpuResourcesProvider;
 struct IcmEncoderShards;
 
+/** Perform LSQ encoding on GPU.
+ *
+ * Split input vectors to different devices and call IcmEncoderImpl::encode
+ * to encode them
+ */
 class GpuIcmEncoder : public lsq::IcmEncoder {
    public:
     GpuIcmEncoder(

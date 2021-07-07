@@ -211,19 +211,6 @@ IcmEncoderImpl::IcmEncoderImpl(
     res = prov->getResources();
 }
 
-/** Compute unary terms.
- *
- * uterm[i] = x * codebook[i]^T, i = 1,...,M
- *
- * M - number of codebook
- * K - number of codewords in a codebook
- * d - dimensions of a codeword
- *
- * @param uterm     output unary terms, size [M, n, K]
- * @param x         input vectors, size [n, d]
- * @param codebooks codebooks, size [M, K, d]
- * @param n         number of input vectors
- */
 void IcmEncoderImpl::computeUnaryTerms(
         float* uterm,           // output, [M, n, K]
         const float* x,         // [n, d]
@@ -255,17 +242,6 @@ void IcmEncoderImpl::computeUnaryTerms(
     }
 }
 
-/** Compute binary terms.
- *
- * bterm[i][j] = codebooks[i] * codebooks[j]^T. i, j = 1,...,M
- *
- * M - number of codebook
- * K - number of codewords in a codebook
- * d - dimensions of a codeword
- *
- * @param bterm     output binary terms, size [M, M, K, K]
- * @param codebooks codebooks, size [M, K, d]
- */
 void IcmEncoderImpl::computeBinaryTerms(float* bterm, const float* codebooks)
         const {
     auto stream = res->getDefaultStreamCurrentDevice();
