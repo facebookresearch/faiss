@@ -61,6 +61,8 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     ///< if non-NULL, use this encoder to encode
     lsq::IcmEncoderFactory* icm_encoder_factory;
 
+    bool update_codebooks_with_double = true;
+
     LocalSearchQuantizer(
             size_t d,      /* dimensionality of the input vectors */
             size_t M,      /* number of subquantizers */

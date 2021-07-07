@@ -220,8 +220,6 @@ def range_PR_multiple_thresholds(
     return precisions, recalls
 
 
-
-
 ###############################################################
 # Functions that compare search results with a reference result.
 # They are intended for use in tests

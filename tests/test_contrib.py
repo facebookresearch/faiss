@@ -15,8 +15,9 @@ from faiss.contrib import ivf_tools
 
 from common_faiss_tests import get_dataset_2
 try:
-    from faiss.contrib.exhaustive_search import knn_ground_truth, knn, range_ground_truth
-    from faiss.contrib.exhaustive_search import range_search_max_results
+    from faiss.contrib.exhaustive_search import \
+        knn_ground_truth, knn, range_ground_truth, \
+        range_search_max_results, exponential_query_iterator
 
 except:
     pass  # Submodule import broken in python 2.
@@ -151,7 +152,7 @@ class TestExhaustiveSearch(unittest.TestCase):
 
         # check repro OK
         _, new_lims, new_D, new_I = range_search_max_results(
-            index, matrix_iterator(xq, 100), threshold)
+            index, matrix_iterator(xq, 100), threshold, max_results=1e10)
 
         evaluation.test_ref_range_results(
             ref_lims, ref_D, ref_I,
@@ -381,3 +382,38 @@ class TestPreassigned(unittest.TestCase):
         for q in range(len(xq)):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
+
+
+class TestRangeSearchMaxResults(unittest.TestCase):
+
+    def do_test(self, metric_type):
+        ds = datasets.SyntheticDataset(32, 0, 1000, 200)
+        index = faiss.IndexFlat(ds.d, metric_type)
+        index.add(ds.get_database())
+
+        # find a reasonable radius
+        D, _ = index.search(ds.get_queries(), 10)
+        radius0 = float(np.median(D[:, -1]))
+
+        # baseline = search with that radius
+        lims_ref, Dref, Iref = index.range_search(ds.get_queries(), radius0)
+
+        # now see if using just the total number of results, we can get back the same
+        # result table
+        query_iterator = exponential_query_iterator(ds.get_queries())
+
+        init_radius = 1e10 if metric_type == faiss.METRIC_L2 else -1e10
+        radius1, lims_new, Dnew, Inew = range_search_max_results(
+            index, query_iterator, init_radius, min_results=Dref.size, clip_to_min=True
+        )
+
+        evaluation.test_ref_range_results(
+            lims_ref, Dref, Iref,
+            lims_new, Dnew, Inew
+        )
+
+    def test_L2(self):
+        self.do_test(faiss.METRIC_L2)
+
+    def test_IP(self):
+        self.do_test(faiss.METRIC_INNER_PRODUCT)
