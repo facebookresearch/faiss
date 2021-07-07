@@ -26,11 +26,11 @@ extern __shared__ char smem[];
 
 /** encode using iterative conditional mode
  *
- * For every subcode ci (i = 1, ..., M) of a vector, we fix the other
- * subcodes cj (j != i) and then find the optimal value of ci such
- * that minimizing the objective function.
+ * For subcode cm of a vector, we fix the other subcodes cj (j != m)
+ * and then find the optimal value of cm (cm = 1,...,K) such that
+ * minimizing the objective function.
  *
- * @param uterm  precomputed unary terms, size (n, M, K)
+ * @param uterm  precomputed unary terms, size (M, n, K)
  * @param bterm  precomputed binary terms, size (M1, M2, K1, K2)
  * @param codes  output vector encodings, size (n, M)
  * @param M      number of codebooks
@@ -46,9 +46,10 @@ __global__ void runIcmEncodeStep(
         int m) {
     using KVPair = Pair<float, int>;
 
-    int id = blockIdx.x;
-    int code = threadIdx.x;
+    int id = blockIdx.x;    // each block takes care of one vector
+    int code = threadIdx.x; // each thread takes care of one possible code
 
+    // compute the objective value by look-up tables
     KVPair obj(0.0f, code);
     obj.k = uterm[id * K + code];
 
@@ -61,6 +62,7 @@ __global__ void runIcmEncodeStep(
         obj.k += bterm[m2 * K * K + code * K + code2];
     }
 
+    // find the minimum objective value and the corresponding code
     __syncthreads();
     obj = blockReduceAll<KVPair, Min<KVPair>, false, false>(
             obj, Min<KVPair>(), (KVPair*)smem);
@@ -70,6 +72,19 @@ __global__ void runIcmEncodeStep(
     }
 }
 
+/** compute reconstruction error for each vector
+ *
+ * decoded_x[i] = \sum codebooks[m][codes[i][m]], m = 1,..,M
+ * obj[i] = ||x[i] - decoded_x[i]||^2
+ *
+ * @param x      input vectors, size [n, dims]
+ * @param codebooks  codebooks, size [M, K, dims]
+ * @param codes  vector codes, size [n, M]
+ * @param obj    output reconstruction errors, size [n]
+ * @param n      number of input vectors
+ * @param K      number of codewords in a codebook
+ * @param M      number of codebooks
+ */
 template <int M>
 __global__ void runEvaluation(
         const float* x,
@@ -79,8 +94,8 @@ __global__ void runEvaluation(
         int n,
         int K,
         int dims) {
-    int id = blockIdx.x; // index of the vector
-    int d = threadIdx.x; // dimension
+    int id = blockIdx.x; // each block takes care of one vector
+    int d = threadIdx.x; // each thread takes care of one dimension
     float acc = 0.0f;
 
 #pragma unroll
@@ -92,6 +107,7 @@ __global__ void runEvaluation(
     acc -= x[id * dims + d];
     acc = acc * acc;
 
+    // sum values of all dimensions together
     __syncthreads();
     acc = blockReduceAllSum<float, false, false>(acc, (float*)smem);
 
@@ -100,6 +116,18 @@ __global__ void runEvaluation(
     }
 }
 
+/** perturb vector codes
+ *
+ * repeat nperts times:
+ *   codes[i][randint(0, M)] = randint(0, K)
+ *
+ * @param seed   random seed
+ * @param codes  vector codes, size [n, M]
+ * @param n      number of input vectors
+ * @param M      number of codebooks
+ * @param K      number of codewords in a codebook
+ * @param nperts number of subcode to be perturbed in a vector
+ */
 template <int M>
 __global__ void runCodesPerturbation(
         int seed,
@@ -107,7 +135,8 @@ __global__ void runCodesPerturbation(
         int n,
         int K,
         int nperts) {
-    int id = blockIdx.x * blockDim.x + threadIdx.x; // index of the vector
+    // each thread takes care of one vector
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (id >= n) {
         return;
@@ -124,6 +153,18 @@ __global__ void runCodesPerturbation(
     }
 }
 
+/** select the best codes by reconstruction errors
+ *
+ * if objs[i] < best_objs[i]:
+ *     best_objs[i] = objs[i]
+ *     best_codes[i] = codes[i]
+ *
+ * @param bestCodes the best codes we've encountered, size [n, M]
+ * @param bestObjs  min reconstruction errors we've encountered, size [n]
+ * @param codes     input vector codes, size [n, M]
+ * @param objs      reconstruction errors of input vector codes, size [n]
+ * @param n         number of input vectors
+ */
 template <int M>
 __global__ void runCodesSelection(
         int32_t* bestCodes,
@@ -131,7 +172,8 @@ __global__ void runCodesSelection(
         const int32_t* codes,
         const float* objs,
         int n) {
-    int id = blockIdx.x * blockDim.x + threadIdx.x; // index of the vector
+    // each thread takes care of one vector
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (id >= n || objs[id] >= bestObjs[id]) {
         return;
@@ -144,11 +186,19 @@ __global__ void runCodesSelection(
     }
 }
 
-__global__ void runNormAddition(float* bterm, const float* norm, int K) {
+/** add L2 norm of codewords in a codebook to the unary terms
+ *
+ * uterm[i][k] = norm[k]
+ *
+ * @param uterm unary terms, size [n, K]
+ * @param norm  L2 norm of each codeword in a codebook, size [K]
+ * @param K     number of codewords in a codebook
+ */
+__global__ void runNormAddition(float* uterm, const float* norm, int K) {
     int id = blockIdx.x;
     int code = threadIdx.x;
 
-    bterm[id * K + code] += norm[code];
+    uterm[id * K + code] += norm[code];
 }
 
 IcmEncoderImpl::IcmEncoderImpl(
@@ -161,6 +211,19 @@ IcmEncoderImpl::IcmEncoderImpl(
     res = prov->getResources();
 }
 
+/** Compute unary terms.
+ *
+ * uterm[i] = x * codebook[i]^T, i = 1,...,M
+ *
+ * M - number of codebook
+ * K - number of codewords in a codebook
+ * d - dimensions of a codeword
+ *
+ * @param uterm     output unary terms, size [M, n, K]
+ * @param x         input vectors, size [n, d]
+ * @param codebooks codebooks, size [M, K, d]
+ * @param n         number of input vectors
+ */
 void IcmEncoderImpl::computeUnaryTerms(
         float* uterm,           // output, [M, n, K]
         const float* x,         // [n, d]
@@ -186,12 +249,23 @@ void IcmEncoderImpl::computeUnaryTerms(
     runL2Norm(c, true, norm, true, stream);
 
     for (int m = 0; m < M; m++) {
-        auto bPtr = uterm + m * n * K;
+        auto uPtr = uterm + m * n * K;
         auto nPtr = norm.data() + m * K;
-        runNormAddition<<<n, K, 0, stream>>>(bPtr, nPtr, K);
+        runNormAddition<<<n, K, 0, stream>>>(uPtr, nPtr, K);
     }
 }
 
+/** Compute binary terms.
+ *
+ * bterm[i][j] = codebooks[i] * codebooks[j]^T. i, j = 1,...,M
+ *
+ * M - number of codebook
+ * K - number of codewords in a codebook
+ * d - dimensions of a codeword
+ *
+ * @param bterm     output binary terms, size [M, M, K, K]
+ * @param codebooks codebooks, size [M, K, d]
+ */
 void IcmEncoderImpl::computeBinaryTerms(float* bterm, const float* codebooks)
         const {
     auto stream = res->getDefaultStreamCurrentDevice();
@@ -216,6 +290,7 @@ void IcmEncoderImpl::setBinaryTerm(const float* codebooksHost) {
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
 
+    // copy from host to device memory
     codebooks = toDeviceNonTemporary<float, 3>(
             res.get(),
             device,
@@ -242,11 +317,13 @@ void IcmEncoderImpl::encodeImpl(
     auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
 
+    // copy from host to device memory
     auto codes = toDeviceTemporary<int32_t, 2>(
             res.get(), device, const_cast<int32_t*>(codesHost), stream, {n, M});
     auto x = toDeviceTemporary<float, 2>(
             res.get(), device, const_cast<float*>(xHost), stream, {n, dims});
 
+    // compute unary terms
     DeviceTensor<float, 3, true> uterm(
             res.get(), makeTempAlloc(AllocType::Other, stream), {M, n, K});
     computeUnaryTerms(uterm.data(), x.data(), codebooks.data(), n);
@@ -261,10 +338,12 @@ void IcmEncoderImpl::encodeImpl(
     DeviceTensor<float, 1, true> objs(
             res.get(), makeTempAlloc(AllocType::Other, stream), {n});
 
+    // compute how much shared memory we need
     const int evaluateSmem = sizeof(float) * (dims + kWarpSize - 1) / kWarpSize;
     const int encodeSmem =
             sizeof(Pair<float, int>) * (K + kWarpSize - 1) / kWarpSize;
 
+    // compute the reconstruction error for each vector
     runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
             x.data(),
             codebooks.data(),
@@ -281,6 +360,7 @@ void IcmEncoderImpl::encodeImpl(
         runCodesPerturbation<M><<<numBlocks, blockSize, 0, stream>>>(
                 gen(), codes.data(), n, K, nperts);
 
+        // perform icm encoding
         for (int j = 0; j < icmIters; j++) {
             for (int m = 0; m < M; m++) {
                 runIcmEncodeStep<M><<<n, K, encodeSmem, stream>>>(
@@ -288,6 +368,7 @@ void IcmEncoderImpl::encodeImpl(
             }
         }
 
+        // compute the reconstruction error for each vector given codes
         runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
                 x.data(),
                 codebooks.data(),
@@ -297,6 +378,7 @@ void IcmEncoderImpl::encodeImpl(
                 K,
                 dims);
 
+        // if objs[i] < best_objs[i], replace best_codes[i] with codes[i]
         runCodesSelection<M><<<numBlocks, blockSize, 0, stream>>>(
                 bestCodes.data(),
                 bestObjs.data(),

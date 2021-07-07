@@ -16,6 +16,7 @@
 namespace faiss {
 namespace gpu {
 
+///< A helper structure to support multi-GPU
 struct IcmEncoderShards {
     std::vector<std::pair<
             std::unique_ptr<IcmEncoderImpl>,
@@ -32,6 +33,7 @@ struct IcmEncoderShards {
         return workers[idx].first.get();
     }
 
+    ///< call f(idx, encoder) for each encoder
     void runOnShards(std::function<void(int, IcmEncoderImpl*)> f) {
         std::vector<std::future<bool>> v;
 
@@ -89,6 +91,7 @@ void GpuIcmEncoder::encode(
 
     auto seed = gen();
 
+    // split input data to different device
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         size_t i0 = idx * shard_size;
         size_t ni = std::min(shard_size, n - i0);

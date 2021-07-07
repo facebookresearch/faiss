@@ -16,13 +16,16 @@ namespace faiss {
 namespace gpu {
 
 struct IcmEncoderImpl {
-    int M, K, dims;
+    int M;    ///< number of codebooks
+    int K;    ///< number of codewords in a codebook
+    int dims; ///< dimensions of a codeword
+
     GpuResourcesProvider* prov;
     std::shared_ptr<GpuResources> res;
     int device;
 
-    DeviceTensor<float, 4, true> bterm;
-    DeviceTensor<float, 3, true> codebooks;
+    DeviceTensor<float, 4, true> bterm;     ///< bianry terms, size [M, M, K, K]
+    DeviceTensor<float, 3, true> codebooks; ///< codebooks, size [M, K, dims]
 
     IcmEncoderImpl(
             int M,
