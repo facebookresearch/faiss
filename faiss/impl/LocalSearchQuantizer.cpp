@@ -407,9 +407,8 @@ void LocalSearchQuantizer::icm_encode(
         icm_encoder.reset(factory->get(this));
     }
 
-    // precompute binary term for all chunks
-    std::vector<float> binaries(M * M * K * K); // [M, M, K, K]
-    icm_encoder->set_binary_term(binaries.data());
+    // precompute binary terms for all chunks
+    icm_encoder->set_binary_term();
 
     const size_t n_chunks = (n + chunk_size - 1) / chunk_size;
     for (size_t i = 0; i < n_chunks; i++) {
@@ -663,11 +662,14 @@ float LocalSearchQuantizer::evaluate(
 
 namespace lsq {
 
-IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq) : lsq(lsq) {}
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq)
+        : lsq(lsq), verbose(false) {}
 
-void IcmEncoder::set_binary_term(float* binaries) {
-    lsq->compute_binary_terms(binaries);
-    this->binaries = binaries;
+void IcmEncoder::set_binary_term() {
+    auto M = lsq->M;
+    auto K = lsq->K;
+    binaries.resize(M * M * K * K);
+    lsq->compute_binary_terms(binaries.data());
 }
 
 void IcmEncoder::encode(
@@ -676,8 +678,7 @@ void IcmEncoder::encode(
         std::mt19937& gen,
         size_t n,
         size_t ils_iters) const {
-
-    lsq->icm_encode_impl(codes, x, binaries, gen, n, ils_iters, verbose);
+    lsq->icm_encode_impl(codes, x, binaries.data(), gen, n, ils_iters, verbose);
 }
 
 double LSQTimer::get(const std::string& name) {

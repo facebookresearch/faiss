@@ -9,11 +9,12 @@
 
 #include <faiss/impl/LocalSearchQuantizer.h>
 
+#include <memory>
+
 namespace faiss {
 namespace gpu {
 
 class GpuResourcesProvider;
-struct IcmEncoderImpl;
 struct IcmEncoderShards;
 
 class GpuIcmEncoder : public lsq::IcmEncoder {
@@ -25,7 +26,10 @@ class GpuIcmEncoder : public lsq::IcmEncoder {
 
     ~GpuIcmEncoder();
 
-    void set_binary_term(float* binaries) override;
+    GpuIcmEncoder(const GpuIcmEncoder&) = delete;
+    GpuIcmEncoder& operator=(const GpuIcmEncoder&) = delete;
+
+    void set_binary_term() override;
 
     void encode(
             int32_t* codes,
@@ -35,12 +39,11 @@ class GpuIcmEncoder : public lsq::IcmEncoder {
             size_t ils_iters) const override;
 
    private:
-    // IcmEncoderImpl* encoder;
-    IcmEncoderShards* shards = nullptr;
+    std::unique_ptr<IcmEncoderShards> shards;
 };
 
 struct GpuIcmEncoderFactory : public lsq::IcmEncoderFactory {
-    GpuIcmEncoderFactory(int ngpus = 1);
+    explicit GpuIcmEncoderFactory(int ngpus = 1);
 
     lsq::IcmEncoder* get(const LocalSearchQuantizer* lsq) override;
 

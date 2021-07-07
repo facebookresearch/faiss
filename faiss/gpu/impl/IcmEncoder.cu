@@ -320,7 +320,7 @@ void IcmEncoderImpl::encode(
         int nperts,
         int ilsIters,
         int icmIters) const {
-    FAISS_THROW_IF_NOT(M <= 64);
+    FAISS_THROW_IF_NOT(M <= 64 || M == 128);
 
 #define DISPATCH_M(m)                                                        \
     case m:                                                                  \

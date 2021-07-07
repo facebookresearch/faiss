@@ -58,6 +58,7 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     int random_seed; ///< seed for random generator
     size_t nperts;   ///< number of perturbation in each code
 
+    ///< if non-NULL, use this encoder to encode
     lsq::IcmEncoderFactory* icm_encoder_factory;
 
     LocalSearchQuantizer(
@@ -165,16 +166,27 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
 namespace lsq {
 
 struct IcmEncoder {
-    const float* binaries = nullptr;
-    bool verbose = false;
-    const LocalSearchQuantizer* lsq = nullptr;
+    std::vector<float> binaries;
 
-    IcmEncoder(const LocalSearchQuantizer* lsq);
+    bool verbose;
+
+    const LocalSearchQuantizer* lsq;
+
+    explicit IcmEncoder(const LocalSearchQuantizer* lsq);
 
     virtual ~IcmEncoder() {}
 
-    virtual void set_binary_term(float* binaries);
+    ///< compute binary terms
+    virtual void set_binary_term();
 
+    /** Encode vectors given codebooks
+     *
+     * @param codes     output codes, size n * M
+     * @param x         vectors to encode, size n * d
+     * @param gen       random generator
+     * @param n         number of vectors
+     * @param ils_iters number of iterations of iterative local search
+     */
     virtual void encode(
             int32_t* codes,
             const float* x,

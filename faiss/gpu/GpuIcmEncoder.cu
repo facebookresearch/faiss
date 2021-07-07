@@ -56,18 +56,16 @@ GpuIcmEncoder::GpuIcmEncoder(
         const LocalSearchQuantizer* lsq,
         const std::vector<GpuResourcesProvider*>& provs,
         const std::vector<int>& devices)
-        : lsq::IcmEncoder(lsq) {
-    shards = new IcmEncoderShards();
+        : lsq::IcmEncoder(lsq), shards(new IcmEncoderShards()) {
     for (size_t i = 0; i < provs.size(); i++) {
-        shards->add(new IcmEncoderImpl(lsq->M, lsq->K, lsq->d, provs[i], devices[i]));
+        shards->add(new IcmEncoderImpl(
+                lsq->M, lsq->K, lsq->d, provs[i], devices[i]));
     }
 }
 
-GpuIcmEncoder::~GpuIcmEncoder() {
-    delete shards;
-}
+GpuIcmEncoder::~GpuIcmEncoder() {}
 
-void GpuIcmEncoder::set_binary_term(float* binaries) {
+void GpuIcmEncoder::set_binary_term() {
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         encoder->setBinaryTerm(lsq->codebooks.data());
     };
@@ -96,7 +94,7 @@ void GpuIcmEncoder::encode(
         size_t ni = std::min(shard_size, n - i0);
         auto xi = x + i0 * d;
         auto ci = codes + i0 * M;
-        std::mt19937 geni(idx + seed);
+        std::mt19937 geni(idx + seed); // different seed for each shard
         encoder->encode(
                 ci, xi, codebooks, geni, ni, nperts, ils_iters, icm_iters);
     };
