@@ -63,18 +63,6 @@ struct IcmEncoderImpl {
      */
     void computeBinaryTerms(float* bterm, const float* codebooks) const;
 
-    template <int M>
-    void encodeImpl(
-            int32_t* codes,
-            const float* x,
-            const float* codebooks,
-            std::mt19937& gen,
-            int n,
-            int K,
-            int nperts,
-            int ilsIters,
-            int icmIters) const;
-
     ///< icm encode method
     void encode(
             int32_t* codes,

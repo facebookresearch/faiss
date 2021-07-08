@@ -37,11 +37,11 @@ extern __shared__ char smem[];
  * @param K      number of codewords in a codebook
  * @param m      identify which subcode to condition on
  */
-template <int M>
 __global__ void runIcmEncodeStep(
         const float* uterm,
         const float* bterm,
         int32_t* codes,
+        int M,
         int K,
         int m) {
     using KVPair = Pair<float, int>;
@@ -85,13 +85,13 @@ __global__ void runIcmEncodeStep(
  * @param K      number of codewords in a codebook
  * @param M      number of codebooks
  */
-template <int M>
 __global__ void runEvaluation(
         const float* x,
         const float* codebooks,
         const int32_t* codes,
         float* obj, // output
         int n,
+        int M,
         int K,
         int dims) {
     int id = blockIdx.x; // each block takes care of one vector
@@ -128,11 +128,11 @@ __global__ void runEvaluation(
  * @param K      number of codewords in a codebook
  * @param nperts number of subcode to be perturbed in a vector
  */
-template <int M>
 __global__ void runCodesPerturbation(
         int seed,
         int32_t* codes,
         int n,
+        int M,
         int K,
         int nperts) {
     // each thread takes care of one vector
@@ -165,13 +165,13 @@ __global__ void runCodesPerturbation(
  * @param objs      reconstruction errors of input vector codes, size [n]
  * @param n         number of input vectors
  */
-template <int M>
 __global__ void runCodesSelection(
         int32_t* bestCodes,
         float* bestObjs,
         const int32_t* codes,
         const float* objs,
-        int n) {
+        int n,
+        int M) {
     // each thread takes care of one vector
     int id = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -278,14 +278,12 @@ void IcmEncoderImpl::setBinaryTerm(const float* codebooksHost) {
     computeBinaryTerms(bterm.data(), codebooks.data());
 }
 
-template <int M>
-void IcmEncoderImpl::encodeImpl(
+void IcmEncoderImpl::encode(
         int32_t* codesHost,
         const float* xHost,
         const float* codebooksHost,
         std::mt19937& gen,
         int n,
-        int K,
         int nperts,
         int ilsIters,
         int icmIters) const {
@@ -320,12 +318,13 @@ void IcmEncoderImpl::encodeImpl(
             sizeof(Pair<float, int>) * (K + kWarpSize - 1) / kWarpSize;
 
     // compute the reconstruction error for each vector
-    runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
+    runEvaluation<<<n, dims, evaluateSmem, stream>>>(
             x.data(),
             codebooks.data(),
             codes.data(),
             bestObjs.data(),
             n,
+            M,
             K,
             dims);
 
@@ -333,135 +332,47 @@ void IcmEncoderImpl::encodeImpl(
     int numBlocks = (n + blockSize - 1) / blockSize;
 
     for (int i = 0; i < ilsIters; i++) {
-        runCodesPerturbation<M><<<numBlocks, blockSize, 0, stream>>>(
-                gen(), codes.data(), n, K, nperts);
+        runCodesPerturbation<<<numBlocks, blockSize, 0, stream>>>(
+                gen(), codes.data(), n, M, K, nperts);
 
         // perform icm encoding
         for (int j = 0; j < icmIters; j++) {
             for (int m = 0; m < M; m++) {
-                runIcmEncodeStep<M><<<n, K, encodeSmem, stream>>>(
-                        uterm[m].data(), bterm[m].data(), codes.data(), K, m);
+                runIcmEncodeStep<<<n, K, encodeSmem, stream>>>(
+                        uterm[m].data(),
+                        bterm[m].data(),
+                        codes.data(),
+                        M,
+                        K,
+                        m);
             }
         }
 
         // compute the reconstruction error for each vector given codes
-        runEvaluation<M><<<n, dims, evaluateSmem, stream>>>(
+        runEvaluation<<<n, dims, evaluateSmem, stream>>>(
                 x.data(),
                 codebooks.data(),
                 codes.data(),
                 objs.data(),
                 n,
+                M,
                 K,
                 dims);
 
         // if objs[i] < best_objs[i], replace best_codes[i] with codes[i]
-        runCodesSelection<M><<<numBlocks, blockSize, 0, stream>>>(
+        runCodesSelection<<<numBlocks, blockSize, 0, stream>>>(
                 bestCodes.data(),
                 bestObjs.data(),
                 codes.data(),
                 objs.data(),
-                n);
+                n,
+                M);
 
         codes.copyFrom(bestCodes, stream);
     }
 
     // copy back to host memory
     fromDevice<int32_t, 2>(bestCodes, codesHost, stream);
-}
-
-void IcmEncoderImpl::encode(
-        int32_t* codes,
-        const float* x,
-        const float* codebooks,
-        std::mt19937& gen,
-        int n,
-        int nperts,
-        int ilsIters,
-        int icmIters) const {
-    FAISS_THROW_IF_NOT(M <= 64 || M == 128);
-
-#define DISPATCH_M(m)                                                        \
-    case m:                                                                  \
-        encodeImpl<m>(                                                       \
-                codes, x, codebooks, gen, n, K, nperts, ilsIters, icmIters); \
-        break
-
-    switch (M) {
-        DISPATCH_M(1);
-        DISPATCH_M(2);
-        DISPATCH_M(4);
-        DISPATCH_M(8);
-        DISPATCH_M(16);
-        DISPATCH_M(32);
-        DISPATCH_M(64);
-        DISPATCH_M(128);
-
-        DISPATCH_M(3);
-
-        DISPATCH_M(5);
-        DISPATCH_M(6);
-        DISPATCH_M(7);
-
-        DISPATCH_M(9);
-        DISPATCH_M(10);
-        DISPATCH_M(11);
-        DISPATCH_M(12);
-        DISPATCH_M(13);
-        DISPATCH_M(14);
-        DISPATCH_M(15);
-
-        DISPATCH_M(17);
-        DISPATCH_M(18);
-        DISPATCH_M(19);
-        DISPATCH_M(20);
-        DISPATCH_M(21);
-        DISPATCH_M(22);
-        DISPATCH_M(23);
-        DISPATCH_M(24);
-        DISPATCH_M(25);
-        DISPATCH_M(26);
-        DISPATCH_M(27);
-        DISPATCH_M(28);
-        DISPATCH_M(29);
-        DISPATCH_M(30);
-        DISPATCH_M(31);
-
-        DISPATCH_M(33);
-        DISPATCH_M(34);
-        DISPATCH_M(35);
-        DISPATCH_M(36);
-        DISPATCH_M(37);
-        DISPATCH_M(38);
-        DISPATCH_M(39);
-        DISPATCH_M(40);
-        DISPATCH_M(41);
-        DISPATCH_M(42);
-        DISPATCH_M(43);
-        DISPATCH_M(44);
-        DISPATCH_M(45);
-        DISPATCH_M(46);
-        DISPATCH_M(47);
-        DISPATCH_M(48);
-        DISPATCH_M(49);
-        DISPATCH_M(50);
-        DISPATCH_M(51);
-        DISPATCH_M(52);
-        DISPATCH_M(53);
-        DISPATCH_M(54);
-        DISPATCH_M(55);
-        DISPATCH_M(56);
-        DISPATCH_M(57);
-        DISPATCH_M(58);
-        DISPATCH_M(59);
-        DISPATCH_M(60);
-        DISPATCH_M(61);
-        DISPATCH_M(62);
-        DISPATCH_M(63);
-
-        default:
-            FAISS_THROW_MSG("Invalid number of codebooks");
-    }
-#undef DISPATCH_M
 }
 
 } // namespace gpu
