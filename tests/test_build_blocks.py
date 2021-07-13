@@ -470,5 +470,33 @@ class TestNNDescentKNNG(unittest.TestCase):
         assert recall > 0.99
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestResultHeap(unittest.TestCase):
+
+    def test_keep_min(self):
+        self.run_test(False)
+
+    def test_keep_max(self):
+        self.run_test(True)
+
+    def run_test(self, keep_max):
+        nq = 100
+        nb = 1000
+        restab = faiss.rand((nq, nb), 123)
+        ids = faiss.randint((nq, nb), 1324, 10000)
+        all_rh = {}
+        for nstep in 1, 3:
+            rh = faiss.ResultHeap(nq, 10, keep_max=keep_max)
+            for i in range(nstep):
+                i0, i1 = i * nb // nstep, (i + 1) * nb // nstep
+                D = restab[:, i0:i1].copy()
+                I = ids[:, i0:i1].copy()
+                rh.add_result(D, I)
+            rh.finalize()
+            if keep_max:
+                assert np.all(rh.D[:, :-1] >= rh.D[:, 1:])
+            else:
+                assert np.all(rh.D[:, :-1] <= rh.D[:, 1:])
+            all_rh[nstep] = rh
+
+        np.testing.assert_equal(all_rh[1].D, all_rh[3].D)
+        np.testing.assert_equal(all_rh[1].I, all_rh[3].I)

@@ -1600,12 +1600,15 @@ class ResultHeap:
     """Accumulate query results from a sliced dataset. The final result will
     be in self.D, self.I."""
 
-    def __init__(self, nq, k):
+    def __init__(self, nq, k, keep_max=False):
         " nq: number of query vectors, k: number of results per query "
         self.I = np.zeros((nq, k), dtype='int64')
         self.D = np.zeros((nq, k), dtype='float32')
         self.nq, self.k = nq, k
-        heaps = float_maxheap_array_t()
+        if keep_max:
+            heaps = float_minheap_array_t()
+        else:
+            heaps = float_maxheap_array_t()
         heaps.k = k
         heaps.nh = nq
         heaps.val = swig_ptr(self.D)
@@ -1615,11 +1618,12 @@ class ResultHeap:
 
     def add_result(self, D, I):
         """D, I do not need to be in a particular order (heap or sorted)"""
-        assert D.shape == (self.nq, self.k)
-        assert I.shape == (self.nq, self.k)
+        nq, kd = D.shape
+        assert I.shape == (nq, kd)
+        assert nq == self.nq
         self.heaps.addn_with_ids(
-            self.k, swig_ptr(D),
-            swig_ptr(I), self.k)
+            kd, swig_ptr(D),
+            swig_ptr(I), kd)
 
     def finalize(self):
         self.heaps.reorder()

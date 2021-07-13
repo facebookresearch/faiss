@@ -168,6 +168,7 @@ class TestCloneSize(unittest.TestCase):
         index2 = faiss.clone_index(index)
         assert index2.ntotal == 100
 
+
 class TestCloneIVFPQ(unittest.TestCase):
 
     def test_clone(self):
@@ -177,3 +178,12 @@ class TestCloneIVFPQ(unittest.TestCase):
         index.add(xb)
         index2 = faiss.clone_index(index)
         assert index2.ntotal == index.ntotal
+
+
+class TestVTDowncast(unittest.TestCase):
+
+    def test_itq_transform(self):
+        codec = faiss.index_factory(16, "ITQ8,LSHt")
+
+        itqt = faiss.downcast_VectorTransform(codec.chain.at(0))
+        itqt.pca_then_itq

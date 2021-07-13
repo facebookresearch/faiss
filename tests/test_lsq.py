@@ -171,6 +171,30 @@ class TestComponents(unittest.TestCase):
 
         np.testing.assert_allclose(new_codebooks, ref_codebooks, atol=1e-3)
 
+    def test_update_codebooks_with_double(self):
+        """If the data is not zero-centering, it would be more accurate to
+        use double-precision floating-point numbers."""
+        ds = datasets.SyntheticDataset(16, 1000, 1000, 0)
+
+        xt = ds.get_train() + 1000
+        xb = ds.get_database() + 1000
+
+        M = 4
+        nbits = 4
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_double = eval_codec(lsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.update_codebooks_with_double = False
+        lsq.train(xt)
+        err_float = eval_codec(lsq, xb)
+
+        # 6533.377 vs 25457.99
+        print(err_double, err_float)
+        self.assertLess(err_double, err_float)
+
     def test_compute_binary_terms(self):
         d = 16
         n = 500

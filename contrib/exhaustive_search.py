@@ -11,6 +11,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+
 def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
     """Computes the exact KNN search results for a dataset that possibly
     does not fit in RAM but for which we have an iterator that
@@ -146,21 +147,27 @@ def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
     return lims, np.hstack(D), np.hstack(I)
 
 
-def threshold_radius_nres(nres, dis, ids, thresh):
+def threshold_radius_nres(nres, dis, ids, thresh, keep_max=False):
     """ select a set of results """
-    mask = dis < thresh
+    if keep_max:
+        mask = dis > thresh
+    else:
+        mask = dis < thresh
     new_nres = np.zeros_like(nres)
     o = 0
     for i, nr in enumerate(nres):
         nr = int(nr)   # avoid issues with int64 + uint64
-        new_nres[i] = mask[o : o + nr].sum()
+        new_nres[i] = mask[o:o + nr].sum()
         o += nr
     return new_nres, dis[mask], ids[mask]
 
 
-def threshold_radius(lims, dis, ids, thresh):
+def threshold_radius(lims, dis, ids, thresh, keep_max=False):
     """ restrict range-search results to those below a given radius """
-    mask = dis < thresh
+    if keep_max:
+        mask = dis > thresh
+    else:
+        mask = dis < thresh
     new_lims = np.zeros_like(lims)
     n = len(lims) - 1
     for i in range(n):
@@ -169,12 +176,18 @@ def threshold_radius(lims, dis, ids, thresh):
     return new_lims, dis[mask], ids[mask]
 
 
-def apply_maxres(res_batches, target_nres):
+def apply_maxres(res_batches, target_nres, keep_max=False):
     """find radius that reduces number of results to target_nres, and
-    applies it in-place to the result batches used in range_search_max_results"""
+    applies it in-place to the result batches used in
+    range_search_max_results"""
     alldis = np.hstack([dis for _, dis, _ in res_batches])
-    alldis.partition(target_nres)
-    radius = alldis[target_nres]
+    assert len(alldis) > target_nres
+    if keep_max:
+        alldis.partition(len(alldis) - target_nres - 1)
+        radius = alldis[-1 - target_nres]
+    else:
+        alldis.partition(target_nres)
+        radius = alldis[target_nres]
 
     if alldis.dtype == 'float32':
         radius = float(radius)
@@ -183,7 +196,8 @@ def apply_maxres(res_batches, target_nres):
     LOG.debug('   setting radius to %s' % radius)
     totres = 0
     for i, (nres, dis, ids) in enumerate(res_batches):
-        nres, dis, ids = threshold_radius_nres(nres, dis, ids, radius)
+        nres, dis, ids = threshold_radius_nres(
+            nres, dis, ids, radius, keep_max=keep_max)
         totres += len(dis)
         res_batches[i] = nres, dis, ids
     LOG.debug('   updated previous results, new nb results %d' % totres)
@@ -192,7 +206,7 @@ def apply_maxres(res_batches, target_nres):
 
 def range_search_max_results(index, query_iterator, radius,
                              max_results=None, min_results=None,
-                             shard=False, ngpu=0):
+                             shard=False, ngpu=0, clip_to_min=False):
     """Performs a range search with many queries (given by an iterator)
     and adjusts the threshold on-the-fly so that the total results
     table does not grow larger than max_results.
@@ -200,10 +214,16 @@ def range_search_max_results(index, query_iterator, radius,
     If ngpu != 0, the function moves the index to this many GPUs to
     speed up search.
     """
+    # TODO: all result manipulations are in python, should move to C++ if perf
+    # critical
 
-    if max_results is not None:
-        if min_results is None:
-            min_results = int(0.8 * max_results)
+    if min_results is None:
+        assert max_results is not None
+        min_results = int(0.8 * max_results)
+
+    if max_results is None:
+        assert min_results is not None
+        max_results = int(min_results * 1.5)
 
     if ngpu == -1:
         ngpu = faiss.get_num_gpus()
@@ -242,15 +262,26 @@ def range_search_max_results(index, query_iterator, radius,
         if max_results is not None and totres > max_results:
             LOG.info('too many results %d > %d, scaling back radius' %
                      (totres, max_results))
-            radius, totres = apply_maxres(res_batches, min_results)
+            radius, totres = apply_maxres(
+                res_batches, min_results,
+                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+            )
         t2 = time.time()
         t_search += t1 - t0
         t_post_process += t2 - t1
         LOG.debug('   [%.3f s] %d queries done, %d results' % (
             time.time() - t_start, qtot, totres))
 
-    LOG.info('   search done in %.3f s + %.3f s, total %d results, end threshold %g' % (
-        t_search, t_post_process, totres, radius))
+    LOG.info(
+        'search done in %.3f s + %.3f s, total %d results, end threshold %g' % (
+            t_search, t_post_process, totres, radius)
+    )
+
+    if clip_to_min and totres > min_results:
+        radius, totres = apply_maxres(
+            res_batches, min_results,
+            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+        )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])
     dis = np.hstack([dis_i for nres_i, dis_i, ids_i in res_batches])
@@ -260,3 +291,18 @@ def range_search_max_results(index, query_iterator, radius,
     lims[1:] = np.cumsum(nres)
 
     return radius, lims, dis, ids
+
+
+def exponential_query_iterator(xq, start_bs=32, max_bs=20000):
+    """ produces batches of progressively increasing sizes. This is useful to
+    adjust the search radius progressively without overflowing with
+    intermediate results """
+    nq = len(xq)
+    bs = start_bs
+    i = 0
+    while i < nq:
+        xqi = xq[i:i + bs]
+        yield xqi
+        if bs < max_bs:
+            bs *= 2
+        i += len(xqi)
