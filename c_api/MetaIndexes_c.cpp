@@ -45,8 +45,7 @@ void faiss_IndexIDMap_id_map(
         *p_size = idx->id_map.size();
 }
 
-FaissIndex* faiss_IndexIDMap_sub_index(
-        FaissIndexIDMap* index) {
+FaissIndex* faiss_IndexIDMap_sub_index(FaissIndexIDMap* index) {
     auto idx = reinterpret_cast<IndexIDMap*>(index);
     return (FaissIndex*)reinterpret_cast<Index*>(idx->index);
 }
@@ -77,8 +76,7 @@ void faiss_IndexIDMap2_id_map(
         *p_size = idx->id_map.size();
 }
 
-FaissIndex* faiss_IndexIDMap2_sub_index(
-        FaissIndexIDMap2* index) {
+FaissIndex* faiss_IndexIDMap2_sub_index(FaissIndexIDMap2* index) {
     auto idx = reinterpret_cast<IndexIDMap2*>(index);
     return (FaissIndex*)reinterpret_cast<Index*>(idx->index);
 }
