@@ -21,6 +21,7 @@ extern "C" {
 /** Index that concatenates the results from several sub-indexes
  */
 FAISS_DECLARE_CLASS_INHERITED(IndexShards, Index)
+FAISS_DECLARE_DESTRUCTOR(IndexShards)
 
 FAISS_DECLARE_GETTER_SETTER(IndexShards, int, own_fields)
 FAISS_DECLARE_GETTER_SETTER(IndexShards, int, successive_ids)

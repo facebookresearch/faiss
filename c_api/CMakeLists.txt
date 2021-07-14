@@ -19,6 +19,7 @@ set(FAISS_C_SRC
   IndexPreTransform_c.cpp
   VectorTransform_c.cpp
   IndexShards_c.cpp
+  IndexReplicas_c.cpp
   Index_c.cpp
   IndexScalarQuantizer_c.cpp
   MetaIndexes_c.cpp
