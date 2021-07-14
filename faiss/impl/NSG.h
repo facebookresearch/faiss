@@ -105,7 +105,7 @@ struct NSG {
 
     int ntotal; ///< nb of nodes
 
-    /// construction-time parameters
+    // construction-time parameters
     int R; ///< nb of neighbors per node
     int L; ///< length of the search path at construction time
     int C; ///< candidate pool size at construction time

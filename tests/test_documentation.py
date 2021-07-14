@@ -15,5 +15,8 @@ class TestDocumentation(unittest.TestCase):
 
         self.assertTrue("Adds vectors to the index" in index.add.__doc__)
 
-# At some point we will check here if SWIG imported the C++ doxygen comments
-# for the classes as docstrings
+    def test_doxygen_comments(self):
+        maxheap_array = faiss.float_maxheap_array_t()
+
+        self.assertTrue("a template structure for a set of [min|max]-heaps"
+                        in maxheap_array.__doc__)
