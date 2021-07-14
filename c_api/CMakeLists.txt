@@ -30,7 +30,12 @@ set(FAISS_C_SRC
   utils/distances_c.cpp
 )
 add_library(faiss_c ${FAISS_C_SRC})
-target_link_libraries(faiss_c PRIVATE faiss)
+
+if(FAISS_OPT_LEVEL STREQUAL "avx2")
+  target_link_libraries(faiss_c PRIVATE faiss_avx2)
+else()
+  target_link_libraries(faiss_c PRIVATE faiss)
+endif()
 
 function(faiss_install_headers headers p)
   foreach(h ${headers})
