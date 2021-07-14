@@ -10,6 +10,7 @@ import time
 import unittest
 import numpy as np
 import faiss
+from faiss.contrib import datasets
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -460,6 +461,45 @@ class TestInvalidParams(unittest.TestCase):
         idx.setNumProbes(3)
         _, I = idx.search(xb[10:20], k)
         self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+
+class TestLSQIcmEncoder(unittest.TestCase):
+
+    @staticmethod
+    def eval_codec(q, xb):
+        codes = q.compute_codes(xb)
+        decoded = q.decode(codes)
+        return ((xb - decoded) ** 2).sum()
+
+    def subtest_gpu_encoding(self, ngpus):
+        """check that the error is in the same as cpu."""
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 8
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_cpu = self.eval_codec(lsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        lsq.icm_encoder_factory = faiss.GpuIcmEncoderFactory(ngpus)
+        err_gpu = self.eval_codec(lsq, xb)
+
+        # 13804.411 vs 13814.794, 1 gpu
+        print(err_gpu, err_cpu)
+        self.assertLess(err_gpu, err_cpu * 1.05)
+
+    def test_one_gpu(self):
+        self.subtest_gpu_encoding(1)
+
+    def test_multiple_gpu(self):
+        ngpu = faiss.get_num_gpus()
+        self.subtest_gpu_encoding(ngpu)
 
 
 if __name__ == '__main__':
