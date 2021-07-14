@@ -1018,21 +1018,22 @@ struct IVFPQScannerT : QueryTables {
 template <MetricType METRIC_TYPE, class C, class PQDecoder>
 struct IVFPQScanner : IVFPQScannerT<Index::idx_t, METRIC_TYPE, PQDecoder>,
                       InvertedListScanner {
-    bool store_pairs;
     int precompute_mode;
 
     IVFPQScanner(const IndexIVFPQ& ivfpq, bool store_pairs, int precompute_mode)
             : IVFPQScannerT<Index::idx_t, METRIC_TYPE, PQDecoder>(
                       ivfpq,
                       nullptr),
-              store_pairs(store_pairs),
-              precompute_mode(precompute_mode) {}
+              precompute_mode(precompute_mode) {
+        this->store_pairs = store_pairs;
+    }
 
     void set_query(const float* query) override {
         this->init_query(query);
     }
 
     void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
         this->init_list(list_no, coarse_dis, precompute_mode);
     }
 

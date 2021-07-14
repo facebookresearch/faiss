@@ -235,6 +235,13 @@ class TestIndexResidual(unittest.TestCase):
             np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4])
         )
 
+    def test_factory_norm(self):
+        index = faiss.index_factory(5, "RQ8x8_Nqint8")
+        self.assertEqual(
+            index.rq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_qint8)
+
+
     def test_search_decompress(self):
         ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
 
@@ -413,7 +420,7 @@ class TestAdditiveQuantizerWithLUT(unittest.TestCase):
         Dnew = np.zeros_like(Dref)
         Inew = np.zeros_like(Iref)
 
-        aq.knn_exact_inner_product(len(xq), sp(xq), 10, sp(Dnew), sp(Inew))
+        aq.knn_centroids_inner_product(len(xq), sp(xq), 10, sp(Dnew), sp(Inew))
 
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
         np.testing.assert_array_equal(Iref, Inew)
@@ -425,7 +432,197 @@ class TestAdditiveQuantizerWithLUT(unittest.TestCase):
         Dnew = np.zeros_like(Dref)
         Inew = np.zeros_like(Iref)
 
-        aq.knn_exact_L2(len(xq), sp(xq), 10, sp(Dnew), sp(Inew), sp(norms))
+        aq.knn_centroids_L2(len(xq), sp(xq), 10, sp(Dnew), sp(Inew), sp(norms))
 
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+
+
+class TestIndexResidualSearch(unittest.TestCase):
+
+    def test_search_IP(self):
+        ds = datasets.SyntheticDataset(32, 1000, 200, 100)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+        xq = ds.get_queries()
+
+        ir = faiss.IndexResidual(ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT)
+        ir.rq.train_type = faiss.ResidualQuantizer.Train_default
+        ir.train(xt)
+
+        ir.add(xb)
+
+        Dref, Iref = ir.search(xq, 4)
+
+        AQ = faiss.AdditiveQuantizer
+        ir2 = faiss.IndexResidual(ds.d, 3, 4, faiss.METRIC_INNER_PRODUCT, AQ.ST_LUT_nonorm)
+        ir2.rq.codebooks = ir.rq.codebooks    # fake training
+        ir2.rq.is_trained = True
+        ir2.is_trained = True
+        ir2.add(xb)
+
+        D2, I2 = ir2.search(xq, 4)
+
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_almost_equal(Dref, D2, decimal=5)
+
+    def test_search_L2(self):
+        ds = datasets.SyntheticDataset(32, 1000, 200, 100)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+        xq = ds.get_queries()
+        gt = ds.get_groundtruth(10)
+
+        ir = faiss.IndexResidual(ds.d, 3, 4)
+        ir.rq.train_type = faiss.ResidualQuantizer.Train_default
+        ir.train(xt)
+
+        # reference run w/ decoding
+        ir.add(xb)
+        Dref, Iref = ir.search(xq, 10)
+
+        # 388
+        inter_ref = faiss.eval_intersection(Iref, gt)
+
+        AQ = faiss.AdditiveQuantizer
+        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4:
+
+            ir2 = faiss.IndexResidual(ds.d, 3, 4, faiss.METRIC_L2, st)
+            ir2.train(xt)   # to get the norm bounds
+            ir2.rq.codebooks = ir.rq.codebooks    # fake training
+            ir2.add(xb)
+
+            D2, I2 = ir2.search(xq, 10)
+
+            if st == AQ.ST_norm_float:
+                np.testing.assert_array_almost_equal(Dref, D2, decimal=5)
+                self.assertLess((Iref != I2).sum(), Iref.size * 0.05)
+            else:
+                inter_2 = faiss.eval_intersection(I2, gt)
+                self.assertGreater(inter_ref, inter_2)
+                # print(st, inter_ref, inter_2)
+
+
+class TestIVFResidualQuantizer(unittest.TestCase):
+
+    def do_test_accuracy(self, by_residual, st):
+        ds = datasets.SyntheticDataset(32, 3000, 1000, 100)
+
+        quantizer = faiss.IndexFlatL2(ds.d)
+
+        index = faiss.IndexIVFResidual(
+            quantizer, ds.d, 100, 3, 4,
+            faiss.METRIC_L2, st
+        )
+        index.by_residual = by_residual
+
+        index.rq.train_type
+        index.rq.train_type = faiss.ResidualQuantizer.Train_default
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 5, 10, 20, 50:
+            index.nprobe = nprobe
+            D, I = index.search(ds.get_queries(), 10)
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            # print(st, "nprobe=", nprobe, "inter=", inter)
+            inters.append(inter)
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        inters = np.array(inters)
+
+        if by_residual:
+            # check that we have increasing intersection measures with
+            # nprobe
+            self.assertTrue(np.all(inters[1:] >= inters[:-1]))
+        else:
+            self.assertTrue(np.all(inters[1:3] >= inters[:2]))
+            # check that we have the same result as the flat residual quantizer
+            iflat = faiss.IndexResidual(ds.d, 3, 4, faiss.METRIC_L2, st)
+            iflat.rq.train_type
+            iflat.rq.train_type = faiss.ResidualQuantizer.Train_default
+            iflat.train(ds.get_train())
+            iflat.rq.codebooks = index.rq.codebooks
+
+            iflat.add(ds.get_database())
+            Dref, Iref = iflat.search(ds.get_queries(), 10)
+
+            index.nprobe = 100
+            D2, I2 = index.search(ds.get_queries(), 10)
+            np.testing.assert_array_almost_equal(Dref, D2, decimal=5)
+            # there are many ties because the codes are so short
+            self.assertLess((Iref != I2).sum(), Iref.size * 0.2)
+
+
+    def test_decompress_no_residual(self):
+        self.do_test_accuracy(False, faiss.AdditiveQuantizer.ST_decompress)
+
+    def test_norm_float_no_residual(self):
+        self.do_test_accuracy(False, faiss.AdditiveQuantizer.ST_norm_float)
+
+    def test_decompress(self):
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_decompress)
+
+    def test_norm_float(self):
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_float)
+
+    def test_factory(self):
+        index = faiss.index_factory(12, "IVF1024,RQ8x8_Nfloat")
+        self.assertEqual(index.nlist, 1024)
+        self.assertEqual(index.rq.search_type, faiss.AdditiveQuantizer.ST_norm_float)
+
+
+    def do_test_accuracy_IP(self, by_residual):
+        ds = datasets.SyntheticDataset(32, 3000, 1000, 100, "IP")
+
+        quantizer = faiss.IndexFlatIP(ds.d)
+
+        index = faiss.IndexIVFResidual(
+            quantizer, ds.d, 100, 3, 4,
+            faiss.METRIC_INNER_PRODUCT, faiss.AdditiveQuantizer.ST_decompress
+        )
+        index.cp.spherical = True
+        index.by_residual = by_residual
+
+        index.rq.train_type
+        index.rq.train_type = faiss.ResidualQuantizer.Train_default
+        index.train(ds.get_train())
+
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 5, 10, 20, 50:
+            index.nprobe = nprobe
+            index.rq.search_type = faiss.AdditiveQuantizer.ST_decompress
+            D, I = index.search(ds.get_queries(), 10)
+            index.rq.search_type = faiss.AdditiveQuantizer.ST_LUT_nonorm
+            D2, I2 = index.search(ds.get_queries(), 10)
+            # print(D[:5] - D2[:5])
+            # print(I[:5])
+            np.testing.assert_array_almost_equal(D, D2, decimal=5)
+            # there are many ties because the codes are so short
+            self.assertLess((I != I2).sum(), I.size * 0.1)
+
+            # D2, I2 = index2.search(ds.get_queries(), 10)
+            # print(D[:5])
+            # print(D2[:5])
+
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            # print("nprobe=", nprobe, "inter=", inter)
+            inters.append(inter)
+        self.assertTrue(np.all(inters[1:4] >= inters[:3]))
+
+    def test_no_residual_IP(self):
+        self.do_test_accuracy_IP(False)
+
+    def test_residual_IP(self):
+        self.do_test_accuracy_IP(True)

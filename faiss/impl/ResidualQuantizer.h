@@ -47,12 +47,16 @@ struct ResidualQuantizer : AdditiveQuantizer {
     /// if non-NULL, use this index for assignment
     ProgressiveDimIndexFactory* assign_index_factory;
 
-    ResidualQuantizer(size_t d, const std::vector<size_t>& nbits);
+    ResidualQuantizer(
+            size_t d,
+            const std::vector<size_t>& nbits,
+            Search_type_t search_type = ST_decompress);
 
     ResidualQuantizer(
-            size_t d,      /* dimensionality of the input vectors */
-            size_t M,      /* number of subquantizers */
-            size_t nbits); /* number of bit per subvector index */
+            size_t d,     /* dimensionality of the input vectors */
+            size_t M,     /* number of subquantizers */
+            size_t nbits, /* number of bit per subvector index */
+            Search_type_t search_type = ST_decompress);
 
     ResidualQuantizer();
 

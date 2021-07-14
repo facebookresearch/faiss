@@ -38,7 +38,7 @@ struct Level1Quantizer {
      * = 2: kmeans training on a flat index + add the centroids to the quantizer
      */
     char quantizer_trains_alone;
-    bool own_fields; ///< whether object owns the quantizer
+    bool own_fields; ///< whether object owns the quantizer (false by default)
 
     ClusteringParameters cp; ///< to override default clustering params
     Index* clustering_index; ///< to override index used during clustering
@@ -121,8 +121,7 @@ struct IndexIVF : Index, Level1Quantizer {
 
     /** The Inverted file takes a quantizer (an Index) on input,
      * which implements the function mapping a vector to a list
-     * identifier. The pointer is borrowed: the quantizer should not
-     * be deleted while the IndexIVF is in use.
+     * identifier.
      */
     IndexIVF(
             Index* quantizer,
@@ -231,7 +230,10 @@ struct IndexIVF : Index, Level1Quantizer {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const;
 
-    /// get a scanner for this index (store_pairs means ignore labels)
+    /** Get a scanner for this index (store_pairs means ignore labels)
+     *
+     * The default search implementation uses this to compute the distances
+     */
     virtual InvertedListScanner* get_InvertedListScanner(
             bool store_pairs = false) const;
 
@@ -351,6 +353,14 @@ struct RangeQueryResult;
 struct InvertedListScanner {
     using idx_t = Index::idx_t;
 
+    idx_t list_no = -1;    ///< remember current list
+    bool keep_max = false; ///< keep maximum instead of minimum
+    /// store positions in invlists rather than labels
+    bool store_pairs = false;
+
+    /// used in default implementation of scan_codes
+    size_t code_size = 0;
+
     /// from now on we handle this query.
     virtual void set_query(const float* query_vector) = 0;
 
@@ -361,7 +371,8 @@ struct InvertedListScanner {
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
     /** scan a set of codes, compute distances to current query and
-     * update heap of results if necessary.
+     * update heap of results if necessary. Default implemetation
+     * calls distance_to_code.
      *
      * @param n      number of codes to scan
      * @param codes  codes to scan (n * code_size)
@@ -377,7 +388,7 @@ struct InvertedListScanner {
             const idx_t* ids,
             float* distances,
             idx_t* labels,
-            size_t k) const = 0;
+            size_t k) const;
 
     /** scan a set of codes, compute distances to current query and
      * update results if distances are below radius

@@ -27,7 +27,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
-#include <faiss/IndexResidual.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>

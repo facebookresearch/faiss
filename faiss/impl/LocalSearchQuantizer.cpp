@@ -7,7 +7,6 @@
 
 // -*- c++ -*-
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 
 #include <cstddef>
@@ -18,6 +17,7 @@
 
 #include <algorithm>
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h> // BitstringWriter
 #include <faiss/utils/utils.h>
@@ -151,15 +151,12 @@ namespace faiss {
 
 LSQTimer lsq_timer;
 
-LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
-    FAISS_THROW_IF_NOT((M * nbits) % 8 == 0);
-
-    this->d = d;
-    this->M = M;
-    this->nbits = std::vector<size_t>(M, nbits);
-
-    // set derived values
-    set_derived_values();
+LocalSearchQuantizer::LocalSearchQuantizer(
+        size_t d,
+        size_t M,
+        size_t nbits,
+        Search_type_t search_type)
+        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
 
     is_trained = false;
     verbose = false;
@@ -181,6 +178,8 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     random_seed = 0x12345;
     std::srand(random_seed);
 }
+
+LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));

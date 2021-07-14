@@ -121,17 +121,16 @@ namespace {
 template <MetricType metric, class C>
 struct IVFFlatScanner : InvertedListScanner {
     size_t d;
-    bool store_pairs;
 
-    IVFFlatScanner(size_t d, bool store_pairs)
-            : d(d), store_pairs(store_pairs) {}
+    IVFFlatScanner(size_t d, bool store_pairs) : d(d) {
+        this->store_pairs = store_pairs;
+    }
 
     const float* xi;
     void set_query(const float* query) override {
         this->xi = query;
     }
 
-    idx_t list_no;
     void set_list(idx_t list_no, float /* coarse_dis */) override {
         this->list_no = list_no;
     }

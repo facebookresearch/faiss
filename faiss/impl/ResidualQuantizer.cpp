@@ -40,16 +40,24 @@ ResidualQuantizer::ResidualQuantizer()
     verbose = false;
 }
 
-ResidualQuantizer::ResidualQuantizer(size_t d, const std::vector<size_t>& nbits)
+ResidualQuantizer::ResidualQuantizer(
+        size_t d,
+        const std::vector<size_t>& nbits,
+        Search_type_t search_type)
         : ResidualQuantizer() {
+    this->search_type = search_type;
     this->d = d;
     M = nbits.size();
     this->nbits = nbits;
     set_derived_values();
 }
 
-ResidualQuantizer::ResidualQuantizer(size_t d, size_t M, size_t nbits)
-        : ResidualQuantizer(d, std::vector<size_t>(M, nbits)) {}
+ResidualQuantizer::ResidualQuantizer(
+        size_t d,
+        size_t M,
+        size_t nbits,
+        Search_type_t search_type)
+        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type) {}
 
 namespace {
 
@@ -306,6 +314,30 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         cur_beam_size = new_beam_size;
     }
 
+    // find min and max norms
+    std::vector<float> norms(n);
+
+    for (size_t i = 0; i < n; i++) {
+        norms[i] = fvec_L2sqr(
+            x + i * d,
+            residuals.data() + i * cur_beam_size * d,
+            d
+        );
+    }
+
+    // fvec_norms_L2sqr(norms.data(), x, d, n);
+
+    norm_min = HUGE_VALF;
+    norm_max = -HUGE_VALF;
+    for (idx_t i = 0; i < n; i++) {
+        if (norms[i] < norm_min) {
+            norm_min = norms[i];
+        }
+        if (norms[i] > norm_min) {
+            norm_max = norms[i];
+        }
+    }
+
     is_trained = true;
 }
 
@@ -354,9 +386,26 @@ void ResidualQuantizer::compute_codes(
             residuals.data(),
             distances.data());
 
+    std::vector<float> norms;
+    if (search_type == ST_norm_float || search_type == ST_norm_qint8 ||
+        search_type == ST_norm_qint4) {
+        norms.resize(n);
+        // recover the norms of reconstruction as
+        // || original_vector - residual ||^2
+        for (size_t i = 0; i < n; i++) {
+            norms[i] = fvec_L2sqr(
+                x + i * d,
+                residuals.data() + i * max_beam_size * d,
+                d
+            );
+        }
+        // using the norms of original vectors is much less accurate
+        // fvec_norms_L2sqr(norms.data(), x, d, n);
+    }
+
     // pack only the first code of the beam (hence the ld_codes=M *
     // max_beam_size)
-    pack_codes(n, codes.data(), codes_out, M * max_beam_size);
+    pack_codes(n, codes.data(), codes_out, M * max_beam_size, norms.data());
 }
 
 void ResidualQuantizer::refine_beam(
