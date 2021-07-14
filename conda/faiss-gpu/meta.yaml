@@ -35,7 +35,6 @@ outputs:
         - CUDA_ARCHS
     requirements:
       build:
-        - {{ compiler('cxx') }}
         - llvm-openmp  # [osx]
         - cmake >=3.18
         - make  # [not win]
@@ -59,7 +58,6 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }}
         - swig
         - cmake >=3.17
         - make  # [not win]
