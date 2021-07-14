@@ -83,6 +83,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexResidual, index)
     TRYCLONE(IndexScalarQuantizer, index)
     TRYCLONE(MultiIndexQuantizer, index)
+    TRYCLONE(ResidualCoarseQuantizer, index)
     if (const IndexIVF* ivf = dynamic_cast<const IndexIVF*>(index)) {
         IndexIVF* res = clone_IndexIVF(ivf);
         if (ivf->invlists == nullptr) {
