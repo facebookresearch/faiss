@@ -95,8 +95,8 @@ template <typename T, typename IndexT>
 __global__ void transposeOuter(const T* in,
                                T* out,
                                IndexT t1, IndexT t2, IndexT i1) {
-  IndexT gt1 = blockIdx.y;
-  IndexT gt2 = blockIdx.x;
+  IndexT gt1 = blockIdx.x;
+  IndexT gt2 = blockIdx.y;
 
   in += i1 * (gt1 * t2 + gt2);
   out += i1 * (gt2 * t1 + gt1);
@@ -157,7 +157,7 @@ void runTransposeAny(Tensor<T, Dim, true>& in,
       innerSize *= in.getSize(i);
     }
 
-    auto grid = dim3(in.getSize(1), in.getSize(0));
+    auto grid = dim3(in.getSize(0), in.getSize(1));
     int block = (innerSize < maxThreads) ? innerSize : maxThreads;
 
     if (totalSize <= (size_t) std::numeric_limits<int>::max()) {
