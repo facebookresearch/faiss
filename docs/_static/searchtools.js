@@ -276,7 +276,7 @@ var Search = {
           setTimeout(function() {
             displayNextItem();
           }, 5);
-        } else {
+        } else if (DOCUMENTATION_OPTIONS.HAS_SOURCE) {
           $.ajax({url: requestUrl,
                   dataType: "text",
                   complete: function(jqxhr, textstatus) {
@@ -289,6 +289,12 @@ var Search = {
                       displayNextItem();
                     }, 5);
                   }});
+        } else {
+          // no source available, just display title
+          Search.output.append(listItem);
+          setTimeout(function() {
+            displayNextItem();
+          }, 5);
         }
       }
       // search finished, update title and status message
