@@ -223,18 +223,17 @@ IndexIVFFlatDedup::IndexIVFFlatDedup(
 
 void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     std::unordered_map<uint64_t, idx_t> map;
-    float* x2 = new float[n * d];
-    ScopeDeleter<float> del(x2);
+    std::unique_ptr<float[]> x2(new float[n * d]);
 
     int64_t n2 = 0;
     for (int64_t i = 0; i < n; i++) {
         uint64_t hash = hash_bytes((uint8_t*)(x + i * d), code_size);
         if (map.count(hash) &&
-            !memcmp(x2 + map[hash] * d, x + i * d, code_size)) {
+            !memcmp(x2.get() + map[hash] * d, x + i * d, code_size)) {
             // is duplicate, skip
         } else {
             map[hash] = n2;
-            memcpy(x2 + n2 * d, x + i * d, code_size);
+            memcpy(x2.get() + n2 * d, x + i * d, code_size);
             n2++;
         }
     }
@@ -245,7 +244,7 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x) {
                n2,
                n);
     }
-    IndexIVFFlat::train(n2, x2);
+    IndexIVFFlat::train(n2, x2.get());
 }
 
 void IndexIVFFlatDedup::add_with_ids(
@@ -256,9 +255,8 @@ void IndexIVFFlatDedup::add_with_ids(
     assert(invlists);
     FAISS_THROW_IF_NOT_MSG(
             direct_map.no(), "IVFFlatDedup not implemented with direct_map");
-    int64_t* idx = new int64_t[na];
-    ScopeDeleter<int64_t> del(idx);
-    quantizer->assign(na, x, idx);
+    std::unique_ptr<int64_t[]> idx(new int64_t[na]);
+    quantizer->assign(na, x, idx.get());
 
     int64_t n_add = 0, n_dup = 0;
 
