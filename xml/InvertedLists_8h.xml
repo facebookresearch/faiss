@@ -54,15 +54,15 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="10">
+      <node id="11">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h_source"/>
       </node>
@@ -79,13 +79,15 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -95,32 +97,32 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
         <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
       <node id="6">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="13">
+      <node id="14">
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/IndexLattice.h</label>
         <link refid="IndexLattice_8h_source"/>
       </node>
@@ -128,7 +130,7 @@
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
@@ -140,7 +142,7 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexIVFPQFastScan.h</label>
         <link refid="IndexIVFPQFastScan_8h_source"/>
       </node>
@@ -148,7 +150,11 @@
         <label>faiss/Index2Layer.h</label>
         <link refid="Index2Layer_8h_source"/>
       </node>
-      <node id="12">
+      <node id="9">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+      </node>
+      <node id="13">
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
       </node>
@@ -156,7 +162,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
@@ -166,15 +172,15 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
       </node>
@@ -499,14 +505,14 @@
 <codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/><ref refid="structfaiss_1_1VStackInvertedLists_1a2f39dbd83196f10e37308c1efb6a5787" kindref="member">get_ids</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="303"><highlight class="normal"></highlight></codeline>
 <codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VStackInvertedLists_1a331222282fb32dc55d6f5847bbd1c848" kindref="member">release_codes</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>release_ids(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>ids)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VStackInvertedLists_1a3048d4656332d160502cd95b22b53be5" kindref="member">release_ids</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>ids)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="306"><highlight class="normal"></highlight></codeline>
 <codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/><ref refid="structfaiss_1_1VStackInvertedLists_1a568b36928c391086da14f36eaf005fea" kindref="member">get_single_id</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="308"><highlight class="normal"></highlight></codeline>
 <codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/><ref refid="structfaiss_1_1VStackInvertedLists_1a7cda72ee7f10f35defd771bd51e2edde" kindref="member">get_single_code</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset)</highlight></codeline>
 <codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="311"><highlight class="normal"></highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>prefetch_lists(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VStackInvertedLists_1af37c2171d22f7f9200fa5cdedb363471" kindref="member">prefetch_lists</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="313"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="315"><highlight class="comment">/**<sp/>use<sp/>the<sp/>first<sp/>inverted<sp/>lists<sp/>if<sp/>they<sp/>are<sp/>non-empty<sp/>otherwise<sp/>use<sp/>the<sp/>second</highlight></codeline>

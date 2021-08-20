@@ -616,6 +616,7 @@
         <argsstring>(size_t list_no, const idx_t *ids) const</argsstring>
         <name>release_ids</name>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1aa987a3ecea9f4df3340fd8c21f5d7000">release_ids</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3048d4656332d160502cd95b22b53be5">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a86c8d8c022c79c32b3f776f2ad4f3b1e">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a50592d220d8c2cef81bb8da4ec9f453e">release_ids</reimplementedby>
         <param>

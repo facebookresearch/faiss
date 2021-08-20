@@ -579,11 +579,12 @@
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a024c25f4757df14fb741ca9a6fb4cfcb">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1ae8846519e0f1b9fedd5eed195df3776f">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a24002a8c3f12aa2784833c14b13b427e">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexResidual_1adf679bd6dc577bdadf4dec20c2873164">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexResidualQuantizer_1a1870bea9540fe4cb8308c09104048332">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexLocalSearchQuantizer_1aa63fc9328d0f202707f9fc947cc423f4">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1ResidualCoarseQuantizer_1a65f7bfba74ec0be4dc3ab79fca55da0c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a150b455e4152bc63ae4f51ba44405475">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a6fa1d1a295eb2d4377b8de5096ab3ef4">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a553b9a33e9be7f231ffdc0ac53c59e7c">train</reimplementedby>

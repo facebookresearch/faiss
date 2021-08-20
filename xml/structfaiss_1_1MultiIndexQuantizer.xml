@@ -751,13 +751,13 @@
         <argsstring>() const</argsstring>
         <name>sa_code_size</name>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1ac7c27786912bed039ef8d05a82db0acb">sa_code_size</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1ae312739a391a32d77fc87699f2dc894c">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1a1e6775c1bfecb89f23558108a034fd62">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1a4ef8ecf3b4628d42754a07765956d324">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a3ffce6ef818de2d782815621c350393f">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ad803358238737eda7f185b486e6081fe">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexResidual_1abc10e972e13ee5fa2697b9af71b65543">sa_code_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d">sa_code_size</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -774,12 +774,12 @@
         <argsstring>(idx_t n, const float *x, uint8_t *bytes) const</argsstring>
         <name>sa_encode</name>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1abbe02fd8270a854f7b25285d9a0a5752">sa_encode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1ae8c5ed4f9c2145aa074986bf1be3af46">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a205db18d83af2fc98faab3f0066e8c9f">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5fc4aff1479e447435e1f08b2a88d1d6">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexResidual_1a1337f098af47699fe060aec59a4ef591">sa_encode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6">sa_encode</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -835,13 +835,13 @@
         <name>sa_decode</name>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a3fd27c778f435412336110785ba7124d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a1464960b17488f8ee8ae600c07f7b72c">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a96a5ca50fbdef07c7773bb9a27e860e5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexResidual_1abf678e3abb16e06448c15afca13ebdd9">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ae10ad1a5c025337984277a68f4da4338">sa_decode</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>

@@ -321,6 +321,7 @@
         <argsstring>(size_t list_no, const idx_t *ids) const</argsstring>
         <name>release_ids</name>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1aa987a3ecea9f4df3340fd8c21f5d7000">release_ids</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3048d4656332d160502cd95b22b53be5">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a86c8d8c022c79c32b3f776f2ad4f3b1e">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a50592d220d8c2cef81bb8da4ec9f453e">release_ids</reimplementedby>
         <param>
@@ -405,6 +406,7 @@
         <name>prefetch_lists</name>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1a249f680477fac00cdfcf319c3bbe8c05">prefetch_lists</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1af37c2171d22f7f9200fa5cdedb363471">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a5fbd34b4052c314148c44f14b4d3c2d3">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1af2900ce6738bb1b212c631e8c58cf33f">prefetch_lists</reimplementedby>
         <param>

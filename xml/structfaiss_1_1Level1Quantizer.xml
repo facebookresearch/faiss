@@ -53,7 +53,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <briefdescription>
-<para>whether object owns the quantizer </para>
+<para>whether object owns the quantizer (false by default) </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -228,15 +228,33 @@
 <para>The class isolates the fields that are independent of the storage of the lists (especially training) </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="9">
+      <node id="5">
+        <label>faiss::IndexIVFResidualQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFResidualQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::IndexIVFLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
         <label>faiss::IndexIVFSpectralHash</label>
         <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="10">
         <label>faiss::IndexIVFPQFastScan</label>
         <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IndexIVFAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFAdditiveQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -244,7 +262,7 @@
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
       </node>
-      <node id="8">
+      <node id="11">
         <label>faiss::IndexIVFScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
@@ -256,28 +274,28 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="6">
         <label>faiss::IndexIVFFlat</label>
         <link refid="structfaiss_1_1IndexIVFFlat"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="8">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="7">
         <label>faiss::IndexIVFFlatDedup</label>
         <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="9">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
