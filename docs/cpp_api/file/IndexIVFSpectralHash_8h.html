@@ -133,6 +133,7 @@
 <li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizer_8h.html">File IndexAdditiveQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryHNSW_8h.html">File IndexBinaryHNSW.h</a></li>
@@ -141,6 +142,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
@@ -156,7 +158,6 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexPreTransform_8h.html">File IndexPreTransform.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexRefine_8h.html">File IndexRefine.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="IndexResidual_8h.html">File IndexResidual.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
@@ -379,7 +380,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb">
 <span id="_CPPv3NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb"></span><span id="_CPPv2NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb"></span><span id="faiss::IndexIVFSpectralHash::get_InvertedListScanner__bC"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ac4068ed995795b111ac89b81599d65a0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScannerE" title="faiss::InvertedListScanner"><span class="n"><span class="pre">InvertedListScanner</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_InvertedListScanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>get a scanner for this index (store_pairs means ignore labels) </p>
+<dd><p>Get a scanner for this index (store_pairs means ignore labels)</p>
+<p>The default search implementation uses this to compute the distances </p>
 </dd></dl>
 
 <dl class="cpp function">

@@ -43,7 +43,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::IndexIVFFlat" href="structfaiss_1_1IndexIVFFlat.html" />
+    <link rel="next" title="Struct faiss::IndexIVFAdditiveQuantizer" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html" />
     <link rel="prev" title="Struct faiss::IndexIDMapTemplate" href="structfaiss_1_1IndexIDMapTemplate.html" /> 
 </head>
 
@@ -102,6 +102,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AdditiveCoarseQuantizer.html">Struct faiss::AdditiveCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTable.html">Struct faiss::AlignedTable</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTableTightAlloc.html">Struct faiss::AlignedTableTightAlloc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html">Struct faiss::ArrayInvertedLists</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizer.html">Struct faiss::IndexAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinary.html">Struct faiss::IndexBinary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFlat.html">Struct faiss::IndexBinaryFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFromFloat.html">Struct faiss::IndexBinaryFromFloat</a></li>
@@ -166,17 +168,21 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMap2Template.html">Struct faiss::IndexIDMap2Template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMapTemplate.html">Struct faiss::IndexIDMapTemplate</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizer.html">Struct faiss::IndexIVFLocalSearchQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html">Struct faiss::IndexIVFPQ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizer.html">Struct faiss::IndexIVFResidualQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html">Struct faiss::IndexIVFSpectralHash</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFStats.html">Struct faiss::IndexIVFStats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLSH.html">Struct faiss::IndexLSH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLattice.html">Struct faiss::IndexLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizer.html">Struct faiss::IndexLocalSearchQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescent.html">Struct faiss::IndexNNDescent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescentFlat.html">Struct faiss::IndexNNDescentFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSG.html">Struct faiss::IndexNSG</a></li>
@@ -187,7 +193,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidual.html">Struct faiss::IndexResidual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizer.html">Struct faiss::IndexResidualQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsTemplate.html">Struct faiss::IndexShardsTemplate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
@@ -199,6 +205,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LinearTransform.html">Struct faiss::LinearTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LocalSearchCoarseQuantizer.html">Struct faiss::LocalSearchCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MaskedInvertedLists.html">Struct faiss::MaskedInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats.html">Struct faiss::MatrixStats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1Occurrence.html">Struct faiss::MatrixStats::Occurrence</a></li>
@@ -341,7 +348,7 @@
 <p>The inverted list object is required only after trainng. If none is set externally, an <a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html#structfaiss_1_1ArrayInvertedLists"><span class="std std-ref">ArrayInvertedLists</span></a> is used automatically.</p>
 <p>At search time, the vector to be searched is also quantized, and only the list corresponding to the quantization index is searched. This speeds up the search by making it non-exhaustive. This can be relaxed using multi-probe search: a few (nprobe) quantization indices are selected and several inverted lists are visited.</p>
 <p>Sub-classes implement a post-filtering of the index that refines the distance estimation from the query to databse vectors. </p>
-<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html#structfaiss_1_1IndexIVFFlat"><span class="std std-ref">faiss::IndexIVFFlat</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html#structfaiss_1_1IndexIVFPQ"><span class="std std-ref">faiss::IndexIVFPQ</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html#structfaiss_1_1IndexIVFPQFastScan"><span class="std std-ref">faiss::IndexIVFPQFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html#structfaiss_1_1IndexIVFScalarQuantizer"><span class="std std-ref">faiss::IndexIVFScalarQuantizer</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVFSpectralHash"><span class="std std-ref">faiss::IndexIVFSpectralHash</span></a></p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html#structfaiss_1_1IndexIVFAdditiveQuantizer"><span class="std std-ref">faiss::IndexIVFAdditiveQuantizer</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html#structfaiss_1_1IndexIVFFlat"><span class="std std-ref">faiss::IndexIVFFlat</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html#structfaiss_1_1IndexIVFPQ"><span class="std std-ref">faiss::IndexIVFPQ</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html#structfaiss_1_1IndexIVFPQFastScan"><span class="std std-ref">faiss::IndexIVFPQFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html#structfaiss_1_1IndexIVFScalarQuantizer"><span class="std std-ref">faiss::IndexIVFScalarQuantizer</span></a>, <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVFSpectralHash"><span class="std std-ref">faiss::IndexIVFSpectralHash</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -366,7 +373,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss8IndexIVF8IndexIVFEP5Index6size_t6size_t6size_t10MetricType">
 <span id="_CPPv3N5faiss8IndexIVF8IndexIVFEP5Index6size_t6size_t6size_t10MetricType"></span><span id="_CPPv2N5faiss8IndexIVF8IndexIVFEP5Index6size_t6size_t6size_t10MetricType"></span><span id="faiss::IndexIVF::IndexIVF__IndexP.s.s.s.MetricType"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7077b7e60e250b9a84c49ff38205bbbf"></span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVF</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">quantizer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlist</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a><span class="sig-paren">)</span><br /></dt>
-<dd><p>The Inverted file takes a quantizer (an <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a>) on input, which implements the function mapping a vector to a list identifier. The pointer is borrowed: the quantizer should not be deleted while the <a class="reference internal" href="#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a> is in use. </p>
+<dd><p>The Inverted file takes a quantizer (an <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a>) on input, which implements the function mapping a vector to a list identifier. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -414,6 +421,20 @@
 <li><p><strong>list_nos</strong> – inverted list ids as returned by the quantizer (size n). -1s are ignored. </p></li>
 <li><p><strong>codes</strong> – output codes, size n * code_size </p></li>
 <li><p><strong>include_listno</strong> – include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss8IndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss8IndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss8IndexIVF12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::IndexIVF::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a538bdb145af7c1152207ea37b692a01a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss8IndexIVF5idx_tE" title="faiss::IndexIVF::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss8IndexIVF5idx_tE" title="faiss::IndexIVF::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
 </ul>
 </dd>
 </dl>
@@ -476,7 +497,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss8IndexIVF23get_InvertedListScannerEb">
 <span id="_CPPv3NK5faiss8IndexIVF23get_InvertedListScannerEb"></span><span id="_CPPv2NK5faiss8IndexIVF23get_InvertedListScannerEb"></span><span id="faiss::IndexIVF::get_InvertedListScanner__bC"></span><span class="target" id="structfaiss_1_1IndexIVF_1affd8641449d109b3e436a009af50111d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScannerE" title="faiss::InvertedListScanner"><span class="n"><span class="pre">InvertedListScanner</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_InvertedListScanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>get a scanner for this index (store_pairs means ignore labels) </p>
+<dd><p>Get a scanner for this index (store_pairs means ignore labels)</p>
+<p>The default search implementation uses this to compute the distances </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -819,7 +841,7 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss8IndexIVF10own_fieldsE">
 <span id="_CPPv3N5faiss8IndexIVF10own_fieldsE"></span><span id="_CPPv2N5faiss8IndexIVF10own_fieldsE"></span><span id="faiss::IndexIVF::own_fields__b"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_fields</span></span></span><br /></dt>
-<dd><p>whether object owns the quantizer </p>
+<dd><p>whether object owns the quantizer (false by default) </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -845,7 +867,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="structfaiss_1_1IndexIVFFlat.html" class="btn btn-neutral float-right" title="Struct faiss::IndexIVFFlat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1IndexIVFAdditiveQuantizer.html" class="btn btn-neutral float-right" title="Struct faiss::IndexIVFAdditiveQuantizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="structfaiss_1_1IndexIDMapTemplate.html" class="btn btn-neutral float-left" title="Struct faiss::IndexIDMapTemplate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

@@ -134,6 +134,10 @@ function selectNamedTabs(name, clickedId=null) {
     })
 }
 
+if (typeof exports === 'undefined') {
+  exports = {};
+}
+
 exports.keyTabs = keyTabs;
 exports.changeTabs = changeTabs;
 exports.selectTab = selectTab;
