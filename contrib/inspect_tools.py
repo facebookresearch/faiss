@@ -16,7 +16,8 @@ def get_invlist(invlists, l):
     ids = codes = None
     try:
         ids = invlists.get_ids(l)
-        faiss.memcpy(faiss.swig_ptr(list_ids), ids, list_ids.nbytes)
+        if ls > 0:
+            faiss.memcpy(faiss.swig_ptr(list_ids), ids, list_ids.nbytes)
         codes = invlists.get_codes(l)
         if invlists.code_size != faiss.InvertedLists.INVALID_CODE_SIZE:
             list_codes = np.zeros((ls, invlists.code_size), dtype='uint8')
@@ -26,7 +27,8 @@ def get_invlist(invlists, l):
             bs = invlists.block_size
             ls_round = (ls + npb - 1) // npb
             list_codes = np.zeros((ls_round, bs // npb, npb), dtype='uint8')
-        faiss.memcpy(faiss.swig_ptr(list_codes), codes, list_codes.nbytes)
+        if ls > 0:
+            faiss.memcpy(faiss.swig_ptr(list_codes), codes, list_codes.nbytes)
     finally:
         if ids is not None:
             invlists.release_ids(l, ids)
@@ -63,3 +65,13 @@ def get_LinearTransform_matrix(pca):
     b = faiss.vector_to_array(pca.b)
     A = faiss.vector_to_array(pca.A).reshape(pca.d_out, pca.d_in)
     return A, b
+
+
+def get_additive_quantizer_codebooks(aq):
+    """ return to codebooks of an additive quantizer """
+    codebooks = faiss.vector_to_array(aq.codebooks).reshape(-1, aq.d)
+    co = faiss.vector_to_array(aq.codebook_offsets)
+    return [
+        codebooks[co[i]:co[i + 1]]
+        for i in range(aq.M)
+    ]

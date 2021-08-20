@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 
 #include <cstddef>
@@ -18,6 +15,8 @@
 
 #include <algorithm>
 
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h> // BitstringWriter
 #include <faiss/utils/utils.h>
@@ -96,13 +95,6 @@ int dgemm_(
 
 namespace {
 
-// c and a and b can overlap
-void fvec_add(size_t d, const float* a, const float* b, float* c) {
-    for (size_t i = 0; i < d; i++) {
-        c[i] = a[i] + b[i];
-    }
-}
-
 void fmat_inverse(float* a, int n) {
     int info;
     int lwork = n * n;
@@ -151,16 +143,12 @@ namespace faiss {
 
 LSQTimer lsq_timer;
 
-LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
-    FAISS_THROW_IF_NOT((M * nbits) % 8 == 0);
-
-    this->d = d;
-    this->M = M;
-    this->nbits = std::vector<size_t>(M, nbits);
-
-    // set derived values
-    set_derived_values();
-
+LocalSearchQuantizer::LocalSearchQuantizer(
+        size_t d,
+        size_t M,
+        size_t nbits,
+        Search_type_t search_type)
+        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
     is_trained = false;
     verbose = false;
 
@@ -181,6 +169,8 @@ LocalSearchQuantizer::LocalSearchQuantizer(size_t d, size_t M, size_t nbits) {
     random_seed = 0x12345;
     std::srand(random_seed);
 }
+
+LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
@@ -259,6 +249,25 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         }
     }
 
+    is_trained = true;
+    {
+        std::vector<float> x_recons(n * d);
+        std::vector<float> norms(n);
+        decode_unpacked(codes.data(), x_recons.data(), n);
+        fvec_norms_L2sqr(norms.data(), x_recons.data(), d, n);
+
+        norm_min = HUGE_VALF;
+        norm_max = -HUGE_VALF;
+        for (idx_t i = 0; i < n; i++) {
+            if (norms[i] < norm_min) {
+                norm_min = norms[i];
+            }
+            if (norms[i] > norm_max) {
+                norm_max = norms[i];
+            }
+        }
+    }
+
     if (verbose) {
         lsq_timer.end("train");
         float obj = evaluate(codes.data(), x, n);
@@ -269,8 +278,6 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
             printf("\t%s time: %lf s\n", it.first.data(), it.second);
         }
     }
-
-    is_trained = true;
 }
 
 void LocalSearchQuantizer::perturb_codebooks(
@@ -526,6 +533,8 @@ void LocalSearchQuantizer::icm_encode(
         const float* xi = x + i * chunk_size * d;
         int32_t* codesi = codes + i * chunk_size * M;
         icm_encode_partial(i, xi, codesi, ni, binaries.data(), ils_iters, gen);
+
+        InterruptCallback::check();
     }
 
     lsq_timer.end("icm_encode");

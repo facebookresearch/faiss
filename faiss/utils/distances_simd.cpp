@@ -974,4 +974,53 @@ void compute_PQ_dis_tables_dsub2(
     }
 }
 
+/*********************************************************
+ * Vector to vector functions
+ *********************************************************/
+
+void fvec_sub(size_t d, const float* a, const float* b, float* c) {
+    size_t i;
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32 ci, ai, bi;
+        ai.loadu(a + i);
+        bi.loadu(b + i);
+        ci = ai - bi;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] - b[i];
+    }
+}
+
+void fvec_add(size_t d, const float* a, const float* b, float* c) {
+    size_t i;
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32 ci, ai, bi;
+        ai.loadu(a + i);
+        bi.loadu(b + i);
+        ci = ai + bi;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] + b[i];
+    }
+}
+
+void fvec_add(size_t d, const float* a, float b, float* c) {
+    size_t i;
+    simd8float32 bv(b);
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32 ci, ai, bi;
+        ai.loadu(a + i);
+        ci = ai + bv;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] + b;
+    }
+}
+
 } // namespace faiss

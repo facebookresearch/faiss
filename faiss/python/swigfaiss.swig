@@ -70,7 +70,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
-#include <faiss/IndexResidual.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
@@ -82,6 +82,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/quantize_lut.h>
 
 #include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
@@ -388,7 +389,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
-%include  <faiss/IndexResidual.h>
+%include  <faiss/IndexAdditiveQuantizer.h>
 %include  <faiss/impl/io.h>
 
 %include  <faiss/invlists/InvertedLists.h>
@@ -407,6 +408,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ScalarQuantizer.h>
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
+%include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 
@@ -545,6 +547,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFPQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
+    DOWNCAST ( IndexIVFResidualQuantizer )
+    DOWNCAST ( IndexIVFLocalSearchQuantizer )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -553,8 +557,10 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
     DOWNCAST ( IndexPQ )
-    DOWNCAST ( IndexResidual )
+    DOWNCAST ( IndexResidualQuantizer )
+    DOWNCAST ( IndexLocalSearchQuantizer )
     DOWNCAST ( ResidualCoarseQuantizer )
+    DOWNCAST ( LocalSearchCoarseQuantizer )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
     DOWNCAST ( IndexLattice )

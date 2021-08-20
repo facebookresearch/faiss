@@ -1335,12 +1335,9 @@ namespace {
 template <class DCClass>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
-    bool store_pairs, by_residual;
+    bool by_residual;
 
-    size_t code_size;
-
-    idx_t list_no; /// current list (set to 0 for Flat index
-    float accu0;   /// added to all distances
+    float accu0; /// added to all distances
 
     IVFSQScannerIP(
             int d,
@@ -1348,12 +1345,10 @@ struct IVFSQScannerIP : InvertedListScanner {
             size_t code_size,
             bool store_pairs,
             bool by_residual)
-            : dc(d, trained),
-              store_pairs(store_pairs),
-              by_residual(by_residual),
-              code_size(code_size),
-              list_no(0),
-              accu0(0) {}
+            : dc(d, trained), by_residual(by_residual), accu0(0) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         dc.set_query(query);
@@ -1411,10 +1406,8 @@ template <class DCClass>
 struct IVFSQScannerL2 : InvertedListScanner {
     DCClass dc;
 
-    bool store_pairs, by_residual;
-    size_t code_size;
+    bool by_residual;
     const Index* quantizer;
-    idx_t list_no;  /// current inverted list
     const float* x; /// current query
 
     std::vector<float> tmp;
@@ -1427,13 +1420,13 @@ struct IVFSQScannerL2 : InvertedListScanner {
             bool store_pairs,
             bool by_residual)
             : dc(d, trained),
-              store_pairs(store_pairs),
               by_residual(by_residual),
-              code_size(code_size),
               quantizer(quantizer),
-              list_no(0),
               x(nullptr),
-              tmp(d) {}
+              tmp(d) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         x = query;
@@ -1443,8 +1436,8 @@ struct IVFSQScannerL2 : InvertedListScanner {
     }
 
     void set_list(idx_t list_no, float /*coarse_dis*/) override {
+        this->list_no = list_no;
         if (by_residual) {
-            this->list_no = list_no;
             // shift of x_in wrt centroid
             quantizer->compute_residual(x, tmp.data(), list_no);
             dc.set_query(tmp.data());

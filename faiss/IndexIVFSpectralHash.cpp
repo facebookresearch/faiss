@@ -206,9 +206,7 @@ template <class HammingComputer>
 struct IVFScanner : InvertedListScanner {
     // copied from index structure
     const IndexIVFSpectralHash* index;
-    size_t code_size;
     size_t nbit;
-    bool store_pairs;
 
     float period, freq;
     std::vector<float> q;
@@ -220,15 +218,16 @@ struct IVFScanner : InvertedListScanner {
 
     IVFScanner(const IndexIVFSpectralHash* index, bool store_pairs)
             : index(index),
-              code_size(index->code_size),
               nbit(index->nbit),
-              store_pairs(store_pairs),
               period(index->period),
               freq(2.0 / index->period),
               q(nbit),
               zero(nbit),
-              qcode(code_size),
-              hc(qcode.data(), code_size) {}
+              qcode(index->code_size),
+              hc(qcode.data(), index->code_size) {
+        this->store_pairs = store_pairs;
+        this->code_size = index->code_size;
+    }
 
     void set_query(const float* query) override {
         FAISS_THROW_IF_NOT(query);
@@ -240,8 +239,6 @@ struct IVFScanner : InvertedListScanner {
             hc.set(qcode.data(), code_size);
         }
     }
-
-    idx_t list_no;
 
     void set_list(idx_t list_no, float /*coarse_dis*/) override {
         this->list_no = list_no;

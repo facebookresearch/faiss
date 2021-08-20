@@ -15,6 +15,7 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/Index2Layer.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
@@ -27,7 +28,6 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
-#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -80,7 +80,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
     TRYCLONE(IndexLattice, index)
-    TRYCLONE(IndexResidual, index)
+    TRYCLONE(IndexResidualQuantizer, index)
     TRYCLONE(IndexScalarQuantizer, index)
     TRYCLONE(MultiIndexQuantizer, index)
     TRYCLONE(ResidualCoarseQuantizer, index)

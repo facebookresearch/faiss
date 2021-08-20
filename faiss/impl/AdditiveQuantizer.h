@@ -27,14 +27,33 @@ struct AdditiveQuantizer {
     std::vector<float> codebooks; ///< codebooks
 
     // derived values
-    std::vector<size_t> codebook_offsets;
+    std::vector<uint64_t> codebook_offsets;
     size_t code_size;           ///< code size in bytes
     size_t tot_bits;            ///< total number of bits
     size_t total_codebook_size; ///< size of the codebook in vectors
-    bool is_byte_aligned;
+    bool only_8bit;             ///< are all nbits = 8 (use faster decoder)
 
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
+
+    /// Encodes how search is performed and how vectors are encoded
+    enum Search_type_t {
+        ST_decompress,    ///< decompress database vector
+        ST_LUT_nonorm,    ///< use a LUT, don't include norms (OK for IP or
+                          ///< normalized vectors)
+        ST_norm_from_LUT, ///< compute the norms from the look-up tables (cost
+                          ///< is in O(M^2))
+        ST_norm_float, ///< use a LUT, and store float32 norm with the vectors
+        ST_norm_qint8, ///< use a LUT, and store 8bit-quantized norm
+        ST_norm_qint4,
+    };
+
+    AdditiveQuantizer(
+            size_t d,
+            const std::vector<size_t>& nbits,
+            Search_type_t search_type = ST_decompress);
+
+    AdditiveQuantizer();
 
     ///< compute derived values when d, M and nbits have been set
     void set_derived_values();
@@ -52,15 +71,18 @@ struct AdditiveQuantizer {
 
     /** pack a series of code to bit-compact format
      *
-     * @param codes  codes to be packed, size n * code_size
+     * @param codes        codes to be packed, size n * code_size
      * @param packed_codes output bit-compact codes
-     * @param ld_codes  leading dimension of codes
+     * @param ld_codes     leading dimension of codes
+     * @param norms        norms of the vectors (size n). Will be computed if
+     *                     needed but not provided
      */
     void pack_codes(
             size_t n,
             const int32_t* codes,
             uint8_t* packed_codes,
-            int64_t ld_codes = -1) const;
+            int64_t ld_codes = -1,
+            const float* norms = nullptr) const;
 
     /** Decode a set of vectors
      *
@@ -69,9 +91,36 @@ struct AdditiveQuantizer {
      */
     void decode(const uint8_t* codes, float* x, size_t n) const;
 
+    /** Decode a set of vectors in non-packed format
+     *
+     * @param codes  codes to decode, size n * ld_codes
+     * @param x      output vectors, size n * d
+     */
+    void decode_unpacked(
+            const int32_t* codes,
+            float* x,
+            size_t n,
+            int64_t ld_codes = -1) const;
+
     /****************************************************************************
-     * Support for exhaustive distance computations with the centroids.
-     * Hence, the number of elements that can be enumerated is not too large.
+     * Search functions in an external set of codes.
+     ****************************************************************************/
+
+    /// Also determines what's in the codes
+    Search_type_t search_type;
+
+    /// min/max for quantization of norms
+    float norm_min, norm_max;
+
+    template <bool is_IP, Search_type_t effective_search_type>
+    float compute_1_distance_LUT(const uint8_t* codes, const float* LUT) const;
+
+    /*
+        float compute_1_L2sqr(const uint8_t* codes, const float* LUT);
+    */
+    /****************************************************************************
+     * Support for exhaustive distance computations with all the centroids.
+     * Hence, the number of these centroids should not be too large.
      ****************************************************************************/
     using idx_t = Index::idx_t;
 
@@ -87,7 +136,7 @@ struct AdditiveQuantizer {
     void compute_LUT(size_t n, const float* xq, float* LUT) const;
 
     /// exact IP search
-    void knn_exact_inner_product(
+    void knn_centroids_inner_product(
             idx_t n,
             const float* xq,
             idx_t k,
@@ -101,7 +150,7 @@ struct AdditiveQuantizer {
     void compute_centroid_norms(float* norms) const;
 
     /** Exact L2 search, with precomputed norms */
-    void knn_exact_L2(
+    void knn_centroids_L2(
             idx_t n,
             const float* xq,
             idx_t k,
