@@ -478,8 +478,6 @@ def handle_Index(the_class):
         return lims, D, I
 
     def replacement_sa_encode(self, x, codes=None):
-
-
         n, d = x.shape
         assert d == self.d
 
@@ -503,6 +501,14 @@ def handle_Index(the_class):
         self.sa_decode_c(n, swig_ptr(codes), swig_ptr(x))
         return x
 
+    def replacement_add_sa_codes(self, codes, ids=None):
+        n, cs = codes.shape
+        assert cs == self.sa_code_size()
+        if ids is not None:
+            assert ids.shape == (n,)
+            ids = swig_ptr(ids)
+        self.add_sa_codes_c(n, swig_ptr(codes), ids)
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'assign', replacement_assign)
@@ -518,6 +524,8 @@ def handle_Index(the_class):
                    replacement_search_and_reconstruct, ignore_missing=True)
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
+    replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
+                ignore_missing=True)
 
     # get/set state for pickle
     # the data is serialized to std::vector -> numpy array -> python bytes
@@ -807,6 +815,8 @@ add_ref_in_method(IndexPreTransform, 'prepend_transform', 0)
 add_ref_in_constructor(IndexIVFPQ, 0)
 add_ref_in_constructor(IndexIVFPQR, 0)
 add_ref_in_constructor(IndexIVFPQFastScan, 0)
+add_ref_in_constructor(IndexIVFResidualQuantizer, 0)
+add_ref_in_constructor(IndexIVFLocalSearchQuantizer, 0)
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
@@ -1564,6 +1574,7 @@ class Kmeans:
 # people may have
 IndexProxy = IndexReplicas
 ConcatenatedInvertedLists = HStackInvertedLists
+IndexResidual = IndexResidualQuantizer
 
 ###########################################
 # serialization of indexes to byte arrays

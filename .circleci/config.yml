@@ -50,14 +50,14 @@ jobs:
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
-            make -C build -j3 faiss
+            make -k -C build -j3 faiss
       - when:
           condition:
             equal: [ "avx2", << parameters.opt_level >> ]
           steps:
             - run:
                 name: Build faiss_avx2 library
-                command: make -C build -j3 faiss_avx2 swigfaiss_avx2
+                command: make -k -C build -j3 faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
           command: |
@@ -82,7 +82,7 @@ jobs:
       - run:
           name: Build C API
           command: |
-            make -C build -j faiss_c
+            make -k -C build -j faiss_c
 
   build_linux_conda:
     docker:
@@ -120,7 +120,7 @@ jobs:
       - run:
           name: Build faiss library
           command: |
-            make -C build -j faiss
+            make -k -C build -j faiss
       - run:
           name: Test faiss library
           command: |
@@ -145,7 +145,7 @@ jobs:
       - run:
           name: Build C API
           command: |
-            make -C build -j faiss_c
+            make -k -C build -j faiss_c
 
   build_windows:
     executor:
@@ -191,7 +191,7 @@ jobs:
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DPython_EXECUTABLE=$PYTHON .
-            make -C build -j3 faiss
+            make -k -C build -j3 faiss
       - run:
           name: Test faiss library
           command: |
@@ -216,7 +216,7 @@ jobs:
       - run:
           name: Build C API
           command: |
-            make -C build -j faiss_c
+            make -k -C build -j faiss_c
 
   build_linux_gpu:
     machine:

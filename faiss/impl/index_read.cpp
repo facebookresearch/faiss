@@ -25,9 +25,11 @@
 #include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/Index2Layer.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -40,7 +42,6 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
-#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -239,15 +240,54 @@ static void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READVECTOR(pq->centroids);
 }
 
-static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
+static void read_ResidualQuantizer_old(ResidualQuantizer* rq, IOReader* f) {
     READ1(rq->d);
     READ1(rq->M);
     READVECTOR(rq->nbits);
-    rq->set_derived_values();
     READ1(rq->is_trained);
     READ1(rq->train_type);
     READ1(rq->max_beam_size);
     READVECTOR(rq->codebooks);
+    READ1(rq->search_type);
+    READ1(rq->norm_min);
+    READ1(rq->norm_max);
+    rq->set_derived_values();
+}
+
+static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
+    READ1(aq->d);
+    READ1(aq->M);
+    READVECTOR(aq->nbits);
+    READ1(aq->is_trained);
+    READVECTOR(aq->codebooks);
+    READ1(aq->search_type);
+    READ1(aq->norm_min);
+    READ1(aq->norm_max);
+    aq->set_derived_values();
+}
+
+static void read_ResidualQuantizer(ResidualQuantizer* rq, IOReader* f) {
+    read_AdditiveQuantizer(rq, f);
+    READ1(rq->train_type);
+    READ1(rq->max_beam_size);
+    if (!(rq->train_type & ResidualQuantizer::Skip_codebook_tables)) {
+        rq->compute_codebook_tables();
+    }
+}
+
+static void read_LocalSearchQuantizer(LocalSearchQuantizer* lsq, IOReader* f) {
+    read_AdditiveQuantizer(lsq, f);
+    READ1(lsq->K);
+    READ1(lsq->train_iters);
+    READ1(lsq->encode_ils_iters);
+    READ1(lsq->train_ils_iters);
+    READ1(lsq->icm_iters);
+    READ1(lsq->p);
+    READ1(lsq->lambd);
+    READ1(lsq->chunk_size);
+    READ1(lsq->random_seed);
+    READ1(lsq->nperts);
+    READ1(lsq->update_codebooks_with_double);
 }
 
 static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
@@ -475,13 +515,21 @@ Index* read_index(IOReader* f, int io_flags) {
             idxp->metric_type = METRIC_L2;
         }
         idx = idxp;
-    } else if (h == fourcc("IxRQ")) {
-        IndexResidual* idxr = new IndexResidual();
+    } else if (h == fourcc("IxRQ") || h == fourcc("IxRq")) {
+        IndexResidualQuantizer* idxr = new IndexResidualQuantizer();
         read_index_header(idxr, f);
-        read_ResidualQuantizer(&idxr->rq, f);
-        READ1(idxr->search_type);
-        READ1(idxr->norm_min);
-        READ1(idxr->norm_max);
+        if (h == fourcc("IxRQ")) {
+            read_ResidualQuantizer_old(&idxr->rq, f);
+        } else {
+            read_ResidualQuantizer(&idxr->rq, f);
+        }
+        READ1(idxr->code_size);
+        READVECTOR(idxr->codes);
+        idx = idxr;
+    } else if (h == fourcc("IxLS")) {
+        auto idxr = new IndexLocalSearchQuantizer();
+        read_index_header(idxr, f);
+        read_LocalSearchQuantizer(&idxr->lsq, f);
         READ1(idxr->code_size);
         READVECTOR(idxr->codes);
         idx = idxr;
@@ -571,6 +619,25 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_InvertedLists(ivsc, f, io_flags);
         idx = ivsc;
+    } else if (h == fourcc("IwLS") || h == fourcc("IwRQ")) {
+        bool is_LSQ = h == fourcc("IwLS");
+        IndexIVFAdditiveQuantizer* iva;
+        if (is_LSQ) {
+            iva = new IndexIVFLocalSearchQuantizer();
+        } else {
+            iva = new IndexIVFResidualQuantizer();
+        }
+        read_ivf_header(iva, f);
+        READ1(iva->code_size);
+        if (is_LSQ) {
+            read_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
+        } else {
+            read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
+        }
+        READ1(iva->by_residual);
+        READ1(iva->use_precomputed_table);
+        read_InvertedLists(iva, f, io_flags);
+        idx = iva;
     } else if (h == fourcc("IwSh")) {
         IndexIVFSpectralHash* ivsp = new IndexIVFSpectralHash();
         read_ivf_header(ivsp, f);

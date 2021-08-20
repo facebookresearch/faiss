@@ -332,3 +332,116 @@ class TestLocalSearchQuantizer(unittest.TestCase):
 
         print(err_lsq, err_pq)
         self.assertLess(err_lsq, err_pq)
+
+
+class TestIndexLocalSearchQuantizer(unittest.TestCase):
+
+    def test_IndexLocalSearchQuantizer(self):
+        ds = datasets.SyntheticDataset(32, 1000, 200, 100)
+        gt = ds.get_groundtruth(10)
+
+        ir = faiss.IndexLocalSearchQuantizer(ds.d, 4, 5)
+        ir.train(ds.get_train())
+        ir.add(ds.get_database())
+        Dref, Iref = ir.search(ds.get_queries(), 10)
+        inter_ref = faiss.eval_intersection(Iref, gt)
+
+        # 467
+        self.assertGreater(inter_ref, 460)
+
+        AQ = faiss.AdditiveQuantizer
+        ir2 = faiss.IndexLocalSearchQuantizer(
+            ds.d, 4, 5, faiss.METRIC_L2, AQ.ST_norm_float)
+
+        ir2.train(ds.get_train())  # just to set flags properly
+        ir2.lsq.codebooks = ir.lsq.codebooks
+
+        ir2.add(ds.get_database())
+        D2, I2 = ir2.search(ds.get_queries(), 10)
+        np.testing.assert_array_almost_equal(Dref, D2, decimal=5)
+        self.assertLess((Iref != I2).sum(), Iref.size * 0.01)
+
+        # test I/O
+        ir3 = faiss.deserialize_index(faiss.serialize_index(ir))
+        D3, I3 = ir3.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Iref, I3)
+        np.testing.assert_array_equal(Dref, D3)
+
+    def test_coarse_quantizer(self):
+        ds = datasets.SyntheticDataset(32, 5000, 1000, 100)
+        gt = ds.get_groundtruth(10)
+
+        quantizer = faiss.LocalSearchCoarseQuantizer(ds.d, 2, 4)
+        quantizer.lsq.nperts
+        quantizer.lsq.nperts = 2
+
+        index = faiss.IndexIVFFlat(quantizer, ds.d, 256)
+        index.quantizer_trains_alone = True
+
+        index.train(ds.get_train())
+
+        index.add(ds.get_database())
+        index.nprobe = 4
+
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        inter_ref = faiss.eval_intersection(Iref, gt)
+
+        # 249
+        self.assertGreater(inter_ref, 235)
+
+    def test_factory(self):
+        index = faiss.index_factory(20, "LSQ5x6_Nqint8")
+        self.assertEqual(index.lsq.M, 5)
+        self.assertEqual(index.lsq.K, 1 << 6)
+        self.assertEqual(
+            index.lsq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_qint8
+        )
+
+
+class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
+
+    def test_factory(self):
+        index = faiss.index_factory(20, "IVF1024,LSQ5x6_Nqint8")
+        self.assertEqual(index.nlist, 1024)
+        self.assertEqual(index.lsq.M, 5)
+        self.assertEqual(index.lsq.K, 1 << 6)
+        self.assertEqual(
+            index.lsq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_qint8
+        )
+
+    def eval_index_accuracy(self, factory_key):
+        # just do a single test, most search functions are already stress
+        # tested in test_residual_quantizer.py
+        ds = datasets.SyntheticDataset(32, 3000, 1000, 100)
+        index = faiss.index_factory(ds.d, factory_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 5, 10, 20, 50:
+            index.nprobe = nprobe
+            D, I = index.search(ds.get_queries(), 10)
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            # print("nprobe=", nprobe, "inter=", inter)
+            inters.append(inter)
+
+        inters = np.array(inters)
+        # in fact the results should be the same for the decoding and the
+        # reconstructing versions
+        self.assertTrue(np.all(inters[1:] >= inters[:-1]))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+    def test_index_accuracy_reconstruct(self):
+        self.eval_index_accuracy("IVF100,LSQ4x5")
+
+    def test_index_accuracy_reconstruct_LUT(self):
+        self.eval_index_accuracy("IVF100,LSQ4x5_Nfloat")
