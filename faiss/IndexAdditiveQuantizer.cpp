@@ -310,7 +310,7 @@ ResidualCoarseQuantizer::ResidualCoarseQuantizer(
         MetricType metric)
         : ResidualCoarseQuantizer(d, std::vector<size_t>(M, nbits), metric) {}
 
-ResidualCoarseQuantizer::ResidualCoarseQuantizer(): beam_factor(4.0) {}
+ResidualCoarseQuantizer::ResidualCoarseQuantizer(): ResidualCoarseQuantizer(0, 0, 0) {}
 
 
 
@@ -319,8 +319,13 @@ void ResidualCoarseQuantizer::set_beam_factor(float new_beam_factor) {
     if (new_beam_factor > 0) {
         FAISS_THROW_IF_NOT(new_beam_factor >= 1.0);
         return;
+    } else if (metric_type == METRIC_L2 && ntotal != centroid_norms.size()) {
+        if (verbose) {
+            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %ld centroids\n", ntotal);
+        }
+        centroid_norms.resize(ntotal);
+        aq->compute_centroid_norms(centroid_norms.data());
     }
-
 }
 
 void ResidualCoarseQuantizer::search(

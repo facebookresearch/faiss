@@ -497,6 +497,13 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
         np.testing.assert_array_equal(Iref, Inew)
 
+        # check i/o
+        CDref, CIref = quantizer.search(ds.get_queries(), 10)
+        quantizer2 = faiss.deserialize_index(faiss.serialize_index(quantizer))
+        quantizer2.search(ds.get_queries(), 10)
+        CDnew, CInew = quantizer2.search(ds.get_queries(), 10)
+        np.testing.assert_array_almost_equal(CDref, CDnew, decimal=5)
+        np.testing.assert_array_equal(CIref, CInew)
 
 ###########################################################
 # Test search with LUTs
