@@ -53,9 +53,9 @@ Tensor Core operations (mixed-precision arithmetic) are enabled on supported
 hardware when operating with float16 data.
 - Support k-means clustering with encoded vectors. This makes it possible to
 train on larger datasets without decompressing them in RAM, and is especially
-useful for binary datasets (see https://github.com/facebookresearch/faiss/blob/master/tests/test_build_blocks.py#L92).
+useful for binary datasets (see https://github.com/facebookresearch/faiss/blob/main/tests/test_build_blocks.py#L92).
 - Support weighted k-means. Weights can be associated to each training point
-(see https://github.com/facebookresearch/faiss/blob/master/tests/test_build_blocks.py).
+(see https://github.com/facebookresearch/faiss/blob/main/tests/test_build_blocks.py).
 - Serialize callback in python, to write to pipes or sockets (see
 https://github.com/facebookresearch/faiss/wiki/Index-IO,-cloning-and-hyper-parameter-tuning).
 - Reconstruct arbitrary ids from IndexIVF + efficient remove of a small number
@@ -63,12 +63,12 @@ of ids. This avoids 2 inefficiencies: O(ntotal) removal of vectors and
 IndexIDMap2 on top of indexIVF. Documentation here:
 https://github.com/facebookresearch/faiss/wiki/Special-operations-on-indexes.
 - Support inner product as a metric in IndexHNSW (see
-https://github.com/facebookresearch/faiss/blob/master/tests/test_index.py#L490).
+https://github.com/facebookresearch/faiss/blob/main/tests/test_index.py#L490).
 - Support PQ of sizes other than 8 bit in IndexIVFPQ.
 - Demo on how to perform searches sequentially on an IVF index. This is useful
 for an OnDisk index with a very large batch of queries. In that case, it is
 worthwhile to scan the index sequentially (see
-https://github.com/facebookresearch/faiss/blob/master/tests/test_ivflib.py#L62).
+https://github.com/facebookresearch/faiss/blob/main/tests/test_ivflib.py#L62).
 - Range search support for most binary indexes.
 - Support for hashing-based binary indexes (see
 https://github.com/facebookresearch/faiss/wiki/Binary-indexes).

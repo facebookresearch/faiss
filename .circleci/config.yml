@@ -426,7 +426,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - deploy_linux:
           name: Linux nightlies

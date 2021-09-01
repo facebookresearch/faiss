@@ -202,7 +202,7 @@ class DatasetBigANN(Dataset):
 class DatasetDeep1B(Dataset):
     """
     See
-    https://github.com/facebookresearch/faiss/tree/master/benchs#getting-deep1b
+    https://github.com/facebookresearch/faiss/tree/main/benchs#getting-deep1b
     on how to get the data
     """
 

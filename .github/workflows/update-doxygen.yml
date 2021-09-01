@@ -2,7 +2,7 @@ name: update-doxygen
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'faiss/**'
 jobs:
@@ -35,6 +35,6 @@ jobs:
           git add xml cpp_api
           if [ -n "$(git status --porcelain)" ]
           then
-            git commit -m "Update API docs ($(git rev-parse --short master))."
+            git commit -m "Update API docs ($(git rev-parse --short main))."
             git push origin gh-pages
           fi
