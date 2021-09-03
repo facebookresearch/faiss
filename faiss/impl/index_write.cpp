@@ -168,6 +168,8 @@ static void write_AdditiveQuantizer(const AdditiveQuantizer* aq, IOWriter* f) {
     WRITE1(aq->search_type);
     WRITE1(aq->norm_min);
     WRITE1(aq->norm_max);
+    WRITE1(aq->nbits_norm);
+    WRITEVECTOR(aq->index_norm.xb);
 }
 
 static void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {

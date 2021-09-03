@@ -19,6 +19,7 @@
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/utils/utils.h>
 
+#include <faiss/Clustering.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -369,6 +370,8 @@ void ResidualQuantizer::train(size_t n, const float* x) {
             norm_max = norms[i];
         }
     }
+    Clustering clus(1, (1 << nbits_norm));
+    clus.train(n, norms.data(), index_norm);
 
     is_trained = true;
 

@@ -263,6 +263,8 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
     READ1(aq->search_type);
     READ1(aq->norm_min);
     READ1(aq->norm_max);
+    READ1(aq->nbits_norm);
+    READVECTOR(aq->index_norm.xb);
     aq->set_derived_values();
 }
 

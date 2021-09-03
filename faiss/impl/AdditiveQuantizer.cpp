@@ -93,6 +93,9 @@ void AdditiveQuantizer::set_derived_values() {
         case ST_norm_qint4:
             tot_bits += 4;
             break;
+        case ST_norm_qint:
+            tot_bits += nbits_norm;
+            break;
     }
 
     // convert bits to bytes
@@ -128,6 +131,16 @@ float decode_qint4(uint8_t i, float amin, float amax) {
 
 } // anonymous namespace
 
+uint8_t AdditiveQuantizer::encode_norm(float x) const {
+    idx_t id;
+    index_norm.assign(idx_t(1), &x, &id, idx_t(1));
+    return uint8_t(id);
+}
+
+float AdditiveQuantizer::decode_norm(uint8_t c) const {
+    return index_norm.xb[c];
+}
+
 void AdditiveQuantizer::pack_codes(
         size_t n,
         const int32_t* codes,
@@ -139,7 +152,7 @@ void AdditiveQuantizer::pack_codes(
     }
     std::vector<float> norm_buf;
     if (search_type == ST_norm_float || search_type == ST_norm_qint4 ||
-        search_type == ST_norm_qint8) {
+        search_type == ST_norm_qint8 || search_type == ST_norm_qint) {
         if (!norms) {
             norm_buf.resize(n);
             std::vector<float> x_recons(n * d);
@@ -163,6 +176,11 @@ void AdditiveQuantizer::pack_codes(
             case ST_norm_float:
                 bsw.write(*(uint32_t*)&norms[i], 32);
                 break;
+            case ST_norm_qint: {
+                uint8_t b = encode_norm(norms[i]);
+                bsw.write(b, nbits_norm);
+                break;
+            }
             case ST_norm_qint8: {
                 uint8_t b = encode_qint8(norms[i], norm_min, norm_max);
                 bsw.write(b, 8);
@@ -426,6 +444,18 @@ float AdditiveQuantizer::
     float accu = accumulate_IPs(*this, bs, codes, LUT);
     uint32_t norm_i = bs.read(32);
     float norm2 = *(float*)&norm_i;
+    return norm2 - 2 * accu;
+}
+
+template <>
+float AdditiveQuantizer::
+        compute_1_distance_LUT<false, AdditiveQuantizer::ST_norm_qint>(
+                const uint8_t* codes,
+                const float* LUT) const {
+    BitstringReader bs(codes, code_size);
+    float accu = accumulate_IPs(*this, bs, codes, LUT);
+    uint32_t norm_i = bs.read(nbits_norm);
+    float norm2 = decode_norm(norm_i);
     return norm2 - 2 * accu;
 }
 

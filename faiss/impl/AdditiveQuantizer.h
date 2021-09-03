@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <faiss/Index.h>
+#include <faiss/IndexFlat.h>
 
 namespace faiss {
 
@@ -36,6 +37,12 @@ struct AdditiveQuantizer {
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
 
+    size_t nbits_norm = 8;
+    IndexFlat1D index_norm;  ///< store and search norms
+
+    uint8_t encode_norm(float x) const;  ///< encode norm
+    float decode_norm(uint8_t c) const;  ///< decode norm
+
     /// Encodes how search is performed and how vectors are encoded
     enum Search_type_t {
         ST_decompress,    ///< decompress database vector
@@ -46,6 +53,8 @@ struct AdditiveQuantizer {
         ST_norm_float, ///< use a LUT, and store float32 norm with the vectors
         ST_norm_qint8, ///< use a LUT, and store 8bit-quantized norm
         ST_norm_qint4,
+
+        ST_norm_qint,
     };
 
     AdditiveQuantizer(

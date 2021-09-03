@@ -15,6 +15,7 @@
 
 #include <algorithm>
 
+#include <faiss/Clustering.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
@@ -266,6 +267,8 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
                 norm_max = norms[i];
             }
         }
+        Clustering clus(1, (1 << nbits_norm));
+        clus.train(n, norms.data(), index_norm);
     }
 
     if (verbose) {

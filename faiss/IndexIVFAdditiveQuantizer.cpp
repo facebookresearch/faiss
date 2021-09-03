@@ -244,6 +244,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)
+                A(ST_norm_qint)
 #undef A
             default:
                 FAISS_THROW_FMT(
