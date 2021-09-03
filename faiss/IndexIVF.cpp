@@ -107,8 +107,15 @@ void Level1Quantizer::train_q1(
         } else {
             clus.train(n, x, *clustering_index);
         }
-        if (verbose)
+        if (verbose) {
             printf("Adding centroids to quantizer\n");
+        }
+        if (!quantizer->is_trained) {
+            if (verbose) {
+                printf("But training it first on centroids table...\n");
+            }
+            quantizer->train(nlist, clus.centroids.data());
+        }
         quantizer->add(nlist, clus.centroids.data());
     }
 }
