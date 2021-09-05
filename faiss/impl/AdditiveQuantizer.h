@@ -38,7 +38,7 @@ struct AdditiveQuantizer {
     bool is_trained; ///< is trained or not
 
     size_t nbits_norm;
-    IndexFlat1D index_norm; ///< store and search norms
+    IndexFlat1D qnorm; ///< store and search norms
 
     uint32_t encode_qcint(
             float x) const; ///< encode norm by non-uniform scalar quantization
@@ -57,7 +57,7 @@ struct AdditiveQuantizer {
         ST_norm_qint8, ///< use a LUT, and store 8bit-quantized norm
         ST_norm_qint4,
 
-        ST_norm_cqint,
+        ST_norm_cqint,  ///< use a LUT, and store non-uniform quantized norm
     };
 
     AdditiveQuantizer(

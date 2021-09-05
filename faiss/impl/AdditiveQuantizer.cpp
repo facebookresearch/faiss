@@ -137,12 +137,12 @@ float decode_qint4(uint8_t i, float amin, float amax) {
 
 uint32_t AdditiveQuantizer::encode_qcint(float x) const {
     idx_t id;
-    index_norm.assign(idx_t(1), &x, &id, idx_t(1));
+    qnorm.assign(idx_t(1), &x, &id, idx_t(1));
     return uint32_t(id);
 }
 
 float AdditiveQuantizer::decode_qcint(uint32_t c) const {
-    return index_norm.xb[c];
+    return qnorm.xb[c];
 }
 
 void AdditiveQuantizer::pack_codes(

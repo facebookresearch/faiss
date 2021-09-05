@@ -272,8 +272,11 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
                 norm_max = norms[i];
             }
         }
-        Clustering clus(1, (1 << nbits_norm));
-        clus.train(n, norms.data(), index_norm);
+
+        if (search_type == ST_norm_cqint) {
+            Clustering clus(1, (1 << nbits_norm));
+            clus.train(n, norms.data(), qnorm);
+        }
     }
 
     if (verbose) {
