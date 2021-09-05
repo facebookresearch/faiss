@@ -244,7 +244,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)
-                A(ST_norm_qint)
+                A(ST_norm_cqint)
 #undef A
             default:
                 FAISS_THROW_FMT(
@@ -263,9 +263,10 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t nlist,
         const std::vector<size_t>& nbits,
         MetricType metric,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        size_t nbits_norm)
         : IndexIVFAdditiveQuantizer(&rq, quantizer, d, nlist, metric),
-          rq(d, nbits, search_type) {
+          rq(d, nbits, search_type, nbits_norm) {
     code_size = invlists->code_size = rq.code_size;
 }
 
@@ -279,14 +280,16 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        size_t nbits_norm)
         : IndexIVFResidualQuantizer(
                   quantizer,
                   d,
                   nlist,
                   std::vector<size_t>(M, nbits),
                   metric,
-                  search_type) {}
+                  search_type,
+                  nbits_norm) {}
 
 IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() {}
 
@@ -301,9 +304,10 @@ IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        size_t nbits_norm)
         : IndexIVFAdditiveQuantizer(&lsq, quantizer, d, nlist, metric),
-          lsq(d, M, nbits, search_type) {
+          lsq(d, M, nbits, search_type, nbits_norm) {
     code_size = invlists->code_size = lsq.code_size;
 }
 

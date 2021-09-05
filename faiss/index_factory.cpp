@@ -135,7 +135,11 @@ void find_matching_parentheses(const std::string& s, int& i0, int& i1) {
 
 AdditiveQuantizer::Search_type_t parse_AQ_search_type(
         std::string stok,
-        MetricType metric) {
+        MetricType metric,
+        size_t* nbits_norm) {
+    std::regex pattern(".*_Ncqint([0-9]+)");
+    std::smatch sm;
+
     if (str_ends_with(stok, "_Nfloat")) {
         return AdditiveQuantizer::ST_norm_float;
     } else if (str_ends_with(stok, "_Nnone")) {
@@ -144,6 +148,9 @@ AdditiveQuantizer::Search_type_t parse_AQ_search_type(
         return AdditiveQuantizer::ST_norm_qint8;
     } else if (str_ends_with(stok, "_Nqint4")) {
         return AdditiveQuantizer::ST_norm_qint4;
+    } else if (std::regex_match(stok, sm, pattern)) {
+        *nbits_norm = std::stoi(sm[1].str());
+        return AdditiveQuantizer::ST_norm_cqint;
     } else if (metric == METRIC_L2) {
         return AdditiveQuantizer::ST_decompress;
     } else {
@@ -283,7 +290,7 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 std::regex_match(
                         stok,
                         std::regex(
-                                "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
+                                "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*(_Nnone|_Nfloat|_Nqint8|_Nqint4|(_Ncqint[0-9]+))?"))) {
             std::vector<size_t> nbits;
             std::smatch sm;
             bool is_RCQ = stok.find("RCQ") == 0;
@@ -297,10 +304,11 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             if (is_RCQ) {
                 index_1 = new ResidualCoarseQuantizer(d, nbits, metric);
             } else {
+                size_t nbits_norm = 0;
                 AdditiveQuantizer::Search_type_t st =
-                        parse_AQ_search_type(stok, metric);
+                        parse_AQ_search_type(stok, metric, &nbits_norm);
                 if (!coarse_quantizer) {
-                    index_1 = new IndexResidualQuantizer(d, nbits, metric, st);
+                    index_1 = new IndexResidualQuantizer(d, nbits, metric, st, nbits_norm);
                 } else {
                     index_1 = fix_ivf_fields(new IndexIVFResidualQuantizer(
                             coarse_quantizer,
@@ -308,7 +316,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                             ncentroids,
                             nbits,
                             metric,
-                            st));
+                            st,
+                            nbits_norm));
                     del_coarse_quantizer.release();
                 }
             }
@@ -316,7 +325,7 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 std::regex_match(
                         stok,
                         std::regex(
-                                "(LSQ|LSCQ)[0-9]+x[0-9]+(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
+                                "(LSQ|LSCQ)[0-9]+x[0-9]+(_Nnone|_Nfloat|_Nqint8|_Nqint4|(_Ncqint[0-9]+))?"))) {
             std::vector<size_t> nbits;
             std::smatch sm;
             bool is_LSCQ = stok.find("LSCQ") == 0;
@@ -326,11 +335,12 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             if (is_LSCQ) {
                 index_1 = new ResidualCoarseQuantizer(d, nbits, metric);
             } else {
+                size_t nbits_norm = 0;
                 AdditiveQuantizer::Search_type_t st =
-                        parse_AQ_search_type(stok, metric);
+                        parse_AQ_search_type(stok, metric, &nbits_norm);
                 if (!coarse_quantizer) {
                     index_1 = new IndexLocalSearchQuantizer(
-                            d, M, nbit, metric, st);
+                            d, M, nbit, metric, st, nbits_norm);
                 } else {
                     index_1 = fix_ivf_fields(new IndexIVFLocalSearchQuantizer(
                             coarse_quantizer,
@@ -339,7 +349,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                             M,
                             nbit,
                             metric,
-                            st));
+                            st,
+                            nbits_norm));
                     del_coarse_quantizer.release();
                 }
             }

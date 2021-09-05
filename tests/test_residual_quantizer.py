@@ -615,9 +615,13 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
         inter_ref = faiss.eval_intersection(Iref, gt)
 
         AQ = faiss.AdditiveQuantizer
-        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4, AQ.ST_norm_qint:
+        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4, AQ.ST_norm_cqint:
 
-            ir2 = faiss.IndexResidualQuantizer(ds.d, 3, 4, faiss.METRIC_L2, st)
+            nbits_norm = 0
+            if st == AQ.ST_norm_cqint:
+                nbits_norm = 8
+
+            ir2 = faiss.IndexResidualQuantizer(ds.d, 3, 4, faiss.METRIC_L2, st, nbits_norm)
             ir2.rq.max_beam_size = 30
             ir2.train(xt)   # to get the norm bounds
             ir2.rq.codebooks = ir.rq.codebooks    # fake training
@@ -641,14 +645,14 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
 
 class TestIVFResidualQuantizer(unittest.TestCase):
 
-    def do_test_accuracy(self, by_residual, st):
+    def do_test_accuracy(self, by_residual, st, nbits_norm=0):
         ds = datasets.SyntheticDataset(32, 3000, 1000, 100)
 
         quantizer = faiss.IndexFlatL2(ds.d)
 
         index = faiss.IndexIVFResidualQuantizer(
             quantizer, ds.d, 100, 3, 4,
-            faiss.METRIC_L2, st
+            faiss.METRIC_L2, st, nbits_norm
         )
         index.by_residual = by_residual
 
@@ -711,8 +715,8 @@ class TestIVFResidualQuantizer(unittest.TestCase):
     def test_norm_float(self):
         self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_float)
 
-    def test_norm_qint(self):
-        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_qint)
+    def test_norm_cqint(self):
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_cqint, 8)
 
     def test_factory(self):
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Nfloat")
@@ -721,6 +725,13 @@ class TestIVFResidualQuantizer(unittest.TestCase):
             index.rq.search_type,
             faiss.AdditiveQuantizer.ST_norm_float
         )
+
+        index = faiss.index_factory(12, "IVF1024,RQ8x8_Ncqint6")
+        self.assertEqual(
+            index.rq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_cqint
+        )
+        self.assertEqual(index.rq.nbits_norm, 6)
 
     def do_test_accuracy_IP(self, by_residual):
         ds = datasets.SyntheticDataset(32, 3000, 1000, 100, "IP")

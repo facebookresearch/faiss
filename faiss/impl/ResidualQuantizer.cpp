@@ -65,12 +65,14 @@ ResidualQuantizer::ResidualQuantizer()
 ResidualQuantizer::ResidualQuantizer(
         size_t d,
         const std::vector<size_t>& nbits,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        size_t nbits_norm)
         : ResidualQuantizer() {
     this->search_type = search_type;
     this->d = d;
     M = nbits.size();
     this->nbits = nbits;
+    this->nbits_norm = nbits_norm;
     set_derived_values();
 }
 
@@ -78,8 +80,9 @@ ResidualQuantizer::ResidualQuantizer(
         size_t d,
         size_t M,
         size_t nbits,
-        Search_type_t search_type)
-        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type) {}
+        Search_type_t search_type,
+        size_t nbits_norm)
+        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type, nbits_norm) {}
 
 void beam_search_encode_step(
         size_t d,

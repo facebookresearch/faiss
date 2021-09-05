@@ -148,8 +148,9 @@ LocalSearchQuantizer::LocalSearchQuantizer(
         size_t d,
         size_t M,
         size_t nbits,
-        Search_type_t search_type)
-        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
+        Search_type_t search_type,
+        size_t nbits_norm)
+        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type, nbits_norm) {
     is_trained = false;
     verbose = false;
 

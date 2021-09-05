@@ -58,13 +58,15 @@ struct ResidualQuantizer : AdditiveQuantizer {
     ResidualQuantizer(
             size_t d,
             const std::vector<size_t>& nbits,
-            Search_type_t search_type = ST_decompress);
+            Search_type_t search_type = ST_decompress,
+            size_t nbits_norm = 0);
 
     ResidualQuantizer(
             size_t d,     /* dimensionality of the input vectors */
             size_t M,     /* number of subquantizers */
             size_t nbits, /* number of bit per subvector index */
-            Search_type_t search_type = ST_decompress);
+            Search_type_t search_type = ST_decompress,
+            size_t nbits_norm = 0);
 
     ResidualQuantizer();
 

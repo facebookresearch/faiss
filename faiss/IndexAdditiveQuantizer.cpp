@@ -147,8 +147,8 @@ void IndexAdditiveQuantizer::search(
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_float> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_LUT_nonorm) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_float> (*this, x, rh);
-            } else if (aq->search_type == AdditiveQuantizer::ST_norm_qint) {
-                search_with_LUT<false, AdditiveQuantizer::ST_norm_qint> (*this, x, rh);
+            } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint) {
+                search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_norm_qint8) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_qint8> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_norm_qint4) {
@@ -190,16 +190,18 @@ IndexResidualQuantizer::IndexResidualQuantizer(
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
-        Search_type_t search_type)
-        : IndexResidualQuantizer(d, std::vector<size_t>(M, nbits), metric, search_type) {
+        Search_type_t search_type,
+        size_t nbits_norm)
+        : IndexResidualQuantizer(d, std::vector<size_t>(M, nbits), metric, search_type, nbits_norm) {
 }
 
 IndexResidualQuantizer::IndexResidualQuantizer(
         int d,
         const std::vector<size_t>& nbits,
         MetricType metric,
-        Search_type_t search_type)
-        : IndexAdditiveQuantizer(d, &rq, metric), rq(d, nbits, search_type) {
+        Search_type_t search_type,
+        size_t nbits_norm)
+        : IndexAdditiveQuantizer(d, &rq, metric), rq(d, nbits, search_type, nbits_norm) {
     code_size = rq.code_size;
     is_trained = false;
 }
@@ -221,8 +223,9 @@ IndexLocalSearchQuantizer::IndexLocalSearchQuantizer(
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
-        Search_type_t search_type)
-        : IndexAdditiveQuantizer(d, &lsq, metric), lsq(d, M, nbits, search_type) {
+        Search_type_t search_type,
+        size_t nbits_norm)
+        : IndexAdditiveQuantizer(d, &lsq, metric), lsq(d, M, nbits, search_type, nbits_norm) {
     code_size = lsq.code_size;
     is_trained = false;
 }
