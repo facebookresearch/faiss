@@ -62,8 +62,7 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
             size_t nbits, /* number of bit per subvector index */
             Search_type_t search_type =
                     ST_decompress, /* determines the storage type */
-            size_t nbits_norm = 0
-    );
+            size_t nbits_norm = 0);
 
     LocalSearchQuantizer();
 

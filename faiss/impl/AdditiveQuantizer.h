@@ -38,11 +38,13 @@ struct AdditiveQuantizer {
     bool is_trained; ///< is trained or not
 
     size_t nbits_norm;
-    IndexFlat1D index_norm;  ///< store and search norms
+    IndexFlat1D index_norm; ///< store and search norms
 
-    uint32_t encode_qcint(float x) const;  ///< encode norm by non-uniform scalar quantization
+    uint32_t encode_qcint(
+            float x) const; ///< encode norm by non-uniform scalar quantization
 
-    float decode_qcint(uint32_t c) const;  ///< decode norm by non-uniform scalar quantization
+    float decode_qcint(uint32_t c)
+            const; ///< decode norm by non-uniform scalar quantization
 
     /// Encodes how search is performed and how vectors are encoded
     enum Search_type_t {

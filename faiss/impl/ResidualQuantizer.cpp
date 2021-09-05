@@ -82,7 +82,11 @@ ResidualQuantizer::ResidualQuantizer(
         size_t nbits,
         Search_type_t search_type,
         size_t nbits_norm)
-        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type, nbits_norm) {}
+        : ResidualQuantizer(
+                  d,
+                  std::vector<size_t>(M, nbits),
+                  search_type,
+                  nbits_norm) {}
 
 void beam_search_encode_step(
         size_t d,
