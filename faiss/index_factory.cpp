@@ -308,7 +308,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 AdditiveQuantizer::Search_type_t st =
                         parse_AQ_search_type(stok, metric, &nbits_norm);
                 if (!coarse_quantizer) {
-                    index_1 = new IndexResidualQuantizer(d, nbits, metric, st, nbits_norm);
+                    index_1 = new IndexResidualQuantizer(
+                            d, nbits, metric, st, nbits_norm);
                 } else {
                     index_1 = fix_ivf_fields(new IndexIVFResidualQuantizer(
                             coarse_quantizer,
