@@ -26,9 +26,11 @@
 #include <faiss/utils/hamming.h>
 
 #include <faiss/Index2Layer.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -41,7 +43,6 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
-#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -158,14 +159,38 @@ void write_ProductQuantizer(const ProductQuantizer* pq, IOWriter* f) {
     WRITEVECTOR(pq->centroids);
 }
 
-void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {
-    WRITE1(rq->d);
-    WRITE1(rq->M);
-    WRITEVECTOR(rq->nbits);
-    WRITE1(rq->is_trained);
+static void write_AdditiveQuantizer(const AdditiveQuantizer* aq, IOWriter* f) {
+    WRITE1(aq->d);
+    WRITE1(aq->M);
+    WRITEVECTOR(aq->nbits);
+    WRITE1(aq->is_trained);
+    WRITEVECTOR(aq->codebooks);
+    WRITE1(aq->search_type);
+    WRITE1(aq->norm_min);
+    WRITE1(aq->norm_max);
+}
+
+static void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {
+    write_AdditiveQuantizer(rq, f);
     WRITE1(rq->train_type);
     WRITE1(rq->max_beam_size);
-    WRITEVECTOR(rq->codebooks);
+}
+
+static void write_LocalSearchQuantizer(
+        const LocalSearchQuantizer* lsq,
+        IOWriter* f) {
+    write_AdditiveQuantizer(lsq, f);
+    WRITE1(lsq->K);
+    WRITE1(lsq->train_iters);
+    WRITE1(lsq->encode_ils_iters);
+    WRITE1(lsq->train_ils_iters);
+    WRITE1(lsq->icm_iters);
+    WRITE1(lsq->p);
+    WRITE1(lsq->lambd);
+    WRITE1(lsq->chunk_size);
+    WRITE1(lsq->random_seed);
+    WRITE1(lsq->nperts);
+    WRITE1(lsq->update_codebooks_with_double);
 }
 
 static void write_ScalarQuantizer(const ScalarQuantizer* ivsc, IOWriter* f) {
@@ -338,15 +363,20 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxp->encode_signs);
         WRITE1(idxp->polysemous_ht);
     } else if (
-            const IndexResidual* idxr =
-                    dynamic_cast<const IndexResidual*>(idx)) {
-        uint32_t h = fourcc("IxRQ");
+            const IndexResidualQuantizer* idxr =
+                    dynamic_cast<const IndexResidualQuantizer*>(idx)) {
+        uint32_t h = fourcc("IxRq");
         WRITE1(h);
         write_index_header(idx, f);
         write_ResidualQuantizer(&idxr->rq, f);
-        WRITE1(idxr->search_type);
-        WRITE1(idxr->norm_min);
-        WRITE1(idxr->norm_max);
+        WRITE1(idxr->code_size);
+        WRITEVECTOR(idxr->codes);
+    } else if (
+            auto* idxr = dynamic_cast<const IndexLocalSearchQuantizer*>(idx)) {
+        uint32_t h = fourcc("IxLS");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_LocalSearchQuantizer(&idxr->lsq, f);
         WRITE1(idxr->code_size);
         WRITEVECTOR(idxr->codes);
     } else if (
@@ -421,6 +451,20 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(ivsc->code_size);
         WRITE1(ivsc->by_residual);
         write_InvertedLists(ivsc->invlists, f);
+    } else if (auto iva = dynamic_cast<const IndexIVFAdditiveQuantizer*>(idx)) {
+        bool is_LSQ = dynamic_cast<const IndexIVFLocalSearchQuantizer*>(iva);
+        uint32_t h = fourcc(is_LSQ ? "IwLS" : "IwRQ");
+        WRITE1(h);
+        write_ivf_header(iva, f);
+        WRITE1(iva->code_size);
+        if (is_LSQ) {
+            write_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
+        } else {
+            write_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
+        }
+        WRITE1(iva->by_residual);
+        WRITE1(iva->use_precomputed_table);
+        write_InvertedLists(iva->invlists, f);
     } else if (
             const IndexIVFSpectralHash* ivsp =
                     dynamic_cast<const IndexIVFSpectralHash*>(idx)) {

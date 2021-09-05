@@ -175,7 +175,7 @@ $ PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" pytest tests/test_*.py
 ### Basic example
 
 A basic usage example is available in
-[`demos/demo_ivfpq_indexing.cpp`](https://github.com/facebookresearch/faiss/blob/master/demos/demo_ivfpq_indexing.cpp).
+[`demos/demo_ivfpq_indexing.cpp`](https://github.com/facebookresearch/faiss/blob/main/demos/demo_ivfpq_indexing.cpp).
 
 It creates a small index, stores it and performs some searches. A normal runtime
 is around 20s. With a fast machine and Intel MKL's BLAS it runs in 2.5s.

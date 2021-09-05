@@ -67,6 +67,7 @@ void IndexScalarQuantizer::search(
         InvertedListScanner* scanner =
                 sq.select_InvertedListScanner(metric_type, nullptr, true);
         ScopeDeleter1<InvertedListScanner> del(scanner);
+        scanner->list_no = 0; // directly the list number
 
 #pragma omp for
         for (idx_t i = 0; i < n; i++) {

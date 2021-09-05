@@ -13,7 +13,7 @@ import tempfile
 import os
 
 from common_faiss_tests import get_dataset_2
-
+from faiss.contrib.datasets import SyntheticDataset
 
 class TestEncodeDecode(unittest.TestCase):
 
@@ -308,3 +308,23 @@ class TestBitstring(unittest.TestCase):
             xnew = br.read(nbit)
             print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
+
+
+class TestIVFTransfer(unittest.TestCase):
+
+    def test_transfer(self):
+
+        ds = SyntheticDataset(32, 2000, 200, 100)
+        index = faiss.index_factory(ds.d, "IVF20,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        index.reset()
+
+        codes = index.sa_encode(ds.get_database())
+        index.add_sa_codes(codes)
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)

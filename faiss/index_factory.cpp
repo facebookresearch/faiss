@@ -25,9 +25,11 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -39,7 +41,6 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
-#include <faiss/IndexResidual.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -83,6 +84,14 @@ char get_trains_alone(const Index* coarse_quantizer) {
               // kmeans index
 }
 
+// set the fields for factory-constructed IVF structures
+IndexIVF* fix_ivf_fields(IndexIVF* index_ivf) {
+    index_ivf->quantizer_trains_alone = get_trains_alone(index_ivf->quantizer);
+    index_ivf->cp.spherical = index_ivf->metric_type == METRIC_INNER_PRODUCT;
+    index_ivf->own_fields = true;
+    return index_ivf;
+}
+
 bool str_ends_with(const std::string& s, const std::string& suffix) {
     return s.rfind(suffix) == std::abs(int(s.size() - suffix.size()));
 }
@@ -122,6 +131,24 @@ void find_matching_parentheses(const std::string& s, int& i0, int& i1) {
     }
     FAISS_THROW_FMT(
             "factory string %s: unbalanced parentheses st=%d", s.c_str(), st);
+}
+
+AdditiveQuantizer::Search_type_t parse_AQ_search_type(
+        std::string stok,
+        MetricType metric) {
+    if (str_ends_with(stok, "_Nfloat")) {
+        return AdditiveQuantizer::ST_norm_float;
+    } else if (str_ends_with(stok, "_Nnone")) {
+        return AdditiveQuantizer::ST_LUT_nonorm;
+    } else if (str_ends_with(stok, "_Nqint8")) {
+        return AdditiveQuantizer::ST_norm_qint8;
+    } else if (str_ends_with(stok, "_Nqint4")) {
+        return AdditiveQuantizer::ST_norm_qint4;
+    } else if (metric == METRIC_L2) {
+        return AdditiveQuantizer::ST_decompress;
+    } else {
+        return AdditiveQuantizer::ST_LUT_nonorm;
+    }
 }
 
 } // anonymous namespace
@@ -252,10 +279,11 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             ncentroids = int64_t(1) << (M * nbit);
             use_2layer = true;
 
-        } else if (std::regex_match(
-                           stok,
-                           std::regex(
-                                   "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*"))) {
+        } else if (
+                std::regex_match(
+                        stok,
+                        std::regex(
+                                "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
             std::vector<size_t> nbits;
             std::smatch sm;
             bool is_RCQ = stok.find("RCQ") == 0;
@@ -266,10 +294,54 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 nbits.resize(nbits.size() + M, nbit);
                 stok = sm.suffix();
             }
-            if (!is_RCQ) {
-                index_1 = new IndexResidual(d, nbits, metric);
-            } else {
+            if (is_RCQ) {
                 index_1 = new ResidualCoarseQuantizer(d, nbits, metric);
+            } else {
+                AdditiveQuantizer::Search_type_t st =
+                        parse_AQ_search_type(stok, metric);
+                if (!coarse_quantizer) {
+                    index_1 = new IndexResidualQuantizer(d, nbits, metric, st);
+                } else {
+                    index_1 = fix_ivf_fields(new IndexIVFResidualQuantizer(
+                            coarse_quantizer,
+                            d,
+                            ncentroids,
+                            nbits,
+                            metric,
+                            st));
+                    del_coarse_quantizer.release();
+                }
+            }
+        } else if (
+                std::regex_match(
+                        stok,
+                        std::regex(
+                                "(LSQ|LSCQ)[0-9]+x[0-9]+(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
+            std::vector<size_t> nbits;
+            std::smatch sm;
+            bool is_LSCQ = stok.find("LSCQ") == 0;
+            std::regex_search(stok, sm, std::regex("([0-9]+)x([0-9]+)"));
+            int M = std::stoi(sm[1].str());
+            int nbit = std::stoi(sm[2].str());
+            if (is_LSCQ) {
+                index_1 = new ResidualCoarseQuantizer(d, nbits, metric);
+            } else {
+                AdditiveQuantizer::Search_type_t st =
+                        parse_AQ_search_type(stok, metric);
+                if (!coarse_quantizer) {
+                    index_1 = new IndexLocalSearchQuantizer(
+                            d, M, nbit, metric, st);
+                } else {
+                    index_1 = fix_ivf_fields(new IndexIVFLocalSearchQuantizer(
+                            coarse_quantizer,
+                            d,
+                            ncentroids,
+                            M,
+                            nbit,
+                            metric,
+                            st));
+                    del_coarse_quantizer.release();
+                }
             }
         } else if (
                 !coarse_quantizer &&
@@ -289,12 +361,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                                   coarse_quantizer, d, ncentroids, metric)
                         : new IndexIVFFlatDedup(
                                   coarse_quantizer, d, ncentroids, metric);
-                index_ivf->quantizer_trains_alone =
-                        get_trains_alone(coarse_quantizer);
-                index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
+                index_1 = fix_ivf_fields(index_ivf);
                 del_coarse_quantizer.release();
-                index_ivf->own_fields = true;
-                index_1 = index_ivf;
             } else if (hnsw_M > 0) {
                 index_1 = new IndexHNSWFlat(d, hnsw_M, metric);
             } else if (nsg_R > 0) {
@@ -320,11 +388,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 IndexIVFScalarQuantizer* index_ivf =
                         new IndexIVFScalarQuantizer(
                                 coarse_quantizer, d, ncentroids, qt, metric);
-                index_ivf->quantizer_trains_alone =
-                        get_trains_alone(coarse_quantizer);
+                index_1 = fix_ivf_fields(index_ivf);
                 del_coarse_quantizer.release();
-                index_ivf->own_fields = true;
-                index_1 = index_ivf;
             } else if (hnsw_M > 0) {
                 index_1 = new IndexHNSWSQ(d, qt, hnsw_M, metric);
             } else {
@@ -338,11 +403,8 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                     "IVFPQR not implemented for inner product search");
             IndexIVFPQR* index_ivf = new IndexIVFPQR(
                     coarse_quantizer, d, ncentroids, M, 8, M2, 8);
-            index_ivf->quantizer_trains_alone =
-                    get_trains_alone(coarse_quantizer);
+            index_1 = fix_ivf_fields(index_ivf);
             del_coarse_quantizer.release();
-            index_ivf->own_fields = true;
-            index_1 = index_ivf;
         } else if (
                 !index &&
                 (sscanf(tok, "PQ%dx4fs_%d", &M, &bbs) == 2 ||
@@ -355,14 +417,9 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             if (coarse_quantizer) {
                 IndexIVFPQFastScan* index_ivf = new IndexIVFPQFastScan(
                         coarse_quantizer, d, ncentroids, M, 4, metric, bbs);
-                index_ivf->quantizer_trains_alone =
-                        get_trains_alone(coarse_quantizer);
-                index_ivf->metric_type = metric;
+                index_1 = fix_ivf_fields(index_ivf);
                 index_ivf->by_residual = by_residual;
-                index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
                 del_coarse_quantizer.release();
-                index_ivf->own_fields = true;
-                index_1 = index_ivf;
             } else {
                 IndexPQFastScan* index_pq =
                         new IndexPQFastScan(d, M, 4, metric, bbs);
@@ -377,15 +434,10 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
             if (coarse_quantizer) {
                 if (!use_2layer) {
                     IndexIVFPQ* index_ivf = new IndexIVFPQ(
-                            coarse_quantizer, d, ncentroids, M, nbit);
-                    index_ivf->quantizer_trains_alone =
-                            get_trains_alone(coarse_quantizer);
-                    index_ivf->metric_type = metric;
-                    index_ivf->cp.spherical = metric == METRIC_INNER_PRODUCT;
+                            coarse_quantizer, d, ncentroids, M, nbit, metric);
+                    index_1 = fix_ivf_fields(index_ivf);
                     del_coarse_quantizer.release();
-                    index_ivf->own_fields = true;
                     index_ivf->do_polysemous_training = do_polysemous_training;
-                    index_1 = index_ivf;
                 } else {
                     Index2Layer* index_2l = new Index2Layer(
                             coarse_quantizer, ncentroids, M, nbit);

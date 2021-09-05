@@ -97,6 +97,39 @@ void inner_product_to_L2sqr(
         size_t n1,
         size_t n2);
 
+/*********************************************************
+ * Vector to vector functions
+ *********************************************************/
+
+/** compute c := a + b for vectors
+ *
+ * c and a can overlap, c and b can overlap
+ *
+ * @param a size d
+ * @param b size d
+ * @param c size d
+ */
+void fvec_add(size_t d, const float* a, const float* b, float* c);
+
+/** compute c := a + b for a, c vectors and b a scalar
+ *
+ * c and a can overlap
+ *
+ * @param a size d
+ * @param c size d
+ */
+void fvec_add(size_t d, const float* a, float b, float* c);
+
+/** compute c := a - b for vectors
+ *
+ * c and a can overlap, c and b can overlap
+ *
+ * @param a size d
+ * @param b size d
+ * @param c size d
+ */
+void fvec_sub(size_t d, const float* a, const float* b, float* c);
+
 /***************************************************************************
  * Compute a subset of  distances
  ***************************************************************************/

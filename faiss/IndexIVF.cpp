@@ -190,6 +190,20 @@ void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     add_core(n, x, xids, coarse_idx.get());
 }
 
+void IndexIVF::add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids) {
+    size_t coarse_size = coarse_code_size();
+    DirectMapAdd dm_adder(direct_map, n, xids);
+
+    for (idx_t i = 0; i < n; i++) {
+        const uint8_t* code = codes + (code_size + coarse_size) * i;
+        idx_t list_no = decode_listno(code);
+        idx_t id = xids ? xids[i] : ntotal + i;
+        size_t ofs = invlists->add_entry(list_no, id, code + coarse_size);
+        dm_adder.add(i, list_no, ofs);
+    }
+    ntotal += n;
+}
+
 void IndexIVF::add_core(
         idx_t n,
         const float* x,
@@ -1068,6 +1082,10 @@ IndexIVF::~IndexIVF() {
     }
 }
 
+/*************************************************************************
+ * IndexIVFStats
+ *************************************************************************/
+
 void IndexIVFStats::reset() {
     memset((void*)this, 0, sizeof(*this));
 }
@@ -1083,13 +1101,60 @@ void IndexIVFStats::add(const IndexIVFStats& other) {
 
 IndexIVFStats indexIVF_stats;
 
+/*************************************************************************
+ * InvertedListScanner
+ *************************************************************************/
+
+size_t InvertedListScanner::scan_codes(
+        size_t list_size,
+        const uint8_t* codes,
+        const idx_t* ids,
+        float* simi,
+        idx_t* idxi,
+        size_t k) const {
+    size_t nup = 0;
+
+    if (!keep_max) {
+        for (size_t j = 0; j < list_size; j++) {
+            float dis = distance_to_code(codes);
+            if (dis < simi[0]) {
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                maxheap_replace_top(k, simi, idxi, dis, id);
+                nup++;
+            }
+            codes += code_size;
+        }
+    } else {
+        for (size_t j = 0; j < list_size; j++) {
+            float dis = distance_to_code(codes);
+            if (dis > simi[0]) {
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                minheap_replace_top(k, simi, idxi, dis, id);
+                nup++;
+            }
+            codes += code_size;
+        }
+    }
+    return nup;
+}
+
 void InvertedListScanner::scan_codes_range(
-        size_t,
-        const uint8_t*,
-        const idx_t*,
-        float,
-        RangeQueryResult&) const {
-    FAISS_THROW_MSG("scan_codes_range not implemented");
+        size_t list_size,
+        const uint8_t* codes,
+        const idx_t* ids,
+        float radius,
+        RangeQueryResult& res) const {
+    for (size_t j = 0; j < list_size; j++) {
+        float dis = distance_to_code(codes);
+        bool keep = !keep_max
+                ? dis < radius
+                : dis > radius; // TODO templatize to remove this test
+        if (keep) {
+            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+            res.add(dis, id);
+        }
+        codes += code_size;
+    }
 }
 
 } // namespace faiss

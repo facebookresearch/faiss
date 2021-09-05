@@ -10,6 +10,7 @@ set(FAISS_SRC
   IVFlib.cpp
   Index.cpp
   Index2Layer.cpp
+  IndexAdditiveQuantizer.cpp
   IndexBinary.cpp
   IndexBinaryFlat.cpp
   IndexBinaryFromFloat.cpp
@@ -19,6 +20,7 @@ set(FAISS_SRC
   IndexFlat.cpp
   IndexHNSW.cpp
   IndexIVF.cpp
+  IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
   IndexIVFPQFastScan.cpp
@@ -33,7 +35,6 @@ set(FAISS_SRC
   IndexPreTransform.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
-  IndexResidual.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   MatrixStats.cpp
@@ -83,6 +84,7 @@ set(FAISS_HEADERS
   IVFlib.h
   Index.h
   Index2Layer.h
+  IndexAdditiveQuantizer.h
   IndexBinary.h
   IndexBinaryFlat.h
   IndexBinaryFromFloat.h
@@ -92,6 +94,7 @@ set(FAISS_HEADERS
   IndexFlat.h
   IndexHNSW.h
   IndexIVF.h
+  IndexIVFAdditiveQuantizer.h
   IndexIVFFlat.h
   IndexIVFPQ.h
   IndexIVFPQFastScan.h
@@ -106,7 +109,7 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
-  IndexResidual.h
+  IndexAdditiveQuantizer.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h

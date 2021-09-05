@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <faiss/impl/AdditiveQuantizer.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -64,9 +65,14 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     bool update_codebooks_with_double = true;
 
     LocalSearchQuantizer(
-            size_t d,      /* dimensionality of the input vectors */
-            size_t M,      /* number of subquantizers */
-            size_t nbits); /* number of bit per subvector index */
+            size_t d,     /* dimensionality of the input vectors */
+            size_t M,     /* number of subquantizers */
+            size_t nbits, /* number of bit per subvector index */
+            Search_type_t search_type =
+                    ST_decompress /* determines the storage type */
+    );
+
+    LocalSearchQuantizer();
 
     ~LocalSearchQuantizer();
 
