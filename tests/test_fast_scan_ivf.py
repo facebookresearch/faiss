@@ -473,3 +473,14 @@ class TestTraining(unittest.TestCase):
 
     def test_by_residual_odd_dim(self):
         self.do_test(by_residual=True, d=30)
+
+
+class TestIsTrained(unittest.TestCase):
+
+    def test_issue_2019(self):
+        index = faiss.index_factory(
+            32,
+            "PCAR16,IVF200(IVF10,PQ2x4fs,RFlat),PQ4x4fsr"
+        )
+        des = faiss.rand((1000, 32))
+        index.train(des)
