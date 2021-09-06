@@ -11,9 +11,55 @@
 #ifndef FAISS_DISTANCES_C_H
 #define FAISS_DISTANCES_C_H
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*********************************************************
+ * Optimized distance/norm/inner prod computations
+ *********************************************************/
+
+/// Compute pairwise distances between sets of vectors
+void faiss_pairwise_L2sqr(
+        int64_t d,
+        int64_t nq,
+        const float* xq,
+        int64_t nb,
+        const float* xb,
+        float* dis,
+        int64_t ldq = -1,
+        int64_t ldb = -1,
+        int64_t ldd = -1);
+
+/// compute the inner product between nx vectors x and one y
+void faiss_fvec_inner_products_ny(
+        float* ip, /* output inner product */
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny);
+
+/// compute ny square L2 distance between x and a set of contiguous y vectors
+void faiss_fvec_L2sqr_ny(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny);
+
+/// squared norm of a vector
+float faiss_fvec_norm_L2sqr(const float* x, size_t d);
+
+/// compute the L2 norms for a set of vectors
+void faiss_fvec_norms_L2(float* norms, const float* x, size_t d, size_t nx);
+
+/// same as fvec_norms_L2, but computes squared norms
+void faiss_fvec_norms_L2sqr(float* norms, const float* x, size_t d, size_t nx);
+
+/// L2-renormalize a set of vector. Nothing done if the vector is 0-normed
+void faiss_fvec_renorm_L2(size_t d, size_t nx, float* x);
 
 /// Setter of threshold value on nx above which we switch to BLAS to compute
 /// distances
