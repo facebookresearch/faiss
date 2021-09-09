@@ -108,7 +108,9 @@
     <member refid="structfaiss_1_1InvertedLists_1a8d3382c2a672340abd227c00cf84ad42" kind="function"><name>get_single_code</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe" kind="function"><name>prefetch_lists</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de" kind="function"><name>add_entry</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705" kind="function"><name>update_entry</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8" kind="function"><name>imbalance_factor</name></member>
@@ -398,6 +400,21 @@
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" kind="variable"><name>outIndicesType</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" kind="variable"><name>outIndices</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" kind="function"><name>GpuDistanceParams</name></member>
+  </compound>
+  <compound refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kind="class"><name>faiss::gpu::GpuIcmEncoder</name>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab67b2bfa44f208c7ef1818340f6ead82" kind="variable"><name>shards</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a29494e1274523a0138179e9d405db1f6" kind="function"><name>GpuIcmEncoder</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a421feaa24ab6efb70c7d0c65ef5a1251" kind="function"><name>~GpuIcmEncoder</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a511ba299ccdb91f13d3ce60336309493" kind="function"><name>GpuIcmEncoder</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1abea5d06f727435ca16e9b664efbb2ea7" kind="function"><name>operator=</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a26bb8e303cbef3b7003212f54eb334c0" kind="function"><name>set_binary_term</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab5e68099e8b3a973e0ae14d47b03d9cf" kind="function"><name>encode</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" kind="struct"><name>faiss::gpu::GpuIcmEncoderFactory</name>
+    <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a5b138503016f8ada5c83718607837467" kind="variable"><name>provs</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1aa6d5e1267aad7c9461f5baf01af971e3" kind="variable"><name>devices</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a75eac4d480b766505d901a72ec3ae82a" kind="function"><name>GpuIcmEncoderFactory</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a50b6ea9c5370c45eb93fa326ff8b6392" kind="function"><name>get</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndex" kind="class"><name>faiss::gpu::GpuIndex</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30" kind="variable"><name>resources_</name></member>
@@ -4826,11 +4843,11 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d78" kind="namespace"><name>faiss::@78</name>
-  </compound>
   <compound refid="namespacefaiss_1_1_0d79" kind="namespace"><name>faiss::@79</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d80" kind="namespace"><name>faiss::@80</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d81" kind="namespace"><name>faiss::@81</name>
   </compound>
   <compound refid="namespacefaiss_1_1detail" kind="namespace"><name>faiss::detail</name>
   </compound>
@@ -4981,6 +4998,8 @@
     <member refid="GpuFaissAssert_8h_1a506cedda3fa24ed640cd5a9589eff199" kind="define"><name>GPU_FAISS_ASSERT</name></member>
     <member refid="GpuFaissAssert_8h_1ae56fdb76f1aa25cdbad7d9c608586bcb" kind="define"><name>GPU_FAISS_ASSERT_MSG</name></member>
     <member refid="GpuFaissAssert_8h_1aac7ad32da7fdcff0f367f7ace73c3453" kind="define"><name>GPU_FAISS_ASSERT_FMT</name></member>
+  </compound>
+  <compound refid="GpuIcmEncoder_8h" kind="file"><name>GpuIcmEncoder.h</name>
   </compound>
   <compound refid="GpuIndex_8h" kind="file"><name>GpuIndex.h</name>
   </compound>

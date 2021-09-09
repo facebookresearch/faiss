@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classfaiss_1_1gpu_1_1GpuIcmEncoder" kind="class" language="C++" prot="public">
+    <compoundname>faiss::gpu::GpuIcmEncoder</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">IcmEncoder</basecompoundref>
+    <includes refid="GpuIcmEncoder_8h" local="no">GpuIcmEncoder.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab67b2bfa44f208c7ef1818340f6ead82" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; IcmEncoderShards &gt;</type>
+        <definition>std::unique_ptr&lt;IcmEncoderShards&gt; faiss::gpu::GpuIcmEncoder::shards</definition>
+        <argsstring></argsstring>
+        <name>shards</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="47" column="21" bodyfile="faiss/gpu/GpuIcmEncoder.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a29494e1274523a0138179e9d405db1f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuIcmEncoder::GpuIcmEncoder</definition>
+        <argsstring>(const LocalSearchQuantizer *lsq, const std::vector&lt; GpuResourcesProvider * &gt; &amp;provs, const std::vector&lt; int &gt; &amp;devices)</argsstring>
+        <name>GpuIcmEncoder</name>
+        <param>
+          <type>const LocalSearchQuantizer *</type>
+          <declname>lsq</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> * &gt; &amp;</type>
+          <declname>provs</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; int &gt; &amp;</type>
+          <declname>devices</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="27" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a421feaa24ab6efb70c7d0c65ef5a1251" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuIcmEncoder::~GpuIcmEncoder</definition>
+        <argsstring>()</argsstring>
+        <name>~GpuIcmEncoder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a511ba299ccdb91f13d3ce60336309493" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuIcmEncoder::GpuIcmEncoder</definition>
+        <argsstring>(const GpuIcmEncoder &amp;)=delete</argsstring>
+        <name>GpuIcmEncoder</name>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kindref="compound">GpuIcmEncoder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="34" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1abea5d06f727435ca16e9b664efbb2ea7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kindref="compound">GpuIcmEncoder</ref> &amp;</type>
+        <definition>GpuIcmEncoder&amp; faiss::gpu::GpuIcmEncoder::operator=</definition>
+        <argsstring>(const GpuIcmEncoder &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kindref="compound">GpuIcmEncoder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="35" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a26bb8e303cbef3b7003212f54eb334c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIcmEncoder::set_binary_term</definition>
+        <argsstring>() override</argsstring>
+        <name>set_binary_term</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="37" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab5e68099e8b3a973e0ae14d47b03d9cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIcmEncoder::encode</definition>
+        <argsstring>(int32_t *codes, const float *x, std::mt19937 &amp;gen, size_t n, size_t ils_iters) const override</argsstring>
+        <name>encode</name>
+        <param>
+          <type>int32_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>std::mt19937 &amp;</type>
+          <declname>gen</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ils_iters</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIcmEncoder.h" line="39" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Perform LSQ encoding on GPU.</para>
+<para>Split input vectors to different devices and call IcmEncoderImpl::encode to encode them </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::gpu::GpuIcmEncoder</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIcmEncoder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>lsq::IcmEncoder</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::gpu::GpuIcmEncoder</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIcmEncoder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>lsq::IcmEncoder</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/gpu/GpuIcmEncoder.h" line="25" column="43" bodyfile="faiss/gpu/GpuIcmEncoder.h" bodystart="25" bodyend="48"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab5e68099e8b3a973e0ae14d47b03d9cf" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>encode</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a29494e1274523a0138179e9d405db1f6" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>GpuIcmEncoder</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a511ba299ccdb91f13d3ce60336309493" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>GpuIcmEncoder</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1abea5d06f727435ca16e9b664efbb2ea7" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>operator=</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a26bb8e303cbef3b7003212f54eb334c0" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>set_binary_term</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab67b2bfa44f208c7ef1818340f6ead82" prot="private" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>shards</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a421feaa24ab6efb70c7d0c65ef5a1251" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIcmEncoder</scope><name>~GpuIcmEncoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

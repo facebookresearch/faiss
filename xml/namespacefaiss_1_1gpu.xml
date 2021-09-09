@@ -10,6 +10,8 @@
     <innerclass refid="classfaiss_1_1gpu_1_1DeviceScope" prot="public">faiss::gpu::DeviceScope</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public">faiss::gpu::GpuClonerOptions</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuDistanceParams" prot="public">faiss::gpu::GpuDistanceParams</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" prot="public">faiss::gpu::GpuIcmEncoder</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" prot="public">faiss::gpu::GpuIcmEncoderFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndex" prot="public">faiss::gpu::GpuIndex</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public">faiss::gpu::GpuIndexBinaryFlat</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
