@@ -9,6 +9,8 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+### Added
+- Support LSQ on GPU (by @KinglittleQ)
 
 ## [1.7.1] - 2021-05-27
 ### Added
