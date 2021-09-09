@@ -100,9 +100,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d78.html">Namespace faiss::&#64;78</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d79.html">Namespace faiss::&#64;79</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d80.html">Namespace faiss::&#64;80</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d81.html">Namespace faiss::&#64;81</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail.html">Namespace faiss::detail</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::gpu</a></li>
@@ -1028,6 +1028,85 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams10outIndicesE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams10outIndicesE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams10outIndicesE"></span><span id="faiss::gpu::GpuDistanceParams::outIndices__voidP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">outIndices</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoderE">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoderE"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoderE"></span><span id="faiss::gpu::GpuIcmEncoder"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIcmEncoder</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">IcmEncoder</span></span><br /></dt>
+<dd><em>#include &lt;GpuIcmEncoder.h&gt;</em><p>Perform LSQ encoding on GPU.</p>
+<p>Split input vectors to different devices and call IcmEncoderImpl::encode to encode them </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderEPK20LocalSearchQuantizerRKNSt6vectorIP20GpuResourcesProviderEERKNSt6vectorIiEE">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderEPK20LocalSearchQuantizerRKNSt6vectorIP20GpuResourcesProviderEERKNSt6vectorIiEE"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderEPK20LocalSearchQuantizerRKNSt6vectorIP20GpuResourcesProviderEERKNSt6vectorIiEE"></span><span id="faiss::gpu::GpuIcmEncoder::GpuIcmEncoder__LocalSearchQuantizerCP.std::vector:GpuResourcesProviderP:CR.std::vector:i:CR"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a29494e1274523a0138179e9d405db1f6"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuIcmEncoder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">LocalSearchQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lsq</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="n"><span class="pre">GpuResourcesProvider</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">provs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">devices</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoderD0Ev">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoderD0Ev"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoderD0Ev"></span><span id="faiss::gpu::GpuIcmEncoder::~GpuIcmEncoder"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a421feaa24ab6efb70c7d0c65ef5a1251"></span><span class="sig-name descname"><span class="n"><span class="pre">~GpuIcmEncoder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderERK13GpuIcmEncoder">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderERK13GpuIcmEncoder"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderERK13GpuIcmEncoder"></span><span id="faiss::gpu::GpuIcmEncoder::GpuIcmEncoder__GpuIcmEncoderCR"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a511ba299ccdb91f13d3ce60336309493"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuIcmEncoder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIcmEncoder.html#_CPPv4N5faiss3gpu13GpuIcmEncoder13GpuIcmEncoderERK13GpuIcmEncoder" title="faiss::gpu::GpuIcmEncoder::GpuIcmEncoder"><span class="n"><span class="pre">GpuIcmEncoder</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoderaSERK13GpuIcmEncoder">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoderaSERK13GpuIcmEncoder"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoderaSERK13GpuIcmEncoder"></span><span id="faiss::gpu::GpuIcmEncoder::assign-operator__GpuIcmEncoderCR"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1abea5d06f727435ca16e9b664efbb2ea7"></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIcmEncoder.html#_CPPv4N5faiss3gpu13GpuIcmEncoderE" title="faiss::gpu::GpuIcmEncoder"><span class="n"><span class="pre">GpuIcmEncoder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIcmEncoder.html#_CPPv4N5faiss3gpu13GpuIcmEncoderE" title="faiss::gpu::GpuIcmEncoder"><span class="n"><span class="pre">GpuIcmEncoder</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoder15set_binary_termEv">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoder15set_binary_termEv"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoder15set_binary_termEv"></span><span id="faiss::gpu::GpuIcmEncoder::set_binary_term"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a26bb8e303cbef3b7003212f54eb334c0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_binary_term</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu13GpuIcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t">
+<span id="_CPPv3NK5faiss3gpu13GpuIcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t"></span><span id="_CPPv2NK5faiss3gpu13GpuIcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t"></span><span id="faiss::gpu::GpuIcmEncoder::encode__int32_tP.floatCP.std::mt19937R.s.sC"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab5e68099e8b3a973e0ae14d47b03d9cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mt19937</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">gen</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ils_iters</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13GpuIcmEncoder6shardsE">
+<span id="_CPPv3N5faiss3gpu13GpuIcmEncoder6shardsE"></span><span id="_CPPv2N5faiss3gpu13GpuIcmEncoder6shardsE"></span><span id="faiss::gpu::GpuIcmEncoder::shards__std::unique_ptr:IcmEncoderShards:"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab67b2bfa44f208c7ef1818340f6ead82"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">IcmEncoderShards</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shards</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuIcmEncoderFactoryE">
+<span id="_CPPv3N5faiss3gpu20GpuIcmEncoderFactoryE"></span><span id="_CPPv2N5faiss3gpu20GpuIcmEncoderFactoryE"></span><span id="faiss::gpu::GpuIcmEncoderFactory"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIcmEncoderFactory</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">IcmEncoderFactory</span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuIcmEncoderFactory20GpuIcmEncoderFactoryEi">
+<span id="_CPPv3N5faiss3gpu20GpuIcmEncoderFactory20GpuIcmEncoderFactoryEi"></span><span id="_CPPv2N5faiss3gpu20GpuIcmEncoderFactory20GpuIcmEncoderFactoryEi"></span><span id="faiss::gpu::GpuIcmEncoderFactory::GpuIcmEncoderFactory__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a75eac4d480b766505d901a72ec3ae82a"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuIcmEncoderFactory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ngpus</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuIcmEncoderFactory3getEPK20LocalSearchQuantizer">
+<span id="_CPPv3N5faiss3gpu20GpuIcmEncoderFactory3getEPK20LocalSearchQuantizer"></span><span id="_CPPv2N5faiss3gpu20GpuIcmEncoderFactory3getEPK20LocalSearchQuantizer"></span><span id="faiss::gpu::GpuIcmEncoderFactory::get__LocalSearchQuantizerCP"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a50b6ea9c5370c45eb93fa326ff8b6392"></span><a class="reference internal" href="../file/GpuIcmEncoder_8h.html#_CPPv4N5faiss3gpu20GpuIcmEncoderFactory3getEPK20LocalSearchQuantizer" title="faiss::gpu::GpuIcmEncoderFactory::get::lsq"><span class="n"><span class="pre">lsq</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">IcmEncoder</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">LocalSearchQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lsq</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuIcmEncoderFactory5provsE">
+<span id="_CPPv3N5faiss3gpu20GpuIcmEncoderFactory5provsE"></span><span id="_CPPv2N5faiss3gpu20GpuIcmEncoderFactory5provsE"></span><span id="faiss::gpu::GpuIcmEncoderFactory::provs__std::vector:GpuResourcesProviderP:"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1a5b138503016f8ada5c83718607837467"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuResourcesProvider.html#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="faiss::gpu::GpuResourcesProvider"><span class="n"><span class="pre">GpuResourcesProvider</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">provs</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuIcmEncoderFactory7devicesE">
+<span id="_CPPv3N5faiss3gpu20GpuIcmEncoderFactory7devicesE"></span><span id="_CPPv2N5faiss3gpu20GpuIcmEncoderFactory7devicesE"></span><span id="faiss::gpu::GpuIcmEncoderFactory::devices__std::vector:i:"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory_1aa6d5e1267aad7c9461f5baf01af971e3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">devices</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>
