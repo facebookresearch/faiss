@@ -73,8 +73,7 @@ struct IndexIVFResidualQuantizer : IndexIVFAdditiveQuantizer {
             size_t nlist,
             const std::vector<size_t>& nbits,
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexIVFResidualQuantizer(
             Index* quantizer,
@@ -83,8 +82,7 @@ struct IndexIVFResidualQuantizer : IndexIVFAdditiveQuantizer {
             size_t M,     /* number of subquantizers */
             size_t nbits, /* number of bit per subvector index */
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexIVFResidualQuantizer();
 
@@ -111,8 +109,7 @@ struct IndexIVFLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
             size_t M,     /* number of subquantizers */
             size_t nbits, /* number of bit per subvector index */
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexIVFLocalSearchQuantizer();
 

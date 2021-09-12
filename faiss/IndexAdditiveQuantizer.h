@@ -76,15 +76,13 @@ struct IndexResidualQuantizer : IndexAdditiveQuantizer {
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexResidualQuantizer(
             int d,
             const std::vector<size_t>& nbits,
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexResidualQuantizer();
 
@@ -105,8 +103,7 @@ struct IndexLocalSearchQuantizer : IndexAdditiveQuantizer {
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
 
     IndexLocalSearchQuantizer();
 

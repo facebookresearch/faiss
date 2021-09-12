@@ -55,6 +55,7 @@ set(FAISS_SRC
   impl/index_read.cpp
   impl/index_write.cpp
   impl/io.cpp
+  impl/kmeans1d.cpp
   impl/lattice_Zn.cpp
   impl/pq4_fast_scan.cpp
   impl/pq4_fast_scan_search_1.cpp
@@ -137,6 +138,7 @@ set(FAISS_HEADERS
   impl/ThreadedIndex.h
   impl/io.h
   impl/io_macros.h
+  impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
   impl/pq4_fast_scan.h

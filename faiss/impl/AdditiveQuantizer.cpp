@@ -47,15 +47,13 @@ namespace faiss {
 AdditiveQuantizer::AdditiveQuantizer(
         size_t d,
         const std::vector<size_t>& nbits,
-        Search_type_t search_type,
-        size_t nbits_norm)
+        Search_type_t search_type)
         : d(d),
           M(nbits.size()),
           nbits(nbits),
           verbose(false),
           is_trained(false),
-          search_type(search_type),
-          nbits_norm(nbits_norm) {
+          search_type(search_type) {
     norm_max = norm_min = NAN;
     code_size = 0;
     tot_bits = 0;
@@ -85,22 +83,19 @@ void AdditiveQuantizer::set_derived_values() {
         case ST_decompress:
         case ST_LUT_nonorm:
         case ST_norm_from_LUT:
-            nbits_norm = 0;
             break; // nothing to add
         case ST_norm_float:
-            nbits_norm = 32;
+            tot_bits += 32;
             break;
         case ST_norm_qint8:
-            nbits_norm = 8;
+        case ST_norm_cqint8:
+            tot_bits += 8;
             break;
         case ST_norm_qint4:
-            nbits_norm = 4;
-            break;
-        case ST_norm_cqint:
-            FAISS_THROW_IF_NOT(nbits_norm > 0);
+        case ST_norm_cqint4:
+            tot_bits += 4;
             break;
     }
-    tot_bits += nbits_norm;
 
     // convert bits to bytes
     code_size = (tot_bits + 7) / 8;
@@ -156,7 +151,8 @@ void AdditiveQuantizer::pack_codes(
     }
     std::vector<float> norm_buf;
     if (search_type == ST_norm_float || search_type == ST_norm_qint4 ||
-        search_type == ST_norm_qint8 || search_type == ST_norm_cqint) {
+        search_type == ST_norm_qint8 || search_type == ST_norm_cqint8 ||
+        search_type == ST_norm_cqint4) {
         if (!norms) {
             norm_buf.resize(n);
             std::vector<float> x_recons(n * d);
@@ -180,11 +176,6 @@ void AdditiveQuantizer::pack_codes(
             case ST_norm_float:
                 bsw.write(*(uint32_t*)&norms[i], 32);
                 break;
-            case ST_norm_cqint: {
-                uint32_t b = encode_qcint(norms[i]);
-                bsw.write(b, nbits_norm);
-                break;
-            }
             case ST_norm_qint8: {
                 uint8_t b = encode_qint8(norms[i], norm_min, norm_max);
                 bsw.write(b, 8);
@@ -192,6 +183,16 @@ void AdditiveQuantizer::pack_codes(
             }
             case ST_norm_qint4: {
                 uint8_t b = encode_qint4(norms[i], norm_min, norm_max);
+                bsw.write(b, 4);
+                break;
+            }
+            case ST_norm_cqint8: {
+                uint32_t b = encode_qcint(norms[i]);
+                bsw.write(b, 8);
+                break;
+            }
+            case ST_norm_cqint4: {
+                uint32_t b = encode_qcint(norms[i]);
                 bsw.write(b, 4);
                 break;
             }
@@ -453,12 +454,24 @@ float AdditiveQuantizer::
 
 template <>
 float AdditiveQuantizer::
-        compute_1_distance_LUT<false, AdditiveQuantizer::ST_norm_cqint>(
+        compute_1_distance_LUT<false, AdditiveQuantizer::ST_norm_cqint8>(
                 const uint8_t* codes,
                 const float* LUT) const {
     BitstringReader bs(codes, code_size);
     float accu = accumulate_IPs(*this, bs, codes, LUT);
-    uint32_t norm_i = bs.read(nbits_norm);
+    uint32_t norm_i = bs.read(8);
+    float norm2 = decode_qcint(norm_i);
+    return norm2 - 2 * accu;
+}
+
+template <>
+float AdditiveQuantizer::
+        compute_1_distance_LUT<false, AdditiveQuantizer::ST_norm_cqint4>(
+                const uint8_t* codes,
+                const float* LUT) const {
+    BitstringReader bs(codes, code_size);
+    float accu = accumulate_IPs(*this, bs, codes, LUT);
+    uint32_t norm_i = bs.read(4);
     float norm2 = decode_qcint(norm_i);
     return norm2 - 2 * accu;
 }

@@ -111,6 +111,16 @@ struct Clustering : ClusteringParameters {
     virtual ~Clustering() {}
 };
 
+struct Clustering1D : Clustering {
+    Clustering1D(int k);
+
+    Clustering1D(int k, const ClusteringParameters& cp);
+
+    void train(idx_t n, const float* x);
+
+    virtual ~Clustering1D() {}
+};
+
 struct ProgressiveDimClusteringParameters : ClusteringParameters {
     int progressive_dim_steps; ///< number of incremental steps
     bool apply_pca;            ///< apply PCA on input

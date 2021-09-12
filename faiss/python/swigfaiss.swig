@@ -90,6 +90,8 @@ typedef uint64_t size_t;
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
 
+#include <faiss/impl/kmeans1d.h>
+
 #include <faiss/impl/NNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
@@ -411,6 +413,8 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
+
+%include <faiss/impl/kmeans1d.h>
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>

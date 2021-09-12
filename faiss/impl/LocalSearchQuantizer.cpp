@@ -148,13 +148,8 @@ LocalSearchQuantizer::LocalSearchQuantizer(
         size_t d,
         size_t M,
         size_t nbits,
-        Search_type_t search_type,
-        size_t nbits_norm)
-        : AdditiveQuantizer(
-                  d,
-                  std::vector<size_t>(M, nbits),
-                  search_type,
-                  nbits_norm) {
+        Search_type_t search_type)
+        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
     is_trained = false;
     verbose = false;
 
@@ -273,9 +268,14 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
             }
         }
 
-        if (search_type == ST_norm_cqint) {
-            Clustering clus(1, (1 << nbits_norm));
-            clus.train(n, norms.data(), qnorm);
+        if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
+            size_t k = (1 << 8);
+            if (search_type == ST_norm_cqint4) {
+                k = (1 << 4);
+            }
+            Clustering1D clus(k);
+            clus.train(n, norms.data());
+            qnorm.add(clus.k, clus.centroids.data());
         }
     }
 

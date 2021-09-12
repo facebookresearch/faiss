@@ -37,7 +37,6 @@ struct AdditiveQuantizer {
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
 
-    size_t nbits_norm;
     IndexFlat1D qnorm; ///< store and search norms
 
     uint32_t encode_qcint(
@@ -56,14 +55,14 @@ struct AdditiveQuantizer {
         ST_norm_float, ///< use a LUT, and store float32 norm with the vectors
         ST_norm_qint8, ///< use a LUT, and store 8bit-quantized norm
         ST_norm_qint4,
-        ST_norm_cqint, ///< use a LUT, and store non-uniform quantized norm
+        ST_norm_cqint8, ///< use a LUT, and store non-uniform quantized norm
+        ST_norm_cqint4,
     };
 
     AdditiveQuantizer(
             size_t d,
             const std::vector<size_t>& nbits,
-            Search_type_t search_type = ST_decompress,
-            size_t nbits_norm = 0);
+            Search_type_t search_type = ST_decompress);
 
     AdditiveQuantizer();
 

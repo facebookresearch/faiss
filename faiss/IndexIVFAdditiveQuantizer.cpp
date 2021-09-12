@@ -244,7 +244,8 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)
-                A(ST_norm_cqint)
+                A(ST_norm_cqint8)
+                A(ST_norm_cqint4)
 #undef A
             default:
                 FAISS_THROW_FMT(
@@ -263,10 +264,9 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t nlist,
         const std::vector<size_t>& nbits,
         MetricType metric,
-        Search_type_t search_type,
-        size_t nbits_norm)
+        Search_type_t search_type)
         : IndexIVFAdditiveQuantizer(&rq, quantizer, d, nlist, metric),
-          rq(d, nbits, search_type, nbits_norm) {
+          rq(d, nbits, search_type) {
     code_size = invlists->code_size = rq.code_size;
 }
 
@@ -280,16 +280,14 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type,
-        size_t nbits_norm)
+        Search_type_t search_type)
         : IndexIVFResidualQuantizer(
                   quantizer,
                   d,
                   nlist,
                   std::vector<size_t>(M, nbits),
                   metric,
-                  search_type,
-                  nbits_norm) {}
+                  search_type) {}
 
 IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() {}
 
@@ -304,10 +302,9 @@ IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer(
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
-        Search_type_t search_type,
-        size_t nbits_norm)
+        Search_type_t search_type)
         : IndexIVFAdditiveQuantizer(&lsq, quantizer, d, nlist, metric),
-          lsq(d, M, nbits, search_type, nbits_norm) {
+          lsq(d, M, nbits, search_type) {
     code_size = invlists->code_size = lsq.code_size;
 }
 

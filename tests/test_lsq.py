@@ -399,12 +399,18 @@ class TestIndexLocalSearchQuantizer(unittest.TestCase):
             faiss.AdditiveQuantizer.ST_norm_qint8
         )
 
-        index = faiss.index_factory(20, "LSQ5x6_Ncqint6")
-        self.assertEqual(index.lsq.nbits_norm, 6)
+        index = faiss.index_factory(20, "LSQ5x6_Ncqint8")
         self.assertEqual(
             index.lsq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_cqint
+            faiss.AdditiveQuantizer.ST_norm_cqint8
         )
+
+        index = faiss.index_factory(20, "LSQ5x6_Ncqint4")
+        self.assertEqual(
+            index.lsq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_cqint4
+        )
+
 
 
 class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
@@ -419,11 +425,10 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
             faiss.AdditiveQuantizer.ST_norm_qint8
         )
 
-        index = faiss.index_factory(20, "IVF1024,LSQ5x6_Ncqint6")
-        self.assertEqual(index.lsq.nbits_norm, 6)
+        index = faiss.index_factory(20, "IVF1024,LSQ5x6_Ncqint8")
         self.assertEqual(
             index.lsq.search_type,
-            faiss.AdditiveQuantizer.ST_norm_cqint
+            faiss.AdditiveQuantizer.ST_norm_cqint8
         )
 
     def eval_index_accuracy(self, factory_key):

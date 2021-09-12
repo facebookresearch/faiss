@@ -65,14 +65,12 @@ ResidualQuantizer::ResidualQuantizer()
 ResidualQuantizer::ResidualQuantizer(
         size_t d,
         const std::vector<size_t>& nbits,
-        Search_type_t search_type,
-        size_t nbits_norm)
+        Search_type_t search_type)
         : ResidualQuantizer() {
     this->search_type = search_type;
     this->d = d;
     M = nbits.size();
     this->nbits = nbits;
-    this->nbits_norm = nbits_norm;
     set_derived_values();
 }
 
@@ -80,13 +78,8 @@ ResidualQuantizer::ResidualQuantizer(
         size_t d,
         size_t M,
         size_t nbits,
-        Search_type_t search_type,
-        size_t nbits_norm)
-        : ResidualQuantizer(
-                  d,
-                  std::vector<size_t>(M, nbits),
-                  search_type,
-                  nbits_norm) {}
+        Search_type_t search_type)
+        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type) {}
 
 void beam_search_encode_step(
         size_t d,
@@ -343,7 +336,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
 
         if (verbose) {
             printf("[%.3f s, %.3f s clustering] train stage %d, %d bits, kmeans objective %g, "
-                   "total distance %g, beam_size %d->%d (batch size %ld)\n",
+                   "total distance %g, beam_size %d->%d (batch size %zd)\n",
                    (getmillisecs() - t0) / 1000,
                    clustering_time,
                    m,
@@ -378,9 +371,14 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         }
     }
 
-    if (search_type == ST_norm_cqint) {
-        Clustering clus(1, (1 << nbits_norm));
-        clus.train(n, norms.data(), qnorm);
+    if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
+        size_t k = (1 << 8);
+        if (search_type == ST_norm_cqint4) {
+            k = (1 << 4);
+        }
+        Clustering1D clus(k);
+        clus.train(n, norms.data());
+        qnorm.add(clus.k, clus.centroids.data());
     }
 
     is_trained = true;
