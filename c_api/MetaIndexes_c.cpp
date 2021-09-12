@@ -45,6 +45,11 @@ void faiss_IndexIDMap_id_map(
         *p_size = idx->id_map.size();
 }
 
+FaissIndex* faiss_IndexIDMap_sub_index(FaissIndexIDMap* index) {
+    auto idx = reinterpret_cast<IndexIDMap*>(index);
+    return (FaissIndex*)reinterpret_cast<Index*>(idx->index);
+}
+
 int faiss_IndexIDMap2_new(FaissIndexIDMap2** p_index, FaissIndex* index) {
     try {
         auto out = new IndexIDMap2(reinterpret_cast<Index*>(index));
@@ -58,4 +63,20 @@ int faiss_IndexIDMap2_construct_rev_map(FaissIndexIDMap2* index) {
         reinterpret_cast<IndexIDMap2*>(index)->construct_rev_map();
     }
     CATCH_AND_HANDLE
+}
+
+void faiss_IndexIDMap2_id_map(
+        FaissIndexIDMap2* index,
+        idx_t** p_id_map,
+        size_t* p_size) {
+    auto idx = reinterpret_cast<IndexIDMap2*>(index);
+    if (p_id_map)
+        *p_id_map = idx->id_map.data();
+    if (p_size)
+        *p_size = idx->id_map.size();
+}
+
+FaissIndex* faiss_IndexIDMap2_sub_index(FaissIndexIDMap2* index) {
+    auto idx = reinterpret_cast<IndexIDMap2*>(index);
+    return (FaissIndex*)reinterpret_cast<Index*>(idx->index);
 }

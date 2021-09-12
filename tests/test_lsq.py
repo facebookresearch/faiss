@@ -15,6 +15,9 @@ import unittest
 from faiss.contrib import datasets
 
 
+sp = faiss.swig_ptr
+
+
 def construct_sparse_matrix(codes, K):
     n, M = codes.shape
     B = np.zeros((n, M * K), dtype=np.float32)
@@ -54,18 +57,18 @@ def compute_binary_terms_ref(codebooks):
 def compute_unary_terms_ref(codebooks, x):
     codebooks_t = np.swapaxes(codebooks, 1, 2)  # [M, d, K]
     unaries = -2 * x.dot(codebooks_t)  # [n, M, K]
-
     code_norms = np.sum(codebooks * codebooks, axis=2)  # [M, K]
     unaries += code_norms
+    unaries = np.swapaxes(unaries, 0, 1)  # [M, n, K]
 
     return unaries
 
 
 def icm_encode_step_ref(unaries, binaries, codes):
-    n, M, K = unaries.shape
+    M, n, K = unaries.shape
 
     for m in range(M):
-        objs = unaries[:, m].copy()  # [n, K]
+        objs = unaries[m].copy()  # [n, K]
 
         for m2 in range(M):  # pair, m2 != m
             if m2 == m:
@@ -131,8 +134,8 @@ class TestComponents(unittest.TestCase):
         # decode x
         pack_codes = np.zeros((n, lsq.code_size)).astype(np.uint8)
         decoded_x = np.zeros((n, d)).astype(np.float32)
-        lsq.pack_codes(n, faiss.swig_ptr(codes), faiss.swig_ptr(pack_codes))
-        lsq.decode_c(faiss.swig_ptr(pack_codes), faiss.swig_ptr(decoded_x), n)
+        lsq.pack_codes(n, sp(codes), sp(pack_codes))
+        lsq.decode_c(sp(pack_codes), sp(decoded_x), n)
 
         # decode in Python
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
@@ -163,7 +166,7 @@ class TestComponents(unittest.TestCase):
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
         codebooks = codebooks.reshape(M, K, d).copy()
 
-        lsq.update_codebooks(faiss.swig_ptr(x), faiss.swig_ptr(codes), n)
+        lsq.update_codebooks(sp(x), sp(codes), n)
         new_codebooks = faiss.vector_float_to_array(lsq.codebooks)
         new_codebooks = new_codebooks.reshape(M, K, d).copy()
 
@@ -209,7 +212,7 @@ class TestComponents(unittest.TestCase):
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
         lsq.train(x)  # just for allocating memory for codebooks
 
-        lsq.compute_binary_terms(faiss.swig_ptr(binaries))
+        lsq.compute_binary_terms(sp(binaries))
 
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
         codebooks = codebooks.reshape(M, K, d).copy()
@@ -226,12 +229,12 @@ class TestComponents(unittest.TestCase):
 
         rs = np.random.RandomState(123)
         x = rs.rand(n, d).astype(np.float32)
-        unaries = np.zeros((n, M, K)).astype(np.float32)
+        unaries = np.zeros((M, n, K)).astype(np.float32)
 
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
         lsq.train(x)  # just for allocating memory for codebooks
 
-        lsq.compute_unary_terms(faiss.swig_ptr(x), faiss.swig_ptr(unaries), n)
+        lsq.compute_unary_terms(sp(x), sp(unaries), n)
 
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
         codebooks = codebooks.reshape(M, K, d).copy()
@@ -251,15 +254,17 @@ class TestComponents(unittest.TestCase):
         # randomly generate codes, binary terms and unary terms
         codes = rs.randint(0, K, (n, M)).astype(np.int32)
         new_codes = codes.copy()
-        unaries = rs.rand(n, M, K).astype(np.float32)
+        unaries = rs.rand(M, n, K).astype(np.float32)
         binaries = rs.rand(M, M, K, K).astype(np.float32)
 
         # do icm encoding given binary and unary terms
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
         lsq.icm_encode_step(
-            faiss.swig_ptr(unaries),
-            faiss.swig_ptr(binaries),
-            faiss.swig_ptr(new_codes), n)
+            sp(new_codes),
+            sp(unaries),
+            sp(binaries),
+            n,
+            1)
 
         # do icm encoding given binary and unary terms in Python
         ref_codes = icm_encode_step_ref(unaries, binaries, codes)
@@ -280,11 +285,11 @@ class TestComponents(unittest.TestCase):
 
         # compute binary terms
         binaries = np.zeros((M, M, K, K)).astype(np.float32)
-        lsq.compute_binary_terms(faiss.swig_ptr(binaries))
+        lsq.compute_binary_terms(sp(binaries))
 
         # compute unary terms
-        unaries = np.zeros((n, M, K)).astype(np.float32)
-        lsq.compute_unary_terms(faiss.swig_ptr(x), faiss.swig_ptr(unaries), n)
+        unaries = np.zeros((M, n, K)).astype(np.float32)
+        lsq.compute_unary_terms(sp(x), sp(unaries), n)
 
         # randomly generate codes
         codes = rs.randint(0, K, (n, M)).astype(np.int32)
@@ -292,9 +297,11 @@ class TestComponents(unittest.TestCase):
 
         # do icm encoding given binary and unary terms
         lsq.icm_encode_step(
-            faiss.swig_ptr(unaries),
-            faiss.swig_ptr(binaries),
-            faiss.swig_ptr(new_codes), n)
+            sp(new_codes),
+            sp(unaries),
+            sp(binaries),
+            n,
+            1)
 
         # do icm encoding without pre-computed unary and bianry terms in Python
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
