@@ -683,7 +683,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PtrTraits&gt;::transpose(int<sp/>dim1,<sp/>int<sp/>dim2)<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(dim1<sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>dim1<sp/>&lt;<sp/>Dim);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(dim1<sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>dim2<sp/>&lt;<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(dim2<sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>dim2<sp/>&lt;<sp/>Dim);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>a<sp/>tensor<sp/>is<sp/>innermost<sp/>contiguous,<sp/>one<sp/>cannot<sp/>transpose<sp/>the<sp/>innermost</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>dimension</highlight></codeline>
