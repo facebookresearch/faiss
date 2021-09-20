@@ -674,7 +674,7 @@ __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         IndexT,
         PtrTraits>::transpose(int dim1, int dim2) const {
     GPU_FAISS_ASSERT(dim1 >= 0 && dim1 < Dim);
-    GPU_FAISS_ASSERT(dim1 >= 0 && dim2 < Dim);
+    GPU_FAISS_ASSERT(dim2 >= 0 && dim2 < Dim);
 
     // If a tensor is innermost contiguous, one cannot transpose the innermost
     // dimension
