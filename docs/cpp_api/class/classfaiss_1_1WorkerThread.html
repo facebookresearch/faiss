@@ -1,75 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Class faiss::WorkerThread &mdash; Faiss  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
     <link rel="canonical" href="https://faiss.ai/cpp_api/class/classfaiss_1_1WorkerThread.html" />
-
-  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Class faiss::gpu::CpuTimer" href="classfaiss_1_1gpu_1_1CpuTimer.html" />
     <link rel="prev" title="Class faiss::IndexReplicasTemplate" href="classfaiss_1_1IndexReplicasTemplate.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> Faiss
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
@@ -126,106 +75,64 @@
 <li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Faiss</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../classlist.html">Class list</a> &raquo;</li>
-        
       <li>Class faiss::WorkerThread</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/cpp_api/class/classfaiss_1_1WorkerThread.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="class-faiss-workerthread">
-<h1>Class faiss::WorkerThread<a class="headerlink" href="#class-faiss-workerthread" title="Permalink to this headline">¶</a></h1>
+<h1>Class faiss::WorkerThread<a class="headerlink" href="#class-faiss-workerthread" title="Permalink to this headline"></a></h1>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThreadE">
-<span id="_CPPv3N5faiss12WorkerThreadE"></span><span id="_CPPv2N5faiss12WorkerThreadE"></span><span id="faiss::WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">WorkerThread</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThreadE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThreadE"></span><span id="_CPPv2N5faiss12WorkerThreadE"></span><span id="faiss::WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">WorkerThread</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThreadE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread12WorkerThreadEv">
-<span id="_CPPv3N5faiss12WorkerThread12WorkerThreadEv"></span><span id="_CPPv2N5faiss12WorkerThread12WorkerThreadEv"></span><span id="faiss::WorkerThread::WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1aa9b8104ac86a2221e836db4457fea2a3"></span><span class="sig-name descname"><span class="n"><span class="pre">WorkerThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread12WorkerThreadEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread12WorkerThreadEv"></span><span id="_CPPv2N5faiss12WorkerThread12WorkerThreadEv"></span><span id="faiss::WorkerThread::WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1aa9b8104ac86a2221e836db4457fea2a3"></span><span class="sig-name descname"><span class="n"><span class="pre">WorkerThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread12WorkerThreadEv" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThreadD0Ev">
-<span id="_CPPv3N5faiss12WorkerThreadD0Ev"></span><span id="_CPPv2N5faiss12WorkerThreadD0Ev"></span><span id="faiss::WorkerThread::~WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1"></span><span class="sig-name descname"><span class="n"><span class="pre">~WorkerThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThreadD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThreadD0Ev"></span><span id="_CPPv2N5faiss12WorkerThreadD0Ev"></span><span id="faiss::WorkerThread::~WorkerThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1"></span><span class="sig-name descname"><span class="n"><span class="pre">~WorkerThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThreadD0Ev" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Stops and waits for the worker thread to exit, flushing all pending lambdas </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread4stopEv">
-<span id="_CPPv3N5faiss12WorkerThread4stopEv"></span><span id="_CPPv2N5faiss12WorkerThread4stopEv"></span><span id="faiss::WorkerThread::stop"></span><span class="target" id="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread4stopEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread4stopEv"></span><span id="_CPPv2N5faiss12WorkerThread4stopEv"></span><span id="faiss::WorkerThread::stop"></span><span class="target" id="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread4stopEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Request that the worker thread stop itself. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread17waitForThreadExitEv">
-<span id="_CPPv3N5faiss12WorkerThread17waitForThreadExitEv"></span><span id="_CPPv2N5faiss12WorkerThread17waitForThreadExitEv"></span><span id="faiss::WorkerThread::waitForThreadExit"></span><span class="target" id="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">waitForThreadExit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread17waitForThreadExitEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread17waitForThreadExitEv"></span><span id="_CPPv2N5faiss12WorkerThread17waitForThreadExitEv"></span><span id="faiss::WorkerThread::waitForThreadExit"></span><span class="target" id="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">waitForThreadExit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread17waitForThreadExitEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Blocking waits in the current thread for the worker thread to stop </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread3addENSt8functionIFvvEEE">
-<span id="_CPPv3N5faiss12WorkerThread3addENSt8functionIFvvEEE"></span><span id="_CPPv2N5faiss12WorkerThread3addENSt8functionIFvvEEE"></span><span class="target" id="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread3addENSt8functionIFvvEEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread3addENSt8functionIFvvEEE"></span><span id="_CPPv2N5faiss12WorkerThread3addENSt8functionIFvvEEE"></span><span class="target" id="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">future</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread3addENSt8functionIFvvEEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Adds a lambda to run on the worker thread; returns a future that can be used to block on its completion. Future status is <code class="docutils literal notranslate"><span class="pre">true</span></code> if the lambda was run in the worker thread; <code class="docutils literal notranslate"><span class="pre">false</span></code> if it was not run, because the worker thread is exiting or has exited. </p>
 </dd></dl>
 
@@ -234,17 +141,17 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread11startThreadEv">
-<span id="_CPPv3N5faiss12WorkerThread11startThreadEv"></span><span id="_CPPv2N5faiss12WorkerThread11startThreadEv"></span><span id="faiss::WorkerThread::startThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1ac572863d6d90142a28176ab8508a5c0c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread11startThreadEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread11startThreadEv"></span><span id="_CPPv2N5faiss12WorkerThread11startThreadEv"></span><span id="faiss::WorkerThread::startThread"></span><span class="target" id="classfaiss_1_1WorkerThread_1ac572863d6d90142a28176ab8508a5c0c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startThread</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread11startThreadEv" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread10threadMainEv">
-<span id="_CPPv3N5faiss12WorkerThread10threadMainEv"></span><span id="_CPPv2N5faiss12WorkerThread10threadMainEv"></span><span id="faiss::WorkerThread::threadMain"></span><span class="target" id="classfaiss_1_1WorkerThread_1a3bcba1e74bc0106710834cebba8109a9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadMain</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread10threadMainEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread10threadMainEv"></span><span id="_CPPv2N5faiss12WorkerThread10threadMainEv"></span><span id="faiss::WorkerThread::threadMain"></span><span class="target" id="classfaiss_1_1WorkerThread_1a3bcba1e74bc0106710834cebba8109a9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadMain</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread10threadMainEv" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread10threadLoopEv">
-<span id="_CPPv3N5faiss12WorkerThread10threadLoopEv"></span><span id="_CPPv2N5faiss12WorkerThread10threadLoopEv"></span><span id="faiss::WorkerThread::threadLoop"></span><span class="target" id="classfaiss_1_1WorkerThread_1a1995b2a276e75326778af7e108d5a696"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadLoop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread10threadLoopEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread10threadLoopEv"></span><span id="_CPPv2N5faiss12WorkerThread10threadLoopEv"></span><span id="faiss::WorkerThread::threadLoop"></span><span class="target" id="classfaiss_1_1WorkerThread_1a1995b2a276e75326778af7e108d5a696"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadLoop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread10threadLoopEv" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -252,31 +159,31 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread7thread_E">
-<span id="_CPPv3N5faiss12WorkerThread7thread_E"></span><span id="_CPPv2N5faiss12WorkerThread7thread_E"></span><span id="faiss::WorkerThread::thread___std::thread"></span><span class="target" id="classfaiss_1_1WorkerThread_1a82689a11d49bb1a4d98850543b462087"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">thread</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thread_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread7thread_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread7thread_E"></span><span id="_CPPv2N5faiss12WorkerThread7thread_E"></span><span id="faiss::WorkerThread::thread___std::thread"></span><span class="target" id="classfaiss_1_1WorkerThread_1a82689a11d49bb1a4d98850543b462087"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">thread</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thread_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread7thread_E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Thread that all queued lambdas are run on. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread6mutex_E">
-<span id="_CPPv3N5faiss12WorkerThread6mutex_E"></span><span id="_CPPv2N5faiss12WorkerThread6mutex_E"></span><span id="faiss::WorkerThread::mutex___std::mutex"></span><span class="target" id="classfaiss_1_1WorkerThread_1ada0210696e69a082e226305052928f30"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mutex_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread6mutex_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread6mutex_E"></span><span id="_CPPv2N5faiss12WorkerThread6mutex_E"></span><span id="faiss::WorkerThread::mutex___std::mutex"></span><span class="target" id="classfaiss_1_1WorkerThread_1ada0210696e69a082e226305052928f30"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mutex_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread6mutex_E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Mutex for the queue and exit status. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread8monitor_E">
-<span id="_CPPv3N5faiss12WorkerThread8monitor_E"></span><span id="_CPPv2N5faiss12WorkerThread8monitor_E"></span><span id="faiss::WorkerThread::monitor___std::condition_variable"></span><span class="target" id="classfaiss_1_1WorkerThread_1a1ac0f05c57f14389d12ec34d3cd7cd65"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">monitor_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread8monitor_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread8monitor_E"></span><span id="_CPPv2N5faiss12WorkerThread8monitor_E"></span><span id="faiss::WorkerThread::monitor___std::condition_variable"></span><span class="target" id="classfaiss_1_1WorkerThread_1a1ac0f05c57f14389d12ec34d3cd7cd65"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">condition_variable</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">monitor_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread8monitor_E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Monitor for the exit status and the queue. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread9wantStop_E">
-<span id="_CPPv3N5faiss12WorkerThread9wantStop_E"></span><span id="_CPPv2N5faiss12WorkerThread9wantStop_E"></span><span id="faiss::WorkerThread::wantStop___b"></span><span class="target" id="classfaiss_1_1WorkerThread_1a4f9eb3eabaf5f4adf6612180060ed65e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wantStop_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread9wantStop_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread9wantStop_E"></span><span id="_CPPv2N5faiss12WorkerThread9wantStop_E"></span><span id="faiss::WorkerThread::wantStop___b"></span><span class="target" id="classfaiss_1_1WorkerThread_1a4f9eb3eabaf5f4adf6612180060ed65e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wantStop_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread9wantStop_E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Whether or not we want the thread to exit. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12WorkerThread6queue_E">
-<span id="_CPPv3N5faiss12WorkerThread6queue_E"></span><span id="_CPPv2N5faiss12WorkerThread6queue_E"></span><span class="target" id="classfaiss_1_1WorkerThread_1ac334da22a126dcd565b835c93ea8193f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">deque</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queue_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread6queue_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss12WorkerThread6queue_E"></span><span id="_CPPv2N5faiss12WorkerThread6queue_E"></span><span class="target" id="classfaiss_1_1WorkerThread_1ac334da22a126dcd565b835c93ea8193f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">deque</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">promise</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queue_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12WorkerThread6queue_E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Queue of pending lambdas to call. </p>
 </dd></dl>
 
@@ -287,50 +194,33 @@
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="classfaiss_1_1gpu_1_1CpuTimer.html" class="btn btn-neutral float-right" title="Class faiss::gpu::CpuTimer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="classfaiss_1_1IndexReplicasTemplate.html" class="btn btn-neutral float-left" title="Class faiss::IndexReplicasTemplate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classfaiss_1_1gpu_1_1CpuTimer.html" class="btn btn-neutral float-right" title="Class faiss::gpu::CpuTimer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright Facebook, Inc. and its affiliates..
-
-    </p>
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
