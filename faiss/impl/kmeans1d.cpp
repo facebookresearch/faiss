@@ -247,9 +247,12 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
 
     for (idx_t k = 1; k < nclusters; ++k) {
         // we define C here
-        auto C = [&D, &CC, &k, &n](idx_t i, idx_t j) {
-            idx_t col = std::min(i, j - 1);
-            return D.at(k - 1, col) + CC(j, i);
+        auto C = [&D, &CC, &k, &n](idx_t m, idx_t i) {
+            if (i == 0) {
+                return CC(i, m);
+            }
+            idx_t col = std::min(m, i - 1);
+            return D.at(k - 1, col) + CC(i, m);
         };
 
         std::vector<idx_t> argmins(n); // argmin of each row

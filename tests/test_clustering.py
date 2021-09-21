@@ -261,13 +261,9 @@ class TestClustering1D(unittest.TestCase):
         D, I = index.search(x, k=1)
         return D.sum()
 
-    def test_cluster1d(self):
-        d = 1
-        n = 1000
-        k = 20
-
+    def subtest_cluster1d(self, n, k):
         rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
+        x = rs.uniform(size=(n, 1)).astype('float32')
 
         clus = faiss.Clustering1D(k)
         clus.train(x)
@@ -277,8 +273,12 @@ class TestClustering1D(unittest.TestCase):
         clus2 = faiss.Kmeans(1, k)
         clus2.train(x)
         obj2 = self.evaluate_obj(clus2.centroids, x)
-
         self.assertLessEqual(obj, obj2)
+
+    def test_cluster1d(self):
+        self.subtest_cluster1d(20, 20)
+        self.subtest_cluster1d(1000, 20)
+        self.subtest_cluster1d(1000, 256)
 
     def test_smawk(self):
         # example in http://web.cs.unlv.edu/larmore/Courses/CSC477/monge.pdf.
