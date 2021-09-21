@@ -11,7 +11,7 @@ import numpy as np
 import unittest
 import faiss
 
-from common import Randu10k, get_dataset_2, Randu10kUnbalanced
+from common_faiss_tests import Randu10k, get_dataset_2, Randu10kUnbalanced
 
 ev = Randu10k()
 
@@ -157,6 +157,16 @@ class IndexAccuracy(unittest.TestCase):
         # should give 0.234  0.236  0.236
         assert e[10] > 0.235
 
+    def test_polysemous_OOM(self):
+        """ this used to cause OOM when training polysemous with large
+        nb bits"""
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 10000, 0, 0)
+        index = faiss.IndexPQ(d, M, 13)
+        index.do_polysemous_training = True
+        index.pq.cp.niter = 0
+        index.polysemous_training.max_memory = 128 * 1024 * 1024
+        self.assertRaises(RuntimeError, index.train, xt)
 
 
 class TestSQFlavors(unittest.TestCase):
@@ -303,7 +313,7 @@ class TestSQFlavors(unittest.TestCase):
         index.nprobe = 4   # hopefully more robust than 1
         Dref, Iref = index.search(xq, 10)
 
-        for pm in 1, 2:
+        for pm in 1, 2, 3:
             index.parallel_mode = pm
 
             Dnew, Inew = index.search(xq, 10)
@@ -369,6 +379,61 @@ class TestSQByte(unittest.TestCase):
             for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
                 self.subtest_8bit_direct(metric_type, d)
 
+
+class TestNNDescent(unittest.TestCase):
+
+    def test_L1(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.83, 0.92, 0.95]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_L1, 10, search_L, threshold)
+
+    def test_L2(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.83, 0.92, 0.95]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_L2, 10, search_L, threshold)
+
+    def test_IP(self):
+        search_Ls = [10, 20, 30]
+        thresholds = [0.80, 0.90, 0.93]
+        for search_L, threshold in zip(search_Ls, thresholds):
+            self.subtest(32, faiss.METRIC_INNER_PRODUCT, 10, search_L, threshold)
+
+    def subtest(self, d, metric, topk, search_L, threshold):
+        metric_names = {faiss.METRIC_L1: 'L1',
+                        faiss.METRIC_L2: 'L2',
+                        faiss.METRIC_INNER_PRODUCT: 'IP'}
+        topk = 10
+        nt, nb, nq = 2000, 1000, 200
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        gt_index = faiss.IndexFlat(d, metric)
+        gt_index.add(xb)
+        gt_D, gt_I = gt_index.search(xq, topk)
+
+        K = 16
+        index = faiss.IndexNNDescentFlat(d, K, metric)
+        index.nndescent.S = 10
+        index.nndescent.R = 32
+        index.nndescent.L = K + 20
+        index.nndescent.iter = 5
+        index.verbose = False
+
+        index.nndescent.search_L = search_L
+
+        index.add(xb)
+        D, I = index.search(xq, topk)
+        recalls = 0
+        for i in range(nq):
+            for j in range(topk):
+                for k in range(topk):
+                    if I[i, j] == gt_I[i, k]:
+                        recalls += 1
+                        break
+        recall = 1.0 * recalls / (nq * topk)
+        print('Metric: {}, L: {}, Recall@{}: {}'.format(
+            metric_names[metric], search_L, topk, recall))
+        assert recall > threshold, '{} <= {}'.format(recall, threshold)
 
 
 class TestPQFlavors(unittest.TestCase):
@@ -683,8 +748,50 @@ class TestSpectralHash(unittest.TestCase):
                     key = (nbit, tt, period)
 
                     print('(%d, %s, %g): %d, ' % (nbit, repr(tt), period, ninter))
-                    assert abs(ninter - self.ref_results[key]) <= 4
+                    assert abs(ninter - self.ref_results[key]) <= 12
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestRefine(unittest.TestCase):
+
+    def do_test(self, metric):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 2000, 1000, 200)
+        index1 = faiss.index_factory(d, "PQ4x4np", metric)
+        Dref, Iref = faiss.knn(xq, xb, 10, metric)
+
+        index1.train(xt)
+        index1.add(xb)
+
+        D1, I1 = index1.search(xq, 100)
+
+        recall1 = (I1 == Iref[:, :1]).sum()
+
+        # add refine index on top
+        index_flat = faiss.IndexFlat(d, metric)
+        index_flat.add(xb)
+
+        index2 = faiss.IndexRefine(index1, index_flat)
+        index2.k_factor = 10.0
+        D2, I2 = index2.search(xq, 10)
+
+        # check distance is computed properly
+        for i in range(len(xq)):
+            x1 = xq[i]
+            x2 = xb[I2[i, 5]]
+            if metric == faiss.METRIC_L2:
+                dref = ((x1 - x2) ** 2).sum()
+            else:
+                dref = np.dot(x1, x2)
+            np.testing.assert_almost_equal(dref, D2[i, 5], decimal=5)
+
+        # check that with refinement, the recall@10 is the same as
+        # the original recall@100
+        recall2 = (I2 == Iref[:, :1]).sum()
+        # print("recalls", recall1, recall2)
+        self.assertEqual(recall1, recall2)
+
+    def test_IP(self):
+        self.do_test(faiss.METRIC_INNER_PRODUCT)
+
+    def test_L2(self):
+        self.do_test(faiss.METRIC_L2)

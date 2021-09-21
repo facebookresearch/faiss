@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
-
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -14,22 +12,18 @@
 
 #include <sys/time.h>
 
-
-#include <faiss/IndexPQ.h>
-#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexPQ.h>
 #include <faiss/index_io.h>
 
-double elapsed ()
-{
+double elapsed() {
     struct timeval tv;
-    gettimeofday (&tv, nullptr);
-    return  tv.tv_sec + tv.tv_usec * 1e-6;
+    gettimeofday(&tv, nullptr);
+    return tv.tv_sec + tv.tv_usec * 1e-6;
 }
 
-
-int main ()
-{
+int main() {
     double t0 = elapsed();
 
     // dimension of the vectors to index
@@ -59,19 +53,22 @@ int main ()
     // Number of bits: we will have 2^nbits_coarse centroids per subquantizer
     //                 meaning (2^12)^nhash distinct inverted lists
     size_t nhash = 2;
-    size_t nbits_subq = int (log2 (nb+1) / 2);        // good choice in general
-    size_t ncentroids = 1 << (nhash * nbits_subq);  // total # of centroids
+    size_t nbits_subq = int(log2(nb + 1) / 2);     // good choice in general
+    size_t ncentroids = 1 << (nhash * nbits_subq); // total # of centroids
 
-    faiss::MultiIndexQuantizer coarse_quantizer (d, nhash, nbits_subq);
+    faiss::MultiIndexQuantizer coarse_quantizer(d, nhash, nbits_subq);
 
-    printf ("IMI (%ld,%ld): %ld virtual centroids (target: %ld base vectors)",
-            nhash, nbits_subq, ncentroids, nb);
+    printf("IMI (%ld,%ld): %ld virtual centroids (target: %ld base vectors)",
+           nhash,
+           nbits_subq,
+           ncentroids,
+           nb);
 
     // the coarse quantizer should not be dealloced before the index
     // 4 = nb of bytes per code (d must be a multiple of this)
     // 8 = nb of bits per sub-code (almost always 8)
     faiss::MetricType metric = faiss::METRIC_L2; // can be METRIC_INNER_PRODUCT
-    faiss::IndexIVFFlat index (&coarse_quantizer, d, ncentroids, metric);
+    faiss::IndexIVFFlat index(&coarse_quantizer, d, ncentroids, metric);
     index.quantizer_trains_alone = true;
 
     // define the number of probes. 2048 is for high-dim, overkilled in practice
@@ -82,72 +79,77 @@ int main ()
     std::uniform_real_distribution<> distrib;
 
     { // training
-        printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
-                elapsed() - t0, nt, d);
+        printf("[%.3f s] Generating %ld vectors in %dD for training\n",
+               elapsed() - t0,
+               nt,
+               d);
 
-        std::vector <float> trainvecs (nt * d);
+        std::vector<float> trainvecs(nt * d);
         for (size_t i = 0; i < nt * d; i++) {
             trainvecs[i] = distrib(rng);
         }
 
-        printf ("[%.3f s] Training the index\n", elapsed() - t0);
+        printf("[%.3f s] Training the index\n", elapsed() - t0);
         index.verbose = true;
-        index.train (nt, trainvecs.data());
+        index.train(nt, trainvecs.data());
     }
 
     size_t nq;
     std::vector<float> queries;
 
     { // populating the database
-        printf ("[%.3f s] Building a dataset of %ld vectors to index\n",
-                elapsed() - t0, nb);
+        printf("[%.3f s] Building a dataset of %ld vectors to index\n",
+               elapsed() - t0,
+               nb);
 
-        std::vector <float> database (nb * d);
+        std::vector<float> database(nb * d);
         for (size_t i = 0; i < nb * d; i++) {
             database[i] = distrib(rng);
         }
 
-        printf ("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
+        printf("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
 
-        index.add (nb, database.data());
+        index.add(nb, database.data());
 
         // remember a few elements from the database as queries
         int i0 = 1234;
         int i1 = 1244;
 
         nq = i1 - i0;
-        queries.resize (nq * d);
+        queries.resize(nq * d);
         for (int i = i0; i < i1; i++) {
             for (int j = 0; j < d; j++) {
-                queries [(i - i0) * d  + j]  = database [i * d + j];
+                queries[(i - i0) * d + j] = database[i * d + j];
             }
         }
     }
 
     { // searching the database
         int k = 5;
-        printf ("[%.3f s] Searching the %d nearest neighbors "
-                "of %ld vectors in the index\n",
-                elapsed() - t0, k, nq);
+        printf("[%.3f s] Searching the %d nearest neighbors "
+               "of %ld vectors in the index\n",
+               elapsed() - t0,
+               k,
+               nq);
 
-        std::vector<faiss::Index::idx_t> nns (k * nq);
-        std::vector<float>               dis (k * nq);
+        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<float> dis(k * nq);
 
-        index.search (nq, queries.data(), k, dis.data(), nns.data());
+        index.search(nq, queries.data(), k, dis.data(), nns.data());
 
-        printf ("[%.3f s] Query results (vector ids, then distances):\n",
-                elapsed() - t0);
+        printf("[%.3f s] Query results (vector ids, then distances):\n",
+               elapsed() - t0);
 
         for (int i = 0; i < nq; i++) {
-            printf ("query %2d: ", i);
+            printf("query %2d: ", i);
             for (int j = 0; j < k; j++) {
-                printf ("%7ld ", nns[j + i * k]);
+                printf("%7ld ", nns[j + i * k]);
             }
-            printf ("\n     dis: ");
+            printf("\n     dis: ");
             for (int j = 0; j < k; j++) {
-                printf ("%7g ", dis[j + i * k]);
+                printf("%7g ", dis[j + i * k]);
             }
-            printf ("\n");
+            printf("\n");
         }
     }
     return 0;

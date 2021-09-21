@@ -9,14 +9,12 @@
 
 #pragma once
 
-#include <vector>
+#include <stdint.h>
 #include <string>
 #include <unordered_map>
-#include <stdint.h>
-
+#include <vector>
 
 namespace faiss {
-
 
 /** Reports some statistics on a dataset and comments on them.
  *
@@ -24,7 +22,7 @@ namespace faiss {
  * accessed from code */
 
 struct MatrixStats {
-    MatrixStats (size_t n, size_t d, const float *x);
+    MatrixStats(size_t n, size_t d, const float* x);
     std::string comments;
 
     // raw statistics
@@ -42,8 +40,8 @@ struct MatrixStats {
         double mean, stddev;
 
         PerDimStats();
-        void add (float x);
-        void compute_mean_std ();
+        void add(float x);
+        void compute_mean_std();
     };
 
     std::vector<PerDimStats> per_dim_stats;
@@ -53,10 +51,9 @@ struct MatrixStats {
     };
     std::unordered_map<uint64_t, Occurrence> occurrences;
 
-    char *buf;
+    char* buf;
     size_t nbuf;
-    void do_comment (const char *fmt, ...);
-
+    void do_comment(const char* fmt, ...);
 };
 
 } // namespace faiss

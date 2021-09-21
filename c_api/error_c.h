@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-/// An error code which depends on the exception thrown from the previous 
+/// An error code which depends on the exception thrown from the previous
 /// operation. See `faiss_get_last_error` to retrieve the error message.
 typedef enum FaissErrorCode {
     /// No error

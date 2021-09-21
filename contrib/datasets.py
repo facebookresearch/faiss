@@ -96,7 +96,7 @@ class SyntheticDataset(Dataset):
         return self.xq
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        maxtrain = maxtrain if maxtrain is not None else self.nt
         return self.xt[:maxtrain]
 
     def get_database(self):
@@ -122,7 +122,8 @@ for dataset_basedir in (
     if os.path.exists(dataset_basedir):
         break
 else:
-    dataset_basedir = None
+    # users can link their data directory to `./data`
+    dataset_basedir = 'data/'
 
 
 class DatasetSIFT1M(Dataset):
@@ -140,7 +141,7 @@ class DatasetSIFT1M(Dataset):
         return fvecs_read(self.basedir + "sift_query.fvecs")
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        maxtrain = maxtrain if maxtrain is not None else self.nt
         return fvecs_read(self.basedir + "sift_learn.fvecs")[:maxtrain]
 
     def get_database(self):
@@ -176,7 +177,7 @@ class DatasetBigANN(Dataset):
         return sanitize(bvecs_mmap(self.basedir + 'bigann_query.bvecs')[:])
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        maxtrain = maxtrain if maxtrain is not None else self.nt
         return sanitize(bvecs_mmap(self.basedir + 'bigann_learn.bvecs')[:maxtrain])
 
     def get_groundtruth(self, k=None):
@@ -201,7 +202,7 @@ class DatasetBigANN(Dataset):
 class DatasetDeep1B(Dataset):
     """
     See
-    https://github.com/facebookresearch/faiss/tree/master/benchs#getting-deep1b
+    https://github.com/facebookresearch/faiss/tree/main/benchs#getting-deep1b
     on how to get the data
     """
 
@@ -224,7 +225,7 @@ class DatasetDeep1B(Dataset):
         return sanitize(fvecs_read(self.basedir + "deep1B_queries.fvecs"))
 
     def get_train(self, maxtrain=None):
-        maxtrain = maxtrain or self.nt
+        maxtrain = maxtrain if maxtrain is not None else self.nt
         return sanitize(fvecs_mmap(self.basedir + "learn.fvecs")[:maxtrain])
 
     def get_groundtruth(self, k=None):
@@ -251,8 +252,9 @@ class DatasetGlove(Dataset):
     Data from http://ann-benchmarks.com/glove-100-angular.hdf5
     """
 
-    def __init__(self, loc=None):
+    def __init__(self, loc=None, download=False):
         import h5py
+        assert not download, "not implemented"
         if not loc:
             loc = dataset_basedir + 'glove/glove-100-angular.hdf5'
         self.glove_h5py = h5py.File(loc, 'r')

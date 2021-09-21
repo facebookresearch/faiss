@@ -12,20 +12,23 @@
 #include <faiss/gpu/GpuClonerOptions.h>
 #include "macros_impl.h"
 
-using faiss::gpu::IndicesOptions;
 using faiss::gpu::GpuClonerOptions;
 using faiss::gpu::GpuMultipleClonerOptions;
+using faiss::gpu::IndicesOptions;
 
 int faiss_GpuClonerOptions_new(FaissGpuClonerOptions** p) {
     try {
         *p = reinterpret_cast<FaissGpuClonerOptions*>(new GpuClonerOptions());
-    } CATCH_AND_HANDLE
+    }
+    CATCH_AND_HANDLE
 }
 
 int faiss_GpuMultipleClonerOptions_new(FaissGpuMultipleClonerOptions** p) {
     try {
-        *p = reinterpret_cast<FaissGpuMultipleClonerOptions*>(new GpuMultipleClonerOptions());
-    } CATCH_AND_HANDLE
+        *p = reinterpret_cast<FaissGpuMultipleClonerOptions*>(
+                new GpuMultipleClonerOptions());
+    }
+    CATCH_AND_HANDLE
 }
 
 DEFINE_DESTRUCTOR(GpuClonerOptions)
@@ -41,7 +44,11 @@ DEFINE_GETTER(GpuClonerOptions, int, verbose)
 DEFINE_GETTER(GpuMultipleClonerOptions, int, shard)
 DEFINE_GETTER(GpuMultipleClonerOptions, int, shard_type)
 
-DEFINE_SETTER_STATIC(GpuClonerOptions, IndicesOptions, FaissIndicesOptions, indicesOptions)
+DEFINE_SETTER_STATIC(
+        GpuClonerOptions,
+        IndicesOptions,
+        FaissIndicesOptions,
+        indicesOptions)
 DEFINE_SETTER_STATIC(GpuClonerOptions, bool, int, useFloat16CoarseQuantizer)
 DEFINE_SETTER_STATIC(GpuClonerOptions, bool, int, useFloat16)
 DEFINE_SETTER_STATIC(GpuClonerOptions, bool, int, usePrecomputed)

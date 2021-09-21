@@ -122,7 +122,17 @@ class TestPQTables(unittest.TestCase):
         else:
             assert False
 
+        # compute sdc tables in numpy
+        cent1 = np.expand_dims(centroids, axis=2)  # [M, ksub, 1, dsub]
+        cent2 = np.expand_dims(centroids, axis=1)  # [M, 1, ksub, dsub]
+        ref_sdc_tab = ((cent1 - cent2) ** 2).sum(3)
+
+        pq.compute_sdc_table()
+        new_sdc_tab = faiss.vector_to_array(pq.sdc_table)
+        new_sdc_tab = new_sdc_tab.reshape(M, pq.ksub, pq.ksub)
+
         np.testing.assert_array_almost_equal(ref_tab, new_tab, decimal=5)
+        np.testing.assert_array_almost_equal(ref_sdc_tab, new_sdc_tab, decimal=5)
 
     def test_dsub2(self):
         self.do_test(16, 2)

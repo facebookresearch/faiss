@@ -7,11 +7,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # translation of test_meta_index.lua
 
+import sys
 import numpy as np
 import faiss
 import unittest
 
-from common import Randu10k
+from common_faiss_tests import Randu10k
 
 ru = Randu10k()
 
@@ -86,6 +87,13 @@ class Shards(unittest.TestCase):
         _Dref, Iref = ref_index.search(xq, k)
         print(Iref[:5, :6])
 
+        # there is a OpenMP bug in this configuration, so disable threading
+        if sys.platform == "darwin" and "Clang 12" in sys.version:
+            nthreads = faiss.omp_get_max_threads()
+            faiss.omp_set_num_threads(1)
+        else:
+            nthreads = None
+
         shard_index = faiss.IndexShards(d)
         shard_index_2 = faiss.IndexShards(d, True, False)
 
@@ -131,6 +139,8 @@ class Shards(unittest.TestCase):
             print('%d / %d differences' % (ndiff, nq * k))
             assert(ndiff < nq * k / 1000.)
 
+        if nthreads is not None:
+            faiss.omp_set_num_threads(nthreads)
 
 class Merge(unittest.TestCase):
 
@@ -213,7 +223,6 @@ class Merge(unittest.TestCase):
             id_list = gen.permutation(nb * 7)[:nb].astype('int64')
             index.add_with_ids(xb, id_list)
 
-
         print('ref search ntotal=%d' % index.ntotal)
         Dref, Iref = index.search(xq, k)
 
@@ -242,13 +251,17 @@ class Merge(unittest.TestCase):
         D, I = index.search(xq, k)
 
         # make sure results are in the same order with even ones removed
+        ndiff = 0
         for i in range(nq):
             j2 = 0
             for j in range(k):
                 if Iref[i, j] % 2 != 0:
-                    assert I[i, j2] == Iref[i, j]
+                    if I[i, j2] != Iref[i, j]:
+                        ndiff += 1
                     assert abs(D[i, j2] - Dref[i, j]) < 1e-5
                     j2 += 1
+        # draws are ordered arbitrarily
+        assert ndiff < 5
 
     def test_remove(self):
         self.do_test_remove(1)

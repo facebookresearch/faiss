@@ -6,11 +6,12 @@
 """this is a basic test script for simple indices work"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
 import numpy as np
 import unittest
 import faiss
 
-from common import compare_binary_result_lists, make_binary_dataset
+from common_faiss_tests import compare_binary_result_lists, make_binary_dataset
 
 
 
@@ -183,7 +184,9 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         Divfflat, _ = index.search(self.xq, 10)
 
-        self.assertEqual((self.Dref == Divfflat).sum(), 4122)
+        # Some centroids are equidistant from the query points.
+        # So the answer will depend on the implementation of the heap.
+        self.assertGreater((self.Dref == Divfflat).sum(), 4100)
 
     def test_ivf_range(self):
         d = self.xq.shape[1] * 8
@@ -251,6 +254,41 @@ class TestBinaryIVF(unittest.TestCase):
                 self.xb[i]
             )
 
+    def test_ivf_nprobe(self):
+        """Test in case of nprobe > nlist."""
+        d = self.xq.shape[1] * 8
+        xt, xb, xq = self.xt, self.xb, self.xq
+
+        # nlist = 10
+        index = faiss.index_binary_factory(d, "BIVF10")
+
+        # When nprobe >= nlist, it is equivalent to an IndexFlat.
+
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 2048
+        k = 5
+
+        # test kNN search
+        D, I = index.search(xq, k)
+
+        ref_index = faiss.index_binary_factory(d, "BFlat")
+        ref_index.add(xb)
+        ref_D, ref_I = ref_index.search(xq, k)
+
+        print(D[0], ref_D[0])
+        print(I[0], ref_I[0])
+        assert np.all(D == ref_D)
+        # assert np.all(I == ref_I)  # id may be different
+
+        # test range search
+        thresh = 5   # *squared* distance
+        lims, D, I = index.range_search(xq, thresh)
+        ref_lims, ref_D, ref_I = ref_index.range_search(xq, thresh)
+        assert np.all(lims == ref_lims)
+        assert np.all(D == ref_D)
+        # assert np.all(I == ref_I)  # id may be different
+
 
 class TestHNSW(unittest.TestCase):
 
@@ -314,6 +352,13 @@ class TestReplicasAndShards(unittest.TestCase):
 
         Dref, Iref = index_ref.search(xq, 10)
 
+        # there is a OpenMP bug in this configuration, so disable threading
+        if sys.platform == "darwin" and "Clang 12" in sys.version:
+            nthreads = faiss.omp_get_max_threads()
+            faiss.omp_set_num_threads(1)
+        else:
+            nthreads = None
+
         nrep = 5
         index = faiss.IndexBinaryReplicas()
         for _i in range(nrep):
@@ -333,6 +378,9 @@ class TestReplicasAndShards(unittest.TestCase):
 
         index2.add(xb)
         D2, I2 = index2.search(xq, 10)
+
+        if nthreads is not None:
+            faiss.omp_set_num_threads(nthreads)
 
         self.assertTrue((Dref == D2).all())
         self.assertTrue((Iref == I2).all())

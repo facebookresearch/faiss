@@ -15,17 +15,29 @@ os.mkdir("faiss")
 shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
-shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
-if platform.system() == 'Windows':
-    shutil.copyfile("Release/_swigfaiss.pyd", "faiss/_swigfaiss.pyd")
 
-else:
-    shutil.copyfile("_swigfaiss.so", "faiss/_swigfaiss.so")
-    try:
-        shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
-        shutil.copyfile("_swigfaiss_avx2.so", "faiss/_swigfaiss_avx2.so")
-    except:
-        pass
+ext = ".pyd" if platform.system() == 'Windows' else ".so"
+prefix = "Release/" * (platform.system() == 'Windows')
+
+swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
+swigfaiss_avx2_lib = f"{prefix}_swigfaiss_avx2{ext}"
+
+found_swigfaiss_generic = os.path.exists(swigfaiss_generic_lib)
+found_swigfaiss_avx2 = os.path.exists(swigfaiss_avx2_lib)
+
+assert (found_swigfaiss_generic or found_swigfaiss_avx2), \
+    f"Could not find {swigfaiss_generic_lib} or " \
+    f"{swigfaiss_avx2_lib}. Faiss may not be compiled yet."
+
+if found_swigfaiss_generic:
+    print(f"Copying {swigfaiss_generic_lib}")
+    shutil.copyfile("swigfaiss.py", "faiss/swigfaiss.py")
+    shutil.copyfile(swigfaiss_generic_lib, f"faiss/_swigfaiss{ext}")
+
+if found_swigfaiss_avx2:
+    print(f"Copying {swigfaiss_avx2_lib}")
+    shutil.copyfile("swigfaiss_avx2.py", "faiss/swigfaiss_avx2.py")
+    shutil.copyfile(swigfaiss_avx2_lib, f"faiss/_swigfaiss_avx2{ext}")
 
 long_description="""
 Faiss is a library for efficient similarity search and clustering of dense
@@ -37,7 +49,7 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name='faiss',
-    version='1.6.5',
+    version='1.7.1',
     description='A library for efficient similarity search and clustering of dense vectors',
     long_description=long_description,
     url='https://github.com/facebookresearch/faiss',

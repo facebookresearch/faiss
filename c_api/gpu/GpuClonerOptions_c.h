@@ -11,7 +11,7 @@
 #ifndef FAISS_GPU_CLONER_OPTIONS_C_H
 #define FAISS_GPU_CLONER_OPTIONS_C_H
 
-#include "faiss_c.h"
+#include "../faiss_c.h"
 #include "GpuIndicesOptions_c.h"
 
 #ifdef __cplusplus
@@ -27,7 +27,10 @@ int faiss_GpuClonerOptions_new(FaissGpuClonerOptions**);
 
 /// how should indices be stored on index types that support indices
 /// (anything but GpuIndexFlat*)?
-FAISS_DECLARE_GETTER_SETTER(GpuClonerOptions, FaissIndicesOptions, indicesOptions)
+FAISS_DECLARE_GETTER_SETTER(
+        GpuClonerOptions,
+        FaissIndicesOptions,
+        indicesOptions)
 
 /// (boolean) is the coarse quantizer in float16?
 FAISS_DECLARE_GETTER_SETTER(GpuClonerOptions, int, useFloat16CoarseQuantizer)

@@ -12,8 +12,8 @@ import faiss
 import tempfile
 import os
 
-from common import get_dataset_2
-
+from common_faiss_tests import get_dataset_2
+from faiss.contrib.datasets import SyntheticDataset
 
 class TestEncodeDecode(unittest.TestCase):
 
@@ -158,8 +158,8 @@ class TestAccuracy(unittest.TestCase):
         if 'Lattice' in highac:
             codec2 = faiss.deserialize_index(
                 faiss.serialize_index(codec))
-            codes = codec.sa_encode(x)
-            x3 = codec.sa_decode(codes)
+            codes = codec2.sa_encode(x)
+            x3 = codec2.sa_decode(codes)
             self.assertTrue(np.all(x2 == x3))
 
     def test_SQ(self):
@@ -208,8 +208,6 @@ class LatticeTest(unittest.TestCase):
             vecs = vec.copy()
             vecs.sort()
             repeats = faiss.Repeats(dim, swig_ptr(vecs))
-            rr = [repeats.repeats.at(i) for i in range(repeats.repeats.size())]
-            # print([(r.val, r.n) for r in rr])
             code = repeats.encode(swig_ptr(vec))
             #print(vec, code)
             vec2 = np.zeros(dim, dtype='float32')
@@ -310,3 +308,23 @@ class TestBitstring(unittest.TestCase):
             xnew = br.read(nbit)
             print('nbit %d xref %x xnew %x' % (nbit, xref, xnew))
             self.assertTrue(xnew == xref)
+
+
+class TestIVFTransfer(unittest.TestCase):
+
+    def test_transfer(self):
+
+        ds = SyntheticDataset(32, 2000, 200, 100)
+        index = faiss.index_factory(ds.d, "IVF20,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        index.reset()
+
+        codes = index.sa_encode(ds.get_database())
+        index.add_sa_codes(codes)
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)

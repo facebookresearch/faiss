@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/IndexFlat.h>
-#include <faiss/utils/random.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/perf/IndexWrapper.h>
 #include <faiss/gpu/test/TestUtils.h>
-#include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/utils/HostTensor.cuh>
 #include <faiss/gpu/utils/Timer.h>
+#include <faiss/utils/random.h>
 #include <gflags/gflags.h>
+#include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
 #include <map>
 #include <memory>
 #include <vector>
@@ -40,110 +39,121 @@ DEFINE_bool(use_unified_mem, false, "use Pascal unified memory for the index");
 using namespace faiss::gpu;
 
 int main(int argc, char** argv) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  cudaProfilerStop();
+    cudaProfilerStop();
 
-  auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
-  printf("using seed %ld\n", seed);
+    auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
+    printf("using seed %ld\n", seed);
 
-  auto numQueries = FLAGS_num_queries;
+    auto numQueries = FLAGS_num_queries;
 
-  auto index = std::unique_ptr<faiss::IndexFlat>(
-    new faiss::IndexFlat(FLAGS_dim, FLAGS_l2 ?
-                         faiss::METRIC_L2 : faiss::METRIC_INNER_PRODUCT));
+    auto index = std::unique_ptr<faiss::IndexFlat>(new faiss::IndexFlat(
+            FLAGS_dim,
+            FLAGS_l2 ? faiss::METRIC_L2 : faiss::METRIC_INNER_PRODUCT));
 
-  HostTensor<float, 2, true> vecs({FLAGS_num, FLAGS_dim});
-  faiss::float_rand(vecs.data(), vecs.numElements(), seed);
+    HostTensor<float, 2, true> vecs({FLAGS_num, FLAGS_dim});
+    faiss::float_rand(vecs.data(), vecs.numElements(), seed);
 
-  index->add(FLAGS_num, vecs.data());
+    index->add(FLAGS_num, vecs.data());
 
-  printf("Database: dim %d num vecs %d\n", FLAGS_dim, FLAGS_num);
-  printf("%s lookup: %d queries, total k %d\n",
-         FLAGS_l2 ? "L2" : "IP",
-         numQueries, FLAGS_k);
-  printf("float16 encoding %s\n", FLAGS_use_float16 ? "enabled" : "disabled");
-  printf("transposed storage %s\n", FLAGS_transposed ? "enabled" : "disabled");
+    printf("Database: dim %d num vecs %d\n", FLAGS_dim, FLAGS_num);
+    printf("%s lookup: %d queries, total k %d\n",
+           FLAGS_l2 ? "L2" : "IP",
+           numQueries,
+           FLAGS_k);
+    printf("float16 encoding %s\n", FLAGS_use_float16 ? "enabled" : "disabled");
+    printf("transposed storage %s\n",
+           FLAGS_transposed ? "enabled" : "disabled");
 
-  // Convert to GPU index
-  printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
+    // Convert to GPU index
+    printf("Copying index to %d GPU(s)...\n", FLAGS_num_gpus);
 
-  auto initFn = [&index](faiss::gpu::GpuResourcesProvider* res, int dev) ->
-    std::unique_ptr<faiss::gpu::GpuIndexFlat> {
-    ((faiss::gpu::StandardGpuResources*) res)->setPinnedMemory(
-      FLAGS_pinned_mem);
+    auto initFn = [&index](faiss::gpu::GpuResourcesProvider* res, int dev)
+            -> std::unique_ptr<faiss::gpu::GpuIndexFlat> {
+        ((faiss::gpu::StandardGpuResources*)res)
+                ->setPinnedMemory(FLAGS_pinned_mem);
 
-    GpuIndexFlatConfig config;
-    config.device = dev;
-    config.useFloat16 = FLAGS_use_float16;
-    config.storeTransposed = FLAGS_transposed;
-    config.memorySpace = FLAGS_use_unified_mem ?
-    MemorySpace::Unified : MemorySpace::Device;
+        GpuIndexFlatConfig config;
+        config.device = dev;
+        config.useFloat16 = FLAGS_use_float16;
+        config.storeTransposed = FLAGS_transposed;
+        config.memorySpace = FLAGS_use_unified_mem ? MemorySpace::Unified
+                                                   : MemorySpace::Device;
 
-    auto p = std::unique_ptr<faiss::gpu::GpuIndexFlat>(
-      new faiss::gpu::GpuIndexFlat(res, index.get(), config));
-    return p;
-  };
+        auto p = std::unique_ptr<faiss::gpu::GpuIndexFlat>(
+                new faiss::gpu::GpuIndexFlat(res, index.get(), config));
+        return p;
+    };
 
-  IndexWrapper<faiss::gpu::GpuIndexFlat> gpuIndex(FLAGS_num_gpus, initFn);
-  printf("copy done\n");
+    IndexWrapper<faiss::gpu::GpuIndexFlat> gpuIndex(FLAGS_num_gpus, initFn);
+    printf("copy done\n");
 
-  // Build query vectors
-  HostTensor<float, 2, true> cpuQuery({numQueries, FLAGS_dim});
-  faiss::float_rand(cpuQuery.data(), cpuQuery.numElements(), seed);
+    // Build query vectors
+    HostTensor<float, 2, true> cpuQuery({numQueries, FLAGS_dim});
+    faiss::float_rand(cpuQuery.data(), cpuQuery.numElements(), seed);
 
-  // Time faiss CPU
-  HostTensor<float, 2, true> cpuDistances({numQueries, FLAGS_k});
-  HostTensor<faiss::Index::idx_t, 2, true> cpuIndices({numQueries, FLAGS_k});
+    // Time faiss CPU
+    HostTensor<float, 2, true> cpuDistances({numQueries, FLAGS_k});
+    HostTensor<faiss::Index::idx_t, 2, true> cpuIndices({numQueries, FLAGS_k});
 
-  if (FLAGS_cpu) {
-    float cpuTime = 0.0f;
+    if (FLAGS_cpu) {
+        float cpuTime = 0.0f;
 
-    CpuTimer timer;
-    index->search(numQueries,
-                  cpuQuery.data(),
-                  FLAGS_k,
-                  cpuDistances.data(),
-                  cpuIndices.data());
+        CpuTimer timer;
+        index->search(
+                numQueries,
+                cpuQuery.data(),
+                FLAGS_k,
+                cpuDistances.data(),
+                cpuIndices.data());
 
-    cpuTime = timer.elapsedMilliseconds();
-    printf("CPU time %.3f ms\n", cpuTime);
-  }
+        cpuTime = timer.elapsedMilliseconds();
+        printf("CPU time %.3f ms\n", cpuTime);
+    }
 
-  HostTensor<float, 2, true> gpuDistances({numQueries, FLAGS_k});
-  HostTensor<faiss::Index::idx_t, 2, true> gpuIndices({numQueries, FLAGS_k});
+    HostTensor<float, 2, true> gpuDistances({numQueries, FLAGS_k});
+    HostTensor<faiss::Index::idx_t, 2, true> gpuIndices({numQueries, FLAGS_k});
 
-  CUDA_VERIFY(cudaProfilerStart());
-  faiss::gpu::synchronizeAllDevices();
+    CUDA_VERIFY(cudaProfilerStart());
+    faiss::gpu::synchronizeAllDevices();
 
-  float gpuTime = 0.0f;
+    float gpuTime = 0.0f;
 
-  // Time GPU
-  {
-    CpuTimer timer;
+    // Time GPU
+    {
+        CpuTimer timer;
 
-    gpuIndex.getIndex()->search(cpuQuery.getSize(0),
-                                cpuQuery.data(),
-                                FLAGS_k,
-                                gpuDistances.data(),
-                                gpuIndices.data());
+        gpuIndex.getIndex()->search(
+                cpuQuery.getSize(0),
+                cpuQuery.data(),
+                FLAGS_k,
+                gpuDistances.data(),
+                gpuIndices.data());
 
-    // There is a device -> host copy above, so no need to time
-    // additional synchronization with the GPU
-    gpuTime = timer.elapsedMilliseconds();
-  }
+        // There is a device -> host copy above, so no need to time
+        // additional synchronization with the GPU
+        gpuTime = timer.elapsedMilliseconds();
+    }
 
-  CUDA_VERIFY(cudaProfilerStop());
-  printf("GPU time %.3f ms\n", gpuTime);
+    CUDA_VERIFY(cudaProfilerStop());
+    printf("GPU time %.3f ms\n", gpuTime);
 
-  if (FLAGS_cpu) {
-    compareLists(cpuDistances.data(), cpuIndices.data(),
-                 gpuDistances.data(), gpuIndices.data(),
-                 numQueries, FLAGS_k,
-                 "", true, FLAGS_diff, false);
-  }
+    if (FLAGS_cpu) {
+        compareLists(
+                cpuDistances.data(),
+                cpuIndices.data(),
+                gpuDistances.data(),
+                gpuIndices.data(),
+                numQueries,
+                FLAGS_k,
+                "",
+                true,
+                FLAGS_diff,
+                false);
+    }
 
-  CUDA_VERIFY(cudaDeviceSynchronize());
+    CUDA_VERIFY(cudaDeviceSynchronize());
 
-  return 0;
+    return 0;
 }

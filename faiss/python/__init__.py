@@ -5,13 +5,14 @@
 
 #@nolint
 
-# not linting this file because it imports * form swigfaiss, which
+# not linting this file because it imports * from swigfaiss, which
 # causes a ton of useless warnings.
 
 import numpy as np
 import sys
 import inspect
 import array
+import warnings
 
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
@@ -29,6 +30,8 @@ __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
 
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
+    """ Replaces a method in a class with another version. The old method
+    is renamed to method_name_c (because presumably it was implemented in C) """
     try:
         orig_method = getattr(the_class, name)
     except AttributeError:
@@ -42,7 +45,20 @@ def replace_method(the_class, name, replacement, ignore_missing=False):
     setattr(the_class, name, replacement)
 
 def handle_Clustering():
+
     def replacement_train(self, x, index, weights=None):
+        """Perform clustering on a set of vectors. The index is used for assignment.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        index : faiss.Index
+            Index used for assignment. The dimension of the index should be `self.d`.
+        weights : array_like, optional
+            Per training sample weight (size n) used when computing the weighted
+            average to obtain the centroid (default is 1 for all training vectors).
+        """
         n, d = x.shape
         assert d == self.d
         if weights is not None:
@@ -50,7 +66,23 @@ def handle_Clustering():
             self.train_c(n, swig_ptr(x), index, swig_ptr(weights))
         else:
             self.train_c(n, swig_ptr(x), index)
+
     def replacement_train_encoded(self, x, codec, index, weights=None):
+        """ Perform clustering on a set of compressed vectors. The index is used for assignment.
+        The decompression is performed on-the-fly.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, codec.code_size()). `dtype` must be `uint8`.
+        codec : faiss.Index
+            Index used to decode the vectors. Should have dimension `self.d`.
+        index : faiss.Index
+            Index used for assignment. The dimension of the index should be `self.d`.
+        weigths : array_like, optional
+            Per training sample weight (size n) used when computing the weighted
+            average to obtain the centroid (default is 1 for all training vectors).
+        """
         n, d = x.shape
         assert d == codec.sa_code_size()
         assert codec.d == index.d
@@ -69,11 +101,31 @@ handle_Clustering()
 def handle_Quantizer(the_class):
 
     def replacement_train(self, x):
+        """ Train the quantizer on a set of training vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        """
         n, d = x.shape
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
     def replacement_compute_codes(self, x):
+        """ Compute the codes corresponding to a set of vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Vectors to encode, shape (n, self.d). `dtype` must be float32.
+
+        Returns
+        -------
+        codes : array_like
+            Corresponding code for each vector, shape (n, self.code_size)
+            and `dtype` uint8.
+        """
         n, d = x.shape
         assert d == self.d
         codes = np.empty((n, self.code_size), dtype='uint8')
@@ -81,6 +133,17 @@ def handle_Quantizer(the_class):
         return codes
 
     def replacement_decode(self, codes):
+        """Reconstruct an approximation of vectors given their codes.
+
+        Parameters
+        ----------
+        codes : array_like
+            Codes to decode, shape (n, self.code_size). `dtype` must be uint8.
+
+        Returns
+        -------
+            Reconstructed vectors for each code, shape `(n, d)` and `dtype` float32.
+        """
         n, cs = codes.shape
         assert cs == self.code_size
         x = np.empty((n, self.d), dtype='float32')
@@ -94,16 +157,56 @@ def handle_Quantizer(the_class):
 
 handle_Quantizer(ProductQuantizer)
 handle_Quantizer(ScalarQuantizer)
+handle_Quantizer(ResidualQuantizer)
+handle_Quantizer(LocalSearchQuantizer)
+
+
+def handle_NSG(the_class):
+
+    def replacement_build(self, x, graph):
+        n, d = x.shape
+        assert d == self.d
+        assert graph.ndim == 2
+        assert graph.shape[0] == n
+        K = graph.shape[1]
+        self.build_c(n, swig_ptr(x), swig_ptr(graph), K)
+
+    replace_method(the_class, 'build', replacement_build)
 
 
 def handle_Index(the_class):
 
     def replacement_add(self, x):
+        """Adds vectors to the index.
+        The index must be trained before vectors can be added to it.
+        The vectors are implicitly numbered in sequence. When `n` vectors are
+        added to the index, they are given ids `ntotal`, `ntotal + 1`, ..., `ntotal + n - 1`.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
+
         n, d = x.shape
         assert d == self.d
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
+        """Adds vectors with arbitrary ids to the index (not all indexes support this).
+        The index must be trained before vectors can be added to it.
+        Vector `i` is stored in `x[i]` and has id `ids[i]`.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        ids : array_like
+            Array if ids of size n. The ids must be of type `int64`. Note that `-1` is reserved
+            in result lists to mean "not found" so it's better to not use it as an id.
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -111,6 +214,25 @@ def handle_Index(the_class):
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_assign(self, x, k, labels=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+        This is the same as the `search` method, but discards the distances.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        labels : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        labels: array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -123,13 +245,48 @@ def handle_Index(the_class):
         return labels
 
     def replacement_train(self, x):
+        """Trains the index on a representative set of vectors.
+        The index must be trained before vectors can be added to it.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
         n, d = x.shape
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
     def replacement_search(self, x, k, D=None, I=None):
+        """Find the k nearest neighbors of the set of vectors x in the index.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the results.
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k).
+            When not enough results are found, the label is set to -1
+        """
+
         n, d = x.shape
         assert d == self.d
+
+        assert k > 0
 
         if D is None:
             D = np.empty((n, k), dtype=np.float32)
@@ -145,8 +302,38 @@ def handle_Index(the_class):
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
+        """Find the k nearest neighbors of the set of vectors x in the index,
+        and return an approximation of these vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        k : int
+            Number of nearest neighbors.
+        D : array_like, optional
+            Distance array to store the result.
+        I : array_like, optional
+            Labels array to store the result.
+        R : array_like, optional
+            reconstruction array to store
+
+        Returns
+        -------
+        D : array_like
+            Distances of the nearest neighbors, shape (n, k). When not enough results are found
+            the label is set to +Inf or -Inf.
+        I : array_like
+            Labels of the nearest neighbors, shape (n, k). When not enough results are found,
+            the label is set to -1
+        R : array_like
+            Approximate (reconstructed) nearest neighbor vectors, shape (n, k, d).
+        """
         n, d = x.shape
         assert d == self.d
+
+        assert k > 0
 
         if D is None:
             D = np.empty((n, k), dtype=np.float32)
@@ -170,6 +357,21 @@ def handle_Index(the_class):
         return D, I, R
 
     def replacement_remove_ids(self, x):
+        """Remove some ids from the index.
+        This is a O(ntotal) operation by default, so could be expensive.
+
+        Parameters
+        ----------
+        x : array_like or faiss.IDSelector
+            Either an IDSelector that returns True for vectors to remove, or a
+            list of ids to reomove (1D array of int64). When `x` is a list,
+            it is wrapped into an IDSelector.
+
+        Returns
+        -------
+        n_remove: int
+            number of vectors that were removed
+        """
         if isinstance(x, IDSelector):
             sel = x
         else:
@@ -182,6 +384,20 @@ def handle_Index(the_class):
         return self.remove_ids_c(sel)
 
     def replacement_reconstruct(self, key, x=None):
+        """Approximate reconstruction of one vector from the index.
+
+        Parameters
+        ----------
+        key : int
+            Id of the vector to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            Reconstructed vector, size `self.d`, `dtype`=float32
+        """
         if x is None:
             x = np.empty(self.d, dtype=np.float32)
         else:
@@ -191,6 +407,23 @@ def handle_Index(the_class):
         return x
 
     def replacement_reconstruct_n(self, n0, ni, x=None):
+        """Approximate reconstruction of vectors `n0` ... `n0 + ni - 1` from the index.
+        Missing vectors trigger an exception.
+
+        Parameters
+        ----------
+        n0 : int
+            Id of the first vector to reconstruct
+        ni : int
+            Number of vectors to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
+        """
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -208,6 +441,30 @@ def handle_Index(the_class):
 
     # The CPU does not support passed-in output buffers
     def replacement_range_search(self, x, thresh):
+        """Search vectors that are within a distance of the query vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        thresh : float
+            Threshold to select neighbors. All elements within this radius are returned,
+            except for maximum inner product indexes, where the elements above the
+            threshold are returned
+
+        Returns
+        -------
+        lims: array_like
+            Startring index of the results for each query vector, size n+1.
+        D : array_like
+            Distances of the nearest neighbors, shape `lims[n]`. The distances for
+            query i are in `D[lims[i]:lims[i+1]]`.
+        I : array_like
+            Labels of nearest neighbors, shape `lims[n]`. The labels for query i
+            are in `I[lims[i]:lims[i+1]]`.
+
+        """
         n, d = x.shape
         assert d == self.d
 
@@ -244,6 +501,14 @@ def handle_Index(the_class):
         self.sa_decode_c(n, swig_ptr(codes), swig_ptr(x))
         return x
 
+    def replacement_add_sa_codes(self, codes, ids=None):
+        n, cs = codes.shape
+        assert cs == self.sa_code_size()
+        if ids is not None:
+            assert ids.shape == (n,)
+            ids = swig_ptr(ids)
+        self.add_sa_codes_c(n, swig_ptr(codes), ids)
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'assign', replacement_assign)
@@ -259,6 +524,24 @@ def handle_Index(the_class):
                    replacement_search_and_reconstruct, ignore_missing=True)
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
+    replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
+                ignore_missing=True)
+
+    # get/set state for pickle
+    # the data is serialized to std::vector -> numpy array -> python bytes
+    # so not very efficient for now.
+
+    def index_getstate(self):
+        return {"this": serialize_index(self).tobytes()}
+
+    def index_setstate(self, st):
+        index2 = deserialize_index(np.frombuffer(st["this"], dtype="uint8"))
+        self.this = index2.this
+
+    the_class.__getstate__ = index_getstate
+    the_class.__setstate__ = index_setstate
+
+
 
 def handle_IndexBinary(the_class):
 
@@ -286,6 +569,7 @@ def handle_IndexBinary(the_class):
     def replacement_search(self, x, k):
         n, d = x.shape
         assert d * 8 == self.d
+        assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
         labels = np.empty((n, k), dtype=np.int64)
         self.search_c(n, swig_ptr(x),
@@ -346,6 +630,7 @@ def handle_VectorTransform(the_class):
     replace_method(the_class, 'train', replacement_vt_train)
     # apply is reserved in Pyton...
     the_class.apply_py = apply_method
+    the_class.apply = apply_method
     replace_method(the_class, 'reverse_transform',
                    replacement_reverse_transform)
 
@@ -431,6 +716,50 @@ for symbol in dir(this_module):
         if issubclass(the_class, ParameterSpace):
             handle_ParameterSpace(the_class)
 
+        if issubclass(the_class, IndexNSG):
+            handle_NSG(the_class)
+
+###########################################
+# Utility to add a deprecation warning to
+# classes from the SWIG interface
+###########################################
+
+def _make_deprecated_swig_class(deprecated_name, base_name):
+    """
+    Dynamically construct deprecated classes as wrappers around renamed ones
+
+    The deprecation warning added in their __new__-method will trigger upon
+    construction of an instance of the class, but only once per session.
+
+    We do this here (in __init__.py) because the base classes are defined in
+    the SWIG interface, making it cumbersome to add the deprecation there.
+
+    Parameters
+    ----------
+    deprecated_name : string
+        Name of the class to be deprecated; _not_ present in SWIG interface.
+    base_name : string
+        Name of the class that is replacing deprecated_name; must already be
+        imported into the current namespace.
+
+    Returns
+    -------
+    None
+        However, the deprecated class gets added to the faiss namespace
+    """
+    base_class = globals()[base_name]
+    def new_meth(cls, *args, **kwargs):
+        msg = f"The class faiss.{deprecated_name} is deprecated in favour of faiss.{base_name}!"
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        instance = super(base_class, cls).__new__(cls, *args, **kwargs)
+        return instance
+
+    # three-argument version of "type" uses (name, tuple-of-bases, dict-of-attributes)
+    klazz = type(deprecated_name, (base_class,), {"__new__": new_meth})
+
+    # this ends up adding the class to the "faiss" namespace, in a way that it
+    # is available both through "import faiss" and "from faiss import *"
+    globals()[deprecated_name] = klazz
 
 ###########################################
 # Add Python references to objects
@@ -485,6 +814,9 @@ add_ref_in_constructor(IndexPreTransform, {2: [0, 1], 1: [0]})
 add_ref_in_method(IndexPreTransform, 'prepend_transform', 0)
 add_ref_in_constructor(IndexIVFPQ, 0)
 add_ref_in_constructor(IndexIVFPQR, 0)
+add_ref_in_constructor(IndexIVFPQFastScan, 0)
+add_ref_in_constructor(IndexIVFResidualQuantizer, 0)
+add_ref_in_constructor(IndexIVFLocalSearchQuantizer, 0)
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
@@ -493,7 +825,9 @@ add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
-add_ref_in_constructor(IndexRefineFlat, 0)
+add_ref_in_constructor(IndexRefineFlat, {2:[0], 1:[0]})
+add_ref_in_constructor(IndexRefine, {2:[0, 1]})
+
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 add_ref_in_constructor(IndexBinaryIDMap, 0)
@@ -520,7 +854,7 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
     if gpus is None:
         gpus = range(len(resources))
     vres = GpuResourcesVector()
-    vdev = IntVector()
+    vdev = Int32Vector()
     for i, res in zip(gpus, resources):
         vdev.push_back(i)
         vres.push_back(res)
@@ -545,7 +879,36 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
     return index_gpu
 
 # allows numpy ndarray usage with bfKnn
-def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
+def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
+    """
+    Compute the k nearest neighbors of a vector on one GPU without constructing an index
+
+    Parameters
+    ----------
+    res : StandardGpuResources
+        GPU resources to use during computation
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    D : array_like, optional
+        Output array for distances of the nearest neighbors, shape (nq, k)
+    I : array_like, optional
+        Output array for the nearest neighbors, shape (nq, k)
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
     nq, d = xq.shape
     if xq.flags.c_contiguous:
         xq_row_major = True
@@ -553,7 +916,7 @@ def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
         xq = xq.T
         xq_row_major = False
     else:
-        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+        raise TypeError('xq matrix should be row (C) or column-major (Fortran)')
 
     xq_ptr = swig_ptr(xq)
 
@@ -572,7 +935,7 @@ def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
         xb = xb.T
         xb_row_major = False
     else:
-        raise TypeError('matrix should be row (C) or column-major (Fortran)')
+        raise TypeError('xb matrix should be row (C) or column-major (Fortran)')
 
     xb_ptr = swig_ptr(xb)
 
@@ -581,7 +944,7 @@ def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
     elif xb.dtype == np.float16:
         xb_type = DistanceDataType_F16
     else:
-        raise TypeError('xb must be f32 or f16')
+        raise TypeError('xb must be float32 or float16')
 
     if D is None:
         D = np.empty((nq, k), dtype=np.float32)
@@ -628,27 +991,139 @@ def knn_gpu(res, xb, xq, k, D=None, I=None, metric=METRIC_L2):
 
     return D, I
 
+# allows numpy ndarray usage with bfKnn for all pairwise distances
+def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2):
+    """
+    Compute all pairwise distances between xq and xb on one GPU without constructing an index
+
+    Parameters
+    ----------
+    res : StandardGpuResources
+        GPU resources to use during computation
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    D : array_like, optional
+        Output array for all pairwise distances, shape (nq, nb)
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        All pairwise distances, shape (nq, nb)
+    """
+    nq, d = xq.shape
+    if xq.flags.c_contiguous:
+        xq_row_major = True
+    elif xq.flags.f_contiguous:
+        xq = xq.T
+        xq_row_major = False
+    else:
+        raise TypeError('xq matrix should be row (C) or column-major (Fortran)')
+
+    xq_ptr = swig_ptr(xq)
+
+    if xq.dtype == np.float32:
+        xq_type = DistanceDataType_F32
+    elif xq.dtype == np.float16:
+        xq_type = DistanceDataType_F16
+    else:
+        raise TypeError('xq must be float32 or float16')
+
+    nb, d2 = xb.shape
+    assert d2 == d
+    if xb.flags.c_contiguous:
+        xb_row_major = True
+    elif xb.flags.f_contiguous:
+        xb = xb.T
+        xb_row_major = False
+    else:
+        raise TypeError('xb matrix should be row (C) or column-major (Fortran)')
+
+    xb_ptr = swig_ptr(xb)
+
+    if xb.dtype == np.float32:
+        xb_type = DistanceDataType_F32
+    elif xb.dtype == np.float16:
+        xb_type = DistanceDataType_F16
+    else:
+        raise TypeError('xb must be float32 or float16')
+
+    if D is None:
+        D = np.empty((nq, nb), dtype=np.float32)
+    else:
+        assert D.shape == (nq, nb)
+        # interface takes void*, we need to check this
+        assert D.dtype == np.float32
+
+    D_ptr = swig_ptr(D)
+
+    args = GpuDistanceParams()
+    args.metric = metric
+    args.k = -1 # selects all pairwise distances
+    args.dims = d
+    args.vectors = xb_ptr
+    args.vectorsRowMajor = xb_row_major
+    args.vectorType = xb_type
+    args.numVectors = nb
+    args.queries = xq_ptr
+    args.queriesRowMajor = xq_row_major
+    args.queryType = xq_type
+    args.numQueries = nq
+    args.outDistances = D_ptr
+
+    # no stream synchronization needed, inputs and outputs are guaranteed to
+    # be on the CPU (numpy arrays)
+    bfKnn(res, args)
+
+    return D
+
+
 ###########################################
 # numpy array / std::vector conversions
 ###########################################
 
-# mapping from vector names in swigfaiss.swig and the numpy dtype names
-vector_name_map = {
-    'Float': 'float32',
-    'Byte': 'uint8',
-    'Char': 'int8',
-    'Uint64': 'uint64',
-    'LongLong': 'int64',
-    'Int': 'int32',
-    'Double': 'float64'
+sizeof_long = array.array('l').itemsize
+deprecated_name_map = {
+    # deprecated: replacement
+    'Float': 'Float32',
+    'Double': 'Float64',
+    'Char': 'Int8',
+    'Int': 'Int32',
+    'Long': 'Int32' if sizeof_long == 4 else 'Int64',
+    'LongLong': 'Int64',
+    'Byte': 'UInt8',
+    # previously misspelled variant
+    'Uint64': 'UInt64',
 }
 
-sizeof_long = array.array('l').itemsize
-if sizeof_long == 4:
-    vector_name_map["Long"] = 'int32'
-elif sizeof_long == 8:
-    vector_name_map["Long"] = 'int64'
+for depr_prefix, base_prefix in deprecated_name_map.items():
+    _make_deprecated_swig_class(depr_prefix + "Vector", base_prefix + "Vector")
 
+    # same for the three legacy *VectorVector classes
+    if depr_prefix in ['Float', 'Long', 'Byte']:
+        _make_deprecated_swig_class(depr_prefix + "VectorVector",
+                                    base_prefix + "VectorVector")
+
+# mapping from vector names in swigfaiss.swig and the numpy dtype names
+# TODO: once deprecated classes are removed, remove the dict and just use .lower() below
+vector_name_map = {
+    'Float32': 'float32',
+    'Float64': 'float64',
+    'Int8': 'int8',
+    'Int16': 'int16',
+    'Int32': 'int32',
+    'Int64': 'int64',
+    'UInt8': 'uint8',
+    'UInt16': 'uint16',
+    'UInt32': 'uint32',
+    'UInt64': 'uint64',
+    **{k: v.lower() for k, v in deprecated_name_map.items()}
+}
 
 
 def vector_to_array(v):
@@ -679,6 +1154,35 @@ def copy_array_to_vector(a, v):
     if n > 0:
         memcpy(v.data(), swig_ptr(a), a.nbytes)
 
+# same for AlignedTable
+
+def copy_array_to_AlignedTable(a, v):
+    n, = a.shape
+    # TODO check class name
+    assert v.itemsize() == a.itemsize
+    v.resize(n)
+    if n > 0:
+        memcpy(v.get(), swig_ptr(a), a.nbytes)
+
+def array_to_AlignedTable(a):
+    if a.dtype == 'uint16':
+        v = AlignedTableUint16(a.size)
+    elif a.dtype == 'uint8':
+        v = AlignedTableUint8(a.size)
+    else:
+        assert False
+    copy_array_to_AlignedTable(a, v)
+    return v
+
+def AlignedTable_to_array(v):
+    """ convert an AlignedTable to a numpy array """
+    classname = v.__class__.__name__
+    assert classname.startswith('AlignedTable')
+    dtype = classname[12:].lower()
+    a = np.empty(v.size(), dtype=dtype)
+    if a.size > 0:
+        memcpy(swig_ptr(a), v.data(), a.nbytes)
+    return a
 
 ###########################################
 # Wrapper for a few functions
@@ -778,7 +1282,9 @@ def eval_intersection(I1, I2):
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
 
+######################################################
 # MapLong2Long interface
+######################################################
 
 def replacement_map_add(self, keys, vals):
     n, = keys.shape
@@ -793,6 +1299,10 @@ def replacement_map_search_multiple(self, keys):
 
 replace_method(MapLong2Long, 'add', replacement_map_add)
 replace_method(MapLong2Long, 'search_multiple', replacement_map_search_multiple)
+
+######################################################
+# search_with_parameters interface
+######################################################
 
 search_with_parameters_c = search_with_parameters
 
@@ -861,14 +1371,105 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
         return lims, Dout, Iout, stats
 
 
+######################################################
+# KNN function
+######################################################
+
+def knn(xq, xb, k, metric=METRIC_L2):
+    """
+    Compute the k nearest neighbors of a vector without constructing an index
+
+
+    Parameters
+    ----------
+    xq : array_like
+        Query vectors, shape (nq, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    xb : array_like
+        Database vectors, shape (nb, d) where d is appropriate for the index.
+        `dtype` must be float32.
+    k : int
+        Number of nearest neighbors.
+    distance_type : MetricType, optional
+        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+
+    Returns
+    -------
+    D : array_like
+        Distances of the nearest neighbors, shape (nq, k)
+    I : array_like
+        Labels of the nearest neighbors, shape (nq, k)
+    """
+    nq, d = xq.shape
+    nb, d2 = xb.shape
+    assert d == d2
+
+    I = np.empty((nq, k), dtype='int64')
+    D = np.empty((nq, k), dtype='float32')
+
+    if metric == METRIC_L2:
+        heaps = float_maxheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = swig_ptr(D)
+        heaps.ids = swig_ptr(I)
+        knn_L2sqr(
+            swig_ptr(xq), swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    elif metric == METRIC_INNER_PRODUCT:
+        heaps = float_minheap_array_t()
+        heaps.k = k
+        heaps.nh = nq
+        heaps.val = swig_ptr(D)
+        heaps.ids = swig_ptr(I)
+        knn_inner_product(
+            swig_ptr(xq), swig_ptr(xb),
+            d, nq, nb, heaps
+        )
+    else:
+        raise NotImplementedError("only L2 and INNER_PRODUCT are supported")
+    return D, I
+
+
 ###########################################
 # Kmeans object
 ###########################################
 
 
 class Kmeans:
-    """shallow wrapper around the Clustering object. The important method
-    is train()."""
+    """Object that performs k-means clustering and manages the centroids.
+    The `Kmeans` class is essentially a wrapper around the C++ `Clustering` object.
+
+    Parameters
+    ----------
+    d : int
+       dimension of the vectors to cluster
+    k : int
+       number of clusters
+    gpu: bool or int, optional
+       False: don't use GPU
+       True: use all GPUs
+       number: use this many GPUs
+    progressive_dim_steps:
+        use a progressive dimension clustering (with that number of steps)
+
+    Subsequent parameters are fields of the Clustring object. The most important are:
+
+    niter: int, optional
+       clustering iterations
+    nredo: int, optional
+       redo clustering this many times and keep best
+    verbose: bool, optional
+    spherical: bool, optional
+       do we want normalized centroids?
+    int_centroids: bool, optional
+       round centroids coordinates to integer
+    seed: int, optional
+       seed for the random number generator
+
+    """
+
 
     def __init__(self, d, k, **kwargs):
         """d: input dimension, k: nb of centroids. Additional
@@ -878,9 +1479,14 @@ class Kmeans:
         self.d = d
         self.k = k
         self.gpu = False
-        self.cp = ClusteringParameters()
+        if "progressive_dim_steps" in kwargs:
+            self.cp = ProgressiveDimClusteringParameters()
+        else:
+            self.cp = ClusteringParameters()
         for k, v in kwargs.items():
             if k == 'gpu':
+                if v == True or v == -1:
+                    v = get_num_gpus()
                 self.gpu = v
             else:
                 # if this raises an exception, it means that it is a non-existent field
@@ -889,25 +1495,62 @@ class Kmeans:
         self.centroids = None
 
     def train(self, x, weights=None, init_centroids=None):
+        """ Perform k-means clustering.
+        On output of the function call:
+
+        - the centroids are in the centroids field of size (`k`, `d`).
+
+        - the objective value at each iteration is in the array obj (size `niter`)
+
+        - detailed optimization statistics are in the array iteration_stats.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, d), `dtype` must be float32 and n should
+            be larger than the number of clusters `k`.
+        weights : array_like
+            weight associated to each vector, shape `n`
+        init_centroids : array_like
+            initial set of centroids, shape (n, d)
+
+        Returns
+        -------
+        final_obj: float
+            final optimization objective
+
+        """
         n, d = x.shape
         assert d == self.d
-        clus = Clustering(d, self.k, self.cp)
-        if init_centroids is not None:
-            nc, d2 = init_centroids.shape
-            assert d2 == d
-            copy_array_to_vector(init_centroids.ravel(), clus.centroids)
-        if self.cp.spherical:
-            self.index = IndexFlatIP(d)
-        else:
-            self.index = IndexFlatL2(d)
-        if self.gpu:
-            if self.gpu == True:
-                ngpu = -1
+
+        if self.cp.__class__ == ClusteringParameters:
+            # regular clustering
+            clus = Clustering(d, self.k, self.cp)
+            if init_centroids is not None:
+                nc, d2 = init_centroids.shape
+                assert d2 == d
+                copy_array_to_vector(init_centroids.ravel(), clus.centroids)
+            if self.cp.spherical:
+                self.index = IndexFlatIP(d)
             else:
-                ngpu = self.gpu
-            self.index = index_cpu_to_all_gpus(self.index, ngpu=ngpu)
-        clus.train(x, self.index, weights)
+                self.index = IndexFlatL2(d)
+            if self.gpu:
+                self.index = index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+            clus.train(x, self.index, weights)
+        else:
+            # not supported for progressive dim
+            assert weights is None
+            assert init_centroids is None
+            assert not self.cp.spherical
+            clus = ProgressiveDimClustering(d, self.k, self.cp)
+            if self.gpu:
+                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
+            else:
+                fac = ProgressiveDimIndexFactory()
+            clus.train(n, swig_ptr(x), fac)
+
         centroids = vector_float_to_array(clus.centroids)
+
         self.centroids = centroids.reshape(self.k, d)
         stats = clus.iteration_stats
         stats = [stats.at(i) for i in range(stats.size())]
@@ -931,6 +1574,7 @@ class Kmeans:
 # people may have
 IndexProxy = IndexReplicas
 ConcatenatedInvertedLists = HStackInvertedLists
+IndexResidual = IndexResidualQuantizer
 
 ###########################################
 # serialization of indexes to byte arrays
@@ -967,12 +1611,15 @@ class ResultHeap:
     """Accumulate query results from a sliced dataset. The final result will
     be in self.D, self.I."""
 
-    def __init__(self, nq, k):
+    def __init__(self, nq, k, keep_max=False):
         " nq: number of query vectors, k: number of results per query "
         self.I = np.zeros((nq, k), dtype='int64')
         self.D = np.zeros((nq, k), dtype='float32')
         self.nq, self.k = nq, k
-        heaps = float_maxheap_array_t()
+        if keep_max:
+            heaps = float_minheap_array_t()
+        else:
+            heaps = float_maxheap_array_t()
         heaps.k = k
         heaps.nh = nq
         heaps.val = swig_ptr(self.D)
@@ -982,11 +1629,12 @@ class ResultHeap:
 
     def add_result(self, D, I):
         """D, I do not need to be in a particular order (heap or sorted)"""
-        assert D.shape == (self.nq, self.k)
-        assert I.shape == (self.nq, self.k)
+        nq, kd = D.shape
+        assert I.shape == (nq, kd)
+        assert nq == self.nq
         self.heaps.addn_with_ids(
-            self.k, swig_ptr(D),
-            swig_ptr(I), self.k)
+            kd, swig_ptr(D),
+            swig_ptr(I), kd)
 
     def finalize(self):
         self.heaps.reorder()

@@ -11,9 +11,9 @@
 #ifndef INDEX_LSH_C_H
 #define INDEX_LSH_C_H
 
-#include "faiss_c.h"
-#include "Index_c.h"
 #include "Clustering_c.h"
+#include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,12 @@ FAISS_DECLARE_GETTER(IndexLSH, int, train_thresholds)
 
 int faiss_IndexLSH_new(FaissIndexLSH** p_index, idx_t d, int nbits);
 
-int faiss_IndexLSH_new_with_options(FaissIndexLSH** p_index, idx_t d, int nbits, int rotate_data, int train_thresholds);
+int faiss_IndexLSH_new_with_options(
+        FaissIndexLSH** p_index,
+        idx_t d,
+        int nbits,
+        int rotate_data,
+        int train_thresholds);
 
 #ifdef __cplusplus
 }

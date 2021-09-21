@@ -1,0 +1,3 @@
+[flake8]
+# Ignore flakes about ambiguous variable name `I`.
+ignore = E741

@@ -3,7 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-{% set version = GIT_DESCRIBE_TAG %}
+{% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
+{% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
 
 package:
@@ -27,7 +28,7 @@ outputs:
   - name: libfaiss
     script: build-lib.sh
     build:
-      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+      string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
       run_exports:
         - {{ pin_compatible('libfaiss', exact=True) }}
       script_env:
@@ -39,12 +40,11 @@ outputs:
         - cmake >=3.18
         - make  # [not win]
       host:
-        - mkl-devel >=2018
-        - blas =*=mkl
+        - mkl =2018
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl >=2018
-        - blas =*=mkl
+        - mkl >=2018  # [not win]
+        - mkl >=2018,<2021  # [win]
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       commands:
@@ -56,7 +56,7 @@ outputs:
   - name: faiss-gpu
     script: build-pkg.sh
     build:
-      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}"
+      string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -65,11 +65,11 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy 1.11.*
+        - numpy =1.11
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - {{ pin_compatible('numpy') }}
+        - numpy >=1.11,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
@@ -78,7 +78,11 @@ outputs:
         - pytorch
       commands:
         - python -m unittest discover tests/
+        - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -m unittest discover faiss/gpu/test/
+        - sh test_cpu_dispatch.sh  # [linux]
+      files:
+        - test_cpu_dispatch.sh  # [linux]
       source_files:
         - tests/
         - faiss/gpu/test/

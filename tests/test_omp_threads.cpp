@@ -10,5 +10,5 @@
 #include <faiss/utils/utils.h>
 
 TEST(Threading, openmp) {
-  EXPECT_TRUE(faiss::check_openmp());
+    EXPECT_TRUE(faiss::check_openmp());
 }

@@ -5,11 +5,12 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import math
 import time
 import unittest
 import numpy as np
 import faiss
-import math
+from faiss.contrib import datasets
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -61,8 +62,11 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         index.train(xt)
         ts.append(time.time())
 
-        # adding some ids because there was a bug in this case
-        index.add_with_ids(xb, np.arange(nb) * 3 + 12345)
+        # adding some ids because there was a bug in this case;
+        # those need to be cast to idx_t(= int64_t), because
+        # on windows the numpy int default is int32
+        ids = (np.arange(nb) * 3 + 12345).astype('int64')
+        index.add_with_ids(xb, ids)
         ts.append(time.time())
 
         index.nprobe = 4
@@ -124,99 +128,6 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         faiss.GpuParameterSpace().set_index_parameter(gpu_index, "nprobe", 3)
 
 
-class ReferencedObject(unittest.TestCase):
-
-    d = 16
-    xb = np.random.rand(256, d).astype('float32')
-    nlist = 128
-
-    d_bin = 256
-    xb_bin = np.random.randint(256, size=(10000, d_bin // 8)).astype('uint8')
-    xq_bin = np.random.randint(256, size=(1000, d_bin // 8)).astype('uint8')
-
-    def test_proxy(self):
-        index = faiss.IndexReplicas()
-        for _i in range(3):
-            sub_index = faiss.IndexFlatL2(self.d)
-            sub_index.add(self.xb)
-            index.addIndex(sub_index)
-        assert index.d == self.d
-        index.search(self.xb, 10)
-
-    def test_resources(self):
-        # this used to crash!
-        index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0,
-                                       faiss.IndexFlatL2(self.d))
-        index.add(self.xb)
-
-    def test_flat(self):
-        index = faiss.GpuIndexFlat(faiss.StandardGpuResources(),
-                                   self.d, faiss.METRIC_L2)
-        index.add(self.xb)
-
-    def test_ivfflat(self):
-        index = faiss.GpuIndexIVFFlat(
-            faiss.StandardGpuResources(),
-            self.d, self.nlist, faiss.METRIC_L2)
-        index.train(self.xb)
-
-    def test_ivfpq(self):
-        index_cpu = faiss.IndexIVFPQ(
-            faiss.IndexFlatL2(self.d),
-            self.d, self.nlist, 2, 8)
-        # speed up test
-        index_cpu.pq.cp.niter = 2
-        index_cpu.do_polysemous_training = False
-        index_cpu.train(self.xb)
-
-        index = faiss.GpuIndexIVFPQ(
-            faiss.StandardGpuResources(), index_cpu)
-        index.add(self.xb)
-
-    def test_binary_flat(self):
-        k = 10
-
-        index_ref = faiss.IndexBinaryFlat(self.d_bin)
-        index_ref.add(self.xb_bin)
-        D_ref, I_ref = index_ref.search(self.xq_bin, k)
-
-        index = faiss.GpuIndexBinaryFlat(faiss.StandardGpuResources(),
-                                         self.d_bin)
-        index.add(self.xb_bin)
-        D, I = index.search(self.xq_bin, k)
-
-        for d_ref, i_ref, d_new, i_new in zip(D_ref, I_ref, D, I):
-            # exclude max distance
-            assert d_ref.max() == d_new.max()
-            dmax = d_ref.max()
-
-            # sort by (distance, id) pairs to be reproducible
-            ref = [(d, i) for d, i in zip(d_ref, i_ref) if d < dmax]
-            ref.sort()
-
-            new = [(d, i) for d, i in zip(d_new, i_new) if d < dmax]
-            new.sort()
-
-            assert ref == new
-
-    def test_stress(self):
-        # a mixture of the above, from issue #631
-        target = np.random.rand(50, 16).astype('float32')
-
-        index = faiss.IndexReplicas()
-        size, dim = target.shape
-        num_gpu = 4
-        for _i in range(num_gpu):
-            config = faiss.GpuIndexFlatConfig()
-            config.device = 0   # simulate on a single GPU
-            sub_index = faiss.GpuIndexFlatIP(faiss.StandardGpuResources(), dim, config)
-            index.addIndex(sub_index)
-
-        index = faiss.IndexIDMap(index)
-        ids = np.arange(size)
-        index.add_with_ids(target, ids)
-
-
 
 class TestShardedFlat(unittest.TestCase):
 
@@ -260,301 +171,141 @@ class TestShardedFlat(unittest.TestCase):
             assert False, "this call should fail!"
 
 
-class TestGPUKmeans(unittest.TestCase):
 
-    def test_kmeans(self):
-        d = 32
-        nb = 1000
-        k = 10
-        rs = np.random.RandomState(123)
-        xb = rs.rand(nb, d).astype('float32')
-
-        km1 = faiss.Kmeans(d, k)
-        obj1 = km1.train(xb)
-
-        km2 = faiss.Kmeans(d, k, gpu=True)
-        obj2 = km2.train(xb)
-
-        print(obj1, obj2)
-        assert np.allclose(obj1, obj2)
-
-
-class TestAlternativeDistances(unittest.TestCase):
-
-    def do_test(self, metric, metric_arg=0):
-        res = faiss.StandardGpuResources()
-        d = 32
-        nb = 1000
-        nq = 100
-
-        rs = np.random.RandomState(123)
-        xb = rs.rand(nb, d).astype('float32')
-        xq = rs.rand(nq, d).astype('float32')
-
-        index_ref = faiss.IndexFlat(d, metric)
-        index_ref.metric_arg = metric_arg
-        index_ref.add(xb)
-        Dref, Iref = index_ref.search(xq, 10)
-
-        # build from other index
-        index = faiss.GpuIndexFlat(res, index_ref)
-        Dnew, Inew = index.search(xq, 10)
-        np.testing.assert_array_equal(Inew, Iref)
-        np.testing.assert_allclose(Dnew, Dref, rtol=1e-6)
-
-        #  build from scratch
-        index = faiss.GpuIndexFlat(res, d, metric)
-        index.metric_arg = metric_arg
-        index.add(xb)
-
-        Dnew, Inew = index.search(xq, 10)
-        np.testing.assert_array_equal(Inew, Iref)
-
-    def test_L1(self):
-        self.do_test(faiss.METRIC_L1)
-
-    def test_Linf(self):
-        self.do_test(faiss.METRIC_Linf)
-
-    def test_Lp(self):
-        self.do_test(faiss.METRIC_Lp, 0.7)
-
-
-class TestGpuRef(unittest.TestCase):
-
-    def test_gpu_ref(self):
-        # this crashes
-        dim = 256
-        training_data = np.random.randint(256, size=(10000, dim // 8)).astype('uint8')
-        centroids = 330
-
-        def create_cpu(dim):
-            quantizer = faiss.IndexBinaryFlat(dim)
-            return faiss.IndexBinaryIVF(quantizer, dim, centroids)
-
-        def create_gpu(dim):
-            gpu_quantizer = faiss.index_cpu_to_all_gpus(faiss.IndexFlatL2(dim))
-
-            index = create_cpu(dim)
-            index.clustering_index = gpu_quantizer
-            index.dont_dealloc_me = gpu_quantizer
-            return index
-
-        index = create_gpu(dim)
-
-        index.verbose = True
-        index.cp.verbose = True
-
-        index.train(training_data)
 
 class TestInterleavedIVFPQLayout(unittest.TestCase):
     def test_interleaved(self):
         res = faiss.StandardGpuResources()
-        d = 128
-        nb = 5000
-        nq = 50
 
-        rs = np.random.RandomState(123)
-        xb = rs.rand(nb, d).astype('float32')
-        xq = rs.rand(nq, d).astype('float32')
+        for bits_per_code in [4, 5, 6, 8]:
+            d = 128
+            nb = 10000
+            nq = 20
 
-        nlist = int(math.sqrt(nb))
-        sub_q = 16
-        bits_per_code = 8
-        nprobe = 4
+            rs = np.random.RandomState(123)
+            xb = rs.rand(nb, d).astype('float32')
+            xq = rs.rand(nq, d).astype('float32')
 
-        config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
-        idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
-        q = faiss.IndexFlatL2(d)
-        idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
+            nlist = int(math.sqrt(nb))
+            sub_q = 16
+            nprobe = 16
 
-        idx_gpu.train(xb)
-        idx_gpu.add(xb)
-        idx_cpu.train(xb)
-        idx_cpu.add(xb)
+            config = faiss.GpuIndexIVFPQConfig()
+            config.interleavedLayout = True
+            idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
+            q = faiss.IndexFlatL2(d)
+            idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
 
-        idx_gpu.nprobe = nprobe
-        idx_cpu.nprobe = nprobe
+            idx_gpu.train(xb)
+            idx_gpu.add(xb)
+            idx_gpu.copyTo(idx_cpu)
 
-        # Try without precomputed codes
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            idx_gpu.nprobe = nprobe
+            idx_cpu.nprobe = nprobe
 
-        # Try with precomputed codes (different kernel)
-        idx_gpu.setPrecomputedCodes(True)
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            k = 20
+
+            # Try without precomputed codes
+            d_g, i_g = idx_gpu.search(xq, k)
+            d_c, i_c = idx_cpu.search(xq, k)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+
+            # Try with precomputed codes (different kernel)
+            idx_gpu.setPrecomputedCodes(True)
+            d_g, i_g = idx_gpu.search(xq, k)
+            d_c, i_c = idx_cpu.search(xq, k)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
 
     def test_copy_to_cpu(self):
         res = faiss.StandardGpuResources()
-        d = 128
-        nb = 5000
-        nq = 50
 
-        rs = np.random.RandomState(234)
-        xb = rs.rand(nb, d).astype('float32')
-        xq = rs.rand(nq, d).astype('float32')
+        for bits_per_code in [4, 5, 6, 8]:
+            d = 128
+            nb = 10000
+            nq = 20
 
-        nlist = int(math.sqrt(nb))
-        sub_q = 16
-        bits_per_code = 8
-        nprobe = 4
+            rs = np.random.RandomState(234)
+            xb = rs.rand(nb, d).astype('float32')
+            xq = rs.rand(nq, d).astype('float32')
 
-        config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
-        idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
-        q = faiss.IndexFlatL2(d)
-        idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
+            nlist = int(math.sqrt(nb))
+            sub_q = 16
+            bits_per_code = 8
+            nprobe = 4
 
-        idx_gpu.train(xb)
-        idx_gpu.add(xb)
+            config = faiss.GpuIndexIVFPQConfig()
+            config.interleavedLayout = True
+            idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
+            q = faiss.IndexFlatL2(d)
+            idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
 
-        idx_gpu.copyTo(idx_cpu)
+            idx_gpu.train(xb)
+            idx_gpu.add(xb)
 
-        idx_gpu.nprobe = nprobe
-        idx_cpu.nprobe = nprobe
+            idx_gpu.copyTo(idx_cpu)
 
-        # Try without precomputed codes
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            idx_gpu.nprobe = nprobe
+            idx_cpu.nprobe = nprobe
 
-        # Try with precomputed codes (different kernel)
-        idx_gpu.setPrecomputedCodes(True)
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            # Try without precomputed codes
+            d_g, i_g = idx_gpu.search(xq, 10)
+            d_c, i_c = idx_cpu.search(xq, 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c))
+
+            # Try with precomputed codes (different kernel)
+            idx_gpu.setPrecomputedCodes(True)
+            d_g, i_g = idx_gpu.search(xq, 10)
+            d_c, i_c = idx_cpu.search(xq, 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c))
 
     def test_copy_to_gpu(self):
         res = faiss.StandardGpuResources()
-        d = 128
-        nb = 5000
-        nq = 50
 
-        rs = np.random.RandomState(567)
-        xb = rs.rand(nb, d).astype('float32')
-        xq = rs.rand(nq, d).astype('float32')
+        for bits_per_code in [4, 5, 6, 8]:
+            d = 128
+            nb = 10000
+            nq = 20
 
-        nlist = int(math.sqrt(nb))
-        sub_q = 16
-        bits_per_code = 8
-        nprobe = 4
+            rs = np.random.RandomState(567)
+            xb = rs.rand(nb, d).astype('float32')
+            xq = rs.rand(nq, d).astype('float32')
 
-        config = faiss.GpuIndexIVFPQConfig()
-        config.alternativeLayout = True
-        idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
-        q = faiss.IndexFlatL2(d)
-        idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
+            nlist = int(math.sqrt(nb))
+            sub_q = 16
+            bits_per_code = 8
+            nprobe = 4
 
-        idx_cpu.train(xb)
-        idx_cpu.add(xb)
+            config = faiss.GpuIndexIVFPQConfig()
+            config.interleavedLayout = True
+            idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2, config)
+            q = faiss.IndexFlatL2(d)
+            idx_cpu = faiss.IndexIVFPQ(q, d, nlist, sub_q, bits_per_code, faiss.METRIC_L2)
 
-        idx_gpu.copyFrom(idx_cpu)
+            idx_cpu.train(xb)
+            idx_cpu.add(xb)
 
-        idx_gpu.nprobe = nprobe
-        idx_cpu.nprobe = nprobe
+            idx_gpu.copyFrom(idx_cpu)
 
-        # Try without precomputed codes
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            idx_gpu.nprobe = nprobe
+            idx_cpu.nprobe = nprobe
 
-        # Try with precomputed codes (different kernel)
-        idx_gpu.setPrecomputedCodes(True)
-        d_g, i_g = idx_gpu.search(xq, 10)
-        d_c, i_c = idx_cpu.search(xq, 10)
-        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size - 10)
-        self.assertTrue(np.allclose(d_g, d_c))
+            # Try without precomputed codes
+            d_g, i_g = idx_gpu.search(xq, 10)
+            d_c, i_c = idx_cpu.search(xq, 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c))
 
-def make_t(num, d, clamp=False, seed=None):
-    rs = None
-    if seed is None:
-        rs = np.random.RandomState(123)
-    else:
-        rs = np.random.RandomState(seed)
+            # Try with precomputed codes (different kernel)
+            idx_gpu.setPrecomputedCodes(True)
+            d_g, i_g = idx_gpu.search(xq, 10)
+            d_c, i_c = idx_cpu.search(xq, 10)
+            self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+            self.assertTrue(np.allclose(d_g, d_c))
 
-    x = rs.rand(num, d).astype(np.float32)
-    if clamp:
-        x = (x * 255).astype('uint8').astype('float32')
-    return x
-
-class TestBruteForceDistance(unittest.TestCase):
-    def test_bf_input_types(self):
-        d = 33
-        k = 5
-        nb = 1000
-        nq = 10
-
-        xs = make_t(nb, d)
-        qs = make_t(nq, d)
-
-        res = faiss.StandardGpuResources()
-
-        # Get ground truth using IndexFlat
-        index = faiss.IndexFlatL2(d)
-        index.add(xs)
-        ref_d, ref_i = index.search(qs, k)
-
-        out_d = np.empty((nq, k), dtype=np.float32)
-        out_i = np.empty((nq, k), dtype=np.int64)
-
-        # Try f32 data/queries, i64 out indices
-        params = faiss.GpuDistanceParams()
-        params.k = k
-        params.dims = d
-        params.vectors = faiss.swig_ptr(xs)
-        params.numVectors = nb
-        params.queries = faiss.swig_ptr(qs)
-        params.numQueries = nq
-        params.outDistances = faiss.swig_ptr(out_d)
-        params.outIndices = faiss.swig_ptr(out_i)
-
-        faiss.bfKnn(res, params)
-
-        self.assertTrue(np.allclose(ref_d, out_d, atol=1e-5))
-        self.assertGreaterEqual((out_i == ref_i).sum(), ref_i.size)
-
-        # Try int32 out indices
-        out_i32 = np.empty((nq, k), dtype=np.int32)
-        params.outIndices = faiss.swig_ptr(out_i32)
-        params.outIndicesType = faiss.IndicesDataType_I32
-
-        faiss.bfKnn(res, params)
-        self.assertEqual((out_i32 == ref_i).sum(), ref_i.size)
-
-        # Try float16 data/queries, i64 out indices
-        xs_f16 = xs.astype(np.float16)
-        qs_f16 = qs.astype(np.float16)
-        xs_f16_f32 = xs_f16.astype(np.float32)
-        qs_f16_f32 = qs_f16.astype(np.float32)
-        index.reset()
-        index.add(xs_f16_f32)
-        ref_d_f16, ref_i_f16 = index.search(qs_f16_f32, k)
-
-        params.vectors = faiss.swig_ptr(xs_f16)
-        params.vectorType = faiss.DistanceDataType_F16
-        params.queries = faiss.swig_ptr(qs_f16)
-        params.queryType = faiss.DistanceDataType_F16
-
-        out_d_f16 = np.empty((nq, k), dtype=np.float32)
-        out_i_f16 = np.empty((nq, k), dtype=np.int64)
-
-        params.outDistances = faiss.swig_ptr(out_d_f16)
-        params.outIndices = faiss.swig_ptr(out_i_f16)
-        params.outIndicesType = faiss.IndicesDataType_I64
-
-        faiss.bfKnn(res, params)
-
-        self.assertGreaterEqual((out_i_f16 == ref_i_f16).sum(), ref_i_f16.size - 5)
-        self.assertTrue(np.allclose(ref_d_f16, out_d_f16, atol = 2e-3))
 
 # Make sure indices are properly stored in the IVF lists
 class TestIVFIndices(unittest.TestCase):
@@ -562,7 +313,6 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
 
         rs = np.random.RandomState(567)
@@ -594,10 +344,9 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
         M = 4
-        nbits = 6
+        nbits = 8
 
         rs = np.random.RandomState(567)
         xb = rs.rand(nb, d).astype('float32')
@@ -630,7 +379,6 @@ class TestIVFIndices(unittest.TestCase):
         res = faiss.StandardGpuResources()
         d = 128
         nb = 5000
-        nq = 10
         nlist = 10
         qtype = faiss.ScalarQuantizer.QT_4bit
 
@@ -660,6 +408,99 @@ class TestIVFIndices(unittest.TestCase):
         _, I = idx.search(xb[10:20], 5)
         # This will strip the high bit
         self.assertTrue(np.array_equal(xb_indices_base[10:20], I[:, 0]))
+
+
+class TestSQ_to_gpu(unittest.TestCase):
+
+    def test_sq_cpu_to_gpu(self):
+        res = faiss.StandardGpuResources()
+        index = faiss.index_factory(32, "SQfp16")
+        index.add(np.random.rand(1000, 32).astype(np.float32))
+        gpu_index = faiss.index_cpu_to_gpu(res, 0, index)
+        self.assertIsInstance(gpu_index, faiss.GpuIndexFlat)
+
+
+class TestInvalidParams(unittest.TestCase):
+
+    def test_indices_ivfpq(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nlist = 10
+        M = 4
+        nbits = 8
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xb_indices_base = np.arange(nb, dtype=np.int64)
+
+        # Force values to not be representable in int32
+        xb_indices = (xb_indices_base + 4294967296).astype('int64')
+
+        config = faiss.GpuIndexIVFPQConfig()
+        idx = faiss.GpuIndexIVFPQ(res, d, nlist, M, nbits,
+                                  faiss.METRIC_L2, config)
+        idx.train(xb)
+        idx.add_with_ids(xb, xb_indices)
+
+        # invalid k (should be > 0)
+        k = -5
+        idx.setNumProbes(3)
+        self.assertRaises(AssertionError, idx.search, xb[10:20], k)
+
+        # invalid nprobe (should be > 0)
+        self.assertRaises(RuntimeError, idx.setNumProbes, 0)
+        self.assertRaises(RuntimeError, idx.setNumProbes, -3)
+
+        k = 5
+        idx.nprobe = -3
+        self.assertRaises(RuntimeError, idx.search, xb[10:20], k)
+
+        # valid params
+        k = 5
+        idx.setNumProbes(3)
+        _, I = idx.search(xb[10:20], k)
+        self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
+
+
+class TestLSQIcmEncoder(unittest.TestCase):
+
+    @staticmethod
+    def eval_codec(q, xb):
+        codes = q.compute_codes(xb)
+        decoded = q.decode(codes)
+        return ((xb - decoded) ** 2).sum()
+
+    def subtest_gpu_encoding(self, ngpus):
+        """check that the error is in the same as cpu."""
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 8
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_cpu = self.eval_codec(lsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        lsq.icm_encoder_factory = faiss.GpuIcmEncoderFactory(ngpus)
+        err_gpu = self.eval_codec(lsq, xb)
+
+        # 13804.411 vs 13814.794, 1 gpu
+        print(err_gpu, err_cpu)
+        self.assertLess(err_gpu, err_cpu * 1.05)
+
+    def test_one_gpu(self):
+        self.subtest_gpu_encoding(1)
+
+    def test_multiple_gpu(self):
+        ngpu = faiss.get_num_gpus()
+        self.subtest_gpu_encoding(ngpu)
+
 
 if __name__ == '__main__':
     unittest.main()

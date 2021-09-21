@@ -11,213 +11,9 @@ import faiss
 import unittest
 import array
 
-from common import get_dataset_2
+from common_faiss_tests import get_dataset_2
 
 
-
-class TestClustering(unittest.TestCase):
-
-    def test_clustering(self):
-        d = 64
-        n = 1000
-        rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
-
-        x *= 10
-
-        km = faiss.Kmeans(d, 32, niter=10)
-        err32 = km.train(x)
-
-        # check that objective is decreasing
-        prev = 1e50
-        for o in km.obj:
-            self.assertGreater(prev, o)
-            prev = o
-
-        km = faiss.Kmeans(d, 64, niter=10)
-        err64 = km.train(x)
-
-        # check that 64 centroids give a lower quantization error than 32
-        self.assertGreater(err32, err64)
-
-        km = faiss.Kmeans(d, 32, niter=10, int_centroids=True)
-        err_int = km.train(x)
-
-        # check that integer centoids are not as good as float ones
-        self.assertGreater(err_int, err32)
-        self.assertTrue(np.all(km.centroids == np.floor(km.centroids)))
-
-
-    def test_nasty_clustering(self):
-        d = 2
-        rs = np.random.RandomState(123)
-        x = np.zeros((100, d), dtype='float32')
-        for i in range(5):
-            x[i * 20:i * 20 + 20] = rs.uniform(size=d)
-
-        # we have 5 distinct points but ask for 10 centroids...
-        km = faiss.Kmeans(d, 10, niter=10, verbose=True)
-        km.train(x)
-
-    def test_redo(self):
-        d = 64
-        n = 1000
-
-        rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
-
-        # make sure that doing 10 redos yields a better objective than just 1
-
-        clus = faiss.Clustering(d, 20)
-        clus.nredo = 1
-        clus.train(x, faiss.IndexFlatL2(d))
-        obj1 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
-
-        clus = faiss.Clustering(d, 20)
-        clus.nredo = 10
-        clus.train(x, faiss.IndexFlatL2(d))
-        obj10 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
-
-        self.assertGreater(obj1, obj10)
-
-    def test_redo_cosine(self):
-        # test redo with cosine distance (inner prod, so objectives are reversed)
-        d = 64
-        n = 1000
-
-        rs = np.random.RandomState(123)
-        x = rs.uniform(size=(n, d)).astype('float32')
-        faiss.normalize_L2(x)
-
-        # make sure that doing 10 redos yields a better objective than just 1
-        # for cosine distance, it is IP so higher is better
-
-        clus = faiss.Clustering(d, 20)
-        clus.nredo = 1
-        clus.train(x, faiss.IndexFlatIP(d))
-        obj1 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
-
-        clus = faiss.Clustering(d, 20)
-        clus.nredo = 10
-        clus.train(x, faiss.IndexFlatIP(d))
-        obj10 = clus.iteration_stats.at(clus.iteration_stats.size() - 1).obj
-
-        self.assertGreater(obj10, obj1)
-
-
-    def test_1ptpercluster(self):
-        # https://github.com/facebookresearch/faiss/issues/842
-        X = np.random.randint(0, 1, (5, 10)).astype('float32')
-        k = 5
-        niter = 10
-        verbose = True
-        kmeans = faiss.Kmeans(X.shape[1], k, niter=niter, verbose=verbose)
-        kmeans.train(X)
-        l2_distances, I = kmeans.index.search(X, 1)
-
-    def test_weighted(self):
-        d = 32
-        sigma = 0.1
-
-        # Data is naturally clustered in 10 clusters.
-        # 5 clusters have 100 points
-        # 5 clusters have 10 points
-        # run k-means with 5 clusters
-
-        ccent = faiss.randn((10, d), 123)
-        faiss.normalize_L2(ccent)
-        x = [ccent[i] + sigma * faiss.randn((100, d), 1234 + i) for i in range(5)]
-        x += [ccent[i] + sigma * faiss.randn((10, d), 1234 + i) for i in range(5, 10)]
-        x = np.vstack(x)
-
-        clus = faiss.Clustering(d, 5)
-        index = faiss.IndexFlatL2(d)
-        clus.train(x, index)
-        cdis1, perm1 = index.search(ccent, 1)
-
-        # distance^2 of ground-truth centroids to clusters
-        cdis1_first = cdis1[:5].sum()
-        cdis1_last = cdis1[5:].sum()
-
-        # now assign weight 0.1 to the 5 first clusters and weight 10
-        # to the 5 last ones and re-run k-means
-        weights = np.ones(100 * 5 + 10 * 5, dtype='float32')
-        weights[:100 * 5] = 0.1
-        weights[100 * 5:] = 10
-
-        clus = faiss.Clustering(d, 5)
-        index = faiss.IndexFlatL2(d)
-        clus.train(x, index, weights=weights)
-        cdis2, perm2 = index.search(ccent, 1)
-
-        # distance^2 of ground-truth centroids to clusters
-        cdis2_first = cdis2[:5].sum()
-        cdis2_last = cdis2[5:].sum()
-
-        print(cdis1_first, cdis1_last)
-        print(cdis2_first, cdis2_last)
-
-        # with the new clustering, the last should be much (*2) closer
-        # to their centroids
-        self.assertGreater(cdis1_last, cdis1_first * 2)
-        self.assertGreater(cdis2_first, cdis2_last * 2)
-
-    def test_encoded(self):
-        d = 32
-        k = 5
-        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
-
-        # make sure that training on a compressed then decompressed
-        # dataset gives the same result as decompressing on-the-fly
-
-        codec = faiss.IndexScalarQuantizer(d, faiss.ScalarQuantizer.QT_4bit)
-        codec.train(xt)
-        codes = codec.sa_encode(xt)
-
-        xt2 = codec.sa_decode(codes)
-
-        clus = faiss.Clustering(d, k)
-        # clus.verbose = True
-        clus.niter = 0
-        index = faiss.IndexFlatL2(d)
-        clus.train(xt2, index)
-        ref_centroids = faiss.vector_to_array(clus.centroids).reshape(-1, d)
-
-        _, ref_errs = index.search(xt2, 1)
-
-        clus = faiss.Clustering(d, k)
-        # clus.verbose = True
-        clus.niter = 0
-        clus.decode_block_size = 120
-        index = faiss.IndexFlatL2(d)
-        clus.train_encoded(codes, codec, index)
-        new_centroids = faiss.vector_to_array(clus.centroids).reshape(-1, d)
-
-        _, new_errs = index.search(xt2, 1)
-
-        # It's the same operation, so should be bit-exact the same
-        self.assertTrue(np.all(ref_centroids == new_centroids))
-
-    def test_init(self):
-        d = 32
-        k = 5
-        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
-        km = faiss.Kmeans(d, k, niter=4)
-        km.train(xt)
-
-        km2 = faiss.Kmeans(d, k, niter=4)
-        km2.train(xt, init_centroids=km.centroids)
-
-        # check that the initial objective is better for km2 than km
-        self.assertGreater(km.obj[0], km2.obj[0] * 1.01)
-
-    def test_stats(self):
-        d = 32
-        k = 5
-        xt, xb, xq = get_dataset_2(d, 1000, 0, 0)
-        km = faiss.Kmeans(d, k, niter=4)
-        km.train(xt)
-        assert list(km.obj) == [st['obj'] for st in km.iteration_stats]
 
 class TestPCA(unittest.TestCase):
 
@@ -614,13 +410,7 @@ class TestSWIGWrap(unittest.TestCase):
 
     def test_int64(self):
         # see https://github.com/facebookresearch/faiss/issues/1529
-        sizeof_long = array.array("l").itemsize
-        if sizeof_long == 4:
-            v = faiss.LongLongVector()
-        elif sizeof_long == 8:
-            v = faiss.LongVector()
-        else:
-            raise AssertionError("weird long size")
+        v = faiss.Int64Vector()
 
         for i in range(10):
             v.push_back(i)
@@ -637,81 +427,76 @@ class TestSWIGWrap(unittest.TestCase):
         faiss.vector_to_array(idx.id_map)
 
 
-class TestPartitioning(unittest.TestCase):
+class TestNNDescentKNNG(unittest.TestCase):
 
-    def do_partition(self, n, q, maxval=None, seed=None):
-        if seed is None:
-            for i in range(50):
-                self.do_partition(n, q, maxval, i + 1234)
-        # print("seed=", seed)
-        rs = np.random.RandomState(seed)
-        if maxval is None:
-            vals = rs.rand(n).astype('float32')
-        else:
-            vals = rs.randint(maxval, size=n).astype('float32')
+    def test_knng_L2(self):
+        self.subtest(32, 10, faiss.METRIC_L2)
 
-        ids = (rs.permutation(n) + 12345).astype('int64')
-        dic = dict(zip(ids, vals))
+    def test_knng_IP(self):
+        self.subtest(32, 10, faiss.METRIC_INNER_PRODUCT)
 
-        #print("seed=", seed, "q=", q, "n=", n)
-        #print(vals)
-        #print(ids)
+    def subtest(self, d, K, metric):
+        metric_names = {faiss.METRIC_L1: 'L1',
+                        faiss.METRIC_L2: 'L2',
+                        faiss.METRIC_INNER_PRODUCT: 'IP'}
 
-        vals_orig = vals.copy()
+        nb = 1000
+        _, xb, _ = get_dataset_2(d, 0, nb, 0)
 
-        sp = faiss.swig_ptr
-        if type(q) == int:
-            faiss.CMax_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q, q, None
-            )
-        else:
-            q_min, q_max = q
-            q = np.array([-1], dtype='uint64')
-            faiss.CMax_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q_min, q_max, sp(q)
-            )
-            q = q[0]
-            assert q_min <= q <= q_max
+        _, knn = faiss.knn(xb, xb, K + 1, metric)
+        knn = knn[:, 1:]
 
-        o = vals_orig.argsort()
-        thresh = vals_orig[o[q]]
-        n_eq = (vals_orig[o[:q]] == thresh).sum()
+        index = faiss.IndexNNDescentFlat(d, K, metric)
+        index.nndescent.S = 10
+        index.nndescent.R = 32
+        index.nndescent.L = K + 20
+        index.nndescent.iter = 5
+        index.verbose = True
 
-        for i in range(q):
-            self.assertEqual(vals[i], dic[ids[i]])
-            self.assertLessEqual(vals[i], thresh)
-            if vals[i] == thresh:
-                n_eq -= 1
-        self.assertEqual(n_eq, 0)
+        index.add(xb)
+        graph = index.nndescent.final_graph
+        graph = faiss.vector_to_array(graph)
+        graph = graph.reshape(nb, K)
 
-    def test_partition(self):
-        self.do_partition(160, 80)
+        recalls = 0
+        for i in range(nb):
+            for j in range(K):
+                for k in range(K):
+                    if graph[i, j] == knn[i, k]:
+                        recalls += 1
+                        break
+        recall = 1.0 * recalls / (nb * K)
+        print('Metric: {}, knng accuracy: {}'.format(metric_names[metric], recall))
+        assert recall > 0.99
 
-    def test_partition_manydups(self):
-        self.do_partition(160, 80, maxval=16)
 
-    def test_partition_lowq(self):
-        self.do_partition(160, 10, maxval=16)
+class TestResultHeap(unittest.TestCase):
 
-    def test_partition_highq(self):
-        self.do_partition(165, 155, maxval=16)
+    def test_keep_min(self):
+        self.run_test(False)
 
-    def test_partition_q10(self):
-        self.do_partition(32, 10, maxval=500)
+    def test_keep_max(self):
+        self.run_test(True)
 
-    def test_partition_q10_dups(self):
-        self.do_partition(32, 10, maxval=16)
+    def run_test(self, keep_max):
+        nq = 100
+        nb = 1000
+        restab = faiss.rand((nq, nb), 123)
+        ids = faiss.randint((nq, nb), 1324, 10000)
+        all_rh = {}
+        for nstep in 1, 3:
+            rh = faiss.ResultHeap(nq, 10, keep_max=keep_max)
+            for i in range(nstep):
+                i0, i1 = i * nb // nstep, (i + 1) * nb // nstep
+                D = restab[:, i0:i1].copy()
+                I = ids[:, i0:i1].copy()
+                rh.add_result(D, I)
+            rh.finalize()
+            if keep_max:
+                assert np.all(rh.D[:, :-1] >= rh.D[:, 1:])
+            else:
+                assert np.all(rh.D[:, :-1] <= rh.D[:, 1:])
+            all_rh[nstep] = rh
 
-    def test_partition_q10_fuzzy(self):
-        self.do_partition(32, (10, 15), maxval=500)
-
-    def test_partition_fuzzy(self):
-        self.do_partition(160, (70, 80), maxval=500)
-
-    def test_partition_fuzzy_2(self):
-        self.do_partition(160, (70, 80))
-
-if __name__ == '__main__':
-    unittest.main()
+        np.testing.assert_equal(all_rh[1].D, all_rh[3].D)
+        np.testing.assert_equal(all_rh[1].I, all_rh[3].I)
