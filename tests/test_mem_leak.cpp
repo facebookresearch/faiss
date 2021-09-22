@@ -35,7 +35,7 @@ TEST(MEM_LEAK, ivfflat) {
         std::vector<float> D(10);
 
         tfidf_faiss_index.search(
-            1, ent_substr_tfidfs_list.data() + i * max_tfidf_features, 10,
+            1, ent_substr_tfidfs_list.data() + (i % 10000) * max_tfidf_features, 10,
             D.data(), I.data());
         if(i%100 == 0) {
             printf("%d: %ld kB %.2f bytes/it\r", i, get_mem_usage_kb(),
