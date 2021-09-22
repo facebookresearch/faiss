@@ -24,26 +24,34 @@ TEST(MEM_LEAK, ivfflat) {
     tfidf_faiss_index.train(5000, dense_matrix.data());
     tfidf_faiss_index.add(5000, dense_matrix.data());
 
-    std::vector<float> ent_substr_tfidfs_list(10000 * max_tfidf_features);
+    int N1 = 1000;
+    int N2 = 10000;
+
+    std::vector<float> ent_substr_tfidfs_list(N1 * max_tfidf_features);
     float_rand(ent_substr_tfidfs_list.data(), ent_substr_tfidfs_list.size(), 1234);
 
+    for (int bs: {1, 4, 16}) {
 
+        size_t m0 = get_mem_usage_kb();
+        double t0 = getmillisecs();
 
-    size_t m0 = get_mem_usage_kb();
-    for(int i = 0; i < 100000; i++) {
-        std::vector<Index::idx_t> I(10);
-        std::vector<float> D(10);
+        for(int i = 0; i < N2; i++) {
+            std::vector<Index::idx_t> I(10 * bs);
+            std::vector<float> D(10 * bs);
 
-        tfidf_faiss_index.search(
-            1, ent_substr_tfidfs_list.data() + (i % 10000) * max_tfidf_features, 10,
-            D.data(), I.data());
-        if(i%100 == 0) {
-            printf("%d: %ld kB %.2f bytes/it\r", i, get_mem_usage_kb(),
-                (get_mem_usage_kb() - m0) * 1024.0 / (i + 1));
-            fflush(stdout);
+            tfidf_faiss_index.search(
+                bs, ent_substr_tfidfs_list.data() + (i % (N1 - bs + 1)) * max_tfidf_features, 10,
+                D.data(), I.data());
+            if(i%100 == 0) {
+                printf("[%.2f s] BS %d %d: %ld kB %.2f bytes/it\r",
+                    (getmillisecs() - t0) / 1000,
+                    bs, i, get_mem_usage_kb(),
+                    (get_mem_usage_kb() - m0) * 1024.0 / (i + 1));
+                fflush(stdout);
+            }
         }
+        printf("\n");
+        EXPECT_GE(50 * bs, (get_mem_usage_kb() - m0) * 1024.0 / N2);
     }
-
-    EXPECT_GE(50, (get_mem_usage_kb() - m0) * 1024.0 / 100000);
 
 }
