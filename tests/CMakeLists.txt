@@ -19,6 +19,7 @@ set(FAISS_TEST_SRC
   test_sliding_ivf.cpp
   test_threaded_index.cpp
   test_transfer_invlists.cpp
+  test_mem_leak.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
