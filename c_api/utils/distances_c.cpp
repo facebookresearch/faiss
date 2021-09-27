@@ -25,6 +25,16 @@ void faiss_pairwise_L2sqr(
     faiss::pairwise_L2sqr(d, nq, xq, nb, xb, dis, ldq, ldb, ldd);
 }
 
+void faiss_pairwise_L2sqr_with_defaults(
+        int64_t d,
+        int64_t nq,
+        const float* xq,
+        int64_t nb,
+        const float* xb,
+        float* dis) {
+    faiss::pairwise_L2sqr(d, nq, xq, nb, xb, dis);
+}
+
 void faiss_fvec_inner_products_ny(
         float* ip,
         const float* x,

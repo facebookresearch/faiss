@@ -29,9 +29,22 @@ void faiss_pairwise_L2sqr(
         int64_t nb,
         const float* xb,
         float* dis,
-        int64_t ldq = -1,
-        int64_t ldb = -1,
-        int64_t ldd = -1);
+        int64_t ldq,
+        int64_t ldb,
+        int64_t ldd);
+
+/// Compute pairwise distances between sets of vectors
+/// arguments from "faiss_pairwise_L2sqr"
+/// ldq equal -1 by default
+/// ldb equal -1 by default
+/// ldd equal -1 by default
+void faiss_pairwise_L2sqr_with_defaults(
+        int64_t d,
+        int64_t nq,
+        const float* xq,
+        int64_t nb,
+        const float* xb,
+        float* dis);
 
 /// compute the inner product between nx vectors x and one y
 void faiss_fvec_inner_products_ny(
