@@ -105,8 +105,9 @@ void exhaustive_inner_product_seq(
         size_t ny,
         ResultHandler& res) {
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
 
-#pragma omp parallel
+#pragma omp parallel num_threads(nt)
     {
         SingleResultHandler resi(res);
 #pragma omp for
@@ -135,8 +136,9 @@ void exhaustive_L2sqr_seq(
         size_t ny,
         ResultHandler& res) {
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
 
-#pragma omp parallel
+#pragma omp parallel num_threads(nt)
     {
         SingleResultHandler resi(res);
 #pragma omp for
