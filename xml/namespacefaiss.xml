@@ -15,6 +15,7 @@
     <innerclass refid="structfaiss_1_1CenteringTransform" prot="public">faiss::CenteringTransform</innerclass>
     <innerclass refid="structfaiss_1_1Cloner" prot="public">faiss::Cloner</innerclass>
     <innerclass refid="structfaiss_1_1Clustering" prot="public">faiss::Clustering</innerclass>
+    <innerclass refid="structfaiss_1_1Clustering1D" prot="public">faiss::Clustering1D</innerclass>
     <innerclass refid="structfaiss_1_1ClusteringIterationStats" prot="public">faiss::ClusteringIterationStats</innerclass>
     <innerclass refid="structfaiss_1_1ClusteringParameters" prot="public">faiss::ClusteringParameters</innerclass>
     <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
@@ -728,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="173" column="7" declfile="faiss/Clustering.h" declline="173" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="187" column="7" declfile="faiss/Clustering.h" declline="187" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

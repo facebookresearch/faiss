@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="143" column="5" bodyfile="faiss/Clustering.h" bodystart="143" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="157" column="5" bodyfile="faiss/Clustering.h" bodystart="157" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="144" column="12" bodyfile="faiss/Clustering.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="158" column="12" bodyfile="faiss/Clustering.h" bodystart="158" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="145" column="12" bodyfile="faiss/Clustering.h" bodystart="145" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="159" column="12" bodyfile="faiss/Clustering.h" bodystart="159" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="148" column="17" bodyfile="faiss/Clustering.h" bodystart="148" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="162" column="17" bodyfile="faiss/Clustering.h" bodystart="162" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1ClusteringIterationStats" kindref="compound">ClusteringIterationStats</ref> &gt;</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="151" column="17" bodyfile="faiss/Clustering.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="165" column="17" bodyfile="faiss/Clustering.h" bodystart="165" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="115" column="9" bodyfile="faiss/Clustering.h" bodystart="115" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="129" column="9" bodyfile="faiss/Clustering.h" bodystart="129" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="116" column="10" bodyfile="faiss/Clustering.h" bodystart="116" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="130" column="10" bodyfile="faiss/Clustering.h" bodystart="130" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -278,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="153" column="5"/>
+        <location file="faiss/Clustering.h" line="167" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -303,7 +303,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="154" column="5"/>
+        <location file="faiss/Clustering.h" line="168" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -328,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="159" column="10"/>
+        <location file="faiss/Clustering.h" line="173" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -341,7 +341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="161" column="13" bodyfile="faiss/Clustering.h" bodystart="161" bodyend="161"/>
+        <location file="faiss/Clustering.h" line="175" column="13" bodyfile="faiss/Clustering.h" bodystart="175" bodyend="175"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -390,7 +390,7 @@ Nearest Neighbor Search&quot;</para>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="142" column="66" bodyfile="faiss/Clustering.h" bodystart="142" bodyend="162"/>
+    <location file="faiss/Clustering.h" line="156" column="66" bodyfile="faiss/Clustering.h" bodystart="156" bodyend="176"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>apply_pca</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>centroids</name></member>

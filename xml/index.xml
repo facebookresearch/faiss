@@ -239,6 +239,31 @@
     <member refid="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" kind="function"><name>post_process_centroids</name></member>
     <member refid="structfaiss_1_1Clustering_1a17403e70a0daaa43c67ac3ea098ce5b3" kind="function"><name>~Clustering</name></member>
   </compound>
+  <compound refid="structfaiss_1_1Clustering1D" kind="struct"><name>faiss::Clustering1D</name>
+    <member refid="structfaiss_1_1Clustering1D_1a86913acc3c6a5f1059afd954508f7a99" kind="function"><name>Clustering1D</name></member>
+    <member refid="structfaiss_1_1Clustering1D_1a8d84a1ebd8e3da9d45f539103ab30559" kind="function"><name>Clustering1D</name></member>
+    <member refid="structfaiss_1_1Clustering1D_1a310ce0a338a7347e7ee5cef91993800e" kind="function"><name>train_exact</name></member>
+    <member refid="structfaiss_1_1Clustering1D_1ab595b531844d7e70b2b45c03394622bf" kind="function"><name>~Clustering1D</name></member>
+    <member refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912" kind="function"><name>train_encoded</name></member>
+    <member refid="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" kind="function"><name>post_process_centroids</name></member>
+    <member refid="structfaiss_1_1Clustering_1ad61a631598a1ac0975c091bda9072da7" kind="typedef"><name>idx_t</name></member>
+    <member refid="structfaiss_1_1Clustering_1afbf6efacae54c58586b75ed790facd74" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Clustering_1a87581785d9516c683bbc7c9392bfa993" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1" kind="variable"><name>centroids</name></member>
+    <member refid="structfaiss_1_1Clustering_1a2ea2382ac486aa661ee0338cfb836a02" kind="variable"><name>iteration_stats</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" kind="variable"><name>niter</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b" kind="variable"><name>nredo</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" kind="variable"><name>spherical</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" kind="variable"><name>int_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" kind="variable"><name>update_index</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" kind="variable"><name>frozen_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924" kind="variable"><name>min_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+  </compound>
   <compound refid="structfaiss_1_1ClusteringIterationStats" kind="struct"><name>faiss::ClusteringIterationStats</name>
     <member refid="structfaiss_1_1ClusteringIterationStats_1a3a1ee76ac7d9cfda93284a846679e56a" kind="variable"><name>obj</name></member>
     <member refid="structfaiss_1_1ClusteringIterationStats_1a5e705d865d7e3c9ea224d1b7fb25c55e" kind="variable"><name>time</name></member>

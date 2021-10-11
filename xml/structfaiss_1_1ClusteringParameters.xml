@@ -182,10 +182,16 @@
 <para>Class for the clustering parameters. Can be passed to the constructor of the <ref refid="structfaiss_1_1Clustering" kindref="compound">Clustering</ref> object. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="3">
+      <node id="4">
         <label>faiss::ProgressiveDimClusteringParameters</label>
         <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::Clustering1D</label>
+        <link refid="structfaiss_1_1Clustering1D"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
@@ -194,10 +200,10 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::ProgressiveDimClustering</label>
         <link refid="structfaiss_1_1ProgressiveDimClustering"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">

@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1Clustering" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Clustering</compoundname>
     <basecompoundref refid="structfaiss_1_1ClusteringParameters" prot="public" virt="non-virtual">faiss::ClusteringParameters</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1Clustering1D" prot="public" virt="non-virtual">faiss::Clustering1D</derivedcompoundref>
     <includes refid="Clustering_8h" local="no">Clustering.h</includes>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1Clustering_1ad61a631598a1ac0975c091bda9072da7" prot="public" static="no">
@@ -416,6 +417,12 @@
 <para>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>faiss::Clustering1D</label>
+        <link refid="structfaiss_1_1Clustering1D"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::Clustering</label>
         <link refid="structfaiss_1_1Clustering"/>
