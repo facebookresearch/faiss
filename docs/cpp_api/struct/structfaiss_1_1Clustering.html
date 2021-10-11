@@ -19,7 +19,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::ClusteringIterationStats" href="structfaiss_1_1ClusteringIterationStats.html" />
+    <link rel="next" title="Struct faiss::Clustering1D" href="structfaiss_1_1Clustering1D.html" />
     <link rel="prev" title="Struct faiss::Cloner" href="structfaiss_1_1Cloner.html" /> 
 </head>
 
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CenteringTransform.html">Struct faiss::CenteringTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Cloner.html">Struct faiss::Cloner</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering1D.html">Struct faiss::Clustering1D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringIterationStats.html">Struct faiss::ClusteringIterationStats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringParameters.html">Struct faiss::ClusteringParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMap.html">Struct faiss::DirectMap</a></li>
@@ -254,6 +255,7 @@
 <dd><p>K-means clustering based on assignment - centroid update iterations</p>
 <p>The clustering is based on an <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> object that assigns training points to the centroids. Therefore, at each iteration the centroids are added to the index.</p>
 <p>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1Clustering1D.html#structfaiss_1_1Clustering1D"><span class="std std-ref">faiss::Clustering1D</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -293,7 +295,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf">
 <span id="_CPPv3N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="_CPPv2N5faiss10Clustering13train_encodedE5idx_tPK7uint8_tPK5IndexR5IndexPKf"></span><span id="faiss::Clustering::train_encoded__idx_t.uint8_tCP.IndexCP.IndexR.floatCP"></span><span class="target" id="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_encoded</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss10Clustering5idx_tE" title="faiss::Clustering::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x_in</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codec</span></span>, <a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">weights</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>run with encoded vectors</p>
-<p>win addition to <a class="reference internal" href="#structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"><span class="std std-ref">train()</span></a>’s parameters takes a codec as parameter to decode the input vectors.</p>
+<p>win addition to <a class="reference internal" href="structfaiss_1_1Clustering1D.html#structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"><span class="std std-ref">train()</span></a>’s parameters takes a codec as parameter to decode the input vectors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>codec</strong> – codec used to decode the vectors (nullptr = vectors are in fact floats) * </p>
@@ -414,7 +416,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="structfaiss_1_1Cloner.html" class="btn btn-neutral float-left" title="Struct faiss::Cloner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="structfaiss_1_1ClusteringIterationStats.html" class="btn btn-neutral float-right" title="Struct faiss::ClusteringIterationStats" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1Clustering1D.html" class="btn btn-neutral float-right" title="Struct faiss::Clustering1D" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
