@@ -90,6 +90,8 @@ typedef uint64_t size_t;
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
 
+#include <faiss/impl/kmeans1d.h>
+
 #include <faiss/impl/NNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
@@ -372,6 +374,7 @@ void gpu_sync_all_devices()
 
 %newobject *::get_distance_computer() const;
 %include  <faiss/Index.h>
+%include  <faiss/IndexFlat.h>
 %include  <faiss/Clustering.h>
 
 %include  <faiss/utils/extra_distances.h>
@@ -385,7 +388,6 @@ void gpu_sync_all_devices()
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
-%include  <faiss/IndexFlat.h>
 %include  <faiss/IndexRefine.h>
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
@@ -412,6 +414,8 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
+
+%include <faiss/impl/kmeans1d.h>
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>

@@ -19,6 +19,7 @@
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/utils/utils.h>
 
+#include <faiss/Clustering.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -335,7 +336,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
 
         if (verbose) {
             printf("[%.3f s, %.3f s clustering] train stage %d, %d bits, kmeans objective %g, "
-                   "total distance %g, beam_size %d->%d (batch size %ld)\n",
+                   "total distance %g, beam_size %d->%d (batch size %zd)\n",
                    (getmillisecs() - t0) / 1000,
                    clustering_time,
                    m,
@@ -368,6 +369,16 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         if (norms[i] > norm_max) {
             norm_max = norms[i];
         }
+    }
+
+    if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
+        size_t k = (1 << 8);
+        if (search_type == ST_norm_cqint4) {
+            k = (1 << 4);
+        }
+        Clustering1D clus(k);
+        clus.train_exact(n, norms.data());
+        qnorm.add(clus.k, clus.centroids.data());
     }
 
     is_trained = true;

@@ -168,6 +168,10 @@ static void write_AdditiveQuantizer(const AdditiveQuantizer* aq, IOWriter* f) {
     WRITE1(aq->search_type);
     WRITE1(aq->norm_min);
     WRITE1(aq->norm_max);
+    if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
+        WRITEVECTOR(aq->qnorm.xb);
+    }
 }
 
 static void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {

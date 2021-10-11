@@ -615,7 +615,8 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
         inter_ref = faiss.eval_intersection(Iref, gt)
 
         AQ = faiss.AdditiveQuantizer
-        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4:
+        for st in AQ.ST_norm_float, AQ.ST_norm_qint8, AQ.ST_norm_qint4, \
+                AQ.ST_norm_cqint8, AQ.ST_norm_cqint4:
 
             ir2 = faiss.IndexResidualQuantizer(ds.d, 3, 4, faiss.METRIC_L2, st)
             ir2.rq.max_beam_size = 30
@@ -711,12 +712,27 @@ class TestIVFResidualQuantizer(unittest.TestCase):
     def test_norm_float(self):
         self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_float)
 
+    def test_norm_cqint(self):
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_cqint8)
+        self.do_test_accuracy(True, faiss.AdditiveQuantizer.ST_norm_cqint4)
+
     def test_factory(self):
         index = faiss.index_factory(12, "IVF1024,RQ8x8_Nfloat")
         self.assertEqual(index.nlist, 1024)
         self.assertEqual(
             index.rq.search_type,
             faiss.AdditiveQuantizer.ST_norm_float
+        )
+
+        index = faiss.index_factory(12, "IVF1024,RQ8x8_Ncqint8")
+        self.assertEqual(
+            index.rq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_cqint8
+        )
+        index = faiss.index_factory(12, "IVF1024,RQ8x8_Ncqint4")
+        self.assertEqual(
+            index.rq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_cqint4
         )
 
     def do_test_accuracy_IP(self, by_residual):

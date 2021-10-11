@@ -91,11 +91,32 @@ def handle_Clustering():
             self.train_encoded_c(n, swig_ptr(x), codec, index, swig_ptr(weights))
         else:
             self.train_encoded_c(n, swig_ptr(x), codec, index)
+
     replace_method(Clustering, 'train', replacement_train)
     replace_method(Clustering, 'train_encoded', replacement_train_encoded)
 
 
 handle_Clustering()
+
+
+def handle_Clustering1D():
+
+    def replacement_train_exact(self, x):
+        """Perform clustering on a set of 1D vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, 1). `dtype` must be float32.
+        """
+        n, d = x.shape
+        assert d == self.d
+        self.train_exact_c(n, swig_ptr(x))
+
+    replace_method(Clustering1D, 'train_exact', replacement_train_exact)
+
+
+handle_Clustering1D()
 
 
 def handle_Quantizer(the_class):

@@ -151,6 +151,10 @@ void IndexAdditiveQuantizer::search(
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_qint8> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_norm_qint4) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_qint4> (*this, x, rh);
+            } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8) {
+                search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint8> (*this, x, rh);
+            } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
+                search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint4> (*this, x, rh);
             } else {
                 FAISS_THROW_FMT("search type %d not supported", aq->search_type);
             }
@@ -258,7 +262,7 @@ void AdditiveCoarseQuantizer::reset() {
 
 void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
     if (verbose) {
-        printf("AdditiveCoarseQuantizer::train: training on %ld vectors\n", n);
+        printf("AdditiveCoarseQuantizer::train: training on %zd vectors\n", size_t(n));
     }
     aq->train(n, x);
     is_trained = true;
@@ -266,7 +270,7 @@ void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
 
     if (metric_type == METRIC_L2) {
         if (verbose) {
-            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %ld centroids\n", ntotal);
+            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n", size_t(ntotal));
         }
         // this is not necessary for the residualcoarsequantizer when
         // using beam search. We'll see if the memory overhead is too high
@@ -321,7 +325,7 @@ void ResidualCoarseQuantizer::set_beam_factor(float new_beam_factor) {
         return;
     } else if (metric_type == METRIC_L2 && ntotal != centroid_norms.size()) {
         if (verbose) {
-            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %ld centroids\n", ntotal);
+            printf("AdditiveCoarseQuantizer::train: computing centroid norms for %zd centroids\n", size_t(ntotal));
         }
         centroid_norms.resize(ntotal);
         aq->compute_centroid_norms(centroid_norms.data());

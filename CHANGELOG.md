@@ -11,6 +11,7 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 ## [Unreleased]
 ### Added
 - Support LSQ on GPU (by @KinglittleQ)
+- Support for exact 1D kmeans (by @KinglittleQ)
 
 ## [1.7.1] - 2021-05-27
 ### Added

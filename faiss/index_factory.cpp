@@ -144,6 +144,10 @@ AdditiveQuantizer::Search_type_t parse_AQ_search_type(
         return AdditiveQuantizer::ST_norm_qint8;
     } else if (str_ends_with(stok, "_Nqint4")) {
         return AdditiveQuantizer::ST_norm_qint4;
+    } else if (str_ends_with(stok, "_Ncqint8")) {
+        return AdditiveQuantizer::ST_norm_cqint8;
+    } else if (str_ends_with(stok, "_Ncqint4")) {
+        return AdditiveQuantizer::ST_norm_cqint4;
     } else if (metric == METRIC_L2) {
         return AdditiveQuantizer::ST_decompress;
     } else {
@@ -283,7 +287,7 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 std::regex_match(
                         stok,
                         std::regex(
-                                "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
+                                "(RQ|RCQ)[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*(_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4)?"))) {
             std::vector<size_t> nbits;
             std::smatch sm;
             bool is_RCQ = stok.find("RCQ") == 0;
@@ -316,7 +320,7 @@ Index* index_factory(int d, const char* description_in, MetricType metric) {
                 std::regex_match(
                         stok,
                         std::regex(
-                                "(LSQ|LSCQ)[0-9]+x[0-9]+(_Nnone|_Nfloat|_Nqint8|_Nqint4)?"))) {
+                                "(LSQ|LSCQ)[0-9]+x[0-9]+(_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4)?"))) {
             std::vector<size_t> nbits;
             std::smatch sm;
             bool is_LSCQ = stok.find("LSCQ") == 0;
