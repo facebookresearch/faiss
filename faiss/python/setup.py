@@ -63,5 +63,5 @@ setup(
     package_data={
         'faiss': ['*.so', '*.pyd'],
     },
-
+    zip_safe=False,
 )

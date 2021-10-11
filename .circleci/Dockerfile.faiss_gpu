@@ -1,13 +1,14 @@
 FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
-# Install python3, swig, and openblas.
+# Install python3, wget, and openblas.
 RUN apt-get update && \
-        apt-get install -y python3-dev python3-pip swig libopenblas-dev
+        apt-get install -y python3-dev python3-pip libopenblas-dev wget libpcre3-dev
+
+# Install swig 4.0.2.
+RUN wget -nv -O - https://sourceforge.net/projects/swig/files/swig/swig-4.0.2/swig-4.0.2.tar.gz/download | tar zxf - && cd swig-4.0.2 && ./configure && make -j && make install
 
 # Install recent CMake.
-RUN apt-get install -y wget && \
-        wget -nv -O - https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1-Linux-x86_64.tar.gz | tar xzf - --strip-components=1 -C /usr && \
-        apt remove -y wget
+RUN wget -nv -O - https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1-Linux-x86_64.tar.gz | tar xzf - --strip-components=1 -C /usr
 
 # Install numpy/scipy/pytorch for python tests.
 RUN pip3 install numpy scipy torch
