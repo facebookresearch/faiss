@@ -110,14 +110,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>t1,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>t2,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexT<sp/>i1)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>gt1<sp/>=<sp/>blockIdx.y;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>gt2<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(IndexT<sp/>gt1<sp/>=<sp/>blockIdx.y;<sp/>gt1<sp/>&lt;<sp/>t1;<sp/>gt1<sp/>+=<sp/>gridDim.y)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>curIn<sp/>=<sp/>in<sp/>+<sp/>i1<sp/>*<sp/>(gt1<sp/>*<sp/>t2<sp/>+<sp/>gt2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>curOut<sp/>=<sp/>out<sp/>+<sp/>i1<sp/>*<sp/>(gt2<sp/>*<sp/>t1<sp/>+<sp/>gt1);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>in<sp/>+=<sp/>i1<sp/>*<sp/>(gt1<sp/>*<sp/>t2<sp/>+<sp/>gt2);</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>out<sp/>+=<sp/>i1<sp/>*<sp/>(gt2<sp/>*<sp/>t1<sp/>+<sp/>gt1);</highlight></codeline>
-<codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out[i]<sp/>=<sp/>in[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(IndexT<sp/>i<sp/>=<sp/>threadIdx.x;<sp/>i<sp/>&lt;<sp/>i1;<sp/>i<sp/>+=<sp/>blockDim.x)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>curOut[i]<sp/>=<sp/>curIn[i];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
@@ -175,7 +175,10 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>innerSize<sp/>*=<sp/>in.getSize(i);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>dim3(in.getSize(1),<sp/>in.getSize(0));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>The<sp/>grid<sp/>y<sp/>dimension<sp/>is<sp/>more<sp/>limited;<sp/>we<sp/>do<sp/>a<sp/>grid<sp/>loop<sp/>if<sp/>necessary</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>maxGridY<sp/>=<sp/>getCurrentDeviceProperties().maxGridSize[1];</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>grid<sp/>=<sp/>dim3(in.getSize(1),<sp/>std::min(in.getSize(0),<sp/>maxGridY));</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>block<sp/>=<sp/>(innerSize<sp/>&lt;<sp/>maxThreads)<sp/>?<sp/>innerSize<sp/>:<sp/>maxThreads;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(totalSize<sp/>&lt;=<sp/>(size_t)std::numeric_limits&lt;int&gt;::max())<sp/>{</highlight></codeline>
