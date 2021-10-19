@@ -757,6 +757,23 @@ class TestNSG(unittest.TestCase):
         self.assertGreaterEqual(recalls, 475)
         self.subtest_connectivity(index, self.xb.shape[0])
 
+    def test_order(self):
+        """make sure that output results are sorted"""
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 32)
+
+        index.train(self.xb)
+        index.add(self.xb)
+
+        k = 10
+        nq = self.xq.shape[0]
+        D, _ = index.search(self.xq, k)
+        
+        indices = np.argsort(D, axis=1)
+        gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
+        gt = np.repeat(gt, nq, axis=0)  # [nq, k]
+        assert np.array_equal(indices, gt)
+
 
 class TestDistancesPositive(unittest.TestCase):
 
