@@ -9,10 +9,8 @@ import numpy as np
 
 import faiss
 import unittest
-import array
 
 from common_faiss_tests import get_dataset_2
-
 
 
 class TestPCA(unittest.TestCase):
@@ -35,6 +33,37 @@ class TestPCA(unittest.TestCase):
             self.assertGreater(prev, o)
             prev = o
 
+    def test_pca_epsilon(self):
+        d = 64
+        n = 1000
+        np.random.seed(123)
+        x = np.random.random(size=(n, d)).astype('float32')
+
+        # make sure data is in a sub-space
+        x[:, ::2] = 0
+
+        # check division by 0 with default computation
+        pca = faiss.PCAMatrix(d, 60, -0.5)
+        pca.train(x)
+        y = pca.apply(x)
+        self.assertFalse(np.all(np.isfinite(y)))
+
+        # check add epsilon
+        pca = faiss.PCAMatrix(d, 60, -0.5)
+        pca.epsilon = 1e-5
+        pca.train(x)
+        y = pca.apply(x)
+        self.assertTrue(np.all(np.isfinite(y)))
+
+        # check I/O
+        index = faiss.index_factory(d, "PCAW60,Flat")
+        index = faiss.deserialize_index(faiss.serialize_index(index))
+        pca1 = faiss.downcast_VectorTransform(index.chain.at(0))
+        pca1.epsilon = 1e-5
+        index.train(x)
+        pca = faiss.downcast_VectorTransform(index.chain.at(0))
+        y = pca.apply(x)
+        self.assertTrue(np.all(np.isfinite(y)))
 
 
 class TestRevSwigPtr(unittest.TestCase):

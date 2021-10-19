@@ -96,9 +96,10 @@ void write_VectorTransform(const VectorTransform* vt, IOWriter* f) {
             uint32_t h = fourcc("rrot");
             WRITE1(h);
         } else if (const PCAMatrix* pca = dynamic_cast<const PCAMatrix*>(lt)) {
-            uint32_t h = fourcc("PcAm");
+            uint32_t h = fourcc("Pcam");
             WRITE1(h);
             WRITE1(pca->eigen_power);
+            WRITE1(pca->epsilon);
             WRITE1(pca->random_rotation);
             WRITE1(pca->balanced_bins);
             WRITEVECTOR(pca->mean);
