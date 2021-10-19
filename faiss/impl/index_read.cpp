@@ -78,16 +78,22 @@ VectorTransform* read_VectorTransform(IOReader* f) {
     VectorTransform* vt = nullptr;
 
     if (h == fourcc("rrot") || h == fourcc("PCAm") || h == fourcc("LTra") ||
-        h == fourcc("PcAm") || h == fourcc("Viqm")) {
+        h == fourcc("PcAm") || h == fourcc("Viqm") || h == fourcc("Pcam")) {
         LinearTransform* lt = nullptr;
         if (h == fourcc("rrot")) {
             lt = new RandomRotationMatrix();
-        } else if (h == fourcc("PCAm") || h == fourcc("PcAm")) {
+        } else if (
+                h == fourcc("PCAm") || h == fourcc("PcAm") ||
+                h == fourcc("Pcam")) {
             PCAMatrix* pca = new PCAMatrix();
             READ1(pca->eigen_power);
+            if (h == fourcc("Pcam")) {
+                READ1(pca->epsilon);
+            }
             READ1(pca->random_rotation);
-            if (h == fourcc("PcAm"))
+            if (h != fourcc("PCAm")) {
                 READ1(pca->balanced_bins);
+            }
             READVECTOR(pca->mean);
             READVECTOR(pca->eigenvalues);
             READVECTOR(pca->PCAMat);
