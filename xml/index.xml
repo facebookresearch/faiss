@@ -3848,6 +3848,7 @@
   </compound>
   <compound refid="structfaiss_1_1PCAMatrix" kind="struct"><name>faiss::PCAMatrix</name>
     <member refid="structfaiss_1_1PCAMatrix_1a4e48e801f98ba2cf57c03b0913d6fafc" kind="variable"><name>eigen_power</name></member>
+    <member refid="structfaiss_1_1PCAMatrix_1a0c2483343aeff1c43c10f66a136a7f37" kind="variable"><name>epsilon</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1af111f055b7571703a3aa270d89e99321" kind="variable"><name>random_rotation</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1abdce90f57a3c4401f5230f03da901e0d" kind="variable"><name>max_points_per_d</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1ac9a4c97b5861081dfd8ca5881bb1a677" kind="variable"><name>balanced_bins</name></member>
