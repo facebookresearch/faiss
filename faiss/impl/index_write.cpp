@@ -227,6 +227,7 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
             uint32_t list_type = fourcc("full");
             WRITE1(list_type);
             std::vector<size_t> sizes;
+            sizes.reserve(ails->nlist);
             for (size_t i = 0; i < ails->nlist; i++) {
                 sizes.push_back(ails->ids[i].size());
             }
