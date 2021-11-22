@@ -104,9 +104,7 @@ void IndexNSG::search(
                 float* simi = distances + i * k;
                 dis->set_query(x + i * d);
 
-                maxheap_heapify(k, simi, idxi);
                 nsg.search(*dis, k, idxi, simi, vt);
-                maxheap_reorder(k, simi, idxi);
 
                 vt.advance();
             }
