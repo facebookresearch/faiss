@@ -155,6 +155,34 @@ void IndexRefine::reconstruct(idx_t key, float* recons) const {
     refine_index->reconstruct(key, recons);
 }
 
+size_t IndexRefine::sa_code_size() const {
+    return base_index->sa_code_size() + refine_index->sa_code_size();
+}
+
+void IndexRefine::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
+    size_t cs1 = base_index->sa_code_size(), cs2 = refine_index->sa_code_size();
+    std::unique_ptr<uint8_t[]> tmp1(new uint8_t[n * cs1]);
+    base_index->sa_encode(n, x, tmp1.get());
+    std::unique_ptr<uint8_t[]> tmp2(new uint8_t[n * cs2]);
+    refine_index->sa_encode(n, x, tmp2.get());
+    for (size_t i = 0; i < n; i++) {
+        uint8_t* b = bytes + i * (cs1 + cs2);
+        memcpy(b, tmp1.get() + cs1 * i, cs1);
+        memcpy(b + cs1, tmp2.get() + cs2 * i, cs2);
+    }
+}
+
+void IndexRefine::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
+    size_t cs1 = base_index->sa_code_size(), cs2 = refine_index->sa_code_size();
+    std::unique_ptr<uint8_t[]> tmp2(
+            new uint8_t[n * refine_index->sa_code_size()]);
+    for (size_t i = 0; i < n; i++) {
+        memcpy(tmp2.get() + i * cs2, bytes + i * (cs1 + cs2), cs2);
+    }
+
+    refine_index->sa_decode(n, tmp2.get(), x);
+}
+
 IndexRefine::~IndexRefine() {
     if (own_fields)
         delete base_index;
