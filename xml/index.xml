@@ -2683,6 +2683,8 @@
     <member refid="structfaiss_1_1IndexIVFSpectralHash_1a47c66c0610e9e7e42e584f5560791707" kind="function"><name>train_residual</name></member>
     <member refid="structfaiss_1_1IndexIVFSpectralHash_1aecae74e51701e356d64788404814bb46" kind="function"><name>encode_vectors</name></member>
     <member refid="structfaiss_1_1IndexIVFSpectralHash_1ac4068ed995795b111ac89b81599d65a0" kind="function"><name>get_InvertedListScanner</name></member>
+    <member refid="structfaiss_1_1IndexIVFSpectralHash_1a51888de3cbe6d38eb65833fb7f0c11f2" kind="function"><name>replace_vt</name></member>
+    <member refid="structfaiss_1_1IndexIVFSpectralHash_1a5ec4e5ee4f805368cdddb2c8b74e39a6" kind="function"><name>replace_vt</name></member>
     <member refid="structfaiss_1_1IndexIVFSpectralHash_1a336f814b40bccbce9f2e0ea8b9a0bcf3" kind="function"><name>~IndexIVFSpectralHash</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>

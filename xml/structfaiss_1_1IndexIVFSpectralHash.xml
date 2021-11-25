@@ -11,6 +11,7 @@
         <enumvalue id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4a3ab3b703718e6b04ca23c425c5b6a8ab" prot="public">
           <name>Thresh_global</name>
           <briefdescription>
+<para>global threshold at 0 </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -18,6 +19,7 @@
         <enumvalue id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4a35dfb9020885c920fa002d1831359fee" prot="public">
           <name>Thresh_centroid</name>
           <briefdescription>
+<para>compare to centroid </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -25,6 +27,7 @@
         <enumvalue id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4ad2ed8067dc6d12e1b4e97aac55b654fb" prot="public">
           <name>Thresh_centroid_half</name>
           <briefdescription>
+<para>central interval around centroid </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -32,6 +35,7 @@
         <enumvalue id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4afb2205224f67828bf1447a7753d4b451" prot="public">
           <name>Thresh_median</name>
           <briefdescription>
+<para>median of training set </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -42,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="36" column="23" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="36" bodyend="41"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="42" column="23" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="42" bodyend="47"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
         <type>int64_t</type>
@@ -92,12 +96,13 @@
         <argsstring></argsstring>
         <name>vt</name>
         <briefdescription>
+<para>transformation from d to nbit dim </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="30" column="21" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="33" column="21" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFSpectralHash_1a7481e7ffaeb23c6fb91940d03b55724d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -105,12 +110,13 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <briefdescription>
+<para>own the vt </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="31" column="10" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="35" column="10" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFSpectralHash_1a0fab89bc0764922e318968e2c58a3b10" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -118,12 +124,13 @@
         <argsstring></argsstring>
         <name>nbit</name>
         <briefdescription>
+<para>nb of bits of the binary signature </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="33" column="9" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="38" column="9" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFSpectralHash_1af703982dd558f11b2d6647968ee61156" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -131,15 +138,16 @@
         <argsstring></argsstring>
         <name>period</name>
         <briefdescription>
+<para>interval size for 0s and 1s </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="34" column="11" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="40" column="11" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFSpectralHash_1a9e078b0de9b87e427ce6b0b157020f85" prot="public" static="no" mutable="no">
-        <type>ThresholdType</type>
+        <type><ref refid="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4" kindref="member">ThresholdType</ref></type>
         <definition>ThresholdType faiss::IndexIVFSpectralHash::threshold_type</definition>
         <argsstring></argsstring>
         <name>threshold_type</name>
@@ -149,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="42" column="19" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="48" column="19" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFSpectralHash_1aa24e53a2ebde491ff7840429c892fc5f" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -159,10 +167,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Trained threshold. size nlist * nbit or 0 if Thresh_global </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="45" column="17" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="45" bodyend="-1"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="52" column="17" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="52" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -464,7 +473,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="47" column="5"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="54" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1a7a3c17923349a96cf6e330624539d51a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -477,7 +486,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="54" column="5"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="61" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1a47c66c0610e9e7e42e584f5560791707" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -500,7 +509,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="56" column="10"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="63" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1aecae74e51701e356d64788404814bb46" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -562,7 +571,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="58" column="10"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="65" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1ac4068ed995795b111ac89b81599d65a0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -582,7 +591,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="65" column="25"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="72" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1a51888de3cbe6d38eb65833fb7f0c11f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexIVFSpectralHash::replace_vt</definition>
+        <argsstring>(VectorTransform *vt, bool own=false)</argsstring>
+        <name>replace_vt</name>
+        <param>
+          <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>own</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>replace the vector transform for an empty (and possibly untrained) index </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFSpectralHash.h" line="77" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1a5ec4e5ee4f805368cdddb2c8b74e39a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexIVFSpectralHash::replace_vt</definition>
+        <argsstring>(IndexPreTransform *index, bool own=false)</argsstring>
+        <name>replace_vt</name>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>own</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>convenience function to get the VT from an index constucted by an index_factory (should end in &quot;LSH&quot;) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFSpectralHash.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFSpectralHash_1a336f814b40bccbce9f2e0ea8b9a0bcf3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -595,7 +650,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFSpectralHash.h" line="68" column="5"/>
+        <location file="faiss/IndexIVFSpectralHash.h" line="83" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1941,7 +1996,7 @@
         <link refid="structfaiss_1_1DirectMap"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFSpectralHash.h" line="29" column="36" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="29" bodyend="69"/>
+    <location file="faiss/IndexIVFSpectralHash.h" line="31" column="36" bodyfile="faiss/IndexIVFSpectralHash.h" bodystart="31" bodyend="84"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7be56eaa6a4f56a3e17f72a790802fd1" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>add_core</name></member>
@@ -1999,6 +2054,8 @@
       <member refid="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>reconstruct_n</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" prot="public" virt="non-virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>replace_invlists</name></member>
+      <member refid="structfaiss_1_1IndexIVFSpectralHash_1a51888de3cbe6d38eb65833fb7f0c11f2" prot="public" virt="non-virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>replace_vt</name></member>
+      <member refid="structfaiss_1_1IndexIVFSpectralHash_1a5ec4e5ee4f805368cdddb2c8b74e39a6" prot="public" virt="non-virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>replace_vt</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>reset</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>sa_code_size</name></member>
       <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::IndexIVFSpectralHash</scope><name>sa_decode</name></member>

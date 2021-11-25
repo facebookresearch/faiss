@@ -475,8 +475,8 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a292a50353235864f6d9c5020ad7a5d0b">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a7dc16a5d92348098da7f50324a98e8e9">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0500e17324cd24817e7832aac8fae5d7">encode_vectors</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1aecae74e51701e356d64788404814bb46">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1a6350ed3e2b070ad01b37dff14dc2fe2a">encode_vectors</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1aecae74e51701e356d64788404814bb46">encode_vectors</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a53cc3b76de05e373198e0169cbe11a91">encode_vectors</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
