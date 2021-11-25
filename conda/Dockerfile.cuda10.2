@@ -3,9 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+FROM nvidia/cuda:10.2-devel-centos8
 
-RUN apt-get update && apt-get install -y wget git libcublas-dev
+RUN yum install -y wget git libcublas-devel-10-2
 
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
         bash Miniconda3-latest-Linux-x86_64.sh -b -p ~/miniconda3
