@@ -74,12 +74,12 @@ class SyntheticDataset(Dataset):
     index
     """
 
-    def __init__(self, d, nt, nb, nq, metric='L2'):
+    def __init__(self, d, nt, nb, nq, metric='L2', seed=1338):
         Dataset.__init__(self)
         self.d, self.nt, self.nb, self.nq = d, nt, nb, nq
         d1 = 10     # intrinsic dimension (more or less)
         n = nb + nt + nq
-        rs = np.random.RandomState(1338)
+        rs = np.random.RandomState(seed)
         x = rs.normal(size=(n, d1))
         x = np.dot(x, rs.rand(d1, d))
         # now we have a d1-dim ellipsoid in d-dimensional space
