@@ -263,22 +263,26 @@
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_globalE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_globalE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_globalE"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4a3ab3b703718e6b04ca23c425c5b6a8ab"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Thresh_global</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>global threshold at 0 </p>
+</dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash13ThresholdType15Thresh_centroidE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash13ThresholdType15Thresh_centroidE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash13ThresholdType15Thresh_centroidE"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4a35dfb9020885c920fa002d1831359fee"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Thresh_centroid</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>compare to centroid </p>
+</dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash13ThresholdType20Thresh_centroid_halfE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash13ThresholdType20Thresh_centroid_halfE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash13ThresholdType20Thresh_centroid_halfE"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4ad2ed8067dc6d12e1b4e97aac55b654fb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Thresh_centroid_half</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>central interval around centroid </p>
+</dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_medianE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_medianE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash13ThresholdType13Thresh_medianE"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ab1fcef4721c51d66cbca92c45fba12a4afb2205224f67828bf1447a7753d4b451"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Thresh_median</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>median of training set </p>
+</dd></dl>
 
 </dd></dl>
 
@@ -337,6 +341,18 @@
 <span id="_CPPv3NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb"></span><span id="_CPPv2NK5faiss20IndexIVFSpectralHash23get_InvertedListScannerEb"></span><span id="faiss::IndexIVFSpectralHash::get_InvertedListScanner__bC"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1ac4068ed995795b111ac89b81599d65a0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScannerE" title="faiss::InvertedListScanner"><span class="n"><span class="pre">InvertedListScanner</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_InvertedListScanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>Get a scanner for this index (store_pairs means ignore labels)</p>
 <p>The default search implementation uses this to compute the distances </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash10replace_vtEP15VectorTransformb">
+<span id="_CPPv3N5faiss20IndexIVFSpectralHash10replace_vtEP15VectorTransformb"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash10replace_vtEP15VectorTransformb"></span><span id="faiss::IndexIVFSpectralHash::replace_vt__VectorTransformP.b"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1a51888de3cbe6d38eb65833fb7f0c11f2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">replace_vt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransformE" title="faiss::VectorTransform"><span class="n"><span class="pre">VectorTransform</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vt</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">own</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>replace the vector transform for an empty (and possibly untrained) index </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash10replace_vtEP17IndexPreTransformb">
+<span id="_CPPv3N5faiss20IndexIVFSpectralHash10replace_vtEP17IndexPreTransformb"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash10replace_vtEP17IndexPreTransformb"></span><span id="faiss::IndexIVFSpectralHash::replace_vt__IndexPreTransformP.b"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1a5ec4e5ee4f805368cdddb2c8b74e39a6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">replace_vt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexPreTransform_8h.html#_CPPv4N5faiss17IndexPreTransformE" title="faiss::IndexPreTransform"><span class="n"><span class="pre">IndexPreTransform</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">own</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>convenience function to get the VT from an index constucted by an index_factory (should end in “LSH”) </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -669,22 +685,26 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash2vtE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash2vtE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash2vtE"></span><span id="faiss::IndexIVFSpectralHash::vt__VectorTransformP"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1aea6fba82a2b471e8bdddbaba2050e446"></span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15VectorTransformE" title="faiss::VectorTransform"><span class="n"><span class="pre">VectorTransform</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">vt</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>transformation from d to nbit dim </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash10own_fieldsE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash10own_fieldsE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash10own_fieldsE"></span><span id="faiss::IndexIVFSpectralHash::own_fields__b"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1a7481e7ffaeb23c6fb91940d03b55724d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_fields</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>own the vt </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash4nbitE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash4nbitE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash4nbitE"></span><span id="faiss::IndexIVFSpectralHash::nbit__i"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1a0fab89bc0764922e318968e2c58a3b10"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nbit</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>nb of bits of the binary signature </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash6periodE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash6periodE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash6periodE"></span><span id="faiss::IndexIVFSpectralHash::period__float"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1af703982dd558f11b2d6647968ee61156"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">period</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>interval size for 0s and 1s </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash14threshold_typeE">
@@ -694,7 +714,8 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash7trainedE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHash7trainedE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHash7trainedE"></span><span id="faiss::IndexIVFSpectralHash::trained__std::vector:float:"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash_1aa24e53a2ebde491ff7840429c892fc5f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">trained</span></span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>Trained threshold. size nlist * nbit or 0 if Thresh_global </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHash8invlistsE">
