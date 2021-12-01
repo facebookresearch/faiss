@@ -18,6 +18,7 @@ set(FAISS_SRC
   IndexBinaryHash.cpp
   IndexBinaryIVF.cpp
   IndexFlat.cpp
+  IndexFlatCodes.cpp
   IndexHNSW.cpp
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
@@ -93,6 +94,7 @@ set(FAISS_HEADERS
   IndexBinaryHash.h
   IndexBinaryIVF.h
   IndexFlat.h
+  IndexFlatCodes.h
   IndexHNSW.h
   IndexIVF.h
   IndexIVFAdditiveQuantizer.h

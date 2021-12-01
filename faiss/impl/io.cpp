@@ -240,7 +240,7 @@ uint32_t fourcc(const std::string& sx) {
 
 void fourcc_inv(uint32_t x, char str[5]) {
     *(uint32_t*)str = x;
-    str[5] = 0;
+    str[4] = 0;
 }
 
 std::string fourcc_inv(uint32_t x) {

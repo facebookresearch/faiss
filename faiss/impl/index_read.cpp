@@ -146,9 +146,10 @@ VectorTransform* read_VectorTransform(IOReader* f) {
         vt = itqt;
     } else {
         FAISS_THROW_FMT(
-                "fourcc %ud (\"%s\") not recognized",
+                "fourcc %ud (\"%s\") not recognized in %s",
                 h,
-                fourcc_inv_printable(h).c_str());
+                fourcc_inv_printable(h).c_str(),
+                f->name.c_str());
     }
     READ1(vt->d_in);
     READ1(vt->d_out);
@@ -271,7 +272,7 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
     READ1(aq->norm_max);
     if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
         aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
-        READVECTOR(aq->qnorm.xb);
+        READXBVECTOR(aq->qnorm.codes);
     }
     aq->set_derived_values();
 }
@@ -472,8 +473,10 @@ Index* read_index(IOReader* f, int io_flags) {
             idxf = new IndexFlat();
         }
         read_index_header(idxf, f);
-        READVECTOR(idxf->xb);
-        FAISS_THROW_IF_NOT(idxf->xb.size() == idxf->ntotal * idxf->d);
+        idxf->code_size = idxf->d * sizeof(float);
+        READXBVECTOR(idxf->codes);
+        FAISS_THROW_IF_NOT(
+                idxf->codes.size() == idxf->ntotal * idxf->code_size);
         // leak!
         idx = idxf;
     } else if (h == fourcc("IxHE") || h == fourcc("IxHe")) {
@@ -483,7 +486,9 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxl->rotate_data);
         READ1(idxl->train_thresholds);
         READVECTOR(idxl->thresholds);
-        READ1(idxl->bytes_per_vec);
+        int code_size_i;
+        READ1(code_size_i);
+        idxl->code_size = code_size_i;
         if (h == fourcc("IxHE")) {
             FAISS_THROW_IF_NOT_FMT(
                     idxl->nbits % 64 == 0,
@@ -491,7 +496,7 @@ Index* read_index(IOReader* f, int io_flags) {
                     "nbits multiple of 64 (got %d)",
                     (int)idxl->nbits);
             // leak
-            idxl->bytes_per_vec *= 8;
+            idxl->code_size *= 8;
         }
         {
             RandomRotationMatrix* rrot = dynamic_cast<RandomRotationMatrix*>(
@@ -504,7 +509,7 @@ Index* read_index(IOReader* f, int io_flags) {
         FAISS_THROW_IF_NOT(
                 idxl->rrot.d_in == idxl->d && idxl->rrot.d_out == idxl->nbits);
         FAISS_THROW_IF_NOT(
-                idxl->codes.size() == idxl->ntotal * idxl->bytes_per_vec);
+                idxl->codes.size() == idxl->ntotal * idxl->code_size);
         idx = idxl;
     } else if (
             h == fourcc("IxPQ") || h == fourcc("IxPo") || h == fourcc("IxPq")) {
@@ -512,6 +517,7 @@ Index* read_index(IOReader* f, int io_flags) {
         IndexPQ* idxp = new IndexPQ();
         read_index_header(idxp, f);
         read_ProductQuantizer(&idxp->pq, f);
+        idxp->code_size = idxp->pq.code_size;
         READVECTOR(idxp->codes);
         if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
             READ1(idxp->search_type);

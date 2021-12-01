@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/PolysemousTraining.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/platform_macros.h>
@@ -21,12 +21,9 @@ namespace faiss {
 
 /** Index based on a product quantizer. Stored vectors are
  * approximated by PQ codes. */
-struct IndexPQ : Index {
+struct IndexPQ : IndexFlatCodes {
     /// The product quantizer used to encode the vectors
     ProductQuantizer pq;
-
-    /// Codes. Size ntotal * pq.code_size
-    std::vector<uint8_t> codes;
 
     /** Constructor.
      *
@@ -43,8 +40,6 @@ struct IndexPQ : Index {
 
     void train(idx_t n, const float* x) override;
 
-    void add(idx_t n, const float* x) override;
-
     void search(
             idx_t n,
             const float* x,
@@ -52,17 +47,7 @@ struct IndexPQ : Index {
             float* distances,
             idx_t* labels) const override;
 
-    void reset() override;
-
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
-    void reconstruct(idx_t key, float* recons) const override;
-
-    size_t remove_ids(const IDSelector& sel) override;
-
     /* The standalone codec interface */
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

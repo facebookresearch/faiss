@@ -11,6 +11,7 @@
 
 #include <vector>
 
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
 
@@ -24,24 +25,18 @@ struct IndexIVFPQ;
  * The class is mainly inteded to store encoded vectors that can be
  * accessed randomly, the search function is not implemented.
  */
-struct Index2Layer : Index {
+struct Index2Layer : IndexFlatCodes {
     /// first level quantizer
     Level1Quantizer q1;
 
     /// second level quantizer is always a PQ
     ProductQuantizer pq;
 
-    /// Codes. Size ntotal * code_size.
-    std::vector<uint8_t> codes;
-
     /// size of the code for the first level (ceil(log8(q1.nlist)))
     size_t code_size_1;
 
     /// size of the code for the second level
     size_t code_size_2;
-
-    /// code_size_1 + code_size_2
-    size_t code_size;
 
     Index2Layer(
             Index* quantizer,
@@ -55,8 +50,6 @@ struct Index2Layer : Index {
 
     void train(idx_t n, const float* x) override;
 
-    void add(idx_t n, const float* x) override;
-
     /// not implemented
     void search(
             idx_t n,
@@ -65,19 +58,12 @@ struct Index2Layer : Index {
             float* distances,
             idx_t* labels) const override;
 
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
-    void reconstruct(idx_t key, float* recons) const override;
-
-    void reset() override;
-
     DistanceComputer* get_distance_computer() const override;
 
     /// transfer the flat codes to an IVFPQ index
     void transfer_to_IVFPQ(IndexIVFPQ& other) const;
 
     /* The standalone codec interface */
-    size_t sa_code_size() const override;
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };

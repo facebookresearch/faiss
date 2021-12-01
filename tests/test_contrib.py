@@ -174,7 +174,6 @@ class TestExhaustiveSearch(unittest.TestCase):
         )
 
 
-
 class TestInspect(unittest.TestCase):
 
     def test_LinearTransform(self):
@@ -193,6 +192,14 @@ class TestInspect(unittest.TestCase):
         # verify
         ynew = x @ A.T + b
         np.testing.assert_array_almost_equal(yref, ynew)
+
+    def test_IndexFlat(self):
+        xb = np.random.rand(13, 20).astype('float32')
+        index = faiss.IndexFlatL2(20)
+        index.add(xb)
+        np.testing.assert_array_equal(
+            xb, inspect_tools.get_flat_data(index)
+        )
 
 
 class TestRangeEval(unittest.TestCase):

@@ -32,18 +32,11 @@ IndexAdditiveQuantizer::IndexAdditiveQuantizer(
             idx_t d,
             AdditiveQuantizer* aq,
             MetricType metric):
-        Index(d, metric), aq(aq)
+        IndexFlatCodes(aq->code_size, d, metric), aq(aq)
 {
     FAISS_THROW_IF_NOT(metric == METRIC_INNER_PRODUCT || metric == METRIC_L2);
 }
 
-
-void IndexAdditiveQuantizer::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((n + ntotal) * aq->code_size);
-    aq->compute_codes(x, &codes[ntotal * aq->code_size], n);
-    ntotal += n;
-}
 
 namespace {
 
@@ -161,15 +154,6 @@ void IndexAdditiveQuantizer::search(
         }
 
     }
-}
-
-void IndexAdditiveQuantizer::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-size_t IndexAdditiveQuantizer::sa_code_size() const {
-    return code_size;
 }
 
 void IndexAdditiveQuantizer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {

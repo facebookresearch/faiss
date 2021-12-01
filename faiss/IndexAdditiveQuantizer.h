@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/platform_macros.h>
@@ -21,7 +21,7 @@
 namespace faiss {
 
 /// Abstract class for additive quantizers. The search functions are in common.
-struct IndexAdditiveQuantizer : Index {
+struct IndexAdditiveQuantizer : IndexFlatCodes {
     // the quantizer, this points to the relevant field in the inheriting
     // classes
     AdditiveQuantizer* aq;
@@ -32,12 +32,6 @@ struct IndexAdditiveQuantizer : Index {
             AdditiveQuantizer* aq = nullptr,
             MetricType metric = METRIC_L2);
 
-    /// size of residual quantizer codes + norms
-    size_t code_size;
-
-    /// Codes. Size ntotal * rq.code_size
-    std::vector<uint8_t> codes;
-
     void search(
             idx_t n,
             const float* x,
@@ -45,13 +39,7 @@ struct IndexAdditiveQuantizer : Index {
             float* distances,
             idx_t* labels) const override;
 
-    void reset() override;
-
-    void add(idx_t n, const float* x) override;
-
     /* The standalone codec interface */
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

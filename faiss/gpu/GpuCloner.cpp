@@ -40,7 +40,7 @@ void ToCPUCloner::merge_index(Index* dst, Index* src, bool successive_ids) {
         auto ifl2 = dynamic_cast<const IndexFlat*>(src);
         FAISS_ASSERT(ifl2);
         FAISS_ASSERT(successive_ids);
-        ifl->add(ifl2->ntotal, ifl2->xb.data());
+        ifl->add(ifl2->ntotal, ifl2->get_xb());
     } else if (auto ifl = dynamic_cast<IndexIVFFlat*>(dst)) {
         auto ifl2 = dynamic_cast<IndexIVFFlat*>(src);
         FAISS_ASSERT(ifl2);
@@ -329,7 +329,7 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             if (index->ntotal > 0) {
                 long i0 = index->ntotal * i / n;
                 long i1 = index->ntotal * (i + 1) / n;
-                shards[i]->add(i1 - i0, index_flat->xb.data() + i0 * index->d);
+                shards[i]->add(i1 - i0, index_flat->get_xb() + i0 * index->d);
             }
         }
     }

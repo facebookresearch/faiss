@@ -28,12 +28,13 @@ namespace faiss {
  ********************************************************/
 
 IndexPQ::IndexPQ(int d, size_t M, size_t nbits, MetricType metric)
-        : Index(d, metric), pq(d, M, nbits) {
+        : IndexFlatCodes(0, d, metric), pq(d, M, nbits) {
     is_trained = false;
     do_polysemous_training = false;
     polysemous_ht = nbits * M + 1;
     search_type = ST_PQ;
     encode_signs = false;
+    code_size = pq.code_size;
 }
 
 IndexPQ::IndexPQ() {
@@ -67,53 +68,6 @@ void IndexPQ::train(idx_t n, const float* x) {
                 pq, ntrain_perm, x + (n - ntrain_perm) * d);
     }
     is_trained = true;
-}
-
-void IndexPQ::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((n + ntotal) * pq.code_size);
-    pq.compute_codes(x, &codes[ntotal * pq.code_size], n);
-    ntotal += n;
-}
-
-size_t IndexPQ::remove_ids(const IDSelector& sel) {
-    idx_t j = 0;
-    for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
-            if (i > j) {
-                memmove(&codes[pq.code_size * j],
-                        &codes[pq.code_size * i],
-                        pq.code_size);
-            }
-            j++;
-        }
-    }
-    size_t nremove = ntotal - j;
-    if (nremove > 0) {
-        ntotal = j;
-        codes.resize(ntotal * pq.code_size);
-    }
-    return nremove;
-}
-
-void IndexPQ::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-void IndexPQ::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
-    FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
-    for (idx_t i = 0; i < ni; i++) {
-        const uint8_t* code = &codes[(i0 + i) * pq.code_size];
-        pq.decode(code, recons + i * d);
-    }
-}
-
-void IndexPQ::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
-    pq.decode(&codes[key * pq.code_size], recons);
 }
 
 namespace {
@@ -457,9 +411,6 @@ void IndexPQ::search_core_polysemous(
 }
 
 /* The standalone codec interface (just remaps to the PQ functions) */
-size_t IndexPQ::sa_code_size() const {
-    return pq.code_size;
-}
 
 void IndexPQ::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     pq.compute_codes(x, bytes, n);
