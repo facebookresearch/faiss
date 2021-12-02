@@ -25,8 +25,14 @@ namespace faiss {
 struct ResidualQuantizer : AdditiveQuantizer {
     /// initialization
     enum train_type_t {
-        Train_default,         ///< regular k-means
-        Train_progressive_dim, ///< progressive dim clustering
+        Train_default = 0,         ///< regular k-means
+        Train_progressive_dim = 1, ///< progressive dim clustering
+        Train_default_Train_top_beam = 1024,
+        Train_progressive_dim_Train_top_beam = 1025,
+        Train_default_Skip_codebook_tables = 2048,
+        Train_progressive_dim_Skip_codebook_tables = 2049,
+        Train_default_Train_top_beam_Skip_codebook_tables = 3072,
+        Train_progressive_dim_Train_top_beam_Skip_codebook_tables = 3073,
     };
 
     train_type_t train_type;
