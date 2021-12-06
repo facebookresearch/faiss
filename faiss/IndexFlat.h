@@ -12,20 +12,13 @@
 
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 
 namespace faiss {
 
 /** Index that stores the full vectors and performs exhaustive search */
-struct IndexFlat : Index {
-    /// database vectors, size ntotal * d
-    std::vector<float> xb;
-
+struct IndexFlat : IndexFlatCodes {
     explicit IndexFlat(idx_t d, MetricType metric = METRIC_L2);
-
-    void add(idx_t n, const float* x) override;
-
-    void reset() override;
 
     void search(
             idx_t n,
@@ -57,18 +50,19 @@ struct IndexFlat : Index {
             float* distances,
             const idx_t* labels) const;
 
-    /** remove some ids. NB that Because of the structure of the
-     * indexing structure, the semantics of this operation are
-     * different from the usual ones: the new ids are shifted */
-    size_t remove_ids(const IDSelector& sel) override;
+    // get pointer to the floating point data
+    float* get_xb() {
+        return (float*)codes.data();
+    }
+    const float* get_xb() const {
+        return (const float*)codes.data();
+    }
 
     IndexFlat() {}
 
     DistanceComputer* get_distance_computer() const override;
 
     /* The stanadlone codec interface (just memcopies in this case) */
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

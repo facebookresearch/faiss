@@ -192,7 +192,8 @@ class TestSQFlavors(unittest.TestCase):
         nlist = index.nlist
         quantizer = faiss.downcast_index(index.quantizer)
         quantizer2 = faiss.IndexFlat(d2, index.metric_type)
-        centroids = faiss.vector_to_array(quantizer.xb).reshape(nlist, d)
+        centroids = faiss.vector_to_array(quantizer.codes)
+        centroids = centroids.view("float32").reshape(nlist, d)
         centroids2 = self.add2columns(centroids)
         quantizer2.add(centroids2)
         index2 = faiss.IndexIVFScalarQuantizer(

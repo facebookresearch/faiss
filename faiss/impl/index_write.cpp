@@ -171,7 +171,7 @@ static void write_AdditiveQuantizer(const AdditiveQuantizer* aq, IOWriter* f) {
     WRITE1(aq->norm_max);
     if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
         aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
-        WRITEVECTOR(aq->qnorm.xb);
+        WRITEXBVECTOR(aq->qnorm.codes);
     }
 }
 
@@ -345,7 +345,7 @@ void write_index(const Index* idx, IOWriter* f) {
                                                                  : "IxFl");
         WRITE1(h);
         write_index_header(idx, f);
-        WRITEVECTOR(idxf->xb);
+        WRITEXBVECTOR(idxf->codes);
     } else if (const IndexLSH* idxl = dynamic_cast<const IndexLSH*>(idx)) {
         uint32_t h = fourcc("IxHe");
         WRITE1(h);
@@ -354,7 +354,8 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxl->rotate_data);
         WRITE1(idxl->train_thresholds);
         WRITEVECTOR(idxl->thresholds);
-        WRITE1(idxl->bytes_per_vec);
+        int code_size_i = idxl->code_size;
+        WRITE1(code_size_i);
         write_VectorTransform(&idxl->rrot, f);
         WRITEVECTOR(idxl->codes);
     } else if (const IndexPQ* idxp = dynamic_cast<const IndexPQ*>(idx)) {

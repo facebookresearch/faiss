@@ -75,7 +75,7 @@ class TestRevSwigPtr(unittest.TestCase):
             i * 10 + np.array([1, 2, 3, 4], dtype='float32')
             for i in range(5)])
         index.add(xb0)
-        xb = faiss.rev_swig_ptr(index.xb.data(), 4 * 5).reshape(5, 4)
+        xb = faiss.rev_swig_ptr(index.get_xb(), 4 * 5).reshape(5, 4)
         self.assertEqual(np.abs(xb0 - xb).sum(), 0)
 
 

@@ -30,16 +30,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
-/*
-#include <faiss/utils/Heap.h>
-
-#include <faiss/Clustering.h>
-
-#include <faiss/utils/hamming.h>
-
-
-*/
-
 namespace faiss {
 
 /*************************************
@@ -52,7 +42,7 @@ Index2Layer::Index2Layer(
         int M,
         int nbit,
         MetricType metric)
-        : Index(quantizer->d, metric),
+        : IndexFlatCodes(0, quantizer->d, metric),
           q1(quantizer, nlist),
           pq(quantizer->d, M, nbit) {
     is_trained = false;
@@ -116,54 +106,6 @@ void Index2Layer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void Index2Layer::add(idx_t n, const float* x) {
-    idx_t bs = 32768;
-    if (n > bs) {
-        for (idx_t i0 = 0; i0 < n; i0 += bs) {
-            idx_t i1 = std::min(i0 + bs, n);
-            if (verbose) {
-                printf("Index2Layer::add: adding %" PRId64 ":%" PRId64
-                       " / %" PRId64 "\n",
-                       i0,
-                       i1,
-                       n);
-            }
-            add(i1 - i0, x + i0 * d);
-        }
-        return;
-    }
-
-    std::vector<idx_t> codes1(n);
-    q1.quantizer->assign(n, x, codes1.data());
-    std::vector<float> residuals(n * d);
-    for (idx_t i = 0; i < n; i++) {
-        q1.quantizer->compute_residual(
-                x + i * d, residuals.data() + i * d, codes1[i]);
-    }
-    std::vector<uint8_t> codes2(n * code_size_2);
-
-    pq.compute_codes(residuals.data(), codes2.data(), n);
-
-    codes.resize((ntotal + n) * code_size);
-    uint8_t* wp = &codes[ntotal * code_size];
-
-    {
-        int i = 0x11223344;
-        const char* ip = (char*)&i;
-        FAISS_THROW_IF_NOT_MSG(
-                ip[0] == 0x44, "works only on a little-endian CPU");
-    }
-
-    // copy to output table
-    for (idx_t i = 0; i < n; i++) {
-        memcpy(wp, &codes1[i], code_size_1);
-        wp += code_size_1;
-        memcpy(wp, &codes2[i * code_size_2], code_size_2);
-        wp += code_size_2;
-    }
-
-    ntotal += n;
-}
 
 void Index2Layer::search(
         idx_t /*n*/,
@@ -174,24 +116,6 @@ void Index2Layer::search(
     FAISS_THROW_MSG("not implemented");
 }
 
-void Index2Layer::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
-    std::vector<float> recons1(d);
-    FAISS_THROW_IF_NOT(i0 >= 0 && i0 + ni <= ntotal);
-    const uint8_t* rp = &codes[i0 * code_size];
-
-    for (idx_t i = 0; i < ni; i++) {
-        idx_t key = 0;
-        memcpy(&key, rp, code_size_1);
-        q1.quantizer->reconstruct(key, recons1.data());
-        rp += code_size_1;
-        pq.decode(rp, recons);
-        for (idx_t j = 0; j < d; j++) {
-            recons[j] += recons1[j];
-        }
-        rp += code_size_2;
-        recons += d;
-    }
-}
 
 void Index2Layer::transfer_to_IVFPQ(IndexIVFPQ& other) const {
     FAISS_THROW_IF_NOT(other.nlist == q1.nlist);
@@ -209,15 +133,6 @@ void Index2Layer::transfer_to_IVFPQ(IndexIVFPQ& other) const {
     }
 
     other.ntotal = ntotal;
-}
-
-void Index2Layer::reconstruct(idx_t key, float* recons) const {
-    reconstruct_n(key, 1, recons);
-}
-
-void Index2Layer::reset() {
-    ntotal = 0;
-    codes.clear();
 }
 
 namespace {
@@ -259,7 +174,7 @@ struct DistanceXPQ4 : Distance2Level {
 
         FAISS_ASSERT(quantizer);
         M = storage.pq.M;
-        pq_l1_tab = quantizer->xb.data();
+        pq_l1_tab = quantizer->get_xb();
     }
 
     float operator()(idx_t i) override {
@@ -368,12 +283,26 @@ DistanceComputer* Index2Layer::get_distance_computer() const {
 }
 
 /* The standalone codec interface */
-size_t Index2Layer::sa_code_size() const {
-    return code_size;
-}
 
 void Index2Layer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
+
+    idx_t bs = 32768;
+    if (n > bs) {
+        for (idx_t i0 = 0; i0 < n; i0 += bs) {
+            idx_t i1 = std::min(i0 + bs, n);
+            if (verbose) {
+                printf("Index2Layer::add: adding %" PRId64 ":%" PRId64
+                       " / %" PRId64 "\n",
+                       i0,
+                       i1,
+                       n);
+            }
+            sa_encode(i1 - i0, x + i0 * d, bytes + i0 * code_size);
+        }
+        return;
+    }
+
     std::unique_ptr<int64_t[]> list_nos(new int64_t[n]);
     q1.quantizer->assign(n, x, list_nos.get());
     std::vector<float> residuals(n * d);

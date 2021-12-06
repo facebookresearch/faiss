@@ -137,7 +137,7 @@ uint32_t AdditiveQuantizer::encode_qcint(float x) const {
 }
 
 float AdditiveQuantizer::decode_qcint(uint32_t c) const {
-    return qnorm.xb[c];
+    return qnorm.get_xb()[c];
 }
 
 void AdditiveQuantizer::pack_codes(
