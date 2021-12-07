@@ -90,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
@@ -307,7 +308,7 @@
 
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizerE">
-<span id="_CPPv3N5faiss22IndexAdditiveQuantizerE"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizerE"></span><span id="faiss::IndexAdditiveQuantizer"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexAdditiveQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss22IndexAdditiveQuantizerE"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizerE"></span><span id="faiss::IndexAdditiveQuantizer"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexAdditiveQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexFlatCodes_8h.html#_CPPv4N5faiss14IndexFlatCodesE" title="faiss::IndexFlatCodes"><span class="n"><span class="pre">IndexFlatCodes</span></span></a><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizerE" title="Permalink to this definition"></a><br /></dt>
 <dd><em>#include &lt;IndexAdditiveQuantizer.h&gt;</em><p>Abstract class for additive quantizers. The search functions are in common. </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexLocalSearchQuantizer.html#structfaiss_1_1IndexLocalSearchQuantizer"><span class="std std-ref">faiss::IndexLocalSearchQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexResidualQuantizer"><span class="std std-ref">faiss::IndexResidualQuantizer</span></a></p>
 <div class="breathe-sectiondef docutils container">
@@ -342,30 +343,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer5resetEv">
-<span id="_CPPv3N5faiss22IndexAdditiveQuantizer5resetEv"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer5resetEv"></span><span id="faiss::IndexAdditiveQuantizer::reset"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1addaaaab2061825a0213839e2f6c655c3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizer5resetEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf">
-<span id="_CPPv3N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexAdditiveQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ad8ff70edbae3e80d982a61a22e600958"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss22IndexAdditiveQuantizer5idx_tE" title="faiss::IndexAdditiveQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss22IndexAdditiveQuantizer12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer12sa_code_sizeEv"></span><span id="faiss::IndexAdditiveQuantizer::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexAdditiveQuantizer12sa_code_sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of the produced codes in bytes </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss22IndexAdditiveQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexAdditiveQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss22IndexAdditiveQuantizer5idx_tE" title="faiss::IndexAdditiveQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexAdditiveQuantizer9sa_encodeE5idx_tPKfP7uint8_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>encode a set of vectors</p>
@@ -374,7 +351,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
@@ -388,7 +365,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
@@ -402,18 +379,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer2aqE">
 <span id="_CPPv3N5faiss22IndexAdditiveQuantizer2aqE"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer2aqE"></span><span id="faiss::IndexAdditiveQuantizer::aq__AdditiveQuantizerP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a6f271fd02746d5c94c18f6d408d3d783"></span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">aq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizer2aqE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer9code_sizeE">
-<span id="_CPPv3N5faiss22IndexAdditiveQuantizer9code_sizeE"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer9code_sizeE"></span><span id="faiss::IndexAdditiveQuantizer::code_size__s"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a5ce29740e6fd4653a198ed1e1ba5af71"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizer9code_sizeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of residual quantizer codes + norms </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer5codesE">
-<span id="_CPPv3N5faiss22IndexAdditiveQuantizer5codesE"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer5codesE"></span><span id="faiss::IndexAdditiveQuantizer::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ac16ee380f708cf8bc6815a398fb503ac"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexAdditiveQuantizer5codesE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Codes. Size ntotal * rq.code_size. </p>
-</dd></dl>
 
 </div>
 </dd></dl>
@@ -485,30 +450,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexLocalSearchQuantizer5resetEv">
-<span id="_CPPv3N5faiss25IndexLocalSearchQuantizer5resetEv"></span><span id="_CPPv2N5faiss25IndexLocalSearchQuantizer5resetEv"></span><span id="faiss::IndexLocalSearchQuantizer::reset"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1addaaaab2061825a0213839e2f6c655c3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss25IndexLocalSearchQuantizer5resetEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexLocalSearchQuantizer3addE5idx_tPKf">
-<span id="_CPPv3N5faiss25IndexLocalSearchQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss25IndexLocalSearchQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexLocalSearchQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ad8ff70edbae3e80d982a61a22e600958"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss25IndexLocalSearchQuantizer5idx_tE" title="faiss::IndexLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss25IndexLocalSearchQuantizer3addE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexLocalSearchQuantizer12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss25IndexLocalSearchQuantizer12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss25IndexLocalSearchQuantizer12sa_code_sizeEv"></span><span id="faiss::IndexLocalSearchQuantizer::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss25IndexLocalSearchQuantizer12sa_code_sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of the produced codes in bytes </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss25IndexLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss25IndexLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss25IndexLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexLocalSearchQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss25IndexLocalSearchQuantizer5idx_tE" title="faiss::IndexLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss25IndexLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>encode a set of vectors</p>
@@ -517,7 +458,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
@@ -531,7 +472,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
@@ -550,18 +491,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexLocalSearchQuantizer2aqE">
 <span id="_CPPv3N5faiss25IndexLocalSearchQuantizer2aqE"></span><span id="_CPPv2N5faiss25IndexLocalSearchQuantizer2aqE"></span><span id="faiss::IndexLocalSearchQuantizer::aq__AdditiveQuantizerP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a6f271fd02746d5c94c18f6d408d3d783"></span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">aq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss25IndexLocalSearchQuantizer2aqE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexLocalSearchQuantizer9code_sizeE">
-<span id="_CPPv3N5faiss25IndexLocalSearchQuantizer9code_sizeE"></span><span id="_CPPv2N5faiss25IndexLocalSearchQuantizer9code_sizeE"></span><span id="faiss::IndexLocalSearchQuantizer::code_size__s"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a5ce29740e6fd4653a198ed1e1ba5af71"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><a class="headerlink" href="#_CPPv4N5faiss25IndexLocalSearchQuantizer9code_sizeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of residual quantizer codes + norms </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss25IndexLocalSearchQuantizer5codesE">
-<span id="_CPPv3N5faiss25IndexLocalSearchQuantizer5codesE"></span><span id="_CPPv2N5faiss25IndexLocalSearchQuantizer5codesE"></span><span id="faiss::IndexLocalSearchQuantizer::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ac16ee380f708cf8bc6815a398fb503ac"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss25IndexLocalSearchQuantizer5codesE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Codes. Size ntotal * rq.code_size. </p>
-</dd></dl>
 
 </div>
 </dd></dl>
@@ -639,30 +568,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexResidualQuantizer5resetEv">
-<span id="_CPPv3N5faiss22IndexResidualQuantizer5resetEv"></span><span id="_CPPv2N5faiss22IndexResidualQuantizer5resetEv"></span><span id="faiss::IndexResidualQuantizer::reset"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1addaaaab2061825a0213839e2f6c655c3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexResidualQuantizer5resetEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexResidualQuantizer3addE5idx_tPKf">
-<span id="_CPPv3N5faiss22IndexResidualQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss22IndexResidualQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexResidualQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ad8ff70edbae3e80d982a61a22e600958"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss22IndexResidualQuantizer5idx_tE" title="faiss::IndexResidualQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexResidualQuantizer3addE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexResidualQuantizer12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss22IndexResidualQuantizer12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss22IndexResidualQuantizer12sa_code_sizeEv"></span><span id="faiss::IndexResidualQuantizer::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexResidualQuantizer12sa_code_sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of the produced codes in bytes </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss22IndexResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss22IndexResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexResidualQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss22IndexResidualQuantizer5idx_tE" title="faiss::IndexResidualQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22IndexResidualQuantizer9sa_encodeE5idx_tPKfP7uint8_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>encode a set of vectors</p>
@@ -671,7 +576,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
@@ -685,7 +590,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexResidualQuantizer.html#structfaiss_1_1IndexAdditiveQuantizer_1a502ae0ba26b81d4e464e426d0cf7fb51"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
@@ -705,18 +610,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexResidualQuantizer2aqE">
 <span id="_CPPv3N5faiss22IndexResidualQuantizer2aqE"></span><span id="_CPPv2N5faiss22IndexResidualQuantizer2aqE"></span><span id="faiss::IndexResidualQuantizer::aq__AdditiveQuantizerP"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a6f271fd02746d5c94c18f6d408d3d783"></span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">aq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexResidualQuantizer2aqE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexResidualQuantizer9code_sizeE">
-<span id="_CPPv3N5faiss22IndexResidualQuantizer9code_sizeE"></span><span id="_CPPv2N5faiss22IndexResidualQuantizer9code_sizeE"></span><span id="faiss::IndexResidualQuantizer::code_size__s"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a5ce29740e6fd4653a198ed1e1ba5af71"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexResidualQuantizer9code_sizeE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of residual quantizer codes + norms </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexResidualQuantizer5codesE">
-<span id="_CPPv3N5faiss22IndexResidualQuantizer5codesE"></span><span id="_CPPv2N5faiss22IndexResidualQuantizer5codesE"></span><span id="faiss::IndexResidualQuantizer::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1ac16ee380f708cf8bc6815a398fb503ac"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss22IndexResidualQuantizer5codesE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Codes. Size ntotal * rq.code_size. </p>
-</dd></dl>
 
 </div>
 </dd></dl>

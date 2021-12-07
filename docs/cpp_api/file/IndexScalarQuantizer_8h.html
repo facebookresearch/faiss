@@ -90,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
@@ -313,7 +314,7 @@
 
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexScalarQuantizerE">
-<span id="_CPPv3N5faiss20IndexScalarQuantizerE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizerE"></span><span id="faiss::IndexScalarQuantizer"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexScalarQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizerE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss20IndexScalarQuantizerE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizerE"></span><span id="faiss::IndexScalarQuantizer"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexScalarQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexFlatCodes_8h.html#_CPPv4N5faiss14IndexFlatCodesE" title="faiss::IndexFlatCodes"><span class="n"><span class="pre">IndexFlatCodes</span></span></a><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizerE" title="Permalink to this definition"></a><br /></dt>
 <dd><em>#include &lt;IndexScalarQuantizer.h&gt;</em><p>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -352,18 +353,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexScalarQuantizer3addE5idx_tPKf">
-<span id="_CPPv3N5faiss20IndexScalarQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexScalarQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1ad49602f9ecfcaa2ec8737a449b69ccd7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizer3addE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexScalarQuantizer::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1abf24732c29106bb808148c3d30599662"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>query n vectors of dimension d to the index.</p>
@@ -380,49 +369,10 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexScalarQuantizer5resetEv">
-<span id="_CPPv3N5faiss20IndexScalarQuantizer5resetEv"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer5resetEv"></span><span id="faiss::IndexScalarQuantizer::reset"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1af0d6b901a2a02fff34e5c7c1ea5b8d55"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizer5resetEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf">
-<span id="_CPPv3NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexScalarQuantizer::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a06e6935b75f0b209f65fffa1c9e1477c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer13reconstruct_nE5idx_t5idx_tPf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf">
-<span id="_CPPv3NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf"></span><span id="faiss::IndexScalarQuantizer::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a8fb8680f64465d643d96119da58099f3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss20IndexScalarQuantizer5idx_tE" title="faiss::IndexScalarQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer11reconstructE5idx_tPf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
-<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer21get_distance_computerEv">
 <span id="_CPPv3NK5faiss20IndexScalarQuantizer21get_distance_computerEv"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer21get_distance_computerEv"></span><span id="faiss::IndexScalarQuantizer::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a453a94e1d549a9ebf11e4b211c577f17"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer21get_distance_computerEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
 <p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss20IndexScalarQuantizer12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer12sa_code_sizeEv"></span><span id="faiss::IndexScalarQuantizer::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer12sa_code_sizeEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>size of the produced codes in bytes </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -434,7 +384,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
@@ -448,7 +398,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexScalarQuantizer_1affa97f8eeee491cdb5f79c975c0f5e1b"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
@@ -463,17 +413,6 @@
 <span id="_CPPv3N5faiss20IndexScalarQuantizer2sqE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer2sqE"></span><span id="faiss::IndexScalarQuantizer::sq__ScalarQuantizer"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a71381f74754d8a54812e80af46a2a83a"></span><span class="n"><span class="pre">ScalarQuantizer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizer2sqE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Used to encode the vectors. </p>
 </dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexScalarQuantizer5codesE">
-<span id="_CPPv3N5faiss20IndexScalarQuantizer5codesE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer5codesE"></span><span id="faiss::IndexScalarQuantizer::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a861fa059f9d4ced9147e08193a2be9be"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizer5codesE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Codes. Size ntotal * pq.code_size. </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexScalarQuantizer9code_sizeE">
-<span id="_CPPv3N5faiss20IndexScalarQuantizer9code_sizeE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizer9code_sizeE"></span><span id="faiss::IndexScalarQuantizer::code_size__s"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a8ca0b891036031ae0a9d4fef756858b2"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizer9code_sizeE" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
 
 </div>
 </dd></dl>

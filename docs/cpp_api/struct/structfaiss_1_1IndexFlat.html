@@ -108,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryMultiHash.html">Struct faiss::IndexBinaryMultiHash</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat1D.html">Struct faiss::IndexFlat1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatCodes.html">Struct faiss::IndexFlatCodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatIP.html">Struct faiss::IndexFlatIP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
@@ -251,7 +252,7 @@
 <h1>Struct faiss::IndexFlat<a class="headerlink" href="#struct-faiss-indexflat" title="Permalink to this headline"></a></h1>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlatE">
-<span id="_CPPv3N5faiss9IndexFlatE"></span><span id="_CPPv2N5faiss9IndexFlatE"></span><span id="faiss::IndexFlat"></span><span class="target" id="structfaiss_1_1IndexFlat"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><br /></dt>
+<span id="_CPPv3N5faiss9IndexFlatE"></span><span id="_CPPv2N5faiss9IndexFlatE"></span><span id="faiss::IndexFlat"></span><span class="target" id="structfaiss_1_1IndexFlat"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexFlatCodes_8h.html#_CPPv4N5faiss14IndexFlatCodesE" title="faiss::IndexFlatCodes"><span class="n"><span class="pre">IndexFlatCodes</span></span></a><br /></dt>
 <dd><p><a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> that stores the full vectors and performs exhaustive search </p>
 <p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexFlatIP.html#structfaiss_1_1IndexFlatIP"><span class="std std-ref">faiss::IndexFlatIP</span></a>, <a class="reference internal" href="structfaiss_1_1IndexFlatL2.html#structfaiss_1_1IndexFlatL2"><span class="std std-ref">faiss::IndexFlatL2</span></a></p>
 <div class="breathe-sectiondef docutils container">
@@ -279,24 +280,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat9IndexFlatE5idx_t10MetricType">
 <span id="_CPPv3N5faiss9IndexFlat9IndexFlatE5idx_t10MetricType"></span><span id="_CPPv2N5faiss9IndexFlat9IndexFlatE5idx_t10MetricType"></span><span id="faiss::IndexFlat::IndexFlat__idx_t.MetricType"></span><span class="target" id="structfaiss_1_1IndexFlat_1a7c4a216055a21621b5ba48bb042d46df"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat3addE5idx_tPKf">
-<span id="_CPPv3N5faiss9IndexFlat3addE5idx_tPKf"></span><span id="_CPPv2N5faiss9IndexFlat3addE5idx_tPKf"></span><span id="faiss::IndexFlat::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexFlat_1a406f028c702edec72477eacc5733f59c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat5resetEv">
-<span id="_CPPv3N5faiss9IndexFlat5resetEv"></span><span id="_CPPv2N5faiss9IndexFlat5resetEv"></span><span id="faiss::IndexFlat::reset"></span><span class="target" id="structfaiss_1_1IndexFlat_1ab63dc34ef5d33f98f94aa0ade7c7324f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat6searchE5idx_tPKf5idx_tPfP5idx_t">
@@ -361,10 +344,14 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat10remove_idsERK10IDSelector">
-<span id="_CPPv3N5faiss9IndexFlat10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss9IndexFlat10remove_idsERK10IDSelector"></span><span id="faiss::IndexFlat::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexFlat_1af8ce3571ee6a1fe5f89e17c671f352b8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>remove some ids. NB that Because of the structure of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat6get_xbEv">
+<span id="_CPPv3N5faiss9IndexFlat6get_xbEv"></span><span id="_CPPv2N5faiss9IndexFlat6get_xbEv"></span><span id="faiss::IndexFlat::get_xb"></span><span class="target" id="structfaiss_1_1IndexFlat_1ad8baeefb1c0b78316e70d9c994a54a80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat6get_xbEv">
+<span id="_CPPv3NK5faiss9IndexFlat6get_xbEv"></span><span id="_CPPv2NK5faiss9IndexFlat6get_xbEv"></span><span id="faiss::IndexFlat::get_xbC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a6a5cd875d1a63260e29d00cab7df9a74"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat9IndexFlatEv">
@@ -379,12 +366,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat12sa_code_sizeEv">
-<span id="_CPPv3NK5faiss9IndexFlat12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss9IndexFlat12sa_code_sizeEv"></span><span id="faiss::IndexFlat::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a1e6775c1bfecb89f23558108a034fd62"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>size of the produced codes in bytes </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat9sa_encodeE5idx_tPKfP7uint8_t">
 <span id="_CPPv3NK5faiss9IndexFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss9IndexFlat9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexFlat::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>encode a set of vectors</p>
@@ -393,7 +374,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexFlatL2.html#structfaiss_1_1IndexFlat_1a1e6775c1bfecb89f23558108a034fd62"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 </ul>
 </dd>
 </dl>
@@ -407,11 +388,41 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexFlatL2.html#structfaiss_1_1IndexFlat_1a1e6775c1bfecb89f23558108a034fd62"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
 <li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat3addE5idx_tPKf">
+<span id="_CPPv3N5faiss9IndexFlat3addE5idx_tPKf"></span><span id="_CPPv2N5faiss9IndexFlat3addE5idx_tPKf"></span><span id="faiss::IndexFlat::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>default add uses sa_encode </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat5resetEv">
+<span id="_CPPv3N5faiss9IndexFlat5resetEv"></span><span id="_CPPv2N5faiss9IndexFlat5resetEv"></span><span id="faiss::IndexFlat::reset"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1afedfd72f57bcbc7d3a94fda7cb90c88b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf">
+<span id="_CPPv3NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexFlat::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a166582b8b10fc86e77ce8c48854496f8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>reconstruction using the codec interface </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat12sa_code_sizeEv">
+<span id="_CPPv3NK5faiss9IndexFlat12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss9IndexFlat12sa_code_sizeEv"></span><span id="faiss::IndexFlat::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>size of the produced codes in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss9IndexFlat10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss9IndexFlat10remove_idsERK10IDSelector"></span><span id="faiss::IndexFlat::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a6d033f2cbc377bb26948a5dfa6b5aa3c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>remove some ids. NB that Because of the structure of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -451,18 +462,6 @@
 <li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
 <li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf">
-<span id="_CPPv3NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss9IndexFlat13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexFlat::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss9IndexFlat5idx_tE" title="faiss::IndexFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Reconstruct vectors i0 to i0 + ni - 1</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>recons</strong> – reconstucted vector (size ni * d) </p>
 </dd>
 </dl>
 </dd></dl>
@@ -516,9 +515,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat2xbE">
-<span id="_CPPv3N5faiss9IndexFlat2xbE"></span><span id="_CPPv2N5faiss9IndexFlat2xbE"></span><span id="faiss::IndexFlat::xb__std::vector:float:"></span><span class="target" id="structfaiss_1_1IndexFlat_1a9001de47890fe5d2eced9551d3613d47"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xb</span></span></span><br /></dt>
-<dd><p>database vectors, size ntotal * d </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat9code_sizeE">
+<span id="_CPPv3N5faiss9IndexFlat9code_sizeE"></span><span id="_CPPv2N5faiss9IndexFlat9code_sizeE"></span><span id="faiss::IndexFlat::code_size__s"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9IndexFlat5codesE">
+<span id="_CPPv3N5faiss9IndexFlat5codesE"></span><span id="_CPPv2N5faiss9IndexFlat5codesE"></span><span id="faiss::IndexFlat::codes__std::vector:uint8_t:"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1ad5bb76b70b977dc2c677b899ece9248c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">codes</span></span></span><br /></dt>
+<dd><p>encoded dataset, size ntotal * code_size </p>
 </dd></dl>
 
 <dl class="cpp var">
