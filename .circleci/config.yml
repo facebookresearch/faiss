@@ -221,7 +221,7 @@ jobs:
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-1604-cuda-10.1:201909-23
+      image: ubuntu-2004-cuda-11.4:202110-01
       docker_layer_caching: true
     steps:
       - checkout
@@ -266,6 +266,8 @@ jobs:
         type: string
       cuda_archs:
         type: string
+      compiler_version:
+        type: string
     machine:
       resource_class: gpu.nvidia.medium
       image: ubuntu-1604-cuda-10.1:201909-23
@@ -281,7 +283,7 @@ jobs:
               -e CUDA_ARCHS="<<parameters.cuda_archs>>" \
               -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
               faiss \
-              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>" }' \
+              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                 --user pytorch --label <<parameters.label>>
           no_output_timeout: 60m
 
@@ -369,27 +371,10 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 10.1)
-          cuda: "10.1"
-          cuda_archs: "35;52;60;61;70;72;75"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 10.2)
           cuda: "10.2"
           cuda_archs: "35;52;60;61;70;72;75"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.0)
-          cuda: "11.0"
-          cuda_archs: "60;61;70;72;75;80"
+          compiler_version: "8.4"
           filters:
             tags:
               only: /^v.*/
@@ -399,6 +384,7 @@ workflows:
           name: Linux GPU packages (CUDA 11.3)
           cuda: "11.3"
           cuda_archs: "60;61;70;72;75;80;86"
+          compiler_version: "9.3"
           filters:
             tags:
               only: /^v.*/
@@ -432,24 +418,16 @@ workflows:
           name: Linux nightlies
           label: nightly
       - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 10.1)
-          cuda: "10.1"
-          cuda_archs: "35;52;60;61;70;72;75"
-          label: nightly
-      - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 10.2)
           cuda: "10.2"
           cuda_archs: "35;52;60;61;70;72;75"
-          label: nightly
-      - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.0)
-          cuda: "11.0"
-          cuda_archs: "60;61;70;72;75;80"
+          compiler_version: "8.4"
           label: nightly
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 11.3)
           cuda: "11.3"
           cuda_archs: "60;61;70;72;75;80;86"
+          compiler_version: "9.3"
           label: nightly
       - deploy_windows:
           name: Windows nightlies
