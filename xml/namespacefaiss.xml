@@ -398,6 +398,20 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::index_factory_verbose</definition>
+        <argsstring></argsstring>
+        <name>index_factory_verbose</name>
+        <briefdescription>
+<para>set to &gt; 0 to get more logs from index_factory </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_factory.h" line="23" column="22" declfile="faiss/index_factory.h" declline="23" declcolumn="22"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1aa75d478d14ec1ffd7b0718adf0dab26b" prot="public" static="no" mutable="no">
         <type>const int</type>
         <definition>const int faiss::IO_FLAG_READ_ONLY</definition>
@@ -778,7 +792,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_factory.h" line="22" column="13" declfile="faiss/index_factory.h" declline="22" declcolumn="13"/>
+        <location file="faiss/index_factory.h" line="25" column="13" declfile="faiss/index_factory.h" declline="25" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa41490abaa2dad0dd2131150ed99ef8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
