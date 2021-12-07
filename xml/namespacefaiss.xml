@@ -53,6 +53,7 @@
     <innerclass refid="structfaiss_1_1IndexBinaryMultiHash" prot="public">faiss::IndexBinaryMultiHash</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat" prot="public">faiss::IndexFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatIP" prot="public">faiss::IndexFlatIP</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatL2" prot="public">faiss::IndexFlatL2</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW" prot="public">faiss::IndexHNSW</innerclass>
@@ -529,7 +530,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="141" column="31" declfile="faiss/IndexPQ.h" declline="141" declcolumn="31"/>
+        <location file="faiss/IndexPQ.h" line="126" column="31" declfile="faiss/IndexPQ.h" declline="126" declcolumn="31"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a740c0ca147e528a2d7913acad0fc9bc3" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1FastScanStats" kindref="compound">FastScanStats</ref></type>

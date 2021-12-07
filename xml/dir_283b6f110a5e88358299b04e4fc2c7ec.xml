@@ -21,6 +21,7 @@
     <innerfile refid="IndexBinaryHNSW_8h">IndexBinaryHNSW.h</innerfile>
     <innerfile refid="IndexBinaryIVF_8h">IndexBinaryIVF.h</innerfile>
     <innerfile refid="IndexFlat_8h">IndexFlat.h</innerfile>
+    <innerfile refid="IndexFlatCodes_8h">IndexFlatCodes.h</innerfile>
     <innerfile refid="IndexHNSW_8h">IndexHNSW.h</innerfile>
     <innerfile refid="IndexIVF_8h">IndexIVF.h</innerfile>
     <innerfile refid="IndexIVFAdditiveQuantizer_8h">IndexIVFAdditiveQuantizer.h</innerfile>
