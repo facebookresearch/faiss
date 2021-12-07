@@ -12,26 +12,20 @@
 
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/VectorTransform.h>
 
 namespace faiss {
 
 /** The sign of each vector component is put in a binary signature */
-struct IndexLSH : Index {
-    typedef unsigned char uint8_t;
-
+struct IndexLSH : IndexFlatCodes {
     int nbits;             ///< nb of bits per vector
-    int bytes_per_vec;     ///< nb of 8-bits per encoded vector
     bool rotate_data;      ///< whether to apply a random rotation to input
     bool train_thresholds; ///< whether we train thresholds or use 0
 
     RandomRotationMatrix rrot; ///< optional random rotation
 
     std::vector<float> thresholds; ///< thresholds to compare with
-
-    /// encoded dataset
-    std::vector<uint8_t> codes;
 
     IndexLSH(
             idx_t d,
@@ -50,8 +44,6 @@ struct IndexLSH : Index {
 
     void train(idx_t n, const float* x) override;
 
-    void add(idx_t n, const float* x) override;
-
     void search(
             idx_t n,
             const float* x,
@@ -59,7 +51,6 @@ struct IndexLSH : Index {
             float* distances,
             idx_t* labels) const override;
 
-    void reset() override;
 
     /// transfer the thresholds to a pre-processing stage (and unset
     /// train_thresholds)
@@ -72,9 +63,6 @@ struct IndexLSH : Index {
     /* standalone codec interface.
      *
      * The vectors are decoded to +/- 1 (not 0, 1) */
-
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

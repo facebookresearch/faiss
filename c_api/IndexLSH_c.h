@@ -25,7 +25,7 @@ FAISS_DECLARE_DESTRUCTOR(IndexLSH)
 FAISS_DECLARE_INDEX_DOWNCAST(IndexLSH)
 
 FAISS_DECLARE_GETTER(IndexLSH, int, nbits)
-FAISS_DECLARE_GETTER(IndexLSH, int, bytes_per_vec)
+FAISS_DECLARE_GETTER(IndexLSH, int, code_size)
 FAISS_DECLARE_GETTER(IndexLSH, int, rotate_data)
 FAISS_DECLARE_GETTER(IndexLSH, int, train_thresholds)
 

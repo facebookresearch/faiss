@@ -19,7 +19,7 @@ DEFINE_DESTRUCTOR(IndexLSH)
 DEFINE_INDEX_DOWNCAST(IndexLSH)
 
 DEFINE_GETTER(IndexLSH, int, nbits)
-DEFINE_GETTER(IndexLSH, int, bytes_per_vec)
+DEFINE_GETTER(IndexLSH, int, code_size)
 DEFINE_GETTER_PERMISSIVE(IndexLSH, int, rotate_data)
 DEFINE_GETTER_PERMISSIVE(IndexLSH, int, train_thresholds)
 

@@ -19,17 +19,8 @@
 
 namespace faiss {
 
-IndexFlat::IndexFlat(idx_t d, MetricType metric) : Index(d, metric) {}
-
-void IndexFlat::add(idx_t n, const float* x) {
-    xb.insert(xb.end(), x, x + n * d);
-    ntotal += n;
-}
-
-void IndexFlat::reset() {
-    xb.clear();
-    ntotal = 0;
-}
+IndexFlat::IndexFlat(idx_t d, MetricType metric)
+        : IndexFlatCodes(sizeof(float) * d, d, metric) {}
 
 void IndexFlat::search(
         idx_t n,
@@ -43,14 +34,14 @@ void IndexFlat::search(
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_inner_product(x, xb.data(), d, n, ntotal, &res);
+        knn_inner_product(x, get_xb(), d, n, ntotal, &res);
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_L2sqr(x, xb.data(), d, n, ntotal, &res);
+        knn_L2sqr(x, get_xb(), d, n, ntotal, &res);
     } else {
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
         knn_extra_metrics(
-                x, xb.data(), d, n, ntotal, metric_type, metric_arg, &res);
+                x, get_xb(), d, n, ntotal, metric_type, metric_arg, &res);
     }
 }
 
@@ -62,10 +53,10 @@ void IndexFlat::range_search(
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             range_search_inner_product(
-                    x, xb.data(), d, n, ntotal, radius, result);
+                    x, get_xb(), d, n, ntotal, radius, result);
             break;
         case METRIC_L2:
-            range_search_L2sqr(x, xb.data(), d, n, ntotal, radius, result);
+            range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result);
             break;
         default:
             FAISS_THROW_MSG("metric type not supported");
@@ -80,35 +71,14 @@ void IndexFlat::compute_distance_subset(
         const idx_t* labels) const {
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            fvec_inner_products_by_idx(
-                    distances, x, xb.data(), labels, d, n, k);
+            fvec_inner_products_by_idx(distances, x, get_xb(), labels, d, n, k);
             break;
         case METRIC_L2:
-            fvec_L2sqr_by_idx(distances, x, xb.data(), labels, d, n, k);
+            fvec_L2sqr_by_idx(distances, x, get_xb(), labels, d, n, k);
             break;
         default:
             FAISS_THROW_MSG("metric type not supported");
     }
-}
-
-size_t IndexFlat::remove_ids(const IDSelector& sel) {
-    idx_t j = 0;
-    for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
-            if (i > j) {
-                memmove(&xb[d * j], &xb[d * i], sizeof(xb[0]) * d);
-            }
-            j++;
-        }
-    }
-    size_t nremove = ntotal - j;
-    if (nremove > 0) {
-        ntotal = j;
-        xb.resize(ntotal * d);
-    }
-    return nremove;
 }
 
 namespace {
@@ -133,7 +103,7 @@ struct FlatL2Dis : DistanceComputer {
             : d(storage.d),
               nb(storage.ntotal),
               q(q),
-              b(storage.xb.data()),
+              b(storage.get_xb()),
               ndis(0) {}
 
     void set_query(const float* x) override {
@@ -161,7 +131,7 @@ struct FlatIPDis : DistanceComputer {
             : d(storage.d),
               nb(storage.ntotal),
               q(q),
-              b(storage.xb.data()),
+              b(storage.get_xb()),
               ndis(0) {}
 
     void set_query(const float* x) override {
@@ -178,25 +148,24 @@ DistanceComputer* IndexFlat::get_distance_computer() const {
         return new FlatIPDis(*this);
     } else {
         return get_extra_distance_computer(
-                d, metric_type, metric_arg, ntotal, xb.data());
+                d, metric_type, metric_arg, ntotal, get_xb());
     }
 }
 
 void IndexFlat::reconstruct(idx_t key, float* recons) const {
-    memcpy(recons, &(xb[key * d]), sizeof(*recons) * d);
-}
-
-/* The standalone codec interface */
-size_t IndexFlat::sa_code_size() const {
-    return sizeof(float) * d;
+    memcpy(recons, &(codes[key * code_size]), code_size);
 }
 
 void IndexFlat::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
-    memcpy(bytes, x, sizeof(float) * d * n);
+    if (n > 0) {
+        memcpy(bytes, x, sizeof(float) * d * n);
+    }
 }
 
 void IndexFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
-    memcpy(x, bytes, sizeof(float) * d * n);
+    if (n > 0) {
+        memcpy(x, bytes, sizeof(float) * d * n);
+    }
 }
 
 /***************************************************
@@ -211,9 +180,9 @@ IndexFlat1D::IndexFlat1D(bool continuous_update)
 void IndexFlat1D::update_permutation() {
     perm.resize(ntotal);
     if (ntotal < 1000000) {
-        fvec_argsort(ntotal, xb.data(), (size_t*)perm.data());
+        fvec_argsort(ntotal, get_xb(), (size_t*)perm.data());
     } else {
-        fvec_argsort_parallel(ntotal, xb.data(), (size_t*)perm.data());
+        fvec_argsort_parallel(ntotal, get_xb(), (size_t*)perm.data());
     }
 }
 
@@ -238,6 +207,7 @@ void IndexFlat1D::search(
 
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == ntotal, "Call update_permutation before search");
+    const float* xb = get_xb();
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {

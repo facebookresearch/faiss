@@ -6,6 +6,7 @@
 import numpy as np
 import faiss
 
+
 def get_invlist(invlists, l):
     """ returns the inverted lists content as a pair of (list_ids, list_codes).
     The codes are reshaped to a proper size
@@ -75,3 +76,9 @@ def get_additive_quantizer_codebooks(aq):
         codebooks[co[i]:co[i + 1]]
         for i in range(aq.M)
     ]
+
+
+def get_flat_data(index):
+    """ copy and return the data matrix in an IndexFlat """
+    xb = faiss.vector_to_array(index.codes).view("float32")
+    return xb.reshape(index.ntotal, index.d)

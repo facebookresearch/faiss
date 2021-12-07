@@ -374,6 +374,7 @@ void gpu_sync_all_devices()
 
 %newobject *::get_distance_computer() const;
 %include  <faiss/Index.h>
+%include  <faiss/IndexFlatCodes.h>
 %include  <faiss/IndexFlat.h>
 %include  <faiss/Clustering.h>
 
