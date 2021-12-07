@@ -106,7 +106,6 @@ void Index2Layer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-
 void Index2Layer::search(
         idx_t /*n*/,
         const float* /*x*/,
@@ -115,7 +114,6 @@ void Index2Layer::search(
         idx_t* /*labels*/) const {
     FAISS_THROW_MSG("not implemented");
 }
-
 
 void Index2Layer::transfer_to_IVFPQ(IndexIVFPQ& other) const {
     FAISS_THROW_IF_NOT(other.nlist == q1.nlist);

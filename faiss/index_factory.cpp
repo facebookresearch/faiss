@@ -557,7 +557,6 @@ std::unique_ptr<Index> index_factory_sub(
         description = sm[sm.size() - 1];
         vts.emplace_back(vt);
         d = vts.back()->d_out;
-
     }
 
     if (vts.size() > 0) {

@@ -51,7 +51,6 @@ struct IndexLSH : IndexFlatCodes {
             float* distances,
             idx_t* labels) const override;
 
-
     /// transfer the thresholds to a pre-processing stage (and unset
     /// train_thresholds)
     void transfer_thresholds(LinearTransform* vt);
