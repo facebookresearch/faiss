@@ -563,7 +563,7 @@ class TestHNSW(unittest.TestCase):
         index.add(self.xb)
         Dhnsw, Ihnsw = index.search(self.xq, 1)
 
-        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 310)
+        self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 307)
 
         self.io_and_retest(index, Dhnsw, Ihnsw)
 
@@ -586,7 +586,7 @@ class TestHNSW(unittest.TestCase):
 
         print('nb equal: ', (Iref == Ihnsw).sum())
 
-        self.assertGreaterEqual((Iref == Ihnsw).sum(), 480)
+        self.assertGreaterEqual((Iref == Ihnsw).sum(), 470)
 
         mask = Iref[:, 0] == Ihnsw[:, 0]
         assert np.allclose(Dref[mask, 0], Dhnsw[mask, 0])
@@ -768,7 +768,7 @@ class TestNSG(unittest.TestCase):
         k = 10
         nq = self.xq.shape[0]
         D, _ = index.search(self.xq, k)
-        
+
         indices = np.argsort(D, axis=1)
         gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
