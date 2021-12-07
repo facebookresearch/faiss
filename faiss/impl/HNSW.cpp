@@ -434,17 +434,22 @@ void HNSW::add_links_starting_from(
 
     ::faiss::shrink_neighbor_list(ptdis, link_targets, M);
 
+    std::vector<storage_idx_t> neighbors;
+    neighbors.reserve(link_targets.size());
     while (!link_targets.empty()) {
-        int other_id = link_targets.top().id;
+        storage_idx_t other_id = link_targets.top().id;
+        add_link(*this, ptdis, pt_id, other_id, level);
+        neighbors.push_back(other_id);
+        link_targets.pop();
+    }
 
+    omp_unset_lock(&locks[pt_id]);
+    for (storage_idx_t other_id : neighbors) {
         omp_set_lock(&locks[other_id]);
         add_link(*this, ptdis, other_id, pt_id, level);
         omp_unset_lock(&locks[other_id]);
-
-        add_link(*this, ptdis, pt_id, other_id, level);
-
-        link_targets.pop();
     }
+    omp_set_lock(&locks[pt_id]);
 }
 
 /**************************************************************
