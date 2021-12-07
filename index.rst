@@ -25,10 +25,10 @@ Welcome to Faiss Documentation
 .. image:: https://img.shields.io/conda/pn/pytorch/faiss-cpu
 
 .. image:: https://img.shields.io/github/license/facebookresearch/faiss
-   :target: https://github.com/facebookresearch/faiss/blob/master/LICENSE
+   :target: https://github.com/facebookresearch/faiss/blob/main/LICENSE
 
-.. image:: https://circleci.com/gh/facebookresearch/faiss/tree/master.svg?style=shield
-   :target: https://circleci.com/gh/facebookresearch/faiss/tree/master
+.. image:: https://circleci.com/gh/facebookresearch/faiss/tree/main.svg?style=shield
+   :target: https://circleci.com/gh/facebookresearch/faiss/tree/main
 
 .. image:: https://img.shields.io/github/stars/facebookresearch/faiss?style=social
    :target: https://github.com/facebookresearch/faiss
