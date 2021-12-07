@@ -372,7 +372,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexLSH.h" line="57" column="10"/>
+        <location file="faiss/IndexLSH.h" line="56" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLSH_1a69ad2bcb02c5801f3f3ff3bc5483afc8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -385,7 +385,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexLSH.h" line="59" column="5" bodyfile="faiss/IndexLSH.h" bodystart="59" bodyend="59"/>
+        <location file="faiss/IndexLSH.h" line="58" column="5" bodyfile="faiss/IndexLSH.h" bodystart="58" bodyend="58"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLSH_1a3c31d36e2bd8d6a2dd0234aae7df1f27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -398,7 +398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexLSH.h" line="61" column="5"/>
+        <location file="faiss/IndexLSH.h" line="60" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLSH_1aac0eb8b22431e490a28fdc566a461af5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -451,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexLSH.h" line="66" column="10"/>
+        <location file="faiss/IndexLSH.h" line="65" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLSH_1ac1eaeea883e641e50c5b770fb02edc25" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -504,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexLSH.h" line="68" column="10"/>
+        <location file="faiss/IndexLSH.h" line="67" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1096,7 +1096,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexLSH.h" line="21" column="30" bodyfile="faiss/IndexLSH.h" bodystart="21" bodyend="69"/>
+    <location file="faiss/IndexLSH.h" line="21" column="30" bodyfile="faiss/IndexLSH.h" bodystart="21" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::IndexLSH</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexLSH</scope><name>add_with_ids</name></member>
