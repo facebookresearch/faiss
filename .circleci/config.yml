@@ -270,7 +270,7 @@ jobs:
         type: string
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-1604-cuda-10.1:201909-23
+      image: ubuntu-2004-cuda-11.4:202110-01
       docker_layer_caching: true
     steps:
       - checkout
