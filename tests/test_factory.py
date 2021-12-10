@@ -39,6 +39,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "SQ8")
         assert index.code_size == 12
 
+
     def test_factory_3(self):
 
         index = faiss.index_factory(12, "IVF10,PQ4")
@@ -53,6 +54,13 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert index.instances is not None
 
+    def test_factory_5(self):
+        index = faiss.index_factory(128, "OPQ16,Flat")
+        assert index.sa_code_size() == 128 * 4
+        index = faiss.index_factory(128, "OPQ16_64,Flat")
+        assert index.sa_code_size() == 64 * 4
+        assert index.chain.at(0).d_out == 64
+
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")
         assert index.storage.sa_code_size() == 12 * 4
@@ -60,7 +68,6 @@ class TestFactory(unittest.TestCase):
         assert index.storage.sa_code_size() == 12
         index = faiss.index_factory(12, "HNSW32_PQ4")
         assert index.storage.sa_code_size() == 4
-
 
     def test_factory_HNSW_newstyle(self):
         index = faiss.index_factory(12, "HNSW32,Flat")
