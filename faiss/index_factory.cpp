@@ -203,7 +203,7 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     }
     if (match("OPQ([0-9]+)(_[0-9]+)?")) {
         int M = std::stoi(sm[1].str());
-        int d_out = mres_to_int(sm[2], d);
+        int d_out = mres_to_int(sm[2], d, 1);
         return new OPQMatrix(d, M, d_out);
     }
     if (match("Pad([0-9]+)")) {
