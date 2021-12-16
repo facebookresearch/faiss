@@ -9,6 +9,8 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+
+## [1.7.2] - 2021-12-15
 ### Added
 - Support LSQ on GPU (by @KinglittleQ)
 - Support for exact 1D kmeans (by @KinglittleQ)
@@ -204,7 +206,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/facebookresearch/faiss/compare/v1.6.5...v1.7.0
 [1.6.5]: https://github.com/facebookresearch/faiss/compare/v1.6.4...v1.6.5
