@@ -523,6 +523,19 @@ void ParameterSpace::set_index_parameter(
         }
     }
 
+    if (name == "efConstruction") {
+        if (DC(IndexHNSW)) {
+            ix->hnsw.efConstruction = int(val);
+            return;
+        }
+        if (DC(IndexIVF)) {
+            if (IndexHNSW* cq = dynamic_cast<IndexHNSW*>(ix->quantizer)) {
+                cq->hnsw.efConstruction = int(val);
+                return;
+            }
+        }
+    }
+
     if (name == "efSearch") {
         if (DC(IndexHNSW)) {
             ix->hnsw.efSearch = int(val);
