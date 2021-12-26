@@ -419,7 +419,6 @@ void IndexIVF::search_preassigned(
                      : pmode == 1 ? nprobe > 1
                                   : nprobe * n > 1);
 
-    printf("do_parallel: %d\n", do_parallel);
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
         InvertedListScanner* scanner = get_InvertedListScanner(store_pairs);
@@ -521,7 +520,6 @@ void IndexIVF::search_preassigned(
          ****************************************************/
 
         if (pmode == 0 || pmode == 3) {
-            printf("search parallel mode %d\n", pmode);
 #pragma omp for
             for (idx_t i = 0; i < n; i++) {
                 if (interrupt) {

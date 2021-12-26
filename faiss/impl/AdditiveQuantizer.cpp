@@ -215,7 +215,6 @@ void AdditiveQuantizer::pack_codes(
             decode_unpacked(codes, x_recons.data(), n, ld_codes);
 
             if (centroids != nullptr) {
-                printf("====== x = x + c\n");
                 // x = x + c
                 fvec_add(n * d, x_recons.data(), centroids, x_recons.data());
             }
