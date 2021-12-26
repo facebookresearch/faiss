@@ -47,7 +47,7 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
 
     x = fvecs_maybe_subsample(
             d, (size_t*)&n, max_train_points, x, verbose, 1234);
-    ScopeDeleter1<float> del_x(x_in == x ? nullptr : x);
+    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
         std::vector<Index::idx_t> idx(n);
@@ -60,7 +60,6 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
 
         if (use_precomputed_table == 11) {
             // compute reconstructed residual
-            printf("aq->code_size %zd\n", aq->code_size);
             std::vector<uint8_t> codes(n * aq->code_size);
             aq->compute_codes(residuals.data(), codes.data(), n);
             aq->decode(codes.data(), residuals.data(), n);
@@ -100,15 +99,16 @@ void IndexIVFAdditiveQuantizer::encode_vectors(
         std::vector<float> residuals(n * d);
         std::vector<float> centroids(n * d);
 
-#pragma omp parallel if (n > 10000)
+#pragma omp parallel for if (n > 10000)
         for (idx_t i = 0; i < n; i++) {
             idx_t list_no = list_nos[i] >= 0 ? list_nos[i] : 0;
-            quantizer->compute_residual(
-                    x + i * d,
-                    residuals.data() + i * d,
-                    list_no);
-            quantizer->reconstruct(list_no, centroids.data() + i * d);
+            float* r = residuals.data() + i * d;
+            float* c = centroids.data() + i * d;
+
+            quantizer->reconstruct(list_no, c);
+            fvec_sub(d, x + i * d, c, r);
         }
+
         const float* c = (use_precomputed_table == 11) ? centroids.data() : nullptr;
         aq->compute_codes(residuals.data(), codes, n, c);
     } else {
