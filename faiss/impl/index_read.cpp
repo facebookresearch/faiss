@@ -271,9 +271,17 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
     READ1(aq->norm_min);
     READ1(aq->norm_max);
     if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
-        aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
+        aq->search_type == AdditiveQuantizer::ST_norm_cqint4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
         READXBVECTOR(aq->qnorm.codes);
     }
+
+    if (aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
+        READVECTOR(aq->norm_tabs);
+    }
+
     aq->set_derived_values();
 }
 

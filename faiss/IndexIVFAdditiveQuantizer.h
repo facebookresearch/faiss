@@ -26,7 +26,9 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
     // the quantizer
     AdditiveQuantizer* aq;
     bool by_residual = true;
-    int use_precomputed_table = 0; // for future use
+
+    // set 11 to use AQInvertedListScannerLUT2
+    int use_precomputed_table = 11; // for future use
 
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
