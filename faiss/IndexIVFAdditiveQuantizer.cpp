@@ -47,7 +47,7 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
 
     x = fvecs_maybe_subsample(
             d, (size_t*)&n, max_train_points, x, verbose, 1234);
-    ScopeDeleter1<float> del_x(x_in == x ? nullptr : x);
+    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
         std::vector<Index::idx_t> idx(n);
@@ -76,7 +76,7 @@ void IndexIVFAdditiveQuantizer::encode_vectors(
         // subtract centroids
         std::vector<float> residuals(n * d);
 
-#pragma omp parallel if (n > 10000)
+#pragma omp parallel for if (n > 10000)
         for (idx_t i = 0; i < n; i++) {
             quantizer->compute_residual(
                     x + i * d,
