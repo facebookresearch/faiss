@@ -11,6 +11,7 @@ set(FAISS_SRC
   Index.cpp
   Index2Layer.cpp
   IndexAdditiveQuantizer.cpp
+  IndexAQFastScan.cpp
   IndexBinary.cpp
   IndexBinaryFlat.cpp
   IndexBinaryFromFloat.cpp
@@ -87,6 +88,7 @@ set(FAISS_HEADERS
   Index.h
   Index2Layer.h
   IndexAdditiveQuantizer.h
+  IndexAQFastScan.h
   IndexBinary.h
   IndexBinaryFlat.h
   IndexBinaryFromFloat.h
@@ -112,7 +114,6 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
-  IndexAdditiveQuantizer.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h

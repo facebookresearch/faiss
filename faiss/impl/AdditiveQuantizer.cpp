@@ -146,7 +146,7 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
         // assume big endian
         for (size_t i = 0; i < 16; i++) {
             for (size_t j = 0; j < 16; j++) {
-                flat_codebooks[i * 16 + j] = c[i] + c[16 + j];
+                flat_codebooks[i * 16 + j] = c[j] + c[16 + i];
             }
         }
         qnorm.add(1 << 8, flat_codebooks.data());
@@ -186,7 +186,7 @@ float decode_qint4(uint8_t i, float amin, float amax) {
 
 uint32_t AdditiveQuantizer::encode_qcint(float x) const {
     idx_t id;
-    qnorm.assign(idx_t(1), &x, &id, idx_t(1));
+    qnorm.assign(1, &x, &id, 1);
     return uint32_t(id);
 }
 
@@ -346,21 +346,21 @@ void AdditiveQuantizer::decode_64bit(idx_t bits, float* xi) const {
     }
 }
 
-void AdditiveQuantizer::compute_LUT(size_t n, const float* xq, float* LUT)
+void AdditiveQuantizer::compute_LUT(size_t n, const float* xq, float* LUT, float alpha)
         const {
     // in all cases, it is large matrix multiplication
 
     FINTEGER ncenti = total_codebook_size;
     FINTEGER di = d;
     FINTEGER nqi = n;
-    float one = 1, zero = 0;
+    float zero = 0;
 
     sgemm_("Transposed",
            "Not transposed",
            &ncenti,
            &nqi,
            &di,
-           &one,
+           &alpha,
            codebooks.data(),
            &di,
            xq,
