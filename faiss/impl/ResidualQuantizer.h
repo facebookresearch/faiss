@@ -24,25 +24,31 @@ namespace faiss {
 
 struct ResidualQuantizer : AdditiveQuantizer {
     /// initialization
-    enum train_type_t {
-        Train_default = 0,         ///< regular k-means
-        Train_progressive_dim = 1, ///< progressive dim clustering
-        Train_default_Train_top_beam = 1024,
-        Train_progressive_dim_Train_top_beam = 1025,
-        Train_default_Skip_codebook_tables = 2048,
-        Train_progressive_dim_Skip_codebook_tables = 2049,
-        Train_default_Train_top_beam_Skip_codebook_tables = 3072,
-        Train_progressive_dim_Train_top_beam_Skip_codebook_tables = 3073,
-    };
 
+    //  Was enum but that does not work so well with bitmasks
+    using train_type_t = int;
+
+    /// Or of the Train_* flags below
     train_type_t train_type;
 
-    // set this bit on train_type if beam is to be trained only on the
-    // first element of the beam (faster but less accurate)
+    /// regular k-means (minimal amount of computation)
+    static const int Train_default = 0;
+
+    /// progressive dim clustering (set by default)
+    static const int Train_progressive_dim = 1;
+
+    /// do a few iterations of codebook refinement after first level estimation
+    static const int Train_refine_codebook = 2;
+
+    /// number of iterations for codebook refinement.
+    int niter_codebook_refine;
+
+    /** set this bit on train_type if beam is to be trained only on the
+     *  first element of the beam (faster but less accurate) */
     static const int Train_top_beam = 1024;
 
-    // set this bit to not autmatically compute the codebook tables
-    // after training
+    /** set this bit to not autmatically compute the codebook tables
+     * after training */
     static const int Skip_codebook_tables = 2048;
 
     /// beam size used for training and for encoding
@@ -74,8 +80,18 @@ struct ResidualQuantizer : AdditiveQuantizer {
 
     ResidualQuantizer();
 
-    // Train the residual quantizer
+    /// Train the residual quantizer
     void train(size_t n, const float* x) override;
+
+    /** Encode the vectors and compute codebook that minimizes the quantization
+     * error on these codes
+     *
+     * @param x      training vectors, size n * d
+     * @param n      nb of training vectors, n >= total_codebook_size
+     * @return       returns quantization error for the new codebook with old
+     * codes
+     */
+    float retrain_AQ_codebook(size_t n, const float* x);
 
     /** Encode a set of vectors
      *
