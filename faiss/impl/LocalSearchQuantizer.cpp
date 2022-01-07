@@ -302,7 +302,7 @@ void LocalSearchQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n,
-        const float *centroids) const {
+        const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
 
     lsq_timer.reset();

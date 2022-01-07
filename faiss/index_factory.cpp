@@ -25,8 +25,8 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
@@ -149,7 +149,7 @@ std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nqint8", AdditiveQuantizer::ST_norm_qint8},
         {"_Nqint4", AdditiveQuantizer::ST_norm_qint4},
         {"_Ncqint8", AdditiveQuantizer::ST_norm_cqint8},
-        {"_Ncqint4", AdditiveQuantizer::ST_norm_cqint4},\
+        {"_Ncqint4", AdditiveQuantizer::ST_norm_cqint4},
         {"_Nlsq2x4", AdditiveQuantizer::ST_norm_lsq2x4},
         {"_Nrq2x4", AdditiveQuantizer::ST_norm_rq2x4},
 };
@@ -364,10 +364,10 @@ IndexIVF* parse_IndexIVF(
             std::string s = sm[4].str();
             index_ivf->threshold_type = s == "g"
                     ? IndexIVFSpectralHash::Thresh_global
-                    : s == "c"
-                    ? IndexIVFSpectralHash::Thresh_centroid
-                    :
-                    /* s == "m" ? */ IndexIVFSpectralHash::Thresh_median;
+                    : s == "c" ? IndexIVFSpectralHash::Thresh_centroid
+                               :
+                               /* s == "m" ? */ IndexIVFSpectralHash::
+                                       Thresh_median;
         }
         return index_ivf;
     }
