@@ -26,6 +26,7 @@
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexAQFastScan.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
@@ -148,12 +149,14 @@ std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nqint8", AdditiveQuantizer::ST_norm_qint8},
         {"_Nqint4", AdditiveQuantizer::ST_norm_qint4},
         {"_Ncqint8", AdditiveQuantizer::ST_norm_cqint8},
-        {"_Ncqint4", AdditiveQuantizer::ST_norm_cqint4},
+        {"_Ncqint4", AdditiveQuantizer::ST_norm_cqint4},\
+        {"_Nlsq2x4", AdditiveQuantizer::ST_norm_lsq2x4},
+        {"_Nrq2x4", AdditiveQuantizer::ST_norm_rq2x4},
 };
 
 const std::string aq_def_pattern = "[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*";
 const std::string aq_norm_pattern =
-        "(|_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4)";
+        "(|_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4|_Nlsq2x4|_Nrq2x4)";
 
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
         std::string stok,
@@ -169,7 +172,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
 std::vector<size_t> aq_parse_nbits(std::string stok) {
     std::vector<size_t> nbits;
     std::smatch sm;
-    while (std::regex_search(stok, sm, std::regex("([0-9]+)x([0-9]+)"))) {
+    while (std::regex_search(stok, sm, std::regex("[^q]([0-9]+)x([0-9]+)"))) {
         int M = std::stoi(sm[1].str());
         int nbit = std::stoi(sm[2].str());
         nbits.resize(nbits.size() + M, nbit);
@@ -503,6 +506,21 @@ Index* parse_other_indexes(
         AdditiveQuantizer::Search_type_t st =
                 aq_parse_search_type(sm[sm.size() - 1].str(), metric);
         return new IndexLocalSearchQuantizer(d, M, nbit, metric, st);
+    }
+
+    // IndexAQFastScan
+    // RQ{M}x4fs_{bbs}_{search_type}
+    pattern = "(LSQ|RQ)([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern;
+    if (match(pattern)) {
+        int M = std::stoi(sm[2].str());
+        int bbs = mres_to_int(sm[3], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+
+        if (sm[1].str() == "RQ") {
+            return new IndexRQFastScan(d, M, 4, metric, st, bbs);
+        } else if (sm[1].str() == "LSQ") {
+            return new IndexLSQFastScan(d, M, 4, metric, st, bbs);
+        }
     }
 
     return nullptr;

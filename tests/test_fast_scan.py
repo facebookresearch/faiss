@@ -435,3 +435,75 @@ class TestAdd(unittest.TestCase):
         D3, I3 = index3.search(ds.get_queries(), 10)
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
+
+
+class TestAQFastScan(unittest.TestCase):
+
+    def subtest_accuracy(self, aq='RQ', st='rq'):
+        """
+        Compare IndexAQFastScan with IndexAQ (qint8)
+        """
+        d = 16
+        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        gt = ds.get_groundtruth(k=1)
+
+        index = faiss.index_factory(d, f'{aq}8x4_Nqint8')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'{aq}8x4fs_32_N{st}2x4')
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        Da, Ia = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall = (Ia == gt).sum() / nq
+
+        print(aq, st, recall_ref, recall)
+        assert abs(recall_ref - recall) < 0.05
+
+    def test_accuracy(self):
+        self.subtest_accuracy('RQ', 'rq')
+        self.subtest_accuracy('RQ', 'lsq')
+        self.subtest_accuracy('LSQ', 'rq')
+        self.subtest_accuracy('LSQ', 'lsq')
+
+    def subtest_factory(self, aq, M, bbs, st):
+        """
+        Format: {AQ}{M}x4fs_{bbs}_N{search_type}
+            AQ:          string, LSQ or RQ
+            M:           integer
+            bbs:         integer
+            search_type: string, lsq2x4 or rq2x4
+        """
+        AQ = faiss.AdditiveQuantizer
+        d = 16
+
+        if bbs > 0:
+            index = faiss.index_factory(d, f'{aq}{M}x4fs_{bbs}_N{st}2x4')
+        else:
+            index = faiss.index_factory(d, f'{aq}{M}x4fs_N{st}2x4')
+            bbs = 32
+
+        assert index.bbs == bbs
+        aq = faiss.downcast_AdditiveQuantizer(index.aq)
+        assert aq.M == M
+
+        if aq == 'LSQ':
+            assert isinstance(aq, faiss.LocalSearchQuantizer)
+        if aq == 'RQ':
+            assert isinstance(aq, faiss.ResidualQuantizer)
+
+        if st == 'lsq':
+            assert aq.search_type == AQ.ST_norm_lsq2x4
+        if st == 'rq':
+            assert aq.search_type == AQ.ST_norm_rq2x4
+
+    def test_factory(self):
+        self.subtest_factory('LSQ', 16, 8, 'lsq')
+        self.subtest_factory('LSQ', 16, 8, 'rq')
+        self.subtest_factory('RQ', 16, 8, 'rq')
+        self.subtest_factory('RQ', 16, 8, 'lsq')
+        self.subtest_factory('LSQ', 64, 0, 'lsq')

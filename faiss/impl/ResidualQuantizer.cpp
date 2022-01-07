@@ -379,7 +379,7 @@ void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
         size_t n,
-        const float *centroids) const {
+        const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
 
     size_t mem = memory_per_point();

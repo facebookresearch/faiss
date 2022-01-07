@@ -42,11 +42,7 @@ IndexAQFastScan::IndexAQFastScan(
     init(aq, metric, bbs);
 }
 
-void IndexAQFastScan::init(
-        AdditiveQuantizer* aq,
-        MetricType metric,
-        int bbs) {
-
+void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
     this->aq = aq;
     this->bbs = bbs;
     d = aq->d;
@@ -63,12 +59,12 @@ void IndexAQFastScan::init(
     } else {
         FAISS_THROW_IF_NOT_MSG(
                 aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
-                aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
+                        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
                 "Search type must be lsq2x4 or rq2x4 for L2 metric");
     }
 
     if (metric_type == METRIC_L2) {
-        M = aq->M + 2;  // 2x4 bits AQ
+        M = aq->M + 2; // 2x4 bits AQ
     } else {
         M = aq->M;
     }
@@ -91,8 +87,8 @@ IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs)
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
     FAISS_THROW_IF_NOT_MSG(
             orig.metric_type == METRIC_INNER_PRODUCT ||
-            aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
-            aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
+                    aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+                    aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
             "Search type must be lsq2x4 or rq2x4");
 
     ntotal = orig.ntotal;
@@ -670,20 +666,13 @@ IndexRQFastScan::IndexRQFastScan(
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
-        Search_type_t search_type)
-        : IndexRQFastScan(d, std::vector<size_t>(M, nbits), metric, search_type) {}
-
-IndexRQFastScan::IndexRQFastScan(
-        int d,
-        const std::vector<size_t>& nbits,
-        MetricType metric,
-        Search_type_t search_type)
-        : rq(d, nbits, search_type) {
-    init(&rq, metric);
+        Search_type_t search_type,
+        int bbs)
+        : rq(d, M, nbits, search_type) {
+    init(&rq, metric, bbs);
 }
 
 IndexRQFastScan::IndexRQFastScan() : IndexRQFastScan(0, 0, 0) {}
-
 
 /**************************************************************************************
  * IndexLSQFastScan
@@ -694,12 +683,12 @@ IndexLSQFastScan::IndexLSQFastScan(
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
         MetricType metric,
-        Search_type_t search_type)
+        Search_type_t search_type,
+        int bbs)
         : lsq(d, M, nbits, search_type) {
-    init(&lsq, metric);
+    init(&lsq, metric, bbs);
 }
 
 IndexLSQFastScan::IndexLSQFastScan() : IndexLSQFastScan(0, 0, 0) {}
-
 
 } // namespace faiss

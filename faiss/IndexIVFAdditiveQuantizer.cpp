@@ -109,7 +109,8 @@ void IndexIVFAdditiveQuantizer::encode_vectors(
             fvec_sub(d, x + i * d, c, r);
         }
 
-        const float* c = (use_precomputed_table == 11) ? centroids.data() : nullptr;
+        const float* c =
+                (use_precomputed_table == 11) ? centroids.data() : nullptr;
         aq->compute_codes(residuals.data(), codes, n, c);
     } else {
         aq->compute_codes(x, codes, n);
@@ -317,14 +318,15 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
             case AdditiveQuantizer::ST_decompress:
                 return new AQInvertedListScannerDecompress<false>(
                         *this, store_pairs);
-#define A(st)                                                \
-    case AdditiveQuantizer::st:                              \
-        if (use_precomputed_table == 11) {                   \
-            return new AQInvertedListScannerLUT2<false,      \
-                AdditiveQuantizer::st>(*this, store_pairs);  \
-        } else {                                             \
-            return new AQInvertedListScannerLUT<false,       \
-                AdditiveQuantizer::st>(*this, store_pairs);  \
+#define A(st)                                                                  \
+    case AdditiveQuantizer::st:                                                \
+        if (use_precomputed_table == 11) {                                     \
+            return new AQInvertedListScannerLUT2<                              \
+                    false,                                                     \
+                    AdditiveQuantizer::st>(*this, store_pairs);                \
+        } else {                                                               \
+            return new AQInvertedListScannerLUT<false, AdditiveQuantizer::st>( \
+                    *this, store_pairs);                                       \
         }
 
                 A(ST_LUT_nonorm)

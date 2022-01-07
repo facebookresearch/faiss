@@ -127,7 +127,7 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
         clus.train_exact(n, norms);
         qnorm.add(clus.k, clus.centroids.data());
     } else if (search_type == ST_norm_lsq2x4 || search_type == ST_norm_rq2x4) {
-        AdditiveQuantizer *aq = nullptr;
+        AdditiveQuantizer* aq = nullptr;
         if (search_type == ST_norm_lsq2x4) {
             aq = new LocalSearchQuantizer(1, 2, 4);
         } else {
@@ -141,7 +141,7 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
 
         // save norm tables for 4-bit fastscan search
         norm_tabs = aq->codebooks;
-        const float *c = norm_tabs.data();
+        const float* c = norm_tabs.data();
 
         // assume big endian
         for (size_t i = 0; i < 16; i++) {
@@ -152,7 +152,6 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
         qnorm.add(1 << 8, flat_codebooks.data());
         delete aq;
     }
-
 }
 
 namespace {
@@ -346,8 +345,11 @@ void AdditiveQuantizer::decode_64bit(idx_t bits, float* xi) const {
     }
 }
 
-void AdditiveQuantizer::compute_LUT(size_t n, const float* xq, float* LUT, float alpha)
-        const {
+void AdditiveQuantizer::compute_LUT(
+        size_t n,
+        const float* xq,
+        float* LUT,
+        float alpha) const {
     // in all cases, it is large matrix multiplication
 
     FINTEGER ncenti = total_codebook_size;

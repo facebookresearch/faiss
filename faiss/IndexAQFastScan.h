@@ -147,13 +147,8 @@ struct IndexRQFastScan : IndexAQFastScan {
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_norm_rq2x4);
-
-    IndexRQFastScan(
-            int d,
-            const std::vector<size_t>& nbits,
-            MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_norm_rq2x4);
+            Search_type_t search_type = AdditiveQuantizer::ST_norm_rq2x4,
+            int bbs = 32);
 
     IndexRQFastScan();
 };
@@ -172,7 +167,8 @@ struct IndexLSQFastScan : IndexAQFastScan {
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
-            Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4);
+            Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
+            int bbs = 32);
 
     IndexLSQFastScan();
 };

@@ -180,7 +180,6 @@ static void write_AdditiveQuantizer(const AdditiveQuantizer* aq, IOWriter* f) {
         aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
         WRITEVECTOR(aq->norm_tabs);
     }
-
 }
 
 static void write_ResidualQuantizer(const ResidualQuantizer* rq, IOWriter* f) {

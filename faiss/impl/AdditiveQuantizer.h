@@ -37,7 +37,7 @@ struct AdditiveQuantizer {
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
 
-    IndexFlat1D qnorm; ///< store and search norms
+    IndexFlat1D qnorm;            ///< store and search norms
     std::vector<float> norm_tabs; ///< store norm tables for 4-bit fastscan
                                   ///< search
 
@@ -61,7 +61,7 @@ struct AdditiveQuantizer {
         ST_norm_cqint4,
 
         ST_norm_lsq2x4, ///< use a 2x4 bits lsq as norm quantizer
-        ST_norm_rq2x4, ///< use a 2x4 bits rq as norm quantizer
+        ST_norm_rq2x4,  ///< use a 2x4 bits rq as norm quantizer
     };
 
     AdditiveQuantizer(
@@ -86,8 +86,11 @@ struct AdditiveQuantizer {
      * @param codes  output codes, size n * code_size
      * @param centroids  centroids to be added to x, size n * d
      */
-    virtual void compute_codes(const float* x, uint8_t* codes, size_t n,
-            const float *centroids = nullptr) const = 0;
+    virtual void compute_codes(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const = 0;
 
     /** pack a series of code to bit-compact format
      *
@@ -156,7 +159,8 @@ struct AdditiveQuantizer {
      * @param LUT    look-up table, size (n, total_codebook_size)
      * @param alpha  compute alpha * inner-product
      */
-    void compute_LUT(size_t n, const float* xq, float* LUT, float alpha = 1.0f) const;
+    void compute_LUT(size_t n, const float* xq, float* LUT, float alpha = 1.0f)
+            const;
 
     /// exact IP search
     void knn_centroids_inner_product(

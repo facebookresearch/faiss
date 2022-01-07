@@ -83,8 +83,11 @@ struct ResidualQuantizer : AdditiveQuantizer {
      * @param codes  output codes, size n * code_size
      * @param centroids  centroids to be added to x, size n * d
      */
-    void compute_codes(const float* x, uint8_t* codes, size_t n,
-            const float *centroids = nullptr) const override;
+    void compute_codes(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const override;
 
     /** lower-level encode function
      *

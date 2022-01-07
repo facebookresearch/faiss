@@ -568,6 +568,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
+    DOWNCAST ( IndexRQFastScan )
+    DOWNCAST ( IndexLSQFastScan )
     DOWNCAST ( ResidualCoarseQuantizer )
     DOWNCAST ( LocalSearchCoarseQuantizer )
     DOWNCAST ( IndexScalarQuantizer )
@@ -656,6 +658,14 @@ void gpu_sync_all_devices()
     }
 }
 
+%typemap(out) faiss::AdditiveQuantizer * {
+    DOWNCAST (LocalSearchQuantizer)
+    DOWNCAST (ResidualQuantizer)
+    {
+        assert(false);
+    }
+}
+
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
 %inline %{
@@ -674,6 +684,10 @@ faiss::IndexBinary * downcast_IndexBinary (faiss::IndexBinary *index)
 faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 {
     return il;
+}
+faiss::AdditiveQuantizer * downcast_AdditiveQuantizer (faiss::AdditiveQuantizer *aq)
+{
+    return aq;
 }
 %}
 
