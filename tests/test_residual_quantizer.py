@@ -263,6 +263,61 @@ class TestResidualQuantizer(unittest.TestCase):
 # Test index, index factory sa_encode / sa_decode
 ###########################################################
 
+def unpack_codes(rq, packed_codes):
+    nbits = faiss.vector_to_array(rq.nbits)
+    if np.all(nbits == 8):
+        return packed_codes.astype("uint32")
+    nbits = [int(x) for x in nbits]
+    nb = len(nbits)
+    n, code_size = packed_codes.shape
+    codes = np.zeros((n, nb), dtype="uint32")
+    for i in range(n):
+        br = faiss.BitstringReader(faiss.swig_ptr(packed_codes[i]), code_size)
+        for j, nbi in enumerate(nbits):
+            codes[i, j] = br.read(nbi)
+    return codes
+
+def retrain_AQ_codebook(index, xt):
+    """ reference implementation of codebook retraining """
+    rq = index.rq
+
+    codes_packed = index.sa_encode(xt)
+    n, code_size = codes_packed.shape
+
+    x_decoded = index.sa_decode(codes_packed)
+    MSE = ((xt - x_decoded) ** 2).sum() / n
+    print(f"Initial MSE on training set: {MSE:g}")
+
+    codes = unpack_codes(index.rq, codes_packed)
+    print("ref codes", codes[0])
+    codebook_offsets = faiss.vector_to_array(rq.codebook_offsets)
+
+    # build sparse code matrix (represented as a dense matrix)
+    C = np.zeros((n, rq.total_codebook_size))
+
+    for i in range(n):
+        C[i][codes[i] + codebook_offsets[:-1]] = 1
+
+    # import pdb; pdb.set_trace()
+    # import scipy
+    # B, residuals, rank, singvals = np.linalg.lstsq(C, xt, rcond=None)
+    if True:
+        B, residuals, rank, singvals = np.linalg.lstsq(C, xt, rcond=None)
+    else:
+        import scipy.linalg
+        import pdb; pdb.set_trace()
+        B, residuals, rank, singvals = scipy.linalg.lstsq(C, xt, )
+
+    MSE = ((C @ B - xt) ** 2).sum() / n
+    print(f"MSE after retrainining: {MSE:g}")
+
+    # replace codebook
+    # faiss.copy_array_to_vector(B.astype('float32').ravel(), index.rq.codebooks)
+    # update codebook tables
+    # index.rq.compute_codebook_tables()
+
+    return C, B
+
 class TestIndexResidualQuantizer(unittest.TestCase):
 
     def test_io(self):
@@ -371,6 +426,55 @@ class TestIndexResidualQuantizer(unittest.TestCase):
         }
         # recalls are {1: 0.05, 10: 0.37, 100: 0.37}
         self.assertGreater(recalls[10], 0.35)
+
+    def test_reestimate_codebook(self):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        ir = faiss.IndexResidualQuantizer(ds.d, 3, 4)
+        ir.train(xt)
+
+        # ir.rq.verbose = True
+        xb_decoded = ir.sa_decode(ir.sa_encode(xb))
+        err_before = ((xb - xb_decoded) ** 2).sum()
+
+        # test manual call of retrain_AQ_codebook
+
+        ref_C, ref_codebook = retrain_AQ_codebook(ir, xb)
+        ir.rq.retrain_AQ_codebook(len(xb), faiss.swig_ptr(xb))
+
+        xb_decoded = ir.sa_decode(ir.sa_encode(xb))
+        err_after = ((xb - xb_decoded) ** 2).sum()
+
+        # ref run: 8347.857 vs. 7710.014
+        self.assertGreater(err_before, err_after * 1.05)
+
+    def test_reestimate_codebook_2(self):
+        ds = datasets.SyntheticDataset(32, 1000, 0, 0)
+        xt = ds.get_train()
+
+        ir = faiss.IndexResidualQuantizer(ds.d, 3, 4)
+        ir.rq.train_type = 0
+        ir.train(xt)
+
+        xt_decoded = ir.sa_decode(ir.sa_encode(xt))
+        err_before = ((xt - xt_decoded) ** 2).sum()
+
+        ir = faiss.IndexResidualQuantizer(ds.d, 3, 4)
+        ir.rq.train_type = faiss.ResidualQuantizer.Train_refine_codebook
+        ir.train(xt)
+
+        xt_decoded = ir.sa_decode(ir.sa_encode(xt))
+        err_after_refined = ((xt - xt_decoded) ** 2).sum()
+
+        print(err_before, err_after_refined)
+        # ref run 7474.98 / 7006.1777
+        self.assertGreater(err_before, err_after_refined * 1.06)
+
+
+
 
 
 ###########################################################
