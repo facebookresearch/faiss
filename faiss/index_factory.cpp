@@ -364,10 +364,10 @@ IndexIVF* parse_IndexIVF(
             std::string s = sm[4].str();
             index_ivf->threshold_type = s == "g"
                     ? IndexIVFSpectralHash::Thresh_global
-                    : s == "c" ? IndexIVFSpectralHash::Thresh_centroid
-                               :
-                               /* s == "m" ? */ IndexIVFSpectralHash::
-                                       Thresh_median;
+                    : s == "c"
+                    ? IndexIVFSpectralHash::Thresh_centroid
+                    :
+                    /* s == "m" ? */ IndexIVFSpectralHash::Thresh_median;
         }
         return index_ivf;
     }

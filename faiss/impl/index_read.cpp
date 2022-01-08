@@ -25,8 +25,8 @@
 #include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
