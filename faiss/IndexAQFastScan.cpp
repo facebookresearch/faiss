@@ -43,14 +43,9 @@ IndexAQFastScan::IndexAQFastScan(
 }
 
 void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
-    this->aq = aq;
-    this->bbs = bbs;
-    d = aq->d;
-    metric_type = metric;
-    nbits = aq->nbits[0];
-    ksub = (1 << nbits);
-    ntotal2 = 0;
-
+    FAISS_THROW_IF_NOT(bbs % 32 == 0);
+    FAISS_THROW_IF_NOT(aq != nullptr);
+    FAISS_THROW_IF_NOT(!aq->nbits.empty());
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
@@ -62,6 +57,14 @@ void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
                         aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
                 "Search type must be lsq2x4 or rq2x4 for L2 metric");
     }
+
+    this->aq = aq;
+    this->bbs = bbs;
+    d = aq->d;
+    metric_type = metric;
+    nbits = aq->nbits[0];
+    ksub = (1 << nbits);
+    ntotal2 = 0;
 
     if (metric_type == METRIC_L2) {
         M = aq->M + 2; // 2x4 bits AQ
@@ -672,7 +675,7 @@ IndexRQFastScan::IndexRQFastScan(
     init(&rq, metric, bbs);
 }
 
-IndexRQFastScan::IndexRQFastScan() : IndexRQFastScan(0, 0, 0) {}
+IndexRQFastScan::IndexRQFastScan() {}
 
 /**************************************************************************************
  * IndexLSQFastScan
@@ -689,6 +692,6 @@ IndexLSQFastScan::IndexLSQFastScan(
     init(&lsq, metric, bbs);
 }
 
-IndexLSQFastScan::IndexLSQFastScan() : IndexLSQFastScan(0, 0, 0) {}
+IndexLSQFastScan::IndexLSQFastScan() {}
 
 } // namespace faiss

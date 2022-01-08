@@ -320,7 +320,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
                         *this, store_pairs);
 #define A(st)                                                                  \
     case AdditiveQuantizer::st:                                                \
-        if (use_precomputed_table == 11) {                                     \
+        if (by_residual && use_precomputed_table == 11) {                      \
             return new AQInvertedListScannerLUT2<                              \
                     false,                                                     \
                     AdditiveQuantizer::st>(*this, store_pairs);                \

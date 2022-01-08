@@ -6,6 +6,8 @@
 
 import unittest
 import time
+import os
+import tempfile
 
 import numpy as np
 import faiss
@@ -502,8 +504,38 @@ class TestAQFastScan(unittest.TestCase):
             assert aq.search_type == AQ.ST_norm_rq2x4
 
     def test_factory(self):
-        self.subtest_factory('LSQ', 16, 8, 'lsq')
-        self.subtest_factory('LSQ', 16, 8, 'rq')
-        self.subtest_factory('RQ', 16, 8, 'rq')
-        self.subtest_factory('RQ', 16, 8, 'lsq')
+        self.subtest_factory('LSQ', 16, 64, 'lsq')
+        self.subtest_factory('LSQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'lsq')
         self.subtest_factory('LSQ', 64, 0, 'lsq')
+
+    def subtest_io(self, factory_str):
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        gt = ds.get_groundtruth(k=1)
+
+        index = faiss.index_factory(d, factory_str)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D1, I1 = index.search(ds.get_queries(), 1)
+
+        _, fname = tempfile.mkstemp()
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname)
+            D2, I2 = index2.search(ds.get_queries(), 1)
+            np.testing.assert_array_equal(I1, I2)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    def test_io(self):
+        self.subtest_io('LSQ4x4fs_Nlsq2x4')
+        self.subtest_io('LSQ4x4fs_Nrq2x4')
+        self.subtest_io('RQ4x4fs_Nrq2x4')
+        self.subtest_io('RQ4x4fs_Nlsq2x4')
+
+        ## looks like qbs=0, bbs=64 is not supported
+        # self.subtest_io('RQ4x4fs_64_Nlsq2x4')
+        # self.subtest_io('PQ4x4fs_64')

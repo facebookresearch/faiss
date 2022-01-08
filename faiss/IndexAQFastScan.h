@@ -52,7 +52,6 @@ struct IndexAQFastScan : Index {
     // this is for testing purposes only (set when initialized by IndexAQ)
     const uint8_t* orig_codes = nullptr;
 
-    size_t chunk_size = 65536;
     size_t max_training_points = 0;
 
     IndexAQFastScan(
