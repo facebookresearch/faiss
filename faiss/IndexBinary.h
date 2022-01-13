@@ -48,7 +48,7 @@ struct IndexBinary {
     /// type of metric this index uses for search
     MetricType metric_type;
 
-    explicit IndexBinary(idx_t d = 0, MetricType metric = METRIC_L2)
+    explicit IndexBinary(idx_t d = 0, MetricType metric = METRIC_Hamming)
             : d(d),
               code_size(d / 8),
               ntotal(0),
