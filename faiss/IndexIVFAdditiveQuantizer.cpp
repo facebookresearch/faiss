@@ -57,28 +57,6 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
         quantizer->compute_residual_n(n, x, residuals.data(), idx.data());
 
         aq->train(n, residuals.data());
-
-        if (use_precomputed_table == 11) {
-            // compute reconstructed residual
-            std::vector<uint8_t> codes(n * aq->code_size);
-            aq->compute_codes(residuals.data(), codes.data(), n);
-            aq->decode(codes.data(), residuals.data(), n);
-
-            // compute reconstructed x
-            std::vector<float> centroid(d);
-            for (size_t i = 0; i < n; i++) {
-                auto xi = residuals.data() + i * d;
-                quantizer->reconstruct(idx[i], centroid.data());
-                fvec_add(d, centroid.data(), xi, xi);
-            }
-
-            // re-train norms
-            // we encode ||x||^2 instead of ||x-c||^2
-            aq->qnorm.reset();
-            std::vector<float> norms(n, 0);
-            fvec_norms_L2sqr(norms.data(), residuals.data(), d, n);
-            aq->train_norm(n, norms.data());
-        }
     } else {
         aq->train(n, x);
     }
@@ -97,21 +75,15 @@ void IndexIVFAdditiveQuantizer::encode_vectors(
     if (by_residual) {
         // subtract centroids
         std::vector<float> residuals(n * d);
-        std::vector<float> centroids(n * d);
 
 #pragma omp parallel for if (n > 10000)
         for (idx_t i = 0; i < n; i++) {
-            idx_t list_no = list_nos[i] >= 0 ? list_nos[i] : 0;
-            float* r = residuals.data() + i * d;
-            float* c = centroids.data() + i * d;
-
-            quantizer->reconstruct(list_no, c);
-            fvec_sub(d, x + i * d, c, r);
+            quantizer->compute_residual(
+                    x + i * d,
+                    residuals.data() + i * d,
+                    list_nos[i] >= 0 ? list_nos[i] : 0);
         }
-
-        const float* c =
-                (use_precomputed_table == 11) ? centroids.data() : nullptr;
-        aq->compute_codes(residuals.data(), codes, n, c);
+        aq->compute_codes(residuals.data(), codes, n);
     } else {
         aq->compute_codes(x, codes, n);
     }
@@ -245,61 +217,6 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
     ~AQInvertedListScannerLUT() override {}
 };
 
-/******************************
- * For L2：
- *     d(q, x) = ||q - x||^2
- *             = ||q - (c + r)||^2
- *             = ||q||^2 - 2<q, c> - 2<q, r> + ||c + r||^2
- *
- ******************************/
-template <bool is_IP, Search_type_t search_type>
-struct AQInvertedListScannerLUT2 : AQInvertedListScanner {
-    std::vector<float> LUT, centroid;
-    float distance_bias, q2;
-
-    AQInvertedListScannerLUT2(
-            const IndexIVFAdditiveQuantizer& ia,
-            bool store_pairs)
-            : AQInvertedListScanner(ia, store_pairs) {
-        LUT.resize(aq.total_codebook_size);
-        centroid.resize(ia.d);
-        distance_bias = 0;
-    }
-
-    /// from now on we handle this query.
-    void set_query(const float* query_vector) override {
-        q = query_vector;
-        if (!is_IP) {
-            // bias = ||q||^2
-            q2 = fvec_norm_L2sqr(q, ia.d);
-        }
-        aq.compute_LUT(1, q, LUT.data());
-    }
-
-    /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        if (ia.metric_type == METRIC_L2 && ia.by_residual) {
-            // bias = ||q||^2 - 2<q, c>
-            ia.quantizer->reconstruct(list_no, centroid.data());
-            float qc = fvec_inner_product(q, centroid.data(), ia.d);
-            distance_bias = q2 - 2 * qc;
-        } else if (ia.metric_type != METRIC_L2 && ia.by_residual) {
-            // bias = <q, c>
-            distance_bias = coarse_dis;
-        }
-    }
-
-    /// compute a single query-to-code distance
-    float distance_to_code(const uint8_t* code) const final {
-        // For L2: d = bias - 2<q, r> + ||c + r||^2
-        // For IP: d = bias + <q, r>
-        return distance_bias +
-                aq.compute_1_distance_LUT<is_IP, search_type>(code, LUT.data());
-    }
-
-    ~AQInvertedListScannerLUT2() override {}
-};
-
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
@@ -318,17 +235,10 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
             case AdditiveQuantizer::ST_decompress:
                 return new AQInvertedListScannerDecompress<false>(
                         *this, store_pairs);
-#define A(st)                                                                  \
-    case AdditiveQuantizer::st:                                                \
-        if (by_residual && use_precomputed_table == 11) {                      \
-            return new AQInvertedListScannerLUT2<                              \
-                    false,                                                     \
-                    AdditiveQuantizer::st>(*this, store_pairs);                \
-        } else {                                                               \
-            return new AQInvertedListScannerLUT<false, AdditiveQuantizer::st>( \
-                    *this, store_pairs);                                       \
-        }
-
+#define A(st)                                                              \
+    case AdditiveQuantizer::st:                                            \
+        return new AQInvertedListScannerLUT<false, AdditiveQuantizer::st>( \
+                *this, store_pairs);
                 A(ST_LUT_nonorm)
                 // A(ST_norm_from_LUT)
                 A(ST_norm_float)

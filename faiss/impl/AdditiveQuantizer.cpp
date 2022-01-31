@@ -127,11 +127,11 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
         clus.train_exact(n, norms);
         qnorm.add(clus.k, clus.centroids.data());
     } else if (search_type == ST_norm_lsq2x4 || search_type == ST_norm_rq2x4) {
-        AdditiveQuantizer* aq = nullptr;
+        std::unique_ptr<AdditiveQuantizer> aq;
         if (search_type == ST_norm_lsq2x4) {
-            aq = new LocalSearchQuantizer(1, 2, 4);
+            aq.reset(new LocalSearchQuantizer(1, 2, 4));
         } else {
-            aq = new ResidualQuantizer(1, 2, 4);
+            aq.reset(new ResidualQuantizer(1, 2, 4));
         }
 
         aq->train(n, norms);
@@ -141,16 +141,18 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
 
         // save norm tables for 4-bit fastscan search
         norm_tabs = aq->codebooks;
-        const float* c = norm_tabs.data();
 
         // assume big endian
+        const float* c = norm_tabs.data();
         for (size_t i = 0; i < 16; i++) {
             for (size_t j = 0; j < 16; j++) {
                 flat_codebooks[i * 16 + j] = c[j] + c[16 + i];
             }
         }
+
+        qnorm.reset();
         qnorm.add(1 << 8, flat_codebooks.data());
-        delete aq;
+        FAISS_THROW_IF_NOT(qnorm.ntotal == (1 << 8));
     }
 }
 

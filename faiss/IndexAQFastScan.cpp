@@ -297,22 +297,6 @@ void IndexAQFastScan::search(
         float* distances,
         idx_t* labels) const {
     FAISS_THROW_IF_NOT(k > 0);
-
-    if (implem == 0x22) {
-        if (metric_type == METRIC_L2) {
-            using VD = VectorDistance<METRIC_L2>;
-            VD vd = {size_t(d), metric_arg};
-            HeapResultHandler<VD::C> rh(n, distances, labels, k);
-            search_with_decompress(*this, ntotal, x, vd, rh);
-        } else {
-            using VD = VectorDistance<METRIC_INNER_PRODUCT>;
-            VD vd = {size_t(d), metric_arg};
-            HeapResultHandler<VD::C> rh(n, distances, labels, k);
-            search_with_decompress(*this, ntotal, x, vd, rh);
-        }
-        return;
-    }
-
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels);
     } else {
@@ -354,11 +338,18 @@ void IndexAQFastScan::search_dispatch_implem(
     }
 
     if (implem == 1) {
-        FAISS_THROW_MSG("Not implemented yet.");
-        // FAISS_THROW_IF_NOT(orig_codes);
-        // FAISS_THROW_IF_NOT(is_max);
-        // float_maxheap_array_t res = {size_t(n), size_t(k), labels,
-        // distances}; aq->search(x, n, orig_codes, ntotal, &res, true);
+        FAISS_THROW_IF_NOT(orig_codes != nullptr);
+        if (metric_type == METRIC_L2) {
+            using VD = VectorDistance<METRIC_L2>;
+            VD vd = {size_t(d), metric_arg};
+            HeapResultHandler<VD::C> rh(n, distances, labels, k);
+            search_with_decompress(*this, n, x, vd, rh);
+        } else {
+            using VD = VectorDistance<METRIC_INNER_PRODUCT>;
+            VD vd = {size_t(d), metric_arg};
+            HeapResultHandler<VD::C> rh(n, distances, labels, k);
+            search_with_decompress(*this, n, x, vd, rh);
+        }
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes != nullptr);
 
