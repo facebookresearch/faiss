@@ -520,7 +520,8 @@ class TestAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        _, fname = tempfile.mkstemp()
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
         try:
             faiss.write_index(index, fname)
             index2 = faiss.read_index(fname)
