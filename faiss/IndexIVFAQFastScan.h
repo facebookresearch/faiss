@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
@@ -82,7 +82,9 @@ struct IndexIVFAQFastScan : IndexIVF {
     ~IndexIVFAQFastScan();
 
     // built from an IndexIVFAQ
-    explicit IndexIVFAQFastScan(const IndexIVFAdditiveQuantizer& orig, int bbs = 32);
+    explicit IndexIVFAQFastScan(
+            const IndexIVFAdditiveQuantizer& orig,
+            int bbs = 32);
 
     /// orig's inverted lists (for debugging)
     InvertedLists* orig_invlists = nullptr;

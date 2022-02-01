@@ -254,8 +254,8 @@ void IndexIVFAQFastScan::encode_vectors(
 
 #pragma omp parallel for if (n > 1000)
         for (idx_t i = 0; i < n; i++) {
-            auto c = centroids.data() + i * d
-            quantizer->reconstruct(list_nos[i], c);
+            auto c = centroids.data() +
+                    i * d quantizer->reconstruct(list_nos[i], c);
         }
 
         aq->compute_codes(residuals.data(), codes, n, centroids.data());
