@@ -111,10 +111,6 @@ struct simd16uint16 : simd256bit {
         i = _mm256_set1_epi16((short)x);
     }
 
-    simd16uint16 operator*(const int a) const {
-        return simd16uint16(_mm256_mullo_epi16(i, _mm256_set1_epi16(a)));
-    }
-
     simd16uint16 operator*(const simd16uint16& other) const {
         return simd16uint16(_mm256_mullo_epi16(i, other.i));
     }
