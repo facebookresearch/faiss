@@ -222,7 +222,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20IndexIVFSpectralHashE">
 <span id="_CPPv3N5faiss20IndexIVFSpectralHashE"></span><span id="_CPPv2N5faiss20IndexIVFSpectralHashE"></span><span id="faiss::IndexIVFSpectralHash"></span><span class="target" id="structfaiss_1_1IndexIVFSpectralHash"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFSpectralHash</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><a class="headerlink" href="#_CPPv4N5faiss20IndexIVFSpectralHashE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;IndexIVFSpectralHash.h&gt;</em><p>Inverted list that stores binary codes of size nbit. Before the binary conversion, the dimension of the vectors is transformed from dim d into dim nbit by vt (a random rotation by default).</p>
+<dd><div class="docutils container">
+<em>#include &lt;IndexIVFSpectralHash.h&gt;</em></div>
+<p>Inverted list that stores binary codes of size nbit. Before the binary conversion, the dimension of the vectors is transformed from dim d into dim nbit by vt (a random rotation by default).</p>
 <p>Each coordinate is subtracted from a value determined by threshold_type, and split into intervals of size period. Half of the interval is a 0 bit, the other half a 1. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>

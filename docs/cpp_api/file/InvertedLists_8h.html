@@ -230,7 +230,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss18ArrayInvertedListsE">
 <span id="_CPPv3N5faiss18ArrayInvertedListsE"></span><span id="_CPPv2N5faiss18ArrayInvertedListsE"></span><span id="faiss::ArrayInvertedLists"></span><span class="target" id="structfaiss_1_1ArrayInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrayInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss18ArrayInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>simple (default) implementation as an array of inverted lists </p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>simple (default) implementation as an array of inverted lists </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -413,7 +415,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19HStackInvertedListsE">
 <span id="_CPPv3N5faiss19HStackInvertedListsE"></span><span id="_CPPv2N5faiss19HStackInvertedListsE"></span><span id="faiss::HStackInvertedLists"></span><span class="target" id="structfaiss_1_1HStackInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HStackInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss21ReadOnlyInvertedListsE" title="faiss::ReadOnlyInvertedLists"><span class="n"><span class="pre">ReadOnlyInvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss19HStackInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>Horizontal stack of inverted lists. </p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>Horizontal stack of inverted lists. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -586,7 +590,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13InvertedListsE">
 <span id="_CPPv3N5faiss13InvertedListsE"></span><span id="_CPPv2N5faiss13InvertedListsE"></span><span id="faiss::InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvertedLists</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13InvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>Table of inverted lists multithreading rules:<ul class="simple">
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>Table of inverted lists multithreading rules:<ul class="simple">
 <li><p>concurrent read accesses are allowed</p></li>
 <li><p>concurrent update accesses are allowed</p></li>
 <li><p>for resize and add_entries, only concurrent access to different lists are allowed </p></li>
@@ -856,7 +862,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19MaskedInvertedListsE">
 <span id="_CPPv3N5faiss19MaskedInvertedListsE"></span><span id="_CPPv2N5faiss19MaskedInvertedListsE"></span><span id="faiss::MaskedInvertedLists"></span><span class="target" id="structfaiss_1_1MaskedInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaskedInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss21ReadOnlyInvertedListsE" title="faiss::ReadOnlyInvertedLists"><span class="n"><span class="pre">ReadOnlyInvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss19MaskedInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>use the first inverted lists if they are non-empty otherwise use the second</p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>use the first inverted lists if they are non-empty otherwise use the second</p>
 <p>This is useful if il1 has a few inverted lists that are too long, and that il0 has replacement lists for those, with empty lists for the others. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1034,7 +1042,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21ReadOnlyInvertedListsE">
 <span id="_CPPv3N5faiss21ReadOnlyInvertedListsE"></span><span id="_CPPv2N5faiss21ReadOnlyInvertedListsE"></span><span id="faiss::ReadOnlyInvertedLists"></span><span class="target" id="structfaiss_1_1ReadOnlyInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadOnlyInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss21ReadOnlyInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>invlists that fail for all write functions </p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>invlists that fail for all write functions </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1HStackInvertedLists.html#structfaiss_1_1HStackInvertedLists"><span class="std std-ref">faiss::HStackInvertedLists</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1MaskedInvertedLists.html#structfaiss_1_1MaskedInvertedLists"><span class="std std-ref">faiss::MaskedInvertedLists</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SliceInvertedLists.html#structfaiss_1_1SliceInvertedLists"><span class="std std-ref">faiss::SliceInvertedLists</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1StopWordsInvertedLists.html#structfaiss_1_1StopWordsInvertedLists"><span class="std std-ref">faiss::StopWordsInvertedLists</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1VStackInvertedLists.html#structfaiss_1_1VStackInvertedLists"><span class="std std-ref">faiss::VStackInvertedLists</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1202,7 +1212,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss18SliceInvertedListsE">
 <span id="_CPPv3N5faiss18SliceInvertedListsE"></span><span id="_CPPv2N5faiss18SliceInvertedListsE"></span><span id="faiss::SliceInvertedLists"></span><span class="target" id="structfaiss_1_1SliceInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SliceInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss21ReadOnlyInvertedListsE" title="faiss::ReadOnlyInvertedLists"><span class="n"><span class="pre">ReadOnlyInvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss18SliceInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>vertical slice of indexes in another <a class="reference internal" href="../struct/structfaiss_1_1InvertedLists.html#structfaiss_1_1InvertedLists"><span class="std std-ref">InvertedLists</span></a> </p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>vertical slice of indexes in another <a class="reference internal" href="../struct/structfaiss_1_1InvertedLists.html#structfaiss_1_1InvertedLists"><span class="std std-ref">InvertedLists</span></a> </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -1394,7 +1406,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22StopWordsInvertedListsE">
 <span id="_CPPv3N5faiss22StopWordsInvertedListsE"></span><span id="_CPPv2N5faiss22StopWordsInvertedListsE"></span><span id="faiss::StopWordsInvertedLists"></span><span class="target" id="structfaiss_1_1StopWordsInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StopWordsInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss21ReadOnlyInvertedListsE" title="faiss::ReadOnlyInvertedLists"><span class="n"><span class="pre">ReadOnlyInvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss22StopWordsInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedLists.h&gt;</em><p>if the inverted list in il is smaller than maxsize then return it, otherwise return an empty invlist </p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedLists.h&gt;</em></div>
+<p>if the inverted list in il is smaller than maxsize then return it, otherwise return an empty invlist </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">

@@ -222,7 +222,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss18BlockInvertedListsE">
 <span id="_CPPv3N5faiss18BlockInvertedListsE"></span><span id="_CPPv2N5faiss18BlockInvertedListsE"></span><span id="faiss::BlockInvertedLists"></span><span class="target" id="structfaiss_1_1BlockInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><a class="headerlink" href="#_CPPv4N5faiss18BlockInvertedListsE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;BlockInvertedLists.h&gt;</em><p>Inverted Lists that are organized by blocks.</p>
+<dd><div class="docutils container">
+<em>#include &lt;BlockInvertedLists.h&gt;</em></div>
+<p>Inverted Lists that are organized by blocks.</p>
 <p>Different from the regular inverted lists, the codes are organized by blocks of size block_size bytes that reprsent a set of n_per_block. Therefore, code allocations are always rounded up to block_size bytes. The codes are also aligned on 32-byte boundaries for use with SIMD.</p>
 <p>To avoid misinterpretations, the code_size is set to (size_t)(-1), even if arguably the amount of memory consumed by code is block_size / n_per_block.</p>
 <p>The writing functions add_entries and update_entries operate on block-aligned data. </p>

@@ -230,7 +230,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss8IndexIVFE">
 <span id="_CPPv3N5faiss8IndexIVFE"></span><span id="_CPPv2N5faiss8IndexIVFE"></span><span id="faiss::IndexIVF"></span><span class="target" id="structfaiss_1_1IndexIVF"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVF</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss15Level1QuantizerE" title="faiss::Level1Quantizer"><span class="n"><span class="pre">Level1Quantizer</span></span></a><a class="headerlink" href="#_CPPv4N5faiss8IndexIVFE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;IndexIVF.h&gt;</em><p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> based on a inverted file (IVF)</p>
+<dd><div class="docutils container">
+<em>#include &lt;IndexIVF.h&gt;</em></div>
+<p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> based on a inverted file (IVF)</p>
 <p>In the inverted file, the quantizer (an <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> instance) provides a quantization index for each vector to be added. The quantization index maps to a list (aka inverted list or posting list), where the id of the vector is stored.</p>
 <p>The inverted list object is required only after trainng. If none is set externally, an <a class="reference internal" href="../struct/structfaiss_1_1ArrayInvertedLists.html#structfaiss_1_1ArrayInvertedLists"><span class="std std-ref">ArrayInvertedLists</span></a> is used automatically.</p>
 <p>At search time, the vector to be searched is also quantized, and only the list corresponding to the quantization index is searched. This speeds up the search by making it non-exhaustive. This can be relaxed using multi-probe search: a few (nprobe) quantization indices are selected and several inverted lists are visited.</p>
@@ -680,7 +682,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScannerE">
 <span id="_CPPv3N5faiss19InvertedListScannerE"></span><span id="_CPPv2N5faiss19InvertedListScannerE"></span><span id="faiss::InvertedListScanner"></span><span class="target" id="structfaiss_1_1InvertedListScanner"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvertedListScanner</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19InvertedListScannerE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;IndexIVF.h&gt;</em><p>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </p>
+<dd><div class="docutils container">
+<em>#include &lt;IndexIVF.h&gt;</em></div>
+<p>Object that handles a query. The inverted lists to scan are provided externally. The object has a lot of state, but distance_to_code and scan_codes can be called in multiple threads </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -809,7 +813,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1QuantizerE">
 <span id="_CPPv3N5faiss15Level1QuantizerE"></span><span id="_CPPv2N5faiss15Level1QuantizerE"></span><span id="faiss::Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1QuantizerE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;IndexIVF.h&gt;</em><p>Encapsulates a quantizer object for the <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a></p>
+<dd><div class="docutils container">
+<em>#include &lt;IndexIVF.h&gt;</em></div>
+<p>Encapsulates a quantizer object for the <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a></p>
 <p>The class isolates the fields that are independent of the storage of the lists (especially training) </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">faiss::IndexIVF</span></a></p>
 <div class="breathe-sectiondef docutils container">

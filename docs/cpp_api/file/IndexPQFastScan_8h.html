@@ -271,7 +271,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss15IndexPQFastScanE">
 <span id="_CPPv3N5faiss15IndexPQFastScanE"></span><span id="_CPPv2N5faiss15IndexPQFastScanE"></span><span id="faiss::IndexPQFastScan"></span><span class="target" id="structfaiss_1_1IndexPQFastScan"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexPQFastScan</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><a class="headerlink" href="#_CPPv4N5faiss15IndexPQFastScanE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;IndexPQFastScan.h&gt;</em><p>Fast scan version of <a class="reference internal" href="../struct/structfaiss_1_1IndexPQ.html#structfaiss_1_1IndexPQ"><span class="std std-ref">IndexPQ</span></a>. Works for 4-bit PQ for now.</p>
+<dd><div class="docutils container">
+<em>#include &lt;IndexPQFastScan.h&gt;</em></div>
+<p>Fast scan version of <a class="reference internal" href="../struct/structfaiss_1_1IndexPQ.html#structfaiss_1_1IndexPQ"><span class="std std-ref">IndexPQ</span></a>. Works for 4-bit PQ for now.</p>
 <p>The codes are not stored sequentially but grouped in blocks of size bbs. This makes it possible to compute distances quickly with SIMD instructions.</p>
 <p>Implementations: 12: blocked loop with internal loop on Q with qbs 13: same with reservoir accumulator to store results 14: no qbs with heap accumulator 15: no qbs with reservoir accumulator </p>
 <div class="breathe-sectiondef docutils container">

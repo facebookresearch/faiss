@@ -222,7 +222,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListsIOHookE">
 <span id="_CPPv3N5faiss19InvertedListsIOHookE"></span><span id="_CPPv2N5faiss19InvertedListsIOHookE"></span><span id="faiss::InvertedListsIOHook"></span><span class="target" id="structfaiss_1_1InvertedListsIOHook"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvertedListsIOHook</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19InvertedListsIOHookE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;InvertedListsIOHook.h&gt;</em><p>Callbacks to handle other types of InvertedList objects.</p>
+<dd><div class="docutils container">
+<em>#include &lt;InvertedListsIOHook.h&gt;</em></div>
+<p>Callbacks to handle other types of InvertedList objects.</p>
 <p>The callbacks should be registered with add_callback before calling read_index or read_InvertedLists. The callbacks for <a class="reference internal" href="../struct/structfaiss_1_1OnDiskInvertedLists.html#structfaiss_1_1OnDiskInvertedLists"><span class="std std-ref">OnDiskInvertedLists</span></a> are registrered by default. The invlist type is identified by:</p>
 <p><ul class="simple">
 <li><p>the key (a fourcc) at read time</p></li>

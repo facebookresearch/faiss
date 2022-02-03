@@ -245,7 +245,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10ClusteringE">
 <span id="_CPPv3N5faiss10ClusteringE"></span><span id="_CPPv2N5faiss10ClusteringE"></span><span id="faiss::Clustering"></span><span class="target" id="structfaiss_1_1Clustering"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clustering</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="n"><span class="pre">ClusteringParameters</span></span></a><a class="headerlink" href="#_CPPv4N5faiss10ClusteringE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;Clustering.h&gt;</em><p>K-means clustering based on assignment - centroid update iterations</p>
+<dd><div class="docutils container">
+<em>#include &lt;Clustering.h&gt;</em></div>
+<p>K-means clustering based on assignment - centroid update iterations</p>
 <p>The clustering is based on an <a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> object that assigns training points to the centroids. Therefore, at each iteration the centroids are added to the index.</p>
 <p>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1Clustering1D.html#structfaiss_1_1Clustering1D"><span class="std std-ref">faiss::Clustering1D</span></a></p>
@@ -405,7 +407,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss12Clustering1DE">
 <span id="_CPPv3N5faiss12Clustering1DE"></span><span id="_CPPv2N5faiss12Clustering1DE"></span><span id="faiss::Clustering1D"></span><span class="target" id="structfaiss_1_1Clustering1D"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clustering1D</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss10ClusteringE" title="faiss::Clustering"><span class="n"><span class="pre">Clustering</span></span></a><a class="headerlink" href="#_CPPv4N5faiss12Clustering1DE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;Clustering.h&gt;</em><p>Exact 1D clustering algorithm</p>
+<dd><div class="docutils container">
+<em>#include &lt;Clustering.h&gt;</em></div>
+<p>Exact 1D clustering algorithm</p>
 <p>Since it does not use an index, it does not overload the <a class="reference internal" href="../struct/structfaiss_1_1Clustering1D.html#structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2"><span class="std std-ref">train()</span></a> function </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -606,7 +610,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss20ClusteringParametersE">
 <span id="_CPPv3N5faiss20ClusteringParametersE"></span><span id="_CPPv2N5faiss20ClusteringParametersE"></span><span id="faiss::ClusteringParameters"></span><span class="target" id="structfaiss_1_1ClusteringParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClusteringParameters</span></span></span><a class="headerlink" href="#_CPPv4N5faiss20ClusteringParametersE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;Clustering.h&gt;</em><p>Class for the clustering parameters. Can be passed to the constructor of the <a class="reference internal" href="../struct/structfaiss_1_1Clustering.html#structfaiss_1_1Clustering"><span class="std std-ref">Clustering</span></a> object. </p>
+<dd><div class="docutils container">
+<em>#include &lt;Clustering.h&gt;</em></div>
+<p>Class for the clustering parameters. Can be passed to the constructor of the <a class="reference internal" href="../struct/structfaiss_1_1Clustering.html#structfaiss_1_1Clustering"><span class="std std-ref">Clustering</span></a> object. </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1Clustering.html#structfaiss_1_1Clustering"><span class="std std-ref">faiss::Clustering</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1ProgressiveDimClusteringParameters.html#structfaiss_1_1ProgressiveDimClusteringParameters"><span class="std std-ref">faiss::ProgressiveDimClusteringParameters</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -690,7 +696,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss24ProgressiveDimClusteringE">
 <span id="_CPPv3N5faiss24ProgressiveDimClusteringE"></span><span id="_CPPv2N5faiss24ProgressiveDimClusteringE"></span><span id="faiss::ProgressiveDimClustering"></span><span class="target" id="structfaiss_1_1ProgressiveDimClustering"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProgressiveDimClustering</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss34ProgressiveDimClusteringParametersE" title="faiss::ProgressiveDimClusteringParameters"><span class="n"><span class="pre">ProgressiveDimClusteringParameters</span></span></a><a class="headerlink" href="#_CPPv4N5faiss24ProgressiveDimClusteringE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;Clustering.h&gt;</em><p>K-means clustering with progressive dimensions used</p>
+<dd><div class="docutils container">
+<em>#include &lt;Clustering.h&gt;</em></div>
+<p>K-means clustering with progressive dimensions used</p>
 <p>The clustering first happens in dim 1, then with exponentially increasing dimension until d (I steps). This is typically applied after a PCA transformation (optional). Reference:</p>
 <p><p>“Improved Residual Vector Quantization for High-dimensional Approximate</p>
 <p>Nearest Neighbor Search”</p>
@@ -931,7 +939,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss26ProgressiveDimIndexFactoryE">
 <span id="_CPPv3N5faiss26ProgressiveDimIndexFactoryE"></span><span id="_CPPv2N5faiss26ProgressiveDimIndexFactoryE"></span><span id="faiss::ProgressiveDimIndexFactory"></span><span class="target" id="structfaiss_1_1ProgressiveDimIndexFactory"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProgressiveDimIndexFactory</span></span></span><a class="headerlink" href="#_CPPv4N5faiss26ProgressiveDimIndexFactoryE" title="Permalink to this definition"></a><br /></dt>
-<dd><em>#include &lt;Clustering.h&gt;</em><p>generates an index suitable for clustering when called </p>
+<dd><div class="docutils container">
+<em>#include &lt;Clustering.h&gt;</em></div>
+<p>generates an index suitable for clustering when called </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory.html#structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory"><span class="std std-ref">faiss::gpu::GpuProgressiveDimIndexFactory</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
