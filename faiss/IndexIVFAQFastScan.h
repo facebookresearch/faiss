@@ -17,7 +17,7 @@
 
 namespace faiss {
 
-/** Fast scan version of IVFPQ. Works for 4-bit PQ for now.
+/** Fast scan version of IVFAQ. Works for 4-bit AQ for now.
  *
  * The codes in the inverted lists are not stored sequentially but
  * grouped in blocks of size bbs. This makes it possible to very quickly
@@ -90,7 +90,7 @@ struct IndexIVFAQFastScan : IndexIVF {
 
     void estimate_norm_scale(idx_t n, const float* x);
 
-    /// same as the regular IVFPQ encoder. The codes are not reorganized by
+    /// same as the regular IVFAQ encoder. The codes are not reorganized by
     /// blocks a that point
     void encode_vectors(
             idx_t n,

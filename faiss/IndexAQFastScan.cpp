@@ -84,37 +84,15 @@ IndexAQFastScan::IndexAQFastScan() : bbs(0), ntotal2(0), M2(0) {
     aq = nullptr;
 }
 
-IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs)
-        : Index(orig.aq->d, orig.metric_type) {
-    aq = orig.aq;
-    FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
-    FAISS_THROW_IF_NOT_MSG(
-            orig.metric_type == METRIC_INNER_PRODUCT ||
-                    aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
-                    aq->search_type == AdditiveQuantizer::ST_norm_rq2x4,
-            "Search type must be lsq2x4 or rq2x4");
+IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs) {
+    init(orig.aq, orig.metric_type, bbs);
 
     ntotal = orig.ntotal;
     is_trained = orig.is_trained;
     orig_codes = orig.codes.data();
 
-    nbits = aq->nbits[0];
-    ksub = (1 << nbits);
-    this->bbs = bbs;
-
-    qbs = 0; // means use default
-
-    // pack the codes
-    M = aq->M + 2;
-    max_train_points = 1024 * ksub * M;
-
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    M2 = roundup(M, 2);
-    code_size = (M * nbits + 7) / 8;
     ntotal2 = roundup(ntotal, bbs);
-
     codes.resize(ntotal2 * M2 / 2);
-
     pq4_pack_codes(orig_codes, ntotal, M, ntotal2, bbs, M2, codes.get());
 }
 

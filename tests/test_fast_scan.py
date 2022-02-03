@@ -481,6 +481,36 @@ class TestAQFastScan(unittest.TestCase):
                 self.subtest_accuracy('RQ', 'rq', implem, metric)
                 self.subtest_accuracy('LSQ', 'lsq', implem, metric)
 
+    def subtest_from_idxaq(self, metric):
+        if metric == 'L2':
+            metric_type = faiss.METRIC_L2
+            st = '_Nrq2x4'
+        else:
+            metric_type = faiss.METRIC_INNER_PRODUCT
+            st = ''
+
+        nlist, d = 64, 16
+        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric=metric)
+        gt = ds.get_groundtruth(k=1)
+        index = faiss.index_factory(d, f'RQ8x4' + st, metric_type)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 16
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.IndexAQFastScan(index)
+        D1, I1 = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall1 = (I1 == gt).sum() / nq
+        print(recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.05
+
+    def test_from_idxaq(self):
+        self.subtest_from_idxaq('L2')
+        self.subtest_from_idxaq('IP')
+
     def subtest_factory(self, aq, M, bbs, st):
         """
         Format: {AQ}{M}x4fs_{bbs}_N{st}

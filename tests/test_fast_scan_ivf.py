@@ -516,20 +516,39 @@ class TestIVFAQFastScan(unittest.TestCase):
         indexfs.add(ds.get_database())
         indexfs.nprobe = 16
         indexfs.implem = implem
-        Da, Ia = indexfs.search(ds.get_queries(), 1)
+        D1, I1 = indexfs.search(ds.get_queries(), 1)
 
         nq = Iref.shape[0]
         recall_ref = (Iref == gt).sum() / nq
-        recall = (Ia == gt).sum() / nq
+        recall1 = (I1 == gt).sum() / nq
 
-        print(aq, st, implem, metric_type, recall_ref, recall)
-        assert abs(recall_ref - recall) < 0.05
+        print(aq, st, implem, metric_type, recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.05
 
     def test_accuracy(self):
         for metric in 'L2', 'IP':
             for implem in 0, 10, 11, 12, 13:
                 self.subtest_accuracy('RQ', 'rq', implem, metric)
                 self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+
+    def test_from_ivfaq(self):
+        nlist, d = 64, 16
+        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric='IP')
+        gt = ds.get_groundtruth(k=1)
+        index = faiss.index_factory(d, f'IVF64,RQ8x4', faiss.METRIC_INNER_PRODUCT)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 16
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.IndexIVFAQFastScan(index)
+        D1, I1 = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall1 = (I1 == gt).sum() / nq
+        print(recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.05
 
     def subtest_factory(self, aq, M, bbs, st):
         """

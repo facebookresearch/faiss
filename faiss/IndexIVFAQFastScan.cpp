@@ -61,7 +61,7 @@ void IndexIVFAQFastScan::init(
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
                 aq->search_type == AdditiveQuantizer::ST_LUT_nonorm,
-                "Search type must be ST_decompress for IP metric");
+                "Search type must be ST_LUT_nonorm for IP metric");
     } else {
         FAISS_THROW_IF_NOT_MSG(
                 aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
@@ -96,6 +96,9 @@ IndexIVFAQFastScan::IndexIVFAQFastScan(
         : IndexIVF(orig.quantizer, orig.d, orig.nlist, 0, orig.metric_type),
           aq(orig.aq),
           bbs(bbs) {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_INNER_PRODUCT,
+            "Only inner product metric are supported");
     init(aq, nlist, metric_type, bbs);
 
     is_trained = orig.is_trained;

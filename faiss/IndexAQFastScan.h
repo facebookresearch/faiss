@@ -140,6 +140,8 @@ struct IndexRQFastScan : IndexAQFastScan {
      * @param d      dimensionality of the input vectors
      * @param M      number of subquantizers
      * @param nbits  number of bit per subvector index
+     * @param metric  metric type
+     * @param search_type AQ search type
      */
     IndexRQFastScan(
             int d,        ///< dimensionality of the input vectors
@@ -160,6 +162,8 @@ struct IndexLSQFastScan : IndexAQFastScan {
      * @param d      dimensionality of the input vectors
      * @param M      number of subquantizers
      * @param nbits  number of bit per subvector index
+     * @param metric  metric type
+     * @param search_type AQ search type
      */
     IndexLSQFastScan(
             int d,        ///< dimensionality of the input vectors
