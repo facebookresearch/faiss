@@ -11,6 +11,9 @@
 
 #include <array>
 
+#include <faiss/VectorTransform.h>
+#include <faiss/impl/FaissAssert.h>
+
 namespace faiss {
 
 using namespace simd_result_handlers;
@@ -40,6 +43,9 @@ void get_matrix_column(
     }
 }
 
+const uint8_t iperm0[16] =
+        {0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15};
+
 } // anonymous namespace
 
 void pq4_pack_codes(
@@ -49,17 +55,22 @@ void pq4_pack_codes(
         size_t nb,
         size_t bbs,
         size_t nsq,
-        uint8_t* blocks) {
+        uint8_t* blocks,
+        uint64_t stride) {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
     FAISS_THROW_IF_NOT(nsq % 2 == 0);
 
-    memset(blocks, 0, nb * nsq / 2);
-    const uint8_t perm0[16] = {
-            0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+    if (stride == -1) {
+        stride = nsq / 2 * bbs;
+    } else {
+        FAISS_THROW_IF_NOT(stride >= nsq / 2 * bbs);
+    }
 
-    uint8_t* codes2 = blocks;
+    memset(blocks, 0, nb * nsq / 2);
+
     for (size_t i0 = 0; i0 < nb; i0 += bbs) {
+        uint8_t* codes2 = blocks + stride * (i0 / bbs);
         for (int sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
@@ -89,16 +100,20 @@ void pq4_pack_codes_range(
         size_t i1,
         size_t bbs,
         size_t M2,
-        uint8_t* blocks) {
-    const uint8_t perm0[16] = {
-            0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+        uint8_t* blocks,
+        uint64_t stride) {
+    if (stride == -1) {
+        stride = M2 / 2 * bbs;
+    } else {
+        FAISS_THROW_IF_NOT(stride >= M2 / 2 * bbs);
+    }
 
-    // range of affected blocks
     size_t block0 = i0 / bbs;
+    // range of affected blocks
     size_t block1 = ((i1 - 1) / bbs) + 1;
 
     for (size_t b = block0; b < block1; b++) {
-        uint8_t* codes2 = blocks + b * bbs * M2 / 2;
+        uint8_t* codes2 = blocks + b * stride;
         int64_t i_base = b * bbs - i0;
         for (int sq = 0; sq < M2; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
@@ -127,8 +142,13 @@ uint8_t pq4_get_packed_element(
         size_t bbs,
         size_t nsq,
         size_t i,
-        size_t sq) {
+        size_t sq,
+        uint64_t stride) {
     // move to correct bbs-sized block
+    if (stride == -1) {
+        stride = nsq / 2 * bbs;
+    }
+
     data += (i / bbs * (nsq / 2) + sq / 2) * bbs;
     sq = sq & 1;
     i = i % bbs;
@@ -140,8 +160,7 @@ uint8_t pq4_get_packed_element(
     if (sq == 1) {
         data += 16;
     }
-    const uint8_t iperm0[16] = {
-            0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15};
+
     if (i < 16) {
         return data[iperm0[i]] & 15;
     } else {

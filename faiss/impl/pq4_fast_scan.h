@@ -18,6 +18,9 @@
  *
  * The implementation of these functions is spread over 3 cpp files to reduce
  * parallel compile times. Templates are instanciated explicitly.
+ *
+ * A Python version of the code layout and accumulation code is in
+ * https://gist.github.com/mdouze/5c32300cf3bd20946a7762f6c016e823
  */
 
 namespace faiss {
@@ -26,12 +29,14 @@ namespace faiss {
  *  The unused bytes are set to 0.
  *
  * @param codes   input codes, size (ntotal, ceil(M / 2))
- * @param nototal number of input codes
+ * @param ntotal  number of input codes
  * @param nb      output number of codes (ntotal rounded up to a multiple of
  *                bbs)
  * @param M2      number of sub-quantizers (=M rounded up to a muliple of 2)
  * @param bbs     size of database blocks (multiple of 32)
- * @param blocks  output array, size nb * nsq / 2.
+ * @param blocks  output array, size nb * stride.
+ * @param stride  size of 1 block in bytes (default -1 means M2/2, ie. compact
+ *                encoding)
  */
 void pq4_pack_codes(
         const uint8_t* codes,
@@ -40,7 +45,8 @@ void pq4_pack_codes(
         size_t nb,
         size_t bbs,
         size_t M2,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        uint64_t stride = -1);
 
 /** Same as pack_codes but write in a given range of the output,
  * leaving the rest untouched. Assumes allocated entries are 0 on input.
@@ -57,7 +63,8 @@ void pq4_pack_codes_range(
         size_t i1,
         size_t bbs,
         size_t M2,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        uint64_t stride = -1);
 
 /** get a single element from a packed codes table
  *
@@ -141,7 +148,7 @@ int pq4_pack_LUT_qbs_q_map(
 
 /** Run accumulation loop.
  *
- * @param qbs     4-bit encded number of queries
+ * @param qbs     4-bit encoded number of queries
  * @param nb      number of database codes (mutliple of bbs)
  * @param nsq     number of sub-quantizers
  * @param codes   encoded database vectors (packed)

@@ -773,6 +773,8 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxpqfs->qbs);
         READ1(idxpqfs->ntotal2);
         READ1(idxpqfs->M2);
+        idxpqfs->M = idxpqfs->pq.M;
+        idxpqfs->code_size = idxpqfs->pq.code_size;
         READVECTOR(idxpqfs->codes);
         idx = idxpqfs;
 

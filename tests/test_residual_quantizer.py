@@ -9,6 +9,7 @@ import faiss
 import unittest
 
 from faiss.contrib import datasets
+from faiss.contrib import evaluation
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
 ###########################################################
@@ -1097,3 +1098,60 @@ class TestCrossCodebookComputations(unittest.TestCase):
         rq.use_beam_LUT = 1
         codes_new = rq.compute_codes(xb)
         np.testing.assert_array_equal(codes_ref_residuals, codes_new)
+
+
+############################################################
+# FastScan implementation
+############################################################
+
+class TestFastScan(unittest.TestCase):
+
+    def do_test_search(self, metric=faiss.METRIC_L2, implem=2):
+        ds = datasets.SyntheticDataset(32, 1000, 200, 100)
+
+        ir = faiss.IndexResidualQuantizer(ds.d, 3, 4, metric)
+        ir.rq.train_type = faiss.ResidualQuantizer.Train_default
+        ir.train(ds.get_train())
+
+        ir.add(ds.get_database())
+
+        xq = ds.get_queries()
+        LUT = np.empty((len(xq), 3, 16), dtype='float32')
+        ir.aq.compute_LUT(len(xq), faiss.swig_ptr(xq), faiss.swig_ptr(LUT))
+        print("energy per subquant:", (LUT ** 2).sum(2).sum(0))
+
+        k = 10
+        Dref, Iref = ir.search(ds.get_queries(), k)
+
+        irfs = faiss.IndexResidualQuantizerFastScan(ir)
+        faiss.omp_set_num_threads(1)
+        irfs.implem = implem
+        Dnew, Inew = irfs.search(ds.get_queries(), k)
+
+        # subset = (Iref != Inew).sum(1) > 0
+        # print(Iref[subset], Dref[subset])
+        # print(Inew[subset], Dnew[subset])
+
+        if implem == 2:
+            # no quantization involved, this should be the same up to roundoff errors
+            evaluation.test_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
+        elif implem == 4:
+            # this is less accurate, allow some flexibility
+            nerr = (Iref != Inew).sum()
+            nerr2 = sum(
+                len(set(Ir) ^ set(In))
+                for Ir, In in zip(Iref, Inew)
+            )
+            # should be 0.006
+            self.assertLess(nerr2 / Iref.size, 0.01)
+            # 0.098
+            self.assertLess(nerr / Iref.size, 0.1)
+
+    def test_search_ip(self):
+        self.do_test_search(metric=faiss.METRIC_INNER_PRODUCT, implem=2)
+
+    def test_search_ip_quantized(self):
+        self.do_test_search(metric=faiss.METRIC_INNER_PRODUCT, implem=4)
+
+    def test_search_ip_quantized_default(self):
+        self.do_test_search(metric=faiss.METRIC_INNER_PRODUCT, implem=0)

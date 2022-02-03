@@ -10,8 +10,9 @@
  */
 
 #include <faiss/index_factory.h>
-#include "faiss/MetricType.h"
-#include "faiss/impl/FaissAssert.h"
+
+#include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
 
 #include <cinttypes>
 #include <cmath>
@@ -162,8 +163,13 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind("_");
-    return aq_search_type[stok.substr(pos)];
+    std::string norm_suffix = stok.substr(stok.rfind("_"));
+    if (metric == METRIC_INNER_PRODUCT) {
+        FAISS_THROW_IF_NOT_MSG(
+                norm_suffix == "_Nnone" || norm_suffix == "",
+                "IP additive quantizer does not need a norm encoding");
+    }
+    return aq_search_type[norm_suffix];
 }
 
 std::vector<size_t> aq_parse_nbits(std::string stok) {

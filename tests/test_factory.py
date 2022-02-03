@@ -259,6 +259,11 @@ class TestAdditive(unittest.TestCase):
             index.rq.search_type,
             faiss.AdditiveQuantizer.ST_norm_qint8)
 
+    def test_IP_norm(self):
+        # norm does not make sense with IP search
+        with self.assertRaises(RuntimeError):
+            faiss.index_factory(5, "RQ8x8_Nqint8", faiss.METRIC_INNER_PRODUCT)
+
 
 class TestSpectralHash(unittest.TestCase):
 

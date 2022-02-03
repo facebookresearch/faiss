@@ -13,6 +13,7 @@
 
 #include <omp.h>
 
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
@@ -29,71 +30,26 @@ inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
 
-IndexPQFastScan::IndexPQFastScan(
+IndexFastScan::IndexFastScan(
         int d,
         size_t M,
         size_t nbits,
         MetricType metric,
         int bbs)
         : Index(d, metric),
-          pq(d, M, nbits),
           bbs(bbs),
+          M(M),
+          code_size((M * nbits + 7) / 8),
           ntotal2(0),
           M2(roundup(M, 2)) {
     FAISS_THROW_IF_NOT(nbits == 4);
     is_trained = false;
 }
 
-IndexPQFastScan::IndexPQFastScan() : bbs(0), ntotal2(0), M2(0) {}
+IndexFastScan::IndexFastScan()
+        : bbs(0), M(0), code_size(0), ntotal2(0), M2(0) {}
 
-IndexPQFastScan::IndexPQFastScan(const IndexPQ& orig, int bbs)
-        : Index(orig.d, orig.metric_type), pq(orig.pq), bbs(bbs) {
-    FAISS_THROW_IF_NOT(orig.pq.nbits == 4);
-    ntotal = orig.ntotal;
-    is_trained = orig.is_trained;
-    orig_codes = orig.codes.data();
-
-    qbs = 0; // means use default
-
-    // pack the codes
-
-    size_t M = pq.M;
-
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    M2 = roundup(M, 2);
-    ntotal2 = roundup(ntotal, bbs);
-
-    codes.resize(ntotal2 * M2 / 2);
-
-    // printf("M=%d M2=%d code_size=%d\n", M, M2, pq.code_size);
-    pq4_pack_codes(orig.codes.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
-}
-
-void IndexPQFastScan::train(idx_t n, const float* x) {
-    if (is_trained) {
-        return;
-    }
-    pq.train(n, x);
-    is_trained = true;
-}
-
-void IndexPQFastScan::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    AlignedTable<uint8_t> tmp_codes(n * pq.code_size);
-    pq.compute_codes(x, tmp_codes.get(), n);
-    ntotal2 = roundup(ntotal + n, bbs);
-    size_t new_size = ntotal2 * M2 / 2;
-    size_t old_size = codes.size();
-    if (new_size > old_size) {
-        codes.resize(new_size);
-        memset(codes.get() + old_size, 0, new_size - old_size);
-    }
-    pq4_pack_codes_range(
-            tmp_codes.get(), pq.M, ntotal, ntotal + n, bbs, M2, codes.get());
-    ntotal += n;
-}
-
-void IndexPQFastScan::reset() {
+void IndexFastScan::reset() {
     codes.resize(0);
     ntotal = 0;
 }
@@ -103,7 +59,9 @@ namespace {
 // from impl/ProductQuantizer.cpp
 template <class C, typename dis_t>
 void pq_estimators_from_tables_generic(
-        const ProductQuantizer& pq,
+        size_t M,
+        size_t ksub,
+        size_t code_size,
         size_t nbits,
         const uint8_t* codes,
         size_t ncodes,
@@ -112,10 +70,8 @@ void pq_estimators_from_tables_generic(
         typename C::T* heap_dis,
         int64_t* heap_ids) {
     using accu_t = typename C::T;
-    const size_t M = pq.M;
-    const size_t ksub = pq.ksub;
     for (size_t j = 0; j < ncodes; ++j) {
-        PQDecoderGeneric decoder(codes + j * pq.code_size, nbits);
+        PQDecoderGeneric decoder(codes + j * code_size, nbits);
         accu_t dis = 0;
         const dis_t* __restrict dt = dis_table;
         for (size_t m = 0; m < M; m++) {
@@ -135,44 +91,11 @@ void pq_estimators_from_tables_generic(
 
 using namespace quantize_lut;
 
-void IndexPQFastScan::compute_quantized_LUT(
-        idx_t n,
-        const float* x,
-        uint8_t* lut,
-        float* normalizers) const {
-    size_t dim12 = pq.ksub * pq.M;
-    std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    if (metric_type == METRIC_L2) {
-        pq.compute_distance_tables(n, x, dis_tables.get());
-    } else {
-        pq.compute_inner_prod_tables(n, x, dis_tables.get());
-    }
-
-    for (uint64_t i = 0; i < n; i++) {
-        round_uint8_per_column(
-                dis_tables.get() + i * dim12,
-                pq.M,
-                pq.ksub,
-                &normalizers[2 * i],
-                &normalizers[2 * i + 1]);
-    }
-
-    for (uint64_t i = 0; i < n; i++) {
-        const float* t_in = dis_tables.get() + i * dim12;
-        uint8_t* t_out = lut + i * M2 * pq.ksub;
-
-        for (int j = 0; j < dim12; j++) {
-            t_out[j] = int(t_in[j]);
-        }
-        memset(t_out + dim12, 0, (M2 - pq.M) * pq.ksub);
-    }
-}
-
 /******************************************************************************
  * Search driver routine
  ******************************************************************************/
 
-void IndexPQFastScan::search(
+void IndexFastScan::search(
         idx_t n,
         const float* x,
         idx_t k,
@@ -188,7 +111,7 @@ void IndexPQFastScan::search(
 }
 
 template <bool is_max>
-void IndexPQFastScan::search_dispatch_implem(
+void IndexFastScan::search_dispatch_implem(
         idx_t n,
         const float* x,
         idx_t k,
@@ -220,21 +143,21 @@ void IndexPQFastScan::search_dispatch_implem(
         }
     }
 
-    if (implem == 1) {
+    size_t ksub = 16; // only 4-bit quantizers supported
+
+    if (impl == 1) {
+        FAISS_THROW_MSG("not implemented");
+        /*
         FAISS_THROW_IF_NOT(orig_codes);
         FAISS_THROW_IF_NOT(is_max);
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        pq.search(x, n, orig_codes, ntotal, &res, true);
+        pq.search(x, n, orig_codes, ntotal, &res, true); */
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes);
 
-        size_t dim12 = pq.ksub * pq.M;
+        size_t dim12 = ksub * M;
         std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-        if (is_max) {
-            pq.compute_distance_tables(n, x, dis_tables.get());
-        } else {
-            pq.compute_inner_prod_tables(n, x, dis_tables.get());
-        }
+        compute_float_LUT(n, x, dis_tables.get());
 
         std::vector<float> normalizers(n * 2);
 
@@ -244,8 +167,8 @@ void IndexPQFastScan::search_dispatch_implem(
             for (uint64_t i = 0; i < n; i++) {
                 round_uint8_per_column(
                         dis_tables.get() + i * dim12,
-                        pq.M,
-                        pq.ksub,
+                        M,
+                        ksub,
                         &normalizers[2 * i],
                         &normalizers[2 * i + 1]);
             }
@@ -257,9 +180,12 @@ void IndexPQFastScan::search_dispatch_implem(
 
             heap_heapify<Cfloat>(k, heap_dis, heap_ids);
 
+            int nbits = 4;
             pq_estimators_from_tables_generic<Cfloat>(
-                    pq,
-                    pq.nbits,
+                    M,
+                    ksub,
+                    code_size,
+                    nbits,
                     orig_codes,
                     ntotal,
                     dis_tables.get() + i * dim12,
@@ -310,7 +236,7 @@ void IndexPQFastScan::search_dispatch_implem(
 }
 
 template <class C>
-void IndexPQFastScan::search_implem_12(
+void IndexFastScan::search_implem_12(
         idx_t n,
         const float* x,
         idx_t k,
@@ -335,7 +261,8 @@ void IndexPQFastScan::search_implem_12(
         return;
     }
 
-    size_t dim12 = pq.ksub * M2;
+    size_t ksub = 16;
+    size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -418,7 +345,7 @@ void IndexPQFastScan::search_implem_12(
 FastScanStats FastScan_stats;
 
 template <class C>
-void IndexPQFastScan::search_implem_14(
+void IndexFastScan::search_implem_14(
         idx_t n,
         const float* x,
         idx_t k,
@@ -444,7 +371,8 @@ void IndexPQFastScan::search_implem_14(
         return;
     }
 
-    size_t dim12 = pq.ksub * M2;
+    size_t ksub = 16;
+    size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> quantized_dis_tables(n * dim12);
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -503,6 +431,170 @@ void IndexPQFastScan::search_implem_14(
         if (!(skip & 8)) {
             handler.to_flat_arrays(distances, labels, normalizers.get());
         }
+    }
+}
+
+void IndexFastScan::compute_quantized_LUT(
+        idx_t n,
+        const float* x,
+        uint8_t* lut,
+        float* normalizers) const {
+    size_t ksub = 16;
+    size_t dim12 = ksub * M;
+    std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
+    compute_float_LUT(n, x, dis_tables.get());
+
+    for (uint64_t i = 0; i < n; i++) {
+        round_uint8_per_column(
+                dis_tables.get() + i * dim12,
+                M,
+                ksub,
+                &normalizers[2 * i],
+                &normalizers[2 * i + 1]);
+    }
+
+    for (uint64_t i = 0; i < n; i++) {
+        const float* t_in = dis_tables.get() + i * dim12;
+        uint8_t* t_out = lut + i * M2 * ksub;
+
+        for (int j = 0; j < dim12; j++) {
+            t_out[j] = int(t_in[j]);
+        }
+        memset(t_out + dim12, 0, (M2 - M) * ksub);
+    }
+}
+
+/**************************************************************
+ * IndexPQFastScan
+ **************************************************************/
+
+IndexPQFastScan::IndexPQFastScan(
+        int d,
+        size_t M,
+        size_t nbits,
+        MetricType metric,
+        int bbs)
+        : IndexFastScan(d, M, nbits, metric, bbs), pq(d, M, nbits) {
+    FAISS_ASSERT(code_size == pq.code_size);
+}
+
+IndexPQFastScan::IndexPQFastScan() {}
+
+IndexPQFastScan::IndexPQFastScan(const IndexPQ& orig, int bbs)
+        : IndexFastScan(
+                  orig.d,
+                  orig.pq.M,
+                  orig.pq.nbits,
+                  orig.metric_type,
+                  bbs),
+          pq(orig.pq) {
+    FAISS_ASSERT(pq.code_size == code_size);
+    ntotal = orig.ntotal;
+    is_trained = orig.is_trained;
+    orig_codes = orig.codes.data();
+
+    qbs = 0; // means use default
+
+    // pack the codes
+    FAISS_THROW_IF_NOT(bbs % 32 == 0);
+    M2 = roundup(M, 2);
+    ntotal2 = roundup(ntotal, bbs);
+
+    codes.resize(ntotal2 * M2 / 2);
+
+    // printf("M=%d M2=%d code_size=%d\n", M, M2, pq.code_size);
+    pq4_pack_codes(orig.codes.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
+}
+
+void IndexPQFastScan::train(idx_t n, const float* x) {
+    if (is_trained) {
+        return;
+    }
+    pq.train(n, x);
+    is_trained = true;
+}
+
+void IndexPQFastScan::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(is_trained);
+    AlignedTable<uint8_t> tmp_codes(n * pq.code_size);
+    pq.compute_codes(x, tmp_codes.get(), n);
+    ntotal2 = roundup(ntotal + n, bbs);
+    size_t new_size = ntotal2 * M2 / 2;
+    size_t old_size = codes.size();
+    if (new_size > old_size) {
+        codes.resize(new_size);
+        memset(codes.get() + old_size, 0, new_size - old_size);
+    }
+    pq4_pack_codes_range(
+            tmp_codes.get(), pq.M, ntotal, ntotal + n, bbs, M2, codes.get());
+    ntotal += n;
+}
+
+void IndexPQFastScan::compute_float_LUT(idx_t n, const float* x, float* lut)
+        const {
+    if (metric_type == METRIC_L2) {
+        pq.compute_distance_tables(n, x, lut);
+    } else {
+        pq.compute_inner_prod_tables(n, x, lut);
+    }
+}
+
+/**************************************************************
+ * IndexResidualQuantizerFastScan
+ **************************************************************/
+
+IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan(
+        const IndexResidualQuantizer& orig,
+        int bbs)
+        : IndexFastScan(
+                  orig.d,
+                  orig.rq.nbits.size(),
+                  orig.rq.nbits[0],
+                  orig.metric_type,
+                  bbs),
+          rq(orig.rq) {
+    for (int m = 0; m < M; m++) {
+        FAISS_THROW_IF_NOT(rq.nbits[m] == 4);
+    }
+    FAISS_ASSERT(rq.code_size == code_size);
+    FAISS_THROW_IF_NOT(bbs % 32 == 0);
+    ntotal = orig.ntotal;
+    is_trained = orig.is_trained;
+    orig_codes = orig.codes.data();
+
+    qbs = 0; // means use default
+
+    M2 = roundup(M, 2);
+    ntotal2 = roundup(ntotal, bbs);
+    codes.resize(ntotal2 * M2 / 2);
+
+    pq4_pack_codes(orig.codes.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
+}
+
+void IndexResidualQuantizerFastScan::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(is_trained);
+    AlignedTable<uint8_t> tmp_codes(n * rq.code_size);
+    rq.compute_codes(x, tmp_codes.get(), n);
+    ntotal2 = roundup(ntotal + n, bbs);
+    size_t new_size = ntotal2 * M2 / 2;
+    size_t old_size = codes.size();
+    if (new_size > old_size) {
+        codes.resize(new_size);
+        memset(codes.get() + old_size, 0, new_size - old_size);
+    }
+    pq4_pack_codes_range(
+            tmp_codes.get(), M, ntotal, ntotal + n, bbs, M2, codes.get());
+    ntotal += n;
+}
+
+void IndexResidualQuantizerFastScan::compute_float_LUT(
+        idx_t nq,
+        const float* xq,
+        float* lut) const {
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        rq.compute_LUT(nq, xq, lut);
+    } else {
+        FAISS_THROW_MSG("not implemented");
     }
 }
 

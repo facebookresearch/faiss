@@ -11,7 +11,6 @@ import numpy as np
 import faiss
 
 from faiss.contrib import datasets
-import platform
 
 
 class TestCompileOptions(unittest.TestCase):

@@ -7,13 +7,17 @@
 
 #pragma once
 
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
-/** Fast scan version of IndexPQ. Works for 4-bit PQ for now.
+/** Fast scan version of IndexPQ and IndexAdditiveQuantizer. Works for 4-bit
+ * sub-codes for now. This works only for search time. Training and addition are
+ * pefromed by sub-classes.
+ *
  *
  * The codes are not stored sequentially but grouped in blocks of size bbs.
  * This makes it possible to compute distances quickly with SIMD instructions.
@@ -25,9 +29,7 @@ namespace faiss {
  * 15: no qbs with reservoir accumulator
  */
 
-struct IndexPQFastScan : Index {
-    ProductQuantizer pq;
-
+struct IndexFastScan : Index {
     // implementation to select
     int implem = 0;
     // skip some parts of the computation (for timing)
@@ -36,6 +38,9 @@ struct IndexPQFastScan : Index {
     // size of the kernel
     int bbs;     // set at build time
     int qbs = 0; // query block size 0 = use default
+
+    // derived from quantizer
+    size_t M, code_size;
 
     // packed version of the codes
     size_t ntotal2;
@@ -46,21 +51,17 @@ struct IndexPQFastScan : Index {
     // this is for testing purposes only (set when initialized by IndexPQ)
     const uint8_t* orig_codes = nullptr;
 
-    IndexPQFastScan(
+    IndexFastScan(
             int d,
             size_t M,
             size_t nbits,
             MetricType metric = METRIC_L2,
             int bbs = 32);
 
-    IndexPQFastScan();
+    IndexFastScan();
 
-    /// build from an existing IndexPQ
-    explicit IndexPQFastScan(const IndexPQ& orig, int bbs = 32);
-
-    void train(idx_t n, const float* x) override;
-    void add(idx_t n, const float* x) override;
     void reset() override;
+
     void search(
             idx_t n,
             const float* x,
@@ -68,8 +69,11 @@ struct IndexPQFastScan : Index {
             float* distances,
             idx_t* labels) const override;
 
-    // called by search function
-    void compute_quantized_LUT(
+    virtual void compute_float_LUT(idx_t n, const float* x, float* lut)
+            const = 0;
+
+    /// default implementation calls compute_float_LUT
+    virtual void compute_quantized_LUT(
             idx_t n,
             const float* x,
             uint8_t* lut,
@@ -108,6 +112,43 @@ struct IndexPQFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl) const;
+};
+
+struct IndexPQFastScan : IndexFastScan {
+    ProductQuantizer pq;
+
+    IndexPQFastScan(
+            int d,
+            size_t M,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            int bbs = 32);
+
+    IndexPQFastScan();
+
+    /// build from an existing IndexPQ
+    explicit IndexPQFastScan(const IndexPQ& orig, int bbs = 32);
+
+    void train(idx_t n, const float* x) override;
+    void add(idx_t n, const float* x) override;
+
+    void compute_float_LUT(idx_t n, const float* x, float* lut) const override;
+};
+
+struct IndexResidualQuantizerFastScan : IndexFastScan {
+    ResidualQuantizer rq;
+
+    /// build from an existing IndexPQ
+    explicit IndexResidualQuantizerFastScan(
+            const IndexResidualQuantizer& orig,
+            int bbs = 32);
+
+    // void train(idx_t n, const float* x) override;
+    // void add(idx_t n, const float* x) override;
+
+    void compute_float_LUT(idx_t n, const float* x, float* lut) const override;
+
+    void add(idx_t n, const float* x) override;
 };
 
 struct FastScanStats {
