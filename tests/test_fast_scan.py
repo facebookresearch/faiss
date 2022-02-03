@@ -441,20 +441,28 @@ class TestAdd(unittest.TestCase):
 
 class TestAQFastScan(unittest.TestCase):
 
-    def subtest_accuracy(self, aq='RQ', st='rq'):
+    def subtest_accuracy(self, aq, st, metric_type='L2'):
         """
         Compare IndexAQFastScan with IndexAQ (qint8)
         """
         d = 16
-        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
         gt = ds.get_groundtruth(k=1)
 
-        index = faiss.index_factory(d, f'{aq}8x4_Nqint8')
+        if metric_type == 'L2':
+            metric = faiss.METRIC_L2
+            postfix1 = '_Nqint8'
+            postfix2 = f'_N{st}2x4'
+        else:
+            metric = faiss.METRIC_INNER_PRODUCT
+            postfix1 = postfix2 = ''
+
+        index = faiss.index_factory(d, f'{aq}8x4{postfix1}', metric)
         index.train(ds.get_train())
         index.add(ds.get_database())
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.index_factory(d, f'{aq}8x4fs_32_N{st}2x4')
+        indexfs = faiss.index_factory(d, f'{aq}8x4fs_32{postfix2}', metric)
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
         Da, Ia = indexfs.search(ds.get_queries(), 1)
@@ -463,7 +471,7 @@ class TestAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall = (Ia == gt).sum() / nq
 
-        print(aq, st, recall_ref, recall)
+        print(aq, st, metric_type, recall_ref, recall)
         assert abs(recall_ref - recall) < 0.05
 
     def test_accuracy(self):
@@ -472,9 +480,15 @@ class TestAQFastScan(unittest.TestCase):
         self.subtest_accuracy('LSQ', 'rq')
         self.subtest_accuracy('LSQ', 'lsq')
 
+        self.subtest_accuracy('RQ', 'rq', 'IP')
+        self.subtest_accuracy('RQ', 'lsq', 'IP')
+        self.subtest_accuracy('LSQ', 'rq', 'IP')
+        self.subtest_accuracy('LSQ', 'lsq', 'IP')
+
     def subtest_factory(self, aq, M, bbs, st):
         """
         Format: {AQ}{M}x4fs_{bbs}_N{search_type}
+
             AQ:          string, LSQ or RQ
             M:           integer
             bbs:         integer

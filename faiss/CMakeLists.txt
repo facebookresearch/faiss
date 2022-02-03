@@ -23,6 +23,7 @@ set(FAISS_SRC
   IndexHNSW.cpp
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
+  IndexIVFAQFastScan.cpp
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
   IndexIVFPQFastScan.cpp
@@ -62,6 +63,8 @@ set(FAISS_SRC
   impl/pq4_fast_scan.cpp
   impl/pq4_fast_scan_search_1.cpp
   impl/pq4_fast_scan_search_qbs.cpp
+  impl/aq4_fast_scan_search_1.cpp
+  impl/aq4_fast_scan_search_qbs.cpp
   impl/io.cpp
   impl/lattice_Zn.cpp
   impl/NNDescent.cpp
@@ -100,6 +103,7 @@ set(FAISS_HEADERS
   IndexHNSW.h
   IndexIVF.h
   IndexIVFAdditiveQuantizer.h
+  IndexIVFAQFastScan.h
   IndexIVFFlat.h
   IndexIVFPQ.h
   IndexIVFPQFastScan.h
@@ -145,6 +149,7 @@ set(FAISS_HEADERS
   impl/lattice_Zn.h
   impl/platform_macros.h
   impl/pq4_fast_scan.h
+  impl/aq4_fast_scan.h
   impl/simd_result_handlers.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h

@@ -42,13 +42,20 @@ IndexIVFAQFastScan::IndexIVFAQFastScan(
         size_t nlist,
         MetricType metric,
         int bbs)
-        : IndexIVF(quantizer, d, nlist, 0, metric),
-          aq(aq),
-          bbs(bbs),
-          nbits(4),
-          ksub(1 << 4) {
+        : IndexIVF(quantizer, d, nlist, 0, metric) {
+    if (aq != nullptr) {
+        init(aq, nlist, metric, bbs);
+    }
+}
+
+void IndexIVFAQFastScan::init(
+        AdditiveQuantizer* aq,
+        size_t nlist,
+        MetricType metric,
+        int bbs) {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(aq != nullptr);
+    FAISS_THROW_IF_NOT(aq->M % 2 == 0);
     FAISS_THROW_IF_NOT(!aq->nbits.empty());
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
@@ -62,30 +69,65 @@ IndexIVFAQFastScan::IndexIVFAQFastScan(
                 "Search type must be lsq2x4 or rq2x4 for L2 metric");
     }
 
-    M = aq->M + 2;
+    this->aq = aq;
+    this->bbs = bbs;
+    nbits = 4;
+    ksub = (1 << 4);
+
+    if (metric_type == METRIC_L2) {
+        M_norm = 2; // 2x4 bits AQ
+    } else {
+        M_norm = 0;
+        rescale_norm = false;
+    }
+    M = aq->M + M_norm;
     M2 = roundup(M, 2);
 
     is_trained = false;
     code_size = M2 / 2;
-    max_training_points = 1024 * ksub * M;
+    max_train_points = 1024 * ksub * M;
 
     replace_invlists(new BlockInvertedLists(nlist, bbs, bbs * M2 / 2), true);
 }
 
 IndexIVFAQFastScan::IndexIVFAQFastScan(
-        Index* quantizer,
-        AdditiveQuantizer* aq,
-        size_t d,
-        size_t nlist,
-        MetricType metric,
+        const IndexIVFAdditiveQuantizer& orig,
         int bbs)
-        : IndexIVFAQFastScan(quantizer, aq, d, nlist, metric, bbs) {}
+        : IndexIVF(orig.quantizer, orig.d, orig.nlist, 0, orig.metric_type),
+          aq(orig.aq),
+          bbs(bbs) {
+    init(aq, nlist, metric_type, bbs);
+
+    is_trained = orig.is_trained;
+    ntotal = orig.ntotal;
+    nprobe = orig.nprobe;
+
+    for (size_t i = 0; i < nlist; i++) {
+        size_t nb = orig.invlists->list_size(i);
+        size_t nb2 = roundup(nb, bbs);
+        AlignedTable<uint8_t> tmp(nb2 * M2 / 2);
+        pq4_pack_codes(
+                InvertedLists::ScopedCodes(orig.invlists, i).get(),
+                nb,
+                M,
+                nb2,
+                bbs,
+                M2,
+                tmp.get());
+        invlists->add_entries(
+                i,
+                nb,
+                InvertedLists::ScopedIds(orig.invlists, i).get(),
+                tmp.get());
+    }
+
+    orig_invlists = orig.invlists;
+}
 
 IndexIVFAQFastScan::IndexIVFAQFastScan() {
     bbs = 0;
     M2 = 0;
     aq = nullptr;
-    aq_norm = nullptr;
 
     is_trained = false;
 }
@@ -104,7 +146,7 @@ void IndexIVFAQFastScan::train_residual(idx_t n, const float* x_in) {
     const int seed = 0x12345;
     size_t nt = n;
     const float* x = fvecs_maybe_subsample(
-            d, &nt, max_training_points, x_in, verbose, seed);
+            d, &nt, max_train_points, x_in, verbose, seed);
     n = nt;
     if (verbose) {
         printf("training additive quantizer on %zd vectors\n", nt);
@@ -116,8 +158,7 @@ void IndexIVFAQFastScan::train_residual(idx_t n, const float* x_in) {
         del_x.reset((float*)x);
     }
 
-    const float* trainset;
-    AlignedTable<float> residuals;
+    std::vector<float> residuals(n * d);
     std::vector<idx_t> assign(n);
 
     if (verbose) {
@@ -129,7 +170,6 @@ void IndexIVFAQFastScan::train_residual(idx_t n, const float* x_in) {
         quantizer->compute_residual(
                 x + i * d, residuals.data() + i * d, assign[i]);
     }
-    trainset = residuals.data();
 
     if (verbose) {
         printf("training %zdx%zd additive quantizer on "
@@ -140,13 +180,13 @@ void IndexIVFAQFastScan::train_residual(idx_t n, const float* x_in) {
                d);
     }
     aq->verbose = verbose;
-    aq->train(n, trainset);
+    aq->train(n, residuals.data());
 
     // train norm quantizer
     if (metric_type == METRIC_L2) {
         std::vector<float> decoded_x(n * d);
         std::vector<uint8_t> x_codes(n * aq->code_size);
-        aq->compute_codes(trainset, x_codes.data(), n);
+        aq->compute_codes(residuals.data(), x_codes.data(), n);
         aq->decode(x_codes.data(), decoded_x.data(), n);
 
         // add coarse centroids
@@ -181,14 +221,17 @@ void IndexIVFAQFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
         del_x.reset((float*)x);
     }
 
-    std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n]);
-    std::unique_ptr<float[]> coarse_dis(new float[n]);
-    quantizer->search(n, x, 1, coarse_dis.get(), coarse_ids.get());
+    std::vector<idx_t> coarse_ids(n);
+    std::vector<float> coarse_dis(n);
+    quantizer->search(n, x, 1, coarse_dis.data(), coarse_ids.data());
 
-    size_t dim12 = ksub * M;
     AlignedTable<float> dis_tables;
     AlignedTable<float> biases;
-    compute_LUT(n, x, coarse_ids.get(), coarse_dis.get(), dis_tables, biases);
+
+    size_t index_nprobe = nprobe;
+    nprobe = 1;
+    compute_LUT(n, x, coarse_ids.data(), coarse_dis.data(), dis_tables, biases);
+    nprobe = index_nprobe;
 
     float scale = 0;
 
@@ -203,10 +246,10 @@ void IndexIVFAQFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
     scale = std::roundf(scale);
     norm_scale = (int)scale;
 
-    if (verbose) {
-        printf("estimated norm scale: %lf\n", scale);
-        printf("rounded norm scale: %d\n", norm_scale);
-    }
+    printf("estimated norm scale: %lf\n", scale);
+    printf("rounded norm scale: %d\n", norm_scale);
+    // if (verbose) {
+    // }
 }
 
 /*********************************************************
@@ -254,8 +297,8 @@ void IndexIVFAQFastScan::encode_vectors(
 
 #pragma omp parallel for if (n > 1000)
         for (idx_t i = 0; i < n; i++) {
-            auto c = centroids.data() +
-                    i * d quantizer->reconstruct(list_nos[i], c);
+            auto c = centroids.data() + i * d;
+            quantizer->reconstruct(list_nos[i], c);
         }
 
         aq->compute_codes(residuals.data(), codes, n, centroids.data());
@@ -371,12 +414,6 @@ void IndexIVFAQFastScan::add_with_ids(
                    flat_codes.data() + order[i] * code_size,
                    code_size);
             nadd++;
-
-            ///// for debug only
-            if (keep_orig_invlists) {
-                uint8_t* code = flat_codes.data() + order[i] * code_size;
-                size_t offset = orig_invlists->add_entry(list_no, id, code);
-            }
         }
         pq4_pack_codes_range(
                 list_codes.data(),
@@ -492,7 +529,7 @@ void IndexIVFAQFastScan::compute_LUT(
 
         // norm look-up tables
         const float* norm_lut = aq->norm_tabs.data();
-        FAISS_THROW_IF_NOT(aaq->norm_tabs.size() == norm_dim12);
+        FAISS_THROW_IF_NOT(aq->norm_tabs.size() == norm_dim12);
 
         // combine them
 #pragma omp parallel for if (n > 100)
@@ -527,7 +564,6 @@ void IndexIVFAQFastScan::compute_LUT_uint8(
     constexpr bool lut_is_3d = false;
     size_t dim12 = ksub * M;
     size_t dim12_2 = ksub * M2;
-    size_t M_norm = aq_norm ? aq_norm->M : 0;
 
     dis_tables.resize(n * dim12_2);
     if (biases_float.get()) {
@@ -796,6 +832,7 @@ void IndexIVFAQFastScan::search_implem_2(
             normalizers.get());
 
     size_t ndis = 0, nlist_visited = 0;
+    bool rescale = (rescale_norm && norm_scale > 1);
 
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
     for (idx_t i = 0; i < n; i++) {
@@ -826,7 +863,7 @@ void IndexIVFAQFastScan::search_implem_2(
                     ids.get(),
                     bias,
                     k,
-                    rescale_norm ? norm_scale : 1,
+                    rescale ? norm_scale : 1,
                     heap_dis,
                     heap_ids);
 
@@ -864,7 +901,6 @@ void IndexIVFAQFastScan::search_implem_10(
         size_t* nlist_out) const {
     memset(distances, -1, sizeof(float) * k * n);
     memset(labels, -1, sizeof(idx_t) * k * n);
-    size_t M_norm = aq_norm ? aq_norm->M : 0;
 
     using HeapHC = HeapHandler<C, true>;
     using ReservoirHC = ReservoirHandler<C, true>;
@@ -994,7 +1030,6 @@ void IndexIVFAQFastScan::search_implem_12(
 
     std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
-    size_t M_norm = aq_norm ? aq_norm->M : 0;
 
     uint64_t times[10];
     memset(times, 0, sizeof(times));
@@ -1235,28 +1270,45 @@ void IndexIVFAQFastScan::reconstruct_orig_invlists() {
     }
 }
 
+/********** IndexIVFLSQFastScan ************/
 IndexIVFLSQFastScan::IndexIVFLSQFastScan(
         Index* quantizer,
         size_t d,
         size_t nlist,
         size_t M,
-        size_t M_norm,
+        size_t nbits,
         MetricType metric,
+        Search_type_t search_type,
         int bbs)
-        : lsq(d, M, 4),
-          norm_lsq(d, M_norm, 4),
-          IndexIVFAQFastScan(
-                  quantizer,
-                  &lsq,
-                  &norm_lsq,
-                  d,
-                  nlist,
-                  metric,
-                  bbs) {}
+        : IndexIVFAQFastScan(quantizer, nullptr, d, nlist, metric, bbs),
+          lsq(d, M, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4); // TODO: delete me
+    init(&lsq, nlist, metric, bbs);
+}
 
 IndexIVFLSQFastScan::IndexIVFLSQFastScan() {}
 
 IndexIVFLSQFastScan::~IndexIVFLSQFastScan() {}
+
+/********** IndexIVFRQFastScan ************/
+IndexIVFRQFastScan::IndexIVFRQFastScan(
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        size_t M,
+        size_t nbits,
+        MetricType metric,
+        Search_type_t search_type,
+        int bbs)
+        : IndexIVFAQFastScan(quantizer, nullptr, d, nlist, metric, bbs),
+          rq(d, M, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4); // TODO: delete me
+    init(&rq, nlist, metric, bbs);
+}
+
+IndexIVFRQFastScan::IndexIVFRQFastScan() {}
+
+IndexIVFRQFastScan::~IndexIVFRQFastScan() {}
 
 IVFAQFastScanStats IVFAQFastScan_stats;
 

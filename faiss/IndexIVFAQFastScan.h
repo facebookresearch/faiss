@@ -34,6 +34,8 @@ namespace faiss {
  */
 
 struct IndexIVFAQFastScan : IndexIVF {
+    using Search_type_t = AdditiveQuantizer::Search_type_t;
+
     AdditiveQuantizer* aq;
 
     // size of the kernel
@@ -42,6 +44,7 @@ struct IndexIVFAQFastScan : IndexIVF {
     size_t M;
     size_t nbits;
     size_t ksub;
+    size_t M_norm;
 
     // M rounded up to a multiple of 2
     size_t M2;
@@ -59,7 +62,7 @@ struct IndexIVFAQFastScan : IndexIVF {
     int norm_scale = 1;
 
     // max number of training vectors
-    size_t max_training_points;
+    size_t max_train_points;
 
     IndexIVFAQFastScan(
             Index* quantizer,
@@ -69,13 +72,7 @@ struct IndexIVFAQFastScan : IndexIVF {
             MetricType metric = METRIC_L2,
             int bbs = 32);
 
-    IndexIVFAQFastScan(
-            Index* quantizer,
-            AdditiveQuantizer* aq,
-            size_t d,
-            size_t nlist,
-            MetricType metric = METRIC_L2,
-            int bbs = 32);
+    void init(AdditiveQuantizer* aq, size_t nlist, MetricType metric, int bbs);
 
     IndexIVFAQFastScan();
 
@@ -211,20 +208,38 @@ struct IVFAQFastScanStats {
 
 struct IndexIVFLSQFastScan : IndexIVFAQFastScan {
     LocalSearchQuantizer lsq;
-    LocalSearchQuantizer norm_lsq;
 
     IndexIVFLSQFastScan(
             Index* quantizer,
             size_t d,
             size_t nlist,
-            size_t vec_M,
-            size_t norm_M = 2,
+            size_t M,
+            size_t nbits,
             MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
             int bbs = 32);
 
     IndexIVFLSQFastScan();
 
     ~IndexIVFLSQFastScan();
+};
+
+struct IndexIVFRQFastScan : IndexIVFAQFastScan {
+    ResidualQuantizer rq;
+
+    IndexIVFRQFastScan(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t M,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
+            int bbs = 32);
+
+    IndexIVFRQFastScan();
+
+    ~IndexIVFRQFastScan();
 };
 
 FAISS_API extern IVFAQFastScanStats IVFAQFastScan_stats;

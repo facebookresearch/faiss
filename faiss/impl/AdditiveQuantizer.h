@@ -158,8 +158,9 @@ struct AdditiveQuantizer {
      * @param xq     query vector, size (n, d)
      * @param LUT    look-up table, size (n, total_codebook_size)
      * @param alpha  compute alpha * inner-product
+     * @param ld     leading dimension of LUT
      */
-    void compute_LUT(size_t n, const float* xq, float* LUT, float alpha = 1.0f)
+    void compute_LUT(size_t n, const float* xq, float* LUT, float alpha = 1.0f, long ld_lut = -1)
             const;
 
     /// exact IP search

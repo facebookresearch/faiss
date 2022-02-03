@@ -351,12 +351,14 @@ void AdditiveQuantizer::compute_LUT(
         size_t n,
         const float* xq,
         float* LUT,
-        float alpha) const {
+        float alpha,
+        long ld_lut) const {
     // in all cases, it is large matrix multiplication
 
     FINTEGER ncenti = total_codebook_size;
     FINTEGER di = d;
     FINTEGER nqi = n;
+    FINTEGER ldc = ld_lut > 0 ? ld_lut : ncenti;
     float zero = 0;
 
     sgemm_("Transposed",
@@ -371,7 +373,7 @@ void AdditiveQuantizer::compute_LUT(
            &di,
            &zero,
            LUT,
-           &ncenti);
+           &ldc);
 }
 
 namespace {

@@ -49,8 +49,8 @@ void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
-                aq->search_type == AdditiveQuantizer::ST_decompress,
-                "Search type must be ST_decompress for IP metric");
+                aq->search_type == AdditiveQuantizer::ST_LUT_nonorm,
+                "Search type must be ST_LUT_nonorm for IP metric");
     } else {
         FAISS_THROW_IF_NOT_MSG(
                 aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
@@ -76,7 +76,7 @@ void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
     M2 = roundup(M, 2);
     code_size = (M * nbits + 7) / 8;
 
-    max_training_points = 1024 * ksub * M;
+    max_train_points = 1024 * ksub * M;
 }
 
 IndexAQFastScan::IndexAQFastScan() : bbs(0), ntotal2(0), M2(0) {
@@ -106,7 +106,7 @@ IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs)
 
     // pack the codes
     M = aq->M + 2;
-    max_training_points = 1024 * ksub * M;
+    max_train_points = 1024 * ksub * M;
 
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     M2 = roundup(M, 2);
@@ -128,7 +128,7 @@ void IndexAQFastScan::train(idx_t n, const float* x_in) {
     const int seed = 0x12345;
     size_t nt = n;
     const float* x = fvecs_maybe_subsample(
-            d, &nt, max_training_points, x_in, verbose, seed);
+            d, &nt, max_train_points, x_in, verbose, seed);
     n = nt;
     if (verbose) {
         printf("training additive quantizer on %zd vectors\n", nt);
@@ -137,7 +137,46 @@ void IndexAQFastScan::train(idx_t n, const float* x_in) {
     aq->verbose = verbose;
     aq->train(n, x);
 
+    if (metric_type == METRIC_L2) {
+        estimate_norm_scale(n, x);
+    }
+
     is_trained = true;
+}
+
+void IndexAQFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
+    FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
+
+    constexpr int seed = 0x980903;
+    constexpr size_t max_points_estimated = 65536;
+    size_t ns = n;
+    const float* x = fvecs_maybe_subsample(
+            d, &ns, max_points_estimated, x_in, verbose, seed);
+    n = ns;
+    std::unique_ptr<float[]> del_x;
+    if (x != x_in) {
+        del_x.reset((float*)x);
+    }
+
+    size_t dim12 = ksub * M;
+    std::vector<float> dis_tables(n * dim12);
+    compute_LUT(dis_tables.data(), n, x);
+
+    float scale = 0;
+    size_t M_norm = 2;
+
+#pragma omp parallel for reduction(+ : scale)
+    for (idx_t i = 0; i < n; i++) {
+        const float* lut = dis_tables.data() + i * M * ksub;
+        scale += quantize_lut::aq_estimate_norm_scale(M, ksub, M_norm, lut);
+    }
+    scale /= n;
+    printf("estimated norm scale: %lf\n", scale);
+
+    scale = std::max(scale, 1.0f);
+    scale = std::roundf(scale);
+    int norm_scale = (int)scale;
+    printf("rounded norm scale: %d\n", norm_scale);
 }
 
 void IndexAQFastScan::add(idx_t n, const float* x) {

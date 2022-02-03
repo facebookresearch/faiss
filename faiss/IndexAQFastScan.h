@@ -52,7 +52,7 @@ struct IndexAQFastScan : Index {
     // this is for testing purposes only (set when initialized by IndexAQ)
     const uint8_t* orig_codes = nullptr;
 
-    size_t max_training_points = 0;
+    size_t max_train_points = 0;
 
     IndexAQFastScan(
             AdditiveQuantizer* aq,
@@ -125,6 +125,8 @@ struct IndexAQFastScan : Index {
     void compute_codes(uint8_t* tmp_codes, idx_t n, const float* x) const;
 
     void compute_LUT(float* lut, idx_t n, const float* x) const;
+
+    void estimate_norm_scale(idx_t n, const float* x_in);
 };
 
 /** Index based on a residual quantizer. Stored vectors are
