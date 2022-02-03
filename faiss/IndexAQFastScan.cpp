@@ -137,46 +137,7 @@ void IndexAQFastScan::train(idx_t n, const float* x_in) {
     aq->verbose = verbose;
     aq->train(n, x);
 
-    if (metric_type == METRIC_L2) {
-        estimate_norm_scale(n, x);
-    }
-
     is_trained = true;
-}
-
-void IndexAQFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
-    FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
-
-    constexpr int seed = 0x980903;
-    constexpr size_t max_points_estimated = 65536;
-    size_t ns = n;
-    const float* x = fvecs_maybe_subsample(
-            d, &ns, max_points_estimated, x_in, verbose, seed);
-    n = ns;
-    std::unique_ptr<float[]> del_x;
-    if (x != x_in) {
-        del_x.reset((float*)x);
-    }
-
-    size_t dim12 = ksub * M;
-    std::vector<float> dis_tables(n * dim12);
-    compute_LUT(dis_tables.data(), n, x);
-
-    float scale = 0;
-    size_t M_norm = 2;
-
-#pragma omp parallel for reduction(+ : scale)
-    for (idx_t i = 0; i < n; i++) {
-        const float* lut = dis_tables.data() + i * M * ksub;
-        scale += quantize_lut::aq_estimate_norm_scale(M, ksub, M_norm, lut);
-    }
-    scale /= n;
-    printf("estimated norm scale: %lf\n", scale);
-
-    scale = std::max(scale, 1.0f);
-    scale = std::roundf(scale);
-    int norm_scale = (int)scale;
-    printf("rounded norm scale: %d\n", norm_scale);
 }
 
 void IndexAQFastScan::add(idx_t n, const float* x) {
@@ -705,7 +666,7 @@ IndexRQFastScan::IndexRQFastScan(
     init(&rq, metric, bbs);
 }
 
-IndexRQFastScan::IndexRQFastScan() {}
+IndexRQFastScan::IndexRQFastScan() { aq = &rq; }
 
 /**************************************************************************************
  * IndexLSQFastScan
@@ -722,6 +683,6 @@ IndexLSQFastScan::IndexLSQFastScan(
     init(&lsq, metric, bbs);
 }
 
-IndexLSQFastScan::IndexLSQFastScan() {}
+IndexLSQFastScan::IndexLSQFastScan() { aq = &lsq; }
 
 } // namespace faiss

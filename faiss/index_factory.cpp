@@ -31,6 +31,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
+#include <faiss/IndexIVFAQFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -341,6 +342,20 @@ IndexIVF* parse_IndexIVF(
             FAISS_THROW_IF_NOT(nbits.size() > 0);
             index_ivf = new IndexIVFLocalSearchQuantizer(
                     get_q(), d, nlist, nbits.size(), nbits[0], mt, st);
+        }
+        return index_ivf;
+    }
+    if (match("(RQ|LSQ)([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern)) {
+        int M = std::stoi(sm[2].str());
+        int bbs = mres_to_int(sm[3], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
+        IndexIVF* index_ivf;
+        if (sm[1].str() == "RQ") {
+            index_ivf = new IndexIVFRQFastScan(
+                    get_q(), d, nlist, M, 4, mt, st, bbs);
+        } else {
+            index_ivf = new IndexIVFLSQFastScan(
+                    get_q(), d, nlist, M, 4, mt, st, bbs);
         }
         return index_ivf;
     }

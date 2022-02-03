@@ -60,7 +60,7 @@ void IndexIVFAQFastScan::init(
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
     if (metric == METRIC_INNER_PRODUCT) {
         FAISS_THROW_IF_NOT_MSG(
-                aq->search_type == AdditiveQuantizer::ST_decompress,
+                aq->search_type == AdditiveQuantizer::ST_LUT_nonorm,
                 "Search type must be ST_decompress for IP metric");
     } else {
         FAISS_THROW_IF_NOT_MSG(
@@ -280,7 +280,7 @@ void IndexIVFAQFastScan::encode_vectors(
     residuals.resize(n * d);
 
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         if (list_nos[i] < 0) {
             memset(residuals.data() + i * d, 0, sizeof(residuals[0]) * d);
         } else {
@@ -512,7 +512,7 @@ void IndexIVFAQFastScan::compute_LUT(
         float* c = centroid.data();
 
 #pragma omp for
-        for (size_t ij = 0; ij < n * nprobe; ij++) {
+        for (idx_t ij = 0; ij < n * nprobe; ij++) {
             int i = ij / nprobe;
             quantizer->reconstruct(coarse_ids[ij], c);
             biases[ij] = coef * fvec_inner_product(c, x + i * d, d);
@@ -520,8 +520,6 @@ void IndexIVFAQFastScan::compute_LUT(
     }
 
     if (metric_type == METRIC_L2) {
-        ////// TODO: set ld in compute_LUT
-
         const size_t norm_dim12 = 2 * ksub;
 
         // inner product look-up tables
@@ -1286,7 +1284,7 @@ IndexIVFLSQFastScan::IndexIVFLSQFastScan(
     init(&lsq, nlist, metric, bbs);
 }
 
-IndexIVFLSQFastScan::IndexIVFLSQFastScan() {}
+IndexIVFLSQFastScan::IndexIVFLSQFastScan() { aq = &lsq; }
 
 IndexIVFLSQFastScan::~IndexIVFLSQFastScan() {}
 
@@ -1306,7 +1304,7 @@ IndexIVFRQFastScan::IndexIVFRQFastScan(
     init(&rq, nlist, metric, bbs);
 }
 
-IndexIVFRQFastScan::IndexIVFRQFastScan() {}
+IndexIVFRQFastScan::IndexIVFRQFastScan() { aq = &rq; }
 
 IndexIVFRQFastScan::~IndexIVFRQFastScan() {}
 

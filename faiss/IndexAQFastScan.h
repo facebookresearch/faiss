@@ -125,8 +125,6 @@ struct IndexAQFastScan : Index {
     void compute_codes(uint8_t* tmp_codes, idx_t n, const float* x) const;
 
     void compute_LUT(float* lut, idx_t n, const float* x) const;
-
-    void estimate_norm_scale(idx_t n, const float* x_in);
 };
 
 /** Index based on a residual quantizer. Stored vectors are

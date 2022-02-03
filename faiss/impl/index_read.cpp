@@ -30,6 +30,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFAQFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
@@ -565,46 +566,71 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->beam_factor);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
-    } else if (h == fourcc("ILfs")) {
-        IndexLSQFastScan* idxlsqfs = new IndexLSQFastScan();
-        read_index_header(idxlsqfs, f);
-        read_LocalSearchQuantizer(&idxlsqfs->lsq, f);
-        idxlsqfs->aq = &idxlsqfs->lsq;
+    } else if (h == fourcc("ILfs") || h == fourcc("IRfs")) {
+        bool is_LSQ = h == fourcc("ILfs");
+        IndexAQFastScan* idxaqfs;
+        if (is_LSQ) {
+            idxaqfs = new IndexLSQFastScan();
+        } else {
+            idxaqfs = new IndexRQFastScan();
+        }
+        read_index_header(idxaqfs, f);
 
-        READ1(idxlsqfs->implem);
-        READ1(idxlsqfs->bbs);
-        READ1(idxlsqfs->qbs);
+        if (is_LSQ) {
+            read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
+        } else {
+            read_ResidualQuantizer((ResidualQuantizer*)idxaqfs->aq, f);
+        }
 
-        READ1(idxlsqfs->M);
-        READ1(idxlsqfs->nbits);
-        READ1(idxlsqfs->ksub);
-        READ1(idxlsqfs->code_size);
+        READ1(idxaqfs->implem);
+        READ1(idxaqfs->bbs);
+        READ1(idxaqfs->qbs);
 
-        READ1(idxlsqfs->ntotal2);
-        READ1(idxlsqfs->M2);
+        READ1(idxaqfs->M);
+        READ1(idxaqfs->nbits);
+        READ1(idxaqfs->ksub);
+        READ1(idxaqfs->code_size);
 
-        READVECTOR(idxlsqfs->codes);
-        idx = idxlsqfs;
-    } else if (h == fourcc("IRfs")) {
-        IndexRQFastScan* idxrqfs = new IndexRQFastScan();
-        read_index_header(idxrqfs, f);
-        read_ResidualQuantizer(&idxrqfs->rq, f);
-        idxrqfs->aq = &idxrqfs->rq;
+        READ1(idxaqfs->ntotal2);
+        READ1(idxaqfs->M2);
 
-        READ1(idxrqfs->implem);
-        READ1(idxrqfs->bbs);
-        READ1(idxrqfs->qbs);
+        READVECTOR(idxaqfs->codes);
+        idx = idxaqfs;
+    } else if (h == fourcc("IVLf") || h == fourcc("IVRf")) {
+        bool is_LSQ = h == fourcc("IVLf");
+        IndexIVFAQFastScan* ivaqfs;
+        if (is_LSQ) {
+            ivaqfs = new IndexIVFLSQFastScan();
+        } else {
+            ivaqfs = new IndexIVFRQFastScan();
+        }
+        read_ivf_header(ivaqfs, f);
 
-        READ1(idxrqfs->M);
-        READ1(idxrqfs->nbits);
-        READ1(idxrqfs->ksub);
-        READ1(idxrqfs->code_size);
+        if (is_LSQ) {
+            read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
+        } else {
+            read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
+        }
 
-        READ1(idxrqfs->ntotal2);
-        READ1(idxrqfs->M2);
+        READ1(ivaqfs->implem);
+        READ1(ivaqfs->bbs);
+        READ1(ivaqfs->qbs);
 
-        READVECTOR(idxrqfs->codes);
-        idx = idxrqfs;
+        READ1(ivaqfs->M);
+        READ1(ivaqfs->M_norm);
+        READ1(ivaqfs->nbits);
+        READ1(ivaqfs->ksub);
+        READ1(ivaqfs->code_size);
+
+        READ1(ivaqfs->qbs2);
+        READ1(ivaqfs->M2);
+
+        READ1(ivaqfs->rescale_norm);
+        READ1(ivaqfs->norm_scale);
+        READ1(ivaqfs->max_train_points);
+
+        read_InvertedLists(ivaqfs, f, io_flags);
+        idx = ivaqfs;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
         std::vector<std::vector<Index::idx_t>> ids;

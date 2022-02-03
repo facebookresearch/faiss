@@ -4,8 +4,9 @@
 # LICENSE file in the root directory of this source tree.
 
 
+import os
 import unittest
-import platform
+import tempfile
 
 import numpy as np
 import faiss
@@ -484,3 +485,116 @@ class TestIsTrained(unittest.TestCase):
         )
         des = faiss.rand((1000, 32))
         index.train(des)
+
+
+class TestIVFAQFastScan(unittest.TestCase):
+
+    def subtest_accuracy(self, aq, st, implem, metric_type='L2'):
+        """
+        Compare IndexAQFastScan with IndexAQ (qint8)
+        """
+        nlist, d = 64, 16
+        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        gt = ds.get_groundtruth(k=1)
+
+        if metric_type == 'L2':
+            metric = faiss.METRIC_L2
+            postfix1 = '_Nqint8'
+            postfix2 = f'_N{st}2x4'
+        else:
+            metric = faiss.METRIC_INNER_PRODUCT
+            postfix1 = postfix2 = ''
+
+        index = faiss.index_factory(d, f'IVF{nlist},{aq}8x4{postfix1}', metric)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 16
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}8x4fs_32{postfix2}', metric)
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        indexfs.nprobe = 16
+        indexfs.implem = implem
+        Da, Ia = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall = (Ia == gt).sum() / nq
+
+        print(aq, st, implem, metric_type, recall_ref, recall)
+        assert abs(recall_ref - recall) < 0.05
+
+    def test_accuracy(self):
+        for metric in 'L2', 'IP':
+            for implem in 0, 10, 11, 12, 13:
+                self.subtest_accuracy('RQ', 'rq', implem, metric)
+                self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+
+    def subtest_factory(self, aq, M, bbs, st):
+        """
+        Format: IVF{nlist},{AQ}{M}x4fs_{bbs}_N{st}
+
+            nlist (int): number of inverted lists
+            AQ (str):    `LSQ` or `RQ`
+            M (int):     number of sub-quantizers
+            bbs (int):   build block size
+            st (str):    search type, `lsq2x4` or `rq2x4`
+        """
+        AQ = faiss.AdditiveQuantizer
+        nlist, d = 128, 16
+
+        if bbs > 0:
+            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs_{bbs}_N{st}2x4')
+        else:
+            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs_N{st}2x4')
+            bbs = 32
+
+        assert index.nlist == nlist
+        assert index.bbs == bbs
+        aq = faiss.downcast_AdditiveQuantizer(index.aq)
+        assert aq.M == M
+
+        if aq == 'LSQ':
+            assert isinstance(aq, faiss.LocalSearchQuantizer)
+        if aq == 'RQ':
+            assert isinstance(aq, faiss.ResidualQuantizer)
+
+        if st == 'lsq':
+            assert aq.search_type == AQ.ST_norm_lsq2x4
+        if st == 'rq':
+            assert aq.search_type == AQ.ST_norm_rq2x4
+
+    def test_factory(self):
+        self.subtest_factory('LSQ', 16, 64, 'lsq')
+        self.subtest_factory('LSQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'lsq')
+        self.subtest_factory('LSQ', 64, 0, 'lsq')
+
+    def subtest_io(self, factory_str):
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        gt = ds.get_groundtruth(k=1)
+
+        index = faiss.index_factory(d, factory_str)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D1, I1 = index.search(ds.get_queries(), 1)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname)
+            D2, I2 = index2.search(ds.get_queries(), 1)
+            np.testing.assert_array_equal(I1, I2)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    def test_io(self):
+        self.subtest_io('IVF64,LSQ4x4fs_Nlsq2x4')
+        self.subtest_io('IVF64,LSQ4x4fs_Nrq2x4')
+        self.subtest_io('IVF64,RQ4x4fs_Nrq2x4')
+        self.subtest_io('IVF64,RQ4x4fs_Nlsq2x4')

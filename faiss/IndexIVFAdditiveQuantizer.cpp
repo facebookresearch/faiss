@@ -46,6 +46,7 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
     size_t max_train_points = 1024 * ((size_t)1 << aq->nbits[0]);
     // we need more data to train LSQ
     if (dynamic_cast<LocalSearchQuantizer*>(aq)) {
+        printf("max_train_points: %zd\n", max_train_points);
         max_train_points = 1024 * aq->M * ((size_t)1 << aq->nbits[0]);
     }
 

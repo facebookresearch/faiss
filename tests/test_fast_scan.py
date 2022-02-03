@@ -441,7 +441,7 @@ class TestAdd(unittest.TestCase):
 
 class TestAQFastScan(unittest.TestCase):
 
-    def subtest_accuracy(self, aq, st, metric_type='L2'):
+    def subtest_accuracy(self, aq, st, implem, metric_type='L2'):
         """
         Compare IndexAQFastScan with IndexAQ (qint8)
         """
@@ -465,34 +465,30 @@ class TestAQFastScan(unittest.TestCase):
         indexfs = faiss.index_factory(d, f'{aq}8x4fs_32{postfix2}', metric)
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
+        indexfs.implem = implem
         Da, Ia = indexfs.search(ds.get_queries(), 1)
 
         nq = Iref.shape[0]
         recall_ref = (Iref == gt).sum() / nq
         recall = (Ia == gt).sum() / nq
 
-        print(aq, st, metric_type, recall_ref, recall)
+        print(aq, st, implem, metric_type, recall_ref, recall)
         assert abs(recall_ref - recall) < 0.05
 
     def test_accuracy(self):
-        self.subtest_accuracy('RQ', 'rq')
-        self.subtest_accuracy('RQ', 'lsq')
-        self.subtest_accuracy('LSQ', 'rq')
-        self.subtest_accuracy('LSQ', 'lsq')
-
-        self.subtest_accuracy('RQ', 'rq', 'IP')
-        self.subtest_accuracy('RQ', 'lsq', 'IP')
-        self.subtest_accuracy('LSQ', 'rq', 'IP')
-        self.subtest_accuracy('LSQ', 'lsq', 'IP')
+        for metric in 'L2', 'IP':
+            for implem in 0, 12, 13, 14, 15:
+                self.subtest_accuracy('RQ', 'rq', implem, metric)
+                self.subtest_accuracy('LSQ', 'lsq', implem, metric)
 
     def subtest_factory(self, aq, M, bbs, st):
         """
-        Format: {AQ}{M}x4fs_{bbs}_N{search_type}
+        Format: {AQ}{M}x4fs_{bbs}_N{st}
 
-            AQ:          string, LSQ or RQ
-            M:           integer
-            bbs:         integer
-            search_type: string, lsq2x4 or rq2x4
+            AQ (str):    `LSQ` or `RQ`
+            M (int):     number of subquantizers
+            bbs (int):   build block size
+            st (str):    search type, `lsq2x4` or `rq2x4`
         """
         AQ = faiss.AdditiveQuantizer
         d = 16
@@ -538,7 +534,9 @@ class TestAQFastScan(unittest.TestCase):
         os.close(fd)
         try:
             faiss.write_index(index, fname)
+            print("write index")
             index2 = faiss.read_index(fname)
+            print("read index")
             D2, I2 = index2.search(ds.get_queries(), 1)
             np.testing.assert_array_equal(I1, I2)
         finally:
@@ -550,7 +548,3 @@ class TestAQFastScan(unittest.TestCase):
         self.subtest_io('LSQ4x4fs_Nrq2x4')
         self.subtest_io('RQ4x4fs_Nrq2x4')
         self.subtest_io('RQ4x4fs_Nlsq2x4')
-
-        ## looks like qbs=0, bbs=64 is not supported
-        # self.subtest_io('RQ4x4fs_64_Nlsq2x4')
-        # self.subtest_io('PQ4x4fs_64')

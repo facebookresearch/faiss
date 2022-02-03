@@ -297,7 +297,6 @@ void aq_quantize_LUT_and_bias(
         uint16_t* biasq,
         float* a_out,
         float* b_out) {
-
     float a, b;
     std::vector<float> mins(M);
     float max_span_LUT = -HUGE_VAL, max_span_dis;
@@ -330,7 +329,6 @@ float aq_estimate_norm_scale(
         size_t ksub,
         size_t M_norm,
         const float* LUT) {
-
     float max_span_LUT = -HUGE_VAL;
     for (int i = 0; i < M - M_norm; i++) {
         float min = tab_min(LUT + i * ksub, ksub);

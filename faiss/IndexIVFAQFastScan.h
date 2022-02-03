@@ -42,9 +42,9 @@ struct IndexIVFAQFastScan : IndexIVF {
     int bbs; // set at build time
 
     size_t M;
+    size_t M_norm;
     size_t nbits;
     size_t ksub;
-    size_t M_norm;
 
     // M rounded up to a multiple of 2
     size_t M2;

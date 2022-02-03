@@ -160,8 +160,12 @@ struct AdditiveQuantizer {
      * @param alpha  compute alpha * inner-product
      * @param ld     leading dimension of LUT
      */
-    void compute_LUT(size_t n, const float* xq, float* LUT, float alpha = 1.0f, long ld_lut = -1)
-            const;
+    void compute_LUT(
+            size_t n,
+            const float* xq,
+            float* LUT,
+            float alpha = 1.0f,
+            long ld_lut = -1) const;
 
     /// exact IP search
     void knn_centroids_inner_product(
