@@ -666,7 +666,9 @@ IndexRQFastScan::IndexRQFastScan(
     init(&rq, metric, bbs);
 }
 
-IndexRQFastScan::IndexRQFastScan() { aq = &rq; }
+IndexRQFastScan::IndexRQFastScan() {
+    aq = &rq;
+}
 
 /**************************************************************************************
  * IndexLSQFastScan
@@ -683,6 +685,8 @@ IndexLSQFastScan::IndexLSQFastScan(
     init(&lsq, metric, bbs);
 }
 
-IndexLSQFastScan::IndexLSQFastScan() { aq = &lsq; }
+IndexLSQFastScan::IndexLSQFastScan() {
+    aq = &lsq;
+}
 
 } // namespace faiss

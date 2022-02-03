@@ -1284,7 +1284,9 @@ IndexIVFLSQFastScan::IndexIVFLSQFastScan(
     init(&lsq, nlist, metric, bbs);
 }
 
-IndexIVFLSQFastScan::IndexIVFLSQFastScan() { aq = &lsq; }
+IndexIVFLSQFastScan::IndexIVFLSQFastScan() {
+    aq = &lsq;
+}
 
 IndexIVFLSQFastScan::~IndexIVFLSQFastScan() {}
 
@@ -1304,7 +1306,9 @@ IndexIVFRQFastScan::IndexIVFRQFastScan(
     init(&rq, nlist, metric, bbs);
 }
 
-IndexIVFRQFastScan::IndexIVFRQFastScan() { aq = &rq; }
+IndexIVFRQFastScan::IndexIVFRQFastScan() {
+    aq = &rq;
+}
 
 IndexIVFRQFastScan::~IndexIVFRQFastScan() {}
 

@@ -30,8 +30,8 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAQFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
