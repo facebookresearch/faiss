@@ -25,7 +25,7 @@ set(FAISS_SRC
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
   IndexIVFFastScan.cpp
-  IndexIVFAQFastScan.cpp
+  IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
   IndexIVFSpectralHash.cpp
@@ -35,7 +35,7 @@ set(FAISS_SRC
   IndexNSG.cpp
   IndexPQ.cpp
   IndexFastScan.cpp
-  IndexAQFastScan.cpp
+  IndexAdditiveQuantizerFastScan.cpp
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
   IndexRefine.cpp
@@ -105,7 +105,7 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFPQ.h
   IndexIVFFastScan.h
-  IndexIVFAQFastScan.h
+  IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
   IndexIVFSpectralHash.h
@@ -115,7 +115,7 @@ set(FAISS_HEADERS
   IndexNSG.h
   IndexPQ.h
   IndexFastScan.h
-  IndexAQFastScan.h
+  IndexAdditiveQuantizerFastScan.h
   IndexPQFastScan.h
   IndexPreTransform.h
   IndexRefine.h

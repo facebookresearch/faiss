@@ -33,7 +33,7 @@ namespace faiss {
  * 13: idem, collect results in reservoir
  */
 
-struct IndexIVFAQFastScan : IndexIVFFastScan {
+struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
     AdditiveQuantizer* aq;
@@ -41,7 +41,7 @@ struct IndexIVFAQFastScan : IndexIVFFastScan {
     // max number of training vectors
     size_t max_train_points;
 
-    IndexIVFAQFastScan(
+    IndexIVFAdditiveQuantizerFastScan(
             Index* quantizer,
             AdditiveQuantizer* aq,
             size_t d,
@@ -51,12 +51,12 @@ struct IndexIVFAQFastScan : IndexIVFFastScan {
 
     void init(AdditiveQuantizer* aq, size_t nlist, MetricType metric, int bbs);
 
-    IndexIVFAQFastScan();
+    IndexIVFAdditiveQuantizerFastScan();
 
-    ~IndexIVFAQFastScan();
+    ~IndexIVFAdditiveQuantizerFastScan();
 
     // built from an IndexIVFAQ
-    explicit IndexIVFAQFastScan(
+    explicit IndexIVFAdditiveQuantizerFastScan(
             const IndexIVFAdditiveQuantizer& orig,
             int bbs = 32);
 
@@ -86,10 +86,11 @@ struct IndexIVFAQFastScan : IndexIVFFastScan {
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
 
-struct IndexIVFLSQFastScan : IndexIVFAQFastScan {
+struct IndexIVFLocalSearchQuantizerFastScan
+        : IndexIVFAdditiveQuantizerFastScan {
     LocalSearchQuantizer lsq;
 
-    IndexIVFLSQFastScan(
+    IndexIVFLocalSearchQuantizerFastScan(
             Index* quantizer,
             size_t d,
             size_t nlist,
@@ -99,15 +100,15 @@ struct IndexIVFLSQFastScan : IndexIVFAQFastScan {
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
             int bbs = 32);
 
-    IndexIVFLSQFastScan();
+    IndexIVFLocalSearchQuantizerFastScan();
 
-    ~IndexIVFLSQFastScan();
+    ~IndexIVFLocalSearchQuantizerFastScan();
 };
 
-struct IndexIVFRQFastScan : IndexIVFAQFastScan {
+struct IndexIVFResidualQuantizerFastScan : IndexIVFAdditiveQuantizerFastScan {
     ResidualQuantizer rq;
 
-    IndexIVFRQFastScan(
+    IndexIVFResidualQuantizerFastScan(
             Index* quantizer,
             size_t d,
             size_t nlist,
@@ -117,9 +118,9 @@ struct IndexIVFRQFastScan : IndexIVFAQFastScan {
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
             int bbs = 32);
 
-    IndexIVFRQFastScan();
+    IndexIVFResidualQuantizerFastScan();
 
-    ~IndexIVFRQFastScan();
+    ~IndexIVFResidualQuantizerFastScan();
 };
 
 } // namespace faiss

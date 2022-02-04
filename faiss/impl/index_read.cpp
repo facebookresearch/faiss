@@ -25,12 +25,12 @@
 #include <faiss/invlists/InvertedListsIOHook.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFAQFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
@@ -568,11 +568,11 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxr;
     } else if (h == fourcc("ILfs") || h == fourcc("IRfs")) {
         bool is_LSQ = h == fourcc("ILfs");
-        IndexAQFastScan* idxaqfs;
+        IndexAdditiveQuantizerFastScan* idxaqfs;
         if (is_LSQ) {
-            idxaqfs = new IndexLSQFastScan();
+            idxaqfs = new IndexLocalSearchQuantizerFastScan();
         } else {
-            idxaqfs = new IndexRQFastScan();
+            idxaqfs = new IndexResidualQuantizerFastScan();
         }
         read_index_header(idxaqfs, f);
 
@@ -598,11 +598,11 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxaqfs;
     } else if (h == fourcc("IVLf") || h == fourcc("IVRf")) {
         bool is_LSQ = h == fourcc("IVLf");
-        IndexIVFAQFastScan* ivaqfs;
+        IndexIVFAdditiveQuantizerFastScan* ivaqfs;
         if (is_LSQ) {
-            ivaqfs = new IndexIVFLSQFastScan();
+            ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
         } else {
-            ivaqfs = new IndexIVFRQFastScan();
+            ivaqfs = new IndexIVFResidualQuantizerFastScan();
         }
         read_ivf_header(ivaqfs, f);
 

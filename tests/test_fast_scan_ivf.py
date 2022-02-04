@@ -491,7 +491,7 @@ class TestIVFAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, aq, st, by_residual, implem, metric_type='L2'):
         """
-        Compare IndexAQFastScan with IndexAQ (qint8)
+        Compare IndexIVFAdditiveQuantizerFastScan with IndexIVFAdditiveQuantizer
         """
         nlist, d = 16, 8
         ds  = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
@@ -544,7 +544,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.IndexIVFAQFastScan(index)
+        indexfs = faiss.IndexIVFAdditiveQuantizerFastScan(index)
         D1, I1 = indexfs.search(ds.get_queries(), 1)
 
         nq = Iref.shape[0]

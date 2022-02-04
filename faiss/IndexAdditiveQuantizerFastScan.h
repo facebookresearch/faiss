@@ -26,13 +26,13 @@ namespace faiss {
  * 15: no qbs with reservoir accumulator
  */
 
-struct IndexAQFastScan : IndexFastScan {
+struct IndexAdditiveQuantizerFastScan : IndexFastScan {
     AdditiveQuantizer* aq;
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
     size_t max_train_points = 0;
 
-    IndexAQFastScan(
+    IndexAdditiveQuantizerFastScan(
             AdditiveQuantizer* aq,
             MetricType metric = METRIC_L2,
             int bbs = 32);
@@ -42,12 +42,14 @@ struct IndexAQFastScan : IndexFastScan {
             MetricType metric = METRIC_L2,
             int bbs = 32);
 
-    IndexAQFastScan();
+    IndexAdditiveQuantizerFastScan();
 
-    ~IndexAQFastScan();
+    ~IndexAdditiveQuantizerFastScan();
 
     /// build from an existing IndexAQ
-    explicit IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs = 32);
+    explicit IndexAdditiveQuantizerFastScan(
+            const IndexAdditiveQuantizer& orig,
+            int bbs = 32);
 
     void train(idx_t n, const float* x) override;
 
@@ -60,7 +62,7 @@ struct IndexAQFastScan : IndexFastScan {
  * approximated by residual quantization codes.
  * Can also be used as a codec
  */
-struct IndexRQFastScan : IndexAQFastScan {
+struct IndexResidualQuantizerFastScan : IndexAdditiveQuantizerFastScan {
     /// The residual quantizer used to encode the vectors
     ResidualQuantizer rq;
 
@@ -72,7 +74,7 @@ struct IndexRQFastScan : IndexAQFastScan {
      * @param metric  metric type
      * @param search_type AQ search type
      */
-    IndexRQFastScan(
+    IndexResidualQuantizerFastScan(
             int d,        ///< dimensionality of the input vectors
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
@@ -80,10 +82,10 @@ struct IndexRQFastScan : IndexAQFastScan {
             Search_type_t search_type = AdditiveQuantizer::ST_norm_rq2x4,
             int bbs = 32);
 
-    IndexRQFastScan();
+    IndexResidualQuantizerFastScan();
 };
 
-struct IndexLSQFastScan : IndexAQFastScan {
+struct IndexLocalSearchQuantizerFastScan : IndexAdditiveQuantizerFastScan {
     LocalSearchQuantizer lsq;
 
     /** Constructor.
@@ -94,7 +96,7 @@ struct IndexLSQFastScan : IndexAQFastScan {
      * @param metric  metric type
      * @param search_type AQ search type
      */
-    IndexLSQFastScan(
+    IndexLocalSearchQuantizerFastScan(
             int d,        ///< dimensionality of the input vectors
             size_t M,     ///< number of subquantizers
             size_t nbits, ///< number of bit per subvector index
@@ -102,7 +104,7 @@ struct IndexLSQFastScan : IndexAQFastScan {
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
             int bbs = 32);
 
-    IndexLSQFastScan();
+    IndexLocalSearchQuantizerFastScan();
 };
 
 } // namespace faiss

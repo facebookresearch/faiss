@@ -78,10 +78,10 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFFlat.h>
 
 #include <faiss/IndexFastScan.h>
-#include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexIVFFastScan.h>
-#include <faiss/IndexIVFAQFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/utils/quantize_lut.h>
 
@@ -443,10 +443,10 @@ void gpu_sync_all_devices()
 %include  <faiss/Index2Layer.h>
 
 %include  <faiss/IndexFastScan.h>
-%include  <faiss/IndexAQFastScan.h>
+%include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
 %include  <faiss/IndexIVFFastScan.h>
-%include  <faiss/IndexIVFAQFastScan.h>
+%include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFPQFastScan.h>
 %include  <faiss/utils/quantize_lut.h>
 
@@ -562,8 +562,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
     DOWNCAST ( IndexIVFLocalSearchQuantizer )
-    DOWNCAST ( IndexIVFRQFastScan )
-    DOWNCAST ( IndexIVFLSQFastScan )
+    DOWNCAST ( IndexIVFResidualQuantizerFastScan )
+    DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -574,8 +574,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
-    DOWNCAST ( IndexRQFastScan )
-    DOWNCAST ( IndexLSQFastScan )
+    DOWNCAST ( IndexResidualQuantizerFastScan )
+    DOWNCAST ( IndexLocalSearchQuantizerFastScan )
     DOWNCAST ( ResidualCoarseQuantizer )
     DOWNCAST ( LocalSearchCoarseQuantizer )
     DOWNCAST ( IndexScalarQuantizer )

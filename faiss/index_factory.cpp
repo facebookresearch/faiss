@@ -25,12 +25,12 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFAQFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
@@ -351,10 +351,10 @@ IndexIVF* parse_IndexIVF(
         auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
         IndexIVF* index_ivf;
         if (sm[1].str() == "RQ") {
-            index_ivf = new IndexIVFRQFastScan(
+            index_ivf = new IndexIVFResidualQuantizerFastScan(
                     get_q(), d, nlist, M, 4, mt, st, bbs);
         } else {
-            index_ivf = new IndexIVFLSQFastScan(
+            index_ivf = new IndexIVFLocalSearchQuantizerFastScan(
                     get_q(), d, nlist, M, 4, mt, st, bbs);
         }
         return index_ivf;
@@ -523,7 +523,7 @@ Index* parse_other_indexes(
         return new IndexLocalSearchQuantizer(d, M, nbit, metric, st);
     }
 
-    // IndexAQFastScan
+    // IndexAdditiveQuantizerFastScan
     // RQ{M}x4fs_{bbs}_{search_type}
     pattern = "(LSQ|RQ)([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern;
     if (match(pattern)) {
@@ -532,9 +532,9 @@ Index* parse_other_indexes(
         auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
 
         if (sm[1].str() == "RQ") {
-            return new IndexRQFastScan(d, M, 4, metric, st, bbs);
+            return new IndexResidualQuantizerFastScan(d, M, 4, metric, st, bbs);
         } else if (sm[1].str() == "LSQ") {
-            return new IndexLSQFastScan(d, M, 4, metric, st, bbs);
+            return new IndexLocalSearchQuantizerFastScan(d, M, 4, metric, st, bbs);
         }
     }
 

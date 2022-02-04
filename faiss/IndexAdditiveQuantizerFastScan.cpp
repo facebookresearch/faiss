@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexAQFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 
 #include <limits.h>
 #include <cassert>
@@ -25,14 +25,17 @@ inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
 
-IndexAQFastScan::IndexAQFastScan(
+IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
         AdditiveQuantizer* aq,
         MetricType metric,
         int bbs) {
     init(aq, metric, bbs);
 }
 
-void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
+void IndexAdditiveQuantizerFastScan::init(
+        AdditiveQuantizer* aq,
+        MetricType metric,
+        int bbs) {
     FAISS_THROW_IF_NOT(aq != nullptr);
     FAISS_THROW_IF_NOT(!aq->nbits.empty());
     FAISS_THROW_IF_NOT(aq->nbits[0] == 4);
@@ -58,12 +61,15 @@ void IndexAQFastScan::init(AdditiveQuantizer* aq, MetricType metric, int bbs) {
     max_train_points = 1024 * ksub * M;
 }
 
-IndexAQFastScan::IndexAQFastScan() : IndexFastScan() {
+IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan()
+        : IndexFastScan() {
     is_trained = false;
     aq = nullptr;
 }
 
-IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs) {
+IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
+        const IndexAdditiveQuantizer& orig,
+        int bbs) {
     init(orig.aq, orig.metric_type, bbs);
 
     ntotal = orig.ntotal;
@@ -75,9 +81,9 @@ IndexAQFastScan::IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs) {
     pq4_pack_codes(orig_codes, ntotal, M, ntotal2, bbs, M2, codes.get());
 }
 
-IndexAQFastScan::~IndexAQFastScan() {}
+IndexAdditiveQuantizerFastScan::~IndexAdditiveQuantizerFastScan() {}
 
-void IndexAQFastScan::train(idx_t n, const float* x_in) {
+void IndexAdditiveQuantizerFastScan::train(idx_t n, const float* x_in) {
     if (is_trained) {
         return;
     }
@@ -97,13 +103,17 @@ void IndexAQFastScan::train(idx_t n, const float* x_in) {
     is_trained = true;
 }
 
-void IndexAQFastScan::compute_codes(uint8_t* tmp_codes, idx_t n, const float* x)
-        const {
+void IndexAdditiveQuantizerFastScan::compute_codes(
+        uint8_t* tmp_codes,
+        idx_t n,
+        const float* x) const {
     aq->compute_codes(x, tmp_codes, n);
 }
 
-void IndexAQFastScan::compute_float_LUT(float* lut, idx_t n, const float* x)
-        const {
+void IndexAdditiveQuantizerFastScan::compute_float_LUT(
+        float* lut,
+        idx_t n,
+        const float* x) const {
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->compute_LUT(n, x, lut, 1.0f);
     } else {
@@ -128,10 +138,10 @@ void IndexAQFastScan::compute_float_LUT(float* lut, idx_t n, const float* x)
 }
 
 /**************************************************************************************
- * IndexRQFastScan
+ * IndexResidualQuantizerFastScan
  **************************************************************************************/
 
-IndexRQFastScan::IndexRQFastScan(
+IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan(
         int d,        ///< dimensionality of the input vectors
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
@@ -142,15 +152,15 @@ IndexRQFastScan::IndexRQFastScan(
     init(&rq, metric, bbs);
 }
 
-IndexRQFastScan::IndexRQFastScan() {
+IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan() {
     aq = &rq;
 }
 
 /**************************************************************************************
- * IndexLSQFastScan
+ * IndexLocalSearchQuantizerFastScan
  **************************************************************************************/
 
-IndexLSQFastScan::IndexLSQFastScan(
+IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan(
         int d,
         size_t M,     ///< number of subquantizers
         size_t nbits, ///< number of bit per subvector index
@@ -161,7 +171,7 @@ IndexLSQFastScan::IndexLSQFastScan(
     init(&lsq, metric, bbs);
 }
 
-IndexLSQFastScan::IndexLSQFastScan() {
+IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan() {
     aq = &lsq;
 }
 

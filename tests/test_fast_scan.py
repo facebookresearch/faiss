@@ -443,7 +443,7 @@ class TestAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, aq, st, implem, metric_type='L2'):
         """
-        Compare IndexAQFastScan with IndexAQ (qint8)
+        Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
         d = 16
         ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
@@ -498,7 +498,7 @@ class TestAQFastScan(unittest.TestCase):
         index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.IndexAQFastScan(index)
+        indexfs = faiss.IndexAdditiveQuantizerFastScan(index)
         indexfs.implem = implem
         D1, I1 = indexfs.search(ds.get_queries(), 1)
 
