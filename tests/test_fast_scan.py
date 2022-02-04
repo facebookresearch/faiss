@@ -481,7 +481,7 @@ class TestAQFastScan(unittest.TestCase):
                 self.subtest_accuracy('RQ', 'rq', implem, metric)
                 self.subtest_accuracy('LSQ', 'lsq', implem, metric)
 
-    def subtest_from_idxaq(self, metric):
+    def subtest_from_idxaq(self, implem, metric):
         if metric == 'L2':
             metric_type = faiss.METRIC_L2
             st = '_Nrq2x4'
@@ -499,6 +499,7 @@ class TestAQFastScan(unittest.TestCase):
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.IndexAQFastScan(index)
+        indexfs.implem = implem
         D1, I1 = indexfs.search(ds.get_queries(), 1)
 
         nq = Iref.shape[0]
@@ -508,8 +509,9 @@ class TestAQFastScan(unittest.TestCase):
         assert abs(recall_ref - recall1) < 0.05
 
     def test_from_idxaq(self):
-        self.subtest_from_idxaq('L2')
-        self.subtest_from_idxaq('IP')
+        for implem in 2, 3, 4:
+            self.subtest_from_idxaq(implem, 'L2')
+            self.subtest_from_idxaq(implem, 'IP')
 
     def subtest_factory(self, aq, M, bbs, st):
         """
@@ -564,9 +566,7 @@ class TestAQFastScan(unittest.TestCase):
         os.close(fd)
         try:
             faiss.write_index(index, fname)
-            print("write index")
             index2 = faiss.read_index(fname)
-            print("read index")
             D2, I2 = index2.search(ds.get_queries(), 1)
             np.testing.assert_array_equal(I1, I2)
         finally:

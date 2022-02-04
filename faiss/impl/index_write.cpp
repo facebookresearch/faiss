@@ -446,12 +446,13 @@ void write_index(const Index* idx, IOWriter* f) {
         } else {
             write_ResidualQuantizer(&ivrqfs->rq, f);
         }
+
+        WRITE1(ivaqfs->by_residual);
         WRITE1(ivaqfs->implem);
         WRITE1(ivaqfs->bbs);
         WRITE1(ivaqfs->qbs);
 
         WRITE1(ivaqfs->M);
-        WRITE1(ivaqfs->M_norm);
         WRITE1(ivaqfs->nbits);
         WRITE1(ivaqfs->ksub);
         WRITE1(ivaqfs->code_size);
@@ -459,8 +460,6 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(ivaqfs->qbs2);
         WRITE1(ivaqfs->M2);
 
-        WRITE1(ivaqfs->rescale_norm);
-        WRITE1(ivaqfs->norm_scale);
         WRITE1(ivaqfs->max_train_points);
 
         write_InvertedLists(ivaqfs->invlists, f);

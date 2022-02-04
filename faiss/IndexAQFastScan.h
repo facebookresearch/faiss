@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexFastScan.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
 
@@ -25,32 +26,9 @@ namespace faiss {
  * 15: no qbs with reservoir accumulator
  */
 
-struct IndexAQFastScan : Index {
+struct IndexAQFastScan : IndexFastScan {
     AdditiveQuantizer* aq;
     using Search_type_t = AdditiveQuantizer::Search_type_t;
-
-    // implementation to select
-    int implem = 0;
-    // skip some parts of the computation (for timing)
-    int skip = 0;
-
-    // size of the kernel
-    int bbs;     // set at build time
-    int qbs = 0; // query block size 0 = use default
-
-    size_t M;
-    size_t nbits;
-    size_t ksub;
-    size_t code_size;
-
-    // packed version of the codes
-    size_t ntotal2;
-    size_t M2;
-
-    AlignedTable<uint8_t> codes;
-
-    // this is for testing purposes only (set when initialized by IndexAQ)
-    const uint8_t* orig_codes = nullptr;
 
     size_t max_train_points = 0;
 
@@ -72,59 +50,10 @@ struct IndexAQFastScan : Index {
     explicit IndexAQFastScan(const IndexAdditiveQuantizer& orig, int bbs = 32);
 
     void train(idx_t n, const float* x) override;
-    void add(idx_t n, const float* x) override;
-    void reset() override;
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels) const override;
 
-    // called by search function
-    void compute_quantized_LUT(
-            idx_t n,
-            const float* x,
-            uint8_t* lut,
-            float* normalizers) const;
+    void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 
-    template <bool is_max>
-    void search_dispatch_implem(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels) const;
-
-    template <class C>
-    void search_implem_2(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels) const;
-
-    template <class C>
-    void search_implem_12(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            int impl) const;
-
-    template <class C>
-    void search_implem_14(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            int impl) const;
-
-    void compute_codes(uint8_t* tmp_codes, idx_t n, const float* x) const;
-
-    void compute_LUT(float* lut, idx_t n, const float* x) const;
+    void compute_float_LUT(float* lut, idx_t n, const float* x) const override;
 };
 
 /** Index based on a residual quantizer. Stored vectors are
@@ -175,17 +104,5 @@ struct IndexLSQFastScan : IndexAQFastScan {
 
     IndexLSQFastScan();
 };
-
-struct AQFastScanStats {
-    uint64_t t0, t1, t2, t3;
-    AQFastScanStats() {
-        reset();
-    }
-    void reset() {
-        memset(this, 0, sizeof(*this));
-    }
-};
-
-FAISS_API extern AQFastScanStats AQFastScan_stats;
 
 } // namespace faiss

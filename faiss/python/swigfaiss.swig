@@ -71,20 +71,22 @@ typedef uint64_t size_t;
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexAdditiveQuantizer.h>
-#include <faiss/IndexAQFastScan.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
 
+#include <faiss/IndexFastScan.h>
+#include <faiss/IndexAQFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFFastScan.h>
+#include <faiss/IndexIVFAQFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/utils/quantize_lut.h>
 
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
-#include  <faiss/IndexIVFAQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
@@ -396,7 +398,6 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
 %include  <faiss/IndexAdditiveQuantizer.h>
-%include  <faiss/IndexAQFastScan.h>
 %include  <faiss/impl/io.h>
 
 %include  <faiss/invlists/InvertedLists.h>
@@ -416,7 +417,6 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
-%include  <faiss/IndexIVFAQFastScan.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 
@@ -444,7 +444,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
+%include  <faiss/IndexFastScan.h>
+%include  <faiss/IndexAQFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFAQFastScan.h>
 %include  <faiss/IndexIVFPQFastScan.h>
 %include  <faiss/utils/quantize_lut.h>
 

@@ -489,12 +489,12 @@ class TestIsTrained(unittest.TestCase):
 
 class TestIVFAQFastScan(unittest.TestCase):
 
-    def subtest_accuracy(self, aq, st, implem, metric_type='L2'):
+    def subtest_accuracy(self, aq, st, by_residual, implem, metric_type='L2'):
         """
         Compare IndexAQFastScan with IndexAQ (qint8)
         """
-        nlist, d = 64, 16
-        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        nlist, d = 16, 8
+        ds  = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
         gt = ds.get_groundtruth(k=1)
 
         if metric_type == 'L2':
@@ -505,13 +505,15 @@ class TestIVFAQFastScan(unittest.TestCase):
             metric = faiss.METRIC_INNER_PRODUCT
             postfix1 = postfix2 = ''
 
-        index = faiss.index_factory(d, f'IVF{nlist},{aq}8x4{postfix1}', metric)
+        index = faiss.index_factory(d, f'IVF{nlist},{aq}5x4{postfix1}', metric)
+        index.by_residual = by_residual
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}8x4fs_32{postfix2}', metric)
+        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}5x4fs_32{postfix2}', metric)
+        indexfs.by_residual = by_residual
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
         indexfs.nprobe = 16
@@ -522,20 +524,21 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
 
-        print(aq, st, implem, metric_type, recall_ref, recall1)
+        print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
     def test_accuracy(self):
         for metric in 'L2', 'IP':
-            for implem in 0, 10, 11, 12, 13:
-                self.subtest_accuracy('RQ', 'rq', implem, metric)
-                self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+            for byr in True, False:
+                for implem in 0, 10, 11, 12, 13:
+                    self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
+                    self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
 
     def test_from_ivfaq(self):
-        nlist, d = 64, 16
+        d = 8
         ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric='IP')
         gt = ds.get_groundtruth(k=1)
-        index = faiss.index_factory(d, f'IVF64,RQ8x4', faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(d, f'IVF16,RQ8x4', faiss.METRIC_INNER_PRODUCT)
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 16
@@ -613,7 +616,7 @@ class TestIVFAQFastScan(unittest.TestCase):
                 os.unlink(fname)
 
     def test_io(self):
-        self.subtest_io('IVF64,LSQ4x4fs_Nlsq2x4')
-        self.subtest_io('IVF64,LSQ4x4fs_Nrq2x4')
-        self.subtest_io('IVF64,RQ4x4fs_Nrq2x4')
-        self.subtest_io('IVF64,RQ4x4fs_Nlsq2x4')
+        self.subtest_io('IVF16,LSQ4x4fs_Nlsq2x4')
+        self.subtest_io('IVF16,LSQ4x4fs_Nrq2x4')
+        self.subtest_io('IVF16,RQ4x4fs_Nrq2x4')
+        self.subtest_io('IVF16,RQ4x4fs_Nlsq2x4')

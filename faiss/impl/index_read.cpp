@@ -612,12 +612,12 @@ Index* read_index(IOReader* f, int io_flags) {
             read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
         }
 
+        READ1(ivaqfs->by_residual);
         READ1(ivaqfs->implem);
         READ1(ivaqfs->bbs);
         READ1(ivaqfs->qbs);
 
         READ1(ivaqfs->M);
-        READ1(ivaqfs->M_norm);
         READ1(ivaqfs->nbits);
         READ1(ivaqfs->ksub);
         READ1(ivaqfs->code_size);
@@ -625,8 +625,6 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivaqfs->qbs2);
         READ1(ivaqfs->M2);
 
-        READ1(ivaqfs->rescale_norm);
-        READ1(ivaqfs->norm_scale);
         READ1(ivaqfs->max_train_points);
 
         read_InvertedLists(ivaqfs, f, io_flags);
@@ -849,6 +847,13 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxpqfs->ntotal2);
         READ1(idxpqfs->M2);
         READVECTOR(idxpqfs->codes);
+
+        const auto& pq = idxpqfs->pq;
+        idxpqfs->M = pq.M;
+        idxpqfs->nbits = pq.nbits;
+        idxpqfs->ksub = (1 << pq.nbits);
+        idxpqfs->code_size = pq.code_size;
+
         idx = idxpqfs;
 
     } else if (h == fourcc("IwPf")) {
@@ -863,6 +868,13 @@ Index* read_index(IOReader* f, int io_flags) {
         read_ProductQuantizer(&ivpq->pq, f);
         read_InvertedLists(ivpq, f, io_flags);
         ivpq->precompute_table();
+
+        const auto& pq = ivpq->pq;
+        ivpq->M = pq.M;
+        ivpq->nbits = pq.nbits;
+        ivpq->ksub = (1 << pq.nbits);
+        ivpq->code_size = pq.code_size;
+
         idx = ivpq;
     } else {
         FAISS_THROW_FMT(
