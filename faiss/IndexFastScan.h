@@ -25,7 +25,6 @@ namespace faiss {
  */
 
 struct IndexFastScan : Index {
-
     // implementation to select
     int implem = 0;
     // skip some parts of the computation (for timing)
@@ -71,9 +70,11 @@ struct IndexFastScan : Index {
 
     void add(idx_t n, const float* x);
 
-    virtual void compute_codes(uint8_t* codes, idx_t n, const float* x) const = 0;
+    virtual void compute_codes(uint8_t* codes, idx_t n, const float* x)
+            const = 0;
 
-    virtual void compute_float_LUT(float* lut, idx_t n, const float* x) const = 0;
+    virtual void compute_float_LUT(float* lut, idx_t n, const float* x)
+            const = 0;
 
     // called by search function
     void compute_quantized_LUT(

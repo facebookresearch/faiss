@@ -36,11 +36,11 @@ inline size_t roundup(size_t a, size_t b) {
 }
 
 IndexIVFFastScan::IndexIVFFastScan(
-            Index* quantizer,
-            size_t d,
-            size_t nlist,
-            size_t code_size,
-            MetricType metric)
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        size_t code_size,
+        MetricType metric)
         : IndexIVF(quantizer, d, nlist, code_size, metric) {}
 
 IndexIVFFastScan::IndexIVFFastScan() {
@@ -70,7 +70,6 @@ void IndexIVFFastScan::init_fastscan(
 }
 
 IndexIVFFastScan::~IndexIVFFastScan() {}
-
 
 /*********************************************************
  * Code management functions
@@ -374,8 +373,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                 nslice = n;
             } else if (lookup_table_is_3d()) {
                 // make sure we don't make too big LUT tables
-                size_t lut_size_per_query = M * ksub * nprobe *
-                        (sizeof(float) + sizeof(uint8_t));
+                size_t lut_size_per_query =
+                        M * ksub * nprobe * (sizeof(float) + sizeof(uint8_t));
 
                 size_t max_lut_size = precomputed_table_max_bytes;
                 // how many queries we can handle within mem budget

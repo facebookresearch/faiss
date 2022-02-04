@@ -31,7 +31,6 @@ namespace faiss {
  */
 
 struct IndexIVFFastScan : IndexIVF {
-
     // size of the kernel
     int bbs; // set at build time
 
