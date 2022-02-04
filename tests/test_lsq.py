@@ -474,3 +474,23 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
 
     def test_index_accuracy_cqint(self):
         self.eval_index_accuracy("IVF100,LSQ4x5_Ncqint8")
+
+    def test_deterministic(self):
+        ds = datasets.SyntheticDataset(d=16, nt=1000, nb=10005, nq=1000)
+        index = faiss.index_factory(ds.d, "IVF100,LSQ4x4_Nqint8")
+
+        k = 1
+        xq = ds.get_queries()
+        xb = ds.get_database()
+        xt = ds.get_train()
+
+        index.train(xt)
+        index.add(xb)
+        D, I = index.search(xq, k=k)
+
+        index.reset()
+        index.train(xt)
+        index.add(xb)
+        D2, I2 = index.search(xq, k=k)
+
+        np.testing.assert_array_equal(I, I2)
