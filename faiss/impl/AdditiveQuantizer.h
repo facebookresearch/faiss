@@ -38,8 +38,8 @@ struct AdditiveQuantizer {
     bool is_trained; ///< is trained or not
 
     IndexFlat1D qnorm;            ///< store and search norms
-    std::vector<float> norm_tabs; ///< store norm tables for 4-bit fastscan
-                                  ///< search
+    std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
+                                  ///< fastscan search
 
     uint32_t encode_qcint(
             float x) const; ///< encode norm by non-uniform scalar quantization
@@ -60,8 +60,9 @@ struct AdditiveQuantizer {
         ST_norm_cqint8, ///< use a LUT, and store non-uniform quantized norm
         ST_norm_cqint4,
 
-        ST_norm_lsq2x4, ///< use a 2x4 bits lsq as norm quantizer
-        ST_norm_rq2x4,  ///< use a 2x4 bits rq as norm quantizer
+        ST_norm_lsq2x4, ///< use a 2x4 bits lsq as norm quantizer (for fast
+                        ///< scan)
+        ST_norm_rq2x4,  ///< use a 2x4 bits rq as norm quantizer (for fast scan)
     };
 
     AdditiveQuantizer(
