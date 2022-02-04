@@ -25,13 +25,13 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -534,7 +534,8 @@ Index* parse_other_indexes(
         if (sm[1].str() == "RQ") {
             return new IndexResidualQuantizerFastScan(d, M, 4, metric, st, bbs);
         } else if (sm[1].str() == "LSQ") {
-            return new IndexLocalSearchQuantizerFastScan(d, M, 4, metric, st, bbs);
+            return new IndexLocalSearchQuantizerFastScan(
+                    d, M, 4, metric, st, bbs);
         }
     }
 

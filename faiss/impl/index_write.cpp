@@ -26,13 +26,13 @@
 #include <faiss/utils/hamming.h>
 
 #include <faiss/Index2Layer.h>
-#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -394,8 +394,11 @@ void write_index(const Index* idx, IOWriter* f) {
         write_LocalSearchQuantizer(&idxr->lsq, f);
         WRITE1(idxr->code_size);
         WRITEVECTOR(idxr->codes);
-    } else if (auto* idxaqfs = dynamic_cast<const IndexAdditiveQuantizerFastScan*>(idx)) {
-        auto idxlsqfs = dynamic_cast<const IndexLocalSearchQuantizerFastScan*>(idx);
+    } else if (
+            auto* idxaqfs =
+                    dynamic_cast<const IndexAdditiveQuantizerFastScan*>(idx)) {
+        auto idxlsqfs =
+                dynamic_cast<const IndexLocalSearchQuantizerFastScan*>(idx);
         auto idxrqfs = dynamic_cast<const IndexResidualQuantizerFastScan*>(idx);
         FAISS_THROW_IF_NOT(idxlsqfs || idxrqfs);
 
@@ -426,9 +429,14 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxaqfs->ntotal2);
         WRITE1(idxaqfs->M2);
         WRITEVECTOR(idxaqfs->codes);
-    } else if (auto* ivaqfs = dynamic_cast<const IndexIVFAdditiveQuantizerFastScan*>(idx)) {
-        auto ivlsqfs = dynamic_cast<const IndexIVFLocalSearchQuantizerFastScan*>(idx);
-        auto ivrqfs = dynamic_cast<const IndexIVFResidualQuantizerFastScan*>(idx);
+    } else if (
+            auto* ivaqfs =
+                    dynamic_cast<const IndexIVFAdditiveQuantizerFastScan*>(
+                            idx)) {
+        auto ivlsqfs =
+                dynamic_cast<const IndexIVFLocalSearchQuantizerFastScan*>(idx);
+        auto ivrqfs =
+                dynamic_cast<const IndexIVFResidualQuantizerFastScan*>(idx);
         FAISS_THROW_IF_NOT(ivlsqfs || ivrqfs);
 
         if (ivlsqfs) {
