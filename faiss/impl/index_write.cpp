@@ -425,9 +425,13 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxaqfs->nbits);
         WRITE1(idxaqfs->ksub);
         WRITE1(idxaqfs->code_size);
-
         WRITE1(idxaqfs->ntotal2);
         WRITE1(idxaqfs->M2);
+
+        WRITE1(idxaqfs->rescale_norm);
+        WRITE1(idxaqfs->norm_scale);
+        WRITE1(idxaqfs->max_train_points);
+
         WRITEVECTOR(idxaqfs->codes);
     } else if (
             auto* ivaqfs =
@@ -464,10 +468,11 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(ivaqfs->nbits);
         WRITE1(ivaqfs->ksub);
         WRITE1(ivaqfs->code_size);
-
         WRITE1(ivaqfs->qbs2);
         WRITE1(ivaqfs->M2);
 
+        WRITE1(ivaqfs->rescale_norm);
+        WRITE1(ivaqfs->norm_scale);
         WRITE1(ivaqfs->max_train_points);
 
         write_InvertedLists(ivaqfs->invlists, f);

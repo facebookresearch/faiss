@@ -534,7 +534,52 @@ class TestIVFAQFastScan(unittest.TestCase):
                     self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
                     self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
 
-    def test_from_ivfaq(self):
+    def subtest_rescale_accuracy(self, aq, st, by_residual, implem, metric_type='L2'):
+        """
+        we set norm_scale to 2 and compare it with IndexIVFAQ
+        """
+        nlist, d = 16, 8
+        ds  = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
+        gt = ds.get_groundtruth(k=1)
+
+        if metric_type == 'L2':
+            metric = faiss.METRIC_L2
+            postfix1 = '_Nqint8'
+            postfix2 = f'_N{st}2x4'
+        else:
+            metric = faiss.METRIC_INNER_PRODUCT
+            postfix1 = postfix2 = ''
+
+        index = faiss.index_factory(d, f'IVF{nlist},{aq}5x4{postfix1}', metric)
+        index.by_residual = by_residual
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 16
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}5x4fs_32{postfix2}', metric)
+        indexfs.by_residual = by_residual
+        indexfs.norm_scale = 2
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        indexfs.nprobe = 16
+        indexfs.implem = implem
+        D1, I1 = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall1 = (I1 == gt).sum() / nq
+
+        print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.05
+
+    def test_rescale_accuracy(self):
+        for byr in True, False:
+            for implem in 0, 10, 11, 12, 13:
+                self.subtest_accuracy('RQ', 'rq', byr, implem, 'L2')
+                self.subtest_accuracy('LSQ', 'lsq', byr, implem, 'L2')
+
+    def subtest_from_ivfaq(self, implem):
         d = 8
         ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric='IP')
         gt = ds.get_groundtruth(k=1)
@@ -551,7 +596,11 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
         print(recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.05
+        assert abs(recall_ref - recall1) < 0.02
+
+    def test_from_ivfaq(self):
+        for implem in 0, 1, 2:
+            self.subtest_from_ivfaq(implem)
 
     def subtest_factory(self, aq, M, bbs, st):
         """

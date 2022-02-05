@@ -17,6 +17,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
@@ -204,6 +205,53 @@ void IndexIVFAdditiveQuantizerFastScan::train_residual(
         // re-train norm tables
         aq->train_norm(n, norms.data());
     }
+
+    if (metric_type == METRIC_L2) {
+        estimate_norm_scale(n, x);
+    }
+}
+
+void IndexIVFAdditiveQuantizerFastScan::estimate_norm_scale(
+        idx_t n,
+        const float* x_in) {
+    FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
+
+    constexpr int seed = 0x980903;
+    constexpr size_t max_points_estimated = 65536;
+    size_t ns = n;
+    const float* x = fvecs_maybe_subsample(
+            d, &ns, max_points_estimated, x_in, verbose, seed);
+    n = ns;
+    std::unique_ptr<float[]> del_x;
+    if (x != x_in) {
+        del_x.reset((float*)x);
+    }
+
+    std::vector<idx_t> coarse_ids(n);
+    std::vector<float> coarse_dis(n);
+    quantizer->search(n, x, 1, coarse_dis.data(), coarse_ids.data());
+
+    AlignedTable<float> dis_tables;
+    AlignedTable<float> biases;
+
+    size_t index_nprobe = nprobe;
+    nprobe = 1;
+    compute_LUT(n, x, coarse_ids.data(), coarse_dis.data(), dis_tables, biases);
+    nprobe = index_nprobe;
+
+    float scale = 0;
+
+#pragma omp parallel for reduction(+ : scale)
+    for (idx_t i = 0; i < n; i++) {
+        const float* lut = dis_tables.get() + i * M * ksub;
+        scale += quantize_lut::aq_estimate_norm_scale(M, ksub, 2, lut);
+    }
+    scale /= n;
+    norm_scale = (int)std::roundf(std::max(scale, 1.0f));
+
+    /// TODO: if verbose
+    printf("estimated norm scale: %lf\n", scale);
+    printf("rounded norm scale: %d\n", norm_scale);
 }
 
 /*********************************************************
@@ -266,6 +314,31 @@ void IndexIVFAdditiveQuantizerFastScan::encode_vectors(
 }
 
 /*********************************************************
+ * Search functions
+ *********************************************************/
+
+void IndexIVFAdditiveQuantizerFastScan::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    bool rescale = (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2);
+    if (!rescale) {
+        IndexIVFFastScan::search(n, x, k, distances, labels);
+        return;
+    }
+
+    NormTableScaler scaler(norm_scale, M - 2);
+    if (metric_type == METRIC_L2) {
+        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
+    } else {
+        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
+    }
+}
+
+/*********************************************************
  * Look-Up Table functions
  *********************************************************/
 
@@ -295,10 +368,9 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         coef = -2.0f;
     }
 
-    // coef * <x, y_c>
-    biases.resize(n * nprobe);
-
     if (by_residual) {
+        // coef * <x, y_c>
+        biases.resize(n * nprobe);
 #pragma omp parallel
         {
             std::vector<float> centroid(d);
@@ -311,10 +383,6 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
                 biases[ij] = coef * fvec_inner_product(c, x + i * d, d);
             }
         }
-    } else {
-        for (idx_t ij = 0; ij < n * nprobe; ij++) {
-            biases[ij] = 0;
-        }
     }
 
     if (metric_type == METRIC_L2) {
@@ -323,9 +391,15 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         // inner product look-up tables
         aq->compute_LUT(n, x, dis_tables.data(), -2.0f, dim12);
 
-        // norm look-up tables
-        const float* norm_lut = aq->norm_tabs.data();
-        FAISS_THROW_IF_NOT(aq->norm_tabs.size() == norm_dim12);
+        // copy and rescale norm look-up tables
+        auto norm_tabs = aq->norm_tabs;
+        if (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2) {
+            for (size_t i = 0; i < norm_tabs.size(); i++) {
+                norm_tabs[i] /= norm_scale;
+            }
+        }
+        const float* norm_lut = norm_tabs.data();
+        FAISS_THROW_IF_NOT(norm_tabs.size() == norm_dim12);
 
         // combine them
 #pragma omp parallel for if (n > 100)

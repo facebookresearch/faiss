@@ -15,10 +15,11 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/utils/utils.h>
 #include <faiss/utils/quantize_lut.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -107,7 +108,9 @@ void IndexAdditiveQuantizerFastScan::train(idx_t n, const float* x_in) {
     is_trained = true;
 }
 
-void IndexAdditiveQuantizerFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
+void IndexAdditiveQuantizerFastScan::estimate_norm_scale(
+        idx_t n,
+        const float* x_in) {
     FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
 
     constexpr int seed = 0x980903;
@@ -162,9 +165,15 @@ void IndexAdditiveQuantizerFastScan::compute_float_LUT(
         std::vector<float> ip_lut(n * ip_dim12);
         aq->compute_LUT(n, x, ip_lut.data(), -2.0f);
 
-        // norm look-up tables
-        const float* norm_lut = aq->norm_tabs.data();
-        FAISS_THROW_IF_NOT(aq->norm_tabs.size() == norm_dim12);
+        // copy and rescale norm look-up tables
+        auto norm_tabs = aq->norm_tabs;
+        if (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2) {
+            for (size_t i = 0; i < norm_tabs.size(); i++) {
+                norm_tabs[i] /= norm_scale;
+            }
+        }
+        const float* norm_lut = norm_tabs.data();
+        FAISS_THROW_IF_NOT(norm_tabs.size() == norm_dim12);
 
         // combine them
         for (idx_t i = 0; i < n; i++) {
@@ -173,6 +182,27 @@ void IndexAdditiveQuantizerFastScan::compute_float_LUT(
             memcpy(lut, norm_lut, norm_dim12 * sizeof(*lut));
             lut += norm_dim12;
         }
+    }
+}
+
+void IndexAdditiveQuantizerFastScan::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    bool rescale = (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2);
+    if (!rescale) {
+        IndexFastScan::search(n, x, k, distances, labels);
+        return;
+    }
+
+    NormTableScaler scaler(norm_scale, M - 2);
+    if (metric_type == METRIC_L2) {
+        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
+    } else {
+        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
     }
 }
 

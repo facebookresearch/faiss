@@ -62,6 +62,13 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 
     void compute_float_LUT(float* lut, idx_t n, const float* x) const override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
 };
 
 /** Index based on a residual quantizer. Stored vectors are

@@ -92,14 +92,14 @@ struct IndexFastScan : Index {
             idx_t* labels,
             const Scaler& scaler) const;
 
-    // TODO: implem 2
-//     template <class C>
-//     void search_implem_2(
-//             idx_t n,
-//             const float* x,
-//             idx_t k,
-//             float* distances,
-//             idx_t* labels) const;
+    template <class Cfloat, class Scaler>
+    void search_implem_234(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const Scaler& scaler) const;
 
     template <class C, class Scaler>
     void search_implem_12(

@@ -38,6 +38,9 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
 
     AdditiveQuantizer* aq;
 
+    bool rescale_norm = true;
+    int norm_scale = 1;
+
     // max number of training vectors
     size_t max_train_points;
 
@@ -62,6 +65,8 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
 
     void train_residual(idx_t n, const float* x) override;
 
+    void estimate_norm_scale(idx_t n, const float* x);
+
     /// same as the regular IVFAQ encoder. The codes are not reorganized by
     /// blocks a that point
     void encode_vectors(
@@ -70,6 +75,13 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listno = false) const override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
 
     // prepare look-up tables
 

@@ -590,9 +590,12 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxaqfs->nbits);
         READ1(idxaqfs->ksub);
         READ1(idxaqfs->code_size);
-
         READ1(idxaqfs->ntotal2);
         READ1(idxaqfs->M2);
+
+        READ1(idxaqfs->rescale_norm);
+        READ1(idxaqfs->norm_scale);
+        READ1(idxaqfs->max_train_points);
 
         READVECTOR(idxaqfs->codes);
         idx = idxaqfs;
@@ -621,10 +624,11 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivaqfs->nbits);
         READ1(ivaqfs->ksub);
         READ1(ivaqfs->code_size);
-
         READ1(ivaqfs->qbs2);
         READ1(ivaqfs->M2);
 
+        READ1(ivaqfs->rescale_norm);
+        READ1(ivaqfs->norm_scale);
         READ1(ivaqfs->max_train_points);
 
         read_InvertedLists(ivaqfs, f, io_flags);

@@ -122,8 +122,8 @@ void pq4_accumulate_loop(
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
 
-#define DISPATCH(NQ, BB)                                           \
-    case NQ * 1000 + BB:                                           \
+#define DISPATCH(NQ, BB)                                                   \
+    case NQ * 1000 + BB:                                                   \
         accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res, scaler); \
         break
 
@@ -147,27 +147,35 @@ void pq4_accumulate_loop(
 
 #define INSTANTIATE_ACCUMULATE(TH, C, with_id_map, S)         \
     template void pq4_accumulate_loop<TH<C, with_id_map>, S>( \
-            int,                                           \
-            size_t,                                        \
-            int,                                           \
-            int,                                           \
-            const uint8_t*,                                \
-            const uint8_t*,                                \
-            TH<C, with_id_map>&, const S&);
+            int,                                              \
+            size_t,                                           \
+            int,                                              \
+            int,                                              \
+            const uint8_t*,                                   \
+            const uint8_t*,                                   \
+            TH<C, with_id_map>&,                              \
+            const S&);
 
-#define INSTANTIATE_3(C, with_id_map, S)                           \
-    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map, S) \
-    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map, S)         \
-    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map, S)
+using DS = DummyScaler;
+using NS = NormTableScaler;
+
+#define INSTANTIATE_3(C, with_id_map)                               \
+    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map, DS) \
+    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map, DS)         \
+    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map, DS)    \
+                                                                    \
+    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map, NS) \
+    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map, NS)         \
+    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map, NS)
 
 using Csi = CMax<uint16_t, int>;
-INSTANTIATE_3(Csi, false, DummyScaler);
+INSTANTIATE_3(Csi, false);
 using CsiMin = CMin<uint16_t, int>;
-INSTANTIATE_3(CsiMin, false, DummyScaler);
+INSTANTIATE_3(CsiMin, false);
 
 using Csl = CMax<uint16_t, int64_t>;
-INSTANTIATE_3(Csl, true, DummyScaler);
+INSTANTIATE_3(Csl, true);
 using CslMin = CMin<uint16_t, int64_t>;
-INSTANTIATE_3(CslMin, true, DummyScaler);
+INSTANTIATE_3(CslMin, true);
 
 } // namespace faiss

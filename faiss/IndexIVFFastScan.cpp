@@ -18,8 +18,8 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/LookupTableScaler.h>
+#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
@@ -190,7 +190,7 @@ void IndexIVFFastScan::add_with_ids(
 
 namespace {
 
-template <class C, typename dis_t>
+template <class C, typename dis_t, class Scaler>
 void estimators_from_tables_generic(
         const IndexIVFFastScan& index,
         const uint8_t* codes,
@@ -200,7 +200,8 @@ void estimators_from_tables_generic(
         float bias,
         size_t k,
         typename C::T* heap_dis,
-        int64_t* heap_ids) {
+        int64_t* heap_ids,
+        const Scaler& scaler) {
     using accu_t = typename C::T;
     for (size_t j = 0; j < ncodes; ++j) {
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
@@ -208,7 +209,7 @@ void estimators_from_tables_generic(
         const dis_t* __restrict dt = dis_table;
         for (size_t m = 0; m < index.M; m++) {
             uint64_t c = bsr.read(index.nbits);
-            dis += dt[c];
+            dis += scaler.scale_one(m, dt[c]);
             dt += index.ksub;
         }
 
@@ -295,20 +296,22 @@ void IndexIVFFastScan::search(
         idx_t* labels) const {
     FAISS_THROW_IF_NOT(k > 0);
 
+    DummyScaler scaler;
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels);
+        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels);
+        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
     }
 }
 
-template <bool is_max>
+template <bool is_max, class Scaler>
 void IndexIVFFastScan::search_dispatch_implem(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const Scaler& scaler) const {
     using Cfloat = typename std::conditional<
             is_max,
             CMax<float, int64_t>,
@@ -338,9 +341,9 @@ void IndexIVFFastScan::search_dispatch_implem(
     }
 
     if (impl == 1) {
-        search_implem_1<Cfloat>(n, x, k, distances, labels);
+        search_implem_1<Cfloat>(n, x, k, distances, labels, scaler);
     } else if (impl == 2) {
-        search_implem_2<C>(n, x, k, distances, labels);
+        search_implem_2<C>(n, x, k, distances, labels, scaler);
 
     } else if (impl >= 10 && impl <= 13) {
         size_t ndis = 0, nlist_visited = 0;
@@ -355,7 +358,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                         labels,
                         impl,
                         &ndis,
-                        &nlist_visited);
+                        &nlist_visited,
+                        scaler);
             } else {
                 search_implem_10<C>(
                         n,
@@ -365,7 +369,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                         labels,
                         impl,
                         &ndis,
-                        &nlist_visited);
+                        &nlist_visited,
+                        scaler);
             }
         } else {
             // explicitly slice over threads
@@ -404,7 +409,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                             lab_i,
                             impl,
                             &ndis,
-                            &nlist_visited);
+                            &nlist_visited,
+                            scaler);
                 } else {
                     search_implem_10<C>(
                             i1 - i0,
@@ -414,7 +420,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                             lab_i,
                             impl,
                             &ndis,
-                            &nlist_visited);
+                            &nlist_visited,
+                            scaler);
                 }
             }
         }
@@ -426,13 +433,14 @@ void IndexIVFFastScan::search_dispatch_implem(
     }
 }
 
-template <class C>
+template <class C, class Scaler>
 void IndexIVFFastScan::search_implem_1(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const Scaler& scaler) const {
     FAISS_THROW_IF_NOT(orig_invlists);
 
     std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
@@ -484,7 +492,8 @@ void IndexIVFFastScan::search_implem_1(
                     bias,
                     k,
                     heap_dis,
-                    heap_ids);
+                    heap_ids,
+                    scaler);
             nlist_visited++;
             ndis++;
         }
@@ -495,13 +504,14 @@ void IndexIVFFastScan::search_implem_1(
     indexIVF_stats.nlist += nlist_visited;
 }
 
-template <class C>
+template <class C, class Scaler>
 void IndexIVFFastScan::search_implem_2(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const Scaler& scaler) const {
     FAISS_THROW_IF_NOT(orig_invlists);
 
     std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
@@ -562,7 +572,8 @@ void IndexIVFFastScan::search_implem_2(
                     bias,
                     k,
                     heap_dis,
-                    heap_ids);
+                    heap_ids,
+                    scaler);
 
             nlist_visited++;
             ndis += ls;
@@ -586,7 +597,7 @@ void IndexIVFFastScan::search_implem_2(
     indexIVF_stats.nlist += nlist_visited;
 }
 
-template <class C>
+template <class C, class Scaler>
 void IndexIVFFastScan::search_implem_10(
         idx_t n,
         const float* x,
@@ -595,7 +606,8 @@ void IndexIVFFastScan::search_implem_10(
         idx_t* labels,
         int impl,
         size_t* ndis_out,
-        size_t* nlist_out) const {
+        size_t* nlist_out,
+        const Scaler& scaler) const {
     memset(distances, -1, sizeof(float) * k * n);
     memset(labels, -1, sizeof(idx_t) * k * n);
 
@@ -682,11 +694,11 @@ void IndexIVFFastScan::search_implem_10(
                 handler->ntotal = ls;
                 handler->id_map = ids.get();
 
-#define DISPATCH(classHC)                                              \
-    if (dynamic_cast<classHC*>(handler.get())) {                       \
-        auto* res = static_cast<classHC*>(handler.get());              \
-        pq4_accumulate_loop(                                           \
-                1, roundup(ls, bbs), bbs, M2, codes.get(), LUT, *res, DummyScaler()); \
+#define DISPATCH(classHC)                                                      \
+    if (dynamic_cast<classHC*>(handler.get())) {                               \
+        auto* res = static_cast<classHC*>(handler.get());                      \
+        pq4_accumulate_loop(                                                   \
+                1, roundup(ls, bbs), bbs, M2, codes.get(), LUT, *res, scaler); \
     }
                 DISPATCH(HeapHC)
                 else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)
@@ -706,7 +718,7 @@ void IndexIVFFastScan::search_implem_10(
     *nlist_out = nlist;
 }
 
-template <class C>
+template <class C, class Scaler>
 void IndexIVFFastScan::search_implem_12(
         idx_t n,
         const float* x,
@@ -715,7 +727,8 @@ void IndexIVFFastScan::search_implem_12(
         idx_t* labels,
         int impl,
         size_t* ndis_out,
-        size_t* nlist_out) const {
+        size_t* nlist_out,
+        const Scaler& scaler) const {
     if (n == 0) { // does not work well with reservoir
         return;
     }
@@ -860,11 +873,11 @@ void IndexIVFFastScan::search_implem_12(
         handler->id_map = ids.get();
         uint64_t tt1 = get_cy();
 
-#define DISPATCH(classHC)                                          \
-    if (dynamic_cast<classHC*>(handler.get())) {                   \
-        auto* res = static_cast<classHC*>(handler.get());          \
-        pq4_accumulate_loop_qbs(                                   \
-                qbs, list_size, M2, codes.get(), LUT.get(), *res, DummyScaler()); \
+#define DISPATCH(classHC)                                                  \
+    if (dynamic_cast<classHC*>(handler.get())) {                           \
+        auto* res = static_cast<classHC*>(handler.get());                  \
+        pq4_accumulate_loop_qbs(                                           \
+                qbs, list_size, M2, codes.get(), LUT.get(), *res, scaler); \
     }
         DISPATCH(HeapHC)
         else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)
@@ -955,5 +968,21 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
 }
 
 IVFFastScanStats IVFFastScan_stats;
+
+template void IndexIVFFastScan::search_dispatch_implem<true, NormTableScaler>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler& scaler) const;
+
+template void IndexIVFFastScan::search_dispatch_implem<false, NormTableScaler>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler& scaler) const;
 
 } // namespace faiss

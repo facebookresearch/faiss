@@ -104,33 +104,36 @@ struct IndexIVFFastScan : IndexIVF {
 
     // internal search funcs
 
-    template <bool is_max>
+    template <bool is_max, class Scaler>
     void search_dispatch_implem(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            const Scaler& scaler) const;
 
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_1(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            const Scaler& scaler) const;
 
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_2(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            const Scaler& scaler) const;
 
     // implem 10 and 12 are not multithreaded internally, so
     // export search stats
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_10(
             idx_t n,
             const float* x,
@@ -139,9 +142,10 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             int impl,
             size_t* ndis_out,
-            size_t* nlist_out) const;
+            size_t* nlist_out,
+            const Scaler& scaler) const;
 
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_12(
             idx_t n,
             const float* x,
@@ -150,7 +154,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             int impl,
             size_t* ndis_out,
-            size_t* nlist_out) const;
+            size_t* nlist_out,
+            const Scaler& scaler) const;
 
     // reconstruct vectors from packed invlists
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)

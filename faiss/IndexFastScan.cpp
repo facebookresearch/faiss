@@ -14,8 +14,8 @@
 #include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/LookupTableScaler.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/hamming.h>
@@ -99,7 +99,7 @@ void IndexFastScan::add(idx_t n, const float* x) {
 
 namespace {
 
-template <class C, typename dis_t>
+template <class C, typename dis_t, class Scaler>
 void estimators_from_tables_generic(
         const IndexFastScan& index,
         const uint8_t* codes,
@@ -107,7 +107,8 @@ void estimators_from_tables_generic(
         const dis_t* dis_table,
         size_t k,
         typename C::T* heap_dis,
-        int64_t* heap_ids) {
+        int64_t* heap_ids,
+        const Scaler& scaler) {
     using accu_t = typename C::T;
 
     for (size_t j = 0; j < ncodes; ++j) {
@@ -116,7 +117,7 @@ void estimators_from_tables_generic(
         const dis_t* dt = dis_table;
         for (size_t m = 0; m < index.M; m++) {
             uint64_t c = bsr.read(index.nbits);
-            dis += dt[c];
+            dis += scaler.scale_one(m, dt[c]);
             dt += index.ksub;
         }
 
@@ -218,53 +219,7 @@ void IndexFastScan::search_dispatch_implem(
         FAISS_THROW_MSG("not implemented");
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes != nullptr);
-
-        const size_t dim12 = ksub * M;
-        std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-        compute_float_LUT(dis_tables.get(), n, x);
-
-        std::vector<float> normalizers(n * 2);
-
-        if (implem == 2) {
-            // default float
-        } else if (implem == 3 || implem == 4) {
-            for (uint64_t i = 0; i < n; i++) {
-                round_uint8_per_column(
-                        dis_tables.get() + i * dim12,
-                        M,
-                        ksub,
-                        &normalizers[2 * i],
-                        &normalizers[2 * i + 1]);
-            }
-        }
-
-#pragma omp parallel for if (n > 1000)
-        for (int64_t i = 0; i < n; i++) {
-            int64_t* heap_ids = labels + i * k;
-            float* heap_dis = distances + i * k;
-
-            heap_heapify<Cfloat>(k, heap_dis, heap_ids);
-
-            estimators_from_tables_generic<Cfloat>(
-                    *this,
-                    orig_codes,
-                    ntotal,
-                    dis_tables.get() + i * dim12,
-                    k,
-                    heap_dis,
-                    heap_ids);
-
-            heap_reorder<Cfloat>(k, heap_dis, heap_ids);
-
-            if (implem == 4) {
-                float a = normalizers[2 * i];
-                float b = normalizers[2 * i + 1];
-
-                for (int j = 0; j < k; j++) {
-                    heap_dis[j] = heap_dis[j] / a + b;
-                }
-            }
-        }
+        search_implem_234<Cfloat>(n, x, k, distances, labels, scaler);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
         int nt = std::min(omp_get_max_threads(), int(n));
@@ -293,6 +248,65 @@ void IndexFastScan::search_dispatch_implem(
         }
     } else {
         FAISS_THROW_FMT("invalid implem %d impl=%d", implem, impl);
+    }
+}
+
+template <class Cfloat, class Scaler>
+void IndexFastScan::search_implem_234(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const Scaler& scaler) const {
+    FAISS_THROW_IF_NOT(implem == 2 || implem == 3 || implem == 4);
+
+    const size_t dim12 = ksub * M;
+    std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
+    compute_float_LUT(dis_tables.get(), n, x);
+
+    std::vector<float> normalizers(n * 2);
+
+    if (implem == 2) {
+        // default float
+    } else if (implem == 3 || implem == 4) {
+        for (uint64_t i = 0; i < n; i++) {
+            round_uint8_per_column(
+                    dis_tables.get() + i * dim12,
+                    M,
+                    ksub,
+                    &normalizers[2 * i],
+                    &normalizers[2 * i + 1]);
+        }
+    }
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        int64_t* heap_ids = labels + i * k;
+        float* heap_dis = distances + i * k;
+
+        heap_heapify<Cfloat>(k, heap_dis, heap_ids);
+
+        estimators_from_tables_generic<Cfloat>(
+                *this,
+                orig_codes,
+                ntotal,
+                dis_tables.get() + i * dim12,
+                k,
+                heap_dis,
+                heap_ids,
+                scaler);
+
+        heap_reorder<Cfloat>(k, heap_dis, heap_ids);
+
+        if (implem == 4) {
+            float a = normalizers[2 * i];
+            float b = normalizers[2 * i + 1];
+
+            for (int j = 0; j < k; j++) {
+                heap_dis[j] = heap_dis[j] / a + b;
+            }
+        }
     }
 }
 
@@ -456,7 +470,14 @@ void IndexFastScan::search_implem_14(
         } else {
             handler.disable = bool(skip & 2);
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    handler,
+                    scaler);
         }
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
@@ -472,7 +493,14 @@ void IndexFastScan::search_implem_14(
             handler.disable = bool(skip & 2);
 
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    handler,
+                    scaler);
 
             if (!(skip & 8)) {
                 handler.to_flat_arrays(distances, labels, normalizers.get());
@@ -488,7 +516,14 @@ void IndexFastScan::search_implem_14(
             // skip
         } else {
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    handler,
+                    scaler);
         }
 
         if (!(skip & 8)) {
@@ -496,5 +531,21 @@ void IndexFastScan::search_implem_14(
         }
     }
 }
+
+template void IndexFastScan::search_dispatch_implem<true, NormTableScaler>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler& scaler) const;
+
+template void IndexFastScan::search_dispatch_implem<false, NormTableScaler>(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const NormTableScaler& scaler) const;
 
 } // namespace faiss
