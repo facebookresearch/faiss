@@ -83,39 +83,43 @@ struct IndexFastScan : Index {
             uint8_t* lut,
             float* normalizers) const;
 
-    template <bool is_max>
+    template <bool is_max, class Scaler>
     void search_dispatch_implem(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            const Scaler& scaler) const;
 
-    template <class C>
-    void search_implem_2(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels) const;
+    // TODO: implem 2
+//     template <class C>
+//     void search_implem_2(
+//             idx_t n,
+//             const float* x,
+//             idx_t k,
+//             float* distances,
+//             idx_t* labels) const;
 
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_12(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
             idx_t* labels,
-            int impl) const;
+            int impl,
+            const Scaler& scaler) const;
 
-    template <class C>
+    template <class C, class Scaler>
     void search_implem_14(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
             idx_t* labels,
-            int impl) const;
+            int impl,
+            const Scaler& scaler) const;
 };
 
 struct FastScanStats {

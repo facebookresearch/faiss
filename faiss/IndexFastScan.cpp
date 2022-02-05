@@ -15,6 +15,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/hamming.h>
@@ -170,20 +171,23 @@ void IndexFastScan::search(
         float* distances,
         idx_t* labels) const {
     FAISS_THROW_IF_NOT(k > 0);
+
+    DummyScaler scaler;
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels);
+        search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels);
+        search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
     }
 }
 
-template <bool is_max>
+template <bool is_max, class Scaler>
 void IndexFastScan::search_dispatch_implem(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const Scaler& scaler) const {
     using Cfloat = typename std::conditional<
             is_max,
             CMax<float, int64_t>,
@@ -266,9 +270,9 @@ void IndexFastScan::search_dispatch_implem(
         int nt = std::min(omp_get_max_threads(), int(n));
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
-                search_implem_12<C>(n, x, k, distances, labels, impl);
+                search_implem_12<C>(n, x, k, distances, labels, impl, scaler);
             } else {
-                search_implem_14<C>(n, x, k, distances, labels, impl);
+                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
             }
         } else {
             // explicitly slice over threads
@@ -280,10 +284,10 @@ void IndexFastScan::search_dispatch_implem(
                 idx_t* lab_i = labels + i0 * k;
                 if (impl == 12 || impl == 13) {
                     search_implem_12<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
                 } else {
                     search_implem_14<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl);
+                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
                 }
             }
         }
@@ -292,14 +296,15 @@ void IndexFastScan::search_dispatch_implem(
     }
 }
 
-template <class C>
+template <class C, class Scaler>
 void IndexFastScan::search_implem_12(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         idx_t* labels,
-        int impl) const {
+        int impl,
+        const Scaler& scaler) const {
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -313,7 +318,8 @@ void IndexFastScan::search_implem_12(
                     k,
                     distances + i0 * k,
                     labels + i0 * k,
-                    impl);
+                    impl,
+                    scaler);
         }
         return;
     }
@@ -351,7 +357,7 @@ void IndexFastScan::search_implem_12(
         } else {
             handler.disable = bool(skip & 2);
             pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
         }
 
         handler.to_flat_arrays(distances, labels, normalizers.get());
@@ -368,7 +374,7 @@ void IndexFastScan::search_implem_12(
             handler.disable = bool(skip & 2);
 
             pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
 
             if (!(skip & 8)) {
                 handler.to_flat_arrays(distances, labels, normalizers.get());
@@ -384,7 +390,7 @@ void IndexFastScan::search_implem_12(
             // skip
         } else {
             pq4_accumulate_loop_qbs(
-                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler);
+                    qbs, ntotal2, M2, codes.get(), LUT.get(), handler, scaler);
         }
 
         if (!(skip & 8)) {
@@ -400,14 +406,15 @@ void IndexFastScan::search_implem_12(
 
 FastScanStats FastScan_stats;
 
-template <class C>
+template <class C, class Scaler>
 void IndexFastScan::search_implem_14(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         idx_t* labels,
-        int impl) const {
+        int impl,
+        const Scaler& scaler) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     int qbs2 = qbs == 0 ? 4 : qbs;
@@ -422,7 +429,8 @@ void IndexFastScan::search_implem_14(
                     k,
                     distances + i0 * k,
                     labels + i0 * k,
-                    impl);
+                    impl,
+                    scaler);
         }
         return;
     }
@@ -448,7 +456,7 @@ void IndexFastScan::search_implem_14(
         } else {
             handler.disable = bool(skip & 2);
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
         }
         handler.to_flat_arrays(distances, labels, normalizers.get());
 
@@ -464,7 +472,7 @@ void IndexFastScan::search_implem_14(
             handler.disable = bool(skip & 2);
 
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
 
             if (!(skip & 8)) {
                 handler.to_flat_arrays(distances, labels, normalizers.get());
@@ -480,7 +488,7 @@ void IndexFastScan::search_implem_14(
             // skip
         } else {
             pq4_accumulate_loop(
-                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler);
+                    n, ntotal2, bbs, M2, codes.get(), LUT.get(), handler, scaler);
         }
 
         if (!(skip & 8)) {

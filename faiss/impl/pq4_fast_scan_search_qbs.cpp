@@ -7,6 +7,7 @@
 
 #include <faiss/impl/pq4_fast_scan.h>
 
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/simdlib.h>
@@ -27,12 +28,13 @@ namespace {
  * writes results in a ResultHandler
  */
 
-template <int NQ, class ResultHandler>
+template <int NQ, class ResultHandler, class Scaler>
 void kernel_accumulate_block(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
     // distance accumulators
@@ -63,11 +65,11 @@ void kernel_accumulate_block(
             simd32uint8 res0 = lut.lookup_2_lanes(clo);
             simd32uint8 res1 = lut.lookup_2_lanes(chi);
 
-            accu[q][0] += simd16uint16(res0);
-            accu[q][1] += simd16uint16(res0) >> 8;
+            accu[q][0] += scaler.scale(sq, simd16uint16(res0));
+            accu[q][1] += scaler.scale(sq, simd16uint16(res0) >> 8);
 
-            accu[q][2] += simd16uint16(res1);
-            accu[q][3] += simd16uint16(res1) >> 8;
+            accu[q][2] += scaler.scale(sq, simd16uint16(res1));
+            accu[q][3] += scaler.scale(sq, simd16uint16(res1) >> 8);
         }
     }
 
@@ -81,13 +83,14 @@ void kernel_accumulate_block(
 }
 
 // handle at most 4 blocks of queries
-template <int QBS, class ResultHandler>
+template <int QBS, class ResultHandler, class Scaler>
 void accumulate_q_4step(
         size_t ntotal2,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT0,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     constexpr int Q1 = QBS & 15;
     constexpr int Q2 = (QBS >> 4) & 15;
     constexpr int Q3 = (QBS >> 8) & 15;
@@ -97,21 +100,21 @@ void accumulate_q_4step(
     for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
         FixedStorageHandler<SQ, 2> res2;
         const uint8_t* LUT = LUT0;
-        kernel_accumulate_block<Q1>(nsq, codes, LUT, res2);
+        kernel_accumulate_block<Q1>(nsq, codes, LUT, res2, scaler);
         LUT += Q1 * nsq * 16;
         if (Q2 > 0) {
             res2.set_block_origin(Q1, 0);
-            kernel_accumulate_block<Q2>(nsq, codes, LUT, res2);
+            kernel_accumulate_block<Q2>(nsq, codes, LUT, res2, scaler);
             LUT += Q2 * nsq * 16;
         }
         if (Q3 > 0) {
             res2.set_block_origin(Q1 + Q2, 0);
-            kernel_accumulate_block<Q3>(nsq, codes, LUT, res2);
+            kernel_accumulate_block<Q3>(nsq, codes, LUT, res2, scaler);
             LUT += Q3 * nsq * 16;
         }
         if (Q4 > 0) {
             res2.set_block_origin(Q1 + Q2 + Q3, 0);
-            kernel_accumulate_block<Q4>(nsq, codes, LUT, res2);
+            kernel_accumulate_block<Q4>(nsq, codes, LUT, res2, scaler);
         }
         res.set_block_origin(0, j0);
         res2.to_other_handler(res);
@@ -119,29 +122,31 @@ void accumulate_q_4step(
     }
 }
 
-template <int NQ, class ResultHandler>
+template <int NQ, class ResultHandler, class Scaler>
 void kernel_accumulate_block_loop(
         size_t ntotal2,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     for (int64_t j0 = 0; j0 < ntotal2; j0 += 32) {
         res.set_block_origin(0, j0);
         kernel_accumulate_block<NQ, ResultHandler>(
-                nsq, codes + j0 * nsq / 2, LUT, res);
+                nsq, codes + j0 * nsq / 2, LUT, res, scaler);
     }
 }
 
 // non-template version of accumulate kernel -- dispatches dynamically
-template <class ResultHandler>
+template <class ResultHandler, class Scaler>
 void accumulate(
         int nq,
         size_t ntotal2,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT));
@@ -149,7 +154,7 @@ void accumulate(
 #define DISPATCH(NQ)                                     \
     case NQ:                                             \
         kernel_accumulate_block_loop<NQ, ResultHandler>( \
-                ntotal2, nsq, codes, LUT, res);          \
+                ntotal2, nsq, codes, LUT, res, scaler);          \
         return
 
     switch (nq) {
@@ -165,14 +170,15 @@ void accumulate(
 
 } // namespace
 
-template <class ResultHandler>
+template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop_qbs(
         int qbs,
         size_t ntotal2,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT0,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT0));
@@ -181,7 +187,7 @@ void pq4_accumulate_loop_qbs(
     switch (qbs) {
 #define DISPATCH(QBS)                                            \
     case QBS:                                                    \
-        accumulate_q_4step<QBS>(ntotal2, nsq, codes, LUT0, res); \
+        accumulate_q_4step<QBS>(ntotal2, nsq, codes, LUT0, res, scaler); \
         return;
         DISPATCH(0x3333); // 12
         DISPATCH(0x2333); // 11
@@ -221,7 +227,7 @@ void pq4_accumulate_loop_qbs(
             res.set_block_origin(i0, j0);
 #define DISPATCH(NQ)                                                      \
     case NQ:                                                              \
-        kernel_accumulate_block<NQ, ResultHandler>(nsq, codes, LUT, res); \
+        kernel_accumulate_block<NQ, ResultHandler>(nsq, codes, LUT, res, scaler); \
         break
             switch (nq) {
                 DISPATCH(1);
@@ -241,33 +247,33 @@ void pq4_accumulate_loop_qbs(
 
 // explicit template instantiations
 
-#define INSTANTIATE_ACCUMULATE_Q(RH)           \
-    template void pq4_accumulate_loop_qbs<RH>( \
-            int, size_t, int, const uint8_t*, const uint8_t*, RH&);
+#define INSTANTIATE_ACCUMULATE_Q(RH, S)           \
+    template void pq4_accumulate_loop_qbs<RH, S>( \
+            int, size_t, int, const uint8_t*, const uint8_t*, RH&, const S&);
 
 using Csi = CMax<uint16_t, int>;
-INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi>)
-INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi>)
-INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi>)
+INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi>, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi>, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi>, DummyScaler)
 using Csi2 = CMin<uint16_t, int>;
-INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi2>)
-INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi2>)
-INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi2>)
+INSTANTIATE_ACCUMULATE_Q(SingleResultHandler<Csi2>, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(HeapHandler<Csi2>, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(ReservoirHandler<Csi2>, DummyScaler)
 
 using Cfl = CMax<uint16_t, int64_t>;
 using HHCsl = HeapHandler<Cfl, true>;
 using RHCsl = ReservoirHandler<Cfl, true>;
 using SHCsl = SingleResultHandler<Cfl, true>;
-INSTANTIATE_ACCUMULATE_Q(HHCsl)
-INSTANTIATE_ACCUMULATE_Q(RHCsl)
-INSTANTIATE_ACCUMULATE_Q(SHCsl)
+INSTANTIATE_ACCUMULATE_Q(HHCsl, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(RHCsl, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(SHCsl, DummyScaler)
 using Cfl2 = CMin<uint16_t, int64_t>;
 using HHCsl2 = HeapHandler<Cfl2, true>;
 using RHCsl2 = ReservoirHandler<Cfl2, true>;
 using SHCsl2 = SingleResultHandler<Cfl2, true>;
-INSTANTIATE_ACCUMULATE_Q(HHCsl2)
-INSTANTIATE_ACCUMULATE_Q(RHCsl2)
-INSTANTIATE_ACCUMULATE_Q(SHCsl2)
+INSTANTIATE_ACCUMULATE_Q(HHCsl2, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(RHCsl2, DummyScaler)
+INSTANTIATE_ACCUMULATE_Q(SHCsl2, DummyScaler)
 
 /***************************************************************
  * Packing functions
@@ -293,7 +299,8 @@ void accumulate_to_mem(
         uint16_t* accu) {
     FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
     StoreResultHandler handler(accu, ntotal2);
-    accumulate(nq, ntotal2, nsq, codes, LUT, handler);
+    DummyScaler scaler;
+    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler);
 }
 
 int pq4_preferred_qbs(int n) {

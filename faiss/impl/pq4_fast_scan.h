@@ -89,7 +89,7 @@ void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
  * @param codes   packed codes array
  * @param LUT     packed look-up table
  */
-template <class ResultHandler>
+template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop(
         int nq,
         size_t nb,
@@ -97,7 +97,8 @@ void pq4_accumulate_loop(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res);
+        ResultHandler& res,
+        const Scaler& scaler);
 
 /* qbs versions, supported only for bbs=32.
  *
@@ -148,13 +149,14 @@ int pq4_pack_LUT_qbs_q_map(
  * @param LUT     look-up table (packed)
  * @param res     call-back for the resutls
  */
-template <class ResultHandler>
+template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop_qbs(
         int qbs,
         size_t nb,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res);
+        ResultHandler& res,
+        const Scaler& scaler);
 
 } // namespace faiss

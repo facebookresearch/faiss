@@ -18,6 +18,7 @@
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/quantize_lut.h>
 
 namespace faiss {
 
@@ -99,8 +100,46 @@ void IndexAdditiveQuantizerFastScan::train(idx_t n, const float* x_in) {
 
     aq->verbose = verbose;
     aq->train(n, x);
+    if (metric_type == METRIC_L2) {
+        estimate_norm_scale(n, x);
+    }
 
     is_trained = true;
+}
+
+void IndexAdditiveQuantizerFastScan::estimate_norm_scale(idx_t n, const float* x_in) {
+    FAISS_THROW_IF_NOT(metric_type == METRIC_L2);
+
+    constexpr int seed = 0x980903;
+    constexpr size_t max_points_estimated = 65536;
+    size_t ns = n;
+    const float* x = fvecs_maybe_subsample(
+            d, &ns, max_points_estimated, x_in, verbose, seed);
+    n = ns;
+    std::unique_ptr<float[]> del_x;
+    if (x != x_in) {
+        del_x.reset((float*)x);
+    }
+
+    std::vector<float> dis_tables(n * M * ksub);
+    compute_float_LUT(dis_tables.data(), n, x);
+
+    // here we compute the mean of scales for each query
+    // TODO: try max of scales
+    double scale = 0;
+
+#pragma omp parallel for reduction(+ : scale)
+    for (idx_t i = 0; i < n; i++) {
+        const float* lut = dis_tables.data() + i * M * ksub;
+        scale += quantize_lut::aq_estimate_norm_scale(M, ksub, 2, lut);
+    }
+    scale /= n;
+
+    norm_scale = (int)std::roundf(std::max(scale, 1.0));
+
+    // TODO: if (verbose)
+    printf("estimated norm scale: %lf\n", scale);
+    printf("rounded norm scale: %d\n", norm_scale);
 }
 
 void IndexAdditiveQuantizerFastScan::compute_codes(

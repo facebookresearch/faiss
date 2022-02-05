@@ -19,6 +19,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
@@ -685,7 +686,7 @@ void IndexIVFFastScan::search_implem_10(
     if (dynamic_cast<classHC*>(handler.get())) {                       \
         auto* res = static_cast<classHC*>(handler.get());              \
         pq4_accumulate_loop(                                           \
-                1, roundup(ls, bbs), bbs, M2, codes.get(), LUT, *res); \
+                1, roundup(ls, bbs), bbs, M2, codes.get(), LUT, *res, DummyScaler()); \
     }
                 DISPATCH(HeapHC)
                 else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)
@@ -863,7 +864,7 @@ void IndexIVFFastScan::search_implem_12(
     if (dynamic_cast<classHC*>(handler.get())) {                   \
         auto* res = static_cast<classHC*>(handler.get());          \
         pq4_accumulate_loop_qbs(                                   \
-                qbs, list_size, M2, codes.get(), LUT.get(), *res); \
+                qbs, list_size, M2, codes.get(), LUT.get(), *res, DummyScaler()); \
     }
         DISPATCH(HeapHC)
         else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)

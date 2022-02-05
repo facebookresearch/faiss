@@ -30,6 +30,10 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
     AdditiveQuantizer* aq;
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
+    bool rescale_norm = true;
+    int norm_scale = 1;
+
+    // max number of training vectors
     size_t max_train_points = 0;
 
     IndexAdditiveQuantizerFastScan(
@@ -52,6 +56,8 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
             int bbs = 32);
 
     void train(idx_t n, const float* x) override;
+
+    void estimate_norm_scale(idx_t n, const float* x);
 
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 

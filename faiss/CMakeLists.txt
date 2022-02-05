@@ -135,6 +135,7 @@ set(FAISS_HEADERS
   impl/FaissException.h
   impl/HNSW.h
   impl/LocalSearchQuantizer.h
+  impl/LookupTableScaler.h
   impl/NNDescent.h
   impl/NSG.h
   impl/PolysemousTraining.h

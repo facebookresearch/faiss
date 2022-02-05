@@ -8,6 +8,7 @@
 #include <faiss/impl/pq4_fast_scan.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/simd_result_handlers.h>
 
 namespace faiss {
@@ -26,12 +27,13 @@ namespace {
  * writes results in a ResultHandler
  */
 
-template <int NQ, int BB, class ResultHandler>
+template <int NQ, int BB, class ResultHandler, class Scaler>
 void kernel_accumulate_block(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     // distance accumulators
     simd16uint16 accu[NQ][BB][4];
 
@@ -63,11 +65,11 @@ void kernel_accumulate_block(
                 simd32uint8 res0 = lut.lookup_2_lanes(clo);
                 simd32uint8 res1 = lut.lookup_2_lanes(chi);
 
-                accu[q][b][0] += simd16uint16(res0);
-                accu[q][b][1] += simd16uint16(res0) >> 8;
+                accu[q][b][0] += scaler.scale(sq, simd16uint16(res0));
+                accu[q][b][1] += scaler.scale(sq, simd16uint16(res0) >> 8);
 
-                accu[q][b][2] += simd16uint16(res1);
-                accu[q][b][3] += simd16uint16(res1) >> 8;
+                accu[q][b][2] += scaler.scale(sq, simd16uint16(res1));
+                accu[q][b][3] += scaler.scale(sq, simd16uint16(res1) >> 8);
             }
         }
     }
@@ -85,17 +87,18 @@ void kernel_accumulate_block(
     }
 }
 
-template <int NQ, int BB, class ResultHandler>
+template <int NQ, int BB, class ResultHandler, class Scaler>
 void accumulate_fixed_blocks(
         size_t nb,
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     constexpr int bbs = 32 * BB;
     for (int64_t j0 = 0; j0 < nb; j0 += bbs) {
         FixedStorageHandler<NQ, 2 * BB> res2;
-        kernel_accumulate_block<NQ, BB>(nsq, codes, LUT, res2);
+        kernel_accumulate_block<NQ, BB>(nsq, codes, LUT, res2, scaler);
         res.set_block_origin(0, j0);
         res2.to_other_handler(res);
         codes += bbs * nsq / 2;
@@ -104,7 +107,7 @@ void accumulate_fixed_blocks(
 
 } // anonymous namespace
 
-template <class ResultHandler>
+template <class ResultHandler, class Scaler>
 void pq4_accumulate_loop(
         int nq,
         size_t nb,
@@ -112,7 +115,8 @@ void pq4_accumulate_loop(
         int nsq,
         const uint8_t* codes,
         const uint8_t* LUT,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const Scaler& scaler) {
     FAISS_THROW_IF_NOT(is_aligned_pointer(codes));
     FAISS_THROW_IF_NOT(is_aligned_pointer(LUT));
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
@@ -120,7 +124,7 @@ void pq4_accumulate_loop(
 
 #define DISPATCH(NQ, BB)                                           \
     case NQ * 1000 + BB:                                           \
-        accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res); \
+        accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res, scaler); \
         break
 
     switch (nq * 1000 + bbs / 32) {
@@ -141,29 +145,29 @@ void pq4_accumulate_loop(
 
 // explicit template instantiations
 
-#define INSTANTIATE_ACCUMULATE(TH, C, with_id_map)         \
-    template void pq4_accumulate_loop<TH<C, with_id_map>>( \
+#define INSTANTIATE_ACCUMULATE(TH, C, with_id_map, S)         \
+    template void pq4_accumulate_loop<TH<C, with_id_map>, S>( \
             int,                                           \
             size_t,                                        \
             int,                                           \
             int,                                           \
             const uint8_t*,                                \
             const uint8_t*,                                \
-            TH<C, with_id_map>&);
+            TH<C, with_id_map>&, const S&);
 
-#define INSTANTIATE_3(C, with_id_map)                           \
-    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map) \
-    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map)         \
-    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map)
+#define INSTANTIATE_3(C, with_id_map, S)                           \
+    INSTANTIATE_ACCUMULATE(SingleResultHandler, C, with_id_map, S) \
+    INSTANTIATE_ACCUMULATE(HeapHandler, C, with_id_map, S)         \
+    INSTANTIATE_ACCUMULATE(ReservoirHandler, C, with_id_map, S)
 
 using Csi = CMax<uint16_t, int>;
-INSTANTIATE_3(Csi, false);
+INSTANTIATE_3(Csi, false, DummyScaler);
 using CsiMin = CMin<uint16_t, int>;
-INSTANTIATE_3(CsiMin, false);
+INSTANTIATE_3(CsiMin, false, DummyScaler);
 
 using Csl = CMax<uint16_t, int64_t>;
-INSTANTIATE_3(Csl, true);
+INSTANTIATE_3(Csl, true, DummyScaler);
 using CslMin = CMin<uint16_t, int64_t>;
-INSTANTIATE_3(CslMin, true);
+INSTANTIATE_3(CslMin, true, DummyScaler);
 
 } // namespace faiss
