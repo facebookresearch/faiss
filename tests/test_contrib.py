@@ -28,11 +28,11 @@ except:
                  'Submodule import broken in python 2.')
 class TestComputeGT(unittest.TestCase):
 
-    def test_compute_GT(self):
+    def do_test_compute_GT(self, metric=faiss.METRIC_L2):
         d = 64
         xt, xb, xq = get_dataset_2(d, 0, 10000, 100)
 
-        index = faiss.IndexFlatL2(d)
+        index = faiss.IndexFlat(d, metric)
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
 
@@ -42,11 +42,17 @@ class TestComputeGT(unittest.TestCase):
             for i0 in range(0, xb.shape[0], bs):
                 yield xb[i0:i0 + bs]
 
-        Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10)
+        Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10, metric)
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
         np.testing.assert_almost_equal(Dref, Dnew, decimal=4)
+
+    def test_compute_GT(self):
+        self.do_test_compute_GT()
+
+    def test_compute_GT_ip(self):
+        self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT)
 
 
 class TestDatasets(unittest.TestCase):

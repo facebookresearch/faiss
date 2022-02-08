@@ -20,7 +20,8 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
     LOG.info("knn_ground_truth queries size %s k=%d" % (xq.shape, k))
     t0 = time.time()
     nq, d = xq.shape
-    rh = faiss.ResultHeap(nq, k)
+    keep_max = metric_type == faiss.METRIC_INNER_PRODUCT
+    rh = faiss.ResultHeap(nq, k, keep_max=keep_max)
 
     index = faiss.IndexFlat(d, metric_type)
     if faiss.get_num_gpus():
