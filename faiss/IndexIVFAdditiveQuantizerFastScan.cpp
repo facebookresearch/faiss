@@ -249,9 +249,10 @@ void IndexIVFAdditiveQuantizerFastScan::estimate_norm_scale(
     scale /= n;
     norm_scale = (int)std::roundf(std::max(scale, 1.0f));
 
-    /// TODO: if verbose
-    printf("estimated norm scale: %lf\n", scale);
-    printf("rounded norm scale: %d\n", norm_scale);
+    if (verbose) {
+        printf("estimated norm scale: %lf\n", scale);
+        printf("rounded norm scale: %d\n", norm_scale);
+    }
 }
 
 /*********************************************************
@@ -330,7 +331,7 @@ void IndexIVFAdditiveQuantizerFastScan::search(
         return;
     }
 
-    NormTableScaler scaler(norm_scale, M - 2);
+    NormTableScaler scaler(norm_scale);
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
     } else {
@@ -342,10 +343,57 @@ void IndexIVFAdditiveQuantizerFastScan::search(
  * Look-Up Table functions
  *********************************************************/
 
-/**
- * d(x, y) = || x - (y_c + \sum_i y_i) ||^2
- *         = || x ||^2 - 2 <x, y_c> - 2 \sum_i<x, y_i> + || y ||^2
- */
+/********************************************************
+
+Let q denote the query vector,
+    x denote the quantized database vector,
+    c denote the corresponding IVF centroid,
+    r denote the residual (x - c).
+
+The L2 distance between q and x is:
+
+    d(q, x) = (q - x)^2
+            = (q - c - r)^2
+            = q^2 - 2<q, c> - 2<q, r> + x^2
+
+where q^2 is a constant for all x, <q,c> is only relevant to c,
+and x^2 is the quantized database vector norm.
+
+Different from IVFAdditiveQuantizer, we encode the quantized vector norm x^2
+instead of r^2. So that we only need to compute one LUT for each query vector:
+
+    LUT[m][k] = -2 * <q, codebooks[m][k]>
+
+`-2<q,c>` could be precomputed in `compute_LUT` and store in `biases`.
+if `by_residual=False`, `<q,c>` is simply 0.
+
+
+
+About norm look-up tables:
+
+To take advantage of the fast SIMD table lookups, we encode the norm by a 2x4
+bits 1D additive quantizer (simply treat the scalar norm as a 1D vector).
+
+Let `cm` denote the codebooks of the trained 2x4 bits 1D additive quantizer,
+size (2, 16); `bm` denote the encoding code of the norm, a 8-bit integer; `cb`
+denote the codebooks of the additive quantizer to encode the database vector,
+size (M, 16).
+
+The decoded norm is:
+
+    decoded_norm = cm[0][bm & 15] + cm[1][bm >> 4]
+
+The decoding is actually doing a table look-up.
+
+We combine the norm LUTs and the IP LUTs together:
+
+    LUT is a 2D table, size (M + 2, 16)
+    if m < M :
+        LUT[m][k] = -2 * <q, cb[m][k]>
+    else:
+        LUT[m][k] = cm[m - M][k]
+
+********************************************************/
 
 bool IndexIVFAdditiveQuantizerFastScan::lookup_table_is_3d() const {
     return false;
@@ -369,7 +417,8 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
     }
 
     if (by_residual) {
-        // coef * <x, y_c>
+        // bias = coef * <q, c>
+        // NOTE: q^2 is not added to `biases`
         biases.resize(n * nprobe);
 #pragma omp parallel
         {
@@ -440,7 +489,7 @@ IndexIVFLocalSearchQuantizerFastScan::IndexIVFLocalSearchQuantizerFastScan(
                   metric,
                   bbs),
           lsq(d, M, nbits, search_type) {
-    FAISS_THROW_IF_NOT(nbits == 4); // TODO: delete me
+    FAISS_THROW_IF_NOT(nbits == 4);
     init(&lsq, nlist, metric, bbs);
 }
 
@@ -468,7 +517,7 @@ IndexIVFResidualQuantizerFastScan::IndexIVFResidualQuantizerFastScan(
                   metric,
                   bbs),
           rq(d, M, nbits, search_type) {
-    FAISS_THROW_IF_NOT(nbits == 4); // TODO: delete me
+    FAISS_THROW_IF_NOT(nbits == 4);
     init(&rq, nlist, metric, bbs);
 }
 

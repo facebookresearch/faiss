@@ -345,11 +345,11 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
-    if (match("(RQ|LSQ)([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern)) {
+    if (match("(RQ|LSQ)([0-9]+)x4fs(r?)(_[0-9]+)?" + aq_norm_pattern)) {
         int M = std::stoi(sm[2].str());
-        int bbs = mres_to_int(sm[3], 32, 1);
+        int bbs = mres_to_int(sm[4], 32, 1);
         auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
-        IndexIVF* index_ivf;
+        IndexIVFAdditiveQuantizerFastScan* index_ivf;
         if (sm[1].str() == "RQ") {
             index_ivf = new IndexIVFResidualQuantizerFastScan(
                     get_q(), d, nlist, M, 4, mt, st, bbs);
@@ -357,6 +357,7 @@ IndexIVF* parse_IndexIVF(
             index_ivf = new IndexIVFLocalSearchQuantizerFastScan(
                     get_q(), d, nlist, M, 4, mt, st, bbs);
         }
+        index_ivf->by_residual = (sm[3].str() == "r");
         return index_ivf;
     }
     if (match("(ITQ|PCA|PCAR)([0-9]+)?,SH([-0-9.e]+)?([gcm])?")) {

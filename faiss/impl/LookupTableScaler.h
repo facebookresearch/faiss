@@ -15,36 +15,54 @@
 namespace faiss {
 
 struct DummyScaler {
-    inline simd16uint16 scale(int sq, const simd16uint16& x) const {
-        return x;
+    static constexpr int nscale = 0;
+
+    inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
+            const {
+        FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
+        return simd32uint8(0);
+    }
+
+    inline simd16uint16 scale_lo(const simd32uint8& res) const {
+        FAISS_THROW_MSG("DummyScaler::scale_lo should not be called.");
+        return simd16uint16(0);
+    }
+
+    inline simd16uint16 scale_hi(const simd32uint8& res) const {
+        FAISS_THROW_MSG("DummyScaler::scale_hi should not be called.");
+        return simd16uint16(0);
     }
 
     template <class dist_t>
-    inline dist_t scale_one(int sq, const dist_t& x) const {
-        return x;
+    inline dist_t scale_one(const dist_t& x) const {
+        FAISS_THROW_MSG("DummyScaler::scale_one should not be called.");
+        return 0;
     }
 };
 
 struct NormTableScaler {
-    size_t M_scale;
+    static constexpr int nscale = 2;
     int scale_int;
     simd16uint16 scale_simd;
 
-    NormTableScaler(int scale, size_t M_scale)
-            : scale_int(scale), scale_simd(scale), M_scale(M_scale) {}
+    NormTableScaler(int scale) : scale_int(scale), scale_simd(scale) {}
 
-    inline simd16uint16 scale(int sq, const simd16uint16& x) const {
-        if (sq < M_scale) {
-            return x;
-        }
-        return x * scale_simd;
+    inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
+            const {
+        return lut.lookup_2_lanes(c);
     }
 
+    inline simd16uint16 scale_lo(const simd32uint8& res) const {
+        return simd16uint16(res) * scale_simd;
+    }
+
+    inline simd16uint16 scale_hi(const simd32uint8& res) const {
+        return (simd16uint16(res) >> 8) * scale_simd;
+    }
+
+    // for implem 2, 3, 4
     template <class dist_t>
-    inline dist_t scale_one(int sq, const dist_t& x) const {
-        if (sq < M_scale) {
-            return x;
-        }
+    inline dist_t scale_one(const dist_t& x) const {
         return x * scale_int;
     }
 };

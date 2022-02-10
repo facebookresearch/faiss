@@ -602,23 +602,24 @@ class TestIVFAQFastScan(unittest.TestCase):
         for implem in 0, 1, 2:
             self.subtest_from_ivfaq(implem)
 
-    def subtest_factory(self, aq, M, bbs, st):
+    def subtest_factory(self, aq, M, bbs, st, r='r'):
         """
-        Format: IVF{nlist},{AQ}{M}x4fs_{bbs}_N{st}
+        Format: IVF{nlist},{AQ}{M}x4fs{r}_{bbs}_N{st}
 
             nlist (int): number of inverted lists
             AQ (str):    `LSQ` or `RQ`
             M (int):     number of sub-quantizers
             bbs (int):   build block size
             st (str):    search type, `lsq2x4` or `rq2x4`
+            r  (str):    `r` or ``, by_residual or not
         """
         AQ = faiss.AdditiveQuantizer
         nlist, d = 128, 16
 
         if bbs > 0:
-            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs_{bbs}_N{st}2x4')
+            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs{r}_{bbs}_N{st}2x4')
         else:
-            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs_N{st}2x4')
+            index = faiss.index_factory(d, f'IVF{nlist},{aq}{M}x4fs{r}_N{st}2x4')
             bbs = 32
 
         assert index.nlist == nlist
@@ -635,6 +636,8 @@ class TestIVFAQFastScan(unittest.TestCase):
             assert aq.search_type == AQ.ST_norm_lsq2x4
         if st == 'rq':
             assert aq.search_type == AQ.ST_norm_rq2x4
+        
+        assert index.by_residual == (r == 'r')
 
     def test_factory(self):
         self.subtest_factory('LSQ', 16, 64, 'lsq')
@@ -642,6 +645,8 @@ class TestIVFAQFastScan(unittest.TestCase):
         self.subtest_factory('RQ', 16, 64, 'rq')
         self.subtest_factory('RQ', 16, 64, 'lsq')
         self.subtest_factory('LSQ', 64, 0, 'lsq')
+
+        self.subtest_factory('LSQ', 64, 0, 'lsq', r='')
 
     def subtest_io(self, factory_str):
         d = 8

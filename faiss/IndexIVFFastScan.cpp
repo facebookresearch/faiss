@@ -207,9 +207,15 @@ void estimators_from_tables_generic(
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = bias;
         const dis_t* __restrict dt = dis_table;
-        for (size_t m = 0; m < index.M; m++) {
+        for (size_t m = 0; m < index.M - scaler.nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
-            dis += scaler.scale_one(m, dt[c]);
+            dis += dt[c];
+            dt += index.ksub;
+        }
+
+        for (size_t m = 0; m < scaler.nscale; m++) {
+            uint64_t c = bsr.read(index.nbits);
+            dis += scaler.scale_one(dt[c]);
             dt += index.ksub;
         }
 

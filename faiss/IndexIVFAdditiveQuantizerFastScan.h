@@ -38,7 +38,7 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
 
     AdditiveQuantizer* aq;
 
-    bool rescale_norm = true;
+    bool rescale_norm = false;
     int norm_scale = 1;
 
     // max number of training vectors

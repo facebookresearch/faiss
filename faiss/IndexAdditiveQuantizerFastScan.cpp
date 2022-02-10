@@ -137,12 +137,12 @@ void IndexAdditiveQuantizerFastScan::estimate_norm_scale(
         scale += quantize_lut::aq_estimate_norm_scale(M, ksub, 2, lut);
     }
     scale /= n;
-
     norm_scale = (int)std::roundf(std::max(scale, 1.0));
 
-    // TODO: if (verbose)
-    printf("estimated norm scale: %lf\n", scale);
-    printf("rounded norm scale: %d\n", norm_scale);
+    if (verbose) {
+        printf("estimated norm scale: %lf\n", scale);
+        printf("rounded norm scale: %d\n", norm_scale);
+    }
 }
 
 void IndexAdditiveQuantizerFastScan::compute_codes(
@@ -198,7 +198,7 @@ void IndexAdditiveQuantizerFastScan::search(
         return;
     }
 
-    NormTableScaler scaler(norm_scale, M - 2);
+    NormTableScaler scaler(norm_scale);
     if (metric_type == METRIC_L2) {
         search_dispatch_implem<true>(n, x, k, distances, labels, scaler);
     } else {

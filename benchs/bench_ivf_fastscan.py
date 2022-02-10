@@ -7,6 +7,7 @@ import sys
 import faiss
 import time
 import os
+import multiprocessing as mp
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -50,22 +51,27 @@ def eval_recall(index, name):
     return recall, qps
 
 
-def eval_and_plot(name, plot=True):
+def eval_and_plot(name, rescale_norm=True, plot=True):
     index = faiss.index_factory(d, name)
     index_path = f"indices/{name}.faissindex"
 
     if os.path.exists(index_path):
         index = faiss.read_index(index_path)
     else:
+        faiss.omp_set_num_threads(mp.cpu_count())
         index.train(xt)
         index.add(xb)
         faiss.write_index(index, index_path)
 
-    faiss.omp_set_num_threads(8)
+    # search params
+    if hasattr(index, 'rescale_norm'):
+        index.rescale_norm = rescale_norm
+        name += f"(rescale_norm={rescale_norm})"
+    faiss.omp_set_num_threads(1)
 
     data = []
     print(f"======{name}")
-    for nprobe in 1, 2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 256:
+    for nprobe in 1, 2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128:
         index.nprobe = nprobe
         recall, qps = eval_recall(index, name)
         data.append((recall, qps))
@@ -78,16 +84,27 @@ def eval_and_plot(name, plot=True):
 M, nlist = 32, 1024
 
 # just for warmup...
-eval_and_plot(f"IVF{nlist},PQ{M}x4fs", False)
+# eval_and_plot(f"IVF{nlist},PQ{M}x4fs", plot=False)
 
 # benchmark
+plt.figure(figsize=(8, 6), dpi=80)
+
+# PQ
 eval_and_plot(f"IVF{nlist},PQ{M}x4fs")
 eval_and_plot(f"IVF{nlist},PQ{M}x4fsr")
+
+# AQ, by_residual
+eval_and_plot(f"IVF{nlist},LSQ{M-2}x4fsr_Nlsq2x4")
+eval_and_plot(f"IVF{nlist},RQ{M-2}x4fsr_Nrq2x4")
+eval_and_plot(f"IVF{nlist},LSQ{M-2}x4fsr_Nlsq2x4", rescale_norm=False)
+eval_and_plot(f"IVF{nlist},RQ{M-2}x4fsr_Nrq2x4", rescale_norm=False)
+
+# AQ, no by_residual
 eval_and_plot(f"IVF{nlist},LSQ{M-2}x4fs_Nlsq2x4")
 eval_and_plot(f"IVF{nlist},RQ{M-2}x4fs_Nrq2x4")
 
 plt.title("Indices on SIFT1M")
-plt.xlabel("recall@1")
+plt.xlabel("Recall@1")
 plt.ylabel("QPS")
-plt.legend()
-plt.savefig("bench_ivf_fastscan.png")
+plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
+plt.savefig("bench_ivf_fastscan.png", bbox_inches='tight')
