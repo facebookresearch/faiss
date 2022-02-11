@@ -12,6 +12,7 @@ from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
 from faiss.contrib import evaluation
 from faiss.contrib import ivf_tools
+from faiss.contrib import clustering
 
 from common_faiss_tests import get_dataset_2
 try:
@@ -77,7 +78,6 @@ class TestDatasets(unittest.TestCase):
             ds.get_groundtruth(100),
             index.search(ds.get_queries(), 100)[1]
         )
-
 
     def test_synthetic_iterator(self):
         ds = datasets.SyntheticDataset(32, 1000, 2000, 10)
@@ -430,3 +430,38 @@ class TestRangeSearchMaxResults(unittest.TestCase):
 
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
+
+
+class TestClustering(unittest.TestCase):
+
+    def test_2level(self):
+        " verify that 2-level clustering is not too sub-optimal "
+        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        xt = ds.get_train()
+        km_ref = faiss.Kmeans(ds.d, 100)
+        km_ref.train(xt)
+        err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
+
+        centroids2, _ = clustering.two_level_clustering(xt, 10, 10)
+        err2 = faiss.knn(xt, centroids2, 1)[0].sum()
+
+        self.assertLess(err2, err * 1.1)
+
+    def test_ivf_train_2level(self):
+        " check 2-level clustering with IVF training "
+        ds = datasets.SyntheticDataset(32, 10000, 1000, 200)
+        index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
+        faiss.extract_index_ivf(index).nprobe = 10
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
+        faiss.extract_index_ivf(index).nprobe = 10
+        clustering.train_ivf_index_with_2level(index, ds.get_train(), verbose=True)
+        index.add(ds.get_database())
+        Dnew, Inew = index.search(ds.get_queries(), 1)
+
+        # normally 47 / 200 differences
+        ndiff = (Iref != Inew).sum()
+        self.assertLess(ndiff, 50)
