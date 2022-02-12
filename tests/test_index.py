@@ -635,16 +635,14 @@ class TestNSG(unittest.TestCase):
                 os.unlink(tmpfile)
 
         Dnsg2, Insg2 = index2.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dnsg2 == Dnsg))
-        self.assertTrue(np.all(Insg2 == Insg))
+        np.testing.assert_array_equal(Dnsg2, Dnsg)
+        np.testing.assert_array_equal(Insg2, Insg)
 
         # also test clone
         index3 = faiss.clone_index(index)
         Dnsg3, Insg3 = index3.search(self.xq, 1)
-
-        self.assertTrue(np.all(Dnsg3 == Dnsg))
-        self.assertTrue(np.all(Insg3 == Insg))
+        np.testing.assert_array_equal(Dnsg3, Dnsg)
+        np.testing.assert_array_equal(Insg3, Insg)
 
     def subtest_connectivity(self, index, nb):
         vt = faiss.VisitedTable(nb)
@@ -777,7 +775,7 @@ class TestNSG(unittest.TestCase):
     def test_nsg_pq(self):
         """Test IndexNSGPQ"""
         d = self.xq.shape[1]
-        R, pq_M = 8, 16
+        R, pq_M = 32, 4
         index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}")
         assert isinstance(index, faiss.IndexNSGPQ)
         idxpq = faiss.downcast_index(index.storage)
@@ -790,30 +788,20 @@ class TestNSG(unittest.TestCase):
         index.GK = 32
         index.train(self.xb)
         index.add(self.xb)
-        D1, I1 = index.search(self.xq, k=1)
+        D, I = index.search(self.xq, k=1)
 
         # test accuracy
-        recalls = (Iref == I1).sum()
-        self.assertGreaterEqual(recalls, 380)  # 383
+        recalls = (Iref == I).sum()
+        print("IndexNSGPQ", recalls)
+        self.assertGreaterEqual(recalls, 190)  # 193
 
         # test I/O
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
-
-        D2, I2 = index2.search(self.xq, 1)
-        np.testing.assert_array_equal(I1, I2)
-        np.testing.assert_array_equal(D1, D2)
+        self.subtest_io_and_clone(index, D, I)
 
     def test_nsg_sq(self):
         """Test IndexNSGSQ"""
         d = self.xq.shape[1]
-        R = 8
+        R = 32
         index = faiss.index_factory(d, f"NSG{R}_SQ8")
         assert isinstance(index, faiss.IndexNSGSQ)
         idxsq = faiss.downcast_index(index.storage)
@@ -826,25 +814,15 @@ class TestNSG(unittest.TestCase):
 
         index.train(self.xb)
         index.add(self.xb)
-        D1, I1 = index.search(self.xq, k=1)
+        D, I = index.search(self.xq, k=1)
 
         # test accuracy
-        recalls = (Iref == I1).sum()
+        recalls = (Iref == I).sum()
+        print("IndexNSGSQ", recalls)
         self.assertGreaterEqual(recalls, 405)  # 411
 
         # test I/O
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
-
-        D2, I2 = index2.search(self.xq, 1)
-        np.testing.assert_array_equal(I1, I2)
-        np.testing.assert_array_equal(D1, D2)
+        self.subtest_io_and_clone(index, D, I)
 
 
 class TestDistancesPositive(unittest.TestCase):
