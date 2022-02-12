@@ -772,7 +772,79 @@ class TestNSG(unittest.TestCase):
         indices = np.argsort(D, axis=1)
         gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
-        assert np.array_equal(indices, gt)
+        np.testing.assert_array_equal(indices, gt)
+
+    def test_nsg_pq(self):
+        """Test IndexNSGPQ"""
+        d = self.xq.shape[1]
+        R, pq_M = 8, 16
+        index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}")
+        assert isinstance(index, faiss.IndexNSGPQ)
+        idxpq = faiss.downcast_index(index.storage)
+        assert index.nsg.R == R and idxpq.pq.M == pq_M
+
+        flat_index = faiss.IndexFlat(d)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, k=1)
+
+        index.GK = 32
+        index.train(self.xb)
+        index.add(self.xb)
+        D1, I1 = index.search(self.xq, k=1)
+
+        # test accuracy
+        recalls = (Iref == I1).sum()
+        self.assertGreaterEqual(recalls, 380)  # 383
+
+        # test I/O
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, tmpfile)
+            index2 = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+
+        D2, I2 = index2.search(self.xq, 1)
+        np.testing.assert_array_equal(I1, I2)
+        np.testing.assert_array_equal(D1, D2)
+
+    def test_nsg_sq(self):
+        """Test IndexNSGSQ"""
+        d = self.xq.shape[1]
+        R = 8
+        index = faiss.index_factory(d, f"NSG{R}_SQ8")
+        assert isinstance(index, faiss.IndexNSGSQ)
+        idxsq = faiss.downcast_index(index.storage)
+        assert index.nsg.R == R
+        assert idxsq.sq.qtype == faiss.ScalarQuantizer.QT_8bit
+
+        flat_index = faiss.IndexFlat(d)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, k=1)
+
+        index.train(self.xb)
+        index.add(self.xb)
+        D1, I1 = index.search(self.xq, k=1)
+
+        # test accuracy
+        recalls = (Iref == I1).sum()
+        self.assertGreaterEqual(recalls, 405)  # 411
+
+        # test I/O
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, tmpfile)
+            index2 = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+
+        D2, I2 = index2.search(self.xq, 1)
+        np.testing.assert_array_equal(I1, I2)
+        np.testing.assert_array_equal(D1, D2)
 
 
 class TestDistancesPositive(unittest.TestCase):

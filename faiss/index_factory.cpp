@@ -422,6 +422,37 @@ IndexHNSW* parse_IndexHNSW(
 }
 
 /***************************************************************
+ * Parse IndexNSG
+ */
+
+IndexNSG* parse_IndexNSG(
+        const std::string code_string,
+        int d,
+        MetricType mt,
+        int nsg_R) {
+    std::smatch sm;
+    auto match = [&sm, &code_string](const std::string& pattern) {
+        return re_match(code_string, pattern, sm);
+    };
+
+    if (match("Flat|")) {
+        return new IndexNSGFlat(d, nsg_R, mt);
+    }
+    if (match("PQ([0-9]+)(np)?")) {
+        int M = std::stoi(sm[1].str());
+        IndexNSGPQ* ipq = new IndexNSGPQ(d, M, nsg_R);
+        dynamic_cast<IndexPQ*>(ipq->storage)->do_polysemous_training =
+                sm[2].str() != "np";
+        return ipq;
+    }
+    if (match(sq_pattern)) {
+        return new IndexNSGSQ(d, sq_types[sm[1].str()], nsg_R, mt);
+    }
+
+    return nullptr;
+}
+
+/***************************************************************
  * Parse basic indexes
  */
 
@@ -452,11 +483,6 @@ Index* parse_other_indexes(
         int M = std::stoi(sm[1].str()), r2 = std::stoi(sm[2].str());
         int nbit = std::stoi(sm[3].str());
         return new IndexLattice(d, M, nbit, r2);
-    }
-
-    // IndexNSGFlat
-    if (match("NSG([0-9]+)(,Flat)?")) {
-        return new IndexNSGFlat(d, std::stoi(sm[1].str()), metric);
     }
 
     // IndexScalarQuantizer
@@ -637,6 +663,29 @@ std::unique_ptr<Index> index_factory_sub(
         FAISS_THROW_IF_NOT_FMT(
                 index,
                 "could not parse HNSW code description %s in %s",
+                code_string.c_str(),
+                description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // NSG variants (it was unclear in the old version that the separator was a
+    // "," so we support both "_" and ",")
+    if (re_match(description, "NSG([0-9]*)([,_].*)?", sm)) {
+        int nsg_R = mres_to_int(sm[1], 32);
+        // We also accept empty code string (synonym of Flat)
+        std::string code_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        if (verbose) {
+            printf("parsing NSG string %s code_string=%s nsg_R=%d\n",
+                   description.c_str(),
+                   code_string.c_str(),
+                   nsg_R);
+        }
+
+        IndexNSG* index = parse_IndexNSG(code_string, d, metric, nsg_R);
+        FAISS_THROW_IF_NOT_FMT(
+                index,
+                "could not parse NSG code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
         return std::unique_ptr<Index>(index);
