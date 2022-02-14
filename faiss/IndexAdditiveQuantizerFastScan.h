@@ -36,7 +36,7 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
     // max number of training vectors
     size_t max_train_points = 0;
 
-    IndexAdditiveQuantizerFastScan(
+    explicit IndexAdditiveQuantizerFastScan(
             AdditiveQuantizer* aq,
             MetricType metric = METRIC_L2,
             int bbs = 32);
@@ -48,7 +48,7 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
 
     IndexAdditiveQuantizerFastScan();
 
-    ~IndexAdditiveQuantizerFastScan();
+    ~IndexAdditiveQuantizerFastScan() override;
 
     /// build from an existing IndexAQ
     explicit IndexAdditiveQuantizerFastScan(

@@ -67,7 +67,7 @@ struct IndexIVFFastScan : IndexIVF {
             MetricType metric,
             int bbs);
 
-    ~IndexIVFFastScan();
+    ~IndexIVFFastScan() override;
 
     /// orig's inverted lists (for debugging)
     InvertedLists* orig_invlists = nullptr;

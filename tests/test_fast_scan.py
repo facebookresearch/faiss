@@ -446,7 +446,7 @@ class TestAQFastScan(unittest.TestCase):
         Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
         d = 16
-        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
         gt = ds.get_groundtruth(k=1)
 
         if metric_type == 'L2':
@@ -489,10 +489,10 @@ class TestAQFastScan(unittest.TestCase):
             metric_type = faiss.METRIC_INNER_PRODUCT
             st = ''
 
-        nlist, d = 64, 16
-        ds  = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric=metric)
+        d = 16
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric=metric)
         gt = ds.get_groundtruth(k=1)
-        index = faiss.index_factory(d, f'RQ8x4' + st, metric_type)
+        index = faiss.index_factory(d, 'RQ8x4' + st, metric_type)
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 16
@@ -555,7 +555,6 @@ class TestAQFastScan(unittest.TestCase):
     def subtest_io(self, factory_str):
         d = 8
         ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
-        gt = ds.get_groundtruth(k=1)
 
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
@@ -582,12 +581,12 @@ class TestAQFastScan(unittest.TestCase):
 
 for metric in 'L2', 'IP':
     for implem in 0, 12, 13, 14, 15:
-         setattr(
+        setattr(
             TestAQFastScan,
             f"test_accuracy_{metric}_LSQ_implem{implem}",
             lambda self: self.subtest_accuracy('LSQ', 'lsq', implem, metric)
         )
-         setattr(
+        setattr(
             TestAQFastScan,
             f"test_accuracy_{metric}_RQ_implem{implem}",
             lambda self: self.subtest_accuracy('RQ', 'rq', implem, metric)

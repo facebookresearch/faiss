@@ -54,7 +54,7 @@ void IndexIVFFastScan::init_fastscan(
         size_t M,
         size_t nbits,
         size_t nlist,
-        MetricType metric,
+        MetricType /* metric */,
         int bbs) {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nbits == 4);
@@ -117,8 +117,9 @@ void IndexIVFFastScan::add_with_ids(
     size_t nadd = 0, nminus1 = 0;
 
     for (size_t i = 0; i < n; i++) {
-        if (idx[i] < 0)
+        if (idx[i] < 0) {
             nminus1++;
+        }
     }
 
     AlignedTable<uint8_t> flat_codes(n * code_size);

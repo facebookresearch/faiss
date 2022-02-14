@@ -59,16 +59,16 @@ struct IndexFastScan : Index {
 
     IndexFastScan();
 
-    void reset();
+    void reset() override;
 
     void search(
             idx_t n,
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels) const override;
 
-    void add(idx_t n, const float* x);
+    void add(idx_t n, const float* x) override;
 
     virtual void compute_codes(uint8_t* codes, idx_t n, const float* x)
             const = 0;

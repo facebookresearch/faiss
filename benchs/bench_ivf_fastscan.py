@@ -3,7 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import sys
 import faiss
 import time
 import os
@@ -46,7 +45,10 @@ def eval_recall(index, name):
 
     corrects = (gt == I).sum()
     recall = corrects / nq
-    print(f'\tnprobe {index.nprobe:3d}, Recall@{k}: {recall:.6f}, speed: {speed:.6f} ms/query')
+    print(
+        f'\tnprobe {index.nprobe:3d}, Recall@{k}: '
+        f'{recall:.6f}, speed: {speed:.6f} ms/query'
+    )
 
     return recall, qps
 

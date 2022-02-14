@@ -56,7 +56,7 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
 
     IndexIVFAdditiveQuantizerFastScan();
 
-    ~IndexIVFAdditiveQuantizerFastScan();
+    ~IndexIVFAdditiveQuantizerFastScan() override;
 
     // built from an IndexIVFAQ
     explicit IndexIVFAdditiveQuantizerFastScan(
@@ -93,7 +93,7 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const idx_t* coarse_ids,
             const float* coarse_dis,
             AlignedTable<float>& dis_tables,
-            AlignedTable<float>& biases) const;
+            AlignedTable<float>& biases) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
