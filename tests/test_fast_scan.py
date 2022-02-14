@@ -457,12 +457,12 @@ class TestAQFastScan(unittest.TestCase):
             metric = faiss.METRIC_INNER_PRODUCT
             postfix1 = postfix2 = ''
 
-        index = faiss.index_factory(d, f'{aq}8x4{postfix1}', metric)
+        index = faiss.index_factory(d, f'{aq}3x4{postfix1}', metric)
         index.train(ds.get_train())
         index.add(ds.get_database())
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.index_factory(d, f'{aq}8x4fs_32{postfix2}', metric)
+        indexfs = faiss.index_factory(d, f'{aq}3x4fs_32{postfix2}', metric)
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
         indexfs.implem = implem
@@ -475,7 +475,7 @@ class TestAQFastScan(unittest.TestCase):
         print(aq, st, implem, metric_type, recall_ref, recall)
         assert abs(recall_ref - recall) < 0.05
 
-    def test_accuracy(self):
+    def xx_test_accuracy(self):
         for metric in 'L2', 'IP':
             for implem in 0, 12, 13, 14, 15:
                 self.subtest_accuracy('RQ', 'rq', implem, metric)
@@ -578,3 +578,17 @@ class TestAQFastScan(unittest.TestCase):
         self.subtest_io('LSQ4x4fs_Nrq2x4')
         self.subtest_io('RQ4x4fs_Nrq2x4')
         self.subtest_io('RQ4x4fs_Nlsq2x4')
+
+
+for metric in 'L2', 'IP':
+    for implem in 0, 12, 13, 14, 15:
+         setattr(
+            TestAQFastScan,
+            f"test_accuracy_{metric}_LSQ_implem{implem}",
+            lambda self: self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+        )
+         setattr(
+            TestAQFastScan,
+            f"test_accuracy_{metric}_RQ_implem{implem}",
+            lambda self: self.subtest_accuracy('RQ', 'rq', implem, metric)
+        )

@@ -505,14 +505,14 @@ class TestIVFAQFastScan(unittest.TestCase):
             metric = faiss.METRIC_INNER_PRODUCT
             postfix1 = postfix2 = ''
 
-        index = faiss.index_factory(d, f'IVF{nlist},{aq}5x4{postfix1}', metric)
+        index = faiss.index_factory(d, f'IVF{nlist},{aq}3x4{postfix1}', metric)
         index.by_residual = by_residual
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}5x4fs_32{postfix2}', metric)
+        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}3x4fs_32{postfix2}', metric)
         indexfs.by_residual = by_residual
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
@@ -527,14 +527,15 @@ class TestIVFAQFastScan(unittest.TestCase):
         print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
-    def test_accuracy(self):
+    def xx_test_accuracy(self):
+        # generated porgramatically below
         for metric in 'L2', 'IP':
             for byr in True, False:
                 for implem in 0, 10, 11, 12, 13:
                     self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
                     self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
 
-    def subtest_rescale_accuracy(self, aq, st, by_residual, implem, metric_type='L2'):
+    def subtest_rescale_accuracy(self, aq, st, by_residual, implem):
         """
         we set norm_scale to 2 and compare it with IndexIVFAQ
         """
@@ -542,22 +543,19 @@ class TestIVFAQFastScan(unittest.TestCase):
         ds  = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
         gt = ds.get_groundtruth(k=1)
 
-        if metric_type == 'L2':
-            metric = faiss.METRIC_L2
-            postfix1 = '_Nqint8'
-            postfix2 = f'_N{st}2x4'
-        else:
-            metric = faiss.METRIC_INNER_PRODUCT
-            postfix1 = postfix2 = ''
+        # if metric_type == 'L2':
+        metric = faiss.METRIC_L2
+        postfix1 = '_Nqint8'
+        postfix2 = f'_N{st}2x4'
 
-        index = faiss.index_factory(d, f'IVF{nlist},{aq}5x4{postfix1}', metric)
+        index = faiss.index_factory(d, f'IVF{nlist},{aq}3x4{postfix1}', metric)
         index.by_residual = by_residual
         index.train(ds.get_train())
         index.add(ds.get_database())
         index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
-        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}5x4fs_32{postfix2}', metric)
+        indexfs = faiss.index_factory(d, f'IVF{nlist},{aq}3x4fs_32{postfix2}', metric)
         indexfs.by_residual = by_residual
         indexfs.norm_scale = 2
         indexfs.train(ds.get_train())
@@ -573,7 +571,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
-    def test_rescale_accuracy(self):
+    def xx_test_rescale_accuracy(self):
         for byr in True, False:
             for implem in 0, 10, 11, 12, 13:
                 self.subtest_accuracy('RQ', 'rq', byr, implem, 'L2')
@@ -674,3 +672,32 @@ class TestIVFAQFastScan(unittest.TestCase):
         self.subtest_io('IVF16,LSQ4x4fs_Nrq2x4')
         self.subtest_io('IVF16,RQ4x4fs_Nrq2x4')
         self.subtest_io('IVF16,RQ4x4fs_Nlsq2x4')
+
+
+# add more tests programatically 
+
+for byr in True, False:
+    for implem in 0, 10, 11, 12, 13:
+        for metric in 'L2', 'IP':
+            setattr(
+                TestIVFAQFastScan,
+                f"test_accuracy_{metric}_RQ_implem{implem}_residual{byr}",
+                lambda self: self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
+            )
+            setattr(
+                TestIVFAQFastScan,
+                f"test_accuracy_{metric}_LSQ_implem{implem}_residual{byr}",
+                lambda self: self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
+            )
+
+        setattr(
+            TestIVFAQFastScan,
+            f"test_rescale_accuracy_LSQ_implem{implem}_residual{byr}",
+            lambda self: self.subtest_rescale_accuracy('LSQ', 'lsq', byr, implem)
+        )
+
+        setattr(
+            TestIVFAQFastScan,
+            f"test_rescale_accuracy_RQ_implem{implem}_residual{byr}",
+            lambda self: self.subtest_rescale_accuracy('RQ', 'rq', byr, implem)
+        )
