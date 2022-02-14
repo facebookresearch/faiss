@@ -12,8 +12,14 @@
 
 #include <faiss/utils/simdlib.h>
 
+/******************************************* 
+ * The Scaler objects are used to specialize the handling of the 
+ * norm components in Additive quantizer fast-scan. 
+ ********************************************/
+
 namespace faiss {
 
+/// no-op handler 
 struct DummyScaler {
     static constexpr int nscale = 0;
 
@@ -40,6 +46,8 @@ struct DummyScaler {
     }
 };
 
+/// consumes 2x4 bits to encode a norm as a scalar additive quantizer 
+/// the norm is scaled because its range if larger than other components
 struct NormTableScaler {
     static constexpr int nscale = 2;
     int scale_int;
@@ -60,7 +68,7 @@ struct NormTableScaler {
         return (simd16uint16(res) >> 8) * scale_simd;
     }
 
-    // for implem 2, 3, 4
+    // for non-SIMD implem 2, 3, 4
     template <class dist_t>
     inline dist_t scale_one(const dist_t& x) const {
         return x * scale_int;

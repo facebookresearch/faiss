@@ -540,7 +540,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         we set norm_scale to 2 and compare it with IndexIVFAQ
         """
         nlist, d = 16, 8
-        ds  = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
+        ds  = datasets.SyntheticDataset(d, 1000, 1000, 500)
         gt = ds.get_groundtruth(k=1)
 
         # if metric_type == 'L2':
@@ -568,7 +568,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
 
-        print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
+        print(aq, st, by_residual, implem, recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
     def xx_test_rescale_accuracy(self):
