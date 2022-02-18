@@ -577,6 +577,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
+    DOWNCAST ( IndexNSGPQ )
+    DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )

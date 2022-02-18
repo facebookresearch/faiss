@@ -182,7 +182,8 @@ jobs:
             bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
             pip3 install cmake
             $CONDA_HOME/bin/conda install -y numpy scipy
-            $CONDA_HOME/bin/pip install pytest torch
+            $CONDA_HOME/bin/conda install -y pytorch cpuonly -c pytorch
+            $CONDA_HOME/bin/pip install pytest
       - run:
           name: Build faiss library
           command: |

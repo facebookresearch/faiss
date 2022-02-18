@@ -751,8 +751,15 @@ Index* read_index(IOReader* f, int io_flags) {
             dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
         }
         idx = idxhnsw;
-    } else if (h == fourcc("INSf")) {
-        IndexNSG* idxnsg = new IndexNSGFlat();
+    } else if (
+            h == fourcc("INSf") || h == fourcc("INSp") || h == fourcc("INSs")) {
+        IndexNSG* idxnsg;
+        if (h == fourcc("INSf"))
+            idxnsg = new IndexNSGFlat();
+        if (h == fourcc("INSp"))
+            idxnsg = new IndexNSGPQ();
+        if (h == fourcc("INSs"))
+            idxnsg = new IndexNSGSQ();
         read_index_header(idxnsg, f);
         READ1(idxnsg->GK);
         READ1(idxnsg->build_type);
