@@ -83,6 +83,8 @@
     <innerclass refid="structfaiss_1_1IndexNNDescentFlat" prot="public">faiss::IndexNNDescentFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexNSG" prot="public">faiss::IndexNSG</innerclass>
     <innerclass refid="structfaiss_1_1IndexNSGFlat" prot="public">faiss::IndexNSGFlat</innerclass>
+    <innerclass refid="structfaiss_1_1IndexNSGPQ" prot="public">faiss::IndexNSGPQ</innerclass>
+    <innerclass refid="structfaiss_1_1IndexNSGSQ" prot="public">faiss::IndexNSGSQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQ" prot="public">faiss::IndexPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQFastScan" prot="public">faiss::IndexPQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQStats" prot="public">faiss::IndexPQStats</innerclass>
