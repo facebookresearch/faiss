@@ -9,6 +9,7 @@
     <includes local="no">faiss/impl/LocalSearchQuantizer.h</includes>
     <includes local="no">faiss/impl/ResidualQuantizer.h</includes>
     <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includedby refid="IndexIVFAdditiveQuantizerFastScan_8h" local="no">faiss/IndexIVFAdditiveQuantizerFastScan.h</includedby>
     <incdepgraph>
       <node id="23">
         <label>limits</label>
@@ -174,6 +175,18 @@
         <label>cstring</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexIVFAdditiveQuantizer" prot="public">faiss::IndexIVFAdditiveQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizer" prot="public">faiss::IndexIVFResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizer" prot="public">faiss::IndexIVFLocalSearchQuantizer</innerclass>

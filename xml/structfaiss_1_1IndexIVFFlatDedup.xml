@@ -894,8 +894,9 @@
         <name>train_residual</name>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a68ed7cae5bec89fcdcb6a1d2addbd5a8">train_residual</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab729805d43f3b2821192035629111665">train_residual</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1a47c66c0610e9e7e42e584f5560791707">train_residual</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a4c8313fa8187a3a7ffdf54ac03e9260d">train_residual</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1a47c66c0610e9e7e42e584f5560791707">train_residual</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a3eb2354bd96a605283c1602637d98ec8">train_residual</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ac05d7fbfed59c85d1cf8ae526d279744">train_residual</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1af6565a5d8bab7be3df19c50d235bd662">train_residual</reimplementedby>
         <param>
@@ -921,7 +922,8 @@
         <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels) const override</argsstring>
         <name>search</name>
         <reimplements refid="structfaiss_1_1Index_1aced51b1ebc33c47ab3ae15ea906559a7">search</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1acb808b612840614e391801e62ddecc97">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a89b087d7af997f6b2262730cbf6f5025">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a92de0135c7cf70bd0085838bf9fb432c">search</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>n</declname>

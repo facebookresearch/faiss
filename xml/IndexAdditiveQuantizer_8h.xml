@@ -9,6 +9,7 @@
     <includes local="no">faiss/impl/LocalSearchQuantizer.h</includes>
     <includes local="no">faiss/impl/ResidualQuantizer.h</includes>
     <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includedby refid="IndexAdditiveQuantizerFastScan_8h" local="no">faiss/IndexAdditiveQuantizerFastScan.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/IndexAdditiveQuantizer.h</label>
@@ -85,6 +86,18 @@
         <label>faiss/impl/ResidualQuantizer.h</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IndexAdditiveQuantizer.h</label>
+        <link refid="IndexAdditiveQuantizer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexAdditiveQuantizer" prot="public">faiss::IndexAdditiveQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexResidualQuantizer" prot="public">faiss::IndexResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizer" prot="public">faiss::IndexLocalSearchQuantizer</innerclass>

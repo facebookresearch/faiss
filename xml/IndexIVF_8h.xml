@@ -15,6 +15,7 @@
     <includedby refid="Index2Layer_8h" local="no">faiss/Index2Layer.h</includedby>
     <includedby refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includedby>
     <includedby refid="IndexIVFAdditiveQuantizer_8h" local="no">faiss/IndexIVFAdditiveQuantizer.h</includedby>
+    <includedby refid="IndexIVFFastScan_8h" local="no">faiss/IndexIVFFastScan.h</includedby>
     <includedby refid="IndexIVFFlat_8h" local="no">faiss/IndexIVFFlat.h</includedby>
     <includedby refid="IndexIVFPQ_8h" local="no">faiss/IndexIVFPQ.h</includedby>
     <includedby refid="IndexIVFSpectralHash_8h" local="no">faiss/IndexIVFSpectralHash.h</includedby>
@@ -157,12 +158,12 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="10">
+      <node id="13">
         <label>faiss/IndexIVFPQ.h</label>
         <link refid="IndexIVFPQ_8h_source"/>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -180,38 +181,48 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="4">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="13">
+      <node id="15">
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
-      <node id="9">
+      <node id="12">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
       </node>
-      <node id="15">
+      <node id="17">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="14">
+      <node id="16">
         <label>faiss/IndexLattice.h</label>
         <link refid="IndexLattice_8h_source"/>
+      </node>
+      <node id="10">
+        <label>faiss/IndexIVFFastScan.h</label>
+        <link refid="IndexIVFFastScan_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="7">
         <label>faiss/IndexBinaryIVF.h</label>
@@ -238,8 +249,10 @@
       <node id="8">
         <label>faiss/IndexIVFAdditiveQuantizer.h</label>
         <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
-      <node id="12">
+      <node id="14">
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
       </node>
@@ -247,9 +260,13 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
+      </node>
+      <node id="9">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
