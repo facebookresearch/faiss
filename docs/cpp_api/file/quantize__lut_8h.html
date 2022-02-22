@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizerFastScan_8h.html">File IndexAdditiveQuantizerFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizer_8h.html">File IndexAdditiveQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
@@ -90,10 +91,13 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFastScan_8h.html">File IndexFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizerFastScan_8h.html">File IndexIVFAdditiveQuantizerFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFastScan_8h.html">File IndexIVFFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
@@ -255,6 +259,16 @@
 </ul>
 </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12quantize_lut24aq_quantize_LUT_and_biasE6size_t6size_t6size_tPKfPKf6size_tiP7uint8_t6size_tP8uint16_tPfPf">
+<span id="_CPPv3N5faiss12quantize_lut24aq_quantize_LUT_and_biasE6size_t6size_t6size_tPKfPKf6size_tiP7uint8_t6size_tP8uint16_tPfPf"></span><span id="_CPPv2N5faiss12quantize_lut24aq_quantize_LUT_and_biasE6size_t6size_t6size_tPKfPKf6size_tiP7uint8_t6size_tP8uint16_tPfPf"></span><span id="faiss::quantize_lut::aq_quantize_LUT_and_bias__s.s.s.floatCP.floatCP.s.i.uint8_tP.s.uint16_tP.floatP.floatP"></span><span class="target" id="namespacefaiss_1_1quantize__lut_1aa7e6fdcb7243e623e4b160308f761ac4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">aq_quantize_LUT_and_bias</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nprobe</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ksub</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">LUT</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bias</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M_norm</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">norm_scale</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">LUTq</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M2</span></span>, <span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">biasq</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a_out</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12quantize_lut24aq_quantize_LUT_and_biasE6size_t6size_t6size_tPKfPKf6size_tiP7uint8_t6size_tP8uint16_tPfPf" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12quantize_lut22aq_estimate_norm_scaleE6size_t6size_t6size_tPKf">
+<span id="_CPPv3N5faiss12quantize_lut22aq_estimate_norm_scaleE6size_t6size_t6size_tPKf"></span><span id="_CPPv2N5faiss12quantize_lut22aq_estimate_norm_scaleE6size_t6size_t6size_tPKf"></span><span id="faiss::quantize_lut::aq_estimate_norm_scale__s.s.s.floatCP"></span><span class="target" id="namespacefaiss_1_1quantize__lut_1ab93e886d01cd9809d0c7ae3b7203f92a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">aq_estimate_norm_scale</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ksub</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M_norm</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">LUT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12quantize_lut22aq_estimate_norm_scaleE6size_t6size_t6size_tPKf" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 </dd></dl>

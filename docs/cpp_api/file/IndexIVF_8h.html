@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="HostTensor_8cuh.html">File HostTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IVFlib_8h.html">File IVFlib.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Index2Layer_8h.html">File Index2Layer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizerFastScan_8h.html">File IndexAdditiveQuantizerFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexAdditiveQuantizer_8h.html">File IndexAdditiveQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFlat_8h.html">File IndexBinaryFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryFromFloat_8h.html">File IndexBinaryFromFloat.h</a></li>
@@ -90,10 +91,13 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryHash_8h.html">File IndexBinaryHash.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinaryIVF_8h.html">File IndexBinaryIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexBinary_8h.html">File IndexBinary.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexFastScan_8h.html">File IndexFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizerFastScan_8h.html">File IndexIVFAdditiveQuantizerFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIVFFastScan_8h.html">File IndexIVFFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFFlat_8h.html">File IndexIVFFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQFastScan_8h.html">File IndexIVFPQFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFPQR_8h.html">File IndexIVFPQR.h</a></li>
@@ -237,7 +241,7 @@
 <p>The inverted list object is required only after trainng. If none is set externally, an <a class="reference internal" href="../struct/structfaiss_1_1ArrayInvertedLists.html#structfaiss_1_1ArrayInvertedLists"><span class="std std-ref">ArrayInvertedLists</span></a> is used automatically.</p>
 <p>At search time, the vector to be searched is also quantized, and only the list corresponding to the quantization index is searched. This speeds up the search by making it non-exhaustive. This can be relaxed using multi-probe search: a few (nprobe) quantization indices are selected and several inverted lists are visited.</p>
 <p>Sub-classes implement a post-filtering of the index that refines the distance estimation from the query to databse vectors. </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFAdditiveQuantizer.html#structfaiss_1_1IndexIVFAdditiveQuantizer"><span class="std std-ref">faiss::IndexIVFAdditiveQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFFlat.html#structfaiss_1_1IndexIVFFlat"><span class="std std-ref">faiss::IndexIVFFlat</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFPQ.html#structfaiss_1_1IndexIVFPQ"><span class="std std-ref">faiss::IndexIVFPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFPQFastScan.html#structfaiss_1_1IndexIVFPQFastScan"><span class="std std-ref">faiss::IndexIVFPQFastScan</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFScalarQuantizer.html#structfaiss_1_1IndexIVFScalarQuantizer"><span class="std std-ref">faiss::IndexIVFScalarQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVFSpectralHash"><span class="std std-ref">faiss::IndexIVFSpectralHash</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFAdditiveQuantizer.html#structfaiss_1_1IndexIVFAdditiveQuantizer"><span class="std std-ref">faiss::IndexIVFAdditiveQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFFastScan.html#structfaiss_1_1IndexIVFFastScan"><span class="std std-ref">faiss::IndexIVFFastScan</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFFlat.html#structfaiss_1_1IndexIVFFlat"><span class="std std-ref">faiss::IndexIVFFlat</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFPQ.html#structfaiss_1_1IndexIVFPQ"><span class="std std-ref">faiss::IndexIVFPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFScalarQuantizer.html#structfaiss_1_1IndexIVFScalarQuantizer"><span class="std std-ref">faiss::IndexIVFScalarQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVFSpectralHash"><span class="std std-ref">faiss::IndexIVFSpectralHash</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
