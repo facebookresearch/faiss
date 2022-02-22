@@ -6,6 +6,8 @@
 
 import unittest
 import time
+import os
+import tempfile
 
 import numpy as np
 import faiss
@@ -141,7 +143,6 @@ class TestRounding(unittest.TestCase):
 #########################################################
 
 
-
 def reference_accu(codes, LUT):
     nq, nsp, is_16 = LUT.shape
     nb, nsp_2 = codes.shape
@@ -209,9 +210,6 @@ class ThisIsNotATestLoop5:    # (unittest.TestCase):
 
     def test_22(self):
         self.do_loop5_kernel(2, 2)
-
-
-
 
 
 ##########################################################
@@ -435,3 +433,157 @@ class TestAdd(unittest.TestCase):
         D3, I3 = index3.search(ds.get_queries(), 10)
         np.testing.assert_array_equal(D3, Dnew)
         np.testing.assert_array_equal(I3, Inew)
+
+
+class TestAQFastScan(unittest.TestCase):
+
+    def subtest_accuracy(self, aq, st, implem, metric_type='L2'):
+        """
+        Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
+        """
+        d = 16
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        gt = ds.get_groundtruth(k=1)
+
+        if metric_type == 'L2':
+            metric = faiss.METRIC_L2
+            postfix1 = '_Nqint8'
+            postfix2 = f'_N{st}2x4'
+        else:
+            metric = faiss.METRIC_INNER_PRODUCT
+            postfix1 = postfix2 = ''
+
+        index = faiss.index_factory(d, f'{aq}3x4{postfix1}', metric)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'{aq}3x4fs_32{postfix2}', metric)
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        indexfs.implem = implem
+        Da, Ia = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall = (Ia == gt).sum() / nq
+
+        print(aq, st, implem, metric_type, recall_ref, recall)
+        assert abs(recall_ref - recall) < 0.05
+
+    def xx_test_accuracy(self):
+        for metric in 'L2', 'IP':
+            for implem in 0, 12, 13, 14, 15:
+                self.subtest_accuracy('RQ', 'rq', implem, metric)
+                self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+
+    def subtest_from_idxaq(self, implem, metric):
+        if metric == 'L2':
+            metric_type = faiss.METRIC_L2
+            st = '_Nrq2x4'
+        else:
+            metric_type = faiss.METRIC_INNER_PRODUCT
+            st = ''
+
+        d = 16
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric=metric)
+        gt = ds.get_groundtruth(k=1)
+        index = faiss.index_factory(d, 'RQ8x4' + st, metric_type)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 16
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.IndexAdditiveQuantizerFastScan(index)
+        indexfs.implem = implem
+        D1, I1 = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall1 = (I1 == gt).sum() / nq
+        print(recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.05
+
+    def test_from_idxaq(self):
+        for implem in 2, 3, 4:
+            self.subtest_from_idxaq(implem, 'L2')
+            self.subtest_from_idxaq(implem, 'IP')
+
+    def subtest_factory(self, aq, M, bbs, st):
+        """
+        Format: {AQ}{M}x4fs_{bbs}_N{st}
+
+            AQ (str):    `LSQ` or `RQ`
+            M (int):     number of subquantizers
+            bbs (int):   build block size
+            st (str):    search type, `lsq2x4` or `rq2x4`
+        """
+        AQ = faiss.AdditiveQuantizer
+        d = 16
+
+        if bbs > 0:
+            index = faiss.index_factory(d, f'{aq}{M}x4fs_{bbs}_N{st}2x4')
+        else:
+            index = faiss.index_factory(d, f'{aq}{M}x4fs_N{st}2x4')
+            bbs = 32
+
+        assert index.bbs == bbs
+        aq = faiss.downcast_AdditiveQuantizer(index.aq)
+        assert aq.M == M
+
+        if aq == 'LSQ':
+            assert isinstance(aq, faiss.LocalSearchQuantizer)
+        if aq == 'RQ':
+            assert isinstance(aq, faiss.ResidualQuantizer)
+
+        if st == 'lsq':
+            assert aq.search_type == AQ.ST_norm_lsq2x4
+        if st == 'rq':
+            assert aq.search_type == AQ.ST_norm_rq2x4
+
+    def test_factory(self):
+        self.subtest_factory('LSQ', 16, 64, 'lsq')
+        self.subtest_factory('LSQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'rq')
+        self.subtest_factory('RQ', 16, 64, 'lsq')
+        self.subtest_factory('LSQ', 64, 0, 'lsq')
+
+    def subtest_io(self, factory_str):
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+
+        index = faiss.index_factory(d, factory_str)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D1, I1 = index.search(ds.get_queries(), 1)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname)
+            D2, I2 = index2.search(ds.get_queries(), 1)
+            np.testing.assert_array_equal(I1, I2)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    def test_io(self):
+        self.subtest_io('LSQ4x4fs_Nlsq2x4')
+        self.subtest_io('LSQ4x4fs_Nrq2x4')
+        self.subtest_io('RQ4x4fs_Nrq2x4')
+        self.subtest_io('RQ4x4fs_Nlsq2x4')
+
+
+for metric in 'L2', 'IP':
+    for implem in 0, 12, 13, 14, 15:
+        setattr(
+            TestAQFastScan,
+            f"test_accuracy_{metric}_LSQ_implem{implem}",
+            lambda self: self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+        )
+        setattr(
+            TestAQFastScan,
+            f"test_accuracy_{metric}_RQ_implem{implem}",
+            lambda self: self.subtest_accuracy('RQ', 'rq', implem, metric)
+        )

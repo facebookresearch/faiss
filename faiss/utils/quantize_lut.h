@@ -77,6 +77,26 @@ void quantize_LUT_and_bias(
         float* a_out = nullptr,
         float* b_out = nullptr);
 
+void aq_quantize_LUT_and_bias(
+        size_t nprobe,
+        size_t M,
+        size_t ksub,
+        const float* LUT,
+        const float* bias,
+        size_t M_norm,
+        int norm_scale,
+        uint8_t* LUTq,
+        size_t M2,
+        uint16_t* biasq,
+        float* a_out,
+        float* b_out);
+
+float aq_estimate_norm_scale(
+        size_t M,
+        size_t ksub,
+        size_t M_norm,
+        const float* LUT);
+
 } // namespace quantize_lut
 
 } // namespace faiss

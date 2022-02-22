@@ -17,7 +17,10 @@
 
 #include <algorithm>
 
+#include <faiss/Clustering.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -89,6 +92,8 @@ void AdditiveQuantizer::set_derived_values() {
             break;
         case ST_norm_qint8:
         case ST_norm_cqint8:
+        case ST_norm_lsq2x4:
+        case ST_norm_rq2x4:
             tot_bits += 8;
             break;
         case ST_norm_qint4:
@@ -99,6 +104,56 @@ void AdditiveQuantizer::set_derived_values() {
 
     // convert bits to bytes
     code_size = (tot_bits + 7) / 8;
+}
+
+void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
+    norm_min = HUGE_VALF;
+    norm_max = -HUGE_VALF;
+    for (idx_t i = 0; i < n; i++) {
+        if (norms[i] < norm_min) {
+            norm_min = norms[i];
+        }
+        if (norms[i] > norm_max) {
+            norm_max = norms[i];
+        }
+    }
+
+    if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
+        size_t k = (1 << 8);
+        if (search_type == ST_norm_cqint4) {
+            k = (1 << 4);
+        }
+        Clustering1D clus(k);
+        clus.train_exact(n, norms);
+        qnorm.add(clus.k, clus.centroids.data());
+    } else if (search_type == ST_norm_lsq2x4 || search_type == ST_norm_rq2x4) {
+        std::unique_ptr<AdditiveQuantizer> aq;
+        if (search_type == ST_norm_lsq2x4) {
+            aq.reset(new LocalSearchQuantizer(1, 2, 4));
+        } else {
+            aq.reset(new ResidualQuantizer(1, 2, 4));
+        }
+
+        aq->train(n, norms);
+        // flatten aq codebooks
+        std::vector<float> flat_codebooks(1 << 8);
+        FAISS_THROW_IF_NOT(aq->codebooks.size() == 32);
+
+        // save norm tables for 4-bit fastscan search
+        norm_tabs = aq->codebooks;
+
+        // assume big endian
+        const float* c = norm_tabs.data();
+        for (size_t i = 0; i < 16; i++) {
+            for (size_t j = 0; j < 16; j++) {
+                flat_codebooks[i * 16 + j] = c[j] + c[16 + i];
+            }
+        }
+
+        qnorm.reset();
+        qnorm.add(1 << 8, flat_codebooks.data());
+        FAISS_THROW_IF_NOT(qnorm.ntotal == (1 << 8));
+    }
 }
 
 namespace {
@@ -132,7 +187,7 @@ float decode_qint4(uint8_t i, float amin, float amax) {
 
 uint32_t AdditiveQuantizer::encode_qcint(float x) const {
     idx_t id;
-    qnorm.assign(idx_t(1), &x, &id, idx_t(1));
+    qnorm.assign(1, &x, &id, 1);
     return uint32_t(id);
 }
 
@@ -145,18 +200,25 @@ void AdditiveQuantizer::pack_codes(
         const int32_t* codes,
         uint8_t* packed_codes,
         int64_t ld_codes,
-        const float* norms) const {
+        const float* norms,
+        const float* centroids) const {
     if (ld_codes == -1) {
         ld_codes = M;
     }
     std::vector<float> norm_buf;
     if (search_type == ST_norm_float || search_type == ST_norm_qint4 ||
         search_type == ST_norm_qint8 || search_type == ST_norm_cqint8 ||
-        search_type == ST_norm_cqint4) {
-        if (!norms) {
+        search_type == ST_norm_cqint4 || search_type == ST_norm_lsq2x4 ||
+        search_type == ST_norm_rq2x4) {
+        if (centroids != nullptr || !norms) {
             norm_buf.resize(n);
             std::vector<float> x_recons(n * d);
             decode_unpacked(codes, x_recons.data(), n, ld_codes);
+
+            if (centroids != nullptr) {
+                // x = x + c
+                fvec_add(n * d, x_recons.data(), centroids, x_recons.data());
+            }
             fvec_norms_L2sqr(norm_buf.data(), x_recons.data(), d, n);
             norms = norm_buf.data();
         }
@@ -186,6 +248,8 @@ void AdditiveQuantizer::pack_codes(
                 bsw.write(b, 4);
                 break;
             }
+            case ST_norm_lsq2x4:
+            case ST_norm_rq2x4:
             case ST_norm_cqint8: {
                 uint32_t b = encode_qcint(norms[i]);
                 bsw.write(b, 8);
@@ -283,28 +347,33 @@ void AdditiveQuantizer::decode_64bit(idx_t bits, float* xi) const {
     }
 }
 
-void AdditiveQuantizer::compute_LUT(size_t n, const float* xq, float* LUT)
-        const {
+void AdditiveQuantizer::compute_LUT(
+        size_t n,
+        const float* xq,
+        float* LUT,
+        float alpha,
+        long ld_lut) const {
     // in all cases, it is large matrix multiplication
 
     FINTEGER ncenti = total_codebook_size;
     FINTEGER di = d;
     FINTEGER nqi = n;
-    float one = 1, zero = 0;
+    FINTEGER ldc = ld_lut > 0 ? ld_lut : ncenti;
+    float zero = 0;
 
     sgemm_("Transposed",
            "Not transposed",
            &ncenti,
            &nqi,
            &di,
-           &one,
+           &alpha,
            codebooks.data(),
            &di,
            xq,
            &di,
            &zero,
            LUT,
-           &ncenti);
+           &ldc);
 }
 
 namespace {
