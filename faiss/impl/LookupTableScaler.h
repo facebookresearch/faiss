@@ -23,8 +23,7 @@ namespace faiss {
 struct DummyScaler {
     static constexpr int nscale = 0;
 
-    inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&)
-            const {
+    inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
         return simd32uint8(0);
     }
@@ -53,8 +52,7 @@ struct NormTableScaler {
     int scale_int;
     simd16uint16 scale_simd;
 
-    explicit NormTableScaler(int scale) :
-        scale_int(scale), scale_simd(scale) {}
+    explicit NormTableScaler(int scale) : scale_int(scale), scale_simd(scale) {}
 
     inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
             const {

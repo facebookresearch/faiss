@@ -403,7 +403,7 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         size_t n,
         const float* x,
         const idx_t* coarse_ids,
-        const float* ,
+        const float*,
         AlignedTable<float>& dis_tables,
         AlignedTable<float>& biases) const {
     const size_t dim12 = ksub * M;
