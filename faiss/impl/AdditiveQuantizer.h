@@ -100,7 +100,7 @@ struct AdditiveQuantizer {
      * @param codes  codes to decode, size n * code_size
      * @param x      output vectors, size n * d
      */
-    void decode(const uint8_t* codes, float* x, size_t n) const;
+    virtual void decode(const uint8_t* codes, float* x, size_t n) const;
 
     /** Decode a set of vectors in non-packed format
      *
