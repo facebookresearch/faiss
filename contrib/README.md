@@ -61,3 +61,11 @@ Functions related to factory strings.
 ### evaluation.py
 
 A few non-trivial evaluation functions for search results
+
+### clustering.py
+
+Contains:
+
+- a Python implementation of kmeans, that can be used for special datatypes (eg. sparse matrices).
+
+- a 2-level clustering routine and a function that can apply it to train an IndexIVF
