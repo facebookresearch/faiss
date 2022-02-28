@@ -547,8 +547,6 @@ void runPQCodeDistancesMM(
         runPQDistanceIPCorrection(outCodeDistancesF, coarseDistances, stream);
     }
 
-    HostTensor<float, 4, true> debugT(outCodeDistancesF, stream);
-
     if (useFloat16Lookup) {
         // Need to convert back to half in the output memory
         auto outCodeDistancesH = outCodeDistances.toTensor<half>();
