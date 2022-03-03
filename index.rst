@@ -18,6 +18,9 @@ Welcome to Faiss Documentation
    cpp_api/*
 
 
+.. image:: https://img.shields.io/badge/Support-Ukraine-FFD500?style=flat&labelColor=005BBB
+   :alt: Support Ukraine - Help Provide Humanitarian Aid to Ukraine.
+   :target: https://opensource.fb.com/support-ukraine
 
 .. image:: https://img.shields.io/conda/vn/pytorch/faiss-cpu?label=conda
    :target: https://anaconda.org/pytorch/faiss-cpu
