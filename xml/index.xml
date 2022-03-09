@@ -291,6 +291,7 @@
     <member refid="structfaiss_1_1CMax_1ac85b44ba294f5e0f308c0ff2af3d5488" kind="typedef"><name>Crev</name></member>
     <member refid="structfaiss_1_1CMax_1aa9bb565770641c21b5975cfc06f16ab8" kind="variable"><name>is_max</name></member>
     <member refid="structfaiss_1_1CMax_1aaf234ed1f1829f1f7c4a4f7b03baa63e" kind="function"><name>cmp</name></member>
+    <member refid="structfaiss_1_1CMax_1a0cd233cff9c2c9522c806ec0f275636c" kind="function"><name>cmp2</name></member>
     <member refid="structfaiss_1_1CMax_1a6852fb868eaca69477c92c21c34c80d2" kind="function"><name>neutral</name></member>
     <member refid="structfaiss_1_1CMax_1a6190ab95ec589abea37578ca7922310e" kind="function"><name>nextafter</name></member>
   </compound>
@@ -300,6 +301,7 @@
     <member refid="structfaiss_1_1CMin_1ac3e75e2ec6af3946e74b71a97e5c7697" kind="typedef"><name>Crev</name></member>
     <member refid="structfaiss_1_1CMin_1a3b3249c8b7a6dd60fd4004e128da9fe0" kind="variable"><name>is_max</name></member>
     <member refid="structfaiss_1_1CMin_1a89143e2cd7f0cf758952178ee55ed88b" kind="function"><name>cmp</name></member>
+    <member refid="structfaiss_1_1CMin_1a289a8cdfb6441d43de2717082905164e" kind="function"><name>cmp2</name></member>
     <member refid="structfaiss_1_1CMin_1af0f4d36dd0f4f44453986d9d73fbfa4d" kind="function"><name>neutral</name></member>
     <member refid="structfaiss_1_1CMin_1a37ab277ca36fca8d8681655da3b54b68" kind="function"><name>nextafter</name></member>
   </compound>
@@ -5525,8 +5527,8 @@
     <member refid="namespacefaiss_1a399cfe2b1a7b2e3d722e10654c164ae0" kind="function"><name>crosshamming_count_thres</name></member>
     <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a1d40aec5723474516de576263cc03048" kind="function"><name>heap_pop</name></member>
-    <member refid="namespacefaiss_1acbe85976d4f73309622f6b62c4d7af2b" kind="function"><name>heap_push</name></member>
-    <member refid="namespacefaiss_1ae2b2237197d94a5414eef24eb7b93700" kind="function"><name>heap_replace_top</name></member>
+    <member refid="namespacefaiss_1a2e2264988d2658c0cd467463bc03254c" kind="function"><name>heap_push</name></member>
+    <member refid="namespacefaiss_1abedf9900fe8f4b4566801aad585d60c1" kind="function"><name>heap_replace_top</name></member>
     <member refid="namespacefaiss_1a6007eab1211f86326246114757ee8c41" kind="function"><name>minheap_pop</name></member>
     <member refid="namespacefaiss_1a34d5f3d2e6e58005727989c3b2def7fe" kind="function"><name>minheap_push</name></member>
     <member refid="namespacefaiss_1a56261d03ad06ddadde7f9c8161c48f88" kind="function"><name>minheap_replace_top</name></member>
