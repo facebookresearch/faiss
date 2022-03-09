@@ -112,7 +112,7 @@ class TestRounding(unittest.TestCase):
             recalls[rank] = (Iref[:, :1] == I4[:, :rank]).sum() / nq
 
         min_r1 = 0.98 if metric == faiss.METRIC_INNER_PRODUCT else 0.99
-        self.assertGreater(recalls[1], min_r1)
+        self.assertGreaterEqual(recalls[1], min_r1)
         self.assertGreater(recalls[10], 0.995)
         # check accuracy of distances
         # err3 = ((D3 - D2) ** 2).sum()
@@ -423,7 +423,7 @@ class TestAdd(unittest.TestCase):
 
         recall_at_1 = (Iref[:, 0] == Inew[:, 0]).sum() / nq
 
-        self.assertGreater(recall_at_1, 0.99)
+        self.assertGreaterEqual(recall_at_1, 0.99)
 
         data = faiss.serialize_index(index2)
         index3 = faiss.deserialize_index(data)

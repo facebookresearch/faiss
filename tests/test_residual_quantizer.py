@@ -735,7 +735,7 @@ class TestIndexResidualQuantizerSearch(unittest.TestCase):
                 self.assertLess((Iref != I2).sum(), Iref.size * 0.05)
             else:
                 inter_2 = faiss.eval_intersection(I2, gt)
-                self.assertGreater(inter_ref, inter_2)
+                self.assertGreaterEqual(inter_ref, inter_2)
                 # print(st, inter_ref, inter_2)
 
 
