@@ -44,6 +44,10 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
     const float* x_in = x;
 
     size_t max_train_points = 1024 * ((size_t)1 << aq->nbits[0]);
+    // we need more data to train LSQ
+    if (dynamic_cast<LocalSearchQuantizer*>(aq)) {
+        max_train_points = 1024 * aq->M * ((size_t)1 << aq->nbits[0]);
+    }
 
     x = fvecs_maybe_subsample(
             d, (size_t*)&n, max_train_points, x, verbose, 1234);
@@ -244,8 +248,10 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
                 A(ST_norm_float)
                 A(ST_norm_qint8)
                 A(ST_norm_qint4)
-                A(ST_norm_cqint8)
                 A(ST_norm_cqint4)
+            case AdditiveQuantizer::ST_norm_lsq2x4:
+            case AdditiveQuantizer::ST_norm_rq2x4:
+                A(ST_norm_cqint8)
 #undef A
             default:
                 FAISS_THROW_FMT(

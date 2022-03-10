@@ -26,10 +26,12 @@
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -271,9 +273,17 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
     READ1(aq->norm_min);
     READ1(aq->norm_max);
     if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
-        aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
+        aq->search_type == AdditiveQuantizer::ST_norm_cqint4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
         READXBVECTOR(aq->qnorm.codes);
     }
+
+    if (aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+        aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
+        READVECTOR(aq->norm_tabs);
+    }
+
     aq->set_derived_values();
 }
 
@@ -556,6 +566,73 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->beam_factor);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
+    } else if (h == fourcc("ILfs") || h == fourcc("IRfs")) {
+        bool is_LSQ = h == fourcc("ILfs");
+        IndexAdditiveQuantizerFastScan* idxaqfs;
+        if (is_LSQ) {
+            idxaqfs = new IndexLocalSearchQuantizerFastScan();
+        } else {
+            idxaqfs = new IndexResidualQuantizerFastScan();
+        }
+        read_index_header(idxaqfs, f);
+
+        if (is_LSQ) {
+            read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
+        } else {
+            read_ResidualQuantizer((ResidualQuantizer*)idxaqfs->aq, f);
+        }
+
+        READ1(idxaqfs->implem);
+        READ1(idxaqfs->bbs);
+        READ1(idxaqfs->qbs);
+
+        READ1(idxaqfs->M);
+        READ1(idxaqfs->nbits);
+        READ1(idxaqfs->ksub);
+        READ1(idxaqfs->code_size);
+        READ1(idxaqfs->ntotal2);
+        READ1(idxaqfs->M2);
+
+        READ1(idxaqfs->rescale_norm);
+        READ1(idxaqfs->norm_scale);
+        READ1(idxaqfs->max_train_points);
+
+        READVECTOR(idxaqfs->codes);
+        idx = idxaqfs;
+    } else if (h == fourcc("IVLf") || h == fourcc("IVRf")) {
+        bool is_LSQ = h == fourcc("IVLf");
+        IndexIVFAdditiveQuantizerFastScan* ivaqfs;
+        if (is_LSQ) {
+            ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
+        } else {
+            ivaqfs = new IndexIVFResidualQuantizerFastScan();
+        }
+        read_ivf_header(ivaqfs, f);
+
+        if (is_LSQ) {
+            read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
+        } else {
+            read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
+        }
+
+        READ1(ivaqfs->by_residual);
+        READ1(ivaqfs->implem);
+        READ1(ivaqfs->bbs);
+        READ1(ivaqfs->qbs);
+
+        READ1(ivaqfs->M);
+        READ1(ivaqfs->nbits);
+        READ1(ivaqfs->ksub);
+        READ1(ivaqfs->code_size);
+        READ1(ivaqfs->qbs2);
+        READ1(ivaqfs->M2);
+
+        READ1(ivaqfs->rescale_norm);
+        READ1(ivaqfs->norm_scale);
+        READ1(ivaqfs->max_train_points);
+
+        read_InvertedLists(ivaqfs, f, io_flags);
+        idx = ivaqfs;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
         std::vector<std::vector<Index::idx_t>> ids;
@@ -781,6 +858,13 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxpqfs->ntotal2);
         READ1(idxpqfs->M2);
         READVECTOR(idxpqfs->codes);
+
+        const auto& pq = idxpqfs->pq;
+        idxpqfs->M = pq.M;
+        idxpqfs->nbits = pq.nbits;
+        idxpqfs->ksub = (1 << pq.nbits);
+        idxpqfs->code_size = pq.code_size;
+
         idx = idxpqfs;
 
     } else if (h == fourcc("IwPf")) {
@@ -795,6 +879,13 @@ Index* read_index(IOReader* f, int io_flags) {
         read_ProductQuantizer(&ivpq->pq, f);
         read_InvertedLists(ivpq, f, io_flags);
         ivpq->precompute_table();
+
+        const auto& pq = ivpq->pq;
+        ivpq->M = pq.M;
+        ivpq->nbits = pq.nbits;
+        ivpq->ksub = (1 << pq.nbits);
+        ivpq->code_size = pq.code_size;
+
         idx = ivpq;
     } else {
         FAISS_THROW_FMT(

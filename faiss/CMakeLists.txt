@@ -24,6 +24,8 @@ set(FAISS_SRC
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
   IndexIVFPQ.cpp
+  IndexIVFFastScan.cpp
+  IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
   IndexIVFSpectralHash.cpp
@@ -32,6 +34,8 @@ set(FAISS_SRC
   IndexLattice.cpp
   IndexNSG.cpp
   IndexPQ.cpp
+  IndexFastScan.cpp
+  IndexAdditiveQuantizerFastScan.cpp
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
   IndexRefine.cpp
@@ -100,6 +104,8 @@ set(FAISS_HEADERS
   IndexIVFAdditiveQuantizer.h
   IndexIVFFlat.h
   IndexIVFPQ.h
+  IndexIVFFastScan.h
+  IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
   IndexIVFSpectralHash.h
@@ -108,11 +114,12 @@ set(FAISS_HEADERS
   IndexNNDescent.h
   IndexNSG.h
   IndexPQ.h
+  IndexFastScan.h
+  IndexAdditiveQuantizerFastScan.h
   IndexPQFastScan.h
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
-  IndexAdditiveQuantizer.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h
@@ -128,6 +135,7 @@ set(FAISS_HEADERS
   impl/FaissException.h
   impl/HNSW.h
   impl/LocalSearchQuantizer.h
+  impl/LookupTableScaler.h
   impl/NNDescent.h
   impl/NSG.h
   impl/PolysemousTraining.h

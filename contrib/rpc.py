@@ -10,14 +10,18 @@ Exposes all functions of a Server object.
 Uses pickle for serialization and the socket interface.
 """
 
-import os,pdb,pickle,time,errno,sys,_thread,traceback,socket,threading,gc
-
+import os
+import pickle
+import sys
+import _thread
+import traceback
+import socket
 import logging
 
 LOG = logging.getLogger(__name__)
 
 # default
-PORT=12032
+PORT = 12032
 
 
 #########################################################################
@@ -29,6 +33,7 @@ def inline_send_handle(f, conn):
     size = st.st_size
     pickle.dump(size, conn)
     conn.write(f.read(size))
+
 
 def inline_send_string(s, conn):
     size = len(s)

@@ -77,7 +77,11 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
 
+#include <faiss/IndexFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/utils/quantize_lut.h>
 
@@ -438,7 +442,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
+%include  <faiss/IndexFastScan.h>
+%include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFPQFastScan.h>
 %include  <faiss/utils/quantize_lut.h>
 
@@ -554,6 +562,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
     DOWNCAST ( IndexIVFLocalSearchQuantizer )
+    DOWNCAST ( IndexIVFResidualQuantizerFastScan )
+    DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -564,6 +574,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
+    DOWNCAST ( IndexResidualQuantizerFastScan )
+    DOWNCAST ( IndexLocalSearchQuantizerFastScan )
     DOWNCAST ( ResidualCoarseQuantizer )
     DOWNCAST ( LocalSearchCoarseQuantizer )
     DOWNCAST ( IndexScalarQuantizer )
@@ -654,6 +666,14 @@ void gpu_sync_all_devices()
     }
 }
 
+%typemap(out) faiss::AdditiveQuantizer * {
+    DOWNCAST (LocalSearchQuantizer)
+    DOWNCAST (ResidualQuantizer)
+    {
+        assert(false);
+    }
+}
+
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
 %inline %{
@@ -672,6 +692,10 @@ faiss::IndexBinary * downcast_IndexBinary (faiss::IndexBinary *index)
 faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 {
     return il;
+}
+faiss::AdditiveQuantizer * downcast_AdditiveQuantizer (faiss::AdditiveQuantizer *aq)
+{
+    return aq;
 }
 %}
 
