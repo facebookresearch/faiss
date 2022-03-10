@@ -137,7 +137,7 @@ it is recommended to set the `-j` option to a fixed value (such as `-j4`).
 
 ``` shell
 $ make -C build -j swigfaiss
-$ (cd build/faiss/python && python setup.py install)
+$ (cd build/faiss/python && python -m pip install .)
 ```
 
 The first command builds the python bindings for Faiss, while the second one
