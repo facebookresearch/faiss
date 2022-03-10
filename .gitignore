@@ -17,3 +17,5 @@
 /tests/test
 /tests/gtest/
 /sift.tar.gz
+/build/
+/sift1M/
