@@ -596,24 +596,16 @@ def handle_IndexBinary(the_class):
     def replacement_add(self, x):
         n, d = x.shape
         assert d * 8 == self.d
-        if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
-        if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
-        if ids.dtype != np.int64:
-            raise TypeError("Input argument %s must be ndarray of dtype int64, but found %s" % ("ids", str(ids.dtype)))
         assert d * 8 == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
         n, d = x.shape
-        if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         assert d * 8 == self.d
         self.train_c(n, swig_ptr(x))
 
@@ -624,8 +616,6 @@ def handle_IndexBinary(the_class):
 
     def replacement_search(self, x, k):
         n, d = x.shape
-        if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         assert d * 8 == self.d
         assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
