@@ -211,6 +211,10 @@ def handle_Index(the_class):
         """
 
         n, d = x.shape
+
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+        
         assert d == self.d
         self.add_c(n, swig_ptr(x))
 
@@ -229,7 +233,13 @@ def handle_Index(the_class):
             in result lists to mean "not found" so it's better to not use it as an id.
         """
         n, d = x.shape
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+        
         assert d == self.d
+
+        if ids.dtype != np.int64:
+            raise TypeError("Input argument %s must be ndarray of dtype int64, but found %s" % ("ids", str(ids.dtype)))
 
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
@@ -255,6 +265,10 @@ def handle_Index(the_class):
             When not enough results are found, the label is set to -1
         """
         n, d = x.shape
+
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+
         assert d == self.d
 
         if labels is None:
@@ -276,6 +290,10 @@ def handle_Index(the_class):
             `dtype` must be float32.
         """
         n, d = x.shape
+
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+
         assert d == self.d
         self.train_c(n, swig_ptr(x))
 
@@ -305,6 +323,10 @@ def handle_Index(the_class):
         """
 
         n, d = x.shape
+
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+
         assert d == self.d
 
         assert k > 0
@@ -353,6 +375,9 @@ def handle_Index(the_class):
         """
         n, d = x.shape
         assert d == self.d
+
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
 
         assert k > 0
 
@@ -423,6 +448,8 @@ def handle_Index(the_class):
             x = np.empty(self.d, dtype=np.float32)
         else:
             assert x.shape == (self.d, )
+            if x.dtype != np.float32:
+                raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
 
         self.reconstruct_c(key, swig_ptr(x))
         return x
@@ -569,16 +596,24 @@ def handle_IndexBinary(the_class):
     def replacement_add(self, x):
         n, d = x.shape
         assert d * 8 == self.d
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         self.add_c(n, swig_ptr(x))
 
     def replacement_add_with_ids(self, x, ids):
         n, d = x.shape
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+        if ids.dtype != np.int64:
+            raise TypeError("Input argument %s must be ndarray of dtype int64, but found %s" % ("ids", str(ids.dtype)))
         assert d * 8 == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
         n, d = x.shape
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         assert d * 8 == self.d
         self.train_c(n, swig_ptr(x))
 
@@ -589,6 +624,8 @@ def handle_IndexBinary(the_class):
 
     def replacement_search(self, x, k):
         n, d = x.shape
+        if x.dtype != np.float32:
+            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
         assert d * 8 == self.d
         assert k > 0
         distances = np.empty((n, k), dtype=np.int32)
