@@ -144,7 +144,9 @@ void IndexAdditiveQuantizer::search(
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_qint8> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_norm_qint4) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_qint4> (*this, x, rh);
-            } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8) {
+            } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint8 ||
+                    aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
+                    aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint8> (*this, x, rh);
             } else if (aq->search_type == AdditiveQuantizer::ST_norm_cqint4) {
                 search_with_LUT<false, AdditiveQuantizer::ST_norm_cqint4> (*this, x, rh);

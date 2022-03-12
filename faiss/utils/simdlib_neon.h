@@ -260,6 +260,11 @@ struct simd16uint16 {
         detail::simdlib::set1(data, &vdupq_n_u16, x);
     }
 
+    simd16uint16 operator*(const simd16uint16& other) const {
+        return simd16uint16{
+                detail::simdlib::binary_func(data, other.data, &vmulq_u16)};
+    }
+
     // shift must be known at compile time
     simd16uint16 operator>>(const int shift) const {
         switch (shift) {

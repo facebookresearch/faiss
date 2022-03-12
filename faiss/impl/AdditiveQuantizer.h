@@ -37,7 +37,9 @@ struct AdditiveQuantizer {
     bool verbose;    ///< verbose during training?
     bool is_trained; ///< is trained or not
 
-    IndexFlat1D qnorm; ///< store and search norms
+    IndexFlat1D qnorm;            ///< store and search norms
+    std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
+                                  ///< fastscan search
 
     uint32_t encode_qcint(
             float x) const; ///< encode norm by non-uniform scalar quantization
@@ -57,6 +59,10 @@ struct AdditiveQuantizer {
         ST_norm_qint4,
         ST_norm_cqint8, ///< use a LUT, and store non-uniform quantized norm
         ST_norm_cqint4,
+
+        ST_norm_lsq2x4, ///< use a 2x4 bits lsq as norm quantizer (for fast
+                        ///< scan)
+        ST_norm_rq2x4,  ///< use a 2x4 bits rq as norm quantizer (for fast scan)
     };
 
     AdditiveQuantizer(
@@ -72,13 +78,20 @@ struct AdditiveQuantizer {
     ///< Train the additive quantizer
     virtual void train(size_t n, const float* x) = 0;
 
+    ///< Train the norm quantizer
+    void train_norm(size_t n, const float* norms);
+
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
+     * @param centroids  centroids to be added to x, size n * d
      */
-    virtual void compute_codes(const float* x, uint8_t* codes, size_t n)
-            const = 0;
+    virtual void compute_codes(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const = 0;
 
     /** pack a series of code to bit-compact format
      *
@@ -87,13 +100,15 @@ struct AdditiveQuantizer {
      * @param ld_codes     leading dimension of codes
      * @param norms        norms of the vectors (size n). Will be computed if
      *                     needed but not provided
+     * @param centroids    centroids to be added to x, size n * d
      */
     void pack_codes(
             size_t n,
             const int32_t* codes,
             uint8_t* packed_codes,
             int64_t ld_codes = -1,
-            const float* norms = nullptr) const;
+            const float* norms = nullptr,
+            const float* centroids = nullptr) const;
 
     /** Decode a set of vectors
      *
@@ -143,8 +158,15 @@ struct AdditiveQuantizer {
      *
      * @param xq     query vector, size (n, d)
      * @param LUT    look-up table, size (n, total_codebook_size)
+     * @param alpha  compute alpha * inner-product
+     * @param ld     leading dimension of LUT
      */
-    void compute_LUT(size_t n, const float* xq, float* LUT) const;
+    void compute_LUT(
+            size_t n,
+            const float* xq,
+            float* LUT,
+            float alpha = 1.0f,
+            long ld_lut = -1) const;
 
     /// exact IP search
     void knn_centroids_inner_product(

@@ -16,11 +16,6 @@
 #include <cstring>
 #include <memory>
 
-#include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/ResidualQuantizer.h>
-#include <faiss/utils/utils.h>
-
-#include <faiss/Clustering.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -388,26 +383,8 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                 x + i * d, residuals.data() + i * cur_beam_size * d, d);
     }
 
-    norm_min = HUGE_VALF;
-    norm_max = -HUGE_VALF;
-    for (idx_t i = 0; i < n; i++) {
-        if (norms[i] < norm_min) {
-            norm_min = norms[i];
-        }
-        if (norms[i] > norm_max) {
-            norm_max = norms[i];
-        }
-    }
-
-    if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
-        size_t k = (1 << 8);
-        if (search_type == ST_norm_cqint4) {
-            k = (1 << 4);
-        }
-        Clustering1D clus(k);
-        clus.train_exact(n, norms.data());
-        qnorm.add(clus.k, clus.centroids.data());
-    }
+    // fvec_norms_L2sqr(norms.data(), x, d, n);
+    train_norm(n, norms.data());
 
     if (!(train_type & Skip_codebook_tables)) {
         compute_codebook_tables();
@@ -546,7 +523,8 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
 void ResidualQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
-        size_t n) const {
+        size_t n,
+        const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
 
     size_t mem = memory_per_point();
@@ -632,7 +610,8 @@ void ResidualQuantizer::compute_codes(
             codes.data(),
             codes_out,
             M * max_beam_size,
-            norms.size() > 0 ? norms.data() : nullptr);
+            norms.size() > 0 ? norms.data() : nullptr,
+            centroids);
 }
 
 void ResidualQuantizer::refine_beam(

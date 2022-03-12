@@ -15,7 +15,6 @@
 
 #include <algorithm>
 
-#include <faiss/Clustering.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
@@ -182,7 +181,7 @@ LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
     FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
-    FAISS_THROW_IF_NOT(nperts <= M);
+    nperts = std::min(nperts, M);
 
     lsq_timer.reset();
     LSQTimerScope scope(&lsq_timer, "train");
@@ -264,26 +263,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
         decode_unpacked(codes.data(), x_recons.data(), n);
         fvec_norms_L2sqr(norms.data(), x_recons.data(), d, n);
 
-        norm_min = HUGE_VALF;
-        norm_max = -HUGE_VALF;
-        for (idx_t i = 0; i < n; i++) {
-            if (norms[i] < norm_min) {
-                norm_min = norms[i];
-            }
-            if (norms[i] > norm_max) {
-                norm_max = norms[i];
-            }
-        }
-
-        if (search_type == ST_norm_cqint8 || search_type == ST_norm_cqint4) {
-            size_t k = (1 << 8);
-            if (search_type == ST_norm_cqint4) {
-                k = (1 << 4);
-            }
-            Clustering1D clus(k);
-            clus.train_exact(n, norms.data());
-            qnorm.add(clus.k, clus.centroids.data());
-        }
+        train_norm(n, norms.data());
     }
 
     if (verbose) {
@@ -321,7 +301,8 @@ void LocalSearchQuantizer::perturb_codebooks(
 void LocalSearchQuantizer::compute_codes(
         const float* x,
         uint8_t* codes_out,
-        size_t n) const {
+        size_t n,
+        const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "LSQ is not trained yet.");
 
     lsq_timer.reset();
@@ -335,7 +316,7 @@ void LocalSearchQuantizer::compute_codes(
     random_int32(codes, 0, K - 1, gen);
 
     icm_encode(codes.data(), x, n, encode_ils_iters, gen);
-    pack_codes(n, codes.data(), codes_out);
+    pack_codes(n, codes.data(), codes_out, -1, nullptr, centroids);
 
     if (verbose) {
         scope.finish();
