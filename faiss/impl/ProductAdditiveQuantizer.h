@@ -31,13 +31,13 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
 
     ProductAdditiveQuantizer(
             size_t d,
-            const std::vector<AdditiveQuantizer*>& aqs);
+            const std::vector<AdditiveQuantizer*>& aqs,
+            Search_type_t search_type);
 
     void init(
             size_t d,
-            const std::vector<AdditiveQuantizer*>& aqs);
-
-    virtual ~ProductAdditiveQuantizer();
+            const std::vector<AdditiveQuantizer*>& aqs,
+            Search_type_t search_type);
 
     ///< Train the additive quantizer
     void train(size_t n, const float* x) override;
