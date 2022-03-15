@@ -11,7 +11,7 @@
 #include <thrust/scan.h>
 #include <faiss/gpu/impl/IVFUtils.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
-#include <faiss/gpu/utils/ThrustAllocator.cuh>
+#include <faiss/gpu/utils/ThrustUtils.cuh>
 
 #include <algorithm>
 
@@ -43,7 +43,7 @@ __global__ void getResultLengths(
 void runCalcListOffsets(
         GpuResources* res,
         Tensor<int, 2, true>& topQueryToCentroid,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,
         cudaStream_t stream) {
@@ -60,7 +60,7 @@ void runCalcListOffsets(
 
     getResultLengths<<<grid, block, 0, stream>>>(
             topQueryToCentroid,
-            listLengths.data().get(),
+            listLengths.data(),
             totalSize,
             prefixSumOffsets);
     CUDA_TEST_ERROR();
@@ -69,7 +69,7 @@ void runCalcListOffsets(
     // results should be maintained
     // Thrust wants a place for its temporary allocations, so provide
     // one, so it won't call cudaMalloc/Free if we size it sufficiently
-    GpuResourcesThrustAllocator alloc(
+    ThrustAllocator alloc(
             res, stream, thrustMem.data(), thrustMem.getSizeInBytes());
 
     thrust::inclusive_scan(
