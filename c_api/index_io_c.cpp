@@ -56,9 +56,12 @@ int faiss_write_index_binary(const FaissIndexBinary* idx, FILE* f) {
     CATCH_AND_HANDLE
 }
 
-int faiss_write_index_binary_fname(const FaissIndexBinary* idx, const char* fname) {
+int faiss_write_index_binary_fname(
+        const FaissIndexBinary* idx,
+        const char* fname) {
     try {
-        faiss::write_index_binary(reinterpret_cast<const IndexBinary*>(idx), fname);
+        faiss::write_index_binary(
+                reinterpret_cast<const IndexBinary*>(idx), fname);
     }
     CATCH_AND_HANDLE
 }

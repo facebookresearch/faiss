@@ -12,8 +12,8 @@
 #define FAISS_INDEX_BINARY_C_H
 
 #include <stddef.h>
-#include "faiss_c.h"
 #include "Index_c.h"
+#include "faiss_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +42,7 @@ FAISS_DECLARE_GETTER(IndexBinary, idx_t, ntotal)
 FAISS_DECLARE_GETTER(IndexBinary, FaissMetricType, metric_type)
 
 FAISS_DECLARE_GETTER_SETTER(IndexBinary, int, verbose)
- 
+
 /** Perform training on a representative set of vectors
  *
  * @param index  opaque pointer to index object
@@ -146,7 +146,10 @@ int faiss_IndexBinary_remove_ids(
  * @param key         id of the vector to reconstruct
  * @param recons      reconstructed vector (size d)
  */
-int faiss_IndexBinary_reconstruct(const FaissIndexBinary* index, idx_t key, uint8_t* recons);
+int faiss_IndexBinary_reconstruct(
+        const FaissIndexBinary* index,
+        idx_t key,
+        uint8_t* recons);
 
 /** Reconstruct vectors i0 to i0 + ni - 1
  *
