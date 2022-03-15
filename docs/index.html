@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to Faiss Documentation &mdash; Faiss  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -75,7 +76,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="welcome-to-faiss-documentation">
+  <section id="welcome-to-faiss-documentation">
 <h1>Welcome to Faiss Documentation<a class="headerlink" href="#welcome-to-faiss-documentation" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
@@ -89,12 +90,12 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</div>
-<div class="section" id="faiss">
+</section>
+<section id="faiss">
 <h1>Faiss<a class="headerlink" href="#faiss" title="Permalink to this headline"></a></h1>
 <p>Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning.</p>
 <p>Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed by <a class="reference external" href="https://research.fb.com/category/facebook-ai-research-fair/">Facebook AI Research</a>.</p>
-<div class="section" id="what-is-similarity-search">
+<section id="what-is-similarity-search">
 <h2>What is similarity search?<a class="headerlink" href="#what-is-similarity-search" title="Permalink to this headline"></a></h2>
 <p>Given a set of vectors <span class="math notranslate nohighlight">\(x_i\)</span> in dimension <span class="math notranslate nohighlight">\(d\)</span>, Faiss build a data structure in RAM from it.
 After the structure is constructed, when given a new vector <span class="math notranslate nohighlight">\(x\)</span> in dimension <span class="math notranslate nohighlight">\(d\)</span> it performs efficiently the operation:</p>
@@ -113,8 +114,8 @@ Note that the <span class="math notranslate nohighlight">\(x_i\)</span>’s are 
 <li><p>return all elements that are within a given radius of the query point (range search)</p></li>
 <li><p>store the index on disk rather than in RAM.</p></li>
 </ul>
-</div>
-<div class="section" id="install">
+</section>
+<section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline"></a></h2>
 <p>The recommended way to install Faiss is through <a class="reference external" href="https://conda.io">Conda</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c pytorch faiss-cpu
@@ -125,8 +126,8 @@ Note that the <span class="math notranslate nohighlight">\(x_i\)</span>’s are 
 </pre></div>
 </div>
 <p>Note that either package should be installed, but not both, as the latter is a superset of the former.</p>
-</div>
-<div class="section" id="research-foundations-of-faiss">
+</section>
+<section id="research-foundations-of-faiss">
 <h2>Research foundations of Faiss<a class="headerlink" href="#research-foundations-of-faiss" title="Permalink to this headline"></a></h2>
 <p>Faiss is based on years of research. Most notably it implements:</p>
 <ul class="simple">
@@ -200,8 +201,8 @@ Zhang+, “Sparse Composite Quantization”, CVPR 15.
 Zhang+, “Collaborative Quantization for Crossmodal Similarity Search”, CVPR 16
 Zhang+, “Efficient Large-scale Approximate Nearest Neighbor Search on OpenCL FPGA”, CVPR 18
 </pre>
-</details></div>
-</div>
+</details></section>
+</section>
 
 
            </div>
