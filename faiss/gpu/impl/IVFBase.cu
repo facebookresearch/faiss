@@ -16,6 +16,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
+#include <faiss/gpu/utils/ThrustUtils.cuh>
 #include <limits>
 #include <unordered_map>
 
@@ -42,6 +43,27 @@ IVFBase::IVFBase(
           interleavedLayout_(interleavedLayout),
           indicesOptions_(indicesOptions),
           space_(space),
+          deviceListDataPointers_(
+                  resources,
+                  AllocInfo(
+                          AllocType::IVFLists,
+                          getCurrentDevice(),
+                          space,
+                          resources->getDefaultStreamCurrentDevice())),
+          deviceListIndexPointers_(
+                  resources,
+                  AllocInfo(
+                          AllocType::IVFLists,
+                          getCurrentDevice(),
+                          space,
+                          resources->getDefaultStreamCurrentDevice())),
+          deviceListLengths_(
+                  resources,
+                  AllocInfo(
+                          AllocType::IVFLists,
+                          getCurrentDevice(),
+                          space,
+                          resources->getDefaultStreamCurrentDevice())),
           maxListLength_(0) {
     reset();
 }
@@ -80,6 +102,8 @@ void IVFBase::reserveMemory(size_t numVecs) {
 }
 
 void IVFBase::reset() {
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
     deviceListData_.clear();
     deviceListIndices_.clear();
     deviceListDataPointers_.clear();
@@ -87,11 +111,8 @@ void IVFBase::reset() {
     deviceListLengths_.clear();
     listOffsetToUserIndex_.clear();
 
-    auto info = AllocInfo(
-            AllocType::IVFLists,
-            getCurrentDevice(),
-            space_,
-            resources_->getDefaultStreamCurrentDevice());
+    auto info =
+            AllocInfo(AllocType::IVFLists, getCurrentDevice(), space_, stream);
 
     for (size_t i = 0; i < numLists_; ++i) {
         deviceListData_.emplace_back(std::unique_ptr<DeviceIVFList>(
@@ -103,9 +124,15 @@ void IVFBase::reset() {
         listOffsetToUserIndex_.emplace_back(std::vector<Index::idx_t>());
     }
 
-    deviceListDataPointers_.resize(numLists_, nullptr);
-    deviceListIndexPointers_.resize(numLists_, nullptr);
-    deviceListLengths_.resize(numLists_, 0);
+    deviceListDataPointers_.resize(numLists_, stream);
+    deviceListDataPointers_.setAll(nullptr, stream);
+
+    deviceListIndexPointers_.resize(numLists_, stream);
+    deviceListIndexPointers_.setAll(nullptr, stream);
+
+    deviceListLengths_.resize(numLists_, stream);
+    deviceListLengths_.setAll(0, stream);
+
     maxListLength_ = 0;
 }
 
@@ -127,14 +154,14 @@ size_t IVFBase::reclaimMemory_(bool exact) {
         auto& data = deviceListData_[i]->data;
         totalReclaimed += data.reclaim(exact, stream);
 
-        deviceListDataPointers_[i] = data.data();
+        deviceListDataPointers_.setAt(i, (void*)data.data(), stream);
     }
 
     for (int i = 0; i < deviceListIndices_.size(); ++i) {
         auto& indices = deviceListIndices_[i]->data;
         totalReclaimed += indices.reclaim(exact, stream);
 
-        deviceListIndexPointers_[i] = indices.data();
+        deviceListIndexPointers_.setAt(i, (void*)indices.data(), stream);
     }
 
     // Update device info for all lists, since the base pointers may
@@ -215,10 +242,6 @@ int IVFBase::getListLength(int listId) const {
             numLists_);
     FAISS_ASSERT(listId < deviceListLengths_.size());
     FAISS_ASSERT(listId < deviceListData_.size());
-
-    // LHS is the GPU resident value, RHS is the CPU resident value
-    FAISS_ASSERT(
-            deviceListLengths_[listId] == deviceListData_[listId]->numVecs);
 
     return deviceListData_[listId]->numVecs;
 }
@@ -366,17 +389,12 @@ void IVFBase::addEncodedVectorsToList_(
     // Handle the indices as well
     addIndicesFromCpu_(listId, indices, numVecs);
 
-    deviceListDataPointers_[listId] = listCodes->data.data();
-    deviceListLengths_[listId] = numVecs;
+    deviceListDataPointers_.setAt(
+            listId, (void*)listCodes->data.data(), stream);
+    deviceListLengths_.setAt(listId, (int)numVecs, stream);
 
     // We update this as well, since the multi-pass algorithm uses it
     maxListLength_ = std::max(maxListLength_, (int)numVecs);
-
-    // device_vector add is potentially happening on a different stream
-    // than our default stream
-    if (resources_->getDefaultStreamCurrentDevice() != 0) {
-        streamWait({stream}, {0});
-    }
 }
 
 void IVFBase::addIndicesFromCpu_(
@@ -407,12 +425,19 @@ void IVFBase::addIndicesFromCpu_(
                 stream,
                 true /* exact reserved size */);
 
+        // We have added the given indices to the raw data vector; update the
+        // count as well
+        listIndices->numVecs = numVecs;
     } else if (indicesOptions_ == INDICES_64_BIT) {
         listIndices->data.append(
                 (uint8_t*)indices,
                 numVecs * sizeof(Index::idx_t),
                 stream,
                 true /* exact reserved size */);
+
+        // We have added the given indices to the raw data vector; update the
+        // count as well
+        listIndices->numVecs = numVecs;
     } else if (indicesOptions_ == INDICES_CPU) {
         // indices are stored on the CPU
         FAISS_ASSERT(listId < listOffsetToUserIndex_.size());
@@ -424,7 +449,8 @@ void IVFBase::addIndicesFromCpu_(
         FAISS_ASSERT(indicesOptions_ == INDICES_IVF);
     }
 
-    deviceListIndexPointers_[listId] = listIndices->data.data();
+    deviceListIndexPointers_.setAt(
+            listId, (void*)listIndices->data.data(), stream);
 }
 
 int IVFBase::addVectors(

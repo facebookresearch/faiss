@@ -12,6 +12,8 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <thrust/execution_policy.h>
+#include <thrust/fill.h>
 #include <algorithm>
 #include <vector>
 
@@ -19,7 +21,7 @@ namespace faiss {
 namespace gpu {
 
 /// A simple version of thrust::device_vector<T>, but has more control
-/// over whether resize() initializes new space with T() (which we
+/// over streams, whether resize() initializes new space with T() (which we
 /// don't want), and control on how much the reserved space grows by
 /// upon resize/reserve. It is also meant for POD types only.
 ///
@@ -129,6 +131,34 @@ class DeviceVector {
         num_ = newSize;
 
         return mem;
+    }
+
+    // Set all entries in the vector to `value`
+    void setAll(const T& value, cudaStream_t stream) {
+        if (num_ > 0) {
+            thrust::fill(
+                    thrust::cuda::par.on(stream), data(), data() + num_, value);
+        }
+    }
+
+    // Set the specific value at a given index to `value`
+    void setAt(size_t idx, const T& value, cudaStream_t stream) {
+        FAISS_ASSERT(idx < num_);
+        CUDA_VERIFY(cudaMemcpyAsync(
+                data() + idx,
+                &value,
+                sizeof(T),
+                cudaMemcpyHostToDevice,
+                stream));
+    }
+
+    // Copy a specific value at a given index to the host
+    T getAt(size_t idx, cudaStream_t stream) {
+        FAISS_ASSERT(idx < num_);
+
+        T out;
+        CUDA_VERIFY(cudaMemcpyAsync(
+                &out, data() + idx, sizeof(T), cudaMemcpyDeviceToHost, stream));
     }
 
     // Clean up after oversized allocations, while leaving some space to
