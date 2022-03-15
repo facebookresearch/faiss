@@ -213,7 +213,8 @@ def handle_Index(the_class):
         n, d = x.shape
 
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                " float32, but found %s" % ("x", x.dtype))
         
         assert d == self.d
         self.add_c(n, swig_ptr(x))
@@ -234,12 +235,14 @@ def handle_Index(the_class):
         """
         n, d = x.shape
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "float32, but found %s" % ("x", x.dtype))
         
         assert d == self.d
 
         if ids.dtype != np.int64:
-            raise TypeError("Input argument %s must be ndarray of dtype int64, but found %s" % ("ids", str(ids.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "int64, but found %s" % ("ids", str(ids.dtype)))
 
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
@@ -267,7 +270,8 @@ def handle_Index(the_class):
         n, d = x.shape
 
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "float32, but found %s" % ("x", x.dtype))
 
         assert d == self.d
 
@@ -292,7 +296,8 @@ def handle_Index(the_class):
         n, d = x.shape
 
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "float32, but found %s" % ("x", x.dtype))
 
         assert d == self.d
         self.train_c(n, swig_ptr(x))
@@ -325,7 +330,8 @@ def handle_Index(the_class):
         n, d = x.shape
 
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "float32, but found %s" % ("x", x.dtype))
 
         assert d == self.d
 
@@ -377,7 +383,8 @@ def handle_Index(the_class):
         assert d == self.d
 
         if x.dtype != np.float32:
-            raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+            raise TypeError("Input argument %s must be ndarray of dtype "
+                "float32, but found %s" % ("x", x.dtype))
 
         assert k > 0
 
@@ -449,7 +456,8 @@ def handle_Index(the_class):
         else:
             assert x.shape == (self.d, )
             if x.dtype != np.float32:
-                raise TypeError("Input argument %s must be ndarray of dtype float32, but found %s" % ("x", str(x.dtype)))
+                raise TypeError("Input argument %s must be ndarray of dtype "
+                    "float32, but found %s" % ("x", x.dtype))
 
         self.reconstruct_c(key, swig_ptr(x))
         return x
