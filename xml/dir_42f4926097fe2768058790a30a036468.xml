@@ -34,7 +34,7 @@
     <innerfile refid="StaticUtils_8h">StaticUtils.h</innerfile>
     <innerfile refid="Tensor-inl_8cuh">Tensor-inl.cuh</innerfile>
     <innerfile refid="Tensor_8cuh">Tensor.cuh</innerfile>
-    <innerfile refid="ThrustAllocator_8cuh">ThrustAllocator.cuh</innerfile>
+    <innerfile refid="ThrustUtils_8cuh">ThrustUtils.cuh</innerfile>
     <innerfile refid="Timer_8h">Timer.h</innerfile>
     <innerfile refid="Transpose_8cuh">Transpose.cuh</innerfile>
     <innerfile refid="WarpPackedBits_8cuh">WarpPackedBits.cuh</innerfile>

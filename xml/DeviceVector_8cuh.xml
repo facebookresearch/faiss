@@ -21,6 +21,8 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/StaticUtils.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;thrust/execution_policy.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;thrust/fill.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;algorithm&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;vector&gt;</highlight></codeline>
 <codeline></codeline>
@@ -28,7 +30,7 @@
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>A<sp/>simple<sp/>version<sp/>of<sp/>thrust::device_vector&lt;T&gt;,<sp/>but<sp/>has<sp/>more<sp/>control</highlight></codeline>
-<codeline><highlight class="normal">///<sp/>over<sp/>whether<sp/>resize()<sp/>initializes<sp/>new<sp/>space<sp/>with<sp/>T()<sp/>(which<sp/>we</highlight></codeline>
+<codeline><highlight class="normal">///<sp/>over<sp/>streams,<sp/>whether<sp/>resize()<sp/>initializes<sp/>new<sp/>space<sp/>with<sp/>T()<sp/>(which<sp/>we</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>don&apos;t<sp/>want),<sp/>and<sp/>control<sp/>on<sp/>how<sp/>much<sp/>the<sp/>reserved<sp/>space<sp/>grows<sp/>by</highlight></codeline>
 <codeline><highlight class="normal">///<sp/>upon<sp/>resize/reserve.<sp/>It<sp/>is<sp/>also<sp/>meant<sp/>for<sp/>POD<sp/>types<sp/>only.</highlight></codeline>
 <codeline><highlight class="normal">///</highlight></codeline>
@@ -138,6 +140,34 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>num_<sp/>=<sp/>newSize;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>mem;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Set<sp/>all<sp/>entries<sp/>in<sp/>the<sp/>vector<sp/>to<sp/>`value`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>setAll(const<sp/>T&amp;<sp/>value,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(num_<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thrust::fill(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thrust::cuda::par.on(stream),<sp/>data(),<sp/>data()<sp/>+<sp/>num_,<sp/>value);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Set<sp/>the<sp/>specific<sp/>value<sp/>at<sp/>a<sp/>given<sp/>index<sp/>to<sp/>`value`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>setAt(size_t<sp/>idx,<sp/>const<sp/>T&amp;<sp/>value,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(idx<sp/>&lt;<sp/>num_);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data()<sp/>+<sp/>idx,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;value,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sizeof(T),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaMemcpyHostToDevice,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Copy<sp/>a<sp/>specific<sp/>value<sp/>at<sp/>a<sp/>given<sp/>index<sp/>to<sp/>the<sp/>host</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/>getAt(size_t<sp/>idx,<sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_ASSERT(idx<sp/>&lt;<sp/>num_);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_VERIFY(cudaMemcpyAsync(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;out,<sp/>data()<sp/>+<sp/>idx,<sp/>sizeof(T),<sp/>cudaMemcpyDeviceToHost,<sp/>stream));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Clean<sp/>up<sp/>after<sp/>oversized<sp/>allocations,<sp/>while<sp/>leaving<sp/>some<sp/>space<sp/>to</highlight></codeline>

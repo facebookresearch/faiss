@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="ThrustAllocator_8cuh" kind="file" language="C++">
-    <compoundname>ThrustAllocator.cuh</compoundname>
+  <compounddef id="ThrustUtils_8cuh" kind="file" language="C++">
+    <compoundname>ThrustUtils.cuh</compoundname>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -18,17 +18,18 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;thrust/device_vector.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;unordered_set&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">///<sp/>Allocator<sp/>for<sp/>Thrust<sp/>that<sp/>comes<sp/>out<sp/>of<sp/>a<sp/>specified<sp/>memory<sp/>space</highlight></codeline>
-<codeline><highlight class="normal">class<sp/>GpuResourcesThrustAllocator<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>ThrustAllocator<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>typedef<sp/>char<sp/>value_type;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>GpuResourcesThrustAllocator(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>ThrustAllocator(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GpuResources*<sp/>res,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>void*<sp/>mem,</highlight></codeline>
@@ -39,7 +40,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cur_((char*)mem),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>end_((char*)mem<sp/>+<sp/>size)<sp/>{}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>~GpuResourcesThrustAllocator()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>inline<sp/>~ThrustAllocator()<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>In<sp/>the<sp/>case<sp/>of<sp/>an<sp/>exception<sp/>being<sp/>thrown,<sp/>we<sp/>may<sp/>not<sp/>have<sp/>called</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>deallocate<sp/>on<sp/>all<sp/>of<sp/>our<sp/>sub-allocations.<sp/>Free<sp/>them<sp/>here</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(auto<sp/>p<sp/>:<sp/>mallocAllocs_)<sp/>{</highlight></codeline>
@@ -89,6 +90,6 @@
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>faiss</highlight></codeline>
     </programlisting>
-    <location file="faiss/gpu/utils/ThrustAllocator.cuh"/>
+    <location file="faiss/gpu/utils/ThrustUtils.cuh"/>
   </compounddef>
 </doxygen>

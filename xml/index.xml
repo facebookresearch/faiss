@@ -5862,7 +5862,7 @@
   </compound>
   <compound refid="Tensor_8cuh" kind="file"><name>Tensor.cuh</name>
   </compound>
-  <compound refid="ThrustAllocator_8cuh" kind="file"><name>ThrustAllocator.cuh</name>
+  <compound refid="ThrustUtils_8cuh" kind="file"><name>ThrustUtils.cuh</name>
   </compound>
   <compound refid="Timer_8h" kind="file"><name>Timer.h</name>
   </compound>
