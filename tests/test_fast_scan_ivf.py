@@ -511,7 +511,6 @@ class TestIVFAQFastScan(unittest.TestCase):
         index.by_residual = by_residual
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.index_factory(
@@ -519,7 +518,6 @@ class TestIVFAQFastScan(unittest.TestCase):
         indexfs.by_residual = by_residual
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
-        indexfs.nprobe = 16
         indexfs.implem = implem
         D1, I1 = indexfs.search(ds.get_queries(), 1)
 
@@ -528,15 +526,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall1 = (I1 == gt).sum() / nq
 
         print(aq, st, by_residual, implem, metric_type, recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.05
-
-    def xx_test_accuracy(self):
-        # generated programatically below
-        for metric in 'L2', 'IP':
-            for byr in True, False:
-                for implem in 0, 10, 11, 12, 13:
-                    self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
-                    self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
+        assert abs(recall_ref - recall1) < 0.01
 
     def subtest_rescale_accuracy(self, aq, st, by_residual, implem):
         """
@@ -556,7 +546,6 @@ class TestIVFAQFastScan(unittest.TestCase):
         index.by_residual = by_residual
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.index_factory(
@@ -565,7 +554,6 @@ class TestIVFAQFastScan(unittest.TestCase):
         indexfs.norm_scale = 2
         indexfs.train(ds.get_train())
         indexfs.add(ds.get_database())
-        indexfs.nprobe = 16
         indexfs.implem = implem
         D1, I1 = indexfs.search(ds.get_queries(), 1)
 
@@ -574,22 +562,15 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall1 = (I1 == gt).sum() / nq
 
         print(aq, st, by_residual, implem, recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.05
+        assert abs(recall_ref - recall1) < 0.01
 
-    def xx_test_rescale_accuracy(self):
-        for byr in True, False:
-            for implem in 0, 10, 11, 12, 13:
-                self.subtest_accuracy('RQ', 'rq', byr, implem, 'L2')
-                self.subtest_accuracy('LSQ', 'lsq', byr, implem, 'L2')
-
-    def subtest_from_ivfaq(self, implem):
+    def test_from_ivfaq(self):
         d = 8
-        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric='IP')
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 200, metric='IP')
         gt = ds.get_groundtruth(k=1)
-        index = faiss.index_factory(d, 'IVF16,RQ8x4', faiss.METRIC_INNER_PRODUCT)
+        index = faiss.index_factory(d, 'IVF16,RQ4x4', faiss.METRIC_INNER_PRODUCT)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.IndexIVFAdditiveQuantizerFastScan(index)
@@ -599,11 +580,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
         print(recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.02
-
-    def test_from_ivfaq(self):
-        for implem in 0, 1, 2:
-            self.subtest_from_ivfaq(implem)
+        assert abs(recall_ref - recall1) < 0.01
 
     def subtest_factory(self, aq, M, bbs, st, r='r'):
         """
@@ -645,17 +622,17 @@ class TestIVFAQFastScan(unittest.TestCase):
         assert index.by_residual == (r == 'r')
 
     def test_factory(self):
+        # this is very fast
         self.subtest_factory('LSQ', 16, 64, 'lsq')
         self.subtest_factory('LSQ', 16, 64, 'rq')
         self.subtest_factory('RQ', 16, 64, 'rq')
         self.subtest_factory('RQ', 16, 64, 'lsq')
         self.subtest_factory('LSQ', 64, 0, 'lsq')
-
         self.subtest_factory('LSQ', 64, 0, 'lsq', r='')
 
     def subtest_io(self, factory_str):
         d = 8
-        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 100)
 
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
@@ -673,11 +650,11 @@ class TestIVFAQFastScan(unittest.TestCase):
             if os.path.exists(fname):
                 os.unlink(fname)
 
-    def test_io(self):
-        self.subtest_io('IVF16,LSQ4x4fs_Nlsq2x4')
-        self.subtest_io('IVF16,LSQ4x4fs_Nrq2x4')
-        self.subtest_io('IVF16,RQ4x4fs_Nrq2x4')
-        self.subtest_io('IVF16,RQ4x4fs_Nlsq2x4')
+    def test_io_lsq(self):
+        self.subtest_io('IVF4,LSQ2x4fs_Nlsq2x4')
+
+    def test_io_rq(self):
+        self.subtest_io('IVF4,RQ2x4fs_Nrq2x4')
 
 
 # add more tests programatically

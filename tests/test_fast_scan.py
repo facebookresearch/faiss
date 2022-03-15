@@ -438,9 +438,8 @@ class TestAQFastScan(unittest.TestCase):
         """
         Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
-        d = 16
-        # ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
-        ds = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 200, metric_type)
         gt = ds.get_groundtruth(k=1)
 
         if metric_type == 'L2':
@@ -467,13 +466,7 @@ class TestAQFastScan(unittest.TestCase):
         recall = (Ia == gt).sum() / nq
 
         print(aq, st, implem, metric_type, recall_ref, recall)
-        assert abs(recall_ref - recall) < 0.05
-
-    def xx_test_accuracy(self):
-        for metric in 'L2', 'IP':
-            for implem in 0, 12, 13, 14, 15:
-                self.subtest_accuracy('RQ', 'rq', implem, metric)
-                self.subtest_accuracy('LSQ', 'lsq', implem, metric)
+        assert abs(recall_ref - recall) < 0.03
 
     def subtest_from_idxaq(self, implem, metric):
         if metric == 'L2':
@@ -483,13 +476,13 @@ class TestAQFastScan(unittest.TestCase):
             metric_type = faiss.METRIC_INNER_PRODUCT
             st = ''
 
-        d = 16
-        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric=metric)
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 200, metric=metric)
         gt = ds.get_groundtruth(k=1)
-        index = faiss.index_factory(d, 'RQ8x4' + st, metric_type)
+
+        index = faiss.index_factory(d, 'RQ3x4' + st, metric_type)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.IndexAdditiveQuantizerFastScan(index)
@@ -499,13 +492,8 @@ class TestAQFastScan(unittest.TestCase):
         nq = Iref.shape[0]
         recall_ref = (Iref == gt).sum() / nq
         recall1 = (I1 == gt).sum() / nq
-        print(recall_ref, recall1)
-        assert abs(recall_ref - recall1) < 0.05
-
-    def xx_test_from_idxaq(self):
-        for implem in 2, 3, 4:
-            self.subtest_from_idxaq(implem, 'L2')
-            self.subtest_from_idxaq(implem, 'IP')
+        print("subtest_from_idxaq", recall_ref, recall1)
+        assert abs(recall_ref - recall1) < 0.02
 
     def subtest_factory(self, aq, M, bbs, st):
         """
@@ -548,7 +536,7 @@ class TestAQFastScan(unittest.TestCase):
 
     def subtest_io(self, factory_str):
         d = 8
-        ds = datasets.SyntheticDataset(d, 1000, 500, 100)
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 100)
 
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
@@ -566,11 +554,11 @@ class TestAQFastScan(unittest.TestCase):
             if os.path.exists(fname):
                 os.unlink(fname)
 
-    def test_io(self):
+    def test_io_lsq(self):
         self.subtest_io('LSQ4x4fs_Nlsq2x4')
-        self.subtest_io('LSQ4x4fs_Nrq2x4')
+
+    def test_io_rq(self):
         self.subtest_io('RQ4x4fs_Nrq2x4')
-        self.subtest_io('RQ4x4fs_Nlsq2x4')
 
 
 # programatically generate tests to get finer test granularity.
