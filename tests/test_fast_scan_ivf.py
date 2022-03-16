@@ -352,8 +352,10 @@ class TestIVFImplem12(unittest.TestCase):
 class TestIVFImplem10(TestIVFImplem12):
     IMPLEM = 10
 
+
 class TestIVFImplem11(TestIVFImplem12):
     IMPLEM = 11
+
 
 class TestIVFImplem13(TestIVFImplem12):
     IMPLEM = 13
@@ -680,32 +682,29 @@ class TestIVFAQFastScan(unittest.TestCase):
 
 # add more tests programatically
 
+def add_TestIVFAQFastScan_subtest_accuracy(
+        aq, st, by_residual, implem, metric='L2'):
+    setattr(
+        TestIVFAQFastScan,
+        f"test_accuracy_{metric}_{aq}_implem{implem}_residual{by_residual}",
+        lambda self:
+        self.subtest_accuracy(aq, st, by_residual, implem, metric)
+    )
+
+
+def add_TestIVFAQFastScan_subtest_rescale_accuracy(aq, st, by_residual, implem):
+    setattr(
+        TestIVFAQFastScan,
+        f"test_rescale_accuracy_{aq}_implem{implem}_residual{by_residual}",
+        lambda self:
+        self.subtest_rescale_accuracy(aq, st, by_residual, implem)
+    )
+
 for byr in True, False:
     for implem in 0, 10, 11, 12, 13:
-        for metric in 'L2', 'IP':
-            setattr(
-                TestIVFAQFastScan,
-                f"test_accuracy_{metric}_RQ_implem{implem}_residual{byr}",
-                lambda self:
-                self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
-            )
-            setattr(
-                TestIVFAQFastScan,
-                f"test_accuracy_{metric}_LSQ_implem{implem}_residual{byr}",
-                lambda self:
-                self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
-            )
+        for mt in 'L2', 'IP':
+            add_TestIVFAQFastScan_subtest_accuracy('RQ', 'rq', byr, implem, mt)
+            add_TestIVFAQFastScan_subtest_accuracy('LSQ', 'lsq', byr, implem, mt)
 
-        setattr(
-            TestIVFAQFastScan,
-            f"test_rescale_accuracy_LSQ_implem{implem}_residual{byr}",
-            lambda self:
-            self.subtest_rescale_accuracy('LSQ', 'lsq', byr, implem)
-        )
-
-        setattr(
-            TestIVFAQFastScan,
-            f"test_rescale_accuracy_RQ_implem{implem}_residual{byr}",
-            lambda self:
-            self.subtest_rescale_accuracy('RQ', 'rq', byr, implem)
-        )
+        add_TestIVFAQFastScan_subtest_rescale_accuracy('LSQ', 'lsq', byr, implem)
+        add_TestIVFAQFastScan_subtest_rescale_accuracy('RQ', 'rq', byr, implem)
