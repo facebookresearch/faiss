@@ -10,6 +10,7 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <vector>
 
 namespace faiss {
@@ -42,6 +43,13 @@ struct IndexFlatCodes : Index {
      * indexing structure, the semantics of this operation are
      * different from the usual ones: the new ids are shifted */
     size_t remove_ids(const IDSelector& sel) override;
+
+    /** a FlatCodesDistanceComputer offers a distance_to_code method */
+    virtual FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const;
+
+    DistanceComputer* get_distance_computer() const override {
+        return get_FlatCodesDistanceComputer();
+    }
 };
 
 } // namespace faiss

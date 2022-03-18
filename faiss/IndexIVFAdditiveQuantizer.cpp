@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// quiet the noise
-// XXclang-format off
-
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 
 #include <algorithm>

@@ -11,6 +11,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 
 namespace faiss {
 
@@ -105,14 +106,16 @@ struct ScalarQuantizer {
 
     Quantizer* select_quantizer() const;
 
-    struct SQDistanceComputer : DistanceComputer {
+    struct SQDistanceComputer : FlatCodesDistanceComputer {
         const float* q;
-        const uint8_t* codes;
-        size_t code_size;
 
-        SQDistanceComputer() : q(nullptr), codes(nullptr), code_size(0) {}
+        SQDistanceComputer() : q(nullptr) {}
 
         virtual float query_to_code(const uint8_t* code) const = 0;
+
+        float distance_to_code(const uint8_t* code) final {
+            return query_to_code(code);
+        }
     };
 
     SQDistanceComputer* get_distance_computer(

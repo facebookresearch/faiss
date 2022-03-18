@@ -30,7 +30,8 @@ struct AdditiveQuantizer {
     // derived values
     std::vector<uint64_t> codebook_offsets;
     size_t code_size;           ///< code size in bytes
-    size_t tot_bits;            ///< total number of bits
+    size_t tot_bits;            ///< total number of bits (indexes + norms)
+    size_t norm_bits;           ///< bits allocated for the norms
     size_t total_codebook_size; ///< size of the codebook in vectors
     bool only_8bit;             ///< are all nbits = 8 (use faster decoder)
 
@@ -41,11 +42,15 @@ struct AdditiveQuantizer {
     std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
                                   ///< fastscan search
 
+    /// encode a norm into norm_bits bits
+    uint64_t encode_norm(float norm) const;
+
     uint32_t encode_qcint(
             float x) const; ///< encode norm by non-uniform scalar quantization
 
     float decode_qcint(uint32_t c)
             const; ///< decode norm by non-uniform scalar quantization
+
 
     /// Encodes how search is performed and how vectors are encoded
     enum Search_type_t {

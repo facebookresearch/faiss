@@ -28,7 +28,7 @@ struct ResidualQuantizer : AdditiveQuantizer {
     //  Was enum but that does not work so well with bitmasks
     using train_type_t = int;
 
-    /// Or of the Train_* flags below
+    /// Binary or of the Train_* flags below
     train_type_t train_type;
 
     /// regular k-means (minimal amount of computation)
@@ -47,7 +47,7 @@ struct ResidualQuantizer : AdditiveQuantizer {
      *  first element of the beam (faster but less accurate) */
     static const int Train_top_beam = 1024;
 
-    /** set this bit to not autmatically compute the codebook tables
+    /** set this bit to *not* autmatically compute the codebook tables
      * after training */
     static const int Skip_codebook_tables = 2048;
 
@@ -82,6 +82,9 @@ struct ResidualQuantizer : AdditiveQuantizer {
 
     /// Train the residual quantizer
     void train(size_t n, const float* x) override;
+
+    /// Copy the M codebook levels from other, starting from skip_M
+    void initialize_from(const ResidualQuantizer& other, int skip_M = 0);
 
     /** Encode the vectors and compute codebook that minimizes the quantization
      * error on these codes
