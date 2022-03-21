@@ -14,7 +14,7 @@
     <includedby refid="IndexNSG_8h" local="no">faiss/IndexNSG.h</includedby>
     <includedby refid="IndexPQFastScan_8h" local="no">faiss/IndexPQFastScan.h</includedby>
     <incdepgraph>
-      <node id="13">
+      <node id="14">
         <label>faiss/impl/platform_macros.h</label>
       </node>
       <node id="4">
@@ -22,8 +22,13 @@
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/DistanceComputer.h</label>
       </node>
       <node id="1">
         <label>faiss/IndexPQ.h</label>
@@ -34,17 +39,17 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>stdint.h</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/impl/PolysemousTraining.h</label>
       </node>
       <node id="9">
@@ -62,7 +67,7 @@
       <node id="8">
         <label>sstream</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>faiss/impl/ProductQuantizer.h</label>
       </node>
       <node id="5">
@@ -196,7 +201,7 @@
 <codeline lineno="52"><highlight class="normal"></highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e" kindref="member">sa_decode</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>bytes,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>DistanceComputer*<sp/><ref refid="structfaiss_1_1IndexPQ_1acb6744a8e64db9b01bfd58f4cf9fee77" kindref="member">get_distance_computer</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>FlatCodesDistanceComputer*<sp/><ref refid="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013" kindref="member">get_FlatCodesDistanceComputer</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"></highlight></codeline>
 <codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"><sp/><sp/><sp/><sp/>/******************************************************</highlight></codeline>
 <codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>Polysemous<sp/>codes<sp/>implementation</highlight></codeline>

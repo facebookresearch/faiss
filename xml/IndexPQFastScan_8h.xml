@@ -31,11 +31,16 @@
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="11">
         <label>cstdint</label>
+      </node>
+      <node id="20">
+        <label>faiss/impl/DistanceComputer.h</label>
       </node>
       <node id="16">
         <label>faiss/IndexPQ.h</label>
@@ -46,9 +51,9 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
@@ -59,7 +64,7 @@
       <node id="10">
         <label>cassert</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss/impl/PolysemousTraining.h</label>
       </node>
       <node id="7">
@@ -81,7 +86,7 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -89,7 +94,7 @@
       <node id="6">
         <label>sstream</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/impl/ProductQuantizer.h</label>
       </node>
       <node id="12">

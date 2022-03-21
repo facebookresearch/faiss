@@ -13,6 +13,8 @@
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
@@ -23,6 +25,9 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="10">
+        <label>faiss/impl/DistanceComputer.h</label>
       </node>
       <node id="8">
         <label>string</label>
@@ -156,7 +161,7 @@
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>DistanceComputer*<sp/><ref refid="structfaiss_1_1IndexFlat_1a62205e1e7468b184115ee0c87d172a78" kindref="member">get_distance_computer</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>FlatCodesDistanceComputer*<sp/><ref refid="structfaiss_1_1IndexFlat_1a5396c3f2f2ee3a716ef2accb6d5d8e24" kindref="member">get_FlatCodesDistanceComputer</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>stanadlone<sp/>codec<sp/>interface<sp/>(just<sp/>memcopies<sp/>in<sp/>this<sp/>case)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67" kindref="member">sa_encode</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>uint8_t*<sp/>bytes)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>

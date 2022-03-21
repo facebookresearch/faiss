@@ -21,21 +21,21 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="28">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
         <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -51,11 +51,16 @@
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="28">
+      <node id="29">
         <label>cstdint</label>
+      </node>
+      <node id="25">
+        <label>faiss/impl/DistanceComputer.h</label>
       </node>
       <node id="23">
         <label>faiss/IndexPQ.h</label>
@@ -66,9 +71,9 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -120,7 +125,7 @@
       <node id="20">
         <label>cassert</label>
       </node>
-      <node id="25">
+      <node id="26">
         <label>faiss/impl/PolysemousTraining.h</label>
       </node>
       <node id="11">
@@ -168,10 +173,10 @@
         <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="27">
         <label>faiss/impl/ProductQuantizer.h</label>
       </node>
-      <node id="29">
+      <node id="30">
         <label>cstdlib</label>
       </node>
       <node id="5">
@@ -206,7 +211,7 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="30">
+      <node id="31">
         <label>algorithm</label>
       </node>
       <node id="19">

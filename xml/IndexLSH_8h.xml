@@ -11,20 +11,25 @@
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
+        <label>faiss/impl/DistanceComputer.h</label>
+      </node>
+      <node id="12">
         <label>stdint.h</label>
       </node>
       <node id="8">
@@ -67,7 +72,7 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
     </incdepgraph>

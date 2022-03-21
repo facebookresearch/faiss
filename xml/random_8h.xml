@@ -83,7 +83,12 @@
 <codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>random<sp/>permutation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_perm(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/>int64_t<sp/>seed);</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Random<sp/>set<sp/>of<sp/>vectors<sp/>with<sp/>intrinsic<sp/>dimensionality<sp/>10<sp/>that<sp/>is<sp/>harder<sp/>to</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>index<sp/>than<sp/>a<sp/>subspace<sp/>of<sp/>dim<sp/>10<sp/>but<sp/>easier<sp/>than<sp/>uniform<sp/>data<sp/>in<sp/>dimension<sp/>d</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>rand_smooth_vectors(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/>int64_t<sp/>seed);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/random.h"/>
   </compounddef>
