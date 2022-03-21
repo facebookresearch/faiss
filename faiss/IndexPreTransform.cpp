@@ -15,6 +15,7 @@
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 
 namespace faiss {

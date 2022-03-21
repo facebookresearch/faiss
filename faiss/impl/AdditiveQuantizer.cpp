@@ -83,24 +83,27 @@ void AdditiveQuantizer::set_derived_values() {
     }
     total_codebook_size = codebook_offsets[M];
     switch (search_type) {
-        case ST_decompress:
-        case ST_LUT_nonorm:
-        case ST_norm_from_LUT:
-            break; // nothing to add
         case ST_norm_float:
-            tot_bits += 32;
+            norm_bits = 32;
             break;
         case ST_norm_qint8:
         case ST_norm_cqint8:
         case ST_norm_lsq2x4:
         case ST_norm_rq2x4:
-            tot_bits += 8;
+            norm_bits = 8;
             break;
         case ST_norm_qint4:
         case ST_norm_cqint4:
-            tot_bits += 4;
+            norm_bits = 4;
+            break;
+        case ST_decompress:
+        case ST_LUT_nonorm:
+        case ST_norm_from_LUT:
+        default:
+            norm_bits = 0;
             break;
     }
+    tot_bits += norm_bits;
 
     // convert bits to bytes
     code_size = (tot_bits + 7) / 8;
@@ -195,6 +198,28 @@ float AdditiveQuantizer::decode_qcint(uint32_t c) const {
     return qnorm.get_xb()[c];
 }
 
+uint64_t AdditiveQuantizer::encode_norm(float norm) const {
+    switch (search_type) {
+        case ST_norm_float:
+            return *(uint32_t*)&norm;
+        case ST_norm_qint8:
+            return encode_qint8(norm, norm_min, norm_max);
+        case ST_norm_qint4:
+            return encode_qint4(norm, norm_min, norm_max);
+        case ST_norm_lsq2x4:
+        case ST_norm_rq2x4:
+        case ST_norm_cqint8:
+            return encode_qcint(norm);
+        case ST_norm_cqint4:
+            return encode_qcint(norm);
+        case ST_decompress:
+        case ST_LUT_nonorm:
+        case ST_norm_from_LUT:
+        default:
+            return 0;
+    }
+}
+
 void AdditiveQuantizer::pack_codes(
         size_t n,
         const int32_t* codes,
@@ -230,36 +255,8 @@ void AdditiveQuantizer::pack_codes(
         for (int m = 0; m < M; m++) {
             bsw.write(codes1[m], nbits[m]);
         }
-        switch (search_type) {
-            case ST_decompress:
-            case ST_LUT_nonorm:
-            case ST_norm_from_LUT:
-                break;
-            case ST_norm_float:
-                bsw.write(*(uint32_t*)&norms[i], 32);
-                break;
-            case ST_norm_qint8: {
-                uint8_t b = encode_qint8(norms[i], norm_min, norm_max);
-                bsw.write(b, 8);
-                break;
-            }
-            case ST_norm_qint4: {
-                uint8_t b = encode_qint4(norms[i], norm_min, norm_max);
-                bsw.write(b, 4);
-                break;
-            }
-            case ST_norm_lsq2x4:
-            case ST_norm_rq2x4:
-            case ST_norm_cqint8: {
-                uint32_t b = encode_qcint(norms[i]);
-                bsw.write(b, 8);
-                break;
-            }
-            case ST_norm_cqint4: {
-                uint32_t b = encode_qcint(norms[i]);
-                bsw.write(b, 4);
-                break;
-            }
+        if (norm_bits != 0) {
+            bsw.write(encode_norm(norms[i]), norm_bits);
         }
     }
 }

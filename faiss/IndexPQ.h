@@ -52,7 +52,7 @@ struct IndexPQ : IndexFlatCodes {
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-    DistanceComputer* get_distance_computer() const override;
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
     /******************************************************
      * Polysemous codes implementation

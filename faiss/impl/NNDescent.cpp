@@ -13,6 +13,7 @@
 #include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 
 namespace faiss {
 

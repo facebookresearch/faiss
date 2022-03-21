@@ -333,6 +333,19 @@ void knn_inner_product(
     }
 }
 
+void knn_inner_product(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes) {
+    float_minheap_array_t heaps = {nx, k, indexes, distances};
+    knn_inner_product(x, y, d, nx, ny, &heaps);
+}
+
 void knn_L2sqr(
         const float* x,
         const float* y,
@@ -359,6 +372,20 @@ void knn_L2sqr(
             exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
         }
     }
+}
+
+void knn_L2sqr(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* distances,
+        int64_t* indexes,
+        const float* y_norm2) {
+    float_maxheap_array_t heaps = {nx, k, indexes, distances};
+    knn_L2sqr(x, y, d, nx, ny, &heaps, y_norm2);
 }
 
 /***************************************************************************

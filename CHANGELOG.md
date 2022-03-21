@@ -11,6 +11,7 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 ## [Unreleased]
 
 - Added sparse k-means routines and moved the generic kmeans to contrib
+- Added FlatDistanceComputer for all FlatCodes indexes
 
 ## [1.7.2] - 2021-12-15
 ### Added

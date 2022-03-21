@@ -43,6 +43,8 @@ struct IndexAdditiveQuantizer : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 };
 
 /** Index based on a residual quantizer. Stored vectors are
