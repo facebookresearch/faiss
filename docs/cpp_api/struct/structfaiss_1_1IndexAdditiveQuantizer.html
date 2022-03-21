@@ -344,6 +344,12 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv">
+<span id="_CPPv3NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexAdditiveQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>a FlatCodesDistanceComputer offers a distance_to_code method </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf">
 <span id="_CPPv3N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexAdditiveQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss22IndexAdditiveQuantizer5idx_tE" title="faiss::IndexAdditiveQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>default add uses sa_encode </p>
@@ -386,6 +392,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22IndexAdditiveQuantizer10remove_idsERK10IDSelector">
 <span id="_CPPv3N5faiss22IndexAdditiveQuantizer10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss22IndexAdditiveQuantizer10remove_idsERK10IDSelector"></span><span id="faiss::IndexAdditiveQuantizer::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a6d033f2cbc377bb26948a5dfa6b5aa3c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>remove some ids. NB that Because of the structure of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv">
+<span id="_CPPv3NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv"></span><span id="faiss::IndexAdditiveQuantizer::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
+<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -488,13 +501,6 @@
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv">
-<span id="_CPPv3NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv"></span><span id="_CPPv2NK5faiss22IndexAdditiveQuantizer21get_distance_computerEv"></span><span id="faiss::IndexAdditiveQuantizer::get_distance_computerC"></span><span class="target" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
-<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
 </dd></dl>
 
 </div>

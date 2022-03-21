@@ -324,7 +324,7 @@
 <span id="_CPPv3N5faiss20IndexScalarQuantizerE"></span><span id="_CPPv2N5faiss20IndexScalarQuantizerE"></span><span id="faiss::IndexScalarQuantizer"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexScalarQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="IndexFlatCodes_8h.html#_CPPv4N5faiss14IndexFlatCodesE" title="faiss::IndexFlatCodes"><span class="n"><span class="pre">IndexFlatCodes</span></span></a><a class="headerlink" href="#_CPPv4N5faiss20IndexScalarQuantizerE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;IndexScalarQuantizer.h&gt;</em></div>
-<p>The uniform quantizer has a range [vmin, vmax]. The range can be the same for all dimensions (uniform) or specific per dimension (default). </p>
+<p>Flat index built on a scalar quantizer. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -378,10 +378,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer21get_distance_computerEv">
-<span id="_CPPv3NK5faiss20IndexScalarQuantizer21get_distance_computerEv"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer21get_distance_computerEv"></span><span id="faiss::IndexScalarQuantizer::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a453a94e1d549a9ebf11e4b211c577f17"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer21get_distance_computerEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
-<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss20IndexScalarQuantizer29get_FlatCodesDistanceComputerEv">
+<span id="_CPPv3NK5faiss20IndexScalarQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss20IndexScalarQuantizer29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexScalarQuantizer::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexScalarQuantizer_1a6d92cd004fadda1a24389febd145f919"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss20IndexScalarQuantizer29get_FlatCodesDistanceComputerEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>a FlatCodesDistanceComputer offers a distance_to_code method </p>
 </dd></dl>
 
 <dl class="cpp function">

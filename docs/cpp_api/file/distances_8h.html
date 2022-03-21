@@ -397,13 +397,29 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t">
 <span id="_CPPv3N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t"></span><span id="_CPPv2N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t"></span><span id="faiss::knn_inner_product__floatCP.floatCP.s.s.s.float_minheap_array_tP"></span><span class="target" id="namespacefaiss_1a880c7318971f866267a86945aaa61b17"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">knn_inner_product</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span>, <a class="reference internal" href="Heap_8h.html#_CPPv4N5faiss21float_minheap_array_tE" title="faiss::float_minheap_array_t"><span class="n"><span class="pre">float_minheap_array_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_tP21float_minheap_array_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product</p>
+<dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, w.r.t to max inner product.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – query vectors, size nx * d </p></li>
 <li><p><strong>y</strong> – database vectors, size ny * d </p></li>
-<li><p><strong>res</strong> – result array, which also provides k. Sorted on output </p></li>
+<li><p><strong>res</strong> – result heap structure, which also provides k. Sorted on output </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_t">
+<span id="_CPPv3N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_t"></span><span id="_CPPv2N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_t"></span><span id="faiss::knn_inner_product__floatCP.floatCP.s.s.s.s.floatP.int64_tP"></span><span class="target" id="namespacefaiss_1ae395f219a37e88f9c19175c3b47c64ed"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">knn_inner_product</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">indexes</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss17knn_inner_productEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the inner product metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>y</strong> – database vectors, size ny * d </p></li>
+<li><p><strong>distances</strong> – output distances, size nq * k </p></li>
+<li><p><strong>indexes</strong> – output vector ids, size nq * k </p></li>
 </ul>
 </dd>
 </dl>
@@ -412,10 +428,32 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf">
 <span id="_CPPv3N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf"></span><span id="_CPPv2N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf"></span><span id="faiss::knn_L2sqr__floatCP.floatCP.s.s.s.float_maxheap_array_tP.floatCP"></span><span class="target" id="namespacefaiss_1a7931bf425c5825f2634c20952bbdb4b7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">knn_L2sqr</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span>, <a class="reference internal" href="Heap_8h.html#_CPPv4N5faiss21float_maxheap_array_tE" title="faiss::float_maxheap_array_t"><span class="n"><span class="pre">float_maxheap_array_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">res</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y_norm2</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_tP21float_maxheap_array_tPKf" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Same as knn_inner_product, for the L2 distance </p>
+<dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the L2 distance </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>y_norm2</strong> – norms for the y vectors (nullptr or size ny) </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>y</strong> – database vectors, size ny * d </p></li>
+<li><p><strong>res</strong> – result heap strcture, which also provides k. Sorted on output </p></li>
+<li><p><strong>y_norm2</strong> – (optional) norms for the y vectors (nullptr or size ny) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_tPKf">
+<span id="_CPPv3N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_tPKf"></span><span id="_CPPv2N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_tPKf"></span><span id="faiss::knn_L2sqr__floatCP.floatCP.s.s.s.s.floatP.int64_tP.floatCP"></span><span class="target" id="namespacefaiss_1a107e244564bff9a8af26bb8fea23bf68"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">knn_L2sqr</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">indexes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y_norm2</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9knn_L2sqrEPKfPKf6size_t6size_t6size_t6size_tPfP7int64_tPKf" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Return the k nearest neighors of each of the nx vectors x among the ny vector y, for the L2 distance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>y</strong> – database vectors, size ny * d </p></li>
+<li><p><strong>distances</strong> – output distances, size nq * k </p></li>
+<li><p><strong>indexes</strong> – output vector ids, size nq * k </p></li>
+<li><p><strong>y_norm2</strong> – (optional) norms for the y vectors (nullptr or size ny) </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

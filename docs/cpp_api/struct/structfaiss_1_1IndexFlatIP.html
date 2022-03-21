@@ -368,10 +368,9 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlatIP21get_distance_computerEv">
-<span id="_CPPv3NK5faiss11IndexFlatIP21get_distance_computerEv"></span><span id="_CPPv2NK5faiss11IndexFlatIP21get_distance_computerEv"></span><span id="faiss::IndexFlatIP::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a62205e1e7468b184115ee0c87d172a78"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
-<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlatIP29get_FlatCodesDistanceComputerEv">
+<span id="_CPPv3NK5faiss11IndexFlatIP29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss11IndexFlatIP29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexFlatIP::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a5396c3f2f2ee3a716ef2accb6d5d8e24"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>a FlatCodesDistanceComputer offers a distance_to_code method </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -432,6 +431,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlatIP10remove_idsERK10IDSelector">
 <span id="_CPPv3N5faiss11IndexFlatIP10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss11IndexFlatIP10remove_idsERK10IDSelector"></span><span id="faiss::IndexFlatIP::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1a6d033f2cbc377bb26948a5dfa6b5aa3c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>remove some ids. NB that Because of the structure of the indexing structure, the semantics of this operation are different from the usual ones: the new ids are shifted </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlatIP21get_distance_computerEv">
+<span id="_CPPv3NK5faiss11IndexFlatIP21get_distance_computerEv"></span><span id="_CPPv2NK5faiss11IndexFlatIP21get_distance_computerEv"></span><span id="faiss::IndexFlatIP::get_distance_computerC"></span><span class="target" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
+<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
 </dd></dl>
 
 <dl class="cpp function">
