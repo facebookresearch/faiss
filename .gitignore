@@ -20,3 +20,4 @@ faiss/python/swigfaiss_avx2.swig
 /build/
 sift.tar.gz
 .vscode/settings.json
+/sift
