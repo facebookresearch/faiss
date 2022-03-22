@@ -126,6 +126,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
@@ -378,6 +379,10 @@ void gpu_sync_all_devices()
 
 %newobject *::get_distance_computer() const;
 %include  <faiss/Index.h>
+
+%include <faiss/impl/DistanceComputer.h>
+
+%newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
 %include  <faiss/IndexFlat.h>
 %include  <faiss/Clustering.h>
@@ -484,7 +489,8 @@ void gpu_sync_all_devices()
 %ignore faiss::InterruptCallback::instance;
 %ignore faiss::InterruptCallback::lock;
 
-%include  <faiss/impl/AuxIndexStructures.h>
+%include <faiss/impl/AuxIndexStructures.h>
+
 
 
 #ifdef GPU_WRAPPER

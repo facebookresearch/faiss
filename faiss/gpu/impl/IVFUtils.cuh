@@ -9,7 +9,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-#include <thrust/device_vector.h>
+#include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
 // A collection of utility functions for IVFPQ and IVFFlat, for
@@ -24,7 +24,7 @@ class GpuResources;
 void runCalcListOffsets(
         GpuResources* res,
         Tensor<int, 2, true>& topQueryToCentroid,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,
         cudaStream_t stream);
@@ -45,7 +45,7 @@ void runPass1SelectLists(
 void runPass2SelectLists(
         Tensor<float, 2, true>& heapDistances,
         Tensor<int, 2, true>& heapIndices,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<int, 2, true>& topQueryToCentroid,

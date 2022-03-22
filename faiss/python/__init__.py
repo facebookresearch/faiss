@@ -1287,6 +1287,12 @@ def randn(n, seed=12345):
     float_randn(swig_ptr(res), res.size, seed)
     return res
 
+rand_smooth_vectors_c = rand_smooth_vectors
+
+def rand_smooth_vectors(n, d, seed=1234):
+    res = np.empty((n, d), dtype='float32')
+    rand_smooth_vectors_c(n, d, swig_ptr(res), seed)
+    return res
 
 def eval_intersection(I1, I2):
     """ size of intersection between each line of two result tables"""
@@ -1429,24 +1435,14 @@ def knn(xq, xb, k, metric=METRIC_L2):
     D = np.empty((nq, k), dtype='float32')
 
     if metric == METRIC_L2:
-        heaps = float_maxheap_array_t()
-        heaps.k = k
-        heaps.nh = nq
-        heaps.val = swig_ptr(D)
-        heaps.ids = swig_ptr(I)
         knn_L2sqr(
             swig_ptr(xq), swig_ptr(xb),
-            d, nq, nb, heaps
+            d, nq, nb, k, swig_ptr(D), swig_ptr(I)
         )
     elif metric == METRIC_INNER_PRODUCT:
-        heaps = float_minheap_array_t()
-        heaps.k = k
-        heaps.nh = nq
-        heaps.val = swig_ptr(D)
-        heaps.ids = swig_ptr(I)
         knn_inner_product(
             swig_ptr(xq), swig_ptr(xb),
-            d, nq, nb, heaps
+            d, nq, nb, k, swig_ptr(D), swig_ptr(I)
         )
     else:
         raise NotImplementedError("only L2 and INNER_PRODUCT are supported")

@@ -258,6 +258,175 @@ void fvec_op_ny_D4(float* dis, const float* x, const float* y, size_t ny) {
     }
 }
 
+#ifdef __AVX2__
+
+// Specialized versions for AVX2 for any CPUs that support gather/scatter.
+// Todo: implement fvec_op_ny_Dxxx in the same way.
+
+template <>
+void fvec_op_ny_D4<ElementOpIP>(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t ny8 = ny / 8;
+    size_t i = 0;
+
+    if (ny8 > 0) {
+        // process 8 D4-vectors per loop.
+        _mm_prefetch(y, _MM_HINT_NTA);
+        _mm_prefetch(y + 16, _MM_HINT_NTA);
+
+        // m0 = (x[0], x[0], x[0], x[0], x[0], x[0], x[0], x[0])
+        const __m256 m0 = _mm256_set1_ps(x[0]);
+        // m1 = (x[1], x[1], x[1], x[1], x[1], x[1], x[1], x[1])
+        const __m256 m1 = _mm256_set1_ps(x[1]);
+        // m2 = (x[2], x[2], x[2], x[2], x[2], x[2], x[2], x[2])
+        const __m256 m2 = _mm256_set1_ps(x[2]);
+        // m3 = (x[3], x[3], x[3], x[3], x[3], x[3], x[3], x[3])
+        const __m256 m3 = _mm256_set1_ps(x[3]);
+
+        const __m256i indices0 =
+                _mm256_setr_epi32(0, 16, 32, 48, 64, 80, 96, 112);
+
+        for (i = 0; i < ny8 * 8; i += 8) {
+            _mm_prefetch(y + 32, _MM_HINT_NTA);
+            _mm_prefetch(y + 48, _MM_HINT_NTA);
+
+            // collect dim 0 for 8 D4-vectors.
+            // v0 = (y[(i * 8 + 0) * 4 + 0], ..., y[(i * 8 + 7) * 4 + 0])
+            const __m256 v0 = _mm256_i32gather_ps(y, indices0, 1);
+            // collect dim 1 for 8 D4-vectors.
+            // v1 = (y[(i * 8 + 0) * 4 + 1], ..., y[(i * 8 + 7) * 4 + 1])
+            const __m256 v1 = _mm256_i32gather_ps(y + 1, indices0, 1);
+            // collect dim 2 for 8 D4-vectors.
+            // v2 = (y[(i * 8 + 0) * 4 + 2], ..., y[(i * 8 + 7) * 4 + 2])
+            const __m256 v2 = _mm256_i32gather_ps(y + 2, indices0, 1);
+            // collect dim 3 for 8 D4-vectors.
+            // v3 = (y[(i * 8 + 0) * 4 + 3], ..., y[(i * 8 + 7) * 4 + 3])
+            const __m256 v3 = _mm256_i32gather_ps(y + 3, indices0, 1);
+
+            // compute distances
+            __m256 distances = _mm256_mul_ps(m0, v0);
+            distances = _mm256_fmadd_ps(m1, v1, distances);
+            distances = _mm256_fmadd_ps(m2, v2, distances);
+            distances = _mm256_fmadd_ps(m3, v3, distances);
+
+            //   distances[0] = (x[0] * y[(i * 8 + 0) * 4 + 0]) +
+            //                  (x[1] * y[(i * 8 + 0) * 4 + 1]) +
+            //                  (x[2] * y[(i * 8 + 0) * 4 + 2]) +
+            //                  (x[3] * y[(i * 8 + 0) * 4 + 3])
+            //   ...
+            //   distances[7] = (x[0] * y[(i * 8 + 7) * 4 + 0]) +
+            //                  (x[1] * y[(i * 8 + 7) * 4 + 1]) +
+            //                  (x[2] * y[(i * 8 + 7) * 4 + 2]) +
+            //                  (x[3] * y[(i * 8 + 7) * 4 + 3])
+            _mm256_storeu_ps(dis + i, distances);
+
+            y += 32;
+        }
+    }
+
+    if (i < ny) {
+        // process leftovers
+        __m128 x0 = _mm_loadu_ps(x);
+
+        for (; i < ny; i++) {
+            __m128 accu = ElementOpIP::op(x0, _mm_loadu_ps(y));
+            y += 4;
+            accu = _mm_hadd_ps(accu, accu);
+            accu = _mm_hadd_ps(accu, accu);
+            dis[i] = _mm_cvtss_f32(accu);
+        }
+    }
+}
+
+template <>
+void fvec_op_ny_D4<ElementOpL2>(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t ny8 = ny / 8;
+    size_t i = 0;
+
+    if (ny8 > 0) {
+        // process 8 D4-vectors per loop.
+        _mm_prefetch(y, _MM_HINT_NTA);
+        _mm_prefetch(y + 16, _MM_HINT_NTA);
+
+        // m0 = (x[0], x[0], x[0], x[0], x[0], x[0], x[0], x[0])
+        const __m256 m0 = _mm256_set1_ps(x[0]);
+        // m1 = (x[1], x[1], x[1], x[1], x[1], x[1], x[1], x[1])
+        const __m256 m1 = _mm256_set1_ps(x[1]);
+        // m2 = (x[2], x[2], x[2], x[2], x[2], x[2], x[2], x[2])
+        const __m256 m2 = _mm256_set1_ps(x[2]);
+        // m3 = (x[3], x[3], x[3], x[3], x[3], x[3], x[3], x[3])
+        const __m256 m3 = _mm256_set1_ps(x[3]);
+
+        const __m256i indices0 =
+                _mm256_setr_epi32(0, 16, 32, 48, 64, 80, 96, 112);
+
+        for (i = 0; i < ny8 * 8; i += 8) {
+            _mm_prefetch(y + 32, _MM_HINT_NTA);
+            _mm_prefetch(y + 48, _MM_HINT_NTA);
+
+            // collect dim 0 for 8 D4-vectors.
+            // v0 = (y[(i * 8 + 0) * 4 + 0], ..., y[(i * 8 + 7) * 4 + 0])
+            const __m256 v0 = _mm256_i32gather_ps(y, indices0, 1);
+            // collect dim 1 for 8 D4-vectors.
+            // v1 = (y[(i * 8 + 0) * 4 + 1], ..., y[(i * 8 + 7) * 4 + 1])
+            const __m256 v1 = _mm256_i32gather_ps(y + 1, indices0, 1);
+            // collect dim 2 for 8 D4-vectors.
+            // v2 = (y[(i * 8 + 0) * 4 + 2], ..., y[(i * 8 + 7) * 4 + 2])
+            const __m256 v2 = _mm256_i32gather_ps(y + 2, indices0, 1);
+            // collect dim 3 for 8 D4-vectors.
+            // v3 = (y[(i * 8 + 0) * 4 + 3], ..., y[(i * 8 + 7) * 4 + 3])
+            const __m256 v3 = _mm256_i32gather_ps(y + 3, indices0, 1);
+
+            // compute differences
+            const __m256 d0 = _mm256_sub_ps(m0, v0);
+            const __m256 d1 = _mm256_sub_ps(m1, v1);
+            const __m256 d2 = _mm256_sub_ps(m2, v2);
+            const __m256 d3 = _mm256_sub_ps(m3, v3);
+
+            // compute squares of differences
+            __m256 distances = _mm256_mul_ps(d0, d0);
+            distances = _mm256_fmadd_ps(d1, d1, distances);
+            distances = _mm256_fmadd_ps(d2, d2, distances);
+            distances = _mm256_fmadd_ps(d3, d3, distances);
+
+            //   distances[0] = (x[0] - y[(i * 8 + 0) * 4 + 0]) ^ 2 +
+            //                  (x[1] - y[(i * 8 + 0) * 4 + 1]) ^ 2 +
+            //                  (x[2] - y[(i * 8 + 0) * 4 + 2]) ^ 2 +
+            //                  (x[3] - y[(i * 8 + 0) * 4 + 3])
+            //   ...
+            //   distances[7] = (x[0] - y[(i * 8 + 7) * 4 + 0]) ^ 2 +
+            //                  (x[1] - y[(i * 8 + 7) * 4 + 1]) ^ 2 +
+            //                  (x[2] - y[(i * 8 + 7) * 4 + 2]) ^ 2 +
+            //                  (x[3] - y[(i * 8 + 7) * 4 + 3])
+            _mm256_storeu_ps(dis + i, distances);
+
+            y += 32;
+        }
+    }
+
+    if (i < ny) {
+        // process leftovers
+        __m128 x0 = _mm_loadu_ps(x);
+
+        for (; i < ny; i++) {
+            __m128 accu = ElementOpL2::op(x0, _mm_loadu_ps(y));
+            y += 4;
+            accu = _mm_hadd_ps(accu, accu);
+            accu = _mm_hadd_ps(accu, accu);
+            dis[i] = _mm_cvtss_f32(accu);
+        }
+    }
+}
+
+#endif
+
 template <class ElementOp>
 void fvec_op_ny_D8(float* dis, const float* x, const float* y, size_t ny) {
     __m128 x0 = _mm_loadu_ps(x);
@@ -721,6 +890,61 @@ static inline void fvec_madd_ref(
         c[i] = a[i] + bf * b[i];
 }
 
+#ifdef __AVX2__
+static inline void fvec_madd_avx2(
+        const size_t n,
+        const float* __restrict a,
+        const float bf,
+        const float* __restrict b,
+        float* __restrict c) {
+    //
+    const size_t n8 = n / 8;
+    const size_t n_for_masking = n % 8;
+
+    const __m256 bfmm = _mm256_set1_ps(bf);
+
+    size_t idx = 0;
+    for (idx = 0; idx < n8 * 8; idx += 8) {
+        const __m256 ax = _mm256_loadu_ps(a + idx);
+        const __m256 bx = _mm256_loadu_ps(b + idx);
+        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
+        _mm256_storeu_ps(c + idx, abmul);
+    }
+
+    if (n_for_masking > 0) {
+        __m256i mask;
+        switch (n_for_masking) {
+            case 1:
+                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, -1);
+                break;
+            case 2:
+                mask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, -1, -1);
+                break;
+            case 3:
+                mask = _mm256_set_epi32(0, 0, 0, 0, 0, -1, -1, -1);
+                break;
+            case 4:
+                mask = _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1);
+                break;
+            case 5:
+                mask = _mm256_set_epi32(0, 0, 0, -1, -1, -1, -1, -1);
+                break;
+            case 6:
+                mask = _mm256_set_epi32(0, 0, -1, -1, -1, -1, -1, -1);
+                break;
+            case 7:
+                mask = _mm256_set_epi32(0, -1, -1, -1, -1, -1, -1, -1);
+                break;
+        }
+
+        const __m256 ax = _mm256_maskload_ps(a + idx, mask);
+        const __m256 bx = _mm256_maskload_ps(b + idx, mask);
+        const __m256 abmul = _mm256_fmadd_ps(bfmm, bx, ax);
+        _mm256_maskstore_ps(c + idx, mask, abmul);
+    }
+}
+#endif
+
 #ifdef __SSE3__
 
 static inline void fvec_madd_sse(
@@ -744,10 +968,14 @@ static inline void fvec_madd_sse(
 }
 
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
+#ifdef __AVX2__
+    fvec_madd_avx2(n, a, bf, b, c);
+#else
     if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
         fvec_madd_sse(n, a, bf, b, c);
     else
         fvec_madd_ref(n, a, bf, b, c);
+#endif
 }
 
 #else

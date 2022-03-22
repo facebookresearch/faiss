@@ -14,6 +14,7 @@
 #include "macros_impl.h"
 
 using faiss::Index;
+using faiss::IndexBinary;
 
 int faiss_write_index(const FaissIndex* idx, FILE* f) {
     try {
@@ -44,6 +45,42 @@ int faiss_read_index_fname(
     try {
         auto out = faiss::read_index(fname, io_flags);
         *p_out = reinterpret_cast<FaissIndex*>(out);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_write_index_binary(const FaissIndexBinary* idx, FILE* f) {
+    try {
+        faiss::write_index_binary(reinterpret_cast<const IndexBinary*>(idx), f);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_write_index_binary_fname(
+        const FaissIndexBinary* idx,
+        const char* fname) {
+    try {
+        faiss::write_index_binary(
+                reinterpret_cast<const IndexBinary*>(idx), fname);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_read_index_binary(FILE* f, int io_flags, FaissIndexBinary** p_out) {
+    try {
+        auto out = faiss::read_index_binary(f, io_flags);
+        *p_out = reinterpret_cast<FaissIndexBinary*>(out);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_read_index_binary_fname(
+        const char* fname,
+        int io_flags,
+        FaissIndexBinary** p_out) {
+    try {
+        auto out = faiss::read_index_binary(fname, io_flags);
+        *p_out = reinterpret_cast<FaissIndexBinary*>(out);
     }
     CATCH_AND_HANDLE
 }

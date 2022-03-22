@@ -10,7 +10,7 @@
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-#include <thrust/device_vector.h>
+#include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
 namespace faiss {
@@ -31,10 +31,10 @@ void runPQScanMultiPassNoPrecomputed(
         int bitsPerSubQuantizer,
         int numSubQuantizers,
         int numSubQuantizerCodes,
-        thrust::device_vector<void*>& listCodes,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listCodes,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         int maxListLength,
         int k,
         faiss::MetricType metric,

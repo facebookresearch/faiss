@@ -325,6 +325,7 @@ class TestScalarQuantizer(unittest.TestCase):
                     # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
+
 class TestRandom(unittest.TestCase):
 
     def test_rand(self):
@@ -339,6 +340,24 @@ class TestRandom(unittest.TestCase):
         c = np.bincount(x, minlength=100)
         print(c)
         assert c.max() - c.min() < 50 * 2
+
+    def test_rand_vector(self):
+        """ test if the smooth_vectors function is reasonably compressible with
+        a small PQ """
+        x = faiss.rand_smooth_vectors(1300, 32)
+        xt = x[:1000]
+        xb = x[1000:1200]
+        xq = x[1200:]
+        _, gt = faiss.knn(xq, xb, 10)
+        index = faiss.IndexPQ(32, 4, 4)
+        index.train(xt)
+        index.add(xb)
+        D, I = index.search(xq, 10)
+        ninter = faiss.eval_intersection(I, gt)
+        # 445 for SyntheticDataset
+        self.assertGreater(ninter, 420)
+        self.assertLess(ninter, 460)
+
 
 
 class TestPairwiseDis(unittest.TestCase):

@@ -131,6 +131,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/DistanceComputer.h
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
