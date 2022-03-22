@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 // Auxiliary index structures, that are used in indexes but that can
 // be forward-declared
 
@@ -184,30 +182,6 @@ struct RangeSearchPartialResult : BufferList {
     static void merge(
             std::vector<RangeSearchPartialResult*>& partial_results,
             bool do_delete = true);
-};
-
-/***********************************************************
- * The distance computer maintains a current query and computes
- * distances to elements in an index that supports random access.
- *
- * The DistanceComputer is not intended to be thread-safe (eg. because
- * it maintains counters) so the distance functions are not const,
- * instantiate one from each thread if needed.
- ***********************************************************/
-struct DistanceComputer {
-    using idx_t = Index::idx_t;
-
-    /// called before computing distances. Pointer x should remain valid
-    /// while operator () is called
-    virtual void set_query(const float* x) = 0;
-
-    /// compute distance of vector i to current query
-    virtual float operator()(idx_t i) = 0;
-
-    /// compute distance between two stored vectors
-    virtual float symmetric_dis(idx_t i, idx_t j) = 0;
-
-    virtual ~DistanceComputer() {}
 };
 
 /***********************************************************

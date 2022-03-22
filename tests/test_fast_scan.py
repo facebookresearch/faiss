@@ -13,7 +13,6 @@ import numpy as np
 import faiss
 
 from faiss.contrib import datasets
-import platform
 
 
 class TestCompileOptions(unittest.TestCase):
@@ -305,8 +304,6 @@ class TestImplem12(TestImplems):
         self.do_with_params(30, 0x33)
 
 
-
-
 class TestImplem13(TestImplems):
 
     def build_fast_scan_index(self, index, qbs):
@@ -442,7 +439,8 @@ class TestAQFastScan(unittest.TestCase):
         Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
         d = 16
-        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        # ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
         gt = ds.get_groundtruth(k=1)
 
         if metric_type == 'L2':
@@ -504,7 +502,7 @@ class TestAQFastScan(unittest.TestCase):
         print(recall_ref, recall1)
         assert abs(recall_ref - recall1) < 0.05
 
-    def test_from_idxaq(self):
+    def xx_test_from_idxaq(self):
         for implem in 2, 3, 4:
             self.subtest_from_idxaq(implem, 'L2')
             self.subtest_from_idxaq(implem, 'IP')
@@ -550,7 +548,7 @@ class TestAQFastScan(unittest.TestCase):
 
     def subtest_io(self, factory_str):
         d = 8
-        ds = datasets.SyntheticDataset(d, 1000, 2000, 1000)
+        ds = datasets.SyntheticDataset(d, 1000, 500, 100)
 
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
@@ -575,15 +573,30 @@ class TestAQFastScan(unittest.TestCase):
         self.subtest_io('RQ4x4fs_Nlsq2x4')
 
 
+# programatically generate tests to get finer test granularity.
+
+def add_TestAQFastScan_subset_accuracy(aq, st, implem, metric):
+    setattr(
+        TestAQFastScan,
+        f"test_accuracy_{metric}_{aq}_implem{implem}",
+        lambda self: self.subtest_accuracy(aq, st, implem, metric)
+    )
+
+
 for metric in 'L2', 'IP':
     for implem in 0, 12, 13, 14, 15:
-        setattr(
-            TestAQFastScan,
-            f"test_accuracy_{metric}_LSQ_implem{implem}",
-            lambda self: self.subtest_accuracy('LSQ', 'lsq', implem, metric)
-        )
-        setattr(
-            TestAQFastScan,
-            f"test_accuracy_{metric}_RQ_implem{implem}",
-            lambda self: self.subtest_accuracy('RQ', 'rq', implem, metric)
-        )
+        add_TestAQFastScan_subset_accuracy('LSQ', 'lsq', implem, metric)
+        add_TestAQFastScan_subset_accuracy('RQ', 'rq', implem, metric)
+
+
+def add_TestAQFastScan_subtest_from_idxaq(implem, metric):
+    setattr(
+        TestAQFastScan,
+        f"test_from_idxaq_{metric}_implem{implem}",
+        lambda self: self.subtest_from_idxaq(implem, metric)
+    )
+
+
+for implem in 2, 3, 4:
+    add_TestAQFastScan_subtest_from_idxaq(implem, 'L2')
+    add_TestAQFastScan_subtest_from_idxaq(implem, 'IP')

@@ -186,10 +186,10 @@ void runIVFFlatScanTile(
         GpuResources* res,
         Tensor<float, 2, true>& queries,
         Tensor<int, 2, true>& listIds,
-        thrust::device_vector<void*>& listData,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listData,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         Tensor<char, 1, true>& thrustMem,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<float, 1, true>& allDistances,
@@ -237,8 +237,8 @@ void runIVFFlatScanTile(
                 useResidual,                                          \
                 residualBase,                                         \
                 listIds,                                              \
-                listData.data().get(),                                \
-                listLengths.data().get(),                             \
+                listData.data(),                                      \
+                listLengths.data(),                                   \
                 codec,                                                \
                 metric,                                               \
                 prefixSumOffsets,                                     \
@@ -342,10 +342,10 @@ void runIVFFlatScanTile(
 void runIVFFlatScan(
         Tensor<float, 2, true>& queries,
         Tensor<int, 2, true>& listIds,
-        thrust::device_vector<void*>& listData,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listData,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         int maxListLength,
         int k,
         faiss::MetricType metric,

@@ -152,7 +152,7 @@ set(FAISS_GPU_HEADERS
   utils/StaticUtils.h
   utils/Tensor-inl.cuh
   utils/Tensor.cuh
-  utils/ThrustAllocator.cuh
+  utils/ThrustUtils.cuh
   utils/Timer.h
   utils/Transpose.cuh
   utils/WarpPackedBits.cuh

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/impl/ResidualQuantizer.h>
 
 #include <algorithm>
@@ -96,6 +94,39 @@ ResidualQuantizer::ResidualQuantizer(
         size_t nbits,
         Search_type_t search_type)
         : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type) {}
+
+void ResidualQuantizer::initialize_from(
+        const ResidualQuantizer& other,
+        int skip_M) {
+    FAISS_THROW_IF_NOT(M + skip_M <= other.M);
+    FAISS_THROW_IF_NOT(skip_M >= 0);
+
+    Search_type_t this_search_type = search_type;
+    int this_M = M;
+
+    // a first good approximation: override everything
+    *this = other;
+
+    // adjust derived values
+    M = this_M;
+    search_type = this_search_type;
+    nbits.resize(M);
+    memcpy(nbits.data(),
+           other.nbits.data() + skip_M,
+           nbits.size() * sizeof(nbits[0]));
+
+    set_derived_values();
+
+    // resize codebooks if trained
+    if (codebooks.size() > 0) {
+        FAISS_THROW_IF_NOT(codebooks.size() == other.total_codebook_size * d);
+        codebooks.resize(total_codebook_size * d);
+        memcpy(codebooks.data(),
+               other.codebooks.data() + other.codebook_offsets[skip_M] * d,
+               codebooks.size() * sizeof(codebooks[0]));
+        // TODO: norm_tabs?
+    }
+}
 
 void beam_search_encode_step(
         size_t d,

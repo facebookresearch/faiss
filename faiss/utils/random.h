@@ -54,4 +54,9 @@ void int64_rand_max(int64_t* x, size_t n, uint64_t max, int64_t seed);
 /* random permutation */
 void rand_perm(int* perm, size_t n, int64_t seed);
 
+/* Random set of vectors with intrinsic dimensionality 10 that is harder to
+ * index than a subspace of dim 10 but easier than uniform data in dimension d
+ * */
+void rand_smooth_vectors(size_t n, size_t d, float* x, int64_t seed);
+
 } // namespace faiss

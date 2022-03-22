@@ -258,6 +258,38 @@ class TestResidualQuantizer(unittest.TestCase):
         for c0, c1 in zip(cb0, cb1):
             self.assertTrue(np.all(c0 == c1))
 
+    def test_clipping(self):
+        """ verify that a clipped residual quantizer gives the same
+        code prefix + suffix as the full RQ """
+        ds = datasets.SyntheticDataset(32, 1000, 100, 0)
+
+        rq = faiss.ResidualQuantizer(ds.d, 5, 4)
+        rq.train_type = faiss.ResidualQuantizer.Train_default
+        rq.max_beam_size = 5
+        rq.train(ds.get_train())
+
+        rq.max_beam_size = 1   # is not he same for a large beam size
+        codes = rq.compute_codes(ds.get_database())
+
+        rq2 = faiss.ResidualQuantizer(ds.d, 2, 4)
+        rq2.initialize_from(rq)
+        self.assertEqual(rq2.M, 2)
+        # verify that the beginning of the codes are the same
+        codes2 = rq2.compute_codes(ds.get_database())
+
+        rq3 = faiss.ResidualQuantizer(ds.d, 3, 4)
+        rq3.initialize_from(rq, 2)
+        self.assertEqual(rq3.M, 3)
+        codes3 = rq3.compute_codes(ds.get_database() - rq2.decode(codes2))
+
+        # verify that prefixes are the same
+        for i in range(ds.nb):
+            print(i, ds.nb)
+            br = faiss.BitstringReader(faiss.swig_ptr(codes[i]), rq.code_size)
+            br2 = faiss.BitstringReader(faiss.swig_ptr(codes2[i]), rq2.code_size)
+            self.assertEqual(br.read(rq2.tot_bits), br2.read(rq2.tot_bits))
+            br3 = faiss.BitstringReader(faiss.swig_ptr(codes3[i]), rq3.code_size)
+            self.assertEqual(br.read(rq3.tot_bits), br3.read(rq3.tot_bits))
 
 ###########################################################
 # Test index, index factory sa_encode / sa_decode
@@ -317,6 +349,7 @@ def retrain_AQ_codebook(index, xt):
     # index.rq.compute_codebook_tables()
 
     return C, B
+
 
 class TestIndexResidualQuantizer(unittest.TestCase):
 

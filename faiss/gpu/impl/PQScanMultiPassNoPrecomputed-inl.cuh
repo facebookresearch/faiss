@@ -284,10 +284,10 @@ void runMultiPassTile(
         int bitsPerSubQuantizer,
         int numSubQuantizers,
         int numSubQuantizerCodes,
-        thrust::device_vector<void*>& listCodes,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listCodes,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         Tensor<char, 1, true>& thrustMem,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<float, 1, true>& allDistances,
@@ -345,8 +345,8 @@ void runMultiPassTile(
                         pqCentroidsInnermostCode,              \
                         coarseIndices,                         \
                         codeDistancesT,                        \
-                        listCodes.data().get(),                \
-                        listLengths.data().get(),              \
+                        listCodes.data(),                      \
+                        listLengths.data(),                    \
                         prefixSumOffsets,                      \
                         allDistances);                         \
     } while (0)
@@ -416,8 +416,8 @@ void runMultiPassTile(
                         pqCentroidsInnermostCode,                       \
                         coarseIndices,                                  \
                         codeDistancesT,                                 \
-                        listCodes.data().get(),                         \
-                        listLengths.data().get(),                       \
+                        listCodes.data(),                               \
+                        listLengths.data(),                             \
                         prefixSumOffsets,                               \
                         allDistances);                                  \
     } while (0)
@@ -533,10 +533,10 @@ void runPQScanMultiPassNoPrecomputed(
         int bitsPerSubQuantizer,
         int numSubQuantizers,
         int numSubQuantizerCodes,
-        thrust::device_vector<void*>& listCodes,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listCodes,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         int maxListLength,
         int k,
         faiss::MetricType metric,

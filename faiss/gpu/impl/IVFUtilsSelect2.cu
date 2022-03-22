@@ -152,7 +152,7 @@ __global__ void pass2SelectLists(
 void runPass2SelectLists(
         Tensor<float, 2, true>& heapDistances,
         Tensor<int, 2, true>& heapIndices,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<int, 2, true>& topQueryToCentroid,
@@ -169,7 +169,7 @@ void runPass2SelectLists(
                 <<<grid, BLOCK, 0, stream>>>(                  \
                         heapDistances,                         \
                         heapIndices,                           \
-                        listIndices.data().get(),              \
+                        listIndices.data(),                    \
                         prefixSumOffsets,                      \
                         topQueryToCentroid,                    \
                         k,                                     \
