@@ -580,7 +580,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="190" column="22" declfile="faiss/utils/distances.h" declline="190" declcolumn="22"/>
+        <location file="faiss/utils/distances.h" line="200" column="22" declfile="faiss/utils/distances.h" declline="200" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a70eb5be4a6af3b9d948bcb8f949a4e9f" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -593,7 +593,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="193" column="22" declfile="faiss/utils/distances.h" declline="193" declcolumn="22"/>
+        <location file="faiss/utils/distances.h" line="203" column="22" declfile="faiss/utils/distances.h" declline="203" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1acbd29d880c5aeaf1caf6266483253953" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -606,7 +606,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="194" column="22" declfile="faiss/utils/distances.h" declline="194" declcolumn="22"/>
+        <location file="faiss/utils/distances.h" line="204" column="22" declfile="faiss/utils/distances.h" declline="204" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -619,7 +619,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="198" column="22" declfile="faiss/utils/distances.h" declline="198" declcolumn="22"/>
+        <location file="faiss/utils/distances.h" line="208" column="22" declfile="faiss/utils/distances.h" declline="208" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e" prot="public" static="no" mutable="no">
         <type>const uint8_t</type>
@@ -1634,6 +1634,39 @@
         </inbodydescription>
         <location file="faiss/utils/distances.h" line="67" column="6" declfile="faiss/utils/distances.h" declline="67" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8fb5a079795e3aa9e1afa3674de43da5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::fvec_L2sqr_ny_nearest</definition>
+        <argsstring>(float *distances_tmp_buffer, const float *x, const float *y, size_t d, size_t ny)</argsstring>
+        <name>fvec_L2sqr_ny_nearest</name>
+        <param>
+          <type>float *</type>
+          <declname>distances_tmp_buffer</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/distances.h" line="77" column="8" declfile="faiss/utils/distances.h" declline="77" declcolumn="8"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7a49180ebf10e643217bbce5862c7f84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::fvec_norm_L2sqr</definition>
@@ -1654,7 +1687,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="75" column="7" declfile="faiss/utils/distances.h" declline="75" declcolumn="7"/>
+        <location file="faiss/utils/distances.h" line="85" column="7" declfile="faiss/utils/distances.h" declline="85" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a043de43abbfd0d169e609fffbdf8886b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1702,7 +1735,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="82" column="6" declfile="faiss/utils/distances.h" declline="82" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="92" column="6" declfile="faiss/utils/distances.h" declline="92" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa3efb3d72f4cca424c19ac96c1b34754" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1732,7 +1765,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="85" column="6" declfile="faiss/utils/distances.h" declline="85" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="95" column="6" declfile="faiss/utils/distances.h" declline="95" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d81952ec447e6886d2fd3b930fdc096" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1757,7 +1790,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="88" column="6" declfile="faiss/utils/distances.h" declline="88" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="98" column="6" declfile="faiss/utils/distances.h" declline="98" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a948cc81e43160b04d3e4c2cd8041f9e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1790,7 +1823,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="93" column="6" declfile="faiss/utils/distances.h" declline="93" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="103" column="6" declfile="faiss/utils/distances.h" declline="103" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acf1cf6c82706ea8620a1a57b44520b4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1847,7 +1880,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="112" column="6" declfile="faiss/utils/distances.h" declline="112" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="122" column="6" declfile="faiss/utils/distances.h" declline="122" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a82f836d347539f6202d4aef0c0653f16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1896,7 +1929,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="121" column="6" declfile="faiss/utils/distances.h" declline="121" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="131" column="6" declfile="faiss/utils/distances.h" declline="131" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6f8c866d02e9ad41a5c999b0e3e97fab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1953,7 +1986,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="131" column="6" declfile="faiss/utils/distances.h" declline="131" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="141" column="6" declfile="faiss/utils/distances.h" declline="141" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3ccc8ec4f2a74c6154befe048fe83f13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1994,7 +2027,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="139" column="6" declfile="faiss/utils/distances.h" declline="139" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="149" column="6" declfile="faiss/utils/distances.h" declline="149" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a470eea056c32c67ac13bb4791394b0b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2035,7 +2068,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="149" column="6" declfile="faiss/utils/distances.h" declline="149" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="159" column="6" declfile="faiss/utils/distances.h" declline="159" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1afbe3e1fcb434cea1ee9ff8ed6ec1d609" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2119,7 +2152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="166" column="6" declfile="faiss/utils/distances.h" declline="166" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="176" column="6" declfile="faiss/utils/distances.h" declline="176" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a687edf56ab386203fcd992572c539f99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2160,7 +2193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="176" column="6" declfile="faiss/utils/distances.h" declline="176" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="186" column="6" declfile="faiss/utils/distances.h" declline="186" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a880c7318971f866267a86945aaa61b17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2224,7 +2257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="207" column="6" declfile="faiss/utils/distances.h" declline="207" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="217" column="6" declfile="faiss/utils/distances.h" declline="217" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae395f219a37e88f9c19175c3b47c64ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2304,7 +2337,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="223" column="6" declfile="faiss/utils/distances.h" declline="223" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="233" column="6" declfile="faiss/utils/distances.h" declline="233" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7931bf425c5825f2634c20952bbdb4b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2380,7 +2413,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="240" column="6" declfile="faiss/utils/distances.h" declline="240" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="250" column="6" declfile="faiss/utils/distances.h" declline="250" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a107e244564bff9a8af26bb8fea23bf68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2473,7 +2506,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="258" column="6" declfile="faiss/utils/distances.h" declline="258" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="268" column="6" declfile="faiss/utils/distances.h" declline="268" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1adaadf5c986701e97103b476018c6d488" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2514,7 +2547,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="272" column="6" declfile="faiss/utils/distances.h" declline="272" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="282" column="6" declfile="faiss/utils/distances.h" declline="282" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad3d348596de734e44b4dd89fdc19cc32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2555,7 +2588,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="281" column="6" declfile="faiss/utils/distances.h" declline="281" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="291" column="6" declfile="faiss/utils/distances.h" declline="291" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a139f6e538b65f47b826794620af7d491" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2631,7 +2664,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="305" column="6" declfile="faiss/utils/distances.h" declline="305" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="315" column="6" declfile="faiss/utils/distances.h" declline="315" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab29d725b808df6f142b80f21aa45e507" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2673,7 +2706,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="315" column="6" declfile="faiss/utils/distances.h" declline="315" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="325" column="6" declfile="faiss/utils/distances.h" declline="325" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2715,7 +2748,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/distances.h" line="329" column="6" declfile="faiss/utils/distances.h" declline="329" declcolumn="6"/>
+        <location file="faiss/utils/distances.h" line="339" column="6" declfile="faiss/utils/distances.h" declline="339" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
