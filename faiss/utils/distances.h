@@ -71,6 +71,16 @@ void fvec_L2sqr_ny(
         size_t d,
         size_t ny);
 
+/* compute ny square L2 distance between x and a set of contiguous y vectors
+   and return the index of the nearest vector.
+   return 0 if ny == 0. */
+size_t fvec_L2sqr_ny_nearest(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny);
+
 /** squared norm of a vector */
 float fvec_norm_L2sqr(const float* x, size_t d);
 
