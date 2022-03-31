@@ -21,3 +21,7 @@ faiss/python/swigfaiss_avx2.swig
 sift.tar.gz
 .vscode/settings.json
 /sift
+faiss/gpu/GpuIndexIVFAQ.cu
+faiss/gpu/GpuIndexIVFAQ.h
+faiss/gpu/impl/IVFAQ.cu
+faiss/gpu/impl/IVFAQ.cuh
