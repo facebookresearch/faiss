@@ -49,9 +49,9 @@ void runUpdateListPointers(
         Tensor<int, 1, true>& newListLength,
         Tensor<void*, 1, true>& newCodePointers,
         Tensor<void*, 1, true>& newIndexPointers,
-        thrust::device_vector<int>& listLengths,
-        thrust::device_vector<void*>& listCodes,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<int>& listLengths,
+        DeviceVector<void*>& listCodes,
+        DeviceVector<void*>& listIndices,
         cudaStream_t stream) {
     int numThreads = std::min(listIds.getSize(0), getMaxThreadsCurrentDevice());
     int numBlocks = utils::divUp(listIds.getSize(0), numThreads);
@@ -64,9 +64,9 @@ void runUpdateListPointers(
             newListLength,
             newCodePointers,
             newIndexPointers,
-            listLengths.data().get(),
-            listCodes.data().get(),
-            listIndices.data().get());
+            listLengths.data(),
+            listCodes.data(),
+            listIndices.data());
 
     CUDA_TEST_ERROR();
 }
@@ -107,7 +107,7 @@ void runIVFIndicesAppend(
         Tensor<int, 1, true>& listOffset,
         Tensor<Index::idx_t, 1, true>& indices,
         IndicesOptions opt,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listIndices,
         cudaStream_t stream) {
     FAISS_ASSERT(
             opt == INDICES_CPU || opt == INDICES_IVF || opt == INDICES_32_BIT ||
@@ -119,7 +119,7 @@ void runIVFIndicesAppend(
         int blocks = utils::divUp(num, threads);
 
         ivfIndicesAppend<<<blocks, threads, 0, stream>>>(
-                listIds, listOffset, indices, opt, listIndices.data().get());
+                listIds, listOffset, indices, opt, listIndices.data());
 
         CUDA_TEST_ERROR();
     }
@@ -192,18 +192,18 @@ void runIVFFlatAppend(
         Tensor<int, 1, true>& listOffset,
         Tensor<float, 2, true>& vecs,
         GpuScalarQuantizer* scalarQ,
-        thrust::device_vector<void*>& listData,
+        DeviceVector<void*>& listData,
         cudaStream_t stream) {
     int dim = vecs.getSize(1);
     int maxThreads = getMaxThreadsCurrentDevice();
 
     // Each block will handle appending a single vector
-#define RUN_APPEND                                                        \
-    do {                                                                  \
-        dim3 grid(vecs.getSize(0));                                       \
-        dim3 block(std::min(dim / codec.kDimPerIter, maxThreads));        \
-        ivfFlatAppend<<<grid, block, 0, stream>>>(                        \
-                listIds, listOffset, vecs, listData.data().get(), codec); \
+#define RUN_APPEND                                                  \
+    do {                                                            \
+        dim3 grid(vecs.getSize(0));                                 \
+        dim3 block(std::min(dim / codec.kDimPerIter, maxThreads));  \
+        ivfFlatAppend<<<grid, block, 0, stream>>>(                  \
+                listIds, listOffset, vecs, listData.data(), codec); \
     } while (0)
 
     if (!scalarQ) {
@@ -295,13 +295,13 @@ void runIVFPQAppend(
         Tensor<int, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         Tensor<uint8_t, 2, true>& encodings,
-        thrust::device_vector<void*>& listCodes,
+        DeviceVector<void*>& listCodes,
         cudaStream_t stream) {
     int threads = std::min(listIds.getSize(0), getMaxThreadsCurrentDevice());
     int blocks = utils::divUp(listIds.getSize(0), threads);
 
     ivfpqAppend<<<threads, blocks, 0, stream>>>(
-            listIds, listOffset, encodings, listCodes.data().get());
+            listIds, listOffset, encodings, listCodes.data());
 
     CUDA_TEST_ERROR();
 }
@@ -456,7 +456,7 @@ void runIVFFlatInterleavedAppend(
         Tensor<int, 1, true>& uniqueListStartOffset,
         Tensor<float, 2, true>& vecs,
         GpuScalarQuantizer* scalarQ,
-        thrust::device_vector<void*>& listData,
+        DeviceVector<void*>& listData,
         GpuResources* res,
         cudaStream_t stream) {
     int dim = vecs.getSize(1);
@@ -472,7 +472,7 @@ void runIVFFlatInterleavedAppend(
                         vectorsByUniqueList,        \
                         uniqueListStartOffset,      \
                         DATA,                       \
-                        listData.data().get());     \
+                        listData.data());           \
     } while (0)
 
     if (!scalarQ) {
@@ -590,7 +590,7 @@ void runIVFPQInterleavedAppend(
         Tensor<int, 1, true>& uniqueListStartOffset,
         int bitsPerCode,
         Tensor<uint8_t, 2, true>& encodings,
-        thrust::device_vector<void*>& listCodes,
+        DeviceVector<void*>& listCodes,
         cudaStream_t stream) {
     // limitation for now
     FAISS_ASSERT(bitsPerCode <= 8);
@@ -607,7 +607,7 @@ void runIVFPQInterleavedAppend(
                         vectorsByUniqueList,        \
                         uniqueListStartOffset,      \
                         encodings,                  \
-                        listCodes.data().get());    \
+                        listCodes.data());          \
     } while (0)
 
     switch (bitsPerCode) {

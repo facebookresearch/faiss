@@ -20,11 +20,8 @@
 namespace faiss {
 
 /**
- * The uniform quantizer has a range [vmin, vmax]. The range can be
- * the same for all dimensions (uniform) or specific per dimension
- * (default).
+ * Flat index built on a scalar quantizer.
  */
-
 struct IndexScalarQuantizer : IndexFlatCodes {
     /// Used to encode the vectors
     ScalarQuantizer sq;
@@ -51,7 +48,7 @@ struct IndexScalarQuantizer : IndexFlatCodes {
             float* distances,
             idx_t* labels) const override;
 
-    DistanceComputer* get_distance_computer() const override;
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
     /* standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;

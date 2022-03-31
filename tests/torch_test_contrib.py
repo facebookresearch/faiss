@@ -340,5 +340,6 @@ class TestTorchUtilsCPU(unittest.TestCase):
         with self.assertRaises(AssertionError):
             index.add(xb)
 
-        with self.assertRaises(ValueError):
-            index.add(xb.numpy())
+        # disabled since we now accept non-contiguous arrays
+        # with self.assertRaises(ValueError):
+        #    index.add(xb.numpy())

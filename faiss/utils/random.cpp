@@ -9,6 +9,23 @@
 
 #include <faiss/utils/random.h>
 
+extern "C" {
+int sgemm_(
+        const char* transa,
+        const char* transb,
+        FINTEGER* m,
+        FINTEGER* n,
+        FINTEGER* k,
+        const float* alpha,
+        const float* a,
+        FINTEGER* lda,
+        const float* b,
+        FINTEGER* ldb,
+        float* beta,
+        float* c,
+        FINTEGER* ldc);
+}
+
 namespace faiss {
 
 /**************************************************
@@ -162,6 +179,42 @@ void byte_rand(uint8_t* x, size_t n, int64_t seed) {
         size_t i;
         for (i = istart; i < iend; i++)
             x[i] = rng.rand_int64();
+    }
+}
+
+void rand_smooth_vectors(size_t n, size_t d, float* x, int64_t seed) {
+    size_t d1 = 10;
+    std::vector<float> x1(n * d1);
+    float_randn(x1.data(), x1.size(), seed);
+    std::vector<float> rot(d1 * d);
+    float_rand(rot.data(), rot.size(), seed + 1);
+
+    { //
+        FINTEGER di = d, d1i = d1, ni = n;
+        float one = 1.0, zero = 0.0;
+        sgemm_("Not transposed",
+               "Not transposed", // natural order
+               &di,
+               &ni,
+               &d1i,
+               &one,
+               rot.data(),
+               &di, // rotation matrix
+               x1.data(),
+               &d1i, // second term
+               &zero,
+               x,
+               &di);
+    }
+
+    std::vector<float> scales(d);
+    float_rand(scales.data(), d, seed + 2);
+
+#pragma omp parallel for if (n * d > 10000)
+    for (int64_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < d; j++) {
+            x[i * d + j] = sinf(x[i * d + j] * (scales[j] * 4 + 0.1));
+        }
     }
 }
 

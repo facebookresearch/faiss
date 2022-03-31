@@ -85,7 +85,8 @@ void IndexScalarQuantizer::search(
     }
 }
 
-DistanceComputer* IndexScalarQuantizer::get_distance_computer() const {
+FlatCodesDistanceComputer* IndexScalarQuantizer::get_FlatCodesDistanceComputer()
+        const {
     ScalarQuantizer::SQDistanceComputer* dc =
             sq.get_distance_computer(metric_type);
     dc->code_size = sq.code_size;

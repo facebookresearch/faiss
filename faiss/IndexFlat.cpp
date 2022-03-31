@@ -83,16 +83,16 @@ void IndexFlat::compute_distance_subset(
 
 namespace {
 
-struct FlatL2Dis : DistanceComputer {
+struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
     Index::idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;
 
-    float operator()(idx_t i) override {
+    float distance_to_code(const uint8_t* code) final {
         ndis++;
-        return fvec_L2sqr(q, b + i * d, d);
+        return fvec_L2sqr(q, (float*)code, d);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -100,7 +100,10 @@ struct FlatL2Dis : DistanceComputer {
     }
 
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
-            : d(storage.d),
+            : FlatCodesDistanceComputer(
+                      storage.codes.data(),
+                      storage.code_size),
+              d(storage.d),
               nb(storage.ntotal),
               q(q),
               b(storage.get_xb()),
@@ -111,24 +114,27 @@ struct FlatL2Dis : DistanceComputer {
     }
 };
 
-struct FlatIPDis : DistanceComputer {
+struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
     Index::idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;
 
-    float operator()(idx_t i) override {
-        ndis++;
-        return fvec_inner_product(q, b + i * d, d);
-    }
-
     float symmetric_dis(idx_t i, idx_t j) override {
         return fvec_inner_product(b + j * d, b + i * d, d);
     }
 
+    float distance_to_code(const uint8_t* code) final {
+        ndis++;
+        return fvec_inner_product(q, (float*)code, d);
+    }
+
     explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
-            : d(storage.d),
+            : FlatCodesDistanceComputer(
+                      storage.codes.data(),
+                      storage.code_size),
+              d(storage.d),
               nb(storage.ntotal),
               q(q),
               b(storage.get_xb()),
@@ -141,7 +147,7 @@ struct FlatIPDis : DistanceComputer {
 
 } // namespace
 
-DistanceComputer* IndexFlat::get_distance_computer() const {
+FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
         return new FlatL2Dis(*this);
     } else if (metric_type == METRIC_INNER_PRODUCT) {
