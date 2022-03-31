@@ -321,27 +321,53 @@ void ProductQuantizer::train(int n, const float* x) {
 template <class PQEncoder>
 void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
     std::vector<float> distances(pq.ksub);
+
+    // It seems to be meaningless to allocate std::vector<float> distances.
+    // But it is done in order to cope the ineffectiveness of the way
+    // the compiler generates the code. Basically, doing something like
+    //
+    //     size_t min_distance = HUGE_VALF;
+    //     size_t idxm = 0;
+    //     for (size_t i = 0; i < N; i++) {
+    //         const float distance = compute_distance(x, y + i * d, d);
+    //         if (distance < min_distance) {
+    //            min_distance = distance;
+    //            idxm = i;
+    //         }
+    //     }
+    //
+    // generates significantly more CPU instructions than the baseline
+    //
+    //     std::vector<float> distances_cached(N);
+    //     for (size_t i = 0; i < N; i++) {
+    //         distances_cached[i] = compute_distance(x, y + i * d, d);
+    //     }
+    //     size_t min_distance = HUGE_VALF;
+    //     size_t idxm = 0;
+    //     for (size_t i = 0; i < N; i++) {
+    //         const float distance = distances_cached[i];
+    //         if (distance < min_distance) {
+    //            min_distance = distance;
+    //            idxm = i;
+    //         }
+    //     }
+    //
+    // So, the baseline is faster. This is because of the vectorization.
+    // I suppose that the branch predictor might affect the performance as well.
+    // So, the buffer is allocated, but it might be unused in
+    // manually optimized code. Let's hope that the compiler is smart enough to
+    // get rid of std::vector allocation in such a case.
+
     PQEncoder encoder(code, pq.nbits);
     for (size_t m = 0; m < pq.M; m++) {
-        float mindis = 1e20;
-        uint64_t idxm = 0;
         const float* xsub = x + m * pq.dsub;
 
-        fvec_L2sqr_ny(
+        uint64_t idxm = fvec_L2sqr_ny_nearest(
                 distances.data(),
                 xsub,
                 pq.get_centroids(m, 0),
                 pq.dsub,
                 pq.ksub);
-
-        /* Find best centroid */
-        for (size_t i = 0; i < pq.ksub; i++) {
-            float dis = distances[i];
-            if (dis < mindis) {
-                mindis = dis;
-                idxm = i;
-            }
-        }
 
         encoder.encode(idxm);
     }
