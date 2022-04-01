@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #ifndef FAISS_IVFLIB_H
 #define FAISS_IVFLIB_H
 
@@ -20,6 +18,11 @@
 #include <vector>
 
 namespace faiss {
+
+struct IndexIVFResidualQuantizer;
+struct IndexResidualQuantizer;
+struct ResidualQuantizer;
+
 namespace ivflib {
 
 /** check if two indexes have the same parameters and are trained in
@@ -144,6 +147,27 @@ void range_search_with_parameters(
         const IVFSearchParameters* params,
         size_t* nb_dis = nullptr,
         double* ms_per_stage = nullptr);
+
+/** Build an IndexIVFResidualQuantizer from an ResidualQuantizer, using the
+ * nlevel first components as coarse quantizer and the rest as codes in invlists
+ */
+IndexIVFResidualQuantizer* ivf_residual_from_quantizer(
+        const ResidualQuantizer&,
+        int nlevel);
+
+/** add from codes. NB that the norm component is not used, so the code_size can
+ * be provided.
+ *
+ * @param ivfrq      index to populate with the codes
+ * @param codes      codes to add, size (ncode, code_size)
+ * @param code_size  override the ivfrq's code_size, useful if the norm encoding
+ *                   is different
+ */
+void ivf_residual_add_from_flat_codes(
+        IndexIVFResidualQuantizer* ivfrq,
+        size_t ncode,
+        const uint8_t* codes,
+        int64_t code_size = -1);
 
 } // namespace ivflib
 } // namespace faiss
