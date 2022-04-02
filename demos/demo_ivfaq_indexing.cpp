@@ -24,7 +24,7 @@ double elapsed() {
 
 int main() {
     double t0 = elapsed();
-    
+
     // dimension of the vectors to index
     int d = 128;
 
@@ -40,23 +40,24 @@ int main() {
     // a reasonable number of centroids to index nb vectors
     int ncentroids = int(4 * sqrt(nb));
 
-    faiss::IndexIVFResidualQuantizer index(&coarse_quantizer, d, ncentroids, 4, 8);
+    faiss::IndexIVFResidualQuantizer index(
+            &coarse_quantizer, d, ncentroids, 4, 8);
 
-    //pseudo-random generator
+    // pseudo-random generator
     std::mt19937 rng;
 
     { // training
-        printf("[%.3f s] Generating %ld vectors in %dD for training\n", 
-        elapsed() - t0,
-        nt,
-        d);
+        printf("[%.3f s] Generating %ld vectors in %dD for training\n",
+               elapsed() - t0,
+               nt,
+               d);
 
         std::vector<float> trainvecs(nt * d);
         std::uniform_real_distribution<> distrib;
-        for (size_t i = 0; i < nt * d; i ++) {
+        for (size_t i = 0; i < nt * d; i++) {
             trainvecs[i] = distrib(rng);
         }
-        
+
         printf("[%.3f s] Training the index\n", elapsed() - t0);
         index.verbose = true;
 
@@ -66,9 +67,9 @@ int main() {
 
     {
         const char* outfilename = "/tmp/index_trained.faissindex";
-        printf("[%.3f s] storing the pre-trained index to %s\n", 
-            elapsed() - t0,
-            outfilename);
+        printf("[%.3f s] storing the pre-trained index to %s\n",
+               elapsed() - t0,
+               outfilename);
 
         write_index(&index, outfilename);
     }
@@ -78,20 +79,20 @@ int main() {
 
     { // populating the database
         printf("[%.3f s] Building a dataset of %ld vectors to index\n",
-        elapsed() - t0,
-        nb);
+               elapsed() - t0,
+               nb);
 
         std::vector<float> database(nb * d);
         std::uniform_real_distribution<> distrib;
-        for (size_t i = 0; i < nb * d; ++ i) {
+        for (size_t i = 0; i < nb * d; ++i) {
             database[i] = distrib(rng);
         }
         printf("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
 
         index.add(nb, database.data());
-        printf("[%.3f s] imbalance factor: %g\n", 
-            elapsed() - t0,
-            index.invlists->imbalance_factor());
+        printf("[%.3f s] imbalance factor: %g\n",
+               elapsed() - t0,
+               index.invlists->imbalance_factor());
 
         // remember a few elements from the database as queries
         int i0 = 1234;
@@ -99,10 +100,9 @@ int main() {
 
         nq = i1 - i0;
         queries.resize(nq * d);
-        for (int i = i0; i < i1; ++ i) {
-            for (int j = 0; j < d; ++ j) {
-                queries[(i - i0) * d + j] = 
-                database[i * d + j];
+        for (int i = i0; i < i1; ++i) {
+            for (int j = 0; j < d; ++j) {
+                queries[(i - i0) * d + j] = database[i * d + j];
             }
         }
     }
@@ -120,7 +120,7 @@ int main() {
 
         printf("[%.3f s] Query results (vector ids, then distances):\n",
                elapsed() - t0);
-        
+
         for (int i = 0; i < nq; i++) {
             printf("query %2d: ", i);
             for (int j = 0; j < k; j++) {
