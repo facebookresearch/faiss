@@ -47,7 +47,11 @@ int main() {
     std::mt19937 rng;
 
     { // training
+<<<<<<< HEAD
         printf("[%.3f s] Generating %ld vectors in %dD for training\n",
+=======
+        printf("[%.3f s] Generating %ld vectors in %dD for training\n", 
+>>>>>>> e117dd839db440eac50372ccb38585f7906d9988
                elapsed() - t0,
                nt,
                d);
