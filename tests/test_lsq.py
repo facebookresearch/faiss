@@ -494,3 +494,49 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
         D2, I2 = index.search(xq, k=k)
 
         np.testing.assert_array_equal(I, I2)
+
+
+class TestProductLocalSearchQuantizer(unittest.TestCase):
+
+    def test_codec(self):
+        """check that the error is in the same ballpark as PQ."""
+        ds = datasets.SyntheticDataset(64, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        pq = faiss.ProductQuantizer(ds.d, nsplits * Msub, nbits)
+        pq.train(xt)
+        err_pq = eval_codec(pq, xb)
+
+        print(err_plsq, err_pq)
+        self.assertLess(err_plsq, err_pq)
+
+    def test_with_lsq(self):
+        """compare with LSQ when nsplits = 1"""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, 1, M, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_lsq = eval_codec(lsq, xb)
+
+        print(err_plsq, err_lsq)
+        self.assertEqual(err_plsq, err_lsq)

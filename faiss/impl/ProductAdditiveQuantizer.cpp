@@ -56,7 +56,7 @@ void ProductAdditiveQuantizer::init(
         const std::vector<AdditiveQuantizer*>& aqs,
         Search_type_t search_type) {
     FAISS_THROW_IF_NOT_MSG(
-            aqs.size() > 1, "At least two additive quantizers are allowed.");
+            !aqs.empty(), "At least one additive quantizer is required.");
     for (size_t i = 0; i < aqs.size(); i++) {
         const auto& q = aqs[i];
         FAISS_THROW_IF_NOT(q->d == aqs[0]->d);
