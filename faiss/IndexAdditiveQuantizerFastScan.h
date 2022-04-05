@@ -69,6 +69,8 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
             idx_t k,
             float* distances,
             idx_t* labels) const override;
+
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
 
 /** Index based on a residual quantizer. Stored vectors are

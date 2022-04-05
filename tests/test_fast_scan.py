@@ -137,6 +137,36 @@ class TestRounding(unittest.TestCase):
     def test_implem_14_ip(self):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
+
+class TestReconstruct(unittest.TestCase):
+
+    def test_pqfastscan(self):
+        ds = datasets.SyntheticDataset(20, 1000, 1000, 0)
+
+        index = faiss.index_factory(20, 'PQ5x4')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        recons = index.reconstruct_n(0, index.ntotal)
+
+        index2 = faiss.IndexPQFastScan(index)
+        recons2 = index2.reconstruct_n(0, index.ntotal)
+
+        np.testing.assert_array_equal(recons, recons2)
+
+    def test_aqfastscan(self):
+        ds = datasets.SyntheticDataset(20, 1000, 1000, 0)
+
+        index = faiss.index_factory(20, 'RQ5x4_Nrq2x4')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        recons = index.reconstruct_n(0, index.ntotal)
+
+        index2 = faiss.IndexAdditiveQuantizerFastScan(index)
+        recons2 = index2.reconstruct_n(0, index.ntotal)
+
+        np.testing.assert_array_equal(recons, recons2)
+
+
 #########################################################
 # Kernel unit test
 #########################################################
