@@ -22,17 +22,15 @@ namespace faiss {
  */
 struct ProductAdditiveQuantizer : AdditiveQuantizer {
     size_t nsplits; ///< number of sub-vectors we split a vector into
-    size_t dsub;    ///< dimensionality of a sub-vector
-    size_t Msub;    ///< number of codebooks per sub-vectror
 
     std::vector<AdditiveQuantizer*> quantizers;
-
-    ProductAdditiveQuantizer();
 
     ProductAdditiveQuantizer(
             size_t d,
             const std::vector<AdditiveQuantizer*>& aqs,
-            Search_type_t search_type);
+            Search_type_t search_type = ST_decompress);
+
+    ProductAdditiveQuantizer();
 
     void init(
             size_t d,
@@ -47,7 +45,22 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
+    void compute_codes(
+            const float* x,
+            uint8_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const override;
+
+    /** Decode a set of vectors in non-packed format
+     *
+     * @param codes  codes to decode, size n * ld_codes
+     * @param x      output vectors, size n * d
+     */
+    void decode_unpacked(
+            const int32_t* codes,
+            float* x,
+            size_t n,
+            int64_t ld_codes = -1) const override;
 
     /** Decode a set of vectors
      *
@@ -56,27 +69,48 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
      */
     void decode(const uint8_t* codes, float* x, size_t n) const override;
 
-    void set_verbose();
+    void compute_LUT(
+            size_t n,
+            const float* xq,
+            float* LUT,
+            float alpha = 1.0f,
+            long ld_lut = -1) const override;
 
-    void copy_codebooks();
+    void set_verbose(bool verb);
 };
 
-// /** Product Local Search Quantizers
-//  */
-// struct ProductLSQ : ProductAdditiveQuantizer {
-//     ProductLSQ(size_t d, size_t M, size_t M_sub, size_t nbits);
-//     ProductLSQ();
+/** Product Local Search Quantizer
+ */
+struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
+    std::vector<LocalSearchQuantizer> lsqs;
 
-//     virtual LocalSearchQuantizer* subquantizer(size_t m) override;
-// };
+    ProductLocalSearchQuantizer(
+            size_t d,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            Search_type_t search_type = ST_decompress);
 
-// /** Product Local Search Quantizers
-//  */
-// struct ProductRQ : ProductAdditiveQuantizer {
-//     ProductRQ(size_t d, size_t M, size_t M_sub, size_t nbits);
-//     ProductRQ();
+    ProductLocalSearchQuantizer();
 
-//     virtual ResidualQuantizer* subquantizer(size_t m) override;
-// };
+    LocalSearchQuantizer* subquantizer(size_t m);
+};
+
+/** Product Residual Quantizer
+ */
+struct ProductResidualQuantizer : ProductAdditiveQuantizer {
+    std::vector<ResidualQuantizer> rqs;
+
+    ProductResidualQuantizer(
+            size_t d,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            Search_type_t search_type = ST_decompress);
+
+    ProductResidualQuantizer();
+
+    ResidualQuantizer* subquantizer(size_t s);
+};
 
 }; // namespace faiss

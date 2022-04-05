@@ -122,7 +122,7 @@ struct AdditiveQuantizer {
      * @param codes  codes to decode, size n * ld_codes
      * @param x      output vectors, size n * d
      */
-    void decode_unpacked(
+    virtual void decode_unpacked(
             const int32_t* codes,
             float* x,
             size_t n,
@@ -161,7 +161,7 @@ struct AdditiveQuantizer {
      * @param alpha  compute alpha * inner-product
      * @param ld     leading dimension of LUT
      */
-    void compute_LUT(
+    virtual void compute_LUT(
             size_t n,
             const float* xq,
             float* LUT,

@@ -106,6 +106,12 @@ if 'opq' in todo:
     print("===== PQ")
     eval_quantizer(pq, xq2, xb2, gt, xt2)
 
+if 'plsq' in todo:
+    print("===== Product LSQ")
+    plsq = faiss.ProductLocalSearchQuantizer(d, 2, M // 2, nbits)
+    plsq.verbose = True
+    eval_quantizer(plsq, xq, xb, gt, xt)
+
 if 'rq' in todo:
     print("===== RQ")
     rq = faiss.ResidualQuantizer(d, M, nbits, )

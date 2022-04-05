@@ -180,6 +180,8 @@ handle_Quantizer(ProductQuantizer)
 handle_Quantizer(ScalarQuantizer)
 handle_Quantizer(ResidualQuantizer)
 handle_Quantizer(LocalSearchQuantizer)
+handle_Quantizer(ProductResidualQuantizer)
+handle_Quantizer(ProductLocalSearchQuantizer)
 
 
 def handle_NSG(the_class):
