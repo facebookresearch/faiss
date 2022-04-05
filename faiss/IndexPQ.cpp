@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexPQ.h>
 
 #include <cinttypes>
@@ -17,7 +15,7 @@
 
 #include <algorithm>
 
-#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
@@ -73,19 +71,16 @@ void IndexPQ::train(idx_t n, const float* x) {
 namespace {
 
 template <class PQDecoder>
-struct PQDistanceComputer : DistanceComputer {
+struct PQDistanceComputer : FlatCodesDistanceComputer {
     size_t d;
     MetricType metric;
     Index::idx_t nb;
-    const uint8_t* codes;
-    size_t code_size;
     const ProductQuantizer& pq;
     const float* sdc;
     std::vector<float> precomputed_table;
     size_t ndis;
 
-    float operator()(idx_t i) override {
-        const uint8_t* code = codes + i * code_size;
+    float distance_to_code(const uint8_t* code) final {
         const float* dt = precomputed_table.data();
         PQDecoder decoder(code, pq.nbits);
         float accu = 0;
@@ -112,13 +107,15 @@ struct PQDistanceComputer : DistanceComputer {
         return accu;
     }
 
-    explicit PQDistanceComputer(const IndexPQ& storage) : pq(storage.pq) {
+    explicit PQDistanceComputer(const IndexPQ& storage)
+            : FlatCodesDistanceComputer(
+                      storage.codes.data(),
+                      storage.code_size),
+              pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
         d = storage.d;
         metric = storage.metric_type;
-        codes = storage.codes.data();
-        code_size = pq.code_size;
         if (pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M) {
             sdc = pq.sdc_table.data();
         } else {
@@ -138,7 +135,7 @@ struct PQDistanceComputer : DistanceComputer {
 
 } // namespace
 
-DistanceComputer* IndexPQ::get_distance_computer() const {
+FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
     if (pq.nbits == 8) {
         return new PQDistanceComputer<PQDecoder8>(*this);
     } else if (pq.nbits == 16) {

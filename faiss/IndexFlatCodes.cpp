@@ -8,6 +8,7 @@
 #include <faiss/IndexFlatCodes.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
@@ -62,6 +63,11 @@ void IndexFlatCodes::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
 
 void IndexFlatCodes::reconstruct(idx_t key, float* recons) const {
     reconstruct_n(key, 1, recons);
+}
+
+FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
+        const {
+    FAISS_THROW_MSG("not implemented");
 }
 
 } // namespace faiss
