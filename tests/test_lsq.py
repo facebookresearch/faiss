@@ -540,3 +540,33 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
 
         print(err_plsq, err_lsq)
         self.assertEqual(err_plsq, err_lsq)
+
+    def test_lut(self):
+        """test compute_LUT function"""
+        ds = datasets.SyntheticDataset(16, 1000, 0, 100)
+
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+        nq, d = xq.shape
+        dsub = d // nsplits
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+
+        codebook_size = nsplits * Msub * (1 << nbits)
+        lut = np.zeros((nq, codebook_size), dtype=np.float32)
+        plsq.compute_LUT(nq, sp(xq), sp(lut))
+
+        codebooks = faiss.vector_to_array(plsq.codebooks)
+        codebooks = codebooks.reshape(nsplits, Msub * (1 << nbits), dsub)
+        xq = xq.reshape(nq, nsplits, dsub)
+        lut_ref = np.zeros((nq, nsplits, Msub * (1 << nbits)), dtype=np.float32)
+        for i in range(nsplits):
+            lut_ref[:, i] = xq[:, i] @ codebooks[i].T
+        lut_ref = lut_ref.reshape(nq, codebook_size)
+
+        np.testing.assert_allclose(lut, lut_ref)

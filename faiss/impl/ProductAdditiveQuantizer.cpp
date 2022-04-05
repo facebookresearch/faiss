@@ -96,7 +96,7 @@ void ProductAdditiveQuantizer::train(size_t n, const float* x) {
         xt.resize(q->d * n);
 
 #pragma omp parallel for if (n > 1000)
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             memcpy(xt.data() + i * q->d,
                    x + i * d + offset_d,
                    q->d * sizeof(*x));
@@ -142,7 +142,7 @@ void ProductAdditiveQuantizer::compute_codes(
         xsub.resize(n * q->d);
 
 #pragma omp parallel for if (n > 1000)
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             memcpy(xsub.data() + i * q->d,
                    x + i * d + offset_d,
                    q->d * sizeof(float));
@@ -153,7 +153,7 @@ void ProductAdditiveQuantizer::compute_codes(
 
         // unpack
 #pragma omp parallel for if (n > 1000)
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             uint8_t* code = codes.data() + i * q->code_size;
             BitstringReader bsr(code, q->code_size);
 
