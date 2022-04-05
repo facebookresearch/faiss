@@ -159,7 +159,7 @@ struct AdditiveQuantizer {
      * @param xq     query vector, size (n, d)
      * @param LUT    look-up table, size (n, total_codebook_size)
      * @param alpha  compute alpha * inner-product
-     * @param ld     leading dimension of LUT
+     * @param ld_lut  leading dimension of LUT
      */
     virtual void compute_LUT(
             size_t n,

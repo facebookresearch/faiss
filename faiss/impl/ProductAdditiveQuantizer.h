@@ -44,6 +44,7 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
+     * @param centroids  centroids to be added to x, size n * d
      */
     void compute_codes(
             const float* x,
@@ -69,6 +70,13 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
      */
     void decode(const uint8_t* codes, float* x, size_t n) const override;
 
+    /** Compute inner-product look-up tables. Used in the search functions.
+     *
+     * @param xq     query vector, size (n, d)
+     * @param LUT    look-up table, size (n, total_codebook_size)
+     * @param alpha  compute alpha * inner-product
+     * @param ld_lut  leading dimension of LUT
+     */
     void compute_LUT(
             size_t n,
             const float* xq,
@@ -76,6 +84,10 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             float alpha = 1.0f,
             long ld_lut = -1) const override;
 
+    /** Set verbosity level for all sub-quantizers.
+     *
+     * @param verb  is verbose or not
+     */
     void set_verbose(bool verb);
 };
 
