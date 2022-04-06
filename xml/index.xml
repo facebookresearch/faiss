@@ -5757,6 +5757,8 @@
     <member refid="IVFlib_8h_1a01332806047c09400a8c73f1fd400699" kind="function"><name>set_invlist_range</name></member>
     <member refid="IVFlib_8h_1a113970d7b83b793fe22b2cf2bb73a78b" kind="function"><name>search_with_parameters</name></member>
     <member refid="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" kind="function"><name>range_search_with_parameters</name></member>
+    <member refid="IVFlib_8h_1a610ba9a58aa5861814109df57fb0aef7" kind="function"><name>ivf_residual_from_quantizer</name></member>
+    <member refid="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" kind="function"><name>ivf_residual_add_from_flat_codes</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1quantize__lut" kind="namespace"><name>faiss::quantize_lut</name>
     <member refid="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" kind="function"><name>round_uint8_per_column</name></member>
