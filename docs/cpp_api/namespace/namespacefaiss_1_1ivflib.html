@@ -183,6 +183,27 @@
 <dd><p>same as search_with_parameters but for range search </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss6ivflib27ivf_residual_from_quantizerERK17ResidualQuantizeri">
+<span id="_CPPv3N5faiss6ivflib27ivf_residual_from_quantizerERK17ResidualQuantizeri"></span><span id="_CPPv2N5faiss6ivflib27ivf_residual_from_quantizerERK17ResidualQuantizeri"></span><span id="faiss::ivflib::ivf_residual_from_quantizer__ResidualQuantizerCR.i"></span><span class="target" id="IVFlib_8h_1a610ba9a58aa5861814109df57fb0aef7"></span><a class="reference internal" href="../file/IndexIVFAdditiveQuantizer_8h.html#_CPPv4N5faiss25IndexIVFResidualQuantizerE" title="faiss::IndexIVFResidualQuantizer"><span class="n"><span class="pre">IndexIVFResidualQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ivf_residual_from_quantizer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ResidualQuantizer</span></span><span class="p"><span class="pre">&amp;</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlevel</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Build an <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFResidualQuantizer.html#structfaiss_1_1IndexIVFResidualQuantizer"><span class="std std-ref">IndexIVFResidualQuantizer</span></a> from an ResidualQuantizer, using the nlevel first components as coarse quantizer and the rest as codes in invlists </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss6ivflib32ivf_residual_add_from_flat_codesEP25IndexIVFResidualQuantizer6size_tPK7uint8_t7int64_t">
+<span id="_CPPv3N5faiss6ivflib32ivf_residual_add_from_flat_codesEP25IndexIVFResidualQuantizer6size_tPK7uint8_t7int64_t"></span><span id="_CPPv2N5faiss6ivflib32ivf_residual_add_from_flat_codesEP25IndexIVFResidualQuantizer6size_tPK7uint8_t7int64_t"></span><span id="faiss::ivflib::ivf_residual_add_from_flat_codes__IndexIVFResidualQuantizerP.s.uint8_tCP.int64_t"></span><span class="target" id="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivf_residual_add_from_flat_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexIVFAdditiveQuantizer_8h.html#_CPPv4N5faiss25IndexIVFResidualQuantizerE" title="faiss::IndexIVFResidualQuantizer"><span class="n"><span class="pre">IndexIVFResidualQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ivfrq</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ncode</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>add from codes. NB that the norm component is not used, so the code_size can be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ivfrq</strong> – index to populate with the codes </p></li>
+<li><p><strong>codes</strong> – codes to add, size (ncode, code_size) </p></li>
+<li><p><strong>code_size</strong> – override the ivfrq’s code_size, useful if the norm encoding is different </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss6ivflib18SlidingIndexWindowE">
