@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <cstdio>
 
+#include <benchmark/benchmark.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
@@ -15,7 +16,7 @@
 
 using namespace faiss;
 
-int main() {
+static void bench(benchmark::State& state) {
     int d = 128;
     int n = 2000;
 
@@ -62,17 +63,16 @@ int main() {
     dc->code_size = sq.code_size;
     printf("code size: %ld\n", dc->code_size);
 
-    double sum_dis = 0;
-    double t0 = getmillisecs();
-    for (int i = 0; i < n; i++) {
-        dc->set_query(&x[i * d]);
-        for (int j = 0; j < n; j++) {
-            sum_dis += (*dc)(j);
+    for (auto _ : state) {
+        float sum_dis = 0;
+        for (int i = 0; i < n; i++) {
+            dc->set_query(&x[i * d]);
+            for (int j = 0; j < n; j++) {
+                benchmark::DoNotOptimize(sum_dis += (*dc)(j));
+            }
         }
     }
-    printf("distances computed in %.3f ms, checksum=%g\n",
-           getmillisecs() - t0,
-           sum_dis);
-
-    return 0;
 }
+
+BENCHMARK(bench);
+BENCHMARK_MAIN();
