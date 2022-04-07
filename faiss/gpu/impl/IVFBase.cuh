@@ -25,7 +25,7 @@ namespace gpu {
 class GpuResources;
 class FlatIndex;
 
-/// Base inverted list functionality for IVFFlat and IVFPQ
+/// Base inverted list functionality for IVFFlat, IVFPQ and IVFAQ
 class IVFBase {
    public:
     IVFBase(GpuResources* resources,
