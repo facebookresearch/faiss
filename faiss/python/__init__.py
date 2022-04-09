@@ -202,6 +202,23 @@ handle_Quantizer(ProductResidualQuantizer)
 handle_Quantizer(ProductLocalSearchQuantizer)
 
 
+def handle_ProductAdditiveQuantizer(the_class):
+
+    def set_paq_attr(self, name, value):
+        if name.startswith('sub_'):
+            name = name[4:]
+            for i in range(self.nsplits):
+                setattr(self.subquantizer(i), name, value)
+        else:
+            super(the_class, self).__setattr__(name, value)
+
+    the_class.__setattr__ = set_paq_attr
+
+
+handle_ProductAdditiveQuantizer(ProductResidualQuantizer)
+handle_ProductAdditiveQuantizer(ProductLocalSearchQuantizer)
+
+
 def handle_NSG(the_class):
 
     def replacement_build(self, x, graph):

@@ -99,12 +99,6 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             float* LUT,
             float alpha = 1.0f,
             long ld_lut = -1) const override;
-
-    /** Set verbosity level for all sub-quantizers and itself.
-     *
-     * @param verb  is verbose or not
-     */
-    void set_verbose(bool verbose);
 };
 
 /** Product Local Search Quantizer

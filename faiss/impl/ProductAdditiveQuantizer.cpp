@@ -292,13 +292,6 @@ void ProductAdditiveQuantizer::compute_LUT(
     }
 }
 
-void ProductAdditiveQuantizer::set_verbose(bool verbose) {
-    for (size_t s = 0; s < nsplits; s++) {
-        quantizers[s]->verbose = verbose;
-    }
-    this->verbose = verbose;
-}
-
 /*************************************
  * Product Local Search Quantizer
  ************************************/
