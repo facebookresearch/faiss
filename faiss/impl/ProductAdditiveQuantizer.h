@@ -20,10 +20,9 @@ namespace faiss {
 /** Product Additive Quantizers
  *
  * The product additive quantizer is a variant of AQ and PQ.
- *
- * 1. It first splits the vector space into multiple orthogonal sub-spaces just
- * like PQ does.
- * 2. And then it quantizes each sub-space by an independent additive quantizer.
+ * It first splits the vector space into multiple orthogonal sub-spaces
+ * just like PQ does. And then it quantizes each sub-space by an independent
+ * additive quantizer.
  *
  */
 struct ProductAdditiveQuantizer : AdditiveQuantizer {
@@ -52,6 +51,8 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             size_t d,
             const std::vector<AdditiveQuantizer*>& aqs,
             Search_type_t search_type);
+
+    AdditiveQuantizer* subquantizer(size_t m) const;
 
     ///< Train the product additive quantizer
     void train(size_t n, const float* x) override;
@@ -108,7 +109,7 @@ struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
 
     /** Construct a product LSQ object.
      *
-     * @param d   imensionality of the input vectors
+     * @param d   dimensionality of the input vectors
      * @param nsplits  number of sub-vectors we split a vector into
      * @param Msub     number of codebooks of each LSQ
      * @param nbits    bits for each step
@@ -122,8 +123,6 @@ struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
             Search_type_t search_type = ST_decompress);
 
     ProductLocalSearchQuantizer();
-
-    LocalSearchQuantizer* subquantizer(size_t m);
 };
 
 /** Product Residual Quantizer
@@ -133,7 +132,7 @@ struct ProductResidualQuantizer : ProductAdditiveQuantizer {
 
     /** Construct a product RQ object.
      *
-     * @param d   imensionality of the input vectors
+     * @param d   dimensionality of the input vectors
      * @param nsplits  number of sub-vectors we split a vector into
      * @param Msub     number of codebooks of each RQ
      * @param nbits    bits for each step
@@ -147,8 +146,6 @@ struct ProductResidualQuantizer : ProductAdditiveQuantizer {
             Search_type_t search_type = ST_decompress);
 
     ProductResidualQuantizer();
-
-    ResidualQuantizer* subquantizer(size_t s);
 };
 
 }; // namespace faiss

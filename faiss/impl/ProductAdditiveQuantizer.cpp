@@ -83,6 +83,11 @@ void ProductAdditiveQuantizer::init(
     quantizers = aqs;
 }
 
+
+AdditiveQuantizer* ProductAdditiveQuantizer::subquantizer(size_t s) const {
+    return quantizers[s];
+}
+
 void ProductAdditiveQuantizer::train(size_t n, const float* x) {
     if (is_trained) {
         return;
@@ -316,10 +321,6 @@ ProductLocalSearchQuantizer::ProductLocalSearchQuantizer(
 
 ProductLocalSearchQuantizer::ProductLocalSearchQuantizer() {}
 
-LocalSearchQuantizer* ProductLocalSearchQuantizer::subquantizer(size_t s) {
-    return &lsqs[s];
-}
-
 /*************************************
  * Product Residual Quantizer
  ************************************/
@@ -343,9 +344,5 @@ ProductResidualQuantizer::ProductResidualQuantizer(
 }
 
 ProductResidualQuantizer::ProductResidualQuantizer() {}
-
-ResidualQuantizer* ProductResidualQuantizer::subquantizer(size_t s) {
-    return &rqs[s];
-}
 
 } // namespace faiss

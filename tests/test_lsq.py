@@ -581,3 +581,6 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
             q = plsq.subquantizer(i)
             assert q.verbose
             assert q.nperts == 3
+
+        assert not plsq.verbose
+        assert plsq.sub_nperts == [3, 3]
