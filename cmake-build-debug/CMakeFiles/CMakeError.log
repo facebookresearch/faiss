@@ -1,21 +1,2 @@
-Determining if the function sgemm_ exists failed with the following output:
-Change Dir: /Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/Users/liyinbin/miniconda3/envs/flare-dev/bin/make cmTC_6380b/fast && /Users/liyinbin/miniconda3/envs/flare-dev/bin/make  -f CMakeFiles/cmTC_6380b.dir/build.make CMakeFiles/cmTC_6380b.dir/build
-make[1]: Entering directory '/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_6380b.dir/CheckFunctionExists.cxx.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -std=gnu++11 -o CMakeFiles/cmTC_6380b.dir/CheckFunctionExists.cxx.o -c /Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_6380b
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6380b.dir/link.txt --verbose=1
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -DCHECK_FUNCTION_EXISTS=sgemm_ -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_6380b.dir/CheckFunctionExists.cxx.o -o cmTC_6380b 
-Undefined symbols for architecture x86_64:
-  "_sgemm_", referenced from:
-      _main in CheckFunctionExists.cxx.o
-ld: symbol(s) not found for architecture x86_64
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
-make[1]: *** [CMakeFiles/cmTC_6380b.dir/build.make:106: cmTC_6380b] Error 1
-make[1]: Leaving directory '/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CMakeTmp'
-make: *** [Makefile:140: cmTC_6380b/fast] Error 2
-
-
-
+Checking whether the CUDA compiler is NVIDIA using "" did not match "nvcc: NVIDIA \(R\) Cuda compiler driver":
+Checking whether the CUDA compiler is Clang using "" did not match "(clang version)":

@@ -1,21 +1,16 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/liyinbin/github/lambda-search/faiss
--- Could NOT find MKL (missing: MKL_LIBRARIES) 
-CMake Deprecation Warning at cmake-build-debug/_deps/googletest-src/CMakeLists.txt:4 (cmake_minimum_required):
-  Compatibility with CMake < 2.8.12 will be removed from a future version of
-  CMake.
-
-  Update the VERSION argument <min> value or use a ...<max> suffix to tell
-  CMake that the project does not need compatibility with older versions.
-
-
-CMake Deprecation Warning at cmake-build-debug/_deps/googletest-src/googletest/CMakeLists.txt:56 (cmake_minimum_required):
-  Compatibility with CMake < 2.8.12 will be removed from a future version of
-  CMake.
-
-  Update the VERSION argument <min> value or use a ...<max> suffix to tell
-  CMake that the project does not need compatibility with older versions.
+-- The CXX compiler identification is AppleClang 12.0.0.12000032
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Error at /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.19/Modules/CMakeDetermineCUDACompiler.cmake:166 (message):
+  Could not find nvcc, please set CUDAToolkit_ROOT.
+Call Stack (most recent call first):
+  CMakeLists.txt:28 (enable_language)
 
 
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/liyinbin/github/lambda-search/faiss/cmake-build-debug
+-- Configuring incomplete, errors occurred!
+See also "/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+See also "/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/CMakeFiles/CMakeError.log".
