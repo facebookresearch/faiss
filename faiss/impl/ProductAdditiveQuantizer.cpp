@@ -83,7 +83,6 @@ void ProductAdditiveQuantizer::init(
     quantizers = aqs;
 }
 
-
 AdditiveQuantizer* ProductAdditiveQuantizer::subquantizer(size_t s) const {
     return quantizers[s];
 }
