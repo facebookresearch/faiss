@@ -557,16 +557,18 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
         plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
         plsq.train(xt)
 
-        codebook_size = nsplits * Msub * (1 << nbits)
+        subcodebook_size = Msub * (1 << nbits)
+        codebook_size = nsplits * subcodebook_size
         lut = np.zeros((nq, codebook_size), dtype=np.float32)
         plsq.compute_LUT(nq, sp(xq), sp(lut))
 
         codebooks = faiss.vector_to_array(plsq.codebooks)
-        codebooks = codebooks.reshape(nsplits, Msub * (1 << nbits), dsub)
+        codebooks = codebooks.reshape(nsplits, subcodebook_size, dsub)
         xq = xq.reshape(nq, nsplits, dsub)
-        lut_ref = np.zeros((nq, nsplits, Msub * (1 << nbits)), dtype=np.float32)
+        lut_ref = np.zeros((nq, nsplits, subcodebook_size), dtype=np.float32)
         for i in range(nsplits):
             lut_ref[:, i] = xq[:, i] @ codebooks[i].T
         lut_ref = lut_ref.reshape(nq, codebook_size)
 
-        np.testing.assert_allclose(lut, lut_ref)
+        # max rtoal in OSX: 2.87e-6
+        np.testing.assert_allclose(lut, lut_ref, rtol=5e-06)

@@ -113,7 +113,7 @@ void ProductAdditiveQuantizer::train(size_t n, const float* x) {
     }
 
     // copy codebook from sub-quantizers
-    codebooks.resize(codebook_size); // size (nsplits * Msub * ksub, dsub)
+    codebooks.resize(codebook_size); // size (M * ksub, dsub)
     float* cb = codebooks.data();
     for (size_t s = 0; s < nsplits; s++) {
         auto q = quantizers[s];
@@ -130,16 +130,18 @@ void ProductAdditiveQuantizer::compute_codes(
         uint8_t* codes_out,
         size_t n,
         const float* centroids) const {
-    // size (n, nsplits, Msub)
+    // size (n, M)
     std::vector<int32_t> unpacked_codes(n * M);
 
     /// TODO: actuallly we do not need to unpack and pack
     size_t offset_d = 0, offset_m = 0;
     std::vector<float> xsub;
+    std::vector<uint8_t> codes;
 
     for (size_t s = 0; s < nsplits; s++) {
         const auto q = quantizers[s];
         xsub.resize(n * q->d);
+        codes.resize(n * q->code_size);
 
 #pragma omp parallel for if (n > 1000)
         for (idx_t i = 0; i < n; i++) {
@@ -148,7 +150,6 @@ void ProductAdditiveQuantizer::compute_codes(
                    q->d * sizeof(float));
         }
 
-        std::vector<uint8_t> codes(n * q->code_size);
         q->compute_codes(xsub.data(), codes.data(), n);
 
         // unpack
@@ -291,11 +292,11 @@ void ProductAdditiveQuantizer::compute_LUT(
     }
 }
 
-void ProductAdditiveQuantizer::set_verbose(bool verb) {
+void ProductAdditiveQuantizer::set_verbose(bool verbose) {
     for (size_t s = 0; s < nsplits; s++) {
-        quantizers[s]->verbose = verb;
+        quantizers[s]->verbose = verbose;
     }
-    this->verbose = verb;
+    this->verbose = verbose;
 }
 
 /*************************************
@@ -310,12 +311,10 @@ ProductLocalSearchQuantizer::ProductLocalSearchQuantizer(
         Search_type_t search_type) {
     FAISS_THROW_IF_NOT(d % nsplits == 0);
     size_t dsub = d / nsplits;
+    std::vector<AdditiveQuantizer*> aqs;
+    lsqs.reserve(nsplits); // reserve to avoid the underlying memory change
     for (size_t i = 0; i < nsplits; i++) {
         lsqs.emplace_back(dsub, Msub, nbits, ST_decompress);
-    }
-
-    std::vector<AdditiveQuantizer*> aqs;
-    for (size_t i = 0; i < nsplits; i++) {
         aqs.push_back(&lsqs[i]);
     }
 
@@ -341,6 +340,7 @@ ProductResidualQuantizer::ProductResidualQuantizer(
     FAISS_THROW_IF_NOT(d % nsplits == 0);
     size_t dsub = d / nsplits;
     std::vector<AdditiveQuantizer*> aqs;
+    rqs.reserve(nsplits); // reserve to avoid the underlying memory change
     for (size_t i = 0; i < nsplits; i++) {
         rqs.emplace_back(dsub, Msub, nbits, ST_decompress);
         aqs.push_back(&rqs[i]);

@@ -18,13 +18,29 @@
 namespace faiss {
 
 /** Product Additive Quantizers
- * TODO: add some docs
+ *
+ * The product additive quantizer is a variant of AQ and PQ.
+ *
+ * 1. It first splits the vector space into multiple orthogonal sub-spaces just
+ * like PQ does.
+ * 2. And then it quantizes each sub-space by an independent additive quantizer.
+ *
  */
 struct ProductAdditiveQuantizer : AdditiveQuantizer {
     size_t nsplits; ///< number of sub-vectors we split a vector into
 
     std::vector<AdditiveQuantizer*> quantizers;
 
+    /** Construct a product additive quantizer.
+     *
+     * The ownership of the additive quantizers passed in is not
+     * transferred to the ProductAdditiveQuantizer object. Users
+     * are responsible to take care of it.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param aqs    sub-additive quantizers
+     * @param search_type  AQ search type
+     */
     ProductAdditiveQuantizer(
             size_t d,
             const std::vector<AdditiveQuantizer*>& aqs,
@@ -37,7 +53,7 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             const std::vector<AdditiveQuantizer*>& aqs,
             Search_type_t search_type);
 
-    ///< Train the additive quantizer
+    ///< Train the product additive quantizer
     void train(size_t n, const float* x) override;
 
     /** Encode a set of vectors
@@ -84,11 +100,11 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             float alpha = 1.0f,
             long ld_lut = -1) const override;
 
-    /** Set verbosity level for all sub-quantizers.
+    /** Set verbosity level for all sub-quantizers and itself.
      *
      * @param verb  is verbose or not
      */
-    void set_verbose(bool verb);
+    void set_verbose(bool verbose);
 };
 
 /** Product Local Search Quantizer
@@ -96,6 +112,14 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
 struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
     std::vector<LocalSearchQuantizer> lsqs;
 
+    /** Construct a product LSQ object.
+     *
+     * @param d   imensionality of the input vectors
+     * @param nsplits  number of sub-vectors we split a vector into
+     * @param Msub     number of codebooks of each LSQ
+     * @param nbits    bits for each step
+     * @param search_type  AQ search type
+     */
     ProductLocalSearchQuantizer(
             size_t d,
             size_t nsplits,
@@ -113,6 +137,14 @@ struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
 struct ProductResidualQuantizer : ProductAdditiveQuantizer {
     std::vector<ResidualQuantizer> rqs;
 
+    /** Construct a product RQ object.
+     *
+     * @param d   imensionality of the input vectors
+     * @param nsplits  number of sub-vectors we split a vector into
+     * @param Msub     number of codebooks of each RQ
+     * @param nbits    bits for each step
+     * @param search_type  AQ search type
+     */
     ProductResidualQuantizer(
             size_t d,
             size_t nsplits,
