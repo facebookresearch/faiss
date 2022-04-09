@@ -1,0 +1,1508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="faiss"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\faiss\;CMake Files\cmake\;CMake Files\demos\;CMake Files\tutorial\;CMake Files\tutorial\cpp\;CMake Files\tests\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\_deps\;CMake Files\cmake-build-debug\_deps\googletest-src\;CMake Files\cmake-build-debug\_deps\googletest-src\googletest\;CMake Files\cmake-build-debug\_deps\googletest-src\googletest\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 test"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Nightly">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 Nightly"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Continuous">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 Continuous"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Experimental">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 Experimental"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss_avx2">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/libfaiss_avx2.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DFINTEGER=int"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 faiss_avx2"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss_avx2/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/libfaiss_avx2.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DFINTEGER=int"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 faiss_avx2/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/libfaiss.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DFINTEGER=int"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 faiss"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/libfaiss.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DFINTEGER=int"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 faiss/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/faiss/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_imi_flat">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_imi_flat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_imi_flat"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_imi_flat/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_imi_flat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_imi_flat/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_sift1M">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_sift1M" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_sift1M"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_sift1M/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_sift1M" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_sift1M/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_weighted_kmeans">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_weighted_kmeans" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_weighted_kmeans"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_weighted_kmeans/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_weighted_kmeans" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_weighted_kmeans/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_nndescent">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_nndescent" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_nndescent"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_nndescent/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_nndescent" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_nndescent/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_ivfpq_indexing">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_ivfpq_indexing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_ivfpq_indexing"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_ivfpq_indexing/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_ivfpq_indexing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_ivfpq_indexing/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_imi_pq">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_imi_pq" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_imi_pq"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="demo_imi_pq/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/demo_imi_pq" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 demo_imi_pq/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/demos/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="5-Multiple-GPUs">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/5-Multiple-GPUs" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 5-Multiple-GPUs"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="5-Multiple-GPUs/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/5-Multiple-GPUs" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 5-Multiple-GPUs/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="3-IVFPQ">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/3-IVFPQ" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 3-IVFPQ"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="3-IVFPQ/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/3-IVFPQ" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 3-IVFPQ/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="4-GPU">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/4-GPU" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 4-GPU"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="4-GPU/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/4-GPU" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 4-GPU/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="2-IVFFlat">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/2-IVFFlat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 2-IVFFlat"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="2-IVFFlat/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/2-IVFFlat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 2-IVFFlat/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="1-Flat">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/1-Flat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 1-Flat"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="1-Flat/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/1-Flat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 1-Flat/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tutorial/cpp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss_test">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/faiss_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 faiss_test"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="faiss_test/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/faiss_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 faiss_test/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/src/gtest-all.cc">
+			<Option target="gtest"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/src/gtest_main.cc">
+			<Option target="gtest_main"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_imi_flat.cpp">
+			<Option target="demo_imi_flat"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_imi_pq.cpp">
+			<Option target="demo_imi_pq"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_ivfpq_indexing.cpp">
+			<Option target="demo_ivfpq_indexing"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_nndescent.cpp">
+			<Option target="demo_nndescent"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_sift1M.cpp">
+			<Option target="demo_sift1M"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/demo_weighted_kmeans.cpp">
+			<Option target="demo_weighted_kmeans"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/AutoTune.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/AutoTune.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Clustering.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Clustering.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IVFlib.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IVFlib.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Index.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Index.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Index2Layer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/Index2Layer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexAdditiveQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexAdditiveQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinary.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinary.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryFlat.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryFlat.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryFromFloat.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryFromFloat.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryHNSW.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryHNSW.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryHash.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryHash.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryIVF.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexBinaryIVF.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexFlat.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexFlat.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexFlatCodes.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexFlatCodes.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexHNSW.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexHNSW.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVF.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVF.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFAdditiveQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFAdditiveQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFFlat.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFFlat.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQ.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQ.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQFastScan.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQFastScan.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQR.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFPQR.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFSpectralHash.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexIVFSpectralHash.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexLSH.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexLSH.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexLattice.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexLattice.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexNNDescent.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexNNDescent.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexNSG.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexNSG.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPQ.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPQ.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPQFastScan.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPQFastScan.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPreTransform.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexPreTransform.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexRefine.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexRefine.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexReplicas.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexReplicas.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexScalarQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexScalarQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexShards.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/IndexShards.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/MatrixStats.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/MatrixStats.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/MetaIndexes.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/MetaIndexes.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/VectorTransform.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/VectorTransform.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/clone_index.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/clone_index.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/AdditiveQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/AdditiveQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/AuxIndexStructures.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/AuxIndexStructures.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/FaissException.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/FaissException.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/HNSW.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/HNSW.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/LocalSearchQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/LocalSearchQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/NNDescent.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/NNDescent.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/NSG.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/NSG.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/PolysemousTraining.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/PolysemousTraining.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ProductQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ProductQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ResidualQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ResidualQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ScalarQuantizer.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/ScalarQuantizer.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/index_read.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/index_write.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/io.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/io.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/kmeans1d.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/kmeans1d.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/lattice_Zn.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/lattice_Zn.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/pq4_fast_scan.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/pq4_fast_scan.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/pq4_fast_scan_search_1.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/impl/pq4_fast_scan_search_qbs.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/index_factory.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/index_factory.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/BlockInvertedLists.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/BlockInvertedLists.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/DirectMap.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/DirectMap.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/InvertedLists.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/InvertedLists.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/InvertedListsIOHook.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/InvertedListsIOHook.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/OnDiskInvertedLists.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/invlists/OnDiskInvertedLists.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/Heap.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/Heap.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/WorkerThread.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/WorkerThread.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/distances.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/distances.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/distances_simd.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/extra_distances.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/extra_distances.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/hamming.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/hamming.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/partitioning.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/partitioning.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/quantize_lut.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/quantize_lut.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/random.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/random.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/utils.cpp">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/utils/utils.h">
+			<Option target="faiss_avx2"/>
+			<Option target="faiss"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_binary_flat.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_dealloc_invlists.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_ivfpq_codec.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_ivfpq_indexing.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_lowlevel_ivf.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_mem_leak.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_merge.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_omp_threads.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_ondisk_ivf.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_pairs_decoding.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_params_override.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_pq_encoding.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_sliding_ivf.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_threaded_index.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/test_transfer_invlists.cpp">
+			<Option target="faiss_test"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/1-Flat.cpp">
+			<Option target="1-Flat"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/2-IVFFlat.cpp">
+			<Option target="2-IVFFlat"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/3-IVFPQ.cpp">
+			<Option target="3-IVFPQ"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/4-GPU.cpp">
+			<Option target="4-GPU"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/5-Multiple-GPUs.cpp">
+			<Option target="5-Multiple-GPUs"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\faiss\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake/FindMKL.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake/faiss-config.cmake.in">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\demos\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tutorial\cpp\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\googletest\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\googletest\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

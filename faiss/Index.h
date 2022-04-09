@@ -118,6 +118,24 @@ struct Index {
 
     /** query n vectors of dimension d to the index.
      *
+     * return at most k vectors. If there are not enough results for a
+     * query, the result array is padded with -1s.
+     *
+     * @param x           input vectors to search, size n * d
+     * @param cond        input condition, if id is marked disable
+     * @param labels      output labels of the NNs, size n*k
+     * @param distances   output pairwise distances, size n*k
+     */
+    virtual void condition_search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const IDSelector &cond,
+            float* distances,
+            idx_t* labels) const;
+
+    /** query n vectors of dimension d to the index.
+     *
      * return all vectors with distance < radius. Note that many
      * indexes do not implement the range_search (only the k-NN search
      * is mandatory).
@@ -129,6 +147,25 @@ struct Index {
     virtual void range_search(
             idx_t n,
             const float* x,
+            float radius,
+            RangeSearchResult* result) const;
+
+    /** query n vectors of dimension d to the index.
+     *
+     * return all vectors with distance < radius. Note that many
+     * indexes do not implement the range_search (only the k-NN search
+     * is mandatory).
+     *
+     * @param x           input vectors to search, size n * d
+     * @param cond        input condition, if id is marked disable
+     * @param radius      search radius
+     * @param result      result table
+     */
+
+    virtual void condition_range_search(
+            idx_t n,
+            const float* x,
+            const IDSelector &cond,
             float radius,
             RangeSearchResult* result) const;
 

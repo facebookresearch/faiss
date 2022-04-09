@@ -27,9 +27,24 @@ struct IndexFlat : IndexFlatCodes {
             float* distances,
             idx_t* labels) const override;
 
+    void condition_search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const IDSelector &cond,
+            float* distances,
+            idx_t* labels) const override;
+
     void range_search(
             idx_t n,
             const float* x,
+            float radius,
+            RangeSearchResult* result) const override;
+
+    void condition_range_search(
+            idx_t n,
+            const float* x,
+            const IDSelector &cond,
             float radius,
             RangeSearchResult* result) const override;
 

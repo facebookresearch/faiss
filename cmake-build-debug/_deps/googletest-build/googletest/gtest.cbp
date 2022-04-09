@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="gtest"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="clang"/>
+		<Option virtualFolders="CMake Files\;CMake Files\faiss\;CMake Files\cmake\;CMake Files\demos\;CMake Files\tutorial\;CMake Files\tutorial\cpp\;CMake Files\tests\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\_deps\;CMake Files\cmake-build-debug\_deps\googletest-src\;CMake Files\cmake-build-debug\_deps\googletest-src\googletest\;CMake Files\cmake-build-debug\_deps\googletest-src\googletest\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest/fast">
+				<Option output="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/include"/>
+					<Add directory="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/Users/liyinbin/miniconda3/envs/flare-dev/bin/make -j12 -f &quot;/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-build/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/src/gtest-all.cc">
+			<Option target="gtest"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/src/gtest_main.cc">
+			<Option target="gtest_main"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/faiss/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\faiss\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake/FindMKL.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake/faiss-config.cmake.in">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/demos/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\demos\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tutorial/cpp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tutorial\cpp\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\googletest\"/>
+		</Unit>
+		<Unit filename="/Users/liyinbin/github/lambda-search/faiss/cmake-build-debug/_deps/googletest-src/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\googletest-src\googletest\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -41,6 +41,17 @@ void knn_extra_metrics(
         float metric_arg,
         float_maxheap_array_t* res);
 
+void knn_condition_extra_metrics(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        MetricType mt,
+        float metric_arg,
+        const IDSelector &cond,
+        float_maxheap_array_t* res);
+
 /** get a DistanceComputer that refers to this type of distance and
  *  indexes a flat array of size nb */
 DistanceComputer* get_extra_distance_computer(

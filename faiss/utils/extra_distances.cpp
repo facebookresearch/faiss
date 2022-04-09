@@ -89,6 +89,48 @@ void knn_extra_metrics_template(
 }
 
 template <class VD>
+void knn_condition_extra_metrics_template(
+        VD vd,
+        const float* x,
+        const float* y,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        float_maxheap_array_t* res) {
+    size_t k = res->k;
+    size_t d = vd.d;
+    size_t check_period = InterruptCallback::get_period_hint(ny * d);
+    check_period *= omp_get_max_threads();
+
+    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
+        size_t i1 = std::min(i0 + check_period, nx);
+
+#pragma omp parallel for
+        for (int64_t i = i0; i < i1; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            size_t j;
+            float* simi = res->get_val(i);
+            int64_t* idxi = res->get_ids(i);
+
+            maxheap_heapify(k, simi, idxi);
+            for (j = 0; j < ny; j++) {
+                float disij = vd(x_i, y_j);
+
+                if (disij < simi[0]) {
+                    if(!cond.is_member(j)) {
+                        maxheap_replace_top(k, simi, idxi, disij, j);
+                    }
+                }
+                y_j += d;
+            }
+            maxheap_reorder(k, simi, idxi);
+        }
+        InterruptCallback::check();
+    }
+}
+
+template <class VD>
 struct ExtraDistanceComputer : DistanceComputer {
     VD vd;
     Index::idx_t nb;
@@ -173,6 +215,36 @@ void knn_extra_metrics(
     case METRIC_##kw: {                                           \
         VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg}; \
         knn_extra_metrics_template(vd, x, y, nx, ny, res);        \
+        break;                                                    \
+    }
+        HANDLE_VAR(L2);
+        HANDLE_VAR(L1);
+        HANDLE_VAR(Linf);
+        HANDLE_VAR(Canberra);
+        HANDLE_VAR(BrayCurtis);
+        HANDLE_VAR(JensenShannon);
+        HANDLE_VAR(Lp);
+#undef HANDLE_VAR
+        default:
+            FAISS_THROW_MSG("metric type not implemented");
+    }
+}
+
+void knn_condition_extra_metrics(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        MetricType mt,
+        float metric_arg,
+        const IDSelector &cond,
+        float_maxheap_array_t* res) {
+    switch (mt) {
+#define HANDLE_VAR(kw)                                            \
+    case METRIC_##kw: {                                           \
+        VectorDistance<METRIC_##kw> vd = {(size_t)d, metric_arg}; \
+        knn_condition_extra_metrics_template(vd, x, y, nx, ny, cond, res);        \
         break;                                                    \
     }
         HANDLE_VAR(L2);

@@ -45,6 +45,30 @@ void IndexFlat::search(
     }
 }
 
+void IndexFlat::condition_search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const IDSelector &cond,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+
+    // we see the distances and labels as heaps
+
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
+        knn_condition_inner_product(x, get_xb(), d, n, ntotal, cond, &res);
+    } else if (metric_type == METRIC_L2) {
+        float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
+        knn_condition_L2sqr(x, get_xb(), d, n, ntotal, cond, &res);
+    } else {
+        float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
+        knn_condition_extra_metrics(
+                x, get_xb(), d, n, ntotal, metric_type, metric_arg, cond, &res);
+    }
+}
+
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -57,6 +81,25 @@ void IndexFlat::range_search(
             break;
         case METRIC_L2:
             range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result);
+            break;
+        default:
+            FAISS_THROW_MSG("metric type not supported");
+    }
+}
+
+void IndexFlat::condition_range_search(
+        idx_t n,
+        const float* x,
+        const IDSelector &cond,
+        float radius,
+        RangeSearchResult* result) const {
+    switch (metric_type) {
+        case METRIC_INNER_PRODUCT:
+            condition_range_search_inner_product(
+                    x, get_xb(), d, n, ntotal, radius, cond,result);
+            break;
+        case METRIC_L2:
+            condition_range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, cond, result);
             break;
         default:
             FAISS_THROW_MSG("metric type not supported");

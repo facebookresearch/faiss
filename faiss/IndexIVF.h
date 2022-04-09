@@ -212,6 +212,18 @@ struct IndexIVF : Index, Level1Quantizer {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const;
 
+    virtual void condition_search_preassigned(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            bool store_pairs,
+            const IDSelector &cond,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const;
     /** assign the vectors, then call search_preassign */
     void search(
             idx_t n,
@@ -219,6 +231,21 @@ struct IndexIVF : Index, Level1Quantizer {
             idx_t k,
             float* distances,
             idx_t* labels) const override;
+
+    void condition_search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const IDSelector& cond,
+            float* distances,
+            idx_t* labels) const override;
+
+    void condition_range_search(
+            idx_t n,
+            const float* x,
+            const IDSelector& cond,
+            float radius,
+            RangeSearchResult* result) const override;
 
     void range_search(
             idx_t n,
@@ -237,12 +264,26 @@ struct IndexIVF : Index, Level1Quantizer {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const;
 
-    /** Get a scanner for this index (store_pairs means ignore labels)
-     *
-     * The default search implementation uses this to compute the distances
-     */
-    virtual InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs = false) const;
+
+    void condition_range_search_preassigned(
+            idx_t nx,
+            const float* x,
+            float radius,
+            const idx_t* keys,
+            const float* coarse_dis,
+            const IDSelector& cond,
+            RangeSearchResult* result,
+            bool store_pairs,
+            const IVFSearchParameters* params,
+            IndexIVFStats* stats) const;
+
+            /** Get a scanner for this index (store_pairs means ignore labels)
+             *
+             * The default search implementation uses this to compute the
+             * distances
+             */
+            virtual InvertedListScanner* get_InvertedListScanner(
+                    bool store_pairs = false) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
@@ -397,6 +438,15 @@ struct InvertedListScanner {
             idx_t* labels,
             size_t k) const;
 
+    virtual size_t condition_scan_codes(
+            size_t n,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* distances,
+            const IDSelector &cond,
+            idx_t* labels,
+            size_t k) const;
+
     /** scan a set of codes, compute distances to current query and
      * update results if distances are below radius
      *
@@ -406,6 +456,14 @@ struct InvertedListScanner {
             const uint8_t* codes,
             const idx_t* ids,
             float radius,
+            RangeQueryResult& result) const;
+
+    virtual void condition_scan_codes_range(
+            size_t n,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float radius,
+            const IDSelector &cond,
             RangeQueryResult& result) const;
 
     virtual ~InvertedListScanner() {}

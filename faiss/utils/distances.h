@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
@@ -212,6 +213,23 @@ void knn_inner_product(
         size_t ny,
         float_minheap_array_t* res);
 
+/** Return the k nearest neighors of each of the nx vectors x among the ny
+ *  vector y, w.r.t to max inner product
+ *
+ * @param x    query vectors, size nx * d
+ * @param y    database vectors, size ny * d
+ * @param cond id selector
+ * @param res  result array, which also provides k. Sorted on output
+ */
+void knn_condition_inner_product(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector& cond,
+        float_minheap_array_t* res);
+
 /** Same as knn_inner_product, for the L2 distance
  *  @param y_norm2    norms for the y vectors (nullptr or size ny)
  */
@@ -221,6 +239,16 @@ void knn_L2sqr(
         size_t d,
         size_t nx,
         size_t ny,
+        float_maxheap_array_t* res,
+        const float* y_norm2 = nullptr);
+
+void knn_condition_L2sqr(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector& cond,
         float_maxheap_array_t* res,
         const float* y_norm2 = nullptr);
 
@@ -269,6 +297,16 @@ void range_search_L2sqr(
         float radius,
         RangeSearchResult* result);
 
+void condition_range_search_L2sqr(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float radius,
+        const IDSelector &cond,
+        RangeSearchResult* result);
+
 /// same as range_search_L2sqr for the inner product similarity
 void range_search_inner_product(
         const float* x,
@@ -277,6 +315,16 @@ void range_search_inner_product(
         size_t nx,
         size_t ny,
         float radius,
+        RangeSearchResult* result);
+
+void condition_range_search_inner_product(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float radius,
+        const IDSelector& cond,
         RangeSearchResult* result);
 
 /***************************************************************************

@@ -1,0 +1,3 @@
+repository='external project URL'
+module='https://github.com/google/googletest/archive/release-1.10.0.tar.gz'
+tag=''

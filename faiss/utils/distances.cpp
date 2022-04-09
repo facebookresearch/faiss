@@ -127,6 +127,42 @@ void exhaustive_inner_product_seq(
     }
 }
 
+/* Find the nearest neighbors for nx queries in a set of ny vectors */
+template <class ResultHandler>
+void exhaustive_condition_inner_product_seq(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        ResultHandler& res) {
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+
+            resi.begin(i);
+
+            for (size_t j = 0; j < ny; j++) {
+                if(!cond.is_member(j)) {
+                    float ip = fvec_inner_product(x_i, y_j, d);
+                    resi.add_result(ip, j);
+                }
+                y_j += d;
+            }
+            resi.end();
+        }
+    }
+}
+
+
 template <class ResultHandler>
 void exhaustive_L2sqr_seq(
         const float* x,
@@ -149,6 +185,39 @@ void exhaustive_L2sqr_seq(
             for (size_t j = 0; j < ny; j++) {
                 float disij = fvec_L2sqr(x_i, y_j, d);
                 resi.add_result(disij, j);
+                y_j += d;
+            }
+            resi.end();
+        }
+    }
+}
+
+
+template <class ResultHandler>
+void exhaustive_condition_L2sqr_seq(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        ResultHandler& res) {
+    using SingleResultHandler = typename ResultHandler::SingleResultHandler;
+    int nt = std::min(int(nx), omp_get_max_threads());
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler resi(res);
+#pragma omp for
+        for (int64_t i = 0; i < nx; i++) {
+            const float* x_i = x + i * d;
+            const float* y_j = y;
+            resi.begin(i);
+            for (size_t j = 0; j < ny; j++) {
+                if(!cond.is_member(j)) {
+                    float disij = fvec_L2sqr(x_i, y_j, d);
+                    resi.add_result(disij, j);
+                }
                 y_j += d;
             }
             resi.end();
@@ -205,6 +274,63 @@ void exhaustive_inner_product_blas(
             }
 
             res.add_results(j0, j1, ip_block.get());
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
+/** Find the nearest neighbors for nx queries in a set of ny vectors */
+template <class ResultHandler>
+void exhaustive_condition_inner_product_blas(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        ResultHandler& res) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+            if(!cond.is_member(j0)) {
+                res.add_results(j0, j1, ip_block.get());
+            }
         }
         res.end_multiple();
         InterruptCallback::check();
@@ -296,6 +422,94 @@ void exhaustive_L2sqr_blas(
     }
 }
 
+// distance correction is an operator that can be applied to transform
+// the distances
+template <class ResultHandler>
+void exhaustive_condition_L2sqr_blas(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        ResultHandler& res,
+        const float* y_norms = nullptr) {
+    // BLAS does not like empty matrices
+    if (nx == 0 || ny == 0)
+        return;
+
+    /* block sizes */
+    const size_t bs_x = distance_compute_blas_query_bs;
+    const size_t bs_y = distance_compute_blas_database_bs;
+    // const size_t bs_x = 16, bs_y = 16;
+    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float[]> x_norms(new float[nx]);
+    std::unique_ptr<float[]> del2;
+
+    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+
+    if (!y_norms) {
+        float* y_norms2 = new float[ny];
+        del2.reset(y_norms2);
+        fvec_norms_L2sqr(y_norms2, y, d, ny);
+        y_norms = y_norms2;
+    }
+
+    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
+        size_t i1 = i0 + bs_x;
+        if (i1 > nx)
+            i1 = nx;
+
+        res.begin_multiple(i0, i1);
+
+        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
+            size_t j1 = j0 + bs_y;
+            if (j1 > ny)
+                j1 = ny;
+            /* compute the actual dot products */
+            {
+                float one = 1, zero = 0;
+                FINTEGER nyi = j1 - j0, nxi = i1 - i0, di = d;
+                sgemm_("Transpose",
+                       "Not transpose",
+                       &nyi,
+                       &nxi,
+                       &di,
+                       &one,
+                       y + j0 * d,
+                       &di,
+                       x + i0 * d,
+                       &di,
+                       &zero,
+                       ip_block.get(),
+                       &nyi);
+            }
+#pragma omp parallel for
+            for (int64_t i = i0; i < i1; i++) {
+                float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
+
+                for (size_t j = j0; j < j1; j++) {
+                    float ip = *ip_line;
+                    float dis = x_norms[i] + y_norms[j] - 2 * ip;
+
+                    // negative values can occur for identical vectors
+                    // due to roundoff errors
+                    if (dis < 0)
+                        dis = 0;
+
+                    *ip_line = dis;
+                    ip_line++;
+                }
+            }
+            if(!cond.is_member(j0)) {
+                res.add_results(j0, j1, ip_block.get());
+            }
+        }
+        res.end_multiple();
+        InterruptCallback::check();
+    }
+}
+
 } // anonymous namespace
 
 /*******************************************************
@@ -333,6 +547,34 @@ void knn_inner_product(
     }
 }
 
+void knn_condition_inner_product(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        float_minheap_array_t* ha) {
+    if (ha->k < distance_compute_min_k_reservoir) {
+        HeapResultHandler<CMin<float, int64_t>> res(
+                ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_condition_inner_product_seq(x, y, d, nx, ny, cond, res);
+        } else {
+            exhaustive_condition_inner_product_blas(x, y, d, nx, ny, cond, res);
+        }
+    } else {
+        ReservoirResultHandler<CMin<float, int64_t>> res(
+                ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_condition_inner_product_seq(x, y, d, nx, ny, cond, res);
+        } else {
+            exhaustive_condition_inner_product_blas(x, y, d, nx, ny, cond, res);
+        }
+    }
+}
+
+
 void knn_L2sqr(
         const float* x,
         const float* y,
@@ -361,6 +603,36 @@ void knn_L2sqr(
     }
 }
 
+void knn_condition_L2sqr(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        const IDSelector &cond,
+        float_maxheap_array_t* ha,
+        const float* y_norm2) {
+    if (ha->k < distance_compute_min_k_reservoir) {
+        HeapResultHandler<CMax<float, int64_t>> res(
+                ha->nh, ha->val, ha->ids, ha->k);
+
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_condition_L2sqr_seq(x, y, d, nx, ny, cond, res);
+        } else {
+            exhaustive_condition_L2sqr_blas(x, y, d, nx, ny, cond, res, y_norm2);
+        }
+    } else {
+        ReservoirResultHandler<CMax<float, int64_t>> res(
+                ha->nh, ha->val, ha->ids, ha->k);
+        if (nx < distance_compute_blas_threshold) {
+            exhaustive_condition_L2sqr_seq(x, y, d, nx, ny, cond, res);
+        } else {
+            exhaustive_condition_L2sqr_blas(x, y, d, nx, ny, cond, res, y_norm2);
+        }
+    }
+}
+
+
 /***************************************************************************
  * Range search
  ***************************************************************************/
@@ -381,6 +653,23 @@ void range_search_L2sqr(
     }
 }
 
+void condition_range_search_L2sqr(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float radius,
+        const IDSelector &cond,
+        RangeSearchResult* res) {
+    RangeSearchResultHandler<CMax<float, int64_t>> resh(res, radius);
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_condition_L2sqr_seq(x, y, d, nx, ny, cond, resh);
+    } else {
+        exhaustive_condition_L2sqr_blas(x, y, d, nx, ny, cond, resh);
+    }
+}
+
 void range_search_inner_product(
         const float* x,
         const float* y,
@@ -394,6 +683,23 @@ void range_search_inner_product(
         exhaustive_inner_product_seq(x, y, d, nx, ny, resh);
     } else {
         exhaustive_inner_product_blas(x, y, d, nx, ny, resh);
+    }
+}
+
+void condition_range_search_inner_product(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        float radius,
+        const IDSelector &cond,
+        RangeSearchResult* res) {
+    RangeSearchResultHandler<CMin<float, int64_t>> resh(res, radius);
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_condition_inner_product_seq(x, y, d, nx, ny, cond, resh);
+    } else {
+        exhaustive_condition_inner_product_blas(x, y, d, nx, ny, cond, resh);
     }
 }
 

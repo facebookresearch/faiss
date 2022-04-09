@@ -23,8 +23,27 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
+void Index::condition_search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const IDSelector& cond,
+        float* distances,
+        idx_t* labels)  const {
+    FAISS_THROW_MSG("condition search not implemented");
+}
+
 void Index::range_search(idx_t, const float*, float, RangeSearchResult*) const {
     FAISS_THROW_MSG("range search not implemented");
+}
+
+void Index::condition_range_search(
+        idx_t n,
+        const float* x,
+        const IDSelector& cond,
+        float radius,
+        RangeSearchResult* result) const {
+    FAISS_THROW_MSG("condition range search not implemented");
 }
 
 void Index::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
