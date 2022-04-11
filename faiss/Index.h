@@ -235,7 +235,7 @@ struct Index {
      */
     virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
 
-    /** encode a set of vectors
+    /** decode a set of vectors
      *
      * @param n       number of vectors
      * @param bytes   input encoded vectors, size n * sa_code_size()
