@@ -413,4 +413,100 @@ struct RangeSearchResultHandler {
     }
 };
 
+/*****************************************************************
+ * Single best result handler.
+ * Tracks the only best result, thus avoiding storing
+ * some temporary data in memory.
+ *****************************************************************/
+
+template <class C>
+struct SingleBestResultHandler {
+    using T = typename C::T;
+    using TI = typename C::TI;
+
+    int nq;
+    // contains exactly nq elements
+    T* dis_tab;
+    // contains exactly nq elements
+    TI* ids_tab;
+
+    SingleBestResultHandler(size_t nq, T* dis_tab, TI* ids_tab)
+            : nq(nq), dis_tab(dis_tab), ids_tab(ids_tab) {}
+
+    struct SingleResultHandler {
+        SingleBestResultHandler& hr;
+
+        T min_dis;
+        TI min_idx;
+        size_t current_idx = 0;
+
+        SingleResultHandler(SingleBestResultHandler& hr) : hr(hr) {}
+
+        /// begin results for query # i
+        void begin(const size_t current_idx) {
+            this->current_idx = current_idx;
+            min_dis = HUGE_VALF;
+            min_idx = 0;
+        }
+
+        /// add one result for query i
+        void add_result(T dis, TI idx) {
+            if (C::cmp(min_dis, dis)) {
+                min_dis = dis;
+                min_idx = idx;
+            }
+        }
+
+        /// series of results for query i is done
+        void end() {
+            hr.dis_tab[current_idx] = min_dis;
+            hr.ids_tab[current_idx] = min_idx;
+        }
+    };
+
+    size_t i0, i1;
+
+    /// begin
+    void begin_multiple(size_t i0, size_t i1) {
+        this->i0 = i0;
+        this->i1 = i1;
+
+        for (size_t i = i0; i < i1; i++) {
+            this->dis_tab[i] = HUGE_VALF;
+        }
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    void add_results(size_t j0, size_t j1, const T* dis_tab) {
+        for (int64_t i = i0; i < i1; i++) {
+            const T* dis_tab_i = dis_tab + (j1 - j0) * (i - i0) - j0;
+
+            auto& min_distance = this->dis_tab[i];
+            auto& min_index = this->ids_tab[i];
+
+            for (size_t j = j0; j < j1; j++) {
+                const T distance = dis_tab_i[j];
+
+                if (C::cmp(min_distance, distance)) {
+                    min_distance = distance;
+                    min_index = j;
+                }
+            }
+        }
+    }
+
+    void add_result(const size_t i, const T dis, const TI idx) {
+        auto& min_distance = this->dis_tab[i];
+        auto& min_index = this->ids_tab[i];
+
+        if (C::cmp(min_distance, dis)) {
+            min_distance = dis;
+            min_index = idx;
+        }
+    }
+
+    /// series of results for queries i0..i1 is done
+    void end_multiple() {}
+};
+
 } // namespace faiss
