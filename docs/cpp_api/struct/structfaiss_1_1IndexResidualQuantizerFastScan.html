@@ -367,6 +367,22 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexResidualQuantizerFastScan::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Decode a set of vectors.</p>
+<p>NOTE: The codes in the <a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizerFastScan.html#structfaiss_1_1IndexAdditiveQuantizerFastScan"><span class="std std-ref">IndexAdditiveQuantizerFastScan</span></a> object are non- contiguous. But this method requires a contiguous representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * code_size </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss30IndexResidualQuantizerFastScan13init_fastscanEi6size_t6size_t10MetricTypei">
 <span id="_CPPv3N5faiss30IndexResidualQuantizerFastScan13init_fastscanEi6size_t6size_t10MetricTypei"></span><span id="_CPPv2N5faiss30IndexResidualQuantizerFastScan13init_fastscanEi6size_t6size_t10MetricTypei"></span><span id="faiss::IndexResidualQuantizerFastScan::init_fastscan__i.s.s.MetricType.i"></span><span class="target" id="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_fastscan</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">M</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbits</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bbs</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
@@ -415,6 +431,21 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf">
+<span id="_CPPv3NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf"></span><span id="faiss::IndexResidualQuantizerFastScan::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss30IndexResidualQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t">
 <span id="_CPPv3N5faiss30IndexResidualQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss30IndexResidualQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexResidualQuantizerFastScan::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_with_ids</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Same as add, but stores xids instead of sequential ids.</p>
@@ -461,21 +492,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss30IndexResidualQuantizerFastScan10remove_idsERK10IDSelector">
 <span id="_CPPv3N5faiss30IndexResidualQuantizerFastScan10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss30IndexResidualQuantizerFastScan10remove_idsERK10IDSelector"></span><span id="faiss::IndexResidualQuantizerFastScan::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf">
-<span id="_CPPv3NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss30IndexResidualQuantizerFastScan11reconstructE5idx_tPf"></span><span id="faiss::IndexResidualQuantizerFastScan::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
-<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -558,21 +574,6 @@
 <li><p><strong>n</strong> – number of vectors </p></li>
 <li><p><strong>x</strong> – input vectors, size n * d </p></li>
 <li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf">
-<span id="_CPPv3NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss30IndexResidualQuantizerFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexResidualQuantizerFastScan::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss30IndexResidualQuantizerFastScan5idx_tE" title="faiss::IndexResidualQuantizerFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>encode a set of vectors</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html#structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><strong>x</strong> – output vectors, size n * d </p></li>
 </ul>
 </dd>
 </dl>

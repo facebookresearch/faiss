@@ -274,6 +274,22 @@
 <span id="_CPPv3NK5faiss15IndexPQFastScan17compute_float_LUTEPf5idx_tPKf"></span><span id="_CPPv2NK5faiss15IndexPQFastScan17compute_float_LUTEPf5idx_tPKf"></span><span id="faiss::IndexPQFastScan::compute_float_LUT__floatP.idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1IndexPQFastScan_1a7ecb9659ab305fc3ba30e766e5e36f35"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_float_LUT</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lut</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexPQFastScan5idx_tE" title="faiss::IndexPQFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss15IndexPQFastScan17compute_float_LUTEPf5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15IndexPQFastScan9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss15IndexPQFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss15IndexPQFastScan9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexPQFastScan::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexPQFastScan_1afe1ce4711953b8a679f83210fee8a30b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss15IndexPQFastScan5idx_tE" title="faiss::IndexPQFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss15IndexPQFastScan9sa_decodeE5idx_tPK7uint8_tPf" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Decode a set of vectors.</p>
+<p>NOTE: The codes in the <a class="reference internal" href="../struct/structfaiss_1_1IndexPQFastScan.html#structfaiss_1_1IndexPQFastScan"><span class="std std-ref">IndexPQFastScan</span></a> object are non-contiguous. But this method requires a contiguous representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * code_size </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
