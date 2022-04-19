@@ -347,7 +347,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors</para>
+<para>decode a set of vectors</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
@@ -668,6 +668,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1afc92036fae3041caf6331b67754b599c">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a68a74f41ca7c511663dd573183fb670b">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
