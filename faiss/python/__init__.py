@@ -194,12 +194,6 @@ def handle_Quantizer(the_class):
     replace_method(the_class, 'decode', replacement_decode)
 
 
-handle_Quantizer(ProductQuantizer)
-handle_Quantizer(ScalarQuantizer)
-handle_Quantizer(ResidualQuantizer)
-handle_Quantizer(LocalSearchQuantizer)
-
-
 def handle_NSG(the_class):
 
     def replacement_build(self, x, graph):
@@ -784,6 +778,9 @@ for symbol in dir(this_module):
 
         if issubclass(the_class, IndexNSG):
             handle_NSG(the_class)
+
+        if issubclass(the_class, Quantizer):
+            handle_Quantizer(the_class)
 
 ###########################################
 # Utility to add a deprecation warning to

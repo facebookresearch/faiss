@@ -19,6 +19,7 @@
 #include <immintrin.h>
 #endif
 
+#include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -318,7 +319,7 @@ template <class Codec, bool uniform, int SIMD>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -372,7 +373,7 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -433,7 +434,7 @@ template <int SIMDWIDTH>
 struct QuantizerFP16 {};
 
 template <>
-struct QuantizerFP16<1> : ScalarQuantizer::Quantizer {
+struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -478,7 +479,7 @@ template <int SIMDWIDTH>
 struct Quantizer8bitDirect {};
 
 template <>
-struct Quantizer8bitDirect<1> : ScalarQuantizer::Quantizer {
+struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
@@ -518,7 +519,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 #endif
 
 template <int SIMDWIDTH>
-ScalarQuantizer::Quantizer* select_quantizer_1(
+ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
@@ -1153,17 +1154,12 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : qtype(qtype), rangestat(RS_minmax), rangestat_arg(0), d(d) {
+        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
     set_derived_sizes();
 }
 
 ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit),
-          rangestat(RS_minmax),
-          rangestat_arg(0),
-          d(0),
-          bits(0),
-          code_size(0) {}
+        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1253,7 +1249,7 @@ void ScalarQuantizer::train_residual(
     }
 }
 
-ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
+ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #ifdef USE_F16C
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
@@ -1266,7 +1262,7 @@ ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
@@ -1275,7 +1271,7 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++)

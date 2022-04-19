@@ -51,14 +51,13 @@ AdditiveQuantizer::AdditiveQuantizer(
         size_t d,
         const std::vector<size_t>& nbits,
         Search_type_t search_type)
-        : d(d),
+        : Quantizer(d),
           M(nbits.size()),
           nbits(nbits),
           verbose(false),
           is_trained(false),
           search_type(search_type) {
     norm_max = norm_min = NAN;
-    code_size = 0;
     tot_bits = 0;
     total_codebook_size = 0;
     only_8bit = false;
