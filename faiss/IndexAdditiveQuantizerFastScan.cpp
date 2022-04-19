@@ -206,6 +206,13 @@ void IndexAdditiveQuantizerFastScan::search(
     }
 }
 
+void IndexAdditiveQuantizerFastScan::sa_decode(
+        idx_t n,
+        const uint8_t* bytes,
+        float* x) const {
+    aq->decode(bytes, x, n);
+}
+
 /**************************************************************************************
  * IndexResidualQuantizerFastScan
  **************************************************************************************/
