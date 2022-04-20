@@ -142,6 +142,7 @@ set(FAISS_HEADERS
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
+  impl/Quantizer.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h

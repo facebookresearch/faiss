@@ -15,23 +15,22 @@
 #include <vector>
 
 #include <faiss/Clustering.h>
+#include <faiss/impl/Quantizer.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
 
 /** Product Quantizer. Implemented only for METRIC_L2 */
-struct ProductQuantizer {
+struct ProductQuantizer : Quantizer {
     using idx_t = Index::idx_t;
 
-    size_t d;     ///< size of the input vectors
     size_t M;     ///< number of subquantizers
     size_t nbits; ///< number of bits per quantization index
 
     // values derived from the above
-    size_t dsub;      ///< dimensionality of each subvector
-    size_t code_size; ///< bytes per indexed vector
-    size_t ksub;      ///< number of centroids for each subquantizer
-    bool verbose;     ///< verbose during training?
+    size_t dsub;  ///< dimensionality of each subvector
+    size_t ksub;  ///< number of centroids for each subquantizer
+    bool verbose; ///< verbose during training?
 
     /// initialization
     enum train_type_t {
@@ -62,7 +61,7 @@ struct ProductQuantizer {
 
     // Train the product quantizer on a set of points. A clustering
     // can be set on input to define non-default clustering parameters
-    void train(int n, const float* x);
+    void train(size_t n, const float* x) override;
 
     ProductQuantizer(
             size_t d,      /* dimensionality of the input vectors */
@@ -81,7 +80,7 @@ struct ProductQuantizer {
     void compute_code(const float* x, uint8_t* code) const;
 
     /// same as compute_code for several vectors
-    void compute_codes(const float* x, uint8_t* codes, size_t n) const;
+    void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
 
     /// speed up code assignment using assign_index
     /// (non-const because the index is changed)
@@ -92,7 +91,7 @@ struct ProductQuantizer {
 
     /// decode a vector from a given code (or n vectors if third argument)
     void decode(const uint8_t* code, float* x) const;
-    void decode(const uint8_t* code, float* x, size_t n) const;
+    void decode(const uint8_t* code, float* x, size_t n) const override;
 
     /// If we happen to have the distance tables precomputed, this is
     /// more efficient to compute the codes.

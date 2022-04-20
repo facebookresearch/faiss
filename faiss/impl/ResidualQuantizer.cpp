@@ -551,7 +551,7 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
     return mem;
 }
 
-void ResidualQuantizer::compute_codes(
+void ResidualQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
         size_t n,

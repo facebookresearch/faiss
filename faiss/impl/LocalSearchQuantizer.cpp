@@ -298,7 +298,7 @@ void LocalSearchQuantizer::perturb_codebooks(
     }
 }
 
-void LocalSearchQuantizer::compute_codes(
+void LocalSearchQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
         size_t n,

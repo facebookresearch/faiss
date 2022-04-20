@@ -9,7 +9,7 @@ import unittest
 import faiss
 
 from faiss.contrib import factory_tools
-
+from faiss.contrib import datasets
 
 class TestFactory(unittest.TestCase):
 
@@ -160,6 +160,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(50, "IVF1000,PQ25x4fsr")
         self.assertTrue(index.by_residual)
 
+
 class TestCodeSize(unittest.TestCase):
 
     def test_1(self):
@@ -265,3 +266,23 @@ class TestSpectralHash(unittest.TestCase):
     def test_sh(self):
         index = faiss.index_factory(123, "IVF256,ITQ64,SH1.2")
         self.assertEqual(index.__class__, faiss.IndexIVFSpectralHash)
+
+
+class TestQuantizerClone(unittest.TestCase):
+
+    def test_clone(self):
+        ds = datasets.SyntheticDataset(32, 200, 10, 0)
+
+        quant = faiss.ScalarQuantizer(32, faiss.ScalarQuantizer.QT_4bit)
+        quant.train(ds.get_train())
+
+        codes = quant.compute_codes(ds.get_database())
+
+        quant2 = faiss.clone_Quantizer(quant)
+        self.assertTrue(quant2.this.own())
+
+        # make sure typemap works
+        self.assertEquals(quant2.__class__, faiss.ScalarQuantizer)
+
+        codes2 = quant2.compute_codes(ds.get_database())
+        np.testing.assert_array_equal(codes, codes2)

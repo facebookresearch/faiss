@@ -12,6 +12,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
+#include <faiss/impl/Quantizer.h>
 
 namespace faiss {
 
@@ -21,15 +22,13 @@ namespace faiss {
  * concatenation of M sub-vectors, additive quantizers sum M sub-vectors
  * to get the decoded vector.
  */
-struct AdditiveQuantizer {
-    size_t d;                     ///< size of the input vectors
+struct AdditiveQuantizer : Quantizer {
     size_t M;                     ///< number of codebooks
     std::vector<size_t> nbits;    ///< bits for each step
     std::vector<float> codebooks; ///< codebooks
 
     // derived values
     std::vector<uint64_t> codebook_offsets;
-    size_t code_size;           ///< code size in bytes
     size_t tot_bits;            ///< total number of bits (indexes + norms)
     size_t norm_bits;           ///< bits allocated for the norms
     size_t total_codebook_size; ///< size of the codebook in vectors
@@ -79,11 +78,13 @@ struct AdditiveQuantizer {
     ///< compute derived values when d, M and nbits have been set
     void set_derived_values();
 
-    ///< Train the additive quantizer
-    virtual void train(size_t n, const float* x) = 0;
-
     ///< Train the norm quantizer
     void train_norm(size_t n, const float* norms);
+
+    void compute_codes(const float* x, uint8_t* codes, size_t n)
+            const override {
+        compute_codes_add_centroids(x, codes, n);
+    }
 
     /** Encode a set of vectors
      *
@@ -91,7 +92,7 @@ struct AdditiveQuantizer {
      * @param codes  output codes, size n * code_size
      * @param centroids  centroids to be added to x, size n * d
      */
-    virtual void compute_codes(
+    virtual void compute_codes_add_centroids(
             const float* x,
             uint8_t* codes,
             size_t n,
@@ -119,7 +120,7 @@ struct AdditiveQuantizer {
      * @param codes  codes to decode, size n * code_size
      * @param x      output vectors, size n * d
      */
-    void decode(const uint8_t* codes, float* x, size_t n) const;
+    void decode(const uint8_t* codes, float* x, size_t n) const override;
 
     /** Decode a set of vectors in non-packed format
      *
