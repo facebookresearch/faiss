@@ -216,7 +216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="61"/>
+        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="60"/>
       </memberdef>
       <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
         <type></type>
@@ -255,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="67" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="67" bodyend="79"/>
+        <location file="faiss/gpu/GpuResources.h" line="66" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="66" bodyend="78"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -440,7 +440,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="64" column="13" declfile="faiss/gpu/GpuResources.h" declline="64" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="63" column="13" declfile="faiss/gpu/GpuResources.h" declline="63" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a26325bc7abaa18271fbe76c2bfbf1c64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -458,7 +458,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="82" column="13" declfile="faiss/gpu/GpuResources.h" declline="82" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="81" column="13" declfile="faiss/gpu/GpuResources.h" declline="81" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a899d29db52c5400a548baa534667f1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -480,7 +480,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="119" column="11" declfile="faiss/gpu/GpuResources.h" declline="119" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="118" column="11" declfile="faiss/gpu/GpuResources.h" declline="118" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a25ba473fa8b757298399a9898435424a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -502,7 +502,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="122" column="11" declfile="faiss/gpu/GpuResources.h" declline="122" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="121" column="11" declfile="faiss/gpu/GpuResources.h" declline="121" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1acc39275d82143dd1663807a635e59cf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -528,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="125" column="11" declfile="faiss/gpu/GpuResources.h" declline="125" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="124" column="11" declfile="faiss/gpu/GpuResources.h" declline="124" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

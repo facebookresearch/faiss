@@ -5458,6 +5458,7 @@
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>
+    <member refid="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" kind="function"><name>clone_Quantizer</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" kind="function"><name>index_factory</name></member>
     <member refid="namespacefaiss_1a550ef4d89215226f02adad8f161457cf" kind="function"><name>index_binary_factory</name></member>

@@ -676,7 +676,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/clone_index.h" line="21" column="7" declfile="faiss/clone_index.h" declline="21" declcolumn="7"/>
+        <location file="faiss/clone_index.h" line="22" column="7" declfile="faiss/clone_index.h" declline="22" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Quantizer *</type>
+        <definition>Quantizer* faiss::clone_Quantizer</definition>
+        <argsstring>(const Quantizer *quant)</argsstring>
+        <name>clone_Quantizer</name>
+        <param>
+          <type>const Quantizer *</type>
+          <declname>quant</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/clone_index.h" line="34" column="11" declfile="faiss/clone_index.h" declline="34" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
