@@ -327,6 +327,7 @@ void gpu_sync_all_devices()
 %ignore *::allocMemoryHandle;
 %ignore faiss::gpu::GpuMemoryReservation;
 %ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
+%ignore faiss::gpu::AllocType;
 
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
@@ -392,6 +393,7 @@ void gpu_sync_all_devices()
 
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
+%include  <faiss/impl/Quantizer.h>
 %include  <faiss/impl/ProductQuantizer.h>
 %include  <faiss/impl/AdditiveQuantizer.h>
 %include  <faiss/impl/ResidualQuantizer.h>
@@ -555,6 +557,7 @@ void gpu_sync_all_devices()
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
+%newobject clone_Quantizer;
 %newobject clone_VectorTransform;
 
 // Subclasses should appear before their parent
@@ -674,7 +677,9 @@ void gpu_sync_all_devices()
     }
 }
 
-%typemap(out) faiss::AdditiveQuantizer * {
+%typemap(out) faiss::Quantizer * {
+    DOWNCAST (ScalarQuantizer)
+    DOWNCAST (ProductQuantizer)
     DOWNCAST (LocalSearchQuantizer)
     DOWNCAST (ResidualQuantizer)
     DOWNCAST (ProductLocalSearchQuantizer)
@@ -703,7 +708,12 @@ faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 {
     return il;
 }
-faiss::AdditiveQuantizer * downcast_AdditiveQuantizer (faiss::AdditiveQuantizer *aq)
+// backwards compatibility
+faiss::Quantizer * downcast_AdditiveQuantizer (faiss::AdditiveQuantizer *aq)
+{
+    return aq;
+}
+faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 {
     return aq;
 }

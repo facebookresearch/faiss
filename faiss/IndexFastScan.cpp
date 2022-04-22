@@ -554,4 +554,14 @@ template void IndexFastScan::search_dispatch_implem<false, NormTableScaler>(
         idx_t* labels,
         const NormTableScaler& scaler) const;
 
+void IndexFastScan::reconstruct(idx_t key, float* recons) const {
+    std::vector<uint8_t> code(code_size, 0);
+    BitstringWriter bsw(code.data(), code_size);
+    for (size_t m = 0; m < M; m++) {
+        uint8_t c = pq4_get_packed_element(codes.data(), bbs, M2, key, m);
+        bsw.write(c, nbits);
+    }
+    sa_decode(1, code.data(), recons);
+}
+
 } // namespace faiss

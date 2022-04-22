@@ -299,7 +299,9 @@ void IndexIVFAdditiveQuantizerFastScan::encode_vectors(
             quantizer->reconstruct(list_nos[i], c);
         }
 
-        aq->compute_codes(residuals.data(), codes, n, centroids.data());
+        aq->compute_codes_add_centroids(
+                residuals.data(), codes, n, centroids.data());
+
     } else {
         aq->compute_codes(x, codes, n);
     }

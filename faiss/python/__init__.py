@@ -194,14 +194,6 @@ def handle_Quantizer(the_class):
     replace_method(the_class, 'decode', replacement_decode)
 
 
-handle_Quantizer(ProductQuantizer)
-handle_Quantizer(ScalarQuantizer)
-handle_Quantizer(ResidualQuantizer)
-handle_Quantizer(LocalSearchQuantizer)
-handle_Quantizer(ProductResidualQuantizer)
-handle_Quantizer(ProductLocalSearchQuantizer)
-
-
 def handle_ProductAdditiveQuantizer(the_class):
 
     def set_paq_attr(self, name, value):
@@ -242,10 +234,6 @@ def handle_ProductAdditiveQuantizer(the_class):
     the_class.__setattr__ = set_paq_attr
     the_class.__getattr__ = get_paq_attr
     replace_method(the_class, 'subquantizer', replacement_subquantizer)
-
-
-handle_ProductAdditiveQuantizer(ProductResidualQuantizer)
-handle_ProductAdditiveQuantizer(ProductLocalSearchQuantizer)
 
 
 def handle_NSG(the_class):
@@ -833,6 +821,13 @@ for symbol in dir(this_module):
         if issubclass(the_class, IndexNSG):
             handle_NSG(the_class)
 
+        if issubclass(the_class, Quantizer):
+            handle_Quantizer(the_class)
+
+        if issubclass(the_class, ProductAdditiveQuantizer):
+            handle_ProductAdditiveQuantizer(the_class)
+
+
 ###########################################
 # Utility to add a deprecation warning to
 # classes from the SWIG interface
@@ -931,6 +926,8 @@ add_ref_in_constructor(IndexIVFPQR, 0)
 add_ref_in_constructor(IndexIVFPQFastScan, 0)
 add_ref_in_constructor(IndexIVFResidualQuantizer, 0)
 add_ref_in_constructor(IndexIVFLocalSearchQuantizer, 0)
+add_ref_in_constructor(IndexIVFResidualQuantizerFastScan, 0)
+add_ref_in_constructor(IndexIVFLocalSearchQuantizerFastScan, 0)
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)

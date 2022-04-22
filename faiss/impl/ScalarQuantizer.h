@@ -9,11 +9,13 @@
 
 #pragma once
 
-#include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/Quantizer.h>
 
 namespace faiss {
+
+struct InvertedListScanner;
 
 /**
  * The uniform quantizer has a range [vmin, vmax]. The range can be
@@ -21,7 +23,7 @@ namespace faiss {
  * (default).
  */
 
-struct ScalarQuantizer {
+struct ScalarQuantizer : Quantizer {
     enum QuantizerType {
         QT_8bit,         ///< 8 bits per component
         QT_4bit,         ///< 4 bits per component
@@ -49,14 +51,8 @@ struct ScalarQuantizer {
     RangeStat rangestat;
     float rangestat_arg;
 
-    /// dimension of input vectors
-    size_t d;
-
     /// bits per scalar code
     size_t bits;
-
-    /// bytes per vector
-    size_t code_size;
 
     /// trained values (including the range)
     std::vector<float> trained;
@@ -67,7 +63,7 @@ struct ScalarQuantizer {
     /// updates internal values based on qtype and d
     void set_derived_sizes();
 
-    void train(size_t n, const float* x);
+    void train(size_t n, const float* x) override;
 
     /// Used by an IVF index to train based on the residuals
     void train_residual(
@@ -82,29 +78,29 @@ struct ScalarQuantizer {
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      */
-    void compute_codes(const float* x, uint8_t* codes, size_t n) const;
+    void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
 
     /** Decode a set of vectors
      *
      * @param codes  codes to decode, size n * code_size
      * @param x      output vectors, size n * d
      */
-    void decode(const uint8_t* code, float* x, size_t n) const;
+    void decode(const uint8_t* code, float* x, size_t n) const override;
 
     /*****************************************************
      * Objects that provide methods for encoding/decoding, distance
      * computation and inverted list scanning
      *****************************************************/
 
-    struct Quantizer {
+    struct SQuantizer {
         // encodes one vector. Assumes code is filled with 0s on input!
         virtual void encode_vector(const float* x, uint8_t* code) const = 0;
         virtual void decode_vector(const uint8_t* code, float* x) const = 0;
 
-        virtual ~Quantizer() {}
+        virtual ~SQuantizer() {}
     };
 
-    Quantizer* select_quantizer() const;
+    SQuantizer* select_quantizer() const;
 
     struct SQDistanceComputer : FlatCodesDistanceComputer {
         const float* q;

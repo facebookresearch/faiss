@@ -173,7 +173,7 @@ static inline void pq_estimators_from_tables_generic(
  *********************************************/
 
 ProductQuantizer::ProductQuantizer(size_t d, size_t M, size_t nbits)
-        : d(d), M(M), nbits(nbits), assign_index(nullptr) {
+        : Quantizer(d, 0), M(M), nbits(nbits), assign_index(nullptr) {
     set_derived_values();
 }
 
@@ -246,7 +246,7 @@ static void init_hypercube_pca(
     }
 }
 
-void ProductQuantizer::train(int n, const float* x) {
+void ProductQuantizer::train(size_t n, const float* x) {
     if (train_type != Train_shared) {
         train_type_t final_train_type;
         final_train_type = train_type;
