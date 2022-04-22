@@ -57,13 +57,18 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
     ///< Train the product additive quantizer
     void train(size_t n, const float* x) override;
 
+    void compute_codes(const float* x, uint8_t* codes, size_t n)
+            const override {
+        compute_codes_add_centroids(x, codes, n);
+    }
+
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
      * @param codes  output codes, size n * code_size
      * @param centroids  centroids to be added to x, size n * d
      */
-    void compute_codes(
+    void compute_codes_add_centroids(
             const float* x,
             uint8_t* codes,
             size_t n,

@@ -129,7 +129,7 @@ void ProductAdditiveQuantizer::train(size_t n, const float* x) {
     is_trained = true;
 }
 
-void ProductAdditiveQuantizer::compute_codes(
+void ProductAdditiveQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
         size_t n,
