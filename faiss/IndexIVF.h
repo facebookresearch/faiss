@@ -108,6 +108,7 @@ struct IndexIVF : Index, Level1Quantizer {
      * 1: parallelize over inverted lists
      * 2: parallelize over both
      * 3: split over queries with a finer granularity
+     * 4: split over inverted lists with batched query
      *
      * PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to
      * prevent the heap to be initialized and finalized
@@ -371,6 +372,11 @@ struct InvertedListScanner {
     /// from now on we handle this query.
     virtual void set_query(const float* query_vector) = 0;
 
+    /// we'll handle a list of queries.
+    virtual void set_query_batched(
+            const float* query_base,
+            std::vector<idx_t>& queries);
+
     /// following codes come from this inverted list
     virtual void set_list(idx_t list_no, float coarse_dis) = 0;
 
@@ -390,6 +396,16 @@ struct InvertedListScanner {
      * @return number of heap updates performed
      */
     virtual size_t scan_codes(
+            size_t n,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            size_t k) const;
+
+    /// same as scan_codes, but we scan a list of queries.
+
+    virtual size_t scan_codes_batched(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,

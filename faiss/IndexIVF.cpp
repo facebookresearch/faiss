@@ -324,7 +324,6 @@ void IndexIVF::search(
 
         double t1 = getmillisecs();
         invlists->prefetch_lists(idx.get(), n * nprobe);
-
         search_preassigned(
                 n,
                 x,
@@ -409,6 +408,7 @@ void IndexIVF::search_preassigned(
     bool interrupt = false;
     std::mutex exception_mutex;
     std::string exception_string;
+    std::vector<std::vector<idx_t>> keys_by_list;
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
@@ -500,9 +500,13 @@ void IndexIVF::search_preassigned(
                     sids.reset(new InvertedLists::ScopedIds(invlists, key));
                     ids = sids->get();
                 }
-
-                nheap += scanner->scan_codes(
-                        list_size, scodes.get(), ids, simi, idxi, k);
+                if (pmode == 4) {
+                    nheap += scanner->scan_codes_batched(
+                            list_size, scodes.get(), ids, simi, idxi, k);
+                } else {
+                    nheap += scanner->scan_codes(
+                            list_size, scodes.get(), ids, simi, idxi, k);
+                }
 
             } catch (const std::exception& e) {
                 std::lock_guard<std::mutex> lock(exception_mutex);
@@ -623,6 +627,53 @@ void IndexIVF::search_preassigned(
             }
 #pragma omp single
             for (int64_t i = 0; i < n; i++) {
+                reorder_result(distances + i * k, labels + i * k);
+            }
+        } else if (pmode == 4) {
+            /// for this parallelization method, we parallelize over every
+            /// existing list, group together all the queries affiliated, and
+            /// scan all the queries of this list in one go.
+#pragma omp single
+            {
+                keys_by_list.resize(nlist);
+                for (idx_t i = 0; i < nlist; i++) {
+                    keys_by_list[i].reserve(nprobe * n / nlist);
+                }
+                for (idx_t il = 0; il < n; il++) {
+                    for (idx_t ikey = 0; ikey < nprobe; ikey++) {
+                        keys_by_list[keys[il * nprobe + ikey]].emplace_back(il);
+                    }
+                }
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_heapify<HeapForIP>(k * n, distances, labels);
+                } else {
+                    heap_heapify<HeapForL2>(k * n, distances, labels);
+                }
+            }
+#pragma omp for schedule(dynamic)
+            for (idx_t il = 0; il < invlists->nlist; il++) {
+                std::vector<idx_t>& my_list = keys_by_list[il];
+                idx_t num_of_x = my_list.size();
+                if (num_of_x > 0) {
+                    std::vector<idx_t> local_idx(k * num_of_x);
+                    std::vector<float> local_dis(k * num_of_x);
+                    scanner->set_query_batched(x, my_list);
+                    ndis += scan_one_list(
+                            il, 0, local_dis.data(), local_idx.data());
+#pragma omp critical
+                    for (idx_t one_x = 0; one_x < num_of_x; one_x++) {
+                        float* simi = distances + my_list[one_x] * k;
+                        idx_t* idxi = labels + my_list[one_x] * k;
+                        add_local_results(
+                                local_dis.data() + one_x * k,
+                                local_idx.data() + one_x * k,
+                                simi,
+                                idxi);
+                    }
+                }
+            }
+#pragma omp for schedule(dynamic)
+            for (idx_t i = 0; i < n; i++) {
                 reorder_result(distances + i * k, labels + i * k);
             }
         } else {
@@ -1112,6 +1163,12 @@ IndexIVFStats indexIVF_stats;
  * InvertedListScanner
  *************************************************************************/
 
+void InvertedListScanner::set_query_batched(
+        const float* query_base,
+        std::vector<idx_t>& queries) {
+    FAISS_THROW_MSG("set_query_batched not implemented");
+}
+
 size_t InvertedListScanner::scan_codes(
         size_t list_size,
         const uint8_t* codes,
@@ -1143,6 +1200,17 @@ size_t InvertedListScanner::scan_codes(
         }
     }
     return nup;
+}
+
+size_t InvertedListScanner::scan_codes_batched(
+        size_t n,
+        const uint8_t* codes,
+        const idx_t* ids,
+        float* distances,
+        idx_t* labels,
+        size_t k) const {
+    FAISS_THROW_MSG("scan_codes_batched not implemented");
+    return 0;
 }
 
 void InvertedListScanner::scan_codes_range(
