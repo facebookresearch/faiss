@@ -124,9 +124,9 @@ inline void heap_replace_top(
             break;
         }
 
-        // Note that C::cmp2() is a bool function answering
-        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
-        // heap and same with the `<` sign for min heap.
+        // Note that C::cmp2() is a bool function answering a `<` or
+        // `>` inequality for the first pair of arguments and, in case
+        // of a tie, for the second pair.
         if ((i2 == k + 1) ||
             C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
             if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {

@@ -30,6 +30,8 @@ namespace faiss {
 
 template <typename T_, typename TI_>
 struct CMax;
+template <typename T_, typename TI_>
+struct CMaxMin;
 
 template <typename T>
 inline T cmin_nextafter(T x);
@@ -55,7 +57,6 @@ struct CMin {
         return std::numeric_limits<T>::lowest();
     }
     static const bool is_max = false;
-
     inline static T nextafter(T x) {
         return cmin_nextafter(x);
     }
@@ -73,6 +74,50 @@ struct CMax {
     // by comparing the second pair of arguments.
     inline static bool cmp2(T a1, T b1, TI a2, TI b2) {
         return (a1 > b1) || ((a1 == b1) && (a2 > b2));
+    }
+    inline static T neutral() {
+        return std::numeric_limits<T>::max();
+    }
+    static const bool is_max = true;
+    inline static T nextafter(T x) {
+        return cmax_nextafter(x);
+    }
+};
+
+template <typename T_, typename TI_>
+struct CMinMax {
+    typedef T_ T;
+    typedef TI_ TI;
+    typedef CMaxMin<T_, TI_> Crev; // reference to reverse comparison
+    inline static bool cmp(T a, T b) {
+        return a < b;
+    }
+    // Similar to cmp(), but also breaks ties
+    // by comparing the second pair of arguments.
+    inline static bool cmp2(T a1, T b1, TI a2, TI b2) {
+        return (a1 < b1) || ((a1 == b1) && (a2 > b2));
+    }
+    inline static T neutral() {
+        return std::numeric_limits<T>::lowest();
+    }
+    static const bool is_max = false;
+    inline static T nextafter(T x) {
+        return cmin_nextafter(x);
+    }
+};
+
+template <typename T_, typename TI_>
+struct CMaxMin {
+    typedef T_ T;
+    typedef TI_ TI;
+    typedef CMinMax<T_, TI_> Crev; // reference to reverse comparison
+    inline static bool cmp(T a, T b) {
+        return a < b;
+    }
+    // Similar to cmp(), but also breaks ties
+    // by comparing the second pair of arguments.
+    inline static bool cmp2(T a1, T b1, TI a2, TI b2) {
+        return (a1 > b1) || ((a1 == b1) && (a2 < b2));
     }
     inline static T neutral() {
         return std::numeric_limits<T>::max();
