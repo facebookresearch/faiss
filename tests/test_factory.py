@@ -282,7 +282,7 @@ class TestQuantizerClone(unittest.TestCase):
         self.assertTrue(quant2.this.own())
 
         # make sure typemap works
-        self.assertEquals(quant2.__class__, faiss.ScalarQuantizer)
+        self.assertEqual(quant2.__class__, faiss.ScalarQuantizer)
 
         codes2 = quant2.compute_codes(ds.get_database())
         np.testing.assert_array_equal(codes, codes2)
