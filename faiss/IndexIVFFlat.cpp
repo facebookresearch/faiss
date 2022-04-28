@@ -118,11 +118,14 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 namespace {
 
+/// update heap array's id with the given id list,
+/// input heap should not contain previous results.
 template <class T>
 void update_res_ids(T* t, const size_t n, const Index::idx_t* ids) {
     Index::idx_t* start = t->get_ids(0);
     for (size_t i = 0; i < n; i++) {
-        start[i] = ids[start[i]];
+        if (start[i] >= 0)
+            start[i] = ids[start[i]];
     }
 }
 
