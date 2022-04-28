@@ -8,6 +8,7 @@ import faiss
 import time
 from datasets import load_sift1M
 
+
 def evaluate(index, xq, gt, k):
     nq = xq.shape[0]
     t0 = time.time()
@@ -21,6 +22,7 @@ def evaluate(index, xq, gt, k):
 
     return (t1 - t0) * 1000.0 / nq, recalls
 
+
 xb, xq, xt, gt = load_sift1M()
 nq, d = xq.shape
 
@@ -31,10 +33,10 @@ index = faiss.IndexIVFFlat(quantizer, d, 1024)
 index.train(xt)
 index.add(xb)
 
-for pmode in 0,4:
-    print("pmode = ",pmode)
-    for nprobe in 16,32,64:
-        for nq in 100,1000,10000:
+for pmode in 0, 4:
+    print("pmode = ", pmode)
+    for nprobe in 16, 32, 64:
+        for nq in 100, 1000, 10000:
             try:
                 index.parallel_mode = pmode
                 index.nprobe = nprobe
