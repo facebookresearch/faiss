@@ -278,13 +278,15 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
     ****************************************************/
 
     // for imbalance factor
-    double tot = 0.0, uf = 0.0;
+    double tot = 0.0;
+    double uf = 0.0;
 
     idx_t end = n;
     for (idx_t k = nclusters - 1; k >= 0; k--) {
-        idx_t start = T.at(k, end - 1);
-        float sum = std::accumulate(&arr[start], &arr[end], 0.0f);
-        idx_t size = end - start;
+        const idx_t start = T.at(k, end - 1);
+        const float sum =
+                std::accumulate(arr.data() + start, arr.data() + end, 0.0f);
+        const idx_t size = end - start;
         FAISS_THROW_IF_NOT_FMT(
                 size > 0, "Cluster %d: size %d", int(k), int(size));
         centroids[k] = sum / size;
