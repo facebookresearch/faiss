@@ -1177,14 +1177,7 @@ class TestProductResidualQuantizer(unittest.TestCase):
         print(err_prq, err_rq)
         self.assertEqual(err_prq, err_rq)
 
-    def test_sub_attributes(self):
+    def test_subquantizer(self):
         prq = faiss.ProductResidualQuantizer(16, 2, 2, 4)
-        prq.sub_verbose = True
-        prq.sub_max_beam_size = 3
-        for i in range(prq.nsplits):
-            q = prq.subquantizer(i)
-            assert q.verbose
-            assert q.max_beam_size == 3
-
-        assert not prq.verbose
-        assert prq.sub_max_beam_size == [3, 3]
+        q = prq.subquantizer(0)
+        assert isinstance(q, faiss.ResidualQuantizer)

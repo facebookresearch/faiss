@@ -15,6 +15,7 @@
 
 #include <algorithm>
 
+#include <faiss/clone_index.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
@@ -80,7 +81,18 @@ void ProductAdditiveQuantizer::init(
 
     // ProductAdditiveQuantizer
     nsplits = aqs.size();
-    quantizers = aqs;
+
+    FAISS_THROW_IF_NOT(quantizers.empty());
+    for (const auto& q : aqs) {
+        auto aq = dynamic_cast<AdditiveQuantizer*>(clone_Quantizer(q));
+        quantizers.push_back(aq);
+    }
+}
+
+ProductAdditiveQuantizer::~ProductAdditiveQuantizer() {
+    for (auto& q : quantizers) {
+        delete q;
+    }
 }
 
 AdditiveQuantizer* ProductAdditiveQuantizer::subquantizer(size_t s) const {
@@ -309,13 +321,16 @@ ProductLocalSearchQuantizer::ProductLocalSearchQuantizer(
     FAISS_THROW_IF_NOT(d % nsplits == 0);
     size_t dsub = d / nsplits;
     std::vector<AdditiveQuantizer*> aqs;
-    lsqs.reserve(nsplits); // reserve to avoid the underlying memory change
-    for (size_t i = 0; i < nsplits; i++) {
-        lsqs.emplace_back(dsub, Msub, nbits, ST_decompress);
-        aqs.push_back(&lsqs[i]);
-    }
 
+    for (size_t i = 0; i < nsplits; i++) {
+        auto lsq = new LocalSearchQuantizer(dsub, Msub, nbits, ST_decompress);
+        aqs.push_back(lsq);
+    }
     init(d, aqs, search_type);
+
+    for (auto& q : aqs) {
+        delete q;
+    }
 }
 
 ProductLocalSearchQuantizer::ProductLocalSearchQuantizer() {}
@@ -333,13 +348,16 @@ ProductResidualQuantizer::ProductResidualQuantizer(
     FAISS_THROW_IF_NOT(d % nsplits == 0);
     size_t dsub = d / nsplits;
     std::vector<AdditiveQuantizer*> aqs;
-    rqs.reserve(nsplits); // reserve to avoid the underlying memory change
-    for (size_t i = 0; i < nsplits; i++) {
-        rqs.emplace_back(dsub, Msub, nbits, ST_decompress);
-        aqs.push_back(&rqs[i]);
-    }
 
+    for (size_t i = 0; i < nsplits; i++) {
+        auto rq = new ResidualQuantizer(dsub, Msub, nbits, ST_decompress);
+        aqs.push_back(rq);
+    }
     init(d, aqs, search_type);
+
+    for (auto& q : aqs) {
+        delete q;
+    }
 }
 
 ProductResidualQuantizer::ProductResidualQuantizer() {}

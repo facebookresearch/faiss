@@ -32,9 +32,8 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
 
     /** Construct a product additive quantizer.
      *
-     * The ownership of the additive quantizers passed in is not
-     * transferred to the ProductAdditiveQuantizer object. Users
-     * are responsible to take care of it.
+     * The additive quantizers passed in will be cloned into the
+     * ProductAdditiveQuantizer object.
      *
      * @param d      dimensionality of the input vectors
      * @param aqs    sub-additive quantizers
@@ -46,6 +45,8 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             Search_type_t search_type = ST_decompress);
 
     ProductAdditiveQuantizer();
+
+    virtual ~ProductAdditiveQuantizer();
 
     void init(
             size_t d,
@@ -110,8 +111,6 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
 /** Product Local Search Quantizer
  */
 struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
-    std::vector<LocalSearchQuantizer> lsqs;
-
     /** Construct a product LSQ object.
      *
      * @param d   dimensionality of the input vectors
@@ -133,8 +132,6 @@ struct ProductLocalSearchQuantizer : ProductAdditiveQuantizer {
 /** Product Residual Quantizer
  */
 struct ProductResidualQuantizer : ProductAdditiveQuantizer {
-    std::vector<ResidualQuantizer> rqs;
-
     /** Construct a product RQ object.
      *
      * @param d   dimensionality of the input vectors

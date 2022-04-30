@@ -194,48 +194,6 @@ def handle_Quantizer(the_class):
     replace_method(the_class, 'decode', replacement_decode)
 
 
-def handle_ProductAdditiveQuantizer(the_class):
-
-    def set_paq_attr(self, name, value):
-        if name.startswith('sub_'):
-            name = name[4:]
-            for i in range(self.nsplits):
-                setattr(self.subquantizer(i), name, value)
-        else:
-            super(the_class, self).__setattr__(name, value)
-
-    def get_paq_attr(self, name):
-        if name.startswith('sub_'):
-            name = name[4:]
-            values = []
-            for i in range(self.nsplits):
-                v = getattr(self.subquantizer(i), name)
-                values.append(v)
-            return values
-
-        cls_name = the_class.__name__
-        raise AttributeError(f"'{cls_name}' object has no attribute '{name}'")
-
-    def replacement_subquantizer(self, s):
-        """Return the s-th sub-quantizer.
-
-        Parameters
-        ----------
-        s : int
-            The index of the sub-quantizer
-
-        Returns
-        -------
-            The s-th sub-quantizer.
-        """
-        q = self.subquantizer_c(s)
-        return downcast_AdditiveQuantizer(q)
-
-    the_class.__setattr__ = set_paq_attr
-    the_class.__getattr__ = get_paq_attr
-    replace_method(the_class, 'subquantizer', replacement_subquantizer)
-
-
 def handle_NSG(the_class):
 
     def replacement_build(self, x, graph):
@@ -823,9 +781,6 @@ for symbol in dir(this_module):
 
         if issubclass(the_class, Quantizer):
             handle_Quantizer(the_class)
-
-        if issubclass(the_class, ProductAdditiveQuantizer):
-            handle_ProductAdditiveQuantizer(the_class)
 
 
 ###########################################
