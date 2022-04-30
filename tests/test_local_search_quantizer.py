@@ -572,8 +572,3 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
 
         # max rtoal in OSX: 2.87e-6
         np.testing.assert_allclose(lut, lut_ref, rtol=5e-06)
-
-    def test_subquantizer(self):
-        plsq = faiss.ProductLocalSearchQuantizer(16, 2, 2, 4)
-        q = plsq.subquantizer(0)
-        assert isinstance(q, faiss.LocalSearchQuantizer)

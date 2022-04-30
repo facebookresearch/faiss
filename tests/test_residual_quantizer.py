@@ -1176,8 +1176,3 @@ class TestProductResidualQuantizer(unittest.TestCase):
 
         print(err_prq, err_rq)
         self.assertEqual(err_prq, err_rq)
-
-    def test_subquantizer(self):
-        prq = faiss.ProductResidualQuantizer(16, 2, 2, 4)
-        q = prq.subquantizer(0)
-        assert isinstance(q, faiss.ResidualQuantizer)
