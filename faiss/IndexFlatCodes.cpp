@@ -20,6 +20,9 @@ IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
 void IndexFlatCodes::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
+    if (n == 0) {
+        return;
+    }
     codes.resize((ntotal + n) * code_size);
     sa_encode(n, x, codes.data() + (ntotal * code_size));
     ntotal += n;
