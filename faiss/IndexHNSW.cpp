@@ -202,7 +202,10 @@ void hnsw_add_vertices(
                         verbose && omp_get_thread_num() == 0 ? 0 : -1;
                 size_t counter = 0;
 
-#pragma omp for schedule(dynamic)
+                // here we should do schedule(dynamic) but this segfaults for
+                // some versions of LLVM. The performance impact should not be
+                // too large when (i1 - i0) / num_threads >> 1
+#pragma omp for schedule(static)
                 for (int i = i0; i < i1; i++) {
                     storage_idx_t pt_id = order[i];
                     dis->set_query(x + (pt_id - n0) * d);
@@ -219,7 +222,6 @@ void hnsw_add_vertices(
                         printf("  %d / %d\r", i - i0, i1 - i0);
                         fflush(stdout);
                     }
-
                     if (counter % check_period == 0) {
                         if (InterruptCallback::is_interrupted()) {
                             interrupt = true;

@@ -774,7 +774,6 @@ void IndexIVF::range_search_preassigned(
                 }
             }
         } else if (parallel_mode == 2) {
-            std::vector<RangeQueryResult*> all_qres(nx);
             RangeQueryResult* qres = nullptr;
 
 #pragma omp for schedule(dynamic)
@@ -782,7 +781,6 @@ void IndexIVF::range_search_preassigned(
                 idx_t i = iik / (idx_t)nprobe;
                 idx_t ik = iik % (idx_t)nprobe;
                 if (qres == nullptr || qres->qno != i) {
-                    FAISS_ASSERT(!qres || i > qres->qno);
                     qres = &pres.new_result(i);
                     scanner->set_query(x + i * d);
                 }
