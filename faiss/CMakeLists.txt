@@ -56,6 +56,7 @@ set(FAISS_SRC
   impl/AdditiveQuantizer.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
+  impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
@@ -136,6 +137,7 @@ set(FAISS_HEADERS
   impl/FaissException.h
   impl/HNSW.h
   impl/LocalSearchQuantizer.h
+  impl/ProductAdditiveQuantizer.h
   impl/LookupTableScaler.h
   impl/NNDescent.h
   impl/NSG.h

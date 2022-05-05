@@ -782,6 +782,7 @@ for symbol in dir(this_module):
         if issubclass(the_class, Quantizer):
             handle_Quantizer(the_class)
 
+
 ###########################################
 # Utility to add a deprecation warning to
 # classes from the SWIG interface

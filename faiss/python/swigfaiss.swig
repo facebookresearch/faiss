@@ -130,6 +130,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -397,6 +398,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/AdditiveQuantizer.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
+%include  <faiss/impl/ProductAdditiveQuantizer.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -680,6 +682,8 @@ void gpu_sync_all_devices()
     DOWNCAST (ProductQuantizer)
     DOWNCAST (LocalSearchQuantizer)
     DOWNCAST (ResidualQuantizer)
+    DOWNCAST (ProductLocalSearchQuantizer)
+    DOWNCAST (ProductResidualQuantizer)
     {
         assert(false);
     }

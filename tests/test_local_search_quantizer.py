@@ -494,3 +494,81 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
         D2, I2 = index.search(xq, k=k)
 
         np.testing.assert_array_equal(I, I2)
+
+
+class TestProductLocalSearchQuantizer(unittest.TestCase):
+
+    def test_codec(self):
+        """check that the error is in the same ballpark as PQ."""
+        ds = datasets.SyntheticDataset(64, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        pq = faiss.ProductQuantizer(ds.d, nsplits * Msub, nbits)
+        pq.train(xt)
+        err_pq = eval_codec(pq, xb)
+
+        print(err_plsq, err_pq)
+        self.assertLess(err_plsq, err_pq)
+
+    def test_with_lsq(self):
+        """compare with LSQ when nsplits = 1"""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, 1, M, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_lsq = eval_codec(lsq, xb)
+
+        print(err_plsq, err_lsq)
+        self.assertEqual(err_plsq, err_lsq)
+
+    def test_lut(self):
+        """test compute_LUT function"""
+        ds = datasets.SyntheticDataset(16, 1000, 0, 100)
+
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+        nq, d = xq.shape
+        dsub = d // nsplits
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+
+        subcodebook_size = Msub * (1 << nbits)
+        codebook_size = nsplits * subcodebook_size
+        lut = np.zeros((nq, codebook_size), dtype=np.float32)
+        plsq.compute_LUT(nq, sp(xq), sp(lut))
+
+        codebooks = faiss.vector_to_array(plsq.codebooks)
+        codebooks = codebooks.reshape(nsplits, subcodebook_size, dsub)
+        xq = xq.reshape(nq, nsplits, dsub)
+        lut_ref = np.zeros((nq, nsplits, subcodebook_size), dtype=np.float32)
+        for i in range(nsplits):
+            lut_ref[:, i] = xq[:, i] @ codebooks[i].T
+        lut_ref = lut_ref.reshape(nq, codebook_size)
+
+        # max rtoal in OSX: 2.87e-6
+        np.testing.assert_allclose(lut, lut_ref, rtol=5e-06)
