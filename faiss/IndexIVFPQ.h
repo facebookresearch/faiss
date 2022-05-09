@@ -142,6 +142,9 @@ struct IndexIVFPQ : IndexIVF {
     IndexIVFPQ();
 };
 
+// block size used in IndexIVFPQ::add_core_o
+FAISS_API extern int index_ivfpq_add_core_o_bs;
+
 /** Pre-compute distance tables for IVFPQ with by-residual and METRIC_L2
  *
  * @param use_precomputed_table (I/O)

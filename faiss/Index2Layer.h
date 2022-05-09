@@ -14,6 +14,7 @@
 #include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPQ.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -67,5 +68,8 @@ struct Index2Layer : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
+
+// block size used in Index2Layer::sa_encode
+FAISS_API extern int index2layer_sa_encode_bs;
 
 } // namespace faiss

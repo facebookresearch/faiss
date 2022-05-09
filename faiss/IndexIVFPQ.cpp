@@ -260,13 +260,16 @@ void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
     }
 }
 
+// block size used in IndexIVFPQ::add_core_o
+int index_ivfpq_add_core_o_bs = 32768;
+
 void IndexIVFPQ::add_core_o(
         idx_t n,
         const float* x,
         const idx_t* xids,
         float* residuals_2,
         const idx_t* precomputed_idx) {
-    idx_t bs = 32768;
+    idx_t bs = index_ivfpq_add_core_o_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);

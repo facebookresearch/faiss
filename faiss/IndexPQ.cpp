@@ -862,6 +862,9 @@ void MultiIndexQuantizer::train(idx_t n, const float* x) {
         ntotal *= pq.ksub;
 }
 
+// block size used in MultiIndexQuantizer::search
+int multi_index_quantizer_search_bs = 32768;
+
 void MultiIndexQuantizer::search(
         idx_t n,
         const float* x,
@@ -874,7 +877,7 @@ void MultiIndexQuantizer::search(
     FAISS_THROW_IF_NOT(k > 0);
 
     // the allocation just below can be severe...
-    idx_t bs = 32768;
+    idx_t bs = multi_index_quantizer_search_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
