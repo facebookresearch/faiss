@@ -5438,6 +5438,7 @@
     <member refid="namespacefaiss_1a17c03ceef680b86f30abf40c359f0b6c" kind="typedef"><name>int_minheap_array_t</name></member>
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" kind="typedef"><name>int_maxheap_array_t</name></member>
+    <member refid="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" kind="variable"><name>index2layer_sa_encode_bs</name></member>
     <member refid="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" kind="variable"><name>index_factory_verbose</name></member>
     <member refid="namespacefaiss_1aa75d478d14ec1ffd7b0718adf0dab26b" kind="variable"><name>IO_FLAG_READ_ONLY</name></member>
     <member refid="namespacefaiss_1a0afd2e723c83893be7aff1fa644d13b3" kind="variable"><name>IO_FLAG_ONDISK_SAME_DIR</name></member>
@@ -5448,8 +5449,10 @@
     <member refid="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" kind="variable"><name>indexIVF_stats</name></member>
     <member refid="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" kind="variable"><name>IVFFastScan_stats</name></member>
     <member refid="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" kind="variable"><name>precomputed_table_max_bytes</name></member>
+    <member refid="namespacefaiss_1a94cbf20c186c51b00f98ae77a45ba56f" kind="variable"><name>index_ivfpq_add_core_o_bs</name></member>
     <member refid="namespacefaiss_1ae040bf76054f16979b15559f8ffc5727" kind="variable"><name>indexIVFPQ_stats</name></member>
     <member refid="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" kind="variable"><name>indexPQ_stats</name></member>
+    <member refid="namespacefaiss_1a6c123717e777aef466043cae98fe8fd9" kind="variable"><name>multi_index_quantizer_search_bs</name></member>
     <member refid="namespacefaiss_1a9875918581ad243ce5483a090c9da918" kind="variable"><name>distance_compute_blas_threshold</name></member>
     <member refid="namespacefaiss_1a70eb5be4a6af3b9d948bcb8f949a4e9f" kind="variable"><name>distance_compute_blas_query_bs</name></member>
     <member refid="namespacefaiss_1acbd29d880c5aeaf1caf6266483253953" kind="variable"><name>distance_compute_blas_database_bs</name></member>

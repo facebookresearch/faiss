@@ -408,6 +408,19 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::index2layer_sa_encode_bs</definition>
+        <argsstring></argsstring>
+        <name>index2layer_sa_encode_bs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index2Layer.h" line="73" column="22" declfile="faiss/Index2Layer.h" declline="73" declcolumn="22"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
         <definition>FAISS_API int faiss::index_factory_verbose</definition>
@@ -543,6 +556,19 @@
         </inbodydescription>
         <location file="faiss/IndexIVFPQ.h" line="29" column="25" declfile="faiss/IndexIVFPQ.h" declline="29" declcolumn="25"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a94cbf20c186c51b00f98ae77a45ba56f" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::index_ivfpq_add_core_o_bs</definition>
+        <argsstring></argsstring>
+        <name>index_ivfpq_add_core_o_bs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFPQ.h" line="146" column="22" declfile="faiss/IndexIVFPQ.h" declline="146" declcolumn="22"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae040bf76054f16979b15559f8ffc5727" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFPQStats" kindref="compound">IndexIVFPQStats</ref></type>
         <definition>FAISS_API IndexIVFPQStats faiss::indexIVFPQ_stats</definition>
@@ -554,7 +580,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="182" column="34" declfile="faiss/IndexIVFPQ.h" declline="182" declcolumn="34"/>
+        <location file="faiss/IndexIVFPQ.h" line="185" column="34" declfile="faiss/IndexIVFPQ.h" declline="185" declcolumn="34"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexPQStats" kindref="compound">IndexPQStats</ref></type>
@@ -568,6 +594,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexPQ.h" line="126" column="31" declfile="faiss/IndexPQ.h" declline="126" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a6c123717e777aef466043cae98fe8fd9" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::multi_index_quantizer_search_bs</definition>
+        <argsstring></argsstring>
+        <name>multi_index_quantizer_search_bs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPQ.h" line="157" column="22" declfile="faiss/IndexPQ.h" declline="157" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a9875918581ad243ce5483a090c9da918" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -1286,7 +1325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="156" column="6" declfile="faiss/IndexIVFPQ.h" declline="156" declcolumn="6"/>
+        <location file="faiss/IndexIVFPQ.h" line="159" column="6" declfile="faiss/IndexIVFPQ.h" declline="159" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="30" column="21" bodyfile="faiss/Index2Layer.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/Index2Layer.h" line="31" column="21" bodyfile="faiss/Index2Layer.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index2Layer_1ab90d1de73cbc705a347cfc852ded6006" prot="public" static="no" mutable="no">
         <type>ProductQuantizer</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="33" column="22" bodyfile="faiss/Index2Layer.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/Index2Layer.h" line="34" column="22" bodyfile="faiss/Index2Layer.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index2Layer_1a735b2b6cc50e4186776a8213d2679837" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="36" column="12" bodyfile="faiss/Index2Layer.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/Index2Layer.h" line="37" column="12" bodyfile="faiss/Index2Layer.h" bodystart="37" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index2Layer_1ad47e3c6493d54c2b83f1120b480d20f3" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="39" column="12" bodyfile="faiss/Index2Layer.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/Index2Layer.h" line="40" column="12" bodyfile="faiss/Index2Layer.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -207,7 +207,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="41" column="5"/>
+        <location file="faiss/Index2Layer.h" line="42" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1a665a1d9562e040bb0281c2d0f5625d93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="48" column="5"/>
+        <location file="faiss/Index2Layer.h" line="49" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1ac07e1ce0fa75888ad0a46091c59ed14a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -233,7 +233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="49" column="5"/>
+        <location file="faiss/Index2Layer.h" line="50" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1a48cbf519590313f1c6a3dc89c8d0678c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -274,7 +274,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="51" column="10"/>
+        <location file="faiss/Index2Layer.h" line="52" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1a5961efc2e19d9a6e5224f477b6d1b226" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -309,7 +309,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="54" column="10"/>
+        <location file="faiss/Index2Layer.h" line="55" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1ab8c5ac9637fe663d04438d0336f7552f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -325,7 +325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="61" column="22"/>
+        <location file="faiss/Index2Layer.h" line="62" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1a4dd6c2d0452188f0596d922ed64fcb55" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -343,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="64" column="10"/>
+        <location file="faiss/Index2Layer.h" line="65" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1a205db18d83af2fc98faab3f0066e8c9f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -396,7 +396,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="67" column="10"/>
+        <location file="faiss/Index2Layer.h" line="68" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -449,7 +449,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index2Layer.h" line="68" column="10"/>
+        <location file="faiss/Index2Layer.h" line="69" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1039,7 +1039,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/Index2Layer.h" line="28" column="33" bodyfile="faiss/Index2Layer.h" bodystart="28" bodyend="69"/>
+    <location file="faiss/Index2Layer.h" line="29" column="33" bodyfile="faiss/Index2Layer.h" bodystart="29" bodyend="70"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::Index2Layer</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::Index2Layer</scope><name>add_with_ids</name></member>
