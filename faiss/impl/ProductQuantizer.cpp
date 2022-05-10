@@ -495,10 +495,13 @@ void ProductQuantizer::compute_codes_with_assign_index(
     }
 }
 
+// block size used in ProductQuantizer::compute_codes
+int product_quantizer_compute_codes_bs = 256 * 1024;
+
 void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
     // process by blocks to avoid using too much RAM
-    size_t bs = 256 * 1024;
+    size_t bs = product_quantizer_compute_codes_bs;
     if (n > bs) {
         for (size_t i0 = 0; i0 < n; i0 += bs) {
             size_t i1 = std::min(i0 + bs, n);
