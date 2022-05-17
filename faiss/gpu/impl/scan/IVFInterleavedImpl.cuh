@@ -9,16 +9,17 @@
 
 #include <faiss/gpu/impl/IVFInterleaved.cuh>
 #include <faiss/gpu/utils/DeviceDefs.cuh>
+#include <faiss/gpu/utils/DeviceVector.cuh>
 
 #define IVF_INTERLEAVED_IMPL(THREADS, WARP_Q, THREAD_Q) \
                                                         \
     void ivfInterleavedScanImpl_##WARP_Q##_(            \
             Tensor<float, 2, true>& queries,            \
             Tensor<int, 2, true>& listIds,              \
-            thrust::device_vector<void*>& listData,     \
-            thrust::device_vector<void*>& listIndices,  \
+            DeviceVector<void*>& listData,              \
+            DeviceVector<void*>& listIndices,           \
             IndicesOptions indicesOptions,              \
-            thrust::device_vector<int>& listLengths,    \
+            DeviceVector<int>& listLengths,             \
             int k,                                      \
             faiss::MetricType metric,                   \
             bool useResidual,                           \
@@ -39,10 +40,10 @@
     void ivfInterleavedScanImpl_##WARP_Q##_(           \
             Tensor<float, 2, true>& queries,           \
             Tensor<int, 2, true>& listIds,             \
-            thrust::device_vector<void*>& listData,    \
-            thrust::device_vector<void*>& listIndices, \
+            DeviceVector<void*>& listData,             \
+            DeviceVector<void*>& listIndices,          \
             IndicesOptions indicesOptions,             \
-            thrust::device_vector<int>& listLengths,   \
+            DeviceVector<int>& listLengths,            \
             int k,                                     \
             faiss::MetricType metric,                  \
             bool useResidual,                          \

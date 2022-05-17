@@ -357,6 +357,7 @@ PCAMatrix::PCAMatrix(
     is_trained = false;
     max_points_per_d = 1000;
     balanced_bins = 0;
+    epsilon = 0;
 }
 
 namespace {
@@ -620,7 +621,7 @@ void PCAMatrix::prepare_Ab() {
         if (eigen_power != 0) {
             float* ai = A.data();
             for (int i = 0; i < d_out; i++) {
-                float factor = pow(eigenvalues[i], eigen_power);
+                float factor = pow(eigenvalues[i] + epsilon, eigen_power);
                 for (int j = 0; j < d_in; j++)
                     *ai++ *= factor;
             }

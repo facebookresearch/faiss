@@ -12,6 +12,7 @@ from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
 from faiss.contrib import evaluation
 from faiss.contrib import ivf_tools
+from faiss.contrib import clustering
 
 from common_faiss_tests import get_dataset_2
 try:
@@ -28,11 +29,11 @@ except:
                  'Submodule import broken in python 2.')
 class TestComputeGT(unittest.TestCase):
 
-    def test_compute_GT(self):
+    def do_test_compute_GT(self, metric=faiss.METRIC_L2):
         d = 64
         xt, xb, xq = get_dataset_2(d, 0, 10000, 100)
 
-        index = faiss.IndexFlatL2(d)
+        index = faiss.IndexFlat(d, metric)
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
 
@@ -42,11 +43,17 @@ class TestComputeGT(unittest.TestCase):
             for i0 in range(0, xb.shape[0], bs):
                 yield xb[i0:i0 + bs]
 
-        Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10)
+        Dnew, Inew = knn_ground_truth(xq, matrix_iterator(xb, 1000), 10, metric)
 
         np.testing.assert_array_equal(Iref, Inew)
         # decimal = 4 required when run on GPU
         np.testing.assert_almost_equal(Dref, Dnew, decimal=4)
+
+    def test_compute_GT(self):
+        self.do_test_compute_GT()
+
+    def test_compute_GT_ip(self):
+        self.do_test_compute_GT(faiss.METRIC_INNER_PRODUCT)
 
 
 class TestDatasets(unittest.TestCase):
@@ -71,7 +78,6 @@ class TestDatasets(unittest.TestCase):
             ds.get_groundtruth(100),
             index.search(ds.get_queries(), 100)[1]
         )
-
 
     def test_synthetic_iterator(self):
         ds = datasets.SyntheticDataset(32, 1000, 2000, 10)
@@ -174,7 +180,6 @@ class TestExhaustiveSearch(unittest.TestCase):
         )
 
 
-
 class TestInspect(unittest.TestCase):
 
     def test_LinearTransform(self):
@@ -193,6 +198,14 @@ class TestInspect(unittest.TestCase):
         # verify
         ynew = x @ A.T + b
         np.testing.assert_array_almost_equal(yref, ynew)
+
+    def test_IndexFlat(self):
+        xb = np.random.rand(13, 20).astype('float32')
+        index = faiss.IndexFlatL2(20)
+        index.add(xb)
+        np.testing.assert_array_equal(
+            xb, inspect_tools.get_flat_data(index)
+        )
 
 
 class TestRangeEval(unittest.TestCase):
@@ -305,7 +318,7 @@ class TestPreassigned(unittest.TestCase):
             index.nprobe = nprobe
             a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
             D, I = ivf_tools.search_preassigned(index, xq, 4, a)
-            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
+            inter_perf = faiss.eval_intersection(I, ds.get_groundtruth()[:, :4])
             self.assertTrue(inter_perf >= prev_inter_perf)
             prev_inter_perf = inter_perf
 
@@ -355,15 +368,21 @@ class TestPreassigned(unittest.TestCase):
         a = alt_quantizer.search(xb[:, :20].copy(), 1)[1].ravel()
         ivf_tools.add_preassigned(index, xb_bin, a)
 
+        # recompute GT in binary
+        k = 15
+        ib = faiss.IndexBinaryFlat(128)
+        ib.add(xb_bin)
+        Dgt, Igt = ib.search(xq_bin, k)
+
         # search elements xq, increase nprobe, check 4 first results w/ groundtruth
         prev_inter_perf = 0
         for nprobe in 1, 10, 20:
 
             index.nprobe = nprobe
             a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
-            D, I = ivf_tools.search_preassigned(index, xq_bin, 4, a)
-            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
-            self.assertTrue(inter_perf >= prev_inter_perf)
+            D, I = ivf_tools.search_preassigned(index, xq_bin, k, a)
+            inter_perf = faiss.eval_intersection(I, Igt)
+            self.assertGreaterEqual(inter_perf, prev_inter_perf)
             prev_inter_perf = inter_perf
 
         # test range search
@@ -417,3 +436,38 @@ class TestRangeSearchMaxResults(unittest.TestCase):
 
     def test_IP(self):
         self.do_test(faiss.METRIC_INNER_PRODUCT)
+
+
+class TestClustering(unittest.TestCase):
+
+    def test_2level(self):
+        " verify that 2-level clustering is not too sub-optimal "
+        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        xt = ds.get_train()
+        km_ref = faiss.Kmeans(ds.d, 100)
+        km_ref.train(xt)
+        err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
+
+        centroids2, _ = clustering.two_level_clustering(xt, 10, 10)
+        err2 = faiss.knn(xt, centroids2, 1)[0].sum()
+
+        self.assertLess(err2, err * 1.1)
+
+    def test_ivf_train_2level(self):
+        " check 2-level clustering with IVF training "
+        ds = datasets.SyntheticDataset(32, 10000, 1000, 200)
+        index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
+        faiss.extract_index_ivf(index).nprobe = 10
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
+        faiss.extract_index_ivf(index).nprobe = 10
+        clustering.train_ivf_index_with_2level(index, ds.get_train(), verbose=True)
+        index.add(ds.get_database())
+        Dnew, Inew = index.search(ds.get_queries(), 1)
+
+        # normally 47 / 200 differences
+        ndiff = (Iref != Inew).sum()
+        self.assertLess(ndiff, 50)

@@ -72,6 +72,8 @@ def parse_result_file(fname):
                 stats['n_threads'] = int(l.split()[-1])
             if l.startswith('  add in'):
                 stats['add_time'] = float(l.split()[-2])
+            if l.startswith("vector code_size"):
+                stats['code_size'] = float(l.split()[-1])
             if l.startswith('args:'):
                 args = eval(l[l.find(' '):])
                 indexkey = args.indexkey

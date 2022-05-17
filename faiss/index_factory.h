@@ -19,6 +19,9 @@ Index* index_factory(
         const char* description,
         MetricType metric = METRIC_L2);
 
+/// set to > 0 to get more logs from index_factory
+FAISS_API extern int index_factory_verbose;
+
 IndexBinary* index_binary_factory(int d, const char* description);
 
 } // namespace faiss

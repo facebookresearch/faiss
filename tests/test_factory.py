@@ -9,7 +9,7 @@ import unittest
 import faiss
 
 from faiss.contrib import factory_tools
-
+from faiss.contrib import datasets
 
 class TestFactory(unittest.TestCase):
 
@@ -39,6 +39,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "SQ8")
         assert index.code_size == 12
 
+
     def test_factory_3(self):
 
         index = faiss.index_factory(12, "IVF10,PQ4")
@@ -52,6 +53,13 @@ class TestFactory(unittest.TestCase):
     def test_factory_4(self):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert index.instances is not None
+
+    def test_factory_5(self):
+        index = faiss.index_factory(128, "OPQ16,Flat")
+        assert index.sa_code_size() == 128 * 4
+        index = faiss.index_factory(128, "OPQ16_64,Flat")
+        assert index.sa_code_size() == 64 * 4
+        assert index.chain.at(0).d_out == 64
 
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")
@@ -67,8 +75,9 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(12, "HNSW32,SQ8", faiss.METRIC_INNER_PRODUCT)
         assert index.storage.sa_code_size() == 12
         assert index.metric_type == faiss.METRIC_INNER_PRODUCT
-        index = faiss.index_factory(12, "HNSW32,PQ4")
+        index = faiss.index_factory(12, "HNSW,PQ4")
         assert index.storage.sa_code_size() == 4
+        self.assertEqual(index.hnsw.nb_neighbors(1), 32)
         index = faiss.index_factory(12, "HNSW32,PQ4np")
         indexpq = faiss.downcast_index(index.storage)
         assert not indexpq.do_polysemous_training
@@ -110,6 +119,8 @@ class TestFactory(unittest.TestCase):
         self.assertEqual(index.bbs, 64)
         self.assertEqual(index.nlist, 50)
         self.assertTrue(index.cp.spherical)
+        index = faiss.index_factory(56, "IVF50,PQ28x4fsr_64")
+        self.assertTrue(index.by_residual)
         index = faiss.index_factory(56, "PQ28x4fs,RFlat")
         self.assertEqual(index.k_factor, 1.0)
 
@@ -149,6 +160,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(50, "IVF1000,PQ25x4fsr")
         self.assertTrue(index.by_residual)
 
+
 class TestCodeSize(unittest.TestCase):
 
     def test_1(self):
@@ -187,3 +199,90 @@ class TestVTDowncast(unittest.TestCase):
 
         itqt = faiss.downcast_VectorTransform(codec.chain.at(0))
         itqt.pca_then_itq
+
+
+# tests after re-factoring
+class TestFactoryV2(unittest.TestCase):
+
+    def test_refine(self):
+        index = faiss.index_factory(123, "Flat,RFlat")
+        index.k_factor
+
+    def test_refine_2(self):
+        index = faiss.index_factory(123, "LSHrt,Refine(Flat)")
+        index1 = faiss.downcast_index(index.base_index)
+        self.assertTrue(index1.rotate_data)
+        self.assertTrue(index1.train_thresholds)
+
+    def test_pre_transform(self):
+        index = faiss.index_factory(123, "PCAR100,L2Norm,PCAW50,LSHr")
+        self.assertTrue(index.chain.size() == 3)
+
+    def test_ivf(self):
+        index = faiss.index_factory(123, "IVF456,Flat")
+        self.assertEqual(index.__class__, faiss.IndexIVFFlat)
+
+    def test_idmap(self):
+        index = faiss.index_factory(123, "Flat,IDMap")
+        self.assertEqual(index.__class__, faiss.IndexIDMap)
+
+    def test_ivf_hnsw(self):
+        index = faiss.index_factory(123, "IVF100_HNSW,Flat")
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.hnsw.nb_neighbors(1), 32)
+
+    def test_ivf_parent(self):
+        index = faiss.index_factory(123, "IVF100(LSHr),Flat")
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.__class__, faiss.IndexLSH)
+
+
+class TestAdditive(unittest.TestCase):
+
+    def test_rcq(self):
+        index = faiss.index_factory(12, "IVF256(RCQ2x4),RQ3x4")
+        self.assertEqual(
+            faiss.downcast_index(index.quantizer).__class__,
+            faiss.ResidualCoarseQuantizer
+        )
+
+    def test_rq3(self):
+        index = faiss.index_factory(5, "RQ2x16_3x8_6x4")
+
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.rq.nbits),
+            np.array([16, 16, 8, 8, 8, 4, 4, 4, 4, 4, 4])
+        )
+
+    def test_norm(self):
+        index = faiss.index_factory(5, "RQ8x8_Nqint8")
+        self.assertEqual(
+            index.rq.search_type,
+            faiss.AdditiveQuantizer.ST_norm_qint8)
+
+
+class TestSpectralHash(unittest.TestCase):
+
+    def test_sh(self):
+        index = faiss.index_factory(123, "IVF256,ITQ64,SH1.2")
+        self.assertEqual(index.__class__, faiss.IndexIVFSpectralHash)
+
+
+class TestQuantizerClone(unittest.TestCase):
+
+    def test_clone(self):
+        ds = datasets.SyntheticDataset(32, 200, 10, 0)
+
+        quant = faiss.ScalarQuantizer(32, faiss.ScalarQuantizer.QT_4bit)
+        quant.train(ds.get_train())
+
+        codes = quant.compute_codes(ds.get_database())
+
+        quant2 = faiss.clone_Quantizer(quant)
+        self.assertTrue(quant2.this.own())
+
+        # make sure typemap works
+        self.assertEqual(quant2.__class__, faiss.ScalarQuantizer)
+
+        codes2 = quant2.compute_codes(ds.get_database())
+        np.testing.assert_array_equal(codes, codes2)

@@ -28,8 +28,7 @@ enum AllocType {
     FlatData = 1,
 
     /// Primary data storage for GpuIndexIVF* (the storage for each individual
-    /// IVF
-    /// list)
+    /// IVF list)
     IVFLists = 2,
 
     /// Quantizer (PQ, SQ) dictionary information

@@ -20,6 +20,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/kmeans1d.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
@@ -551,6 +552,37 @@ void Clustering::train_encoded(
         index.reset();
         index.add(k, best_centroids.data());
     }
+}
+
+Clustering1D::Clustering1D(int k) : Clustering(1, k) {}
+
+Clustering1D::Clustering1D(int k, const ClusteringParameters& cp)
+        : Clustering(1, k, cp) {}
+
+void Clustering1D::train_exact(idx_t n, const float* x) {
+    const float* xt = x;
+
+    std::unique_ptr<uint8_t[]> del;
+    if (n > k * max_points_per_centroid) {
+        uint8_t* x_new;
+        float* weights_new;
+        n = subsample_training_set(
+                *this,
+                n,
+                (uint8_t*)x,
+                sizeof(float) * d,
+                nullptr,
+                &x_new,
+                &weights_new);
+        del.reset(x_new);
+        xt = (float*)x_new;
+    }
+
+    centroids.resize(k);
+    double uf = kmeans1d(xt, n, k, centroids.data());
+
+    ClusteringIterationStats stats = {0.0, 0.0, 0.0, uf, 0};
+    iteration_stats.push_back(stats);
 }
 
 float kmeans_clustering(

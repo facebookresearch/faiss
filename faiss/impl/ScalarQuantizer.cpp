@@ -19,6 +19,7 @@
 #include <immintrin.h>
 #endif
 
+#include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -318,7 +319,7 @@ template <class Codec, bool uniform, int SIMD>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -372,7 +373,7 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -433,7 +434,7 @@ template <int SIMDWIDTH>
 struct QuantizerFP16 {};
 
 template <>
-struct QuantizerFP16<1> : ScalarQuantizer::Quantizer {
+struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -478,7 +479,7 @@ template <int SIMDWIDTH>
 struct Quantizer8bitDirect {};
 
 template <>
-struct Quantizer8bitDirect<1> : ScalarQuantizer::Quantizer {
+struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
@@ -518,7 +519,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 #endif
 
 template <int SIMDWIDTH>
-ScalarQuantizer::Quantizer* select_quantizer_1(
+ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
@@ -911,11 +912,6 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
         q = x;
     }
 
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
-    }
-
     float symmetric_dis(idx_t i, idx_t j) override {
         return compute_code_distance(
                 codes + i * code_size, codes + j * code_size);
@@ -961,11 +957,6 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
     void set_query(const float* x) final {
         q = x;
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1019,11 +1010,6 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     int compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1087,11 +1073,6 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
     int compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1173,17 +1154,12 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : qtype(qtype), rangestat(RS_minmax), rangestat_arg(0), d(d) {
+        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
     set_derived_sizes();
 }
 
 ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit),
-          rangestat(RS_minmax),
-          rangestat_arg(0),
-          d(0),
-          bits(0),
-          code_size(0) {}
+        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1273,7 +1249,7 @@ void ScalarQuantizer::train_residual(
     }
 }
 
-ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
+ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #ifdef USE_F16C
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
@@ -1286,7 +1262,7 @@ ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
@@ -1295,7 +1271,7 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++)
@@ -1335,12 +1311,9 @@ namespace {
 template <class DCClass>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
-    bool store_pairs, by_residual;
+    bool by_residual;
 
-    size_t code_size;
-
-    idx_t list_no; /// current list (set to 0 for Flat index
-    float accu0;   /// added to all distances
+    float accu0; /// added to all distances
 
     IVFSQScannerIP(
             int d,
@@ -1348,12 +1321,10 @@ struct IVFSQScannerIP : InvertedListScanner {
             size_t code_size,
             bool store_pairs,
             bool by_residual)
-            : dc(d, trained),
-              store_pairs(store_pairs),
-              by_residual(by_residual),
-              code_size(code_size),
-              list_no(0),
-              accu0(0) {}
+            : dc(d, trained), by_residual(by_residual), accu0(0) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         dc.set_query(query);
@@ -1411,10 +1382,8 @@ template <class DCClass>
 struct IVFSQScannerL2 : InvertedListScanner {
     DCClass dc;
 
-    bool store_pairs, by_residual;
-    size_t code_size;
+    bool by_residual;
     const Index* quantizer;
-    idx_t list_no;  /// current inverted list
     const float* x; /// current query
 
     std::vector<float> tmp;
@@ -1427,13 +1396,13 @@ struct IVFSQScannerL2 : InvertedListScanner {
             bool store_pairs,
             bool by_residual)
             : dc(d, trained),
-              store_pairs(store_pairs),
               by_residual(by_residual),
-              code_size(code_size),
               quantizer(quantizer),
-              list_no(0),
               x(nullptr),
-              tmp(d) {}
+              tmp(d) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         x = query;
@@ -1443,8 +1412,8 @@ struct IVFSQScannerL2 : InvertedListScanner {
     }
 
     void set_list(idx_t list_no, float /*coarse_dis*/) override {
+        this->list_no = list_no;
         if (by_residual) {
-            this->list_no = list_no;
             // shift of x_in wrt centroid
             quantizer->compute_residual(x, tmp.data(), list_no);
             dc.set_query(tmp.data());

@@ -9,11 +9,15 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def merge_ondisk(trained_index: faiss.Index,
-                 shard_fnames: List[str],
-                 ivfdata_fname: str) -> None:
-    """ Add the contents of the indexes stored in shard_fnames into the index
-    trained_index. The on-disk data is stored in ivfdata_fname """
+
+def merge_ondisk(
+    trained_index: faiss.Index, shard_fnames: List[str], ivfdata_fname: str
+) -> None:
+    """Add the contents of the indexes stored in shard_fnames into the index
+    trained_index. The on-disk data is stored in ivfdata_fname"""
+    assert not isinstance(
+        trained_index, faiss.IndexIVFPQR
+    ), "IndexIVFPQR is not supported as an on disk index."
     # merge the images into an on-disk index
     # first load the inverted lists
     ivfs = []
@@ -38,8 +42,8 @@ def merge_ondisk(trained_index: faiss.Index,
     # prepare the output inverted lists. They will be written
     # to merged_index.ivfdata
     invlists = faiss.OnDiskInvertedLists(
-        index_ivf.nlist, index_ivf.code_size,
-        ivfdata_fname)
+        index_ivf.nlist, index_ivf.code_size, ivfdata_fname
+    )
 
     # merge all the inverted lists
     ivf_vector = faiss.InvertedListsPtrVector()

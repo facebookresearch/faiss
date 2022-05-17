@@ -21,15 +21,22 @@ class TestDistanceComputer(unittest.TestCase):
         index.add(ds.get_database())
         xq = ds.get_queries()
         Dref, Iref = index.search(xq, 10)
-        dc = index.get_distance_computer()
-        self.assertTrue(dc.this.own())
-        for q in range(ds.nq):
-            dc.set_query(faiss.swig_ptr(xq[q]))
-            for j in range(10):
-                ref_dis = Dref[q, j]
-                new_dis = dc(int(Iref[q, j]))
-                np.testing.assert_almost_equal(
-                    new_dis, ref_dis, decimal=5)
+
+        for is_FlatCodesDistanceComputer in False, True:
+            if not is_FlatCodesDistanceComputer:
+                dc = index.get_distance_computer()
+            else:
+                if not isinstance(index, faiss.IndexFlatCodes):
+                    continue
+                dc = index.get_FlatCodesDistanceComputer()
+            self.assertTrue(dc.this.own())
+            for q in range(ds.nq):
+                dc.set_query(faiss.swig_ptr(xq[q]))
+                for j in range(10):
+                    ref_dis = Dref[q, j]
+                    new_dis = dc(int(Iref[q, j]))
+                    np.testing.assert_almost_equal(
+                        new_dis, ref_dis, decimal=5)
 
     def test_distance_computer_PQ(self):
         self.do_test("PQ8np")
@@ -49,5 +56,11 @@ class TestDistanceComputer(unittest.TestCase):
     def test_distance_computer_VT(self):
         self.do_test("PCA20,SQ8")
 
+    def test_distance_computer_AQ_decompress(self):
+        self.do_test("RQ3x4")    # test decompress path
 
+    def test_distance_computer_AQ_LUT(self):
+        self.do_test("RQ3x4_Nqint8")    # test LUT path
 
+    def test_distance_computer_AQ_LUT_IP(self):
+        self.do_test("RQ3x4_Nqint8", faiss.METRIC_INNER_PRODUCT)

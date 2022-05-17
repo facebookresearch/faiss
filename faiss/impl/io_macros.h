@@ -66,3 +66,23 @@
         WRITEANDCHECK(&size, 1);           \
         WRITEANDCHECK((vec).data(), size); \
     }
+
+// read/write xb vector for backwards compatibility of IndexFlat
+
+#define WRITEXBVECTOR(vec)                         \
+    {                                              \
+        FAISS_THROW_IF_NOT((vec).size() % 4 == 0); \
+        size_t size = (vec).size() / 4;            \
+        WRITEANDCHECK(&size, 1);                   \
+        WRITEANDCHECK((vec).data(), size * 4);     \
+    }
+
+#define READXBVECTOR(vec)                                            \
+    {                                                                \
+        size_t size;                                                 \
+        READANDCHECK(&size, 1);                                      \
+        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
+        size *= 4;                                                   \
+        (vec).resize(size);                                          \
+        READANDCHECK((vec).data(), size);                            \
+    }

@@ -18,7 +18,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 1
+#define FAISS_VERSION_PATCH 2
 
 /**
  * @namespace faiss
@@ -38,7 +38,8 @@
 
 namespace faiss {
 
-/// Forward declarations see AuxIndexStructures.h
+/// Forward declarations see impl/AuxIndexStructures.h and
+/// impl/DistanceComputer.h
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
@@ -234,7 +235,7 @@ struct Index {
      */
     virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
 
-    /** encode a set of vectors
+    /** decode a set of vectors
      *
      * @param n       number of vectors
      * @param bytes   input encoded vectors, size n * sa_code_size()

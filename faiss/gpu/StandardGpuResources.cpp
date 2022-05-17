@@ -268,6 +268,9 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
         return;
     }
 
+    FAISS_ASSERT(device < getNumDevices());
+    DeviceScope scope(device);
+
     // If this is the first device that we're initializing, create our
     // pinned memory allocation
     if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
@@ -284,9 +287,6 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
         pinnedMemAllocSize_ = pinnedMemSize_;
     }
-
-    FAISS_ASSERT(device < getNumDevices());
-    DeviceScope scope(device);
 
     // Make sure that device properties for all devices are cached
     auto& prop = getDeviceProperties(device);

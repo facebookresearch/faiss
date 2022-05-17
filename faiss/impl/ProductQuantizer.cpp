@@ -173,7 +173,7 @@ static inline void pq_estimators_from_tables_generic(
  *********************************************/
 
 ProductQuantizer::ProductQuantizer(size_t d, size_t M, size_t nbits)
-        : d(d), M(M), nbits(nbits), assign_index(nullptr) {
+        : Quantizer(d, 0), M(M), nbits(nbits), assign_index(nullptr) {
     set_derived_values();
 }
 
@@ -246,7 +246,7 @@ static void init_hypercube_pca(
     }
 }
 
-void ProductQuantizer::train(int n, const float* x) {
+void ProductQuantizer::train(size_t n, const float* x) {
     if (train_type != Train_shared) {
         train_type_t final_train_type;
         final_train_type = train_type;
@@ -321,27 +321,53 @@ void ProductQuantizer::train(int n, const float* x) {
 template <class PQEncoder>
 void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
     std::vector<float> distances(pq.ksub);
+
+    // It seems to be meaningless to allocate std::vector<float> distances.
+    // But it is done in order to cope the ineffectiveness of the way
+    // the compiler generates the code. Basically, doing something like
+    //
+    //     size_t min_distance = HUGE_VALF;
+    //     size_t idxm = 0;
+    //     for (size_t i = 0; i < N; i++) {
+    //         const float distance = compute_distance(x, y + i * d, d);
+    //         if (distance < min_distance) {
+    //            min_distance = distance;
+    //            idxm = i;
+    //         }
+    //     }
+    //
+    // generates significantly more CPU instructions than the baseline
+    //
+    //     std::vector<float> distances_cached(N);
+    //     for (size_t i = 0; i < N; i++) {
+    //         distances_cached[i] = compute_distance(x, y + i * d, d);
+    //     }
+    //     size_t min_distance = HUGE_VALF;
+    //     size_t idxm = 0;
+    //     for (size_t i = 0; i < N; i++) {
+    //         const float distance = distances_cached[i];
+    //         if (distance < min_distance) {
+    //            min_distance = distance;
+    //            idxm = i;
+    //         }
+    //     }
+    //
+    // So, the baseline is faster. This is because of the vectorization.
+    // I suppose that the branch predictor might affect the performance as well.
+    // So, the buffer is allocated, but it might be unused in
+    // manually optimized code. Let's hope that the compiler is smart enough to
+    // get rid of std::vector allocation in such a case.
+
     PQEncoder encoder(code, pq.nbits);
     for (size_t m = 0; m < pq.M; m++) {
-        float mindis = 1e20;
-        uint64_t idxm = 0;
         const float* xsub = x + m * pq.dsub;
 
-        fvec_L2sqr_ny(
+        uint64_t idxm = fvec_L2sqr_ny_nearest(
                 distances.data(),
                 xsub,
                 pq.get_centroids(m, 0),
                 pq.dsub,
                 pq.ksub);
-
-        /* Find best centroid */
-        for (size_t i = 0; i < pq.ksub; i++) {
-            float dis = distances[i];
-            if (dis < mindis) {
-                mindis = dis;
-                idxm = i;
-            }
-        }
 
         encoder.encode(idxm);
     }
@@ -469,10 +495,13 @@ void ProductQuantizer::compute_codes_with_assign_index(
     }
 }
 
+// block size used in ProductQuantizer::compute_codes
+int product_quantizer_compute_codes_bs = 256 * 1024;
+
 void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
     // process by blocks to avoid using too much RAM
-    size_t bs = 256 * 1024;
+    size_t bs = product_quantizer_compute_codes_bs;
     if (n > bs) {
         for (size_t i0 = 0; i0 < n; i0 += bs) {
             size_t i1 = std::min(i0 + bs, n);

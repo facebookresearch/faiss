@@ -104,9 +104,7 @@ void IndexNSG::search(
                 float* simi = distances + i * k;
                 dis->set_query(x + i * d);
 
-                maxheap_heapify(k, simi, idxi);
                 nsg.search(*dis, k, idxi, simi, vt);
-                maxheap_reorder(k, simi, idxi);
 
                 vt.advance();
             }
@@ -299,5 +297,38 @@ IndexNSGFlat::IndexNSGFlat(int d, int R, MetricType metric)
     own_fields = true;
     is_trained = true;
 }
+
+/**************************************************************
+ * IndexNSGPQ implementation
+ **************************************************************/
+
+IndexNSGPQ::IndexNSGPQ() {}
+
+IndexNSGPQ::IndexNSGPQ(int d, int pq_m, int M)
+        : IndexNSG(new IndexPQ(d, pq_m, 8), M) {
+    own_fields = true;
+    is_trained = false;
+}
+
+void IndexNSGPQ::train(idx_t n, const float* x) {
+    IndexNSG::train(n, x);
+    (dynamic_cast<IndexPQ*>(storage))->pq.compute_sdc_table();
+}
+
+/**************************************************************
+ * IndexNSGSQ implementation
+ **************************************************************/
+
+IndexNSGSQ::IndexNSGSQ(
+        int d,
+        ScalarQuantizer::QuantizerType qtype,
+        int M,
+        MetricType metric)
+        : IndexNSG(new IndexScalarQuantizer(d, qtype, metric), M) {
+    is_trained = false;
+    own_fields = true;
+}
+
+IndexNSGSQ::IndexNSGSQ() {}
 
 } // namespace faiss

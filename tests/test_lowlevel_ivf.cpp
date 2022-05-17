@@ -199,7 +199,7 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
                     float computed_D = scanner->distance_to_code(
                             codes.data() + vno * il->code_size);
 
-                    EXPECT_EQ(computed_D, D[jj]);
+                    EXPECT_FLOAT_EQ(computed_D, D[jj]);
                 }
             }
         }
