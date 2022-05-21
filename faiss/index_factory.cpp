@@ -159,7 +159,7 @@ const std::string aq_def_pattern = "[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*";
 const std::string aq_norm_pattern =
         "(|_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4|_Nlsq2x4|_Nrq2x4)";
 
-const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";  // (nsplits)x(Msub)x(nbits)
+const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";
 
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
         std::string stok,
@@ -558,7 +558,8 @@ Index* parse_other_indexes(
         int Msub = mres_to_int(sm[2]);
         int nbit = mres_to_int(sm[3]);
         auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
-        return new IndexProductResidualQuantizer(d, nsplits, Msub, nbit, metric, st);
+        return new IndexProductResidualQuantizer(
+                d, nsplits, Msub, nbit, metric, st);
     }
 
     // IndexProductLocalSearchQuantizer
@@ -567,7 +568,8 @@ Index* parse_other_indexes(
         int Msub = mres_to_int(sm[2]);
         int nbit = mres_to_int(sm[3]);
         auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
-        return new IndexProductLocalSearchQuantizer(d, nsplits, Msub, nbit, metric, st);
+        return new IndexProductLocalSearchQuantizer(
+                d, nsplits, Msub, nbit, metric, st);
     }
 
     // IndexAdditiveQuantizerFastScan

@@ -432,7 +432,8 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITEVECTOR(idxpr->codes);
     } else if (
             const IndexProductLocalSearchQuantizer* idxpl =
-                    dynamic_cast<const IndexProductLocalSearchQuantizer*>(idx)) {
+                    dynamic_cast<const IndexProductLocalSearchQuantizer*>(
+                            idx)) {
         uint32_t h = fourcc("IxPL");
         WRITE1(h);
         write_index_header(idx, f);

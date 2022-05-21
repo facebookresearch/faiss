@@ -311,12 +311,16 @@ static void read_LocalSearchQuantizer(LocalSearchQuantizer* lsq, IOReader* f) {
     READ1(lsq->update_codebooks_with_double);
 }
 
-static void read_ProductAdditiveQuantizer(ProductAdditiveQuantizer* paq, IOReader* f) {
+static void read_ProductAdditiveQuantizer(
+        ProductAdditiveQuantizer* paq,
+        IOReader* f) {
     read_AdditiveQuantizer(paq, f);
     READ1(paq->nsplits);
 }
 
-static void read_ProductResidualQuantizer(ProductResidualQuantizer* prq, IOReader* f) {
+static void read_ProductResidualQuantizer(
+        ProductResidualQuantizer* prq,
+        IOReader* f) {
     read_ProductAdditiveQuantizer(prq, f);
 
     for (size_t i = 0; i < prq->nsplits; i++) {
@@ -326,7 +330,9 @@ static void read_ProductResidualQuantizer(ProductResidualQuantizer* prq, IOReade
     }
 }
 
-static void read_ProductLocalSearchQuantizer(ProductLocalSearchQuantizer* plsq, IOReader* f) {
+static void read_ProductLocalSearchQuantizer(
+        ProductLocalSearchQuantizer* plsq,
+        IOReader* f) {
     read_ProductAdditiveQuantizer(plsq, f);
 
     for (size_t i = 0; i < plsq->nsplits; i++) {
@@ -585,14 +591,14 @@ Index* read_index(IOReader* f, int io_flags) {
         READVECTOR(idxr->codes);
         idx = idxr;
     } else if (h == fourcc("IxPR")) {
-        IndexProductResidualQuantizer* idxpr = new IndexProductResidualQuantizer();
+        auto idxpr = new IndexProductResidualQuantizer();
         read_index_header(idxpr, f);
         read_ProductResidualQuantizer(&idxpr->prq, f);
         READ1(idxpr->code_size);
         READVECTOR(idxpr->codes);
         idx = idxpr;
     } else if (h == fourcc("IxPL")) {
-        IndexProductLocalSearchQuantizer* idxpl = new IndexProductLocalSearchQuantizer();
+        auto idxpl = new IndexProductLocalSearchQuantizer();
         read_index_header(idxpl, f);
         read_ProductLocalSearchQuantizer(&idxpl->plsq, f);
         READ1(idxpl->code_size);
