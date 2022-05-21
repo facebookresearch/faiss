@@ -311,6 +311,31 @@ static void read_LocalSearchQuantizer(LocalSearchQuantizer* lsq, IOReader* f) {
     READ1(lsq->update_codebooks_with_double);
 }
 
+static void read_ProductAdditiveQuantizer(ProductAdditiveQuantizer* paq, IOReader* f) {
+    read_AdditiveQuantizer(paq, f);
+    READ1(paq->nsplits);
+}
+
+static void read_ProductResidualQuantizer(ProductResidualQuantizer* prq, IOReader* f) {
+    read_ProductAdditiveQuantizer(prq, f);
+
+    for (size_t i = 0; i < prq->nsplits; i++) {
+        auto rq = new ResidualQuantizer();
+        read_ResidualQuantizer(rq, f);
+        prq->quantizers.push_back(rq);
+    }
+}
+
+static void read_ProductLocalSearchQuantizer(ProductLocalSearchQuantizer* plsq, IOReader* f) {
+    read_ProductAdditiveQuantizer(plsq, f);
+
+    for (size_t i = 0; i < plsq->nsplits; i++) {
+        auto lsq = new LocalSearchQuantizer();
+        read_LocalSearchQuantizer(lsq, f);
+        plsq->quantizers.push_back(lsq);
+    }
+}
+
 static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->qtype);
     READ1(ivsc->rangestat);
@@ -559,6 +584,20 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->code_size);
         READVECTOR(idxr->codes);
         idx = idxr;
+    } else if (h == fourcc("IxPR")) {
+        IndexProductResidualQuantizer* idxpr = new IndexProductResidualQuantizer();
+        read_index_header(idxpr, f);
+        read_ProductResidualQuantizer(&idxpr->prq, f);
+        READ1(idxpr->code_size);
+        READVECTOR(idxpr->codes);
+        idx = idxpr;
+    } else if (h == fourcc("IxPL")) {
+        IndexProductLocalSearchQuantizer* idxpl = new IndexProductLocalSearchQuantizer();
+        read_index_header(idxpl, f);
+        read_ProductLocalSearchQuantizer(&idxpl->plsq, f);
+        READ1(idxpl->code_size);
+        READVECTOR(idxpl->codes);
+        idx = idxpl;
     } else if (h == fourcc("ImRQ")) {
         ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
         read_index_header(idxr, f);

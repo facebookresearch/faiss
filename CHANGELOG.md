@@ -12,6 +12,8 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 - Added sparse k-means routines and moved the generic kmeans to contrib
 - Added FlatDistanceComputer for all FlatCodes indexes
+- Support for fast accumulation of 4-bit LSQ and RQ
+- Added product additive quantization
 
 ## [1.7.2] - 2021-12-15
 ### Added

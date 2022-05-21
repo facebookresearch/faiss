@@ -353,6 +353,57 @@ void IndexLocalSearchQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+
+/**************************************************************************************
+ * IndexProductResidualQuantizer
+ **************************************************************************************/
+
+IndexProductResidualQuantizer::IndexProductResidualQuantizer(
+        int d,        ///< dimensionality of the input vectors
+        size_t nsplits, ///< number of residual quantizers
+        size_t Msub,     ///< number of subquantizers per RQ
+        size_t nbits, ///< number of bit per subvector index
+        MetricType metric,
+        Search_type_t search_type)
+        : IndexAdditiveQuantizer(d, &prq, metric), prq(d, nsplits, Msub, nbits, search_type) {
+    code_size = prq.code_size;
+    is_trained = false;
+}
+
+IndexProductResidualQuantizer::IndexProductResidualQuantizer()
+        : IndexProductResidualQuantizer(0, 0, 0, 0) {}
+
+void IndexProductResidualQuantizer::train(idx_t n, const float* x) {
+    prq.train(n, x);
+    is_trained = true;
+}
+
+
+/**************************************************************************************
+ * IndexProductLocalSearchQuantizer
+ **************************************************************************************/
+
+IndexProductLocalSearchQuantizer::IndexProductLocalSearchQuantizer(
+        int d,        ///< dimensionality of the input vectors
+        size_t nsplits, ///< number of local search quantizers
+        size_t Msub,     ///< number of subquantizers per LSQ
+        size_t nbits, ///< number of bit per subvector index
+        MetricType metric,
+        Search_type_t search_type)
+        : IndexAdditiveQuantizer(d, &plsq, metric), plsq(d, nsplits, Msub, nbits, search_type) {
+    code_size = plsq.code_size;
+    is_trained = false;
+}
+
+IndexProductLocalSearchQuantizer::IndexProductLocalSearchQuantizer()
+        : IndexProductLocalSearchQuantizer(0, 0, 0, 0) {}
+
+void IndexProductLocalSearchQuantizer::train(idx_t n, const float* x) {
+    plsq.train(n, x);
+    is_trained = true;
+}
+
+
 /**************************************************************************************
  * AdditiveCoarseQuantizer
  **************************************************************************************/

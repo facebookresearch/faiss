@@ -75,6 +75,12 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             size_t n,
             const float* centroids = nullptr) const override;
 
+    void compute_unpacked_codes(
+            const float* x,
+            int32_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const;
+
     /** Decode a set of vectors in non-packed format
      *
      * @param codes  codes to decode, size n * ld_codes

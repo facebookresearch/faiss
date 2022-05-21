@@ -159,6 +159,8 @@ const std::string aq_def_pattern = "[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*";
 const std::string aq_norm_pattern =
         "(|_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4|_Nlsq2x4|_Nrq2x4)";
 
+const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";  // (nsplits)x(Msub)x(nbits)
+
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
         std::string stok,
         MetricType metric) {
@@ -548,6 +550,24 @@ Index* parse_other_indexes(
         AdditiveQuantizer::Search_type_t st =
                 aq_parse_search_type(sm[sm.size() - 1].str(), metric);
         return new IndexLocalSearchQuantizer(d, M, nbit, metric, st);
+    }
+
+    // IndexProductResidualQuantizer
+    if (match("PRQ" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[1]);
+        int Msub = mres_to_int(sm[2]);
+        int nbit = mres_to_int(sm[3]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+        return new IndexProductResidualQuantizer(d, nsplits, Msub, nbit, metric, st);
+    }
+
+    // IndexProductLocalSearchQuantizer
+    if (match("PLSQ" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[1]);
+        int Msub = mres_to_int(sm[2]);
+        int nbit = mres_to_int(sm[3]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+        return new IndexProductLocalSearchQuantizer(d, nsplits, Msub, nbit, metric, st);
     }
 
     // IndexAdditiveQuantizerFastScan

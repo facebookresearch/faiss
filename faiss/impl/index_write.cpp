@@ -207,6 +207,33 @@ static void write_LocalSearchQuantizer(
     WRITE1(lsq->update_codebooks_with_double);
 }
 
+static void write_ProductAdditiveQuantizer(
+        const ProductAdditiveQuantizer* paq,
+        IOWriter* f) {
+    write_AdditiveQuantizer(paq, f);
+    WRITE1(paq->nsplits);
+}
+
+static void write_ProductResidualQuantizer(
+        const ProductResidualQuantizer* prq,
+        IOWriter* f) {
+    write_ProductAdditiveQuantizer(prq, f);
+    for (const auto aq : prq->quantizers) {
+        auto rq = dynamic_cast<const ResidualQuantizer*>(aq);
+        write_ResidualQuantizer(rq, f);
+    }
+}
+
+static void write_ProductLocalSearchQuantizer(
+        const ProductLocalSearchQuantizer* plsq,
+        IOWriter* f) {
+    write_ProductAdditiveQuantizer(plsq, f);
+    for (const auto aq : plsq->quantizers) {
+        auto lsq = dynamic_cast<const LocalSearchQuantizer*>(aq);
+        write_LocalSearchQuantizer(lsq, f);
+    }
+}
+
 static void write_ScalarQuantizer(const ScalarQuantizer* ivsc, IOWriter* f) {
     WRITE1(ivsc->qtype);
     WRITE1(ivsc->rangestat);
@@ -394,6 +421,24 @@ void write_index(const Index* idx, IOWriter* f) {
         write_LocalSearchQuantizer(&idxr->lsq, f);
         WRITE1(idxr->code_size);
         WRITEVECTOR(idxr->codes);
+    } else if (
+            const IndexProductResidualQuantizer* idxpr =
+                    dynamic_cast<const IndexProductResidualQuantizer*>(idx)) {
+        uint32_t h = fourcc("IxPR");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_ProductResidualQuantizer(&idxpr->prq, f);
+        WRITE1(idxpr->code_size);
+        WRITEVECTOR(idxpr->codes);
+    } else if (
+            const IndexProductLocalSearchQuantizer* idxpl =
+                    dynamic_cast<const IndexProductLocalSearchQuantizer*>(idx)) {
+        uint32_t h = fourcc("IxPL");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_ProductLocalSearchQuantizer(&idxpl->plsq, f);
+        WRITE1(idxpl->code_size);
+        WRITEVECTOR(idxpl->codes);
     } else if (
             auto* idxaqfs =
                     dynamic_cast<const IndexAdditiveQuantizerFastScan*>(idx)) {
