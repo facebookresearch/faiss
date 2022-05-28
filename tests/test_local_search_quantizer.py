@@ -617,3 +617,55 @@ class TestIndexProductLocalSearchQuantizer(unittest.TestCase):
 
         code_size = (ns * Msub * nbits + 7) // 8 + 1
         self.assertEqual(index.plsq.code_size, code_size)
+
+
+class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
+
+    def eval_index_accuracy(self, factory_key):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+        index = faiss.index_factory(ds.d, factory_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 5, 10, 20, 50:
+            index.nprobe = nprobe
+            D, I = index.search(ds.get_queries(), 10)
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            inters.append(inter)
+
+        inters = np.array(inters)
+        self.assertTrue(np.all(inters[1:] >= inters[:-1]))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        return inter
+
+    def test_index_accuracy(self):
+        self.eval_index_accuracy("IVF64,PLSQ2x2x5_Nqint8")
+
+    def test_index_accuracy2(self):
+        """check that the error is in the same ballpark as LSQ."""
+        inter1 = self.eval_index_accuracy("IVF64,PLSQ2x2x5_Nqint8")
+        inter2 = self.eval_index_accuracy("IVF64,LSQ4x5_Nqint8")
+        # print(inter1, inter2)  # 381 vs 374
+        self.assertGreaterEqual(inter1 * 1.1, inter2)
+
+    def test_factory(self):
+        AQ = faiss.AdditiveQuantizer
+        ns, Msub, nbits = 2, 4, 8
+        index = faiss.index_factory(64, f"IVF64,PLSQ{ns}x{Msub}x{nbits}_Nqint8")
+        assert isinstance(index, faiss.IndexIVFProductLocalSearchQuantizer)
+        self.assertEqual(index.nlist, 64)
+        self.assertEqual(index.plsq.nsplits, ns)
+        self.assertEqual(index.plsq.subquantizer(0).M, Msub)
+        self.assertEqual(index.plsq.subquantizer(0).nbits.at(0), nbits)
+        self.assertEqual(index.plsq.search_type, AQ.ST_norm_qint8)
+
+        code_size = (ns * Msub * nbits + 7) // 8 + 1
+        self.assertEqual(index.plsq.code_size, code_size)

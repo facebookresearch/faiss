@@ -757,20 +757,31 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_InvertedLists(ivsc, f, io_flags);
         idx = ivsc;
-    } else if (h == fourcc("IwLS") || h == fourcc("IwRQ")) {
+    } else if (h == fourcc("IwLS") || h == fourcc("IwRQ") ||
+                h == fourcc("IwPL") || h == fourcc("IwPR")) {
         bool is_LSQ = h == fourcc("IwLS");
+        bool is_RQ = h == fourcc("IwRQ");
+        bool is_PLSQ = h == fourcc("IwPL");
         IndexIVFAdditiveQuantizer* iva;
         if (is_LSQ) {
             iva = new IndexIVFLocalSearchQuantizer();
-        } else {
+        } else if (is_RQ) {
             iva = new IndexIVFResidualQuantizer();
+        } else if (is_PLSQ) {
+            iva = new IndexIVFProductLocalSearchQuantizer();
+        } else {
+            iva = new IndexIVFProductResidualQuantizer();
         }
         read_ivf_header(iva, f);
         READ1(iva->code_size);
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer((ProductLocalSearchQuantizer*)iva->aq, f);
+        } else {
+            read_ProductResidualQuantizer((ProductResidualQuantizer*)iva->aq, f);
         }
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);

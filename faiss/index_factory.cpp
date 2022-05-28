@@ -347,6 +347,21 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
+    if (match("(PRQ|PLSQ)" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[2]);
+        int Msub = mres_to_int(sm[3]);
+        int nbit = mres_to_int(sm[4]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
+        IndexIVF* index_ivf;
+        if (sm[1].str() == "PRQ") {
+            index_ivf = new IndexIVFProductResidualQuantizer(
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+        } else {
+            index_ivf = new IndexIVFProductLocalSearchQuantizer(
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+        }
+        return index_ivf;
+    }
     if (match("(RQ|LSQ)([0-9]+)x4fs(r?)(_[0-9]+)?" + aq_norm_pattern)) {
         int M = std::stoi(sm[2].str());
         int bbs = mres_to_int(sm[4], 32, 1);
