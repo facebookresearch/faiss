@@ -9,6 +9,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/raft/RaftIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/IVFFlat.cuh>
@@ -26,15 +27,10 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
         GpuResourcesProvider* provider,
         const faiss::IndexIVFFlat* index,
         GpuIndexIVFFlatConfig config)
-        : GpuIndexIVF(
+        : GpuIndexIVFFlat(
         provider,
-        index->d,
-        index->metric_type,
-        index->metric_arg,
-        index->nlist,
-        config),
-          ivfFlatConfig_(config),
-          reserveMemoryVecs_(0) {
+        index,
+        config) {
     copyFrom(index);
 }
 
@@ -44,9 +40,7 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
         int nlist,
         faiss::MetricType metric,
         GpuIndexIVFFlatConfig config)
-        : GpuIndexIVF(provider, dims, metric, 0, nlist, config),
-          ivfFlatConfig_(config),
-          reserveMemoryVecs_(0) {
+        : GpuIndexIVFFlat(provider, dims, nlist, metric, config) {
     // faiss::Index params
     this->is_trained = false;
 
