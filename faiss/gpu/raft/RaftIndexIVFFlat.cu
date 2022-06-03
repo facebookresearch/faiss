@@ -50,57 +50,6 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
 
 RaftIndexIVFFlat::~RaftIndexIVFFlat() {}
 
-void RaftIndexIVFFlat::reserveMemory(size_t numVecs) {
-    reserveMemoryVecs_ = numVecs;
-    if (index_) {
-        DeviceScope scope(config_.device);
-        index_->reserveMemory(numVecs);
-    }
-}
-
-void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-    DeviceScope scope(config_.device);
-
-    GpuIndexIVF::copyFrom(index);
-
-    // Clear out our old data
-    index_.reset();
-
-    // The other index might not be trained
-    if (!index->is_trained) {
-        FAISS_ASSERT(!is_trained);
-        return;
-    }
-
-    // Otherwise, we can populate ourselves from the other index
-    FAISS_ASSERT(is_trained);
-
-    // Copy our lists as well
-    index_.reset(new IVFFlat(
-            resources_.get(),
-            quantizer->getGpuData(),
-            index->metric_type,
-            index->metric_arg,
-            false,   // no residual
-            nullptr, // no scalar quantizer
-            ivfFlatConfig_.interleavedLayout,
-            ivfFlatConfig_.indicesOptions,
-            config_.memorySpace));
-
-    // Copy all of the IVF data
-    index_->copyInvertedListsFrom(index->invlists);
-}
-
-void RaftIndexIVFFlat::reset() {
-    if (index_) {
-        DeviceScope scope(config_.device);
-
-        index_->reset();
-        this->ntotal = 0;
-    } else {
-        FAISS_ASSERT(this->ntotal == 0);
-    }
-}
 
 void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     // For now, only support <= max int results

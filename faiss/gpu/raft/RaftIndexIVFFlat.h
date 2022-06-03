@@ -43,21 +43,6 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
 
     ~RaftIndexIVFFlat() override;
 
-    /// Reserve GPU memory in our inverted lists for this number of vectors
-    void reserveMemory(size_t numVecs);
-
-    /// Initialize ourselves from the given CPU index; will overwrite
-    /// all data in ourselves
-    void copyFrom(const faiss::IndexIVFFlat* index);
-
-    /// Copy ourselves to the given CPU index; will overwrite all data
-    /// in the index instance
-    void copyTo(faiss::IndexIVFFlat* index) const;
-
-    /// After adding vectors, one can call this to reclaim device memory
-    /// to exactly the amount needed. Returns space reclaimed in bytes
-    size_t reclaimMemory();
-
     /// Clears out all inverted lists, but retains the coarse centroid
     /// information
     void reset() override;
