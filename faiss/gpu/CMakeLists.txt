@@ -162,6 +162,11 @@ set(FAISS_GPU_HEADERS
   utils/warpselect/WarpSelectImpl.cuh
 )
 
+if(FAISS_ENABLE_RAFT)
+  list(APPEND FAISS_GPU_HEADERS raft/RaftIndexIVFFlat.h)
+  list(APPEND FAISS_GPU_SRC raft/RaftIndexIVFFlat.cu)
+endif()
+
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
@@ -176,7 +181,7 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
+target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>)
 target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
 target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
 target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
