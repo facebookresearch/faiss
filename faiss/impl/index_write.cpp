@@ -597,7 +597,8 @@ void write_index(const Index* idx, IOWriter* f) {
     } else if (auto iva = dynamic_cast<const IndexIVFAdditiveQuantizer*>(idx)) {
         bool is_LSQ = dynamic_cast<const IndexIVFLocalSearchQuantizer*>(iva);
         bool is_RQ = dynamic_cast<const IndexIVFResidualQuantizer*>(iva);
-        bool is_PLSQ = dynamic_cast<const IndexIVFProductLocalSearchQuantizer*>(iva);
+        bool is_PLSQ =
+                dynamic_cast<const IndexIVFProductLocalSearchQuantizer*>(iva);
         uint32_t h;
         if (is_LSQ) {
             h = fourcc("IwLS");
@@ -617,9 +618,11 @@ void write_index(const Index* idx, IOWriter* f) {
         } else if (is_RQ) {
             write_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
         } else if (is_PLSQ) {
-            write_ProductLocalSearchQuantizer((ProductLocalSearchQuantizer*)iva->aq, f);
+            write_ProductLocalSearchQuantizer(
+                    (ProductLocalSearchQuantizer*)iva->aq, f);
         } else {
-            write_ProductResidualQuantizer((ProductResidualQuantizer*)iva->aq, f);
+            write_ProductResidualQuantizer(
+                    (ProductResidualQuantizer*)iva->aq, f);
         }
         WRITE1(iva->by_residual);
         WRITE1(iva->use_precomputed_table);

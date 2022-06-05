@@ -1251,21 +1251,21 @@ class TestIndexIVFProductResidualQuantizer(unittest.TestCase):
         return inter
 
     def test_index_accuracy(self):
-        self.eval_index_accuracy("IVF64,PRQ2x2x5_Nqint8")
+        self.eval_index_accuracy("IVF100,PRQ2x2x5_Nqint8")
 
     def test_index_accuracy2(self):
         """check that the error is in the same ballpark as RQ."""
-        inter1 = self.eval_index_accuracy("IVF64,PRQ2x2x5_Nqint8")
-        inter2 = self.eval_index_accuracy("IVF64,RQ4x5_Nqint8")
+        inter1 = self.eval_index_accuracy("IVF100,PRQ2x2x5_Nqint8")
+        inter2 = self.eval_index_accuracy("IVF100,RQ4x5_Nqint8")
         # print(inter1, inter2)  # 392 vs 374
         self.assertGreaterEqual(inter1 * 1.1, inter2)
 
     def test_factory(self):
         AQ = faiss.AdditiveQuantizer
         ns, Msub, nbits = 2, 4, 8
-        index = faiss.index_factory(64, f"IVF64,PRQ{ns}x{Msub}x{nbits}_Nqint8")
+        index = faiss.index_factory(64, f"IVF100,PRQ{ns}x{Msub}x{nbits}_Nqint8")
         assert isinstance(index, faiss.IndexIVFProductResidualQuantizer)
-        self.assertEqual(index.nlist, 64)
+        self.assertEqual(index.nlist, 100)
         self.assertEqual(index.prq.nsplits, ns)
         self.assertEqual(index.prq.subquantizer(0).M, Msub)
         self.assertEqual(index.prq.subquantizer(0).nbits.at(0), nbits)
