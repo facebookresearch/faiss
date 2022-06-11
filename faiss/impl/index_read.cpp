@@ -611,20 +611,31 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->beam_factor);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
-    } else if (h == fourcc("ILfs") || h == fourcc("IRfs")) {
+    } else if (h == fourcc("ILfs") || h == fourcc("IRfs") || h == fourcc("IPRf") || h == fourcc("IPLf")) {
         bool is_LSQ = h == fourcc("ILfs");
+        bool is_RQ = h == fourcc("IRfs");
+        bool is_PLSQ = h == fourcc("IPLf");
+
         IndexAdditiveQuantizerFastScan* idxaqfs;
         if (is_LSQ) {
             idxaqfs = new IndexLocalSearchQuantizerFastScan();
-        } else {
+        } else if (is_RQ) {
             idxaqfs = new IndexResidualQuantizerFastScan();
+        } else if (is_PLSQ) {
+            idxaqfs = new IndexProductLocalSearchQuantizerFastScan();
+        } else {
+            idxaqfs = new IndexProductResidualQuantizerFastScan();
         }
         read_index_header(idxaqfs, f);
 
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)idxaqfs->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer((ProductLocalSearchQuantizer*)idxaqfs->aq, f);
+        } else {
+            read_ProductResidualQuantizer((ProductResidualQuantizer*)idxaqfs->aq, f);
         }
 
         READ1(idxaqfs->implem);

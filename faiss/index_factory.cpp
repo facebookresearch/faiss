@@ -603,6 +603,24 @@ Index* parse_other_indexes(
         }
     }
 
+    // IndexProductAdditiveQuantizerFastScan
+    // PRQ{nsplits}x{Msub}x4fs_{bbs}_{search_type}
+    pattern = "(PLSQ|PRQ)([0-9]+)x([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern;
+    if (match(pattern)) {
+        int nsplits = std::stoi(sm[2].str());
+        int Msub = std::stoi(sm[3].str());
+        int bbs = mres_to_int(sm[4], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+
+        if (sm[1].str() == "PRQ") {
+            return new IndexProductResidualQuantizerFastScan(
+                    d, nsplits, Msub, 4, metric, st, bbs);
+        } else if (sm[1].str() == "PLSQ") {
+            return new IndexProductLocalSearchQuantizerFastScan(
+                    d, nsplits, Msub, 4, metric, st, bbs);
+        }
+    }
+
     return nullptr;
 }
 

@@ -630,13 +630,14 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
         index.add(ds.get_database())
 
         inters = []
-        for nprobe in 1, 2, 5, 10, 20, 100:
+        for nprobe in 1, 2, 4, 8, 16:
             index.nprobe = nprobe
             D, I = index.search(ds.get_queries(), 10)
             inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
             inters.append(inter)
 
         inters = np.array(inters)
+        print(inters)
         if not np.all(inters[1:] >= inters[:-1]):
             print("TestIVFPLSQ", inters)
         self.assertTrue(np.all(inters[1:] >= inters[:-1]))
@@ -650,21 +651,21 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
         return inter
 
     def test_index_accuracy(self):
-        self.eval_index_accuracy("IVF100,PLSQ2x2x5_Nqint8")
+        self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
 
     def test_index_accuracy2(self):
         """check that the error is in the same ballpark as LSQ."""
-        inter1 = self.eval_index_accuracy("IVF100,PLSQ2x2x5_Nqint8")
-        inter2 = self.eval_index_accuracy("IVF100,LSQ4x5_Nqint8")
+        inter1 = self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
+        inter2 = self.eval_index_accuracy("IVF32,LSQ4x5_Nqint8")
         # print(inter1, inter2)  # 381 vs 374
         self.assertGreaterEqual(inter1 * 1.1, inter2)
 
     def test_factory(self):
         AQ = faiss.AdditiveQuantizer
         ns, Msub, nbits = 2, 4, 8
-        index = faiss.index_factory(64, f"IVF100,PLSQ{ns}x{Msub}x{nbits}_Nqint8")
+        index = faiss.index_factory(64, f"IVF32,PLSQ{ns}x{Msub}x{nbits}_Nqint8")
         assert isinstance(index, faiss.IndexIVFProductLocalSearchQuantizer)
-        self.assertEqual(index.nlist, 100)
+        self.assertEqual(index.nlist, 32)
         self.assertEqual(index.plsq.nsplits, ns)
         self.assertEqual(index.plsq.subquantizer(0).M, Msub)
         self.assertEqual(index.plsq.subquantizer(0).nbits.at(0), nbits)

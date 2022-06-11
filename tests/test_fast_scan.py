@@ -630,3 +630,79 @@ def add_TestAQFastScan_subtest_from_idxaq(implem, metric):
 for implem in 2, 3, 4:
     add_TestAQFastScan_subtest_from_idxaq(implem, 'L2')
     add_TestAQFastScan_subtest_from_idxaq(implem, 'IP')
+
+
+class TestPAQFastScan(unittest.TestCase):
+
+    def subtest_accuracy(self, paq):
+        """
+        Compare IndexPAQFastScan with IndexPAQ (qint8)
+        """
+        d = 16
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 500)
+        gt = ds.get_groundtruth(k=1)
+
+
+        index = faiss.index_factory(d, f'{paq}2x3x4_Nqint8')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'{paq}2x3x4fs_Nlsq2x4')
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        Da, Ia = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall = (Ia == gt).sum() / nq
+
+        assert abs(recall_ref - recall) < 0.05
+
+    def test_accuracy_PLSQ(self):
+        self.subtest_accuracy("PLSQ")
+    
+    def test_accuracy_PRQ(self):
+        self.subtest_accuracy("PRQ")
+
+    def subtest_factory(self, paq):
+        AQ = faiss.AdditiveQuantizer
+        d = 16
+
+        index = faiss.index_factory(d, f'{paq}2x3x4fs_Nlsq2x4')
+        paq = faiss.downcast_Quantizer(index.aq)
+        self.assertEqual(paq.nsplits, 2)
+        self.assertEqual(paq.subquantizer(0).M, 3)
+
+        if paq == 'PLSQ':
+            assert isinstance(paq, faiss.ProductLocalSearchQuantizer)
+        if paq == 'PRQ':
+            assert isinstance(paq, faiss.ProductResidualQuantizer)
+
+    def test_factory(self):
+        self.subtest_factory('PRQ')
+        self.subtest_factory('PLSQ')
+
+    def subtest_io(self, factory_str):
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 500, 100)
+
+        index = faiss.index_factory(d, factory_str)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D1, I1 = index.search(ds.get_queries(), 1)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname)
+            D2, I2 = index2.search(ds.get_queries(), 1)
+            np.testing.assert_array_equal(I1, I2)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    def test_io(self):
+        self.subtest_io('PLSQ2x3x4fs_Nlsq2x4')
+        self.subtest_io('PRQ2x3x4fs_Nrq2x4')

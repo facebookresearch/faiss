@@ -251,4 +251,46 @@ IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan() {
     aq = &lsq;
 }
 
+/**************************************************************************************
+ * IndexProductResidualQuantizerFastScan
+ **************************************************************************************/
+
+IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan(
+        int d,          ///< dimensionality of the input vectors
+        size_t nsplits, ///< number of residual quantizers
+        size_t Msub,    ///< number of subquantizers per RQ
+        size_t nbits,   ///< number of bit per subvector index
+        MetricType metric,
+        Search_type_t search_type,
+        int bbs)
+        : prq(d, nsplits, Msub, nbits, search_type) {
+    init(&prq, metric, bbs);
+}
+
+IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan() {
+    aq = &prq;
+}
+
+/**************************************************************************************
+ * IndexProductLocalSearchQuantizerFastScan
+ **************************************************************************************/
+
+IndexProductLocalSearchQuantizerFastScan::
+        IndexProductLocalSearchQuantizerFastScan(
+                int d,          ///< dimensionality of the input vectors
+                size_t nsplits, ///< number of local search quantizers
+                size_t Msub,    ///< number of subquantizers per LSQ
+                size_t nbits,   ///< number of bit per subvector index
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : plsq(d, nsplits, Msub, nbits, search_type) {
+    init(&plsq, metric, bbs);
+}
+
+IndexProductLocalSearchQuantizerFastScan::
+        IndexProductLocalSearchQuantizerFastScan() {
+    aq = &plsq;
+}
+
 } // namespace faiss

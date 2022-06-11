@@ -117,7 +117,7 @@ struct IndexProductResidualQuantizer : IndexAdditiveQuantizer {
     IndexProductResidualQuantizer(
             int d,          ///< dimensionality of the input vectors
             size_t nsplits, ///< number of residual quantizers
-            size_t Msub,    ///< number of subquantizers
+            size_t Msub,    ///< number of subquantizers per RQ
             size_t nbits,   ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_decompress);
@@ -137,13 +137,13 @@ struct IndexProductLocalSearchQuantizer : IndexAdditiveQuantizer {
      *
      * @param d      dimensionality of the input vectors
      * @param nsplits  number of local search quantizers
-     * @param Msub      number of subquantizers per LSQ
+     * @param Msub     number of subquantizers per LSQ
      * @param nbits  number of bit per subvector index
      */
     IndexProductLocalSearchQuantizer(
             int d,          ///< dimensionality of the input vectors
             size_t nsplits, ///< number of local search quantizers
-            size_t Msub,    ///< number of subquantizers
+            size_t Msub,    ///< number of subquantizers per LSQ
             size_t nbits,   ///< number of bit per subvector index
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_decompress);
