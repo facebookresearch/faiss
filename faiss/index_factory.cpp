@@ -377,7 +377,8 @@ IndexIVF* parse_IndexIVF(
         index_ivf->by_residual = (sm[3].str() == "r");
         return index_ivf;
     }
-    if (match("(PRQ|PLSQ)([0-9]+)x([0-9]+)x4fs(r?)(_[0-9]+)?" + aq_norm_pattern)) {
+    if (match("(PRQ|PLSQ)([0-9]+)x([0-9]+)x4fs(r?)(_[0-9]+)?" +
+              aq_norm_pattern)) {
         int nsplits = std::stoi(sm[2].str());
         int Msub = std::stoi(sm[3].str());
         int bbs = mres_to_int(sm[5], 32, 1);
