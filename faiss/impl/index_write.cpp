@@ -502,13 +502,23 @@ void write_index(const Index* idx, IOWriter* f) {
                 dynamic_cast<const IndexIVFLocalSearchQuantizerFastScan*>(idx);
         auto ivrqfs =
                 dynamic_cast<const IndexIVFResidualQuantizerFastScan*>(idx);
-        FAISS_THROW_IF_NOT(ivlsqfs || ivrqfs);
+        auto ivplsqfs =
+                dynamic_cast<const IndexIVFProductLocalSearchQuantizerFastScan*>(idx);
+        auto ivprqfs =
+                dynamic_cast<const IndexIVFProductResidualQuantizerFastScan*>(idx);
+        FAISS_THROW_IF_NOT(ivlsqfs || ivrqfs || ivplsqfs || ivprqfs);
 
         if (ivlsqfs) {
             uint32_t h = fourcc("IVLf");
             WRITE1(h);
-        } else {
+        } else if (ivrqfs) {
             uint32_t h = fourcc("IVRf");
+            WRITE1(h);
+        } else if (ivplsqfs) {
+            uint32_t h = fourcc("NPLf");  // N means IV ...
+            WRITE1(h);
+        } else {
+            uint32_t h = fourcc("NPRf");
             WRITE1(h);
         }
 
@@ -516,8 +526,12 @@ void write_index(const Index* idx, IOWriter* f) {
 
         if (ivlsqfs) {
             write_LocalSearchQuantizer(&ivlsqfs->lsq, f);
-        } else {
+        } else if (ivrqfs) {
             write_ResidualQuantizer(&ivrqfs->rq, f);
+        } else if (ivplsqfs) {
+            write_ProductLocalSearchQuantizer(&ivplsqfs->plsq, f);
+        } else {
+            write_ProductResidualQuantizer(&ivprqfs->prq, f);
         }
 
         WRITE1(ivaqfs->by_residual);

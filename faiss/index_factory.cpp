@@ -377,6 +377,22 @@ IndexIVF* parse_IndexIVF(
         index_ivf->by_residual = (sm[3].str() == "r");
         return index_ivf;
     }
+    if (match("(PRQ|PLSQ)([0-9]+)x([0-9]+)x4fs(r?)(_[0-9]+)?" + aq_norm_pattern)) {
+        int nsplits = std::stoi(sm[2].str());
+        int Msub = std::stoi(sm[3].str());
+        int bbs = mres_to_int(sm[5], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
+        IndexIVFAdditiveQuantizerFastScan* index_ivf;
+        if (sm[1].str() == "PRQ") {
+            index_ivf = new IndexIVFProductResidualQuantizerFastScan(
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+        } else {
+            index_ivf = new IndexIVFProductLocalSearchQuantizerFastScan(
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+        }
+        index_ivf->by_residual = (sm[4].str() == "r");
+        return index_ivf;
+    }
     if (match("(ITQ|PCA|PCAR)([0-9]+)?,SH([-0-9.e]+)?([gcm])?")) {
         int outdim = mres_to_int(sm[2], d); // is also the number of bits
         std::unique_ptr<VectorTransform> vt;

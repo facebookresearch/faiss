@@ -637,9 +637,6 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
             inters.append(inter)
 
         inters = np.array(inters)
-        print(inters)
-        if not np.all(inters[1:] >= inters[:-1]):
-            print("TestIVFPLSQ", inters)
         self.assertTrue(np.all(inters[1:] >= inters[:-1]))
 
         # do a little I/O test

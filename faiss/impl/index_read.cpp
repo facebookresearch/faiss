@@ -659,20 +659,31 @@ Index* read_index(IOReader* f, int io_flags) {
 
         READVECTOR(idxaqfs->codes);
         idx = idxaqfs;
-    } else if (h == fourcc("IVLf") || h == fourcc("IVRf")) {
+    } else if (h == fourcc("IVLf") || h == fourcc("IVRf") || h == fourcc("NPLf") || h == fourcc("NPRf")) {
         bool is_LSQ = h == fourcc("IVLf");
+        bool is_RQ = h == fourcc("IVRf");
+        bool is_PLSQ = h == fourcc("NPLf");
+
         IndexIVFAdditiveQuantizerFastScan* ivaqfs;
         if (is_LSQ) {
             ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
-        } else {
+        } else if (is_RQ) {
             ivaqfs = new IndexIVFResidualQuantizerFastScan();
+        } else if (is_PLSQ) {
+            ivaqfs = new IndexIVFProductLocalSearchQuantizerFastScan();
+        } else {
+            ivaqfs = new IndexIVFProductResidualQuantizerFastScan();
         }
         read_ivf_header(ivaqfs, f);
 
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer((ProductLocalSearchQuantizer*)ivaqfs->aq, f);
+        } else {
+            read_ProductResidualQuantizer((ProductResidualQuantizer*)ivaqfs->aq, f);
         }
 
         READ1(ivaqfs->by_residual);

@@ -469,7 +469,6 @@ class TestAQFastScan(unittest.TestCase):
         Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
         d = 16
-        # ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
         ds = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
         gt = ds.get_groundtruth(k=1)
 
@@ -666,18 +665,10 @@ class TestPAQFastScan(unittest.TestCase):
         self.subtest_accuracy("PRQ")
 
     def subtest_factory(self, paq):
-        AQ = faiss.AdditiveQuantizer
-        d = 16
-
-        index = faiss.index_factory(d, f'{paq}2x3x4fs_Nlsq2x4')
-        paq = faiss.downcast_Quantizer(index.aq)
-        self.assertEqual(paq.nsplits, 2)
-        self.assertEqual(paq.subquantizer(0).M, 3)
-
-        if paq == 'PLSQ':
-            assert isinstance(paq, faiss.ProductLocalSearchQuantizer)
-        if paq == 'PRQ':
-            assert isinstance(paq, faiss.ProductResidualQuantizer)
+        index = faiss.index_factory(16, f'{paq}2x3x4fs_Nlsq2x4')
+        q = faiss.downcast_Quantizer(index.aq)
+        self.assertEqual(q.nsplits, 2)
+        self.assertEqual(q.subquantizer(0).M, 3)
 
     def test_factory(self):
         self.subtest_factory('PRQ')
