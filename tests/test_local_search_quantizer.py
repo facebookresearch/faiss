@@ -630,13 +630,15 @@ class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
         index.add(ds.get_database())
 
         inters = []
-        for nprobe in 1, 2, 5, 10, 20, 50:
+        for nprobe in 1, 2, 5, 10, 20, 100:
             index.nprobe = nprobe
             D, I = index.search(ds.get_queries(), 10)
             inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
             inters.append(inter)
 
         inters = np.array(inters)
+        if not np.all(inters[1:] >= inters[:-1]):
+            print("TestIVFPLSQ", inters)
         self.assertTrue(np.all(inters[1:] >= inters[:-1]))
 
         # do a little I/O test
