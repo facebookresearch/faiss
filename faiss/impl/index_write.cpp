@@ -447,8 +447,10 @@ void write_index(const Index* idx, IOWriter* f) {
                 dynamic_cast<const IndexLocalSearchQuantizerFastScan*>(idx);
         auto idxrqfs = dynamic_cast<const IndexResidualQuantizerFastScan*>(idx);
         auto idxplsqfs =
-                dynamic_cast<const IndexProductLocalSearchQuantizerFastScan*>(idx);
-        auto idxprqfs = dynamic_cast<const IndexProductResidualQuantizerFastScan*>(idx);
+                dynamic_cast<const IndexProductLocalSearchQuantizerFastScan*>(
+                        idx);
+        auto idxprqfs =
+                dynamic_cast<const IndexProductResidualQuantizerFastScan*>(idx);
         FAISS_THROW_IF_NOT(idxlsqfs || idxrqfs || idxplsqfs || idxprqfs);
 
         if (idxlsqfs) {
