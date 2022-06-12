@@ -641,7 +641,6 @@ class TestPAQFastScan(unittest.TestCase):
         ds = datasets.SyntheticDataset(d, 1000, 1000, 500)
         gt = ds.get_groundtruth(k=1)
 
-
         index = faiss.index_factory(d, f'{paq}2x3x4_Nqint8')
         index.train(ds.get_train())
         index.add(ds.get_database())
