@@ -70,6 +70,8 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
 
+    void trainQuantizer_impl(Index::idx_t n, const float* x);
+
     /// Called from GpuIndex for search
     void searchImpl_(
             int n,

@@ -78,9 +78,11 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
             {(int)n, (int)this->d});
 
     // TODO: I think this can be done on GPU through RAFT k-means
-    trainQuantizer_(n, hostData.data());
+    trainQuantizer_impl(n, hostData.data());
 
     // The quantizer is now trained; construct the IVF index
+
+    // TODO: The underlying RaftIVFFlat essentially becomes the `query impl`
     index_.reset(new RaftIVFFlat(
             resources_.get(),
             quantizer->getGpuData(),
@@ -105,6 +107,38 @@ int RaftIndexIVFFlat::getListLength(int listId) const {
 
     return index_->getListLength(listId);
 }
+
+void RaftIndexIVFFlat::trainQuantizer_impl(Index::idx_t n, const float* x) {
+    if (n == 0) {
+        // nothing to do
+        return;
+    }
+
+    if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
+        if (this->verbose) {
+            printf("IVF quantizer does not need training.\n");
+        }
+
+        return;
+    }
+
+    if (this->verbose) {
+        printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
+    }
+
+    DeviceScope scope(config_.device);
+
+    // leverage the CPU-side k-means code, which works for the GPU
+    // flat index as well
+    quantizer->reset();
+    Clustering clus(this->d, nlist, this->cp);
+    clus.verbose = verbose;
+    clus.train(n, x, *quantizer);
+    quantizer->is_trained = true;
+
+    FAISS_ASSERT(quantizer->ntotal == nlist);
+}
+
 
 std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
         int listId,
