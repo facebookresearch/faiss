@@ -131,6 +131,8 @@ void RaftIndexIVFFlat::trainQuantizer_impl(Index::idx_t n, const float* x) {
     // leverage the CPU-side k-means code, which works for the GPU
     // flat index as well
     quantizer->reset();
+
+    // TODO: Invoke RAFT K-means here
     Clustering clus(this->d, nlist, this->cp);
     clus.verbose = verbose;
     clus.train(n, x, *quantizer);

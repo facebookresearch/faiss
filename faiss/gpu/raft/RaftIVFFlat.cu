@@ -203,6 +203,7 @@ void RaftIVFFlat::query(
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe, dim_});
 
+    // TODO: This is where we invoke the search function from RAFT
     if (useResidual_) {
         // Reconstruct vectors from the quantizer
         quantizer_->reconstruct(coarseIndices, residualBase);
