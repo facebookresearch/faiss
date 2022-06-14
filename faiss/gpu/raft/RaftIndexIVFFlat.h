@@ -18,7 +18,7 @@ struct IndexIVFFlat;
 namespace faiss {
 namespace gpu {
 
-class IVFFlat;
+class RaftIVFFlat;
 class GpuIndexFlat;
 
 /// Wrapper around the GPU implementation that looks like

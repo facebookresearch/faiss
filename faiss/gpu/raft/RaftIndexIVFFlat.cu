@@ -12,7 +12,7 @@
 #include <faiss/gpu/raft/RaftIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/raft/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
@@ -81,7 +81,7 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     trainQuantizer_(n, hostData.data());
 
     // The quantizer is now trained; construct the IVF index
-    index_.reset(new IVFFlat(
+    index_.reset(new RaftIVFFlat(
             resources_.get(),
             quantizer->getGpuData(),
             this->metric_type,

@@ -163,8 +163,8 @@ set(FAISS_GPU_HEADERS
 )
 
 if(FAISS_ENABLE_RAFT)
-  list(APPEND FAISS_GPU_HEADERS raft/RaftIndexIVFFlat.h)
-  list(APPEND FAISS_GPU_SRC raft/RaftIndexIVFFlat.cu)
+  list(APPEND FAISS_GPU_HEADERS raft/RaftIndexIVFFlat.h raft/RaftIVFFlat.cuh)
+  list(APPEND FAISS_GPU_SRC raft/RaftIndexIVFFlat.cu raft/RaftIVFFlat.cu)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
