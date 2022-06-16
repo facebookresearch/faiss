@@ -152,6 +152,7 @@
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
     <innerclass refid="structfaiss_1_1VStackInvertedLists" prot="public">faiss::VStackInvertedLists</innerclass>
     <innerclass refid="classfaiss_1_1WorkerThread" prot="public">faiss::WorkerThread</innerclass>
+    <innernamespace refid="namespacefaiss_1_1cppcontrib">faiss::cppcontrib</innernamespace>
     <innernamespace refid="namespacefaiss_1_1detail">faiss::detail</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <innernamespace refid="namespacefaiss_1_1ivflib">faiss::ivflib</innernamespace>

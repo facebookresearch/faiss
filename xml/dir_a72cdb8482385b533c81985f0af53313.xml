@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_a72cdb8482385b533c81985f0af53313" kind="dir">
+    <compoundname>faiss/cppcontrib</compoundname>
+    <innerfile refid="SaDecodeKernels-avx2-inl_8h">SaDecodeKernels-avx2-inl.h</innerfile>
+    <innerfile refid="SaDecodeKernels-inl_8h">SaDecodeKernels-inl.h</innerfile>
+    <innerfile refid="SaDecodeKernels_8h">SaDecodeKernels.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/"/>
+  </compounddef>
+</doxygen>

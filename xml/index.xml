@@ -174,9 +174,7 @@
     <member refid="structfaiss_1_1InvertedLists_1a8d3382c2a672340abd227c00cf84ad42" kind="function"><name>get_single_code</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe" kind="function"><name>prefetch_lists</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de" kind="function"><name>add_entry</name></member>
-    <member refid="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705" kind="function"><name>update_entry</name></member>
-    <member refid="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8" kind="function"><name>imbalance_factor</name></member>
@@ -1282,6 +1280,14 @@
     <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kind="typedef"><name>idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kind="struct"><name>faiss::cppcontrib::Index2LevelDecoder</name>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" kind="function"><name>accum</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexAdditiveQuantizer" kind="struct"><name>faiss::IndexAdditiveQuantizer</name>
     <member refid="structfaiss_1_1IndexAdditiveQuantizer_1a1432509b1f127e2b84a67ee3de2a290d" kind="typedef"><name>Search_type_t</name></member>
@@ -5630,11 +5636,15 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d84" kind="namespace"><name>faiss::@84</name>
+  <compound refid="namespacefaiss_1_1_0d87" kind="namespace"><name>faiss::@87</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d85" kind="namespace"><name>faiss::@85</name>
+  <compound refid="namespacefaiss_1_1_0d88" kind="namespace"><name>faiss::@88</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d86" kind="namespace"><name>faiss::@86</name>
+  <compound refid="namespacefaiss_1_1_0d89" kind="namespace"><name>faiss::@89</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d3" kind="namespace"><name>faiss::cppcontrib::@3</name>
   </compound>
   <compound refid="namespacefaiss_1_1detail" kind="namespace"><name>faiss::detail</name>
   </compound>
@@ -5776,6 +5786,17 @@
   <compound refid="clone__index_8h" kind="file"><name>clone_index.h</name>
   </compound>
   <compound refid="Clustering_8h" kind="file"><name>Clustering.h</name>
+  </compound>
+  <compound refid="SaDecodeKernels-avx2-inl_8h" kind="file"><name>SaDecodeKernels-avx2-inl.h</name>
+    <member refid="SaDecodeKernels-avx2-inl_8h_1a51f4a4e743041c88fb645fd9d39f8336" kind="variable"><name>coarseCentroidIdx</name></member>
+    <member refid="SaDecodeKernels-avx2-inl_8h_1a4426fff3fbf9dda14fc7d896061eaf5d" kind="variable"><name>coarseCentroidOffset</name></member>
+    <member refid="SaDecodeKernels-avx2-inl_8h_1a9412e3ddea1d1099e86561113f5956d5" kind="variable"><name>fineCentroidIdx</name></member>
+    <member refid="SaDecodeKernels-avx2-inl_8h_1a56835bafcaf9318bbdd81cead3ff64da" kind="variable"><name>fineCentroidOffset</name></member>
+    <member refid="SaDecodeKernels-avx2-inl_8h_1ac85002ac774d37321a1ebb650dbdff35" kind="variable"><name>QPOS_LEFT</name></member>
+  </compound>
+  <compound refid="SaDecodeKernels-inl_8h" kind="file"><name>SaDecodeKernels-inl.h</name>
+  </compound>
+  <compound refid="SaDecodeKernels_8h" kind="file"><name>SaDecodeKernels.h</name>
   </compound>
   <compound refid="GpuAutoTune_8h" kind="file"><name>GpuAutoTune.h</name>
   </compound>
@@ -6032,6 +6053,8 @@
   <compound refid="VectorTransform_8h" kind="file"><name>VectorTransform.h</name>
   </compound>
   <compound refid="dir_e0bc4e8ba6e534e3fbf335254ee8d911" kind="dir"><name>faiss/gpu/utils/blockselect</name>
+  </compound>
+  <compound refid="dir_a72cdb8482385b533c81985f0af53313" kind="dir"><name>faiss/cppcontrib</name>
   </compound>
   <compound refid="dir_283b6f110a5e88358299b04e4fc2c7ec" kind="dir"><name>faiss</name>
   </compound>

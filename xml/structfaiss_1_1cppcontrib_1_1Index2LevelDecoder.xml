@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::cppcontrib::Index2LevelDecoder</compoundname>
+    <templateparamlist>
+      <param>
+        <type>intptr_t</type>
+        <declname>DIM</declname>
+        <defname>DIM</defname>
+      </param>
+      <param>
+        <type>intptr_t</type>
+        <declname>COARSE_SIZE</declname>
+        <defname>COARSE_SIZE</defname>
+      </param>
+      <param>
+        <type>intptr_t</type>
+        <declname>FINE_SIZE</declname>
+        <defname>FINE_SIZE</defname>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::store</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, float *const __restrict outputStore)</argsstring>
+        <name>store</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputStore</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" line="525" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" bodystart="525" bodyend="532"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, const float weight, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" line="536" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" bodystart="536" bodyend="544"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids0, const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqCoarseCentroids1, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids1</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" line="549" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" bodystart="549" bodyend="569"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::store</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, float *const __restrict outputStore)</argsstring>
+        <name>store</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputStore</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-inl.h" line="17" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-inl.h" bodystart="17" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids, const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, const float weight, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-inl.h" line="51" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-inl.h" bodystart="51" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::Index2LevelDecoder&lt; DIM, COARSE_SIZE, FINE_SIZE &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqCoarseCentroids0, const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqCoarseCentroids1, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqCoarseCentroids1</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/SaDecodeKernels-inl.h" line="87" column="17" bodyfile="faiss/cppcontrib/SaDecodeKernels-inl.h" bodystart="87" bodyend="133"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" line="523" column="25" bodyfile="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" bodystart="523" bodyend="570"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a11d7af99ed1acfda1c1392a56c18f064" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a87c62893be3966ce5e90a3d4a1f0f5f0" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>store</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ae713433ccbc30c88251326e80c813e2c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>store</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

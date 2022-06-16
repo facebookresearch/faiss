@@ -346,6 +346,7 @@
         <definition>virtual size_t faiss::InvertedLists::add_entries</definition>
         <argsstring>(size_t list_no, size_t n_entry, const idx_t *ids, const uint8_t *code)=0</argsstring>
         <name>add_entries</name>
+        <reimplementedby refid="structfaiss_1_1BlockInvertedLists_1a820d8f05e6fae5eb5f82d43d19d0c7c6">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a762cfcc06fe60dbaa807ce72723531a9">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ArrayInvertedLists_1a6b1f8d4cfe8413065c416d442bd4636b">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReadOnlyInvertedLists_1a0734538244d8c5969e3e23e38faf1c0c">add_entries</reimplementedby>
@@ -407,6 +408,7 @@
         <definition>virtual void faiss::InvertedLists::update_entries</definition>
         <argsstring>(size_t list_no, size_t offset, size_t n_entry, const idx_t *ids, const uint8_t *code)=0</argsstring>
         <name>update_entries</name>
+        <reimplementedby refid="structfaiss_1_1BlockInvertedLists_1aa5d61744a1478c537fec67e64b4dbe25">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a4d64d34d7ce9b242bb840c218fc3059c">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ArrayInvertedLists_1af4aa699d0fba82f2d6f755e0b33b49af">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReadOnlyInvertedLists_1a33c3a5174bcf6709dcefec8bdc4b9a52">update_entries</reimplementedby>
