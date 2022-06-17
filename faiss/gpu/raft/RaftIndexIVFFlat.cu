@@ -16,8 +16,6 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
-#include <raft/core/handle.hpp>
-#include <raft/spatial/knn/ann_common.h>
 #include <raft/spatial/knn/ann.cuh>
 
 #include <limits>
@@ -71,12 +69,14 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
+    // TODO: Populate the rest of the params properly.
     raft::spatial::knn::ivf_flat_params raft_idx_params;
     raft_idx_params.nlist = nlist;
 
     raft::distance::DistanceType metric = raft::distance::DistanceType::L2Expanded;
-    raft::spatial::knn::approx_knn_build_index(handle, &raft_knn_index, &raft_idx_params, metric, 0.0f,
-                                               const_cast<float*>(x), n, (faiss::Index::idx_t)d);
+    raft::spatial::knn::approx_knn_build_index(
+            raft_handle, &raft_knn_index, &raft_idx_params, metric, 0.0f,
+            const_cast<float*>(x), n, (faiss::Index::idx_t)d);
 
 //    // FIXME: GPUize more of this
 //    // First, make sure that the data is resident on the CPU, if it is not on
@@ -162,6 +162,9 @@ std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
     return index_->getListVectorData(listId, gpuFormat);
 }
 
+void RaftIndexIVFFlat::reset() {
+
+}
 std::vector<Index::idx_t> RaftIndexIVFFlat::getListIndices(int listId) const {
     FAISS_ASSERT(index_);
     DeviceScope scope(config_.device);
@@ -206,7 +209,14 @@ void RaftIndexIVFFlat::searchImpl_(
     Tensor<Index::idx_t, 2, true> outLabels(
             const_cast<Index::idx_t*>(labels), {n, k});
 
-    index_->query(queries, nprobe, k, outDistances, outLabels);
+    // TODO: Populate the rest of the params properly.
+    raft::spatial::knn::ivf_flat_params raft_idx_params;
+    raft_idx_params.nlist = nlist;
+
+    raft::spatial::knn::approx_knn_search(
+            raft_handle, distances, (int64_t*)labels,
+            const_cast<raft::spatial::knn::knnIndex*>(&raft_knn_index),
+            &raft_idx_params, k, const_cast<float*>(x), n);
 }
 
 } // namespace gpu

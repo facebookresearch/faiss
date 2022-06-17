@@ -22,8 +22,6 @@
 #include <faiss/gpu/utils/HostTensor.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
-#include <raft/spatial/knn/ann_common.h>
-#include <raft/spatial/knn/ann.cuh>
 
 #include <limits>
 #include <unordered_map>

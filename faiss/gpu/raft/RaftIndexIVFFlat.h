@@ -83,7 +83,7 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             float* distances,
             Index::idx_t* labels) const override;
 
-    const raft::handle_t handle;
+    const raft::handle_t raft_handle;
     raft::spatial::knn::knnIndex raft_knn_index;
 };
 
