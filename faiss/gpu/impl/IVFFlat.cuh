@@ -32,7 +32,7 @@ class IVFFlat : public IVFBase {
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
-    void query(
+    virtual void query(
             Tensor<float, 2, true>& queries,
             int nprobe,
             int k,

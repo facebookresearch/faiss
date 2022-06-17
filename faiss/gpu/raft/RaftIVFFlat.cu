@@ -21,6 +21,10 @@
 #include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
+
+#include <raft/spatial/knn/ann_common.h>
+#include <raft/spatial/knn/ann.cuh>
+
 #include <limits>
 #include <unordered_map>
 
@@ -164,8 +168,18 @@ void RaftIVFFlat::query(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices) {
+        Tensor<Index::idx_t, 2, true>& outIndices)  {
     auto stream = resources_->getDefaultStreamCurrentDevice();
+
+    // TODO: This is where we invoke the search function from RAFT
+    /**
+     * template <typename T>
+       void cuivflHandle<T>::cuivflSearch(const T* queries,  // [numQueries, dim]
+                                          uint32_t n_queries,
+                                          uint32_t k,
+                                          size_t* neighbors,  // [numQueries, topK]
+                                          float* distances)
+     */
 
     // These are caught at a higher level
     FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
@@ -203,7 +217,7 @@ void RaftIVFFlat::query(
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe, dim_});
 
-    // TODO: This is where we invoke the search function from RAFT
+
     if (useResidual_) {
         // Reconstruct vectors from the quantizer
         quantizer_->reconstruct(coarseIndices, residualBase);

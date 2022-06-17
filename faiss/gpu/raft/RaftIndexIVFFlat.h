@@ -9,6 +9,9 @@
 
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
+
+#include <raft/core/handle.hpp>
+#include <raft/spatial/knn/ann_common.h>
 #include <memory>
 
 namespace faiss {
@@ -80,6 +83,8 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             float* distances,
             Index::idx_t* labels) const override;
 
+    const raft::handle_t handle;
+    raft::spatial::knn::knnIndex raft_knn_index;
 };
 
 } // namespace gpu

@@ -17,6 +17,8 @@
 #include <faiss/gpu/utils/Float16.cuh>
 
 #include <raft/core/handle.hpp>
+#include <raft/spatial/knn/ann_common.h>
+#include <raft/spatial/knn/ann.cuh>
 
 #include <limits>
 
@@ -69,36 +71,45 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
 
     FAISS_ASSERT(!index_);
 
-    // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
-    auto hostData = toHost<float, 2>(
-            (float*)x,
-            resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+    raft::spatial::knn::ivf_flat_params raft_idx_params;
+    raft_idx_params.nlist = nlist;
 
-    // TODO: I think this can be done on GPU through RAFT k-means
-    trainQuantizer_impl(n, hostData.data());
+    raft::distance::DistanceType metric = raft::distance::DistanceType::L2Expanded;
+    raft::spatial::knn::approx_knn_build_index(handle, &raft_knn_index, &raft_idx_params, metric, 0.0f,
+                                               const_cast<float*>(x), n, (faiss::Index::idx_t)d);
 
-    // The quantizer is now trained; construct the IVF index
-
-    // TODO: The underlying RaftIVFFlat essentially becomes the `query impl`
-    index_.reset(new RaftIVFFlat(
-            resources_.get(),
-            quantizer->getGpuData(),
-            this->metric_type,
-            this->metric_arg,
-            false,   // no residual
-            nullptr, // no scalar quantizer
-            ivfFlatConfig_.interleavedLayout,
-            ivfFlatConfig_.indicesOptions,
-            config_.memorySpace));
-
-    if (reserveMemoryVecs_) {
-        index_->reserveMemory(reserveMemoryVecs_);
-    }
-
-    this->is_trained = true;
+//    // FIXME: GPUize more of this
+//    // First, make sure that the data is resident on the CPU, if it is not on
+//    // the CPU, as we depend upon parts of the CPU code
+//    auto hostData = toHost<float, 2>(
+//            (float*)x,
+//            resources_->getDefaultStream(config_.device),
+//            {(int)n, (int)this->d});
+//
+//    // TODO: I think this can be done on GPU through RAFT k-means
+//    trainQuantizer_impl(n, hostData.data());
+//
+//    // The quantizer is now trained; construct the IVF index
+//
+//    // TODO: The underlying RaftIVFFlat essentially becomes the `query impl`
+//    index_.reset(new RaftIVFFlat(
+//            resources_.get(),
+//
+//            // TODO: getGpuData returns a `FlatIndex`
+//            quantizer->getGpuData(),
+//            this->metric_type,
+//            this->metric_arg,
+//            false,   // no residual
+//            nullptr, // no scalar quantizer
+//            ivfFlatConfig_.interleavedLayout,
+//            ivfFlatConfig_.indicesOptions,
+//            config_.memorySpace));
+//
+//    if (reserveMemoryVecs_) {
+//        index_->reserveMemory(reserveMemoryVecs_);
+//    }
+//
+//    this->is_trained = true;
 }
 
 int RaftIndexIVFFlat::getListLength(int listId) const {
@@ -132,7 +143,7 @@ void RaftIndexIVFFlat::trainQuantizer_impl(Index::idx_t n, const float* x) {
     // flat index as well
     quantizer->reset();
 
-    // TODO: Invoke RAFT K-means here
+    // TODO: Invoke RAFT K-means here and set resulting trained data on quantizer
     Clustering clus(this->d, nlist, this->cp);
     clus.verbose = verbose;
     clus.train(n, x, *quantizer);

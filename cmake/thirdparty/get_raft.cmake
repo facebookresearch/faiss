@@ -16,8 +16,8 @@
 
 
 set(RAFT_VERSION "22.04")
-set(RAFT_FORK "rapidsai")
-set(RAFT_PINNED_TAG "branch-${RAFT_VERSION}")
+set(RAFT_FORK "achirkin")
+set(RAFT_PINNED_TAG "fea-knn-ivf-flat")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)

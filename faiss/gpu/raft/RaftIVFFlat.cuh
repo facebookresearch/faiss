@@ -38,7 +38,7 @@ class RaftIVFFlat : public IVFFlat {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices);
+            Tensor<Index::idx_t, 2, true>& outIndices) override;
 
    protected:
     /// Returns the number of bytes in which an IVF list containing numVecs
