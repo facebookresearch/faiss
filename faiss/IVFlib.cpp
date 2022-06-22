@@ -5,15 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IVFlib.h>
+#include <omp.h>
 
 #include <memory>
 
+#include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -404,6 +407,101 @@ void range_search_with_parameters(
         ms_per_stage[1] = t2 - t1;
         ms_per_stage[2] = t3 - t2;
     }
+}
+
+IndexIVFResidualQuantizer* ivf_residual_from_quantizer(
+        const ResidualQuantizer& rq,
+        int nlevel) {
+    FAISS_THROW_IF_NOT(nlevel > 0 && nlevel + 1 < rq.M);
+
+    std::vector<size_t> nbits(nlevel);
+    std::copy(rq.nbits.begin(), rq.nbits.begin() + nlevel, nbits.begin());
+    std::unique_ptr<ResidualCoarseQuantizer> rcq(
+            new ResidualCoarseQuantizer(rq.d, nbits));
+
+    // set the coarse quantizer from the 2 first quantizers
+    rcq->rq.initialize_from(rq);
+    rcq->is_trained = true;
+    rcq->ntotal = (idx_t)1 << rcq->rq.tot_bits;
+
+    // settings for exhaustive search in RCQ
+    rcq->centroid_norms.resize(rcq->ntotal);
+    rcq->aq->compute_centroid_norms(rcq->centroid_norms.data());
+    rcq->beam_factor = -1.0; // use exact search
+    size_t nlist = rcq->ntotal;
+
+    // build a IVFResidualQuantizer from that
+    std::vector<size_t> nbits_refined;
+    for (int i = nlevel; i < rq.M; i++) {
+        nbits_refined.push_back(rq.nbits[i]);
+    }
+    std::unique_ptr<IndexIVFResidualQuantizer> index(
+            new IndexIVFResidualQuantizer(
+                    rcq.get(),
+                    rq.d,
+                    nlist,
+                    nbits_refined,
+                    faiss::METRIC_L2,
+                    rq.search_type));
+    index->own_fields = true;
+    rcq.release();
+    index->by_residual = true;
+    index->rq.initialize_from(rq, nlevel);
+    index->is_trained = true;
+
+    return index.release();
+}
+
+void ivf_residual_add_from_flat_codes(
+        IndexIVFResidualQuantizer* index,
+        size_t nb,
+        const uint8_t* raw_codes,
+        int64_t code_size) {
+    const ResidualCoarseQuantizer* rcq =
+            dynamic_cast<const faiss::ResidualCoarseQuantizer*>(
+                    index->quantizer);
+    FAISS_THROW_IF_NOT_MSG(rcq, "the coarse quantizer must be a RCQ");
+    if (code_size < 0) {
+        code_size = index->code_size;
+    }
+    InvertedLists& invlists = *index->invlists;
+    const ResidualQuantizer& rq = index->rq;
+
+    // populate inverted lists
+#pragma omp parallel if (nb > 10000)
+    {
+        std::vector<uint8_t> tmp_code(index->code_size);
+        std::vector<float> tmp(rq.d);
+        int nt = omp_get_num_threads();
+        int rank = omp_get_thread_num();
+
+#pragma omp for
+        for (idx_t i = 0; i < nb; i++) {
+            const uint8_t* code = &raw_codes[i * code_size];
+            BitstringReader rd(code, code_size);
+            idx_t list_no = rd.read(rcq->rq.tot_bits);
+
+            if (list_no % nt ==
+                rank) { // each thread takes care of 1/nt of the invlists
+                // copy AQ indexes one by one
+                BitstringWriter wr(tmp_code.data(), tmp_code.size());
+                for (int j = 0; j < rq.M; j++) {
+                    int nbit = rq.nbits[j];
+                    wr.write(rd.read(nbit), nbit);
+                }
+                // we need to recompute the norm
+                // decode first, does not use the norm component, so that's
+                // ok
+                index->rq.decode(tmp_code.data(), tmp.data(), 1);
+                float norm = fvec_norm_L2sqr(tmp.data(), rq.d);
+                wr.write(rq.encode_norm(norm), rq.norm_bits);
+
+                // add code to the inverted list
+                invlists.add_entry(list_no, i, tmp_code.data());
+            }
+        }
+    }
+    index->ntotal += nb;
 }
 
 } // namespace ivflib

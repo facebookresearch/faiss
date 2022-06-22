@@ -73,6 +73,9 @@ class TestEncodeDecode(unittest.TestCase):
     def test_LSH(self):
         self.do_encode_twice('LSHrt')
 
+    def test_RQ6x8(self):
+        self.do_encode_twice('RQ6x8')
+
 
 class TestIndexEquiv(unittest.TestCase):
 

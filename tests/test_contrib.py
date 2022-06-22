@@ -318,7 +318,7 @@ class TestPreassigned(unittest.TestCase):
             index.nprobe = nprobe
             a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
             D, I = ivf_tools.search_preassigned(index, xq, 4, a)
-            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
+            inter_perf = faiss.eval_intersection(I, ds.get_groundtruth()[:, :4])
             self.assertTrue(inter_perf >= prev_inter_perf)
             prev_inter_perf = inter_perf
 
@@ -368,15 +368,21 @@ class TestPreassigned(unittest.TestCase):
         a = alt_quantizer.search(xb[:, :20].copy(), 1)[1].ravel()
         ivf_tools.add_preassigned(index, xb_bin, a)
 
+        # recompute GT in binary
+        k = 15
+        ib = faiss.IndexBinaryFlat(128)
+        ib.add(xb_bin)
+        Dgt, Igt = ib.search(xq_bin, k)
+
         # search elements xq, increase nprobe, check 4 first results w/ groundtruth
         prev_inter_perf = 0
         for nprobe in 1, 10, 20:
 
             index.nprobe = nprobe
             a = alt_quantizer.search(xq[:, :20].copy(), index.nprobe)[1]
-            D, I = ivf_tools.search_preassigned(index, xq_bin, 4, a)
-            inter_perf = (I == ds.get_groundtruth()[:, :4]).sum() / I.size
-            self.assertTrue(inter_perf >= prev_inter_perf)
+            D, I = ivf_tools.search_preassigned(index, xq_bin, k, a)
+            inter_perf = faiss.eval_intersection(I, Igt)
+            self.assertGreaterEqual(inter_perf, prev_inter_perf)
             prev_inter_perf = inter_perf
 
         # test range search

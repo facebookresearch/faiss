@@ -32,6 +32,11 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
 
+#include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductQuantizer.h>
+#include <faiss/impl/ResidualQuantizer.h>
+#include <faiss/impl/ScalarQuantizer.h>
+
 namespace faiss {
 
 /*************************************************************
@@ -147,6 +152,14 @@ Index* Cloner::clone_Index(const Index* index) {
         FAISS_THROW_MSG("clone not supported for this type of Index");
     }
     return nullptr;
+}
+
+Quantizer* clone_Quantizer(const Quantizer* quant) {
+    TRYCLONE(ResidualQuantizer, quant)
+    TRYCLONE(LocalSearchQuantizer, quant)
+    TRYCLONE(ProductQuantizer, quant)
+    TRYCLONE(ScalarQuantizer, quant)
+    FAISS_THROW_MSG("Did not recognize quantizer to clone");
 }
 
 } // namespace faiss

@@ -150,9 +150,6 @@ LocalSearchQuantizer::LocalSearchQuantizer(
         size_t nbits,
         Search_type_t search_type)
         : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
-    is_trained = false;
-    verbose = false;
-
     K = (1 << nbits);
 
     train_iters = 25;
@@ -298,7 +295,7 @@ void LocalSearchQuantizer::perturb_codebooks(
     }
 }
 
-void LocalSearchQuantizer::compute_codes(
+void LocalSearchQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
         size_t n,

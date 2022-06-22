@@ -120,6 +120,8 @@ struct IndexFastScan : Index {
             idx_t* labels,
             int impl,
             const Scaler& scaler) const;
+
+    void reconstruct(idx_t key, float* recons) const override;
 };
 
 struct FastScanStats {

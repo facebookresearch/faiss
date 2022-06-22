@@ -1130,3 +1130,49 @@ class TestCrossCodebookComputations(unittest.TestCase):
         rq.use_beam_LUT = 1
         codes_new = rq.compute_codes(xb)
         np.testing.assert_array_equal(codes_ref_residuals, codes_new)
+
+
+class TestProductResidualQuantizer(unittest.TestCase):
+
+    def test_codec(self):
+        """check that the error is in the same ballpark as PQ."""
+        ds = datasets.SyntheticDataset(64, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+
+        prq = faiss.ProductResidualQuantizer(ds.d, nsplits, Msub, nbits)
+        prq.train(xt)
+        err_prq = eval_codec(prq, xb)
+
+        pq = faiss.ProductQuantizer(ds.d, nsplits * Msub, nbits)
+        pq.train(xt)
+        err_pq = eval_codec(pq, xb)
+
+        print(err_prq, err_pq)
+        self.assertLess(err_prq, err_pq)
+
+    def test_with_rq(self):
+        """compare with RQ when nsplits = 1"""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 4
+
+        prq = faiss.ProductResidualQuantizer(ds.d, 1, M, nbits)
+        prq.train(xt)
+        err_prq = eval_codec(prq, xb)
+
+        rq = faiss.ResidualQuantizer(ds.d, M, nbits)
+        rq.train(xt)
+        err_rq = eval_codec(rq, xb)
+
+        print(err_prq, err_rq)
+        self.assertEqual(err_prq, err_rq)

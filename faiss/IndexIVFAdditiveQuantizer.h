@@ -51,6 +51,8 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs) const override;
 
+    void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
+
     ~IndexIVFAdditiveQuantizer() override;
 };
 

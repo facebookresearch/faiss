@@ -325,6 +325,31 @@ class TestScalarQuantizer(unittest.TestCase):
                     # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
+    def test_reconstruct(self):
+        self.do_reconstruct(True)
+
+    def test_reconstruct_no_residual(self):
+        self.do_reconstruct(False)
+
+    def do_reconstruct(self, by_residual):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 100, 5, 5)
+
+        index = faiss.index_factory(d, "IVF10,SQ8")
+        index.by_residual = by_residual
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 10
+        D, I = index.search(xq, 4)
+        xb2 = index.reconstruct_n(0, index.ntotal)
+        for i in range(5):
+            for j in range(4):
+                self.assertAlmostEqual(
+                    ((xq[i] - xb2[I[i, j]]) ** 2).sum(),
+                    D[i, j],
+                    places=4
+                )
+
 
 class TestRandom(unittest.TestCase):
 
