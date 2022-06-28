@@ -159,8 +159,7 @@ int faiss_Index_compute_residual_n(
     CATCH_AND_HANDLE
 }
 
-int faiss_Index_sa_code_size(const FaissIndex* index,
-    size_t* size) {
+int faiss_Index_sa_code_size(const FaissIndex* index, size_t* size) {
     try {
         reinterpret_cast<const faiss::Index*>(index)->sa_code_size();
     }
@@ -173,8 +172,7 @@ int faiss_Index_sa_encode(
         const float* x,
         uint8_t* bytes) {
     try {
-        reinterpret_cast<const faiss::Index*>(index)->sa_encode(
-                n, x, bytes);
+        reinterpret_cast<const faiss::Index*>(index)->sa_encode(n, x, bytes);
     }
     CATCH_AND_HANDLE
 }
@@ -185,8 +183,7 @@ int faiss_Index_sa_decode(
         const uint8_t* bytes,
         float* x) {
     try {
-        reinterpret_cast<const faiss::Index*>(index)->sa_decode(
-                n, bytes, x);
+        reinterpret_cast<const faiss::Index*>(index)->sa_decode(n, bytes, x);
     }
     CATCH_AND_HANDLE
 }
