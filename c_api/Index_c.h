@@ -241,7 +241,8 @@ int faiss_Index_sa_encode(
  * @param bytes   input encoded vectors, size n * sa_code_size()
  * @param x       output vectors, size n * d
  */
-int faiss_Index_sa_decode(const FaissIndex* index,
+int faiss_Index_sa_decode(
+        const FaissIndex* index,
         idx_t n,
         const uint8_t* bytes,
         float* x);
