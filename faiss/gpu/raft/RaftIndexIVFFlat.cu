@@ -97,7 +97,7 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     // TODO: Invoke corresponding call on the RAFT side to copy quantizer
     /**
      * For example:
-     * raft_knn_index.emplace(raft::spatial::knn::ivf_flat::make_ivf_flat_index<T>(
+     * raft_knn_index.emplace(raft::spatial::knn::ivf_flat::make_index<T>(
      *      raft_handle, raft_idx_params, (faiss::Index::idx_t)d);
      */
 }
@@ -112,8 +112,13 @@ void RaftIndexIVFFlat::reserveMemory(size_t numVecs) {
         // TODO: We need to reserve memory on the raft::ivf_flat::index
         /**
          * For example:
-         * raft::spatial::knn::ivf_flat::ivf_flat_allocate_ivf_lists(
+         * raft::spatial::knn::ivf_flat::allocate_ivf_lists(
          *      raft_handle, *raft_knn_index, numVecs);
+         *
+         * raft::spatial::knn::ivf_flat::populate(
+         *      raft_handle, *raft_knn_index,
+         *      n_centroids, centroids,
+         *      n_vectors, ivf);
          */
     }
 }
@@ -124,7 +129,7 @@ size_t RaftIndexIVFFlat::reclaimMemory() {
     // TODO: We need to reclaim memory on the raft::ivf_flat::index
     /**
      * For example:
-     * raft::spatial::knn::ivf_flat::ivf_flat_reclaim_ivf_lists(
+     * raft::spatial::knn::ivf_flat::reclaim_ivf_lists(
      *      raft_handle, *raft_knn_index, numVecs);
      */
     return 0;
@@ -153,10 +158,10 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     /**
      * For example:
      *
-     * raft_knn_index.emplace(raft::spatial::knn::ivf_flat::make_ivf_flat_index<T>(
+     * raft_knn_index.emplace(raft::spatial::knn::ivf_flat::make_index<T>(
      *      raft_handle, raft_idx_params, (faiss::Index::idx_t)d);
 
-     * raft::spatial::knn::ivf_flat::ivf_flat_train_quantizer(
+     * raft::spatial::knn::ivf_flat::train_quantizer(
      *      raft_handle, *raft_knn_index, const_cast<float*>(x), n);
      */
 
@@ -241,7 +246,7 @@ void RaftIndexIVFFlat::addImpl_(
     // TODO: Invoke corresponding call in raft::ivf_flat
     /**
      * For example:
-     * raft::spatial::knn::ivf_flat::ivf_flat_add_vectors(
+     * raft::spatial::knn::ivf_flat::add_vectors(
      *      raft_handle, *raft_knn_index, n, x, xids);
      */
 
