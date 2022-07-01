@@ -11,7 +11,8 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 
 #include <raft/core/handle.hpp>
-#include <raft/spatial/knn/ann_common.h>
+#include <raft/spatial/knn/ivf_flat_types.hpp>
+
 #include <memory>
 
 namespace faiss {
@@ -56,6 +57,15 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
     /// Returns the number of vectors present in a particular inverted list
     int getListLength(int listId) const override;
 
+    /// Reserve GPU memory in our inverted lists for this number of vectors
+    void reserveMemory(size_t numVecs);
+
+    /// After adding vectors, one can call this to reclaim device memory
+    /// to exactly the amount needed. Returns space reclaimed in bytes
+    size_t reclaimMemory();
+
+    void copyFrom(const faiss::IndexIVFFlat* index);
+
     /// Return the encoded vector data contained in a particular inverted list,
     /// for debugging purposes.
     /// If gpuFormat is true, the data is returned as it is encoded in the
@@ -73,7 +83,6 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
 
-    void trainQuantizer_impl(Index::idx_t n, const float* x);
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -84,7 +93,7 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             Index::idx_t* labels) const override;
 
     const raft::handle_t raft_handle;
-    raft::spatial::knn::knnIndex raft_knn_index;
+    std::optional<raft::spatial::knn::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};
 };
 
 } // namespace gpu
