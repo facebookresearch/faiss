@@ -178,13 +178,7 @@ int RaftIndexIVFFlat::getListLength(int listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Call function in RAFT to do this.
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_length(
-     *    raft_handle, *raft_knn_index, listId);
-     */
-    return 0;
+    return int(raft_knn_index->list_sizes[listId]);
 }
 
 std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
@@ -193,13 +187,13 @@ std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Invoke corresponding call in raft::ivf_flat
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_vector_data(
-     *    raft_handle, *raft_knn_index, listId, gpuFormat);
-     */
-    std::vector<uint8_t> vec;
+    using elem_t = decltype(raft_knn_index->data)::element_type;
+    size_t dim = raft_knn_index->dim();
+    size_t byte_offset = size_t(raft_knn_index->list_offsets[listId]) * sizeof(elem_t) * dim;
+    // the interleaved block can be slightly larger than the list size (it's rounded up)
+    size_t byte_size = size_t(raft_knn_index->list_offsets[listId + 1]) * sizeof(elem_t) * dim - byte_offset;
+    std::vector<uint8_t> vec(byte_size);
+    raft::copy(vec.data(), reinterpret_cast<uint8_t*>(raft_knn_index->data.data()) + byte_offset, byte_size);
     return vec;
 }
 
@@ -212,13 +206,10 @@ std::vector<Index::idx_t> RaftIndexIVFFlat::getListIndices(int listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Need to invoke corresponding call in raft::ivf_flat
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_indices(
-     *    raft_handle, *raft_knn_index, listId);
-     */
-    std::vector<Index::idx_t> vec;
+    size_t offset = raft_knn_index->list_offsets[listId];
+    size_t size = raft_knn_index->list_sizes[listId];
+    std::vector<Index::idx_t> vec(size);
+    raft::copy(vec.data(), raft_knn_index->indices.data() + offset, size);
     return vec;
 }
 
