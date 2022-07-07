@@ -11,7 +11,7 @@ The code is organized as:
 - `bench_all_ivf.py`: evaluate one type of inverted file
 
 - `run_on_cluster_generic.bash`: call `bench_all_ivf.py` for all tested types of indices. 
-Since the number of experiments is quite large the script is structued so that the benchmark can be run on a cluster.
+Since the number of experiments is quite large the script is structured so that the benchmark can be run on a cluster.
 
 - `parse_bench_all_ivf.py`: make nice tradeoff plots from all the results. 
 
