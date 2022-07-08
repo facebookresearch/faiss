@@ -75,7 +75,7 @@ and cuBLAS.
 Using the GPU with the C API
 ----------------------------
 
-A standard GPU resurces object can be obtained by the name `FaissStandardGpuResources`:
+A standard GPU resources object can be obtained by the name `FaissStandardGpuResources`:
 
 ```c
 FaissStandardGpuResources* gpu_res = NULL;
