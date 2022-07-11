@@ -1110,7 +1110,7 @@ void IndexIVFFastScan::search_implem_14(
         std::set<int> q_set;
         uint64_t t_copy_pack = 0, t_scan = 0;
 #pragma omp for schedule(dynamic)
-        for (size_t cluster = 0; cluster < ses.size(); cluster++){ 
+        for (idx_t cluster = 0; cluster < ses.size(); cluster++){ 
             
             uint64_t tt0 = get_cy();
             size_t i0 = ses[cluster].start;
