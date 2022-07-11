@@ -7,10 +7,10 @@
 
 #include <faiss/IndexIVFFastScan.h>
 
-#include<set>
 #include <cassert>
 #include <cinttypes>
 #include <cstdio>
+#include <set>
 
 #include <omp.h>
 
@@ -369,14 +369,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                         &nlist_visited,
                         scaler);
             } else if (impl == 14 || impl == 15) {
-                search_implem_14<C>(
-                        n,
-                        x,
-                        k,
-                        distances,
-                        labels,
-                        impl,
-                        scaler);
+                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
             } else {
                 search_implem_10<C>(
                         n,
@@ -410,46 +403,41 @@ void IndexIVFFastScan::search_dispatch_implem(
                 // LUTs unlikely to be a limiting factor
                 nslice = omp_get_max_threads();
             }
-            if (impl == 14 || impl == 15) { //this might require slicing if there are too many queries (for now we keep this simple)
-                search_implem_14<C>(
-                        n,
-                        x,
-                        k,
-                        distances,
-                        labels,
-                        impl,
-                        scaler);
+            if (impl == 14 ||
+                impl == 15) { // this might require slicing if there are too
+                              // many queries (for now we keep this simple)
+                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
             } else {
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
-            for (int slice = 0; slice < nslice; slice++) {
-                idx_t i0 = n * slice / nslice;
-                idx_t i1 = n * (slice + 1) / nslice;
-                float* dis_i = distances + i0 * k;
-                idx_t* lab_i = labels + i0 * k;
-                if (impl == 12 || impl == 13) {
-                    search_implem_12<C>(
-                            i1 - i0,
-                            x + i0 * d,
-                            k,
-                            dis_i,
-                            lab_i,
-                            impl,
-                            &ndis,
-                            &nlist_visited,
-                            scaler);
-                } else {
-                    search_implem_10<C>(
-                            i1 - i0,
-                            x + i0 * d,
-                            k,
-                            dis_i,
-                            lab_i,
-                            impl,
-                            &ndis,
-                            &nlist_visited,
-                            scaler);
+                for (int slice = 0; slice < nslice; slice++) {
+                    idx_t i0 = n * slice / nslice;
+                    idx_t i1 = n * (slice + 1) / nslice;
+                    float* dis_i = distances + i0 * k;
+                    idx_t* lab_i = labels + i0 * k;
+                    if (impl == 12 || impl == 13) {
+                        search_implem_12<C>(
+                                i1 - i0,
+                                x + i0 * d,
+                                k,
+                                dis_i,
+                                lab_i,
+                                impl,
+                                &ndis,
+                                &nlist_visited,
+                                scaler);
+                    } else {
+                        search_implem_10<C>(
+                                i1 - i0,
+                                x + i0 * d,
+                                k,
+                                dis_i,
+                                lab_i,
+                                impl,
+                                &ndis,
+                                &nlist_visited,
+                                scaler);
+                    }
                 }
-            }
             }
         }
         indexIVF_stats.nq += n;
@@ -1005,16 +993,15 @@ void IndexIVFFastScan::search_implem_14(
             return a.list_no < b.list_no;
         });
     }
-    
+
     struct SE {
-        size_t start;     // start in the QC vector
-        size_t end; // end in the QC vector
+        size_t start; // start in the QC vector
+        size_t end;   // end in the QC vector
         size_t list_size;
     };
     std::vector<SE> ses;
     size_t i0_l = 0;
     while (i0_l < qcs.size()) {
-       
         // find all queries that access this inverted list
         int list_no = qcs[i0_l].list_no;
         size_t i1 = i0_l + 1;
@@ -1038,7 +1025,7 @@ void IndexIVFFastScan::search_implem_14(
     uint64_t ttg3 = get_cy();
     uint64_t compute_clusters_tt = ttg3 - ttg2;
 
-    //function to handle the global heap
+    // function to handle the global heap
     using HeapForIP = CMin<float, idx_t>;
     using HeapForL2 = CMax<float, idx_t>;
     auto init_result = [&](float* simi, idx_t* idxi) {
@@ -1066,19 +1053,19 @@ void IndexIVFFastScan::search_implem_14(
         } else {
             heap_reorder<HeapForL2>(k, simi, idxi);
         }
-    };  
+    };
     uint64_t ttg4 = get_cy();
     uint64_t fn_tt = ttg4 - ttg3;
 
     size_t ndis = 0;
     size_t nlist_visited = 0;
 
-#pragma omp parallel  reduction(+ : ndis, nlist_visited)
-    { 
+#pragma omp parallel reduction(+ : ndis, nlist_visited)
+    {
         // storage for each thread
         std::vector<idx_t> local_idx(k * n);
         std::vector<float> local_dis(k * n);
-        
+
         // prepare the result handlers
         std::unique_ptr<SIMDResultHandler<C, true>> handler;
         AlignedTable<uint16_t> tmp_distances;
@@ -1091,7 +1078,8 @@ void IndexIVFFastScan::search_implem_14(
             handler.reset(new SingleResultHC(n, 0));
         } else if (impl == 14) {
             tmp_distances.resize(n * k);
-            handler.reset(new HeapHC(n, tmp_distances.get(), local_idx.data(), k, 0));
+            handler.reset(
+                    new HeapHC(n, tmp_distances.get(), local_idx.data(), k, 0));
         } else if (impl == 15) {
             handler.reset(new ReservoirHC(n, 0, k, 2 * k));
         }
@@ -1103,22 +1091,21 @@ void IndexIVFFastScan::search_implem_14(
             tmp_bias.resize(qbs2);
             handler->dbias = tmp_bias.data();
         }
-        
+
         uint64_t ttg5 = get_cy();
         uint64_t handler_tt = ttg5 - ttg4;
 
         std::set<int> q_set;
         uint64_t t_copy_pack = 0, t_scan = 0;
 #pragma omp for schedule(dynamic)
-        for (idx_t cluster = 0; cluster < ses.size(); cluster++){ 
-            
+        for (idx_t cluster = 0; cluster < ses.size(); cluster++) { 
             uint64_t tt0 = get_cy();
             size_t i0 = ses[cluster].start;
             size_t i1 = ses[cluster].end;
             size_t list_size = ses[cluster].list_size;
             nlist_visited++;
             int list_no = qcs[i0].list_no;
-            
+
             // re-organize LUTs and biases into the right order
             int nc = i1 - i0;
 
@@ -1154,38 +1141,44 @@ void IndexIVFFastScan::search_implem_14(
             handler->id_map = ids.get();
             uint64_t tt1 = get_cy();
 
-    #define DISPATCH(classHC)                                                  \
-        if (dynamic_cast<classHC*>(handler.get())) {                           \
-            auto* res = static_cast<classHC*>(handler.get());                  \
-            pq4_accumulate_loop_qbs(                                           \
-                    qbs, list_size, M2, codes.get(), LUT.get(), *res, scaler); \
-        }
+#define DISPATCH(classHC)                                                  \
+    if (dynamic_cast<classHC*>(handler.get())) {                           \
+        auto* res = static_cast<classHC*>(handler.get());                  \
+        pq4_accumulate_loop_qbs(                                           \
+                qbs, list_size, M2, codes.get(), LUT.get(), *res, scaler); \
+    }
             DISPATCH(HeapHC)
             else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)
 
-            uint64_t tt2 = get_cy();
+                    uint64_t tt2 = get_cy();
             t_copy_pack += tt1 - tt0;
             t_scan += tt2 - tt1;
         }
-        
 
         // labels is in-place for HeapHC
         handler->to_flat_arrays(
-                local_dis.data(), local_idx.data(), skip & 16 ? nullptr : normalizers.get());
+                local_dis.data(),
+                local_idx.data(),
+                skip & 16 ? nullptr : normalizers.get());
 
 #pragma omp single
         {
-            //we init the results as a heap
-            for (idx_t i = 0; i < n; i++) {   
-               init_result(distances + i * k, labels + i * k);
+            // we init the results as a heap
+            for (idx_t i = 0; i < n; i++) {
+                init_result(distances + i * k, labels + i * k);
             }
-        } 
+        }
 #pragma omp barrier
 #pragma omp critical
         {
-            //write to global heap  #go over only the queries
-            for (std::set<int>::iterator it=q_set.begin(); it!=q_set.end(); ++it) {
-                add_local_results(local_dis.data() + *it * k, local_idx.data()+ *it * k, distances + *it * k, labels + *it * k);
+            // write to global heap  #go over only the queries
+            for (std::set<int>::iterator it = q_set.begin(); it != q_set.end();
+                 ++it) {
+                add_local_results(
+                        local_dis.data() + *it * k,
+                        local_idx.data() + *it * k,
+                        distances + *it * k,
+                        labels + *it * k);
             }
 
             IVFFastScan_stats.t_copy_pack += t_copy_pack;
@@ -1199,8 +1192,8 @@ void IndexIVFFastScan::search_implem_14(
         }
 #pragma omp barrier
 #pragma omp single
-        {   
-            for (idx_t i = 0; i < n; i++) {   
+        {
+            for (idx_t i = 0; i < n; i++) {
                 reorder_result(distances + i * k, labels + i * k);
             }
         }
