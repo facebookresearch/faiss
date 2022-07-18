@@ -1,36 +1,77 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <title>File SaDecodeKernels-avx2-inl.h &mdash; Faiss  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
     <link rel="canonical" href="https://faiss.ai/cpp_api/file/SaDecodeKernels-avx2-inl_8h.html" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="File SaDecodeKernels-inl.h" href="SaDecodeKernels-inl_8h.html" />
     <link rel="prev" title="File Reductions.cuh" href="Reductions_8cuh.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../../index.html" class="icon icon-home"> Faiss
+          
+
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -38,7 +79,18 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
@@ -181,58 +233,100 @@
 <li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Faiss</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../filelist.html">File list</a> &raquo;</li>
+        
       <li>File SaDecodeKernels-avx2-inl.h</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+          
             <a href="../../_sources/cpp_api/file/SaDecodeKernels-avx2-inl_8h.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <section id="file-sadecodekernels-avx2-inl-h">
-<h1>File SaDecodeKernels-avx2-inl.h<a class="headerlink" href="#file-sadecodekernels-avx2-inl-h" title="Permalink to this headline"></a></h1>
+<h1>File SaDecodeKernels-avx2-inl.h<a class="headerlink" href="#file-sadecodekernels-avx2-inl-h" title="Permalink to this heading">¶</a></h1>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv417coarseCentroidIdx">
-<span id="_CPPv317coarseCentroidIdx"></span><span id="_CPPv217coarseCentroidIdx"></span><span id="coarseCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a51f4a4e743041c88fb645fd9d39f8336"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv417coarseCentroidIdx" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv317coarseCentroidIdx"></span><span id="_CPPv217coarseCentroidIdx"></span><span id="coarseCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a51f4a4e743041c88fb645fd9d39f8336"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv417coarseCentroidIdx" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv420coarseCentroidOffset">
-<span id="_CPPv320coarseCentroidOffset"></span><span id="_CPPv220coarseCentroidOffset"></span><span id="coarseCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a4426fff3fbf9dda14fc7d896061eaf5d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv420coarseCentroidOffset" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv320coarseCentroidOffset"></span><span id="_CPPv220coarseCentroidOffset"></span><span id="coarseCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a4426fff3fbf9dda14fc7d896061eaf5d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv420coarseCentroidOffset" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv415fineCentroidIdx">
-<span id="_CPPv315fineCentroidIdx"></span><span id="_CPPv215fineCentroidIdx"></span><span id="fineCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a9412e3ddea1d1099e86561113f5956d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv415fineCentroidIdx" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv315fineCentroidIdx"></span><span id="_CPPv215fineCentroidIdx"></span><span id="fineCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a9412e3ddea1d1099e86561113f5956d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv415fineCentroidIdx" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv418fineCentroidOffset">
-<span id="_CPPv318fineCentroidOffset"></span><span id="_CPPv218fineCentroidOffset"></span><span id="fineCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a56835bafcaf9318bbdd81cead3ff64da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv418fineCentroidOffset" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv318fineCentroidOffset"></span><span id="_CPPv218fineCentroidOffset"></span><span id="fineCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a56835bafcaf9318bbdd81cead3ff64da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv418fineCentroidOffset" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv49QPOS_LEFT">
-<span id="_CPPv39QPOS_LEFT"></span><span id="_CPPv29QPOS_LEFT"></span><span id="QPOS_LEFT__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1ac85002ac774d37321a1ebb650dbdff35"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QPOS_LEFT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv418fineCentroidOffset" title="fineCentroidOffset"><span class="n"><span class="pre">fineCentroidOffset</span></span></a><a class="headerlink" href="#_CPPv49QPOS_LEFT" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv39QPOS_LEFT"></span><span id="_CPPv29QPOS_LEFT"></span><span id="QPOS_LEFT__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1ac85002ac774d37321a1ebb650dbdff35"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QPOS_LEFT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv418fineCentroidOffset" title="fineCentroidOffset"><span class="n"><span class="pre">fineCentroidOffset</span></span></a><a class="headerlink" href="#_CPPv49QPOS_LEFT" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -257,10 +351,10 @@
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontribE">
-<span id="_CPPv3N5faiss10cppcontribE"></span><span id="_CPPv2N5faiss10cppcontribE"></span><span id="faiss::cppcontrib"></span><span class="target" id="namespacefaiss_1_1cppcontrib"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cppcontrib</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10cppcontribE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss10cppcontribE"></span><span id="_CPPv2N5faiss10cppcontribE"></span><span id="faiss::cppcontrib"></span><span class="target" id="namespacefaiss_1_1cppcontrib"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cppcontrib</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10cppcontribE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE">
-<span id="_CPPv3I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span id="_CPPv2I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DIM</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">COARSE_SIZE</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FINE_SIZE</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Index2LevelDecoder</span></span></span><a class="headerlink" href="#_CPPv4I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span id="_CPPv2I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DIM</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">COARSE_SIZE</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FINE_SIZE</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Index2LevelDecoder</span></span></span><a class="headerlink" href="#_CPPv4I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
@@ -289,33 +383,50 @@
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Reductions_8cuh.html" class="btn btn-neutral float-left" title="File Reductions.cuh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="SaDecodeKernels-inl_8h.html" class="btn btn-neutral float-right" title="File SaDecodeKernels-inl.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Reductions_8cuh.html" class="btn btn-neutral float-left" title="File Reductions.cuh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
-  </div>
+    <p>
+        &#169; Copyright Facebook, Inc. and its affiliates..
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
