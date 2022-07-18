@@ -437,8 +437,7 @@ def handle_Index(the_class):
 
         Returns
         -------
-        x : array_like
-            Reconstructed vector, size `self.d`, `dtype`=float32
+        x : array_like reconstructed vector, size `self.d`, `dtype`=float32
         """
         if x is None:
             x = np.empty(self.d, dtype=np.float32)
@@ -446,6 +445,30 @@ def handle_Index(the_class):
             assert x.shape == (self.d, )
 
         self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_batch(self, key, x=None):
+        """Approximate reconstruction of several vectors from the index.
+
+        Parameters
+        ----------
+        key : array of ints
+            Ids of the vectors to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            reconstrcuted vectors, size `len(key), self.d`
+        """
+        key = np.ascontiguousarray(key, dtype='int64')
+        n, = key.shape
+        if x is None:
+            x = np.empty((n, self.d), dtype=np.float32)
+        else:
+            assert x.shape == (n, self.d)
+        self.reconstruct_batch_c(n, swig_ptr(key), swig_ptr(x))
         return x
 
     def replacement_reconstruct_n(self, n0, ni, x=None):
@@ -564,6 +587,7 @@ def handle_Index(the_class):
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_batch', replacement_reconstruct_batch)
     replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'update_vectors', replacement_update_vectors,
