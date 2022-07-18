@@ -158,6 +158,16 @@ struct Index {
      */
     virtual void reconstruct(idx_t key, float* recons) const;
 
+    /** Reconstruct several stored vectors (or an approximation if lossy coding)
+     *
+     * this function may not be defined for some indexes
+     * @param n        number of vectors to reconstruct
+     * @param keys        ids of the vectors to reconstruct (size n)
+     * @param recons      reconstucted vector (size n * d)
+     */
+    virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
+            const;
+
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
      * this function may not be defined for some indexes
