@@ -201,7 +201,9 @@ std::vector<float> generate(const size_t n, const size_t d) {
 template <typename T>
 void test(const uint64_t n, const uint64_t d, const std::string& description) {
     auto data = generate(n, d);
-    auto [index, encodedData] = trainDataset(data, n, d, description);
+    std::shared_ptr<faiss::Index> index;
+    std::vector<uint8_t> encodedData;
+    std::tie(index, encodedData) = trainDataset(data, n, d, description);
 
     verify<T>(n, d, index, encodedData);
 }
