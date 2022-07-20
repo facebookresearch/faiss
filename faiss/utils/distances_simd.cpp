@@ -949,8 +949,7 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
         float32x4_t sq = vsubq_f32(xi, yi);
         accux4 = vfmaq_f32(accux4, sq, sq);
     }
-    float32x4_t accux2 = vpaddq_f32(accux4, accux4);
-    float32_t accux1 = vdups_laneq_f32(accux2, 0) + vdups_laneq_f32(accux2, 1);
+    float32_t accux1 = vaddvq_f32(accux4);
     for (; i < d; ++i) {
         float32_t xi = x[i];
         float32_t yi = y[i];
@@ -969,8 +968,7 @@ float fvec_inner_product(const float* x, const float* y, size_t d) {
         float32x4_t yi = vld1q_f32(y + i);
         accux4 = vfmaq_f32(accux4, xi, yi);
     }
-    float32x4_t accux2 = vpaddq_f32(accux4, accux4);
-    float32_t accux1 = vdups_laneq_f32(accux2, 0) + vdups_laneq_f32(accux2, 1);
+    float32_t accux1 = vaddvq_f32(accux4);
     for (; i < d; ++i) {
         float32_t xi = x[i];
         float32_t yi = y[i];
@@ -987,8 +985,7 @@ float fvec_norm_L2sqr(const float* x, size_t d) {
         float32x4_t xi = vld1q_f32(x + i);
         accux4 = vfmaq_f32(accux4, xi, xi);
     }
-    float32x4_t accux2 = vpaddq_f32(accux4, accux4);
-    float32_t accux1 = vdups_laneq_f32(accux2, 0) + vdups_laneq_f32(accux2, 1);
+    float32_t accux1 = vaddvq_f32(accux4);
     for (; i < d; ++i) {
         float32_t xi = x[i];
         accux1 += xi * xi;
