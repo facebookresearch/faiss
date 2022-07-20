@@ -49,6 +49,26 @@ def supported_instruction_sets():
         return result
     return set()
 
+# Currently numpy.core._multiarray_umath.__cpu_features__ doesn't support Arm SVE,
+# so let's read Features in /proc/cpuinfo and search 'sve' entry
+def is_sve_supported():
+    if platform.machine() != "aarch64":
+        return False
+    # Currently SVE is only supported on Linux
+    if platform.system() != "Linux":
+        return False
+    if not os.path.exists('/proc/cpuinfo'):
+        return False
+    proc = subprocess.Popen(['cat', '/proc/cpuinfo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    so, _se = proc.communicate()
+    if proc.returncode != 0:
+        return False
+    for line in so.decode(encoding='UTF-8').splitlines():
+        if ':' in line:
+            l, r = line.split(':', 1)
+            if l.strip() == 'Features' and "sve" in r.strip().split():
+                return True
+    return False
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +110,18 @@ if has_AVX2 and not loaded:
     except ImportError as e:
         logger.info(f"Could not load library with AVX2 support due to:\n{e!r}")
         # reset so that we load without AVX2 below
+        loaded = False
+
+has_SVE = is_sve_supported() and not "SVE" in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r")
+if has_SVE and not loaded:
+    try:
+        logger.info("Loading faiss with SVE support.")
+        from .swigfaiss_sve import *
+        logger.info("Successfully loaded faiss with SVE support.")
+        loaded = True
+    except ImportError as e:
+        logger.info(f"Could not load library with SVE support due to:\n{e!r}")
+        # reset so that we load without SVE below
         loaded = False
 
 if not loaded:
