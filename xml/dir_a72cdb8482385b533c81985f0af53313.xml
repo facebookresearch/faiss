@@ -4,6 +4,7 @@
     <compoundname>faiss/cppcontrib</compoundname>
     <innerfile refid="SaDecodeKernels-avx2-inl_8h">SaDecodeKernels-avx2-inl.h</innerfile>
     <innerfile refid="SaDecodeKernels-inl_8h">SaDecodeKernels-inl.h</innerfile>
+    <innerfile refid="SaDecodeKernels-neon-inl_8h">SaDecodeKernels-neon-inl.h</innerfile>
     <innerfile refid="SaDecodeKernels_8h">SaDecodeKernels.h</innerfile>
     <briefdescription>
     </briefdescription>
