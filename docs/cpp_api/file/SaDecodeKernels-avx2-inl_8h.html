@@ -302,34 +302,6 @@
             
   <section id="file-sadecodekernels-avx2-inl-h">
 <h1>File SaDecodeKernels-avx2-inl.h<a class="headerlink" href="#file-sadecodekernels-avx2-inl-h" title="Permalink to this heading">¶</a></h1>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv417coarseCentroidIdx">
-<span id="_CPPv317coarseCentroidIdx"></span><span id="_CPPv217coarseCentroidIdx"></span><span id="coarseCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a51f4a4e743041c88fb645fd9d39f8336"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv417coarseCentroidIdx" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv420coarseCentroidOffset">
-<span id="_CPPv320coarseCentroidOffset"></span><span id="_CPPv220coarseCentroidOffset"></span><span id="coarseCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a4426fff3fbf9dda14fc7d896061eaf5d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">COARSE_SIZE</span></span><a class="headerlink" href="#_CPPv420coarseCentroidOffset" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv415fineCentroidIdx">
-<span id="_CPPv315fineCentroidIdx"></span><span id="_CPPv215fineCentroidIdx"></span><span id="fineCentroidIdx__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a9412e3ddea1d1099e86561113f5956d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidIdx</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv415fineCentroidIdx" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv418fineCentroidOffset">
-<span id="_CPPv318fineCentroidOffset"></span><span id="_CPPv218fineCentroidOffset"></span><span id="fineCentroidOffset__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1a56835bafcaf9318bbdd81cead3ff64da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineCentroidOffset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">CPOS</span></span><span class="w"> </span><span class="o"><span class="pre">%</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><a class="headerlink" href="#_CPPv418fineCentroidOffset" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv49QPOS_LEFT">
-<span id="_CPPv39QPOS_LEFT"></span><span id="_CPPv29QPOS_LEFT"></span><span id="QPOS_LEFT__intptr_t"></span><span class="target" id="SaDecodeKernels-avx2-inl_8h_1ac85002ac774d37321a1ebb650dbdff35"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QPOS_LEFT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">FINE_SIZE</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv418fineCentroidOffset" title="fineCentroidOffset"><span class="n"><span class="pre">fineCentroidOffset</span></span></a><a class="headerlink" href="#_CPPv49QPOS_LEFT" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-</div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45faiss">
 <span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>

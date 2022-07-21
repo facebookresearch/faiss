@@ -530,8 +530,20 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t">
-<span id="_CPPv3NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::OneRecallAtRCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">evaluate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">D</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">I</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv3NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="_CPPv2NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t"></span><span id="faiss::OneRecallAtRCriterion::evaluate__floatCP.idx_tCPC"></span><span class="target" id="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">evaluate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">D</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">I</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss21OneRecallAtRCriterion8evaluateEPKfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the criterion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>D</strong> – size nq * nnn </p></li>
+<li><p><strong>I</strong> – size nq * nnn </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the criterion, between 0 and 1. Larger is better. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21OneRecallAtRCriterionD0Ev">
@@ -548,23 +560,6 @@
 <li><p><strong>gt_D_in</strong> – size nq * gt_nnn </p></li>
 <li><p><strong>gt_I_in</strong> – size nq * gt_nnn </p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">evaluate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">D</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss21OneRecallAtRCriterion5idx_tE" title="faiss::OneRecallAtRCriterion::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">I</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
-<dd><p>Evaluate the criterion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>D</strong> – size nq * nnn </p></li>
-<li><p><strong>I</strong> – size nq * nnn </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the criterion, between 0 and 1. Larger is better. </p>
 </dd>
 </dl>
 </dd></dl>
