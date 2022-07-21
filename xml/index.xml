@@ -4585,7 +4585,6 @@
     <member refid="structfaiss_1_1OneRecallAtRCriterion_1afe472c2ae38534c293b02feebf87988d" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1OneRecallAtRCriterion_1a79b1af707034d3984debd15a6aa34255" kind="function"><name>~OneRecallAtRCriterion</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a174f0de8e6fd01905f5fa2170f5039d8" kind="function"><name>set_groundtruth</name></member>
-    <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1a7873f86515af86a77eaaea1f6b13e982" kind="typedef"><name>idx_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1OperatingPoint" kind="struct"><name>faiss::OperatingPoint</name>
@@ -5850,11 +5849,6 @@
   <compound refid="Clustering_8h" kind="file"><name>Clustering.h</name>
   </compound>
   <compound refid="SaDecodeKernels-avx2-inl_8h" kind="file"><name>SaDecodeKernels-avx2-inl.h</name>
-    <member refid="SaDecodeKernels-avx2-inl_8h_1a51f4a4e743041c88fb645fd9d39f8336" kind="variable"><name>coarseCentroidIdx</name></member>
-    <member refid="SaDecodeKernels-avx2-inl_8h_1a4426fff3fbf9dda14fc7d896061eaf5d" kind="variable"><name>coarseCentroidOffset</name></member>
-    <member refid="SaDecodeKernels-avx2-inl_8h_1a9412e3ddea1d1099e86561113f5956d5" kind="variable"><name>fineCentroidIdx</name></member>
-    <member refid="SaDecodeKernels-avx2-inl_8h_1a56835bafcaf9318bbdd81cead3ff64da" kind="variable"><name>fineCentroidOffset</name></member>
-    <member refid="SaDecodeKernels-avx2-inl_8h_1ac85002ac774d37321a1ebb650dbdff35" kind="variable"><name>QPOS_LEFT</name></member>
   </compound>
   <compound refid="SaDecodeKernels-inl_8h" kind="file"><name>SaDecodeKernels-inl.h</name>
   </compound>
