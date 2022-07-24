@@ -1183,6 +1183,22 @@ void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
 #endif
 }
 
+#elif defined(__aarch64__)
+
+void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
+    const size_t n_simd = n - (n & 3);
+    const float32x4_t bfv = vdupq_n_f32(bf);
+    size_t i;
+    for (i = 0; i < n_simd; i += 4) {
+        const float32x4_t ai = vld1q_f32(a + i);
+        const float32x4_t bi = vld1q_f32(b + i);
+        const float32x4_t ci = vfmaq_f32(ai, bfv, bi);
+        vst1q_f32(c + i, ci);
+    }
+    for (; i < n; ++i)
+        c[i] = a[i] + bf * b[i];
+}
+
 #else
 
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c) {
@@ -1274,6 +1290,57 @@ int fvec_madd_and_argmin(
         return fvec_madd_and_argmin_sse(n, a, bf, b, c);
     else
         return fvec_madd_and_argmin_ref(n, a, bf, b, c);
+}
+
+#elif defined(__aarch64__)
+
+int fvec_madd_and_argmin(
+        size_t n,
+        const float* a,
+        float bf,
+        const float* b,
+        float* c) {
+    float32x4_t vminv = vdupq_n_f32(1e20);
+    uint32x4_t iminv = vdupq_n_u32(static_cast<uint32_t>(-1));
+    size_t i;
+    {
+        const size_t n_simd = n - (n & 3);
+        const uint32_t iota[] = {0, 1, 2, 3};
+        uint32x4_t iv = vld1q_u32(iota);
+        const uint32x4_t incv = vdupq_n_u32(4);
+        const float32x4_t bfv = vdupq_n_f32(bf);
+        for (i = 0; i < n_simd; i += 4) {
+            const float32x4_t ai = vld1q_f32(a + i);
+            const float32x4_t bi = vld1q_f32(b + i);
+            const float32x4_t ci = vfmaq_f32(ai, bfv, bi);
+            vst1q_f32(c + i, ci);
+            const uint32x4_t less_than = vcltq_f32(ci, vminv);
+            vminv = vminq_f32(ci, vminv);
+            iminv = vorrq_u32(
+                    vandq_u32(less_than, iv),
+                    vandq_u32(vmvnq_u32(less_than), iminv));
+            iv = vaddq_u32(iv, incv);
+        }
+    }
+    float vmin = vminvq_f32(vminv);
+    uint32_t imin;
+    {
+        const float32x4_t vminy = vdupq_n_f32(vmin);
+        const uint32x4_t equals = vceqq_f32(vminv, vminy);
+        imin = vminvq_u32(vorrq_u32(
+                vandq_u32(equals, iminv),
+                vandq_u32(
+                        vmvnq_u32(equals),
+                        vdupq_n_u32(std::numeric_limits<uint32_t>::max()))));
+    }
+    for (; i < n; ++i) {
+        c[i] = a[i] + bf * b[i];
+        if (c[i] < vmin) {
+            vmin = c[i];
+            imin = static_cast<uint32_t>(i);
+        }
+    }
+    return static_cast<int>(imin);
 }
 
 #else
