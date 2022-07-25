@@ -211,16 +211,6 @@ void test(const uint64_t n, const uint64_t d, const std::string& description) {
 constexpr size_t NSAMPLES = 4096;
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ64) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 4>;
-    test<T>(NSAMPLES, 256, "IVF256,PQ64np");
-}
-
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ32) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 8>;
-    test<T>(NSAMPLES, 256, "IVF256,PQ32np");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
     test<T>(NSAMPLES, 256, "IVF256,PQ16np");
@@ -229,12 +219,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16) {
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 32>;
     test<T>(NSAMPLES, 256, "IVF256,PQ8np");
-}
-
-//
-TEST(TEST_CPPCONTRIB_SA_DECODE, D192_IVF256_PQ48) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<192, 192, 4>;
-    test<T>(NSAMPLES, 192, "IVF256,PQ48np");
 }
 
 //
@@ -280,16 +264,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_IVF256_PQ8) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ32) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<128, 128, 4>;
-    test<T>(NSAMPLES, 128, "IVF256,PQ32np");
-}
-
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ16) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<128, 128, 8>;
-    test<T>(NSAMPLES, 128, "IVF256,PQ16np");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 128, 16>;
     test<T>(NSAMPLES, 128, "IVF256,PQ8np");
@@ -301,11 +275,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D128_IVF256_PQ4) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ32) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 4>;
-    test<T>(NSAMPLES, 64, "IVF256,PQ16np");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 8>;
     test<T>(NSAMPLES, 64, "IVF256,PQ8np");
@@ -317,16 +286,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ8) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ64) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 4>;
-    test<T>(NSAMPLES, 256, "Residual4x8,PQ64");
-}
-
-TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ32) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 8>;
-    test<T>(NSAMPLES, 256, "Residual4x8,PQ32");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16>;
     test<T>(NSAMPLES, 256, "Residual4x8,PQ16");
@@ -356,16 +315,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual1x8_PQ10) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ32) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<128, 32, 4>;
-    test<T>(NSAMPLES, 128, "Residual4x8,PQ32");
-}
-
-TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ16) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<128, 32, 8>;
-    test<T>(NSAMPLES, 128, "Residual4x8,PQ16");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<128, 32, 16>;
     test<T>(NSAMPLES, 128, "Residual4x8,PQ8");
@@ -377,11 +326,6 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D128_Residual4x8_PQ4) {
 }
 
 //
-TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ16) {
-    using T = faiss::cppcontrib::Index2LevelDecoder<64, 16, 4>;
-    test<T>(NSAMPLES, 64, "Residual4x8,PQ16");
-}
-
 TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ8) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 16, 8>;
     test<T>(NSAMPLES, 64, "Residual4x8,PQ8");
