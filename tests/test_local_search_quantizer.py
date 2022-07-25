@@ -14,6 +14,7 @@ import unittest
 
 from faiss.contrib import datasets
 
+faiss.omp_set_num_threads(4)
 
 sp = faiss.swig_ptr
 

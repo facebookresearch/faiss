@@ -15,6 +15,7 @@ from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 # Reference implementation of encoding with beam search
 ###########################################################
 
+faiss.omp_set_num_threads(4)
 
 def pairwise_distances(a, b):
     anorms = (a ** 2).sum(1)

@@ -14,6 +14,8 @@ import faiss
 
 from faiss.contrib import datasets
 
+# the tests tend to timeout in stress modes + dev otherwise
+faiss.omp_set_num_threads(4)
 
 class TestCompileOptions(unittest.TestCase):
 
