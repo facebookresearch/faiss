@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="80" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="12" bodyend="15"/>
+        <location file="faiss/utils/hamming.h" line="80" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="66" bodyend="69"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1BitstringWriter_1af8f527858ffdcc241a02408d2e791817" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="83" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="17" bodyend="36"/>
+        <location file="faiss/utils/hamming.h" line="83" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="71" bodyend="90"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

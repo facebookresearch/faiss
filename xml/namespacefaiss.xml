@@ -2946,6 +2946,159 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="48" column="27" declfile="faiss/utils/extra_distances.h" declline="48" declcolumn="27"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>size_t</type>
+            <declname>nbits</declname>
+            <defname>nbits</defname>
+          </param>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T faiss::hamming</definition>
+        <argsstring>(const uint8_t *bs1, const uint8_t *bs2)</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>bs1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>bs2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="14" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="14" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>size_t</type>
+            <declname>nbits</declname>
+            <defname>nbits</defname>
+          </param>
+        </templateparamlist>
+        <type>hamdis_t</type>
+        <definition>hamdis_t faiss::hamming</definition>
+        <argsstring>(const uint64_t *bs1, const uint64_t *bs2)</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>bs1</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>bs2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="26" column="17" bodyfile="faiss/utils/hamming-inl.h" bodystart="26" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>hamdis_t</type>
+        <definition>hamdis_t faiss::hamming&lt; 64 &gt;</definition>
+        <argsstring>(const uint64_t *pa, const uint64_t *pb)</argsstring>
+        <name>hamming&lt; 64 &gt;</name>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pa</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="38" column="8" bodyfile="faiss/utils/hamming-inl.h" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>hamdis_t</type>
+        <definition>hamdis_t faiss::hamming&lt; 128 &gt;</definition>
+        <argsstring>(const uint64_t *pa, const uint64_t *pb)</argsstring>
+        <name>hamming&lt; 128 &gt;</name>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pa</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="43" column="8" bodyfile="faiss/utils/hamming-inl.h" bodystart="43" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>hamdis_t</type>
+        <definition>hamdis_t faiss::hamming&lt; 256 &gt;</definition>
+        <argsstring>(const uint64_t *pa, const uint64_t *pb)</argsstring>
+        <name>hamming&lt; 256 &gt;</name>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pa</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="48" column="8" bodyfile="faiss/utils/hamming-inl.h" bodystart="48" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>hamdis_t</type>
+        <definition>hamdis_t faiss::hamming</definition>
+        <argsstring>(const uint64_t *bs1, const uint64_t *bs2, size_t nwords)</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>bs1</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>bs2</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nwords</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming-inl.h" line="54" column="17" bodyfile="faiss/utils/hamming-inl.h" bodystart="54" bodyend="63" declfile="faiss/utils/hamming.h" declline="210" declcolumn="10"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::SPECIALIZED_HC</definition>
@@ -2960,7 +3113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="368" column="1" declfile="faiss/utils/hamming-inl.h" declline="368" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="422" column="1" declfile="faiss/utils/hamming-inl.h" declline="422" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2976,7 +3129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="369" column="1" declfile="faiss/utils/hamming-inl.h" declline="369" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="423" column="1" declfile="faiss/utils/hamming-inl.h" declline="423" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2992,7 +3145,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="370" column="1" declfile="faiss/utils/hamming-inl.h" declline="370" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="424" column="1" declfile="faiss/utils/hamming-inl.h" declline="424" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -3008,7 +3161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="371" column="1" declfile="faiss/utils/hamming-inl.h" declline="371" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="425" column="1" declfile="faiss/utils/hamming-inl.h" declline="425" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -3024,7 +3177,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="372" column="1" declfile="faiss/utils/hamming-inl.h" declline="372" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="426" column="1" declfile="faiss/utils/hamming-inl.h" declline="426" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -3040,7 +3193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="373" column="1" declfile="faiss/utils/hamming-inl.h" declline="373" declcolumn="1"/>
+        <location file="faiss/utils/hamming-inl.h" line="427" column="1" declfile="faiss/utils/hamming-inl.h" declline="427" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69337e23232a204be3e1464713fee62d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -3057,7 +3210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="382" column="12" bodyfile="faiss/utils/hamming-inl.h" bodystart="382" bodyend="388"/>
+        <location file="faiss/utils/hamming-inl.h" line="436" column="12" bodyfile="faiss/utils/hamming-inl.h" bodystart="436" bodyend="442"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a31146ebd95375313ae7c02ba06209ca0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3096,7 +3249,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="461" column="6" declfile="faiss/utils/hamming-inl.h" declline="461" declcolumn="6"/>
+        <location file="faiss/utils/hamming-inl.h" line="515" column="6" declfile="faiss/utils/hamming-inl.h" declline="515" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3716,31 +3869,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="202" column="6" declfile="faiss/utils/hamming.h" declline="202" declcolumn="6"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>hamdis_t</type>
-        <definition>hamdis_t faiss::hamming</definition>
-        <argsstring>(const uint64_t *bs1, const uint64_t *bs2, size_t nwords)</argsstring>
-        <name>hamming</name>
-        <param>
-          <type>const uint64_t *</type>
-          <declname>bs1</declname>
-        </param>
-        <param>
-          <type>const uint64_t *</type>
-          <declname>bs2</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>nwords</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming.h" line="210" column="10" declfile="faiss/utils/hamming.h" declline="210" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d40aec5723474516de576263cc03048" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

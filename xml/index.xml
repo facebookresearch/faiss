@@ -5594,6 +5594,12 @@
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kind="function"><name>get_extra_distance_computer</name></member>
+    <member refid="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" kind="function"><name>hamming</name></member>
+    <member refid="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" kind="function"><name>hamming</name></member>
+    <member refid="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" kind="function"><name>hamming&lt; 64 &gt;</name></member>
+    <member refid="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" kind="function"><name>hamming&lt; 128 &gt;</name></member>
+    <member refid="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" kind="function"><name>hamming&lt; 256 &gt;</name></member>
+    <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" kind="function"><name>SPECIALIZED_HC</name></member>
     <member refid="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" kind="function"><name>SPECIALIZED_HC</name></member>
@@ -5616,7 +5622,6 @@
     <member refid="namespacefaiss_1ac713458e556afa5bd612b88944292d65" kind="function"><name>hamming_count_thres</name></member>
     <member refid="namespacefaiss_1ad32229f823f2a0a920f0b62a702a67c5" kind="function"><name>match_hamming_thres</name></member>
     <member refid="namespacefaiss_1a399cfe2b1a7b2e3d722e10654c164ae0" kind="function"><name>crosshamming_count_thres</name></member>
-    <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a1d40aec5723474516de576263cc03048" kind="function"><name>heap_pop</name></member>
     <member refid="namespacefaiss_1a2e2264988d2658c0cd467463bc03254c" kind="function"><name>heap_push</name></member>
     <member refid="namespacefaiss_1abedf9900fe8f4b4566801aad585d60c1" kind="function"><name>heap_replace_top</name></member>

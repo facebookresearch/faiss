@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="359" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="359" bodyend="360"/>
+        <location file="faiss/utils/hamming-inl.h" line="413" column="5" bodyfile="faiss/utils/hamming-inl.h" bodystart="413" bodyend="414"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="230" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="230" bodyend="234"/>
+        <location file="faiss/utils/hamming-inl.h" line="284" column="10" bodyfile="faiss/utils/hamming-inl.h" bodystart="284" bodyend="288"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="236" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="236" bodyend="295"/>
+        <location file="faiss/utils/hamming-inl.h" line="290" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="290" bodyend="349"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="220" column="19" bodyfile="faiss/utils/hamming-inl.h" bodystart="220" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="274" column="19" bodyfile="faiss/utils/hamming-inl.h" bodystart="274" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -96,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="221" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="221" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="275" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="275" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming-inl.h" line="222" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="222" bodyend="-1"/>
+        <location file="faiss/utils/hamming-inl.h" line="276" column="9" bodyfile="faiss/utils/hamming-inl.h" bodystart="276" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -140,7 +140,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/hamming-inl.h" line="356" column="45" bodyfile="faiss/utils/hamming-inl.h" bodystart="356" bodyend="359"/>
+    <location file="faiss/utils/hamming-inl.h" line="410" column="45" bodyfile="faiss/utils/hamming-inl.h" bodystart="410" bodyend="413"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>a8</name></member>
       <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" prot="public" virt="non-virtual"><scope>faiss::HammingComputer</scope><name>hamming</name></member>
