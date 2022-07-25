@@ -56,54 +56,6 @@ const uint8_t hamdis_tab_ham_bytes[256] = {
         4, 5, 5, 6, 5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
         4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8};
 
-/* Elementary Hamming distance computation: unoptimized  */
-template <size_t nbits, typename T>
-T hamming(const uint8_t* bs1, const uint8_t* bs2) {
-    const size_t nbytes = nbits / 8;
-    size_t i;
-    T h = 0;
-    for (i = 0; i < nbytes; i++)
-        h += (T)hamdis_tab_ham_bytes[bs1[i] ^ bs2[i]];
-    return h;
-}
-
-/* Hamming distances for multiples of 64 bits */
-template <size_t nbits>
-hamdis_t hamming(const uint64_t* bs1, const uint64_t* bs2) {
-    const size_t nwords = nbits / 64;
-    size_t i;
-    hamdis_t h = 0;
-    for (i = 0; i < nwords; i++)
-        h += popcount64(bs1[i] ^ bs2[i]);
-    return h;
-}
-
-/* specialized (optimized) functions */
-template <>
-hamdis_t hamming<64>(const uint64_t* pa, const uint64_t* pb) {
-    return popcount64(pa[0] ^ pb[0]);
-}
-
-template <>
-hamdis_t hamming<128>(const uint64_t* pa, const uint64_t* pb) {
-    return popcount64(pa[0] ^ pb[0]) + popcount64(pa[1] ^ pb[1]);
-}
-
-template <>
-hamdis_t hamming<256>(const uint64_t* pa, const uint64_t* pb) {
-    return popcount64(pa[0] ^ pb[0]) + popcount64(pa[1] ^ pb[1]) +
-            popcount64(pa[2] ^ pb[2]) + popcount64(pa[3] ^ pb[3]);
-}
-
-/* Hamming distances for multiple of 64 bits */
-hamdis_t hamming(const uint64_t* bs1, const uint64_t* bs2, size_t nwords) {
-    size_t i;
-    hamdis_t h = 0;
-    for (i = 0; i < nwords; i++)
-        h += popcount64(bs1[i] ^ bs2[i]);
-    return h;
-}
-
 template <size_t nbits>
 void hammings(
         const uint64_t* bs1,
