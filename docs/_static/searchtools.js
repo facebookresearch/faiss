@@ -88,7 +88,7 @@ const _displayItem = (item, highlightTerms, searchTerms) => {
   linkEl.href = linkUrl + "?" + params.toString() + anchor;
   linkEl.innerHTML = title;
   if (descr)
-    listItem.appendChild(document.createElement("span")).innerText =
+    listItem.appendChild(document.createElement("span")).innerHTML =
       " (" + descr + ")";
   else if (showSearchSummary)
     fetch(requestUrl)
@@ -155,10 +155,8 @@ const Search = {
   _pulse_status: -1,
 
   htmlToText: (htmlString) => {
-    const htmlElement = document
-      .createRange()
-      .createContextualFragment(htmlString);
-    _removeChildren(htmlElement.querySelectorAll(".headerlink"));
+    const htmlElement = new DOMParser().parseFromString(htmlString, 'text/html');
+    htmlElement.querySelectorAll(".headerlink").forEach((el) => { el.remove() });
     const docContent = htmlElement.querySelector('[role="main"]');
     if (docContent !== undefined) return docContent.textContent;
     console.warn(
@@ -504,11 +502,12 @@ const Search = {
    * latter for highlighting it.
    */
   makeSearchSummary: (htmlText, keywords, highlightWords) => {
-    const text = Search.htmlToText(htmlText).toLowerCase();
+    const text = Search.htmlToText(htmlText);
     if (text === "") return null;
 
+    const textLower = text.toLowerCase();
     const actualStartPosition = [...keywords]
-      .map((k) => text.indexOf(k.toLowerCase()))
+      .map((k) => textLower.indexOf(k.toLowerCase()))
       .filter((i) => i > -1)
       .slice(-1)[0];
     const startWithContext = Math.max(actualStartPosition - 120, 0);
@@ -516,9 +515,9 @@ const Search = {
     const top = startWithContext === 0 ? "" : "...";
     const tail = startWithContext + 240 < text.length ? "..." : "";
 
-    let summary = document.createElement("div");
+    let summary = document.createElement("p");
     summary.classList.add("context");
-    summary.innerText = top + text.substr(startWithContext, 240).trim() + tail;
+    summary.textContent = top + text.substr(startWithContext, 240).trim() + tail;
 
     highlightWords.forEach((highlightWord) =>
       _highlightText(summary, highlightWord, "highlighted")

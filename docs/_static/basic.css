@@ -326,7 +326,6 @@ p.sidebar-title {
 }
 nav.contents,
 aside.topic,
-
 div.admonition, div.topic, blockquote {
     clear: left;
 }
@@ -334,7 +333,6 @@ div.admonition, div.topic, blockquote {
 /* -- topics ---------------------------------------------------------------- */
 nav.contents,
 aside.topic,
-
 div.topic {
     border: 1px solid #ccc;
     padding: 7px;
@@ -375,7 +373,6 @@ div.sidebar > :last-child,
 aside.sidebar > :last-child,
 nav.contents > :last-child,
 aside.topic > :last-child,
-
 div.topic > :last-child,
 div.admonition > :last-child {
     margin-bottom: 0;
@@ -385,7 +382,6 @@ div.sidebar::after,
 aside.sidebar::after,
 nav.contents::after,
 aside.topic::after,
-
 div.topic::after,
 div.admonition::after,
 blockquote::after {
@@ -610,26 +606,6 @@ ol.simple p,
 ul.simple p {
     margin-bottom: 0;
 }
-
-/* Docutils 0.17 and older (footnotes & citations) */
-dl.footnote > dt,
-dl.citation > dt {
-    float: left;
-    margin-right: 0.5em;
-}
-
-dl.footnote > dd,
-dl.citation > dd {
-    margin-bottom: 0em;
-}
-
-dl.footnote > dd:after,
-dl.citation > dd:after {
-    content: "";
-    clear: both;
-}
-
-/* Docutils 0.18+ (footnotes & citations) */
 aside.footnote > span,
 div.citation > span {
     float: left;
@@ -654,8 +630,6 @@ div.citation > p:last-of-type:after {
     clear: both;
 }
 
-/* Footnotes & citations ends */
-
 dl.field-list {
     display: grid;
     grid-template-columns: fit-content(30%) auto;
@@ -666,10 +640,6 @@ dl.field-list > dt {
     word-break: break-word;
     padding-left: 0.5em;
     padding-right: 5px;
-}
-
-dl.field-list > dt:after {
-    content: ":";
 }
 
 dl.field-list > dd {
