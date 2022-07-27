@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <immintrin.h>
+#include <arm_neon.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -16,34 +16,34 @@ namespace {
 // Returns {
 //   [0..3] = *coarse[0..3] + *fine[0..3];
 // }
-inline __m128 elementaryBlock4x1b(
+inline float32x4_t elementaryBlock4x1b(
         const float* const __restrict coarse,
         const float* const __restrict fine) {
     // load fine
-    const __m128 fineValue = _mm_loadu_ps(fine);
+    const auto fineValue = vld1q_f32(fine);
     // load coarse
-    const __m128 coarseValue = _mm_loadu_ps(coarse);
+    const auto coarseValue = vld1q_f32(coarse);
 
     // add coarse and fine
-    return _mm_add_ps(fineValue, coarseValue);
+    return vaddq_f32(fineValue, coarseValue);
 }
 
 // Processes 4 float values.
 // Returns {
 //   [0..3] = existingValue[0..3] + weight * (*coarse[0..3] + *fine[0..3]);
 // }
-inline __m128 elementaryBlock4x1bAccum(
+inline float32x4_t elementaryBlock4x1bAccum(
         const float* const __restrict coarse,
         const float* const __restrict fine,
         const float weight,
-        const __m128 existingValue) {
+        const float32x4_t existingValue) {
     // add coarse and fine
-    const __m128 combinedValue = elementaryBlock4x1b(coarse, fine);
+    const auto combinedValue = elementaryBlock4x1b(coarse, fine);
 
     // this operation is expected to be optimized by a compiler
-    const __m128 weightAvx = _mm_set1_ps(weight);
+    const auto weightNeon = vdupq_n_f32(weight);
     // do fma
-    return _mm_fmadd_ps(combinedValue, weightAvx, existingValue);
+    return vfmaq_f32(existingValue, weightNeon, combinedValue);
 }
 
 // Processes 8 float values.
@@ -51,20 +51,22 @@ inline __m128 elementaryBlock4x1bAccum(
 //   [0..3] = *coarse[0..3] + *fine0[0..3];
 //   [4..7] = *coarse[4..7] + *fine1[0..3];
 // }
-inline __m256 elementaryBlock4x2b(
+inline float32x4x2_t elementaryBlock4x2b(
         const float* const __restrict coarse,
         const float* const __restrict fine0,
         const float* const __restrict fine1) {
     // load fine
-    const __m128 fineValue0 = _mm_loadu_ps(fine0);
-    const __m128 fineValue1 = _mm_loadu_ps(fine1);
+    const auto fineValue0 = vld1q_f32(fine0);
+    const auto fineValue1 = vld1q_f32(fine1);
     // load coarse
-    const __m256 coarseValue = _mm256_loadu_ps(coarse);
+    const auto coarseValue0 = vld1q_f32(coarse);
+    const auto coarseValue1 = vld1q_f32(coarse + 4);
 
-    // combine two 4b into a single 8b
-    const __m256 combinedFineValue = _mm256_set_m128(fineValue1, fineValue0);
     // add coarse and fine
-    return _mm256_add_ps(combinedFineValue, coarseValue);
+    const auto result0 = vaddq_f32(fineValue0, coarseValue0);
+    const auto result1 = vaddq_f32(fineValue1, coarseValue1);
+
+    return {result0, result1};
 }
 
 // Processes 8 float values.
@@ -72,53 +74,64 @@ inline __m256 elementaryBlock4x2b(
 //   [0..3] = existingValue[0..3] + weight * (*coarse[0..3] + *fine0[0..3]);
 //   [4..7] = existingValue[4..7] + weight * (*coarse[4..7] + *fine1[0..3]);
 // }
-inline __m256 elementaryBlock4x2bAccum(
+inline float32x4x2_t elementaryBlock4x2bAccum(
         const float* const __restrict coarse,
         const float* const __restrict fine0,
         const float* const __restrict fine1,
         const float weight,
-        const __m256 existingValue) {
+        const float32x4x2_t existingValue) {
     // add coarse and fine
-    const __m256 combinedValue = elementaryBlock4x2b(coarse, fine0, fine1);
+    const auto combinedValue = elementaryBlock4x2b(coarse, fine0, fine1);
 
     // this operation is expected to be optimized by a compiler
-    const __m256 weightAvx2 = _mm256_set1_ps(weight);
+    const auto weightNeon = vdupq_n_f32(weight);
     // do fma
-    return _mm256_fmadd_ps(combinedValue, weightAvx2, existingValue);
+    const auto result0 =
+            vfmaq_f32(existingValue.val[0], weightNeon, combinedValue.val[0]);
+    const auto result1 =
+            vfmaq_f32(existingValue.val[1], weightNeon, combinedValue.val[1]);
+    return {result0, result1};
 }
 
 // Processes 8 float values.
 // Returns {
 //   [0..7] = *coarse[0..7] + *fine[0..7];
 // }
-inline __m256 elementaryBlock8x1b(
+inline float32x4x2_t elementaryBlock8x1b(
         const float* const __restrict coarse,
         const float* const __restrict fine) {
     // load fine
-    const __m256 fineValue = _mm256_loadu_ps(fine);
+    const auto fineValue0 = vld1q_f32(fine);
+    const auto fineValue1 = vld1q_f32(fine + 4);
     // load coarse
-    const __m256 coarseValue = _mm256_loadu_ps(coarse);
+    const auto coarseValue0 = vld1q_f32(coarse);
+    const auto coarseValue1 = vld1q_f32(coarse + 4);
 
     // add coarse and fine
-    return _mm256_add_ps(fineValue, coarseValue);
+    return {vaddq_f32(fineValue0, coarseValue0),
+            vaddq_f32(fineValue1, coarseValue1)};
 }
 
 // Processes 8 float values.
 // Returns {
 //   [0..7] = existingValue[0..7] + weight * (*coarse[0..7] + *fine[0..7]);
 // }
-inline __m256 elementaryBlock8x1bAccum(
+inline float32x4x2_t elementaryBlock8x1bAccum(
         const float* const __restrict coarse,
         const float* const __restrict fine,
         const float weight,
-        const __m256 existingValue) {
+        const float32x4x2_t existingValue) {
     // add coarse and fine
-    const __m256 combinedValue = elementaryBlock8x1b(coarse, fine);
+    const auto combinedValue = elementaryBlock8x1b(coarse, fine);
 
     // this operation is expected to be optimized by a compiler
-    const __m256 weightAvx2 = _mm256_set1_ps(weight);
+    const auto weightNeon = vdupq_n_f32(weight);
     // do fma
-    return _mm256_fmadd_ps(combinedValue, weightAvx2, existingValue);
+    const auto result0 =
+            vfmaq_f32(existingValue.val[0], weightNeon, combinedValue.val[0]);
+    const auto result1 =
+            vfmaq_f32(existingValue.val[1], weightNeon, combinedValue.val[1]);
+    return {result0, result1};
 }
 
 // reduces the number of read operations from RAM
@@ -229,28 +242,33 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
         // but 8 floats per loop
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0a =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
 
-        const __m256 storeValue = elementaryBlock4x2b(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset);
+        const auto storeValue = elementaryBlock4x2b(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE +
+                        fineCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE +
+                        fineCentroidOffset);
 
-        _mm256_storeu_ps(outputStore + CPOS, storeValue);
+        vst1q_f32(outputStore + CPOS, storeValue.val[0]);
+        vst1q_f32(outputStore + CPOS + 4, storeValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::store(
-              pqCoarseCentroids0, pqFineCentroids0, code0,
-              outputStore);
-
-        // clang-format on
+                pqCoarseCentroids0, pqFineCentroids0, code0, outputStore);
     }
 
     // process 1 sample
@@ -266,32 +284,42 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
         // but 8 floats per loop
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0a =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
 
-        __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
+        auto existingValue0 = vld1q_f32(outputAccum + CPOS);
+        auto existingValue1 = vld1q_f32(outputAccum + CPOS + 4);
 
-        existingValue = elementaryBlock4x2bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+        auto existingValue = elementaryBlock4x2bAccum(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE +
+                        fineCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                {existingValue0, existingValue1});
 
-        _mm256_storeu_ps(outputAccum + CPOS, existingValue);
+        vst1q_f32(outputAccum + CPOS, existingValue.val[0]);
+        vst1q_f32(outputAccum + CPOS + 4, existingValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                outputAccum);
     }
 
     // process 2 samples
@@ -313,43 +341,65 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
         const uint8_t* const __restrict fine1 = code1 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
         // but 8 floats per loop
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
-        const intptr_t coarseCode1 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1a = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine1);
-        const intptr_t fineCode1b = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine1);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0a =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t coarseCode1 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
+        const intptr_t fineCode1a =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 0>::get(fine1);
+        const intptr_t fineCode1b =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx + 1>::get(fine1);
 
-        __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
+        auto existingValue0 = vld1q_f32(outputAccum + CPOS);
+        auto existingValue1 = vld1q_f32(outputAccum + CPOS + 4);
+
+        auto existingValue = elementaryBlock4x2bAccum(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE +
+                        fineCentroidOffset,
+                pqFineCentroids0 +
+                        ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                {existingValue0, existingValue1});
 
         existingValue = elementaryBlock4x2bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+                pqCoarseCentroids1 +
+                        (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids1 +
+                        ((fineCentroidIdx + 0) * 256 + fineCode1a) * FINE_SIZE +
+                        fineCentroidOffset,
+                pqFineCentroids1 +
+                        ((fineCentroidIdx + 1) * 256 + fineCode1b) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight1,
+                existingValue);
 
-        existingValue = elementaryBlock4x2bAccum(
-              pqCoarseCentroids1 + (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + ((fineCentroidIdx + 0) * 256 + fineCode1a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids1 + ((fineCentroidIdx + 1) * 256 + fineCode1b) * FINE_SIZE + fineCentroidOffset,
-              weight1,
-              existingValue);
-
-        _mm256_storeu_ps(outputAccum + CPOS, existingValue);
+        vst1q_f32(outputAccum + CPOS, existingValue.val[0]);
+        vst1q_f32(outputAccum + CPOS + 4, existingValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                pqCoarseCentroids1,
+                pqFineCentroids1,
+                code1,
+                weight1,
+                outputAccum);
     }
 };
 
@@ -382,25 +432,27 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 8 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
 
-        const __m256 storeValue = elementaryBlock8x1b(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset);
+        const auto storeValue = elementaryBlock8x1b(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset);
 
-        _mm256_storeu_ps(outputStore + CPOS, storeValue);
+        vst1q_f32(outputStore + CPOS, storeValue.val[0]);
+        vst1q_f32(outputStore + CPOS + 4, storeValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::store(
-              pqCoarseCentroids0, pqFineCentroids0, code0,
-              outputStore);
-
-        // clang-format on
+                pqCoarseCentroids0, pqFineCentroids0, code0, outputStore);
     }
 
     // process 1 sample
@@ -416,29 +468,36 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 8 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
 
-        __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
+        const auto existingValue0 = vld1q_f32(outputAccum + CPOS);
+        const auto existingValue1 = vld1q_f32(outputAccum + CPOS + 4);
 
-        existingValue = elementaryBlock8x1bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+        const auto existingValue = elementaryBlock8x1bAccum(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                {existingValue0, existingValue1});
 
-        _mm256_storeu_ps(outputAccum + CPOS, existingValue);
+        vst1q_f32(outputAccum + CPOS, existingValue.val[0]);
+        vst1q_f32(outputAccum + CPOS + 4, existingValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                outputAccum);
     }
 
     // process 2 samples
@@ -460,38 +519,54 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
         const uint8_t* const __restrict fine1 = code1 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 8 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
-        const intptr_t coarseCode1 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine1);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode1 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
+        const intptr_t fineCode1 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine1);
 
-        __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
+        const auto existingValue0 = vld1q_f32(outputAccum + CPOS);
+        const auto existingValue1 = vld1q_f32(outputAccum + CPOS + 4);
+
+        auto existingValue = elementaryBlock8x1bAccum(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                {existingValue0, existingValue1});
 
         existingValue = elementaryBlock8x1bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+                pqCoarseCentroids1 +
+                        (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids1 +
+                        (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight1,
+                existingValue);
 
-        existingValue = elementaryBlock8x1bAccum(
-              pqCoarseCentroids1 + (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE + fineCentroidOffset,
-              weight1,
-              existingValue);
-
-        _mm256_storeu_ps(outputAccum + CPOS, existingValue);
+        vst1q_f32(outputAccum + CPOS, existingValue.val[0]);
+        vst1q_f32(outputAccum + CPOS + 4, existingValue.val[1]);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 8>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                pqCoarseCentroids1,
+                pqFineCentroids1,
+                code1,
+                weight1,
+                outputAccum);
     }
 };
 
@@ -524,25 +599,26 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
 
-        const __m128 storeValue = elementaryBlock4x1b(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset);
+        const auto storeValue = elementaryBlock4x1b(
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset);
 
-        _mm_storeu_ps(outputStore + CPOS, storeValue);
+        vst1q_f32(outputStore + CPOS, storeValue);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 4>::store(
-              pqCoarseCentroids0, pqFineCentroids0, code0,
-              outputStore);
-
-        // clang-format on
+                pqCoarseCentroids0, pqFineCentroids0, code0, outputStore);
     }
 
     // process 1 sample
@@ -558,29 +634,34 @@ struct Index2LevelDecoderImpl<
         // fine quantizer
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
 
-        __m128 existingValue = _mm_loadu_ps(outputAccum + CPOS);
+        auto existingValue = vld1q_f32(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x1bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                existingValue);
 
-        _mm_storeu_ps(outputAccum + CPOS, existingValue);
+        vst1q_f32(outputAccum + CPOS, existingValue);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 4>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                outputAccum);
     }
 
     // process 2 samples
@@ -602,38 +683,52 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
         const uint8_t* const __restrict fine1 = code1 + (DIM / COARSE_SIZE);
 
-        // clang-format off
-
         // process chunks, 4 float
 
-        const intptr_t coarseCode0 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
-        const intptr_t coarseCode1 = Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1 = Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine1);
+        const intptr_t coarseCode0 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse0);
+        const intptr_t fineCode0 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine0);
+        const intptr_t coarseCode1 =
+                Uint8Reader<DIM, COARSE_SIZE, coarseCentroidIdx>::get(coarse1);
+        const intptr_t fineCode1 =
+                Uint8Reader<DIM, FINE_SIZE, fineCentroidIdx>::get(fine1);
 
-        __m128 existingValue = _mm_loadu_ps(outputAccum + CPOS);
-
-        existingValue = elementaryBlock4x1bAccum(
-              pqCoarseCentroids0 + (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
-              weight0,
-              existingValue);
+        auto existingValue = vld1q_f32(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x1bAccum(
-              pqCoarseCentroids1 + (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE + fineCentroidOffset,
-              weight1,
-              existingValue);
+                pqCoarseCentroids0 +
+                        (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids0 +
+                        (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight0,
+                existingValue);
 
-        _mm_storeu_ps(outputAccum + CPOS, existingValue);
+        existingValue = elementaryBlock4x1bAccum(
+                pqCoarseCentroids1 +
+                        (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE +
+                        coarseCentroidOffset,
+                pqFineCentroids1 +
+                        (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE +
+                        fineCentroidOffset,
+                weight1,
+                existingValue);
+
+        vst1q_f32(outputAccum + CPOS, existingValue);
 
         // next
         Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, CPOS + 4>::accum(
-              pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
-              pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
-              outputAccum);
-
-        // clang-format on
+                pqCoarseCentroids0,
+                pqFineCentroids0,
+                code0,
+                weight0,
+                pqCoarseCentroids1,
+                pqFineCentroids1,
+                code1,
+                weight1,
+                outputAccum);
     }
 };
 
@@ -656,8 +751,6 @@ struct Index2LevelDecoderImpl<
         QPOS_LEFT_GE_8,
         QPOS_LEFT_GE_4,
         true> {
-    // clang-format off
-
     // process 1 sample
     static void store(
             const float* const __restrict pqCoarseCentroids0,
@@ -684,8 +777,6 @@ struct Index2LevelDecoderImpl<
             const uint8_t* const __restrict code1,
             const float weight1,
             float* const __restrict outputAccum) {}
-
-    // clang-format on
 };
 } // namespace
 

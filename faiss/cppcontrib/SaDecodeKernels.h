@@ -80,6 +80,8 @@
 
 #ifdef __AVX2__
 #include <faiss/cppcontrib/SaDecodeKernels-avx2-inl.h>
+#elif defined(__ARM_NEON)
+#include <faiss/cppcontrib/SaDecodeKernels-neon-inl.h>
 #else
 #include <faiss/cppcontrib/SaDecodeKernels-inl.h>
 #endif
