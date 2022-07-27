@@ -1,0 +1,983 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Struct faiss::IndexIVFProductLocalSearchQuantizer &mdash; Faiss  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="https://faiss.ai/cpp_api/struct/structfaiss_1_1IndexIVFProductLocalSearchQuantizer.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Struct faiss::IndexIVFProductLocalSearchQuantizerFastScan" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan.html" />
+    <link rel="prev" title="Struct faiss::IndexIVFPQStats" href="structfaiss_1_1IndexIVFPQStats.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Faiss
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AdditiveCoarseQuantizer.html">Struct faiss::AdditiveCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTable.html">Struct faiss::AlignedTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AlignedTableTightAlloc.html">Struct faiss::AlignedTableTightAlloc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ArrayInvertedLists.html">Struct faiss::ArrayInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AutoTuneCriterion.html">Struct faiss::AutoTuneCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BinaryInvertedListScanner.html">Struct faiss::BinaryInvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringReader.html">Struct faiss::BitstringReader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BitstringWriter.html">Struct faiss::BitstringWriter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedLists.html">Struct faiss::BlockInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1BlockInvertedListsIOHook.html">Struct faiss::BlockInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMax.html">Struct faiss::CMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CMin.html">Struct faiss::CMin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1CenteringTransform.html">Struct faiss::CenteringTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Cloner.html">Struct faiss::Cloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering.html">Struct faiss::Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Clustering1D.html">Struct faiss::Clustering1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringIterationStats.html">Struct faiss::ClusteringIterationStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ClusteringParameters.html">Struct faiss::ClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMap.html">Struct faiss::DirectMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1DirectMapAdd.html">Struct faiss::DirectMapAdd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1FastScanStats.html">Struct faiss::FastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer16.html">Struct faiss::GenHammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer32.html">Struct faiss::GenHammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputer8.html">Struct faiss::GenHammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1GenHammingComputerM8.html">Struct faiss::GenHammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HCounterState.html">Struct faiss::HCounterState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HStackInvertedLists.html">Struct faiss::HStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer.html">Struct faiss::HammingComputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer16.html">Struct faiss::HammingComputer16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer20.html">Struct faiss::HammingComputer20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer32.html">Struct faiss::HammingComputer32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer4.html">Struct faiss::HammingComputer4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer64.html">Struct faiss::HammingComputer64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputer8.html">Struct faiss::HammingComputer8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerDefault.html">Struct faiss::HammingComputerDefault</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM4.html">Struct faiss::HammingComputerM4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HammingComputerM8.html">Struct faiss::HammingComputerM8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1HeapArray.html">Struct faiss::HeapArray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQMatrix.html">Struct faiss::ITQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFPQSearchParameters.html">Struct faiss::IVFPQSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizer.html">Struct faiss::IndexAdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizerFastScan.html">Struct faiss::IndexAdditiveQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinary.html">Struct faiss::IndexBinary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFlat.html">Struct faiss::IndexBinaryFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryFromFloat.html">Struct faiss::IndexBinaryFromFloat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHNSW.html">Struct faiss::IndexBinaryHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash.html">Struct faiss::IndexBinaryHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHashStats.html">Struct faiss::IndexBinaryHashStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryHash_1_1InvertedList.html">Struct faiss::IndexBinaryHash::InvertedList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryIVF.html">Struct faiss::IndexBinaryIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexBinaryMultiHash.html">Struct faiss::IndexBinaryMultiHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFastScan.html">Struct faiss::IndexFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat.html">Struct faiss::IndexFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlat1D.html">Struct faiss::IndexFlat1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatCodes.html">Struct faiss::IndexFlatCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatIP.html">Struct faiss::IndexFlatIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexFlatL2.html">Struct faiss::IndexFlatL2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW.html">Struct faiss::IndexHNSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSW2Level.html">Struct faiss::IndexHNSW2Level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWFlat.html">Struct faiss::IndexHNSWFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWPQ.html">Struct faiss::IndexHNSWPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexHNSWSQ.html">Struct faiss::IndexHNSWSQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMap2Template.html">Struct faiss::IndexIDMap2Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIDMapTemplate.html">Struct faiss::IndexIDMapTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVF.html">Struct faiss::IndexIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizer.html">Struct faiss::IndexIVFAdditiveQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan.html">Struct faiss::IndexIVFAdditiveQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizer.html">Struct faiss::IndexIVFLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html">Struct faiss::IndexIVFPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexIVFProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizer.html">Struct faiss::IndexIVFProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan.html">Struct faiss::IndexIVFProductResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizer.html">Struct faiss::IndexIVFResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizerFastScan.html">Struct faiss::IndexIVFResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html">Struct faiss::IndexIVFSpectralHash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFStats.html">Struct faiss::IndexIVFStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLSH.html">Struct faiss::IndexLSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLattice.html">Struct faiss::IndexLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizer.html">Struct faiss::IndexLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizerFastScan.html">Struct faiss::IndexLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescent.html">Struct faiss::IndexNNDescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNNDescentFlat.html">Struct faiss::IndexNNDescentFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSG.html">Struct faiss::IndexNSG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGFlat.html">Struct faiss::IndexNSGFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGPQ.html">Struct faiss::IndexNSGPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexNSGSQ.html">Struct faiss::IndexNSGSQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQ.html">Struct faiss::IndexPQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQFastScan.html">Struct faiss::IndexPQFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQStats.html">Struct faiss::IndexPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizer.html">Struct faiss::IndexProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizer.html">Struct faiss::IndexProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizerFastScan.html">Struct faiss::IndexProductResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizer.html">Struct faiss::IndexResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizerFastScan.html">Struct faiss::IndexResidualQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsTemplate.html">Struct faiss::IndexShardsTemplate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IntersectionCriterion.html">Struct faiss::IntersectionCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListScanner.html">Struct faiss::InvertedListScanner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists.html">Struct faiss::InvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIOHook.html">Struct faiss::InvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">Struct faiss::InvertedLists::ScopedCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LinearTransform.html">Struct faiss::LinearTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1LocalSearchCoarseQuantizer.html">Struct faiss::LocalSearchCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MaskedInvertedLists.html">Struct faiss::MaskedInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats.html">Struct faiss::MatrixStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1Occurrence.html">Struct faiss::MatrixStats::Occurrence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MatrixStats_1_1PerDimStats.html">Struct faiss::MatrixStats::PerDimStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer.html">Struct faiss::MultiIndexQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1MultiIndexQuantizer2.html">Struct faiss::MultiIndexQuantizer2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1NormalizationTransform.html">Struct faiss::NormalizationTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OPQMatrix.html">Struct faiss::OPQMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists.html">Struct faiss::OnDiskInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedListsIOHook.html">Struct faiss::OnDiskInvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskInvertedLists_1_1Slot.html">Struct faiss::OnDiskInvertedLists::Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OnDiskOneList.html">Struct faiss::OnDiskOneList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OneRecallAtRCriterion.html">Struct faiss::OneRecallAtRCriterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoint.html">Struct faiss::OperatingPoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1OperatingPoints.html">Struct faiss::OperatingPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PCAMatrix.html">Struct faiss::PCAMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterRange.html">Struct faiss::ParameterRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ParameterSpace.html">Struct faiss::ParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1PartitionStats.html">Struct faiss::PartitionStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimClustering.html">Struct faiss::ProgressiveDimClustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimClusteringParameters.html">Struct faiss::ProgressiveDimClusteringParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ProgressiveDimIndexFactory.html">Struct faiss::ProgressiveDimIndexFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomGenerator.html">Struct faiss::RandomGenerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RandomRotationMatrix.html">Struct faiss::RandomRotationMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReadOnlyInvertedLists.html">Struct faiss::ReadOnlyInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder.html">Struct faiss::cppcontrib::Index2LevelDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit.html">Struct faiss::detail::simdlib::is_simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocInfo.html">Struct faiss::gpu::AllocInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1AllocRequest.html">Struct faiss::gpu::AllocRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuClonerOptions.html">Struct faiss::gpu::GpuClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuDistanceParams.html">Struct faiss::gpu::GpuDistanceParams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory.html">Struct faiss::gpu::GpuIcmEncoderFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig.html">Struct faiss::gpu::GpuIndexBinaryFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexConfig.html">Struct faiss::gpu::GpuIndexConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexFlatConfig.html">Struct faiss::gpu::GpuIndexFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFConfig.html">Struct faiss::gpu::GpuIndexIVFConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig.html">Struct faiss::gpu::GpuIndexIVFFlatConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig.html">Struct faiss::gpu::GpuIndexIVFPQConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig.html">Struct faiss::gpu::GpuIndexIVFScalarQuantizerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMemoryReservation.html">Struct faiss::gpu::GpuMemoryReservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html">Struct faiss::gpu::GpuMultipleClonerOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuParameterSpace.html">Struct faiss::gpu::GpuParameterSpace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory.html">Struct faiss::gpu::GpuProgressiveDimIndexFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1IndexWrapper.html">Struct faiss::gpu::IndexWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Range.html">Struct faiss::gpu::StackDeviceMemory::Range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack.html">Struct faiss::gpu::StackDeviceMemory::Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToCPUCloner.html">Struct faiss::gpu::ToCPUCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuCloner.html">Struct faiss::gpu::ToGpuCloner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html">Struct faiss::gpu::ToGpuClonerMultiple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ivflib_1_1SlidingIndexWindow.html">Struct faiss::ivflib::SlidingIndexWindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd16uint16.html">Struct faiss::simd16uint16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd256bit.html">Struct faiss::simd256bit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd32uint8.html">Struct faiss::simd32uint8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8float32.html">Struct faiss::simd8float32</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1simd8uint32.html">Struct faiss::simd8uint32</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../structlist.html">Struct list</a> &raquo;</li>
+        
+      <li>Struct faiss::IndexIVFProductLocalSearchQuantizer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/cpp_api/struct/structfaiss_1_1IndexIVFProductLocalSearchQuantizer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="struct-faiss-indexivfproductlocalsearchquantizer">
+<h1>Struct faiss::IndexIVFProductLocalSearchQuantizer<a class="headerlink" href="#struct-faiss-indexivfproductlocalsearchquantizer" title="Permalink to this heading">¶</a></h1>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizerE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizerE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizerE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFProductLocalSearchQuantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFProductLocalSearchQuantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexIVFAdditiveQuantizer_8h.html#_CPPv4N5faiss25IndexIVFAdditiveQuantizerE" title="faiss::IndexIVFAdditiveQuantizer"><span class="n"><span class="pre">IndexIVFAdditiveQuantizer</span></span></a><br /></dt>
+<dd><p><a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a> based on a product local search quantizer. Stored vectors are approximated by product local search quantization codes. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer13Search_type_tE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer13Search_type_tE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer13Search_type_tE"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a8280b89470b7be3ef87921ed5c05ab02"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Search_type_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Search_type_t</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE"></span><span class="target" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idx_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><br /></dt>
+<dd><p>all indices are this type </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer11component_tE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer11component_tE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer11component_tE"></span><span class="target" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">component_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10distance_tE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10distance_tE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10distance_tE"></span><span class="target" id="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">distance_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEP5Index6size_t6size_t6size_t6size_t6size_t10MetricType13Search_type_t">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEP5Index6size_t6size_t6size_t6size_t6size_t10MetricType13Search_type_t"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEP5Index6size_t6size_t6size_t6size_t6size_t10MetricType13Search_type_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer__IndexP.s.s.s.s.s.MetricType.Search_type_t"></span><span class="target" id="structfaiss_1_1IndexIVFProductLocalSearchQuantizer_1a4376345c3d1a3cb969c70420b2087fae"></span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFProductLocalSearchQuantizer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">quantizer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlist</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nsplits</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Msub</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbits</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricType9METRIC_L2E" title="faiss::METRIC_L2"><span class="n"><span class="pre">METRIC_L2</span></span></a>, <a class="reference internal" href="../file/IndexIVFAdditiveQuantizer_8h.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer13Search_type_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::Search_type_t"><span class="n"><span class="pre">Search_type_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">search_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ST_decompress</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – dimensionality of the input vectors </p></li>
+<li><p><strong>nsplits</strong> – number of local search quantizers </p></li>
+<li><p><strong>Msub</strong> – number of subquantizers per LSQ </p></li>
+<li><p><strong>nbits</strong> – number of bit per subvector index </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEv">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEv"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer35IndexIVFProductLocalSearchQuantizerEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFProductLocalSearchQuantizer_1aaed10749c6dc3130fa91fde17a2d158f"></span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFProductLocalSearchQuantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizerD0Ev">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizerD0Ev"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizerD0Ev"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::~IndexIVFProductLocalSearchQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFProductLocalSearchQuantizer_1af8808108e35dbe99ab25aa5bdfa90832"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IndexIVFProductLocalSearchQuantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer14train_residualE5idx_tPKf">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer14train_residualE5idx_tPKf"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer14train_residualE5idx_tPKf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::train_residual__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab729805d43f3b2821192035629111665"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_residual</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Sub-classes that encode the residuals can train their encoders here does nothing by default </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer14encode_vectorsE5idx_tPKfPK5idx_tP7uint8_tb"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::encode_vectors__idx_t.floatCP.idx_tCP.uint8_tP.bC"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0500e17324cd24817e7832aac8fae5d7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode_vectors</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">list_nos</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_listnos</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Encodes a set of vectors as they would appear in the inverted lists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_nos</strong> – inverted list ids as returned by the quantizer (size n). -1s are ignored. </p></li>
+<li><p><strong>codes</strong> – output codes, size n * code_size </p></li>
+<li><p><strong>include_listno</strong> – include the list ids in the code (in this case add ceil(log8(nlist)) to the code size) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer23get_InvertedListScannerEb">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer23get_InvertedListScannerEb"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer23get_InvertedListScannerEb"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::get_InvertedListScanner__bC"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a963bae466f9f5cf9d24dc5c95642ed4a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19InvertedListScannerE" title="faiss::InvertedListScanner"><span class="n"><span class="pre">InvertedListScanner</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_InvertedListScanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Get a scanner for this index (store_pairs means ignore labels)</p>
+<p>The default search implementation uses this to compute the distances </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0ce87a96183a3bbd1b3d70b6fe7e30ce"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>decode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5resetEv">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer5resetEv"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer5resetEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::reset"></span><span class="target" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5trainE5idx_tPKf">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer5trainE5idx_tPKf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer3addE5idx_tPKf">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer3addE5idx_tPKf"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer3addE5idx_tPKf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Calls add_with_ids with NULL ids. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer12add_with_idsE5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a14e75169bddcd0251134821416b060a1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_with_ids</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>default implementation that calls encode_vectors </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer8add_coreE5idx_tPKfPK5idx_tPK5idx_t">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer8add_coreE5idx_tPKfPK5idx_tPK5idx_t"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer8add_coreE5idx_tPKfPK5idx_tPK5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::add_core__idx_t.floatCP.idx_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7be56eaa6a4f56a3e17f72a790802fd1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_core</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">precomputed_idx</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Implementation of vector addition where the vector assignments are predefined. The default implementation hands over the code extraction to encode_vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>precomputed_idx</strong> – quantization indices for the input vectors (size n) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer12add_sa_codesE5idx_tPK7uint8_tPK5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::add_sa_codes__idx_t.uint8_tCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a538bdb145af7c1152207ea37b692a01a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_sa_codes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Add vectors that are computed with the standalone codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – codes to add size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>xids</strong> – corresponding ids, size n </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer18search_preassignedE5idx_tPKf5idx_tPK5idx_tPKfPfP5idx_tbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::search_preassigned__idx_t.floatCP.idx_t.idx_tCP.floatCP.floatP.idx_tP.b.IVFSearchParametersCP.IndexIVFStatsPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_preassigned</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">assign</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">centroid_dis</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters"><span class="n"><span class="pre">IVFSearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats"><span class="n"><span class="pre">IndexIVFStats</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">stats</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>search a set of vectors, that are pre-quantized by the IVF quantizer. Fill in the corresponding heaps with the query results. The default implementation uses InvertedListScanners to do the search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – nb of vectors to query </p></li>
+<li><p><strong>x</strong> – query vectors, size nx * d </p></li>
+<li><p><strong>assign</strong> – coarse quantization indices, size nx * nprobe </p></li>
+<li><p><strong>centroid_dis</strong> – distances to coarse centroids, size nx * nprobe </p></li>
+<li><p><strong>distance</strong> – output distances, size n * k </p></li>
+<li><p><strong>labels</strong> – output labels, size n * k </p></li>
+<li><p><strong>store_pairs</strong> – store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </p></li>
+<li><p><strong>params</strong> – used to override the object’s search parameters </p></li>
+<li><p><strong>stats</strong> – search stats to be updated (can be null) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer6searchE5idx_tPKf5idx_tPfP5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::search__idx_t.floatCP.idx_t.floatP.idx_tPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae2fd47b7d52603659e269aa8f6abb613"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>assign the vectors, then call search_preassign </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer12range_searchE5idx_tPKffP17RangeSearchResult">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer12range_searchE5idx_tPKffP17RangeSearchResult"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::range_search__idx_t.floatCP.float.RangeSearchResultPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a5b7b4b3dc5ea40f7076a00c81cc83d66"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radius</span></span>, <span class="n"><span class="pre">RangeSearchResult</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">result</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer24range_search_preassignedE5idx_tPKffPK5idx_tPKfP17RangeSearchResultbPK19IVFSearchParametersP13IndexIVFStats"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::range_search_preassigned__idx_t.floatCP.float.idx_tCP.floatCP.RangeSearchResultP.b.IVFSearchParametersCP.IndexIVFStatsPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae51e8f23f3283feb2f262d791f2f167c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_search_preassigned</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radius</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coarse_dis</span></span>, <span class="n"><span class="pre">RangeSearchResult</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">result</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters"><span class="n"><span class="pre">IVFSearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats"><span class="n"><span class="pre">IndexIVFStats</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">stats</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer11reconstructE5idx_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer11reconstructE5idx_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer14update_vectorsEiPK5idx_tPKf">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer14update_vectorsEiPK5idx_tPKf"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer14update_vectorsEiPK5idx_tPKf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::update_vectors__i.idx_tCP.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a297563f801130e43485c1818b0e13901"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_vectors</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nv</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">idx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Update a subset of vectors.</p>
+<p>The index must have a direct_map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nv</strong> – nb of vectors to update </p></li>
+<li><p><strong>idx</strong> – vector indices to update, size nv </p></li>
+<li><p><strong>v</strong> – vectors of new values, size nv*d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer13reconstruct_nE5idx_t5idx_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::reconstruct_n__idx_t.idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7cc286dfbd8bfd43ea4b22173e28231c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ni</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Reconstruct a subset of the indexed vectors.</p>
+<p>Overrides default implementation to bypass <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"><span class="std std-ref">reconstruct()</span></a> which requires direct_map to be maintained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i0</strong> – first vector to reconstruct </p></li>
+<li><p><strong>ni</strong> – nb of vectors to reconstruct </p></li>
+<li><p><strong>recons</strong> – output array of reconstructed vectors, size ni * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer22search_and_reconstructE5idx_tPKf5idx_tPfP5idx_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::search_and_reconstruct__idx_t.floatCP.idx_t.floatP.idx_tP.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a77aec24920024a09f7661790d9534c10"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_and_reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</p>
+<p>Overrides default implementation to avoid having to maintain direct_map and instead fetch the code offsets through the <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> flag in <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recons</strong> – reconstructed vectors size (n, k, d) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::reconstruct_from_offset__int64_t.int64_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_from_offset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
+<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10remove_idsERK10IDSelector"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>Dataset manipulation functions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer26check_compatible_for_mergeERK8IndexIVF">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer26check_compatible_for_mergeERK8IndexIVF"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer26check_compatible_for_mergeERK8IndexIVF"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::check_compatible_for_merge__IndexIVFCRC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a76d85d286f3b58bba42b1d3c73dc9620"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10merge_fromER8IndexIVF5idx_t">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10merge_fromER8IndexIVF5idx_t"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10merge_fromER8IndexIVF5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::merge_from__IndexIVFR.idx_t"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa38b33056ccb93cd4a2852eb26227899"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer14copy_subset_toER8IndexIVFi5idx_t5idx_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::copy_subset_to__IndexIVFR.i.idx_t.idx_tC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy_subset_to</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subset_type</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a1</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a2</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>copy a subset of the entries index to the other index</p>
+<p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer13get_list_sizeE6size_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer13get_list_sizeE6size_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer13get_list_sizeE6size_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::get_list_size__sC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_list_size</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer15make_direct_mapEb">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer15make_direct_mapEb"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer15make_direct_mapEb"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::make_direct_map__b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_direct_map</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_maintain_direct_map</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>intialize a direct map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_maintain_direct_map</strong> – if true, create a direct map, else clear it </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer19set_direct_map_typeEN9DirectMap4TypeE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer19set_direct_map_typeEN9DirectMap4TypeE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer19set_direct_map_typeEN9DirectMap4TypeE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::set_direct_map_type__DirectMap::Type"></span><span class="target" id="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_direct_map_type</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMapE" title="faiss::DirectMap"><span class="n"><span class="pre">DirectMap</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMap4TypeE" title="faiss::DirectMap::Type"><span class="n"><span class="pre">Type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer16replace_invlistsEP13InvertedListsb">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer16replace_invlistsEP13InvertedListsb"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer16replace_invlistsEP13InvertedListsb"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::replace_invlists__InvertedListsP.b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">replace_invlists</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">il</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">own</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>replace the inverted lists, old one is deallocated if own_invlists </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer12sa_code_sizeEv">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer12sa_code_sizeEv"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer12sa_code_sizeEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::sa_code_sizeC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>size of the produced codes in bytes </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>encode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer6assignE5idx_tPKfP5idx_t5idx_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer6assignE5idx_tPKfP5idx_t5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::assign__idx_t.floatCP.idx_tP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>return the indexes of the k vectors closest to the query x.</p>
+<p>This function is identical as search but only return labels of neighbors. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>labels</strong> – output labels of the NNs, size n*k </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer17reconstruct_batchE5idx_tPK5idx_tPf">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer17reconstruct_batchE5idx_tPK5idx_tPf"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer17reconstruct_batchE5idx_tPK5idx_tPf"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::reconstruct_batch__idx_t.idx_tCP.floatPC"></span><span class="target" id="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_batch</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">keys</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Reconstruct several stored vectors (or an approximation if lossy coding)</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to reconstruct </p></li>
+<li><p><strong>keys</strong> – ids of the vectors to reconstruct (size n) </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size n * d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer16compute_residualEPKfPf5idx_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer16compute_residualEPKfPf5idx_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer16compute_residualEPKfPf5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::compute_residual__floatCP.floatP.idx_tC"></span><span class="target" id="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_residual</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">residual</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Computes a residual vector after indexing encoding.</p>
+<p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vector, size d </p></li>
+<li><p><strong>residual</strong> – output residual vector, size d </p></li>
+<li><p><strong>key</strong> – encoded index, as returned by search and assign </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer18compute_residual_nE5idx_tPKfPfPK5idx_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer18compute_residual_nE5idx_tPKfPfPK5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::compute_residual_n__idx_t.floatCP.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_residual_n</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xs</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">residuals</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">keys</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Computes a residual vector after indexing encoding (batch form). Equivalent to calling compute_residual for each vector.</p>
+<p>The residual vector is the difference between a vector and the reconstruction that can be decoded from its representation in the index. The residual can be used for multiple-stage indexing methods, like <a class="reference internal" href="structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a>’s methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>xs</strong> – input vectors, size (n x d) </p></li>
+<li><p><strong>residuals</strong> – output residual vectors, size (n x d) </p></li>
+<li><p><strong>keys</strong> – encoded index, as returned by search and assign </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer21get_distance_computerEv">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer21get_distance_computerEv"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer21get_distance_computerEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::get_distance_computerC"></span><span class="target" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">DistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_distance_computer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</p>
+<p>DistanceComputer is implemented for indexes that support random access of their vectors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer8train_q1E6size_tPKfb10MetricType">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer8train_q1E6size_tPKfb10MetricType"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer8train_q1E6size_tPKfb10MetricType"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::train_q1__s.floatCP.b.MetricType"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_q1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">verbose</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric_type</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer16coarse_code_sizeEv">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer16coarse_code_sizeEv"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer16coarse_code_sizeEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::coarse_code_sizeC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarse_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>compute the number of bytes required to store list ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer13encode_listnoEN5Index5idx_tEP7uint8_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer13encode_listnoEN5Index5idx_tEP7uint8_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer13encode_listnoEN5Index5idx_tEP7uint8_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::encode_listno__Index::idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a8d36d811aaf11daeae2a3f580747c5b2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode_listno</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss35IndexIVFProductLocalSearchQuantizer13decode_listnoEPK7uint8_t">
+<span id="_CPPv3NK5faiss35IndexIVFProductLocalSearchQuantizer13decode_listnoEPK7uint8_t"></span><span id="_CPPv2NK5faiss35IndexIVFProductLocalSearchQuantizer13decode_listnoEPK7uint8_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::decode_listno__uint8_tCPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a64f28832f84e8559f9b76ccd3a3046d3"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5Index5idx_tE" title="faiss::Index::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_listno</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer4plsqE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer4plsqE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer4plsqE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::plsq__ProductLocalSearchQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFProductLocalSearchQuantizer_1a9b3aa9f50ea492af55e4db0719b8af37"></span><span class="n"><span class="pre">ProductLocalSearchQuantizer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">plsq</span></span></span><br /></dt>
+<dd><p>The product local search quantizer used to encode the vectors. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer2aqE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer2aqE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer2aqE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::aq__AdditiveQuantizerP"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1ac3f5adfc483cd467ede705998dadbcb4"></span><span class="n"><span class="pre">AdditiveQuantizer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">aq</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer11by_residualE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer11by_residualE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer11by_residualE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::by_residual__b"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a4b7b27d24efd231efe44748bb818ea0c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">by_residual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer21use_precomputed_tableE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer21use_precomputed_tableE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer21use_precomputed_tableE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::use_precomputed_table__i"></span><span class="target" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a558e91cea1541fc1880b6e36cb6f0970"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_precomputed_table</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer8invlistsE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer8invlistsE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer8invlistsE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::invlists__InvertedListsP"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc"></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">invlists</span></span></span><br /></dt>
+<dd><p>Access to the actual data. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer12own_invlistsE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer12own_invlistsE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer12own_invlistsE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::own_invlists__b"></span><span class="target" id="structfaiss_1_1IndexIVF_1a5743b18d78fe1b9910d8ff8670f207d7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_invlists</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer9code_sizeE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer9code_sizeE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer9code_sizeE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::code_size__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1a46d1aeddb60643c5b3f096147c3e028f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><br /></dt>
+<dd><p>code size per vector in bytes </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer6nprobeE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer6nprobeE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer6nprobeE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::nprobe__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1affed235eadf27a13d753ee4d33a1dc58"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nprobe</span></span></span><br /></dt>
+<dd><p>number of probes at query time </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer9max_codesE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer9max_codesE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer9max_codesE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::max_codes__s"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7f2dd34f66f8770acba74a0a591fa4a8"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_codes</span></span></span><br /></dt>
+<dd><p>max nb of codes to visit to do a query </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer13parallel_modeE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer13parallel_modeE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer13parallel_modeE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::parallel_mode__i"></span><span class="target" id="structfaiss_1_1IndexIVF_1a244ec2067da495ff1493687e0048ae02"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parallel_mode</span></span></span><br /></dt>
+<dd><p>Parallel mode determines how queries are parallelized with OpenMP</p>
+<p>0 (default): split over queries 1: parallelize over inverted lists 2: parallelize over both 3: split over queries with a finer granularity</p>
+<p>PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to prevent the heap to be initialized and finalized </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer26PARALLEL_MODE_NO_HEAP_INITE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer26PARALLEL_MODE_NO_HEAP_INITE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer26PARALLEL_MODE_NO_HEAP_INITE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::PARALLEL_MODE_NO_HEAP_INIT__iC"></span><span class="target" id="structfaiss_1_1IndexIVF_1aa221f301cca11e1ab59d6c12e08a0240"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PARALLEL_MODE_NO_HEAP_INIT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1024</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10direct_mapE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10direct_mapE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10direct_mapE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::direct_map__DirectMap"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae1267a1770ef6c8fa111891110e6fa69"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMapE" title="faiss::DirectMap"><span class="n"><span class="pre">DirectMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">direct_map</span></span></span><br /></dt>
+<dd><p>optional map that maps back ids to invlist entries. This enables <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"><span class="std std-ref">reconstruct()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer1dE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer1dE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer1dE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::d__i"></span><span class="target" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d</span></span></span><br /></dt>
+<dd><p>vector dimension </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer6ntotalE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer6ntotalE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer6ntotalE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::ntotal__idx_t"></span><span class="target" id="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd"></span><a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5idx_tE" title="faiss::IndexIVFProductLocalSearchQuantizer::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd><p>total nb of indexed vectors </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer7verboseE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer7verboseE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer7verboseE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::verbose__b"></span><span class="target" id="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><br /></dt>
+<dd><p>verbosity level </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10is_trainedE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10is_trainedE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10is_trainedE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::is_trained__b"></span><span class="target" id="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_trained</span></span></span><br /></dt>
+<dd><p>set if the <a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> does not require training, or if training is done already </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer11metric_typeE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer11metric_typeE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer11metric_typeE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::metric_type__MetricType"></span><span class="target" id="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e"></span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metric_type</span></span></span><br /></dt>
+<dd><p>type of metric this index uses for search </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10metric_argE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10metric_argE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10metric_argE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metric_arg</span></span></span><br /></dt>
+<dd><p>argument of the metric type </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer9quantizerE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer9quantizerE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer9quantizerE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::quantizer__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer</span></span></span><br /></dt>
+<dd><p>quantizer that maps vectors to inverted lists </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer5nlistE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer5nlistE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer5nlistE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::nlist__s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nlist</span></span></span><br /></dt>
+<dd><p>number of possible key values </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer22quantizer_trains_aloneE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer22quantizer_trains_aloneE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer22quantizer_trains_aloneE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::quantizer_trains_alone__c"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_trains_alone</span></span></span><br /></dt>
+<dd><p>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer10own_fieldsE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer10own_fieldsE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer10own_fieldsE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::own_fields__b"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_fields</span></span></span><br /></dt>
+<dd><p>whether object owns the quantizer (false by default) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer2cpE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer2cpE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer2cpE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::cp__ClusteringParameters"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72"></span><a class="reference internal" href="../file/Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="n"><span class="pre">ClusteringParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cp</span></span></span><br /></dt>
+<dd><p>to override default clustering params </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss35IndexIVFProductLocalSearchQuantizer16clustering_indexE">
+<span id="_CPPv3N5faiss35IndexIVFProductLocalSearchQuantizer16clustering_indexE"></span><span id="_CPPv2N5faiss35IndexIVFProductLocalSearchQuantizer16clustering_indexE"></span><span id="faiss::IndexIVFProductLocalSearchQuantizer::clustering_index__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">clustering_index</span></span></span><br /></dt>
+<dd><p>to override index used during clustering </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan.html" class="btn btn-neutral float-right" title="Struct faiss::IndexIVFProductLocalSearchQuantizerFastScan" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1IndexIVFPQStats.html" class="btn btn-neutral float-left" title="Struct faiss::IndexIVFPQStats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright Facebook, Inc. and its affiliates..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

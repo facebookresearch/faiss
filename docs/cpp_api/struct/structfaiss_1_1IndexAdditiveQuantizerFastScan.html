@@ -185,6 +185,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQFastScan.html">Struct faiss::IndexIVFPQFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQR.html">Struct faiss::IndexIVFPQR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQStats.html">Struct faiss::IndexIVFPQStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizer.html">Struct faiss::IndexIVFProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizer.html">Struct faiss::IndexIVFProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan.html">Struct faiss::IndexIVFProductResidualQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizer.html">Struct faiss::IndexIVFResidualQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFResidualQuantizerFastScan.html">Struct faiss::IndexIVFResidualQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFScalarQuantizer.html">Struct faiss::IndexIVFScalarQuantizer</a></li>
@@ -204,6 +208,10 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQFastScan.html">Struct faiss::IndexPQFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPQStats.html">Struct faiss::IndexPQStats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexPreTransform.html">Struct faiss::IndexPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizer.html">Struct faiss::IndexProductLocalSearchQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan.html">Struct faiss::IndexProductLocalSearchQuantizerFastScan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizer.html">Struct faiss::IndexProductResidualQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizerFastScan.html">Struct faiss::IndexProductResidualQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefine.html">Struct faiss::IndexRefine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRefineFlat.html">Struct faiss::IndexRefineFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexResidualQuantizer.html">Struct faiss::IndexResidualQuantizer</a></li>
@@ -362,7 +370,7 @@
 <dd><p>Fast scan version of IndexAQ. Works for 4-bit AQ for now.</p>
 <p>The codes are not stored sequentially but grouped in blocks of size bbs. This makes it possible to compute distances quickly with SIMD instructions.</p>
 <p>Implementations: 12: blocked loop with internal loop on Q with qbs 13: same with reservoir accumulator to store results 14: no qbs with heap accumulator 15: no qbs with reservoir accumulator </p>
-<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizerFastScan.html#structfaiss_1_1IndexLocalSearchQuantizerFastScan"><span class="std std-ref">faiss::IndexLocalSearchQuantizerFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexResidualQuantizerFastScan.html#structfaiss_1_1IndexResidualQuantizerFastScan"><span class="std std-ref">faiss::IndexResidualQuantizerFastScan</span></a></p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexLocalSearchQuantizerFastScan.html#structfaiss_1_1IndexLocalSearchQuantizerFastScan"><span class="std std-ref">faiss::IndexLocalSearchQuantizerFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan.html#structfaiss_1_1IndexProductLocalSearchQuantizerFastScan"><span class="std std-ref">faiss::IndexProductLocalSearchQuantizerFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexProductResidualQuantizerFastScan.html#structfaiss_1_1IndexProductResidualQuantizerFastScan"><span class="std std-ref">faiss::IndexProductResidualQuantizerFastScan</span></a>, <a class="reference internal" href="structfaiss_1_1IndexResidualQuantizerFastScan.html#structfaiss_1_1IndexResidualQuantizerFastScan"><span class="std std-ref">faiss::IndexResidualQuantizerFastScan</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
