@@ -77,6 +77,10 @@
     <innerclass refid="structfaiss_1_1IndexIVFPQFastScan" prot="public">faiss::IndexIVFPQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQR" prot="public">faiss::IndexIVFPQR</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQStats" prot="public">faiss::IndexIVFPQStats</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizer" prot="public">faiss::IndexIVFProductLocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFProductLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizer" prot="public">faiss::IndexIVFProductResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan" prot="public">faiss::IndexIVFProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizer" prot="public">faiss::IndexIVFResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public">faiss::IndexIVFResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
@@ -96,6 +100,10 @@
     <innerclass refid="structfaiss_1_1IndexPQFastScan" prot="public">faiss::IndexPQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQStats" prot="public">faiss::IndexPQStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexPreTransform" prot="public">faiss::IndexPreTransform</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizer" prot="public">faiss::IndexProductLocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexProductLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizer" prot="public">faiss::IndexProductResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" prot="public">faiss::IndexProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="64" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="64" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="65" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="65" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1ac3f5adfc483cd467ede705998dadbcb4" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="27" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="28" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a4b7b27d24efd231efe44748bb818ea0c" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="28" column="10" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="29" column="10" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a558e91cea1541fc1880b6e36cb6f0970" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="29" column="9" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="30" column="9" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -407,7 +407,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="72" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="73" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFResidualQuantizer_1a39c9bf516908b8fffbb5b8e33a1ba7b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -450,7 +450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="80" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="81" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFResidualQuantizer_1a40051d6e8df5cea0c3add235c36b1000" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -463,7 +463,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="89" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="90" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFResidualQuantizer_1a26c16e4f433aeeba0c5f7780c4e5238c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
@@ -476,7 +476,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="91" column="13"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="92" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1ab729805d43f3b2821192035629111665" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -499,7 +499,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="42" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="43" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0500e17324cd24817e7832aac8fae5d7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -561,7 +561,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="44" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="45" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a963bae466f9f5cf9d24dc5c95642ed4a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -581,7 +581,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="51" column="25"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="52" column="25"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0ce87a96183a3bbd1b3d70b6fe7e30ce" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -634,7 +634,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="54" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="55" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1895,7 +1895,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="31" column="5" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizer.h" line="32" column="5" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
         <type>int64_t</type>
@@ -2028,7 +2028,7 @@
         <link refid="structfaiss_1_1DirectMap"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFAdditiveQuantizer.h" line="62" column="58" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="62" bodyend="92"/>
+    <location file="faiss/IndexIVFAdditiveQuantizer.h" line="63" column="58" bodyfile="faiss/IndexIVFAdditiveQuantizer.h" bodystart="63" bodyend="93"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFResidualQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7be56eaa6a4f56a3e17f72a790802fd1" prot="public" virt="virtual"><scope>faiss::IndexIVFResidualQuantizer</scope><name>add_core</name></member>

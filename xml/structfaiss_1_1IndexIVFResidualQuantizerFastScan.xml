@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="121" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="121" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="119" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="119" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a6c393377298ff34d98582f329a2f908e" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -550,7 +550,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="123" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="121" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFResidualQuantizerFastScan_1a4dacb3272c8fccca4d2a14aa99cc2b16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -563,20 +563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="133" column="5"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFResidualQuantizerFastScan_1af1ffae3b713cbda95863723a73e8f590" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::IndexIVFResidualQuantizerFastScan::~IndexIVFResidualQuantizerFastScan</definition>
-        <argsstring>()</argsstring>
-        <name>~IndexIVFResidualQuantizerFastScan</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="135" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="131" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab714cd606ef876e045314cc80b93be01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2551,7 +2538,7 @@
         <link refid="structfaiss_1_1DirectMap"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="120" column="74" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="120" bodyend="136"/>
+    <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="118" column="74" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="118" bodyend="132"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7be56eaa6a4f56a3e17f72a790802fd1" prot="public" virt="virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>add_core</name></member>
@@ -2659,7 +2646,6 @@
       <member refid="structfaiss_1_1IndexIVF_1ade600c4def9726b51f08d4e66263b688" prot="public" virt="non-virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>~IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a88114160b397addc576426fc61773c42" prot="public" virt="non-virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>~IndexIVFAdditiveQuantizerFastScan</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1aacba6f754ab1cb48fb4ee684a7a47bfa" prot="public" virt="non-virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>~IndexIVFFastScan</name></member>
-      <member refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan_1af1ffae3b713cbda95863723a73e8f590" prot="public" virt="non-virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>~IndexIVFResidualQuantizerFastScan</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca" prot="public" virt="non-virtual"><scope>faiss::IndexIVFResidualQuantizerFastScan</scope><name>~Level1Quantizer</name></member>
     </listofallmembers>
   </compounddef>

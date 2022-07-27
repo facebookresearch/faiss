@@ -203,11 +203,13 @@
         <reimplementedby refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLocalSearchQuantizer_1aa63fc9328d0f202707f9fc947cc423f4">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a150b455e4152bc63ae4f51ba44405475">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexProductResidualQuantizer_1a726a1a837bea21c65e9974499e838fd6">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a6fa1d1a295eb2d4377b8de5096ab3ef4">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexProductLocalSearchQuantizer_1aa165f6c8c6655052a39bbad89b1dd8d7">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1a553b9a33e9be7f231ffdc0ac53c59e7c">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a150b455e4152bc63ae4f51ba44405475">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a3c5b3760acb01814892fe93c72f08304">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a11c52bf069e04520b000cf888c06cb05">train</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a0e74fad76628ddfb5ae3dc1d1c69f7e8">train</reimplementedby>
@@ -262,9 +264,9 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1af2ef88dc72b4a94f1190ecc8cb25881b">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa72640bcbe2e5d9029954c2fa6633453">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6">add</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1ac6ac307f55a1b44dbf185e22c83b0a10">add</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ac97a713a28450ca2fa0615eaef3bed5a">add</reimplementedby>
         <param>
@@ -361,12 +363,12 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a92de0135c7cf70bd0085838bf9fb432c">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1a65736f2900865cd156faba4fcd260d05">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a4a010daf51e44d9717e94400cc23c159">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a94ce7e6530f41d5a2e3fb4e91b2a0ee9">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a999ee03f4e65f453377e209d10e25681">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1ResidualCoarseQuantizer_1aa2caeaca675083d19d8ce0db4dc245ca">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a94ce7e6530f41d5a2e3fb4e91b2a0ee9">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer2_1adff25d40c18f5d7a65d359d1cd80ea29">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW2Level_1a50a087a17ce5a7a1fbcca0836959b4ec">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1ae2fd47b7d52603659e269aa8f6abb613">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ResidualCoarseQuantizer_1aa2caeaca675083d19d8ce0db4dc245ca">search</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndex_1a4564ff946e4339156173b39449562971">search</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -555,9 +557,9 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a8047981cb8d10c54107664c4955df402">reset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a2ec358ccc474cc183f861f350ebbcb8f">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a4808ce22fcc95c7af902b97969f2a90d">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a2ec358ccc474cc183f861f350ebbcb8f">reset</reimplementedby>
         <briefdescription>
 <para>removes all elements from the database. </para>
         </briefdescription>
@@ -603,8 +605,8 @@
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67">reconstruct</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a68a74f41ca7c511663dd573183fb670b">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392">reconstruct</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a68a74f41ca7c511663dd573183fb670b">reconstruct</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39">reconstruct</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad690b0d256903730605ce36d64720fbf">reconstruct</reimplementedby>
         <param>
@@ -1022,8 +1024,8 @@
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1acc76166d19edf5e34a36f352cf9c02cd">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a71dcc40c559af0fa5040b0e457ca3b44">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ae10ad1a5c025337984277a68f4da4338">sa_decode</reimplementedby>
@@ -1083,16 +1085,28 @@
 <para>All vectors provided at add or search time are 32-bit float arrays, although the internal representation may vary. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="21">
-        <label>faiss::IndexLocalSearchQuantizer</label>
-        <link refid="structfaiss_1_1IndexLocalSearchQuantizer"/>
-        <childnode refid="20" relation="public-inheritance">
+      <node id="49">
+        <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
+        <childnode refid="46" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="38">
+      <node id="23">
+        <label>faiss::IndexLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1IndexLocalSearchQuantizer"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="44">
         <label>faiss::IndexIVFResidualQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFResidualQuantizer"/>
-        <childnode refid="36" relation="public-inheritance">
+        <childnode refid="40" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss::IndexProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexProductResidualQuantizerFastScan"/>
+        <childnode refid="14" relation="public-inheritance">
         </childnode>
       </node>
       <node id="10">
@@ -1101,10 +1115,10 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="59">
+      <node id="67">
         <label>faiss::IndexRefineFlat</label>
         <link refid="structfaiss_1_1IndexRefineFlat"/>
-        <childnode refid="58" relation="public-inheritance">
+        <childnode refid="66" relation="public-inheritance">
         </childnode>
       </node>
       <node id="12">
@@ -1113,13 +1127,13 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="37">
+      <node id="41">
         <label>faiss::IndexIVFLocalSearchQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizer"/>
-        <childnode refid="36" relation="public-inheritance">
+        <childnode refid="40" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="50">
+      <node id="58">
         <label>faiss::IndexLattice</label>
         <link refid="structfaiss_1_1IndexLattice"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1131,70 +1145,82 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="32">
-        <label>faiss::IndexHNSWFlat</label>
-        <link refid="structfaiss_1_1IndexHNSWFlat"/>
-        <childnode refid="30" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="49">
-        <label>faiss::IndexIVFSpectralHash</label>
-        <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
-        <childnode refid="35" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="43">
-        <label>faiss::IndexIVFPQFastScan</label>
-        <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
-        <childnode refid="39" relation="public-inheritance">
+      <node id="25">
+        <label>faiss::IndexProductResidualQuantizer</label>
+        <link refid="structfaiss_1_1IndexProductResidualQuantizer"/>
+        <childnode refid="22" relation="public-inheritance">
         </childnode>
       </node>
       <node id="36">
+        <label>faiss::IndexHNSWFlat</label>
+        <link refid="structfaiss_1_1IndexHNSWFlat"/>
+        <childnode refid="34" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>faiss::IndexIVFSpectralHash</label>
+        <link refid="structfaiss_1_1IndexIVFSpectralHash"/>
+        <childnode refid="39" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>faiss::IndexIVFPQFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
+        <childnode refid="45" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="40">
         <label>faiss::IndexIVFAdditiveQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFAdditiveQuantizer"/>
-        <childnode refid="35" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="48">
+      <node id="56">
         <label>faiss::IndexIVFScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexIVFScalarQuantizer"/>
-        <childnode refid="35" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="19">
+      <node id="21">
         <label>faiss::Index2Layer</label>
         <link refid="structfaiss_1_1Index2Layer"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="58">
+      <node id="66">
         <label>faiss::IndexRefine</label>
         <link refid="structfaiss_1_1IndexRefine"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="27">
+      <node id="31">
         <label>faiss::IndexLSH</label>
         <link refid="structfaiss_1_1IndexLSH"/>
-        <childnode refid="18" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>faiss::IndexResidualQuantizer</label>
-        <link refid="structfaiss_1_1IndexResidualQuantizer"/>
         <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="35">
+      <node id="26">
+        <label>faiss::IndexResidualQuantizer</label>
+        <link refid="structfaiss_1_1IndexResidualQuantizer"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>faiss::IndexIVFProductLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizer"/>
+        <childnode refid="40" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="39">
         <label>faiss::IndexIVF</label>
         <link refid="structfaiss_1_1IndexIVF"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="40">
+      <node id="46">
         <label>faiss::IndexIVFAdditiveQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan"/>
-        <childnode refid="39" relation="public-inheritance">
+        <childnode refid="45" relation="public-inheritance">
         </childnode>
       </node>
       <node id="11">
@@ -1203,7 +1229,7 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="57">
+      <node id="65">
         <label>faiss::IndexPreTransform</label>
         <link refid="structfaiss_1_1IndexPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1215,40 +1241,46 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="29">
+      <node id="33">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="42">
+      <node id="50">
         <label>faiss::IndexIVFResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
-        <childnode refid="40" relation="public-inheritance">
+        <childnode refid="46" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="39">
+      <node id="45">
         <label>faiss::IndexIVFFastScan</label>
         <link refid="structfaiss_1_1IndexIVFFastScan"/>
-        <childnode refid="35" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="31">
+      <node id="35">
         <label>faiss::IndexHNSW2Level</label>
         <link refid="structfaiss_1_1IndexHNSW2Level"/>
-        <childnode refid="30" relation="public-inheritance">
+        <childnode refid="34" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="55">
+      <node id="63">
         <label>faiss::IndexNSGPQ</label>
         <link refid="structfaiss_1_1IndexNSGPQ"/>
-        <childnode refid="53" relation="public-inheritance">
+        <childnode refid="61" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="56">
+      <node id="16">
+        <label>faiss::IndexProductLocalSearchQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="64">
         <label>faiss::IndexNSGSQ</label>
         <link refid="structfaiss_1_1IndexNSGSQ"/>
-        <childnode refid="53" relation="public-inheritance">
+        <childnode refid="61" relation="public-inheritance">
         </childnode>
       </node>
       <node id="9">
@@ -1257,16 +1289,16 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="41">
+      <node id="47">
         <label>faiss::IndexIVFLocalSearchQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan"/>
-        <childnode refid="40" relation="public-inheritance">
+        <childnode refid="46" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="23">
+      <node id="27">
         <label>faiss::IndexFlat</label>
         <link refid="structfaiss_1_1IndexFlat"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
@@ -1275,10 +1307,10 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="26">
+      <node id="30">
         <label>faiss::IndexFlat1D</label>
         <link refid="structfaiss_1_1IndexFlat1D"/>
-        <childnode refid="25" relation="public-inheritance">
+        <childnode refid="29" relation="public-inheritance">
         </childnode>
       </node>
       <node id="13">
@@ -1287,40 +1319,40 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="51">
+      <node id="59">
         <label>faiss::IndexNNDescent</label>
         <link refid="structfaiss_1_1IndexNNDescent"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="34">
+      <node id="38">
         <label>faiss::IndexHNSWSQ</label>
         <link refid="structfaiss_1_1IndexHNSWSQ"/>
-        <childnode refid="30" relation="public-inheritance">
+        <childnode refid="34" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="60">
+      <node id="68">
         <label>faiss::IndexSplitVectors</label>
         <link refid="structfaiss_1_1IndexSplitVectors"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="44">
+      <node id="52">
         <label>faiss::IndexIVFFlat</label>
         <link refid="structfaiss_1_1IndexIVFFlat"/>
-        <childnode refid="35" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss::IndexResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexResidualQuantizerFastScan"/>
         <childnode refid="14" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="24">
+      <node id="28">
         <label>faiss::IndexFlatIP</label>
         <link refid="structfaiss_1_1IndexFlatIP"/>
-        <childnode refid="23" relation="public-inheritance">
+        <childnode refid="27" relation="public-inheritance">
         </childnode>
       </node>
       <node id="15">
@@ -1329,28 +1361,28 @@
         <childnode refid="14" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="20">
+      <node id="22">
         <label>faiss::IndexAdditiveQuantizer</label>
         <link refid="structfaiss_1_1IndexAdditiveQuantizer"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="25">
+      <node id="29">
         <label>faiss::IndexFlatL2</label>
         <link refid="structfaiss_1_1IndexFlatL2"/>
-        <childnode refid="23" relation="public-inheritance">
+        <childnode refid="27" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="46">
+      <node id="54">
         <label>faiss::IndexIVFPQ</label>
         <link refid="structfaiss_1_1IndexIVFPQ"/>
-        <childnode refid="35" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="28">
+      <node id="32">
         <label>faiss::IndexPQ</label>
         <link refid="structfaiss_1_1IndexPQ"/>
-        <childnode refid="18" relation="public-inheritance">
+        <childnode refid="20" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">
@@ -1363,34 +1395,46 @@
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
-      <node id="61">
+      <node id="69">
         <label>faiss::MultiIndexQuantizer</label>
         <link refid="structfaiss_1_1MultiIndexQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="53">
+      <node id="48">
+        <label>faiss::IndexIVFProductLocalSearchQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan"/>
+        <childnode refid="46" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="61">
         <label>faiss::IndexNSG</label>
         <link refid="structfaiss_1_1IndexNSG"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="52">
+      <node id="60">
         <label>faiss::IndexNNDescentFlat</label>
         <link refid="structfaiss_1_1IndexNNDescentFlat"/>
-        <childnode refid="51" relation="public-inheritance">
+        <childnode refid="59" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="30">
+      <node id="34">
         <label>faiss::IndexHNSW</label>
         <link refid="structfaiss_1_1IndexHNSW"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="33">
+      <node id="43">
+        <label>faiss::IndexIVFProductResidualQuantizer</label>
+        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizer"/>
+        <childnode refid="40" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="37">
         <label>faiss::IndexHNSWPQ</label>
         <link refid="structfaiss_1_1IndexHNSWPQ"/>
-        <childnode refid="30" relation="public-inheritance">
+        <childnode refid="34" relation="public-inheritance">
         </childnode>
       </node>
       <node id="14">
@@ -1399,10 +1443,10 @@
         <childnode refid="13" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="62">
+      <node id="70">
         <label>faiss::MultiIndexQuantizer2</label>
         <link refid="structfaiss_1_1MultiIndexQuantizer2"/>
-        <childnode refid="61" relation="public-inheritance">
+        <childnode refid="69" relation="public-inheritance">
         </childnode>
       </node>
       <node id="7">
@@ -1411,7 +1455,7 @@
         <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="18">
+      <node id="20">
         <label>faiss::IndexFlatCodes</label>
         <link refid="structfaiss_1_1IndexFlatCodes"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1423,19 +1467,25 @@
         <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="45">
+      <node id="53">
         <label>faiss::IndexIVFFlatDedup</label>
         <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
-        <childnode refid="44" relation="public-inheritance">
+        <childnode refid="52" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="47">
+      <node id="55">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
-        <childnode refid="46" relation="public-inheritance">
+        <childnode refid="54" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="17">
+      <node id="24">
+        <label>faiss::IndexProductLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1IndexProductLocalSearchQuantizer"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
         <label>faiss::IndexPQFastScan</label>
         <link refid="structfaiss_1_1IndexPQFastScan"/>
         <childnode refid="13" relation="public-inheritance">
@@ -1447,10 +1497,10 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="54">
+      <node id="62">
         <label>faiss::IndexNSGFlat</label>
         <link refid="structfaiss_1_1IndexNSGFlat"/>
-        <childnode refid="53" relation="public-inheritance">
+        <childnode refid="61" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

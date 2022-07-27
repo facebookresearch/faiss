@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1IndexLocalSearchQuantizerFastScan" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexLocalSearchQuantizerFastScan</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexAdditiveQuantizerFastScan</basecompoundref>
+    <includes refid="IndexAdditiveQuantizerFastScan_8h" local="no">IndexAdditiveQuantizerFastScan.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexLocalSearchQuantizerFastScan_1a381e9a5df8c689e6ed8f9116e56f5385" prot="public" static="no" mutable="no">
         <type>LocalSearchQuantizer</type>
@@ -15,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="113" column="26" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="113" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="118" column="26" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="118" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -28,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="30" column="23" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="31" column="23" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a55845ba5cac53e01bf4b343cdfaa511f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -42,7 +43,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="33" column="10" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="33" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="34" column="10" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1acbc02d18fe21977dfaa0060522e4e418" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -56,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="34" column="9" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="35" column="9" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a78093cc9225101c355740f0be30276ce" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -70,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="37" column="12" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="38" column="12" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -405,7 +406,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="123" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="128" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLocalSearchQuantizerFastScan_1a44b40819d477322e68b3e7b7754c379a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -418,7 +419,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="131" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="136" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a762aea7ad05d5661a5c7d1653909eafd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -445,7 +446,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="44" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="45" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ac209f095ccac62ca6cc86d24923471d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -486,7 +487,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="58" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="59" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1af641f659c9e6a755225bfe709550251b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -507,7 +508,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="60" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="61" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae3ed04afd1cc393aa63183a781820a9a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -533,7 +534,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="62" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="63" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adc4f2674c37789595d680f7531cd515a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -559,7 +560,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="64" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="65" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a12841ef6987a46c2a12e4716ac09899b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -621,7 +622,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="66" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="67" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -675,7 +676,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="82" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="83" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1572,7 +1573,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="31" column="5" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="32" column="5" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
         <type>int64_t</type>
@@ -1618,6 +1619,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> based on a local search quantizer. Stored vectors are approximated by local search quantization codes. Can also be used as a codec </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
@@ -1681,7 +1683,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="112" column="71" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="112" bodyend="132"/>
+    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="117" column="71" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="117" bodyend="137"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>add_with_ids</name></member>

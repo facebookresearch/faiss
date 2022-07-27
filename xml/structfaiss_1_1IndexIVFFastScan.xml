@@ -2184,8 +2184,8 @@
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1acc76166d19edf5e34a36f352cf9c02cd">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a71dcc40c559af0fa5040b0e457ca3b44">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ae10ad1a5c025337984277a68f4da4338">sa_decode</reimplementedby>
@@ -2371,6 +2371,12 @@
     </detaileddescription>
     <inheritancegraph>
       <node id="8">
+        <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
         <label>faiss::IndexIVFPQFastScan</label>
         <link refid="structfaiss_1_1IndexIVFPQFastScan"/>
         <childnode refid="1" relation="public-inheritance">
@@ -2394,7 +2400,7 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="9">
         <label>faiss::IndexIVFResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
         <childnode refid="5" relation="public-inheritance">
@@ -2415,6 +2421,12 @@
       <node id="3">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="7">
+        <label>faiss::IndexIVFProductLocalSearchQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>

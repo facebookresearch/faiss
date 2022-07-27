@@ -1,23 +1,23 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="structfaiss_1_1IndexResidualQuantizerFastScan" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::IndexResidualQuantizerFastScan</compoundname>
+  <compounddef id="structfaiss_1_1IndexProductResidualQuantizerFastScan" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexProductResidualQuantizerFastScan</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexAdditiveQuantizerFastScan</basecompoundref>
     <includes refid="IndexAdditiveQuantizerFastScan_8h" local="no">IndexAdditiveQuantizerFastScan.h</includes>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" prot="public" static="no" mutable="no">
-        <type>ResidualQuantizer</type>
-        <definition>ResidualQuantizer faiss::IndexResidualQuantizerFastScan::rq</definition>
+      <memberdef kind="variable" id="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" prot="public" static="no" mutable="no">
+        <type>ProductResidualQuantizer</type>
+        <definition>ProductResidualQuantizer faiss::IndexProductResidualQuantizerFastScan::prq</definition>
         <argsstring></argsstring>
-        <name>rq</name>
+        <name>prq</name>
         <briefdescription>
-<para>The residual quantizer used to encode the vectors. </para>
+<para>The product residual quantizer used to encode the vectors. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="92" column="23" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="145" column="30" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="145" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -320,11 +320,11 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexResidualQuantizerFastScan_1a6aea7fed0c36dbdc75a0fa6fac3fb522" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexProductResidualQuantizerFastScan_1a66e4866859cdae06b0ff91c290f8f183" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan</definition>
-        <argsstring>(int d, size_t M, size_t nbits, MetricType metric=METRIC_L2, Search_type_t search_type=AdditiveQuantizer::ST_norm_rq2x4, int bbs=32)</argsstring>
-        <name>IndexResidualQuantizerFastScan</name>
+        <definition>faiss::IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan</definition>
+        <argsstring>(int d, size_t nsplits, size_t Msub, size_t nbits, MetricType metric=METRIC_L2, Search_type_t search_type=AdditiveQuantizer::ST_norm_rq2x4, int bbs=32)</argsstring>
+        <name>IndexProductResidualQuantizerFastScan</name>
         <param>
           <type>int</type>
           <declname>d</declname>
@@ -333,8 +333,14 @@
         </param>
         <param>
           <type>size_t</type>
-          <declname>M</declname>
-          <briefdescription><para>number of subquantizers </para>
+          <declname>nsplits</declname>
+          <briefdescription><para>number of residual quantizers </para>
+</briefdescription>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>Msub</declname>
+          <briefdescription><para>number of subquantizers per RQ </para>
 </briefdescription>
         </param>
         <param>
@@ -372,10 +378,18 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>M</parametername>
+<parametername>nsplits</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of subquantizers </para>
+<para>number of residual quantizers </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Msub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of subquantizers per RQ </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -407,20 +421,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="102" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="156" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexResidualQuantizerFastScan_1aaf446fc6c94623efb0cd779faf48766f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexProductResidualQuantizerFastScan_1ac4fb9d2b5ede3456d71344f047c0bb17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan</definition>
+        <definition>faiss::IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan</definition>
         <argsstring>()</argsstring>
-        <name>IndexResidualQuantizerFastScan</name>
+        <name>IndexProductResidualQuantizerFastScan</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="110" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="165" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a762aea7ad05d5661a5c7d1653909eafd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1620,19 +1634,19 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> based on a residual quantizer. Stored vectors are approximated by residual quantization codes. Can also be used as a codec </para>
+<para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> based on a product residual quantizer. Stored vectors are approximated by product residual quantization codes. Can also be used as a codec </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="1">
+        <label>faiss::IndexProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexProductResidualQuantizerFastScan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="3">
         <label>faiss::IndexFastScan</label>
         <link refid="structfaiss_1_1IndexFastScan"/>
         <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss::IndexResidualQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexResidualQuantizerFastScan"/>
-        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
@@ -1654,6 +1668,12 @@
           <edgelabel>tab</edgelabel>
         </childnode>
       </node>
+      <node id="1">
+        <label>faiss::IndexProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexProductResidualQuantizerFastScan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="6">
         <label>faiss::AlignedTableTightAlloc&lt; uint8_t, 32 &gt;</label>
         <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
@@ -1667,12 +1687,6 @@
           <edgelabel>codes</edgelabel>
         </childnode>
       </node>
-      <node id="1">
-        <label>faiss::IndexResidualQuantizerFastScan</label>
-        <link refid="structfaiss_1_1IndexResidualQuantizerFastScan"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="4">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
@@ -1684,72 +1698,72 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="90" column="68" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="90" bodyend="111"/>
+    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="143" column="75" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="143" bodyend="166"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>aq</name></member>
-      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>assign</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1add3fe80ce6635a6abbecd00229430875" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>bbs</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a9a22fcf66a8c3115eeaee06849e12426" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>code_size</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1acc81ddd8d41f594a7dc13c46ad864a8c" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>codes</name></member>
-      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>component_t</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae3ed04afd1cc393aa63183a781820a9a" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>compute_codes</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adc4f2674c37789595d680f7531cd515a" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>compute_float_LUT</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a5cbf309c75a1be32c3d513744257484e" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>compute_quantized_LUT</name></member>
-      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>compute_residual</name></member>
-      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>d</name></member>
-      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1af641f659c9e6a755225bfe709550251b" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>estimate_norm_scale</name></member>
-      <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>idx_t</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>implem</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adb04aba51f5f26f3c8cdd8fd22845e09" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a44fd82713c87e1bcf064ae18adede582" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae081d6870a211e35c27db296f9eb1d3c" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1adf1f52bc54531170c3cba9e47105416d" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexFastScan</name></member>
-      <member refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a6aea7fed0c36dbdc75a0fa6fac3fb522" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexResidualQuantizerFastScan</name></member>
-      <member refid="structfaiss_1_1IndexResidualQuantizerFastScan_1aaf446fc6c94623efb0cd779faf48766f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexResidualQuantizerFastScan</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a762aea7ad05d5661a5c7d1653909eafd" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>init</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>init_fastscan</name></member>
-      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a26f16e76a8c207290b7b7fbb3f78f416" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>ksub</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a4e013b276576e19ad1cfcdaa38e7b176" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>M</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a7f4869a6c26f2f1eec8f0779bed20cb6" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>M2</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a78093cc9225101c355740f0be30276ce" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>max_train_points</name></member>
-      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>metric_type</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1ad68a0fa7782135a50978e3c8964ca4e2" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>nbits</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1acbc02d18fe21977dfaa0060522e4e418" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>norm_scale</name></member>
-      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>ntotal</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a50423e2e9d43cb792df4b2079d185092" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>ntotal2</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1ad4125c84c2558b544ec12bb618dc2175" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>orig_codes</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a340668cf9ba404f5efbd5f60e99ff7c8" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>qbs</name></member>
-      <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>range_search</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>reconstruct_n</name></member>
-      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>remove_ids</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a55845ba5cac53e01bf4b343cdfaa511f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>rescale_norm</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a6f2ae4a0a5dd9d1c2afca4bc7f9c038a" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>rq</name></member>
-      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>sa_decode</name></member>
-      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a12841ef6987a46c2a12e4716ac09899b" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search</name></member>
-      <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1af7a35baeb191147f6c9f9a49cc38b64a" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search_dispatch_implem</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a6417fe30f2f108166370b8823aa1b41d" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search_implem_12</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1aab75d1bb79678fb0b389e2fed53ba527" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search_implem_14</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a7e8e036e3442dda3c90a32a926007289" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>search_implem_234</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a793239b07a69169a69156a3304612cdc" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>Search_type_t</name></member>
-      <member refid="structfaiss_1_1IndexFastScan_1a71595cdc66c8a537737bfd8ceac6a211" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>skip</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ac209f095ccac62ca6cc86d24923471d3" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a9f5ef22c12e0a9d3d9af9c00ecd07e5b" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>~IndexAdditiveQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>aq</name></member>
+      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>assign</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1add3fe80ce6635a6abbecd00229430875" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>bbs</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a9a22fcf66a8c3115eeaee06849e12426" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1acc81ddd8d41f594a7dc13c46ad864a8c" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae3ed04afd1cc393aa63183a781820a9a" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>compute_codes</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adc4f2674c37789595d680f7531cd515a" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>compute_float_LUT</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a5cbf309c75a1be32c3d513744257484e" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>compute_quantized_LUT</name></member>
+      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>compute_residual</name></member>
+      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>compute_residual_n</name></member>
+      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1af641f659c9e6a755225bfe709550251b" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>estimate_norm_scale</name></member>
+      <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>idx_t</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>implem</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adb04aba51f5f26f3c8cdd8fd22845e09" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a44fd82713c87e1bcf064ae18adede582" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae081d6870a211e35c27db296f9eb1d3c" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1adf1f52bc54531170c3cba9e47105416d" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexFastScan</name></member>
+      <member refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1a66e4866859cdae06b0ff91c290f8f183" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexProductResidualQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1ac4fb9d2b5ede3456d71344f047c0bb17" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>IndexProductResidualQuantizerFastScan</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a762aea7ad05d5661a5c7d1653909eafd" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>init</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>init_fastscan</name></member>
+      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a26f16e76a8c207290b7b7fbb3f78f416" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>ksub</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a4e013b276576e19ad1cfcdaa38e7b176" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>M</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a7f4869a6c26f2f1eec8f0779bed20cb6" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>M2</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a78093cc9225101c355740f0be30276ce" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>max_train_points</name></member>
+      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1ad68a0fa7782135a50978e3c8964ca4e2" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>nbits</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1acbc02d18fe21977dfaa0060522e4e418" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>norm_scale</name></member>
+      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a50423e2e9d43cb792df4b2079d185092" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>ntotal2</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1ad4125c84c2558b544ec12bb618dc2175" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>orig_codes</name></member>
+      <member refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>prq</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a340668cf9ba404f5efbd5f60e99ff7c8" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>qbs</name></member>
+      <member refid="structfaiss_1_1Index_1a23c23be6698f583402bde568eee00ad1" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>range_search</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>reconstruct_batch</name></member>
+      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>remove_ids</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a55845ba5cac53e01bf4b343cdfaa511f" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>rescale_norm</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a6f2ae4a0a5dd9d1c2afca4bc7f9c038a" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>sa_code_size</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>sa_decode</name></member>
+      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>sa_encode</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a12841ef6987a46c2a12e4716ac09899b" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search</name></member>
+      <member refid="structfaiss_1_1Index_1a009874adf12440eb46396522ffd736cd" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1af7a35baeb191147f6c9f9a49cc38b64a" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search_dispatch_implem</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a6417fe30f2f108166370b8823aa1b41d" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search_implem_12</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1aab75d1bb79678fb0b389e2fed53ba527" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search_implem_14</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a7e8e036e3442dda3c90a32a926007289" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>search_implem_234</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a793239b07a69169a69156a3304612cdc" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>Search_type_t</name></member>
+      <member refid="structfaiss_1_1IndexFastScan_1a71595cdc66c8a537737bfd8ceac6a211" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>skip</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ac209f095ccac62ca6cc86d24923471d3" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>~Index</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a9f5ef22c12e0a9d3d9af9c00ecd07e5b" prot="public" virt="non-virtual"><scope>faiss::IndexProductResidualQuantizerFastScan</scope><name>~IndexAdditiveQuantizerFastScan</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

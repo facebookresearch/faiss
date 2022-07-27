@@ -4,6 +4,8 @@
     <compoundname>faiss::IndexIVFAdditiveQuantizerFastScan</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexIVFFastScan" prot="public" virt="non-virtual">faiss::IndexIVFFastScan</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexIVFLocalSearchQuantizerFastScan</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexIVFProductLocalSearchQuantizerFastScan</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexIVFProductResidualQuantizerFastScan</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public" virt="non-virtual">faiss::IndexIVFResidualQuantizerFastScan</derivedcompoundref>
     <includes refid="IndexIVFAdditiveQuantizerFastScan_8h" local="no">IndexIVFAdditiveQuantizerFastScan.h</includes>
       <sectiondef kind="public-type">
@@ -2458,6 +2460,12 @@
 <para>Implementations (implem): 0: auto-select implementation (default) 1: orig&apos;s search, re-implemented 2: orig&apos;s search, re-ordered by invlist 10: optimizer int16 search, collect results in heap, no qbs 11: idem, collect results in reservoir 12: optimizer int16 search, collect results in heap, uses qbs 13: idem, collect results in reservoir </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="8">
+        <label>faiss::IndexIVFProductResidualQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="5">
         <label>faiss::Level1Quantizer</label>
         <link refid="structfaiss_1_1Level1Quantizer"/>
@@ -2476,7 +2484,7 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="9">
         <label>faiss::IndexIVFResidualQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan"/>
         <childnode refid="1" relation="public-inheritance">
@@ -2497,6 +2505,12 @@
       <node id="4">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="7">
+        <label>faiss::IndexIVFProductLocalSearchQuantizerFastScan</label>
+        <link refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>

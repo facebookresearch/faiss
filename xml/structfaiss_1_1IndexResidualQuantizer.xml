@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="56" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="56" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="57" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="57" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizer_1a6f271fd02746d5c94c18f6d408d3d783" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="27" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="28" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -211,7 +211,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="64" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="65" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexResidualQuantizer_1aba1bb38b8b1c6ea68e0cd9f30aa31669" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -242,7 +242,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="71" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="72" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexResidualQuantizer_1a64e4f2d1767271ab909d5e3549893ca6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -255,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="77" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="78" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexResidualQuantizer_1a1870bea9540fe4cb8308c09104048332" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -296,7 +296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="79" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="80" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizer_1aa91d697fbe39412136c57502aa1327ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -358,7 +358,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="35" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="36" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -411,7 +411,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="43" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -464,7 +464,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="45" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="46" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>FlatCodesDistanceComputer *</type>
@@ -479,7 +479,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="47" column="31"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="48" column="31"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1029,7 +1029,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="28" column="5" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="29" column="5" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
         <type>int64_t</type>
@@ -1125,7 +1125,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizer.h" line="54" column="52" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="54" bodyend="80"/>
+    <location file="faiss/IndexAdditiveQuantizer.h" line="55" column="52" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="55" bodyend="81"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizer</scope><name>add_with_ids</name></member>
@@ -1142,7 +1142,7 @@
       <member refid="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizer</scope><name>get_FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>idx_t</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexAdditiveQuantizer_1a45c228892cf27a7a9a06a0e387a7b640" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>IndexAdditiveQuantizer</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizer_1aa2614cf0e0c6033ced4ba3817045a6a1" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>IndexAdditiveQuantizer</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexResidualQuantizer_1a8d49e51cc7c16953795d7ace5421e11f" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizer</scope><name>IndexResidualQuantizer</name></member>
