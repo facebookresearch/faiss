@@ -567,7 +567,12 @@ void ResidualQuantizer::compute_codes_add_centroids(
         }
         for (size_t i0 = 0; i0 < n; i0 += bs) {
             size_t i1 = std::min(n, i0 + bs);
-            compute_codes(x + i0 * d, codes_out + i0 * code_size, i1 - i0);
+            const float* cent = nullptr;
+            if (centroids != nullptr) {
+                cent = centroids + i0 * d;
+            }
+            compute_codes_add_centroids(
+                    x + i0 * d, codes_out + i0 * code_size, i1 - i0, cent);
         }
         return;
     }

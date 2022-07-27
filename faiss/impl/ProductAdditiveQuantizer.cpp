@@ -50,26 +50,21 @@ ProductAdditiveQuantizer::ProductAdditiveQuantizer(
     init(d, aqs, search_type);
 }
 
-ProductAdditiveQuantizer::ProductAdditiveQuantizer() {}
+ProductAdditiveQuantizer::ProductAdditiveQuantizer()
+        : ProductAdditiveQuantizer(0, {}) {}
 
 void ProductAdditiveQuantizer::init(
         size_t d,
         const std::vector<AdditiveQuantizer*>& aqs,
         Search_type_t search_type) {
-    FAISS_THROW_IF_NOT_MSG(
-            !aqs.empty(), "At least one additive quantizer is required.");
-    for (size_t i = 0; i < aqs.size(); i++) {
-        const auto& q = aqs[i];
-        FAISS_THROW_IF_NOT(q->d == aqs[0]->d);
-        FAISS_THROW_IF_NOT(q->M == aqs[0]->M);
-        FAISS_THROW_IF_NOT(q->nbits[0] == aqs[0]->nbits[0]);
-    }
-
     // AdditiveQuantizer constructor
     this->d = d;
     this->search_type = search_type;
-    M = aqs.size() * aqs[0]->M;
-    nbits = std::vector<size_t>(M, aqs[0]->nbits[0]);
+    M = 0;
+    for (const auto& q : aqs) {
+        M += q->M;
+        nbits.insert(nbits.end(), q->nbits.begin(), q->nbits.end());
+    }
     verbose = false;
     is_trained = false;
     norm_max = norm_min = NAN;
@@ -139,6 +134,15 @@ void ProductAdditiveQuantizer::train(size_t n, const float* x) {
     }
 
     is_trained = true;
+
+    // train norm
+    std::vector<int32_t> codes(n * M);
+    compute_unpacked_codes(x, codes.data(), n);
+    std::vector<float> x_recons(n * d);
+    std::vector<float> norms(n);
+    decode_unpacked(codes.data(), x_recons.data(), n);
+    fvec_norms_L2sqr(norms.data(), x_recons.data(), d, n);
+    train_norm(n, norms.data());
 }
 
 void ProductAdditiveQuantizer::compute_codes_add_centroids(
@@ -148,7 +152,17 @@ void ProductAdditiveQuantizer::compute_codes_add_centroids(
         const float* centroids) const {
     // size (n, M)
     std::vector<int32_t> unpacked_codes(n * M);
+    compute_unpacked_codes(x, unpacked_codes.data(), n, centroids);
 
+    // pack
+    pack_codes(n, unpacked_codes.data(), codes_out, -1, nullptr, centroids);
+}
+
+void ProductAdditiveQuantizer::compute_unpacked_codes(
+        const float* x,
+        int32_t* unpacked_codes,
+        size_t n,
+        const float* centroids) const {
     /// TODO: actuallly we do not need to unpack and pack
     size_t offset_d = 0, offset_m = 0;
     std::vector<float> xsub;
@@ -183,9 +197,6 @@ void ProductAdditiveQuantizer::compute_codes_add_centroids(
         offset_d += q->d;
         offset_m += q->M;
     }
-
-    // pack
-    pack_codes(n, unpacked_codes.data(), codes_out, -1, nullptr, centroids);
 }
 
 void ProductAdditiveQuantizer::decode_unpacked(
@@ -318,22 +329,26 @@ ProductLocalSearchQuantizer::ProductLocalSearchQuantizer(
         size_t Msub,
         size_t nbits,
         Search_type_t search_type) {
-    FAISS_THROW_IF_NOT(d % nsplits == 0);
-    size_t dsub = d / nsplits;
     std::vector<AdditiveQuantizer*> aqs;
 
-    for (size_t i = 0; i < nsplits; i++) {
-        auto lsq = new LocalSearchQuantizer(dsub, Msub, nbits, ST_decompress);
-        aqs.push_back(lsq);
+    if (nsplits > 0) {
+        FAISS_THROW_IF_NOT(d % nsplits == 0);
+        size_t dsub = d / nsplits;
+
+        for (size_t i = 0; i < nsplits; i++) {
+            auto lsq =
+                    new LocalSearchQuantizer(dsub, Msub, nbits, ST_decompress);
+            aqs.push_back(lsq);
+        }
     }
     init(d, aqs, search_type);
-
     for (auto& q : aqs) {
         delete q;
     }
 }
 
-ProductLocalSearchQuantizer::ProductLocalSearchQuantizer() {}
+ProductLocalSearchQuantizer::ProductLocalSearchQuantizer()
+        : ProductLocalSearchQuantizer(0, 0, 0, 0) {}
 
 /*************************************
  * Product Residual Quantizer
@@ -345,21 +360,24 @@ ProductResidualQuantizer::ProductResidualQuantizer(
         size_t Msub,
         size_t nbits,
         Search_type_t search_type) {
-    FAISS_THROW_IF_NOT(d % nsplits == 0);
-    size_t dsub = d / nsplits;
     std::vector<AdditiveQuantizer*> aqs;
 
-    for (size_t i = 0; i < nsplits; i++) {
-        auto rq = new ResidualQuantizer(dsub, Msub, nbits, ST_decompress);
-        aqs.push_back(rq);
+    if (nsplits > 0) {
+        FAISS_THROW_IF_NOT(d % nsplits == 0);
+        size_t dsub = d / nsplits;
+
+        for (size_t i = 0; i < nsplits; i++) {
+            auto rq = new ResidualQuantizer(dsub, Msub, nbits, ST_decompress);
+            aqs.push_back(rq);
+        }
     }
     init(d, aqs, search_type);
-
     for (auto& q : aqs) {
         delete q;
     }
 }
 
-ProductResidualQuantizer::ProductResidualQuantizer() {}
+ProductResidualQuantizer::ProductResidualQuantizer()
+        : ProductResidualQuantizer(0, 0, 0, 0) {}
 
 } // namespace faiss

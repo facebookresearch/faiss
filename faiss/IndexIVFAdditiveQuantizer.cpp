@@ -342,4 +342,50 @@ IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer()
 
 IndexIVFLocalSearchQuantizer::~IndexIVFLocalSearchQuantizer() {}
 
+/**************************************************************************************
+ * IndexIVFProductResidualQuantizer
+ **************************************************************************************/
+
+IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer(
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        size_t nsplits,
+        size_t Msub,
+        size_t nbits,
+        MetricType metric,
+        Search_type_t search_type)
+        : IndexIVFAdditiveQuantizer(&prq, quantizer, d, nlist, metric),
+          prq(d, nsplits, Msub, nbits, search_type) {
+    code_size = invlists->code_size = prq.code_size;
+}
+
+IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer()
+        : IndexIVFAdditiveQuantizer(&prq) {}
+
+IndexIVFProductResidualQuantizer::~IndexIVFProductResidualQuantizer() {}
+
+/**************************************************************************************
+ * IndexIVFProductLocalSearchQuantizer
+ **************************************************************************************/
+
+IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer(
+        Index* quantizer,
+        size_t d,
+        size_t nlist,
+        size_t nsplits,
+        size_t Msub,
+        size_t nbits,
+        MetricType metric,
+        Search_type_t search_type)
+        : IndexIVFAdditiveQuantizer(&plsq, quantizer, d, nlist, metric),
+          plsq(d, nsplits, Msub, nbits, search_type) {
+    code_size = invlists->code_size = plsq.code_size;
+}
+
+IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer()
+        : IndexIVFAdditiveQuantizer(&plsq) {}
+
+IndexIVFProductLocalSearchQuantizer::~IndexIVFProductLocalSearchQuantizer() {}
+
 } // namespace faiss

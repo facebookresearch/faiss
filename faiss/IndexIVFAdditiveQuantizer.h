@@ -15,6 +15,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/platform_macros.h>
 
@@ -116,6 +117,64 @@ struct IndexIVFLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFLocalSearchQuantizer();
 
     virtual ~IndexIVFLocalSearchQuantizer();
+};
+
+/** IndexIVF based on a product residual quantizer. Stored vectors are
+ * approximated by product residual quantization codes.
+ */
+struct IndexIVFProductResidualQuantizer : IndexIVFAdditiveQuantizer {
+    /// The product residual quantizer used to encode the vectors
+    ProductResidualQuantizer prq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of residual quantizers
+     * @param Msub   number of subquantizers per RQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexIVFProductResidualQuantizer(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexIVFProductResidualQuantizer();
+
+    virtual ~IndexIVFProductResidualQuantizer();
+};
+
+/** IndexIVF based on a product local search quantizer. Stored vectors are
+ * approximated by product local search quantization codes.
+ */
+struct IndexIVFProductLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
+    /// The product local search quantizer used to encode the vectors
+    ProductLocalSearchQuantizer plsq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of local search quantizers
+     * @param Msub   number of subquantizers per LSQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexIVFProductLocalSearchQuantizer(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t nsplits,
+            size_t Msub,
+            size_t nbits,
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexIVFProductLocalSearchQuantizer();
+
+    virtual ~IndexIVFProductLocalSearchQuantizer();
 };
 
 } // namespace faiss
