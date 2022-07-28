@@ -9,8 +9,8 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
-#include <faiss/gpu/raft/RaftIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/raft/RaftIndexIVFFlat.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
@@ -26,11 +26,8 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
         GpuResourcesProvider* provider,
         const faiss::IndexIVFFlat* index,
         GpuIndexIVFFlatConfig config)
-        : GpuIndexIVFFlat(
-        provider,
-        index,
-        config), raft_handle(resources_->getDefaultStream(config_.device)) {
-
+        : GpuIndexIVFFlat(provider, index, config),
+          raft_handle(resources_->getDefaultStream(config_.device)) {
     copyFrom(index);
 }
 
@@ -41,69 +38,52 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
         faiss::MetricType metric,
         GpuIndexIVFFlatConfig config)
         : GpuIndexIVFFlat(provider, dims, nlist, metric, config),
-          raft_handle(resources_->getDefaultStream(config_.device)) {
+          raft_handle(resources_->getDefaultStream(config_.device)) {}
 
-    this->is_trained = false;
+RaftIndexIVFFlat::~RaftIndexIVFFlat() {
+    RaftIndexIVFFlat::reset();
 }
 
-RaftIndexIVFFlat::~RaftIndexIVFFlat() {}
-
 void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-
-    printf("Copying from...\n");
-
-    // TODO: Need to copy necessary memory from the index and set any needed params.
     DeviceScope scope(config_.device);
-
     GpuIndex::copyFrom(index);
-
     FAISS_ASSERT(index->nlist > 0);
     FAISS_THROW_IF_NOT_FMT(
             index->nlist <= (Index::idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports %zu inverted lists",
             (size_t)std::numeric_limits<int>::max());
-    nlist = index->nlist;
-
     FAISS_THROW_IF_NOT_FMT(
             index->nprobe > 0 && index->nprobe <= getMaxKSelection(),
             "GPU index only supports nprobe <= %zu; passed %zu",
             (size_t)getMaxKSelection(),
             index->nprobe);
-    nprobe = index->nprobe;
 
-    config.device = config_.device;
-
-    FAISS_ASSERT(metric_type != faiss::METRIC_L2 &&
-                 metric_type != faiss::METRIC_INNER_PRODUCT);
-
-    if (!index->is_trained) {
-        // copied in GpuIndex::copyFrom
-        FAISS_ASSERT(!is_trained && ntotal == 0);
-        return;
+    if (index->is_trained && index->ntotal > 0) {
+        // TODO: A proper copy of the index without retraining
+        // For now, just get all the data from the index, and train our index
+        // anew.
+        auto stream = raft_handle.get_stream();
+        auto total_elems = size_t(index->ntotal) * size_t(index->d);
+        rmm::device_uvector<float> buf_dev(total_elems, stream);
+        {
+            std::vector<float> buf_host(total_elems);
+            index->reconstruct_n(0, index->ntotal, buf_host.data());
+            raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
+        }
+        FAISS_ASSERT(index->d == this->d);
+        FAISS_ASSERT(index->metric_arg == this->metric_arg);
+        FAISS_ASSERT(index->metric_type == this->metric_type);
+        FAISS_ASSERT(index->nlist == this->nlist);
+        RaftIndexIVFFlat::rebuildRaftIndex(buf_dev.data(), index->ntotal);
+    } else {
+        // index is not trained, so we can remove ours as well (if there was
+        // any)
+        raft_knn_index.reset();
     }
-
-    // copied in GpuIndex::copyFrom
-    // ntotal can exceed max int, but the number of vectors per inverted
-    // list cannot exceed this. We check this in the subclasses.
-    FAISS_ASSERT(is_trained && (ntotal == index->ntotal));
-
-    // Since we're trained, the quantizer must have data
-    FAISS_ASSERT(index->quantizer->ntotal > 0);
-
-    raft::spatial::knn::ivf_flat::index_params raft_idx_params;
-    raft_idx_params.n_lists = nlist;
-    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-
-    // TODO: Invoke corresponding call on the RAFT side to copy quantizer
-    /**
-     * For example:
-     * raft_knn_index.emplace(raft::spatial::knn::ivf_flat::make_index<T>(
-     *      raft_handle, raft_idx_params, (faiss::Index::idx_t)d);
-     */
+    this->is_trained = index->is_trained;
 }
 
 void RaftIndexIVFFlat::reserveMemory(size_t numVecs) {
-
     std::cout << "Reserving memory for " << numVecs << " vectors." << std::endl;
     reserveMemoryVecs_ = numVecs;
     if (raft_knn_index.has_value()) {
@@ -136,23 +116,7 @@ size_t RaftIndexIVFFlat::reclaimMemory() {
 }
 
 void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
     DeviceScope scope(config_.device);
-
-    if (this->is_trained) {
-        FAISS_ASSERT(raft_knn_index.has_value());
-        return;
-    }
-
-    raft::spatial::knn::ivf_flat::index_params raft_idx_params;
-    raft_idx_params.n_lists = nlist;
-    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-
 
     // TODO: This should only train the quantizer portion of the index
     /**
@@ -163,28 +127,18 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
 
      * raft::spatial::knn::ivf_flat::train_quantizer(
      *      raft_handle, *raft_knn_index, const_cast<float*>(x), n);
+     *
+     * NB: ivf_flat does not have a quantizer. Training here imply kmeans?
      */
 
-    raft_knn_index.emplace(
-        raft::spatial::knn::ivf_flat::build(raft_handle, raft_idx_params,
-                                            const_cast<float*>(x),
-                                            n, (faiss::Index::idx_t)d,
-                                            raft_handle.get_stream()));
-
-    raft_handle.sync_stream();
+    RaftIndexIVFFlat::rebuildRaftIndex(x, n);
 }
 
 int RaftIndexIVFFlat::getListLength(int listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Call function in RAFT to do this.
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_length(
-     *    raft_handle, *raft_knn_index, listId);
-     */
-    return 0;
+    return int(raft_knn_index->list_sizes(listId));
 }
 
 std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
@@ -193,32 +147,42 @@ std::vector<uint8_t> RaftIndexIVFFlat::getListVectorData(
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Invoke corresponding call in raft::ivf_flat
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_vector_data(
-     *    raft_handle, *raft_knn_index, listId, gpuFormat);
-     */
-    std::vector<uint8_t> vec;
+    using elem_t = decltype(raft_knn_index->data)::element_type;
+    size_t dim = raft_knn_index->dim();
+    size_t byte_offset =
+            size_t(raft_knn_index->list_offsets(listId)) * sizeof(elem_t) * dim;
+    // the interleaved block can be slightly larger than the list size (it's
+    // rounded up)
+    size_t byte_size = size_t(raft_knn_index->list_offsets(listId + 1)) *
+                    sizeof(elem_t) * dim -
+            byte_offset;
+    std::vector<uint8_t> vec(byte_size);
+    raft::copy(
+            vec.data(),
+            reinterpret_cast<const uint8_t*>(raft_knn_index->data.data()) +
+                    byte_offset,
+            byte_size,
+            raft_handle.get_stream());
     return vec;
 }
 
 void RaftIndexIVFFlat::reset() {
-    std::cout << "Calling reset()" << std::endl;
     raft_knn_index.reset();
+    this->ntotal = 0;
 }
 
 std::vector<Index::idx_t> RaftIndexIVFFlat::getListIndices(int listId) const {
     FAISS_ASSERT(raft_knn_index.has_value());
     DeviceScope scope(config_.device);
 
-    // TODO: Need to invoke corresponding call in raft::ivf_flat
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::get_list_indices(
-     *    raft_handle, *raft_knn_index, listId);
-     */
-    std::vector<Index::idx_t> vec;
+    size_t offset = raft_knn_index->list_offsets(listId);
+    size_t size = raft_knn_index->list_sizes(listId);
+    std::vector<Index::idx_t> vec(size);
+    raft::copy(
+            vec.data(),
+            raft_knn_index->indices.data() + offset,
+            size,
+            raft_handle.get_stream());
     return vec;
 }
 
@@ -227,29 +191,20 @@ void RaftIndexIVFFlat::addImpl_(
         const float* x,
         const Index::idx_t* xids) {
     // Device is already set in GpuIndex::add
-    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(is_trained);
     FAISS_ASSERT(n > 0);
+    /* TODO:
+      At the moment, raft does not support adding vectors, and does not support
+      providing indices with the vectors even in training
 
-      // Data is already resident on the GPU
-    Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
-
-//    // Not all vectors may be able to be added (some may contain NaNs etc)
-//    index_->addVectors(data, labels);
-//
-//    // but keep the ntotal based on the total number of vectors that we
-//    // attempted to add
-    ntotal += n;
-
-    std::cout << "Calling addImpl_ with " << n << " vectors." << std::endl;
-
-    // TODO: Invoke corresponding call in raft::ivf_flat
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::add_vectors(
-     *      raft_handle, *raft_knn_index, n, x, xids);
+      For now, just do the training anew
      */
+    raft_knn_index.reset();
 
+    // Not all vectors may be able to be added (some may contain NaNs etc)
+    // but keep the ntotal based on the total number of vectors that we
+    // attempted to add index_->addVectors(data, labels);
+    RaftIndexIVFFlat::rebuildRaftIndex(x, n);
 }
 
 void RaftIndexIVFFlat::searchImpl_(
@@ -263,26 +218,43 @@ void RaftIndexIVFFlat::searchImpl_(
     FAISS_ASSERT(n > 0);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
 
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<float, 2, true> outDistances(distances, {n, k});
-    Tensor<Index::idx_t, 2, true> outLabels(
-            const_cast<Index::idx_t*>(labels), {n, k});
-
-    // TODO: Populate the rest of the params properly.
-    raft::spatial::knn::ivf_flat::search_params raft_idx_params;
-    raft_idx_params.n_probes = nprobe;
-
-    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(raft_handle,
-                                         raft_idx_params,
-                                         *raft_knn_index,
-                                         const_cast<float*>(x),
-                                         static_cast<std::uint32_t>(n),
-                                         static_cast<std::uint32_t>(k),
-                                         static_cast<faiss::Index::idx_t *>(labels),
-                                         distances, raft_handle.get_stream());
+    raft::spatial::knn::ivf_flat::search_params pams;
+    pams.n_probes = nprobe;
+    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
+            raft_handle,
+            pams,
+            *raft_knn_index,
+            const_cast<float*>(x),
+            static_cast<std::uint32_t>(n),
+            static_cast<std::uint32_t>(k),
+            labels,
+            distances);
 
     raft_handle.sync_stream();
+}
+
+void RaftIndexIVFFlat::rebuildRaftIndex(const float* x, Index::idx_t n_rows) {
+    raft::spatial::knn::ivf_flat::index_params pams;
+
+    pams.n_lists = this->nlist;
+    switch (this->metric_type) {
+        case faiss::METRIC_L2:
+            pams.metric = raft::distance::DistanceType::L2Expanded;
+            break;
+        case faiss::METRIC_INNER_PRODUCT:
+            pams.metric = raft::distance::DistanceType::InnerProduct;
+            break;
+        default:
+            FAISS_THROW_MSG("Metric is not supported.");
+    }
+    pams.metric_arg = this->metric_arg;
+    pams.kmeans_trainset_fraction = 1.0;
+
+    raft_knn_index.emplace(raft::spatial::knn::ivf_flat::build(
+            this->raft_handle, pams, x, n_rows, uint32_t(this->d)));
+    this->raft_handle.sync_stream();
+    this->is_trained = true;
+    this->ntotal = n_rows;
 }
 
 } // namespace gpu
