@@ -10,7 +10,7 @@ Linux systems, for various versions of CUDA.
 
 To install the latest stable release:
 
-``` shell
+```shell
 # CPU-only version
 $ conda install -c pytorch faiss-cpu
 
@@ -23,7 +23,7 @@ $ conda install -c pytorch faiss-gpu cudatoolkit=10.2 # for CUDA 10.2
 
 Nightly pre-release packages can be installed as follows:
 
-``` shell
+```shell
 # CPU-only version
 $ conda install -c pytorch/label/nightly faiss-cpu
 
@@ -41,7 +41,7 @@ Due to the comprehensive infrastructure of conda-forge, it may even happen that
 certain build combinations are supported in conda-forge that are not available
 through the pytorch channel. To install, use
 
-``` shell
+```shell
 # CPU version
 $ conda install -c conda-forge faiss-cpu
 
@@ -54,6 +54,24 @@ If you are having problems using a package built by conda-forge, please raise
 an [issue](https://github.com/conda-forge/faiss-split-feedstock/issues) on the
 conda-forge package "feedstock".
 
+## Installing from pip
+
+It seems that Faiss is not support Macbook M1 chip between conda and conda-forge.
+
+To install the package using pip
+
+```shell
+
+# Upgrade pip to the lastest version first.
+$ python -m pip install --upgrade pip
+
+# CPU version
+$ pip install faiss-cpu
+
+# GPU version
+$ pip install faiss-gpu
+```
+
 # Building from source
 
 Faiss can be built from source using CMake.
@@ -63,11 +81,13 @@ found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
 The basic requirements are:
+
 - a C++11 compiler (with support for OpenMP support version 2 or higher),
 - a BLAS implementation (we strongly recommend using Intel MKL for best
-performance).
+  performance).
 
 The optional requirements are:
+
 - for GPU indices:
   - nvcc,
   - the CUDA toolkit,
@@ -81,7 +101,7 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 ## Step 1: invoking CMake
 
-``` shell
+```shell
 $ cmake -B build .
 ```
 
@@ -89,40 +109,41 @@ This generates the system-dependent configuration/build files in the `build/`
 subdirectory.
 
 Several options can be passed to CMake, among which:
+
 - general options:
   - `-DFAISS_ENABLE_GPU=OFF` in order to disable building GPU indices (possible
-  values are `ON` and `OFF`),
+    values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
-  (possible values are `ON` and `OFF`),
+    (possible values are `ON` and `OFF`),
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
-  are `ON` and `OFF`),
+    are `ON` and `OFF`),
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
-  optimization options (enables `-O3` on gcc for instance),
+    optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `sse4`, and `avx2`, by increasing order of optimization),
+    generate code using optimized SIMD instructions (possible values are `generic`,
+    `sse4`, and `avx2`, by increasing order of optimization),
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
-  Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
-  (more information about the values for the `BLA_VENDOR` option can be found in
-  the [CMake docs](https://cmake.org/cmake/help/latest/module/FindBLAS.html)),
+    Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
+    (more information about the values for the `BLA_VENDOR` option can be found in
+    the [CMake docs](https://cmake.org/cmake/help/latest/module/FindBLAS.html)),
 - GPU-related options:
   - `-DCUDAToolkit_ROOT=/path/to/cuda-10.1` in order to hint to the path of
-  the CUDA toolkit (for more information, see
-  [CMake docs](https://cmake.org/cmake/help/latest/module/FindCUDAToolkit.html)),
+    the CUDA toolkit (for more information, see
+    [CMake docs](https://cmake.org/cmake/help/latest/module/FindCUDAToolkit.html)),
   - `-DCMAKE_CUDA_ARCHITECTURES="75;72"` for specifying which GPU architectures
-  to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
-  determine which architecture(s) you should pick),
+    to build against (see [CUDA docs](https://developer.nvidia.com/cuda-gpus) to
+    determine which architecture(s) you should pick),
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
-  interface for a different python than the default one (see
-  [CMake docs](https://cmake.org/cmake/help/latest/module/FindPython.html)).
+    interface for a different python than the default one (see
+    [CMake docs](https://cmake.org/cmake/help/latest/module/FindPython.html)).
 
 ## Step 2: Invoking Make
 
-``` shell
+```shell
 $ make -C build -j faiss
 ```
 
@@ -135,7 +156,7 @@ it is recommended to set the `-j` option to a fixed value (such as `-j4`).
 
 ## Step 3: Building the python bindings (optional)
 
-``` shell
+```shell
 $ make -C build -j swigfaiss
 $ (cd build/faiss/python && python setup.py install)
 ```
@@ -145,14 +166,13 @@ generates and installs the python package.
 
 ## Step 4: Installing the C++ library and headers (optional)
 
-``` shell
+```shell
 $ make -C build install
 ```
 
 This will make the compiled library (either `libfaiss.a` or `libfaiss.so` on
 Linux) available system-wide, as well as the C++ headers. This step is not
 needed to install the python package only.
-
 
 ## Step 5: Testing (optional)
 
@@ -161,13 +181,13 @@ needed to install the python package only.
 To run the whole test suite, make sure that `cmake` was invoked with
 `-DBUILD_TESTING=ON`, and run:
 
-``` shell
+```shell
 $ make -C build test
 ```
 
 ### Running the python test suite
 
-``` shell
+```shell
 $ (cd build/faiss/python && python setup.py build)
 $ PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" pytest tests/test_*.py
 ```
@@ -181,17 +201,20 @@ It creates a small index, stores it and performs some searches. A normal runtime
 is around 20s. With a fast machine and Intel MKL's BLAS it runs in 2.5s.
 
 It can be built with
-``` shell
+
+```shell
 $ make -C build demo_ivfpq_indexing
 ```
+
 and subsequently ran with
-``` shell
+
+```shell
 $ ./build/demos/demo_ivfpq_indexing
 ```
 
 ### Basic GPU example
 
-``` shell
+```shell
 $ make -C build demo_ivfpq_indexing_gpu
 $ ./build/demos/demo_ivfpq_indexing_gpu
 ```
@@ -208,7 +231,7 @@ directory for this repository.
 
 Then compile and run the following (after ensuring you have installed faiss):
 
-``` shell
+```shell
 $ make -C build demo_sift1M
 $ ./build/demos/demo_sift1M
 ```
@@ -223,7 +246,7 @@ The following script extends the demo_sift1M test to several types of
 indexes. This must be run from the root of the source directory for this
 repository:
 
-``` shell
+```shell
 $ mkdir tmp  # graphs of the output will be written here
 $ python demos/demo_auto_tune.py
 ```
@@ -236,13 +259,15 @@ operating points. You can play around with the types of indexes.
 The example above also runs on GPU. Edit `demos/demo_auto_tune.py` at line 100
 with the values
 
-``` python
+```python
 keys_to_test = keys_gpu
 use_gpu = True
 ```
 
 and you can run
-``` shell
+
+```shell
 $ python demos/demo_auto_tune.py
 ```
+
 to test the GPU code.
