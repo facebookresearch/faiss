@@ -15,9 +15,9 @@
 #=============================================================================
 
 
-set(RAFT_VERSION "22.04")
+set(RAFT_VERSION "22.08")
 set(RAFT_FORK "achirkin")
-set(RAFT_PINNED_TAG "fea-knn-ivf-flat")
+set(RAFT_PINNED_TAG "enh-knn-ivf-flat-hide-impl")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)

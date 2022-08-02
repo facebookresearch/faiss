@@ -102,22 +102,31 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
         // Since we've guaranteed that all arguments are on device, call the
         // implementation
-        bfKnnOnDevice<T>(
-                res,
-                device,
-                stream,
-                tVectors,
-                args.vectorsRowMajor,
-                args.vectorNorms ? &tVectorNorms : nullptr,
-                tQueries,
-                args.queriesRowMajor,
-                args.k,
-                args.metric,
-                args.metricArg,
-                tOutDistances,
-                tOutIntIndices,
-                args.ignoreOutDistances);
 
+#if defined FAISS_ENABLE_RAFT
+        // TODO: When k <= 64, invoke bfknn from RAFT
+        if (args.k <= 64) {
+
+        } else
+#endif
+
+        {
+            bfKnnOnDevice<T>(
+                    res,
+                    device,
+                    stream,
+                    tVectors,
+                    args.vectorsRowMajor,
+                    args.vectorNorms ? &tVectorNorms : nullptr,
+                    tQueries,
+                    args.queriesRowMajor,
+                    args.k,
+                    args.metric,
+                    args.metricArg,
+                    tOutDistances,
+                    tOutIntIndices,
+                    args.ignoreOutDistances);
+        }
         // Convert and copy int indices out
         auto tOutIndices = toDeviceTemporary<Index::idx_t, 2>(
                 res,
@@ -146,23 +155,29 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 stream,
                 {args.numQueries, args.k});
 
-        // Since we've guaranteed that all arguments are on device, call the
-        // implementation
-        bfKnnOnDevice<T>(
-                res,
-                device,
-                stream,
-                tVectors,
-                args.vectorsRowMajor,
-                args.vectorNorms ? &tVectorNorms : nullptr,
-                tQueries,
-                args.queriesRowMajor,
-                args.k,
-                args.metric,
-                args.metricArg,
-                tOutDistances,
-                tOutIntIndices,
-                args.ignoreOutDistances);
+#if defined FAISS_ENABLE_RAFT
+        if (args.k <= 64) {
+        } else
+#endif
+        {
+            // Since we've guaranteed that all arguments are on device, call the
+            // implementation
+            bfKnnOnDevice<T>(
+                    res,
+                    device,
+                    stream,
+                    tVectors,
+                    args.vectorsRowMajor,
+                    args.vectorNorms ? &tVectorNorms : nullptr,
+                    tQueries,
+                    args.queriesRowMajor,
+                    args.k,
+                    args.metric,
+                    args.metricArg,
+                    tOutDistances,
+                    tOutIntIndices,
+                    args.ignoreOutDistances);
+        }
 
         // Copy back if necessary
         fromDevice<int, 2>(tOutIntIndices, (int*)args.outIndices, stream);
