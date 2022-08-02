@@ -77,38 +77,12 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 //    FAISS_ASSERT(index->quantizer->ntotal > 0);
 //
 //
-////    // Copy our lists as well
-////    index_.reset(new IVFFlat(
-////            resources_.get(),
-////            quantizer->getGpuData(),  // FlatIndex instance- contains the vectors in index
-////            index->metric_type,
-////            index->metric_arg,
-////            false,   // no residual
-////            nullptr, // no scalar quantizer
-////            ivfFlatConfig_.interleavedLayout,
-////            ivfFlatConfig_.indicesOptions,
-////            config_.memorySpace));
-////
-////    // Copy all of the IVF data
-////    index_->copyInvertedListsFrom(index->invlists);  // xcopy
-//
-//
-//    raft::spatial::knn::ivf_flat::index_params raft_idx_params;
-//    raft_idx_params.n_lists = nlist;
-//    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-//
-//    raft_knn_index.emplace(raft_handle, raft_idx_params, (uint32_t)d);
-//
     /**
      * TODO: Copy centers and center norms from quantizer
      * Things to do:
      *    1. Copy index_->quantizer->vectors_ to raft_index->centers
      *    2. Copy index_->quantizer->norms_ to raft_index->center_norms
      */
-//
-//    raft::copy(raft_knn_index.value().centers(),
-//
-//
     /**
      * TODO: Copy IVF data, indices, list_sizes, list_offsets from index->invlists
      *
@@ -130,6 +104,8 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
         FAISS_ASSERT(index->nlist == this->nlist);
 
         Index::idx_t quantizer_ntotal = index->quantizer->ntotal;
+        Index::idx_t index_ntotal = index->ntotal;
+
         std::cout << "Calling copyFrom with trained index with "  << quantizer_ntotal << " items" << std::endl;
         auto stream = raft_handle.get_stream();
 
@@ -143,9 +119,9 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
         RaftIndexIVFFlat::rebuildRaftIndex(buf_dev.data(), quantizer_ntotal);
 
-        if(index->ntotal > 0) {
-            std::cout << "Adding " << index->ntotal << " vectors to index" << std::endl;
-            total_elems = size_t(index->ntotal) * size_t(index->d);
+        if(index_ntotal > 0) {
+            std::cout << "Adding " << index_ntotal << " vectors to index" << std::endl;
+            total_elems = size_t(index_ntotal) * size_t(index->d);
             buf_dev.resize(total_elems, stream);
             {
                 std::vector<float> buf_host(total_elems);
@@ -153,7 +129,7 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                 raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
             }
 
-            RaftIndexIVFFlat::addImpl_(index->ntotal, buf_dev.data(), nullptr);
+            RaftIndexIVFFlat::addImpl_(index_ntotal, buf_dev.data(), nullptr);
         }
     } else {
         // index is not trained, so we can remove ours as well (if there was
