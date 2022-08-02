@@ -182,6 +182,6 @@ endforeach()
 
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>)
-target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
+target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft>)
 target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)
-target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
+target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)

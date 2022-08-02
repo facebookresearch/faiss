@@ -92,6 +92,8 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             float* distances,
             Index::idx_t* labels) const override;
 
+    void rebuildRaftIndex(const float* x, Index::idx_t n_rows);
+
     const raft::handle_t raft_handle;
     std::optional<raft::spatial::knn::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};
 };
