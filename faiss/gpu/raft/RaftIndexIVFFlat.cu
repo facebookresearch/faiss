@@ -186,6 +186,7 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     raft::spatial::knn::ivf_flat::index_params raft_idx_params;
     raft_idx_params.n_lists = nlist;
     raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
+    raft_idx_params.add_data_on_build = false;
 
     raft_knn_index.emplace(
         raft::spatial::knn::ivf_flat::build(raft_handle, raft_idx_params,
@@ -278,11 +279,6 @@ void RaftIndexIVFFlat::addImpl_(
 
     std::cout << "Calling addImpl_ with " << n << " vectors." << std::endl;
 
-    /**
-     * For example:
-     * raft::spatial::knn::ivf_flat::add_vectors(
-     *      raft_handle, *raft_knn_index, n, x, xids);
-     */
     raft_knn_index.emplace(raft::spatial::knn::ivf_flat::extend(
             raft_handle, raft_knn_index.value(), x, xids, (Index::idx_t)n));
     this->ntotal += n;
@@ -332,9 +328,11 @@ void RaftIndexIVFFlat::rebuildRaftIndex(const float* x, Index::idx_t n_rows) {
     }
     pams.metric_arg = this->metric_arg;
     pams.kmeans_trainset_fraction = 1.0;
+    pams.add_data_on_build = false;
 
     raft_knn_index.emplace(raft::spatial::knn::ivf_flat::build(
             this->raft_handle, pams, x, n_rows, uint32_t(this->d)));
+
     this->raft_handle.sync_stream();
     this->is_trained = true;
     this->ntotal = n_rows;

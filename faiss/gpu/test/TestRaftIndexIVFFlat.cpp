@@ -306,10 +306,10 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2) {
     printf("Finished queryTest(faiss::METRIC_L2, false);\n");
 }
 
-TEST(TestRaftIndexIVFFlat, Float32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false);
-    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false)\n");
-}
+//TEST(TestRaftIndexIVFFlat, Float32_Query_IP) {
+//    queryTest(faiss::METRIC_INNER_PRODUCT, false);
+//    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false)\n");
+//}
 
 // float16 coarse quantizer
 
@@ -318,10 +318,10 @@ TEST(TestRaftIndexIVFFlat, Float16_32_Query_L2) {
     printf("Finished queryTest(faiss::METRIC_L2, true)\n");
 }
 
-TEST(TestRaftIndexIVFFlat, Float16_32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, true);
-    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, true)\n");
-}
+//TEST(TestRaftIndexIVFFlat, Float16_32_Query_IP) {
+//    queryTest(faiss::METRIC_INNER_PRODUCT, true);
+//    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, true)\n");
+//}
 
 //
 // There are IVF list scanning specializations for 64-d and 128-d that we
@@ -333,20 +333,20 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2_64) {
     printf("Finished queryTest(faiss::METRIC_L2, false, 64)\n");
 }
 
-TEST(TestRaftIndexIVFFlat, Float32_Query_IP_64) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false, 64);
-    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false, 64)\n");
-}
+//TEST(TestRaftIndexIVFFlat, Float32_Query_IP_64) {
+//    queryTest(faiss::METRIC_INNER_PRODUCT, false, 64);
+//    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false, 64)\n");
+//}
 
 TEST(TestRaftIndexIVFFlat, Float32_Query_L2_128) {
     queryTest(faiss::METRIC_L2, false, 128);
     printf("Finished queryTest(faiss::METRIC_L2, false, 128)\n");
 }
 
-TEST(TestRaftIndexIVFFlat, Float32_Query_IP_128) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false, 128);
-    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false, 128)\n");
-}
+//TEST(TestRaftIndexIVFFlat, Float32_Query_IP_128) {
+//    queryTest(faiss::METRIC_INNER_PRODUCT, false, 128);
+//    printf("Finished queryTest(faiss::METRIC_INNER_PRODUCT, false, 128)\n");
+//}
 
 //
 // Copy tests
