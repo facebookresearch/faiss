@@ -193,6 +193,7 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
                                             n, (faiss::Index::idx_t)d));
 
     raft_handle.sync_stream();
+    this->is_trained = true;
 }
 
 int RaftIndexIVFFlat::getListLength(int listId) const {
