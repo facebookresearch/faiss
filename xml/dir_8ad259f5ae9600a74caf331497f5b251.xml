@@ -6,6 +6,9 @@
     <innerfile refid="distances_8h">distances.h</innerfile>
     <innerfile refid="extra__distances-inl_8h">extra_distances-inl.h</innerfile>
     <innerfile refid="extra__distances_8h">extra_distances.h</innerfile>
+    <innerfile refid="fp16-fp16c_8h">fp16-fp16c.h</innerfile>
+    <innerfile refid="fp16-inl_8h">fp16-inl.h</innerfile>
+    <innerfile refid="fp16_8h">fp16.h</innerfile>
     <innerfile refid="hamming-inl_8h">hamming-inl.h</innerfile>
     <innerfile refid="hamming_8h">hamming.h</innerfile>
     <innerfile refid="Heap_8h">Heap.h</innerfile>

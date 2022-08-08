@@ -6114,6 +6114,8 @@
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kind="function"><name>get_extra_distance_computer</name></member>
+    <member refid="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" kind="function"><name>encode_fp16</name></member>
+    <member refid="namespacefaiss_1ac3f112424a7957effd27187654d90986" kind="function"><name>decode_fp16</name></member>
     <member refid="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" kind="function"><name>hamming</name></member>
     <member refid="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" kind="function"><name>hamming&lt; 64 &gt;</name></member>
@@ -6227,11 +6229,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d88" kind="namespace"><name>faiss::@88</name>
+  <compound refid="namespacefaiss_1_1_0d81" kind="namespace"><name>faiss::@81</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d89" kind="namespace"><name>faiss::@89</name>
+  <compound refid="namespacefaiss_1_1_0d91" kind="namespace"><name>faiss::@91</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d90" kind="namespace"><name>faiss::@90</name>
+  <compound refid="namespacefaiss_1_1_0d92" kind="namespace"><name>faiss::@92</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d93" kind="namespace"><name>faiss::@93</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -6611,6 +6615,12 @@
   <compound refid="extra__distances-inl_8h" kind="file"><name>extra_distances-inl.h</name>
   </compound>
   <compound refid="extra__distances_8h" kind="file"><name>extra_distances.h</name>
+  </compound>
+  <compound refid="fp16-fp16c_8h" kind="file"><name>fp16-fp16c.h</name>
+  </compound>
+  <compound refid="fp16-inl_8h" kind="file"><name>fp16-inl.h</name>
+  </compound>
+  <compound refid="fp16_8h" kind="file"><name>fp16.h</name>
   </compound>
   <compound refid="hamming-inl_8h" kind="file"><name>hamming-inl.h</name>
     <member refid="hamming-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>

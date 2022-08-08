@@ -2954,6 +2954,40 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="48" column="27" declfile="faiss/utils/extra_distances.h" declline="48" declcolumn="27"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::encode_fp16</definition>
+        <argsstring>(float x)</argsstring>
+        <name>encode_fp16</name>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/fp16-fp16c.h" line="8" column="17" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="8" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ac3f112424a7957effd27187654d90986" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::decode_fp16</definition>
+        <argsstring>(uint16_t x)</argsstring>
+        <name>decode_fp16</name>
+        <param>
+          <type>uint16_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/fp16-fp16c.h" line="15" column="14" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="15" bodyend="19"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
