@@ -97,7 +97,7 @@ class GpuIndexIVF : public GpuIndex {
     /// Exposing this like the CPU version for manipulation
     int nprobe;
 
-    /// Exposeing this like the CPU version for query
+    /// Exposing this like the CPU version for query
     GpuIndexFlat* quantizer;
 
    protected:

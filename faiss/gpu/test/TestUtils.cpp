@@ -104,6 +104,35 @@ void compareIndices(
             testDistance.data(),
             testIndices.data());
 
+    int idx = 4;
+
+    int start_idx = idx * numQuery;
+    int stop_idx = start_idx + k;
+    printf("ref inds: [");
+    for(int i = start_idx; i < stop_idx; i++) {
+        printf("%d, ", int(refIndices[i]));
+    }
+    printf("]\n");
+
+    printf("test inds: [");
+    for(int i = start_idx; i < stop_idx; i++) {
+        printf("%d, ", int(testIndices[i]));
+    }
+    printf("]\n");
+
+    printf("ref dists: [");
+    for(int i = start_idx; i < stop_idx; i++) {
+        printf("%f, ", float(refDistance[i]));
+    }
+    printf("]\n");
+
+    printf("test dists: [");
+    for(int i = start_idx; i < stop_idx; i++) {
+        printf("%f, ", float(testDistance[i]));
+    }
+    printf("]\n");
+
+
     faiss::gpu::compareLists(
             refDistance.data(),
             refIndices.data(),

@@ -9,6 +9,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
+#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/raft/RaftIndexIVFFlat.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -110,15 +111,39 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
         auto stream = raft_handle.get_stream();
 
         auto total_elems = size_t(quantizer_ntotal) * size_t(index->quantizer->d);
-        rmm::device_uvector<float> buf_dev(total_elems, stream);
-        {
-            std::vector<float> buf_host(total_elems);
-            index->quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
-            raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
+
+        raft::spatial::knn::ivf_flat::index_params pams;
+        switch (this->metric_type) {
+            case faiss::METRIC_L2:
+                pams.metric = raft::distance::DistanceType::L2Expanded;
+                break;
+            case faiss::METRIC_INNER_PRODUCT:
+                pams.metric = raft::distance::DistanceType::InnerProduct;
+                break;
+            default:
+                FAISS_THROW_MSG("Metric is not supported.");
         }
 
-        RaftIndexIVFFlat::rebuildRaftIndex(buf_dev.data(), quantizer_ntotal);
+        raft_knn_index.emplace(raft_handle, pams.metric, this->nlist, this->d);
 
+        raft::copy(raft_knn_index.value().centers().data_handle(),
+                   quantizer->getGpuData()->getVectorsRef<float>().data(),
+                   total_elems,
+                   raft_handle.get_stream());
+
+
+        // TODO: Need to compute the norms, I guess
+//        raft::copy(raft_knn_index.value().center_norms().value().data_handle(), quantizer->getGpuData()->norms_, quantizer_ntotal, raft_handle.get_stream());
+
+//        {
+//            std::vector<float> buf_host(total_elems);
+//            index->quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
+//            raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
+//        }
+
+//        RaftIndexIVFFlat::rebuildRaftIndex(buf_dev.data(), quantizer_ntotal);
+//
+        rmm::device_uvector<float> buf_dev(total_elems, stream);
         if(index_ntotal > 0) {
             std::cout << "Adding " << index_ntotal << " vectors to index" << std::endl;
             total_elems = size_t(index_ntotal) * size_t(index->d);
