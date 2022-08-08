@@ -59,25 +59,6 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             (size_t)getMaxKSelection(),
             index->nprobe);
 
-//    FAISS_ASSERT(metric_type != faiss::METRIC_L2 &&
-//                 metric_type != faiss::METRIC_INNER_PRODUCT);
-//
-//    if (!index->is_trained) {
-//        // copied in GpuIndex::copyFrom
-//        FAISS_ASSERT(!is_trained && ntotal == 0);
-//        return;
-
-//    }
-//
-//    // copied in GpuIndex::copyFrom
-//    // ntotal can exceed max int, but the number of vectors per inverted
-//    // list cannot exceed this. We check this in the subclasses.
-//    FAISS_ASSERT(is_trained && (ntotal == index->ntotal));
-//
-//    // Since we're trained, the quantizer must have data
-//    FAISS_ASSERT(index->quantizer->ntotal > 0);
-//
-//
     /**
      * TODO: Copy centers and center norms from quantizer
      * Things to do:
@@ -113,6 +94,7 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
         auto total_elems = size_t(quantizer_ntotal) * size_t(index->quantizer->d);
 
         raft::spatial::knn::ivf_flat::index_params pams;
+
         switch (this->metric_type) {
             case faiss::METRIC_L2:
                 pams.metric = raft::distance::DistanceType::L2Expanded;
@@ -126,34 +108,27 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
         raft_knn_index.emplace(raft_handle, pams.metric, this->nlist, this->d);
 
-        raft::copy(raft_knn_index.value().centers().data_handle(),
-                   quantizer->getGpuData()->getVectorsRef<float>().data(),
-                   total_elems,
-                   raft_handle.get_stream());
-
-
-        // TODO: Need to compute the norms, I guess
-//        raft::copy(raft_knn_index.value().center_norms().value().data_handle(), quantizer->getGpuData()->norms_, quantizer_ntotal, raft_handle.get_stream());
-
-//        {
-//            std::vector<float> buf_host(total_elems);
-//            index->quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
-//            raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
-//        }
-
-//        RaftIndexIVFFlat::rebuildRaftIndex(buf_dev.data(), quantizer_ntotal);
-//
+        // Copy (reconstructed) centroids over, rather than re-training
         rmm::device_uvector<float> buf_dev(total_elems, stream);
+        {
+            std::vector<float> buf_host(total_elems);
+            index->quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
+            raft::copy(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
+        }
+
+        // Add (reconstructed) vectors to index if needed
         if(index_ntotal > 0) {
             std::cout << "Adding " << index_ntotal << " vectors to index" << std::endl;
             total_elems = size_t(index_ntotal) * size_t(index->d);
             buf_dev.resize(total_elems, stream);
             {
                 std::vector<float> buf_host(total_elems);
-                index->reconstruct_n(0, index->ntotal, buf_host.data());
+                index->reconstruct_n(0, index_ntotal, buf_host.data());
                 raft::copy(buf_dev.data(), buf_host.data(), total_elems, stream);
             }
 
+            // TODO: We might want to consider moving the centroid norm computation
+            // outside of the incremental add on the RAFT side.
             RaftIndexIVFFlat::addImpl_(index_ntotal, buf_dev.data(), nullptr);
         }
     } else {
@@ -212,6 +187,7 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     raft_idx_params.n_lists = nlist;
     raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
     raft_idx_params.add_data_on_build = false;
+    raft_idx_params.kmeans_n_iters = 100;
 
     raft_knn_index.emplace(
         raft::spatial::knn::ivf_flat::build(raft_handle, raft_idx_params,

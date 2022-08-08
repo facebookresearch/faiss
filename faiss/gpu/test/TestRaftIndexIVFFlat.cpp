@@ -84,6 +84,8 @@ void queryTest(
         faiss::IndexIVFFlat cpuIndex(
                 quantizer, opt.dim, opt.numCentroids, metricType);
         cpuIndex.train(opt.numTrain, trainVecs.data());
+
+        std::cout << "numTrain: " << opt.numTrain << "numCentroids: " << opt.numCentroids << std::endl;
         cpuIndex.add(opt.numAdd, addVecs.data());
         cpuIndex.nprobe = opt.nprobe;
 
@@ -97,17 +99,17 @@ void queryTest(
 
         faiss::gpu::RaftIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
-//        gpuIndex.copyFrom(&cpuIndex);
+        gpuIndex.copyFrom(&cpuIndex);
 
         raft::handle_t raft_handle;
-        rmm::device_uvector<float> trainVecsDev(trainVecs.size(), raft_handle.get_stream());
-        raft::copy(trainVecsDev.data(), trainVecs.data(), trainVecs.size(), raft_handle.get_stream());
-
+//        rmm::device_uvector<float> trainVecsDev(trainVecs.size(), raft_handle.get_stream());
+//        raft::copy(trainVecsDev.data(), trainVecs.data(), trainVecs.size(), raft_handle.get_stream());
+//
         rmm::device_uvector<float> addVecsDev(addVecs.size(), raft_handle.get_stream());
         raft::copy(addVecsDev.data(), addVecs.data(), addVecs.size(), raft_handle.get_stream());
 
-        gpuIndex.train(opt.numTrain, trainVecsDev.data());
-        gpuIndex.add(opt.numAdd, addVecsDev.data());
+//        gpuIndex.train(opt.numTrain, trainVecsDev.data());
+//        gpuIndex.add(opt.numAdd, addVecsDev.data());
         gpuIndex.setNumProbes(opt.nprobe);
 
         bool compFloat16 = useFloat16CoarseQuantizer;

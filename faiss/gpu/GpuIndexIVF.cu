@@ -231,6 +231,8 @@ void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
     clus.train(n, x, *quantizer);
     quantizer->is_trained = true;
 
+
+
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }
 
