@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <raft/core/cudart_utils.hpp>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -12,6 +13,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
@@ -90,6 +92,8 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace));
+
+    raft::print_device_vector("faiss centers", quantizer->getGpuData()->vectors(), 50, std::cout);
 
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);

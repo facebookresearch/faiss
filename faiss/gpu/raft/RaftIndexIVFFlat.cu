@@ -116,6 +116,8 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             raft::copy(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
         }
 
+        raft::print_device_vector("raft centers", raft_knn_index.value().centers().data_handle(), total_elems, std::cout);
+
         // Add (reconstructed) vectors to index if needed
         if(index_ntotal > 0) {
             std::cout << "Adding " << index_ntotal << " vectors to index" << std::endl;

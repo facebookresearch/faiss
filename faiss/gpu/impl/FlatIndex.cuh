@@ -60,6 +60,11 @@ class FlatIndex {
             int num,
             cudaStream_t stream);
 
+
+    float *vectors() {
+        return vectors_.data();
+    }
+
     void query(
             Tensor<float, 2, true>& vecs,
             int k,

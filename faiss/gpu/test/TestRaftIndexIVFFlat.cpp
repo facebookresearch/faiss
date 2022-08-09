@@ -11,6 +11,9 @@
 #include <faiss/gpu/raft/RmmGpuResources.hpp>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+
+#include <faiss/gpu/GpuDistance.h>
+#include <faiss/gpu/raft/RmmGpuResources.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <sstream>
@@ -63,6 +66,50 @@ struct Options {
     faiss::gpu::IndicesOptions indicesOpt;
 };
 
+template<typename idx_type>
+void train_index(const raft::handle_t &raft_handle, Options &opt, idx_type &index, std::vector<float> &trainVecs, std::vector<float> &addVecs) {
+    index.train(opt.numTrain, trainVecs.data());
+    index.add(opt.numAdd, addVecs.data());
+    index.setNumProbes(opt.nprobe);
+}
+
+
+void invoke_bfknn(const raft::handle_t &raft_handle, Options &opt, float *dists, faiss::Index::idx_t *inds, faiss::MetricType m,
+                  std::vector<float> &addVecs, std::vector<float> &queryVecs) {
+
+
+
+    faiss::gpu::RmmGpuResources gpu_res;
+    gpu_res.setDefaultStream(opt.device, raft_handle.get_stream());
+
+    rmm::device_uvector<float> addVecsDev(addVecs.size(), raft_handle.get_stream());
+    raft::copy(addVecsDev.data(), addVecs.data(), addVecs.size(), raft_handle.get_stream());
+
+    rmm::device_uvector<float> queryVecsDev(queryVecs.size(), raft_handle.get_stream());
+    raft::copy(queryVecsDev.data(), queryVecs.data(), queryVecs.size(), raft_handle.get_stream());
+
+    faiss::gpu::GpuDistanceParams args;
+    args.metric          = m;
+    args.k               = opt.k;
+    args.dims            = opt.dim;
+    args.vectors         = addVecs.data();
+    args.vectorsRowMajor = true;
+    args.numVectors      = opt.numAdd;
+    args.queries         = queryVecs.data();
+    args.queriesRowMajor = true;
+    args.numQueries      = opt.numQuery;
+    args.outDistances    = dists;
+    args.outIndices      = inds;
+    args.outIndicesType  = faiss::gpu::IndicesDataType::I64;
+
+    /**
+     * @todo: Until FAISS supports pluggable allocation strategies,
+     * we will not reap the benefits of the pool allocator for
+     * avoiding device-wide synchronizations from cudaMalloc/cudaFree
+     */
+    bfKnn(&gpu_res, args);
+}
+
 void queryTest(
         faiss::MetricType metricType,
         bool useFloat16CoarseQuantizer,
@@ -75,19 +122,9 @@ void queryTest(
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
-        faiss::IndexFlatL2 quantizerL2(opt.dim);
-        faiss::IndexFlatIP quantizerIP(opt.dim);
-        faiss::Index* quantizer = metricType == faiss::METRIC_L2
-                ? (faiss::Index*)&quantizerL2
-                : (faiss::Index*)&quantizerIP;
-
-        faiss::IndexIVFFlat cpuIndex(
-                quantizer, opt.dim, opt.numCentroids, metricType);
-        cpuIndex.train(opt.numTrain, trainVecs.data());
+        std::vector<float> queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
 
         std::cout << "numTrain: " << opt.numTrain << "numCentroids: " << opt.numCentroids << std::endl;
-        cpuIndex.add(opt.numAdd, addVecs.data());
-        cpuIndex.nprobe = opt.nprobe;
 
         faiss::gpu::RmmGpuResources res;
         res.noTempMemory();
@@ -97,35 +134,79 @@ void queryTest(
         config.indicesOptions = opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
 
-        faiss::gpu::RaftIndexIVFFlat gpuIndex(
-                &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
-        gpuIndex.copyFrom(&cpuIndex);
-
+        // TODO: Since we are modifying the centroids when adding new vectors,
+        // the neighbors are no longer going to match completely between CPU
+        // and the RAFT indexes. We will probably want to perform a bfknn as
+        // ground truth and then compare the recall for both the RAFT and FAISS
+        // indices.
         raft::handle_t raft_handle;
-//        rmm::device_uvector<float> trainVecsDev(trainVecs.size(), raft_handle.get_stream());
-//        raft::copy(trainVecsDev.data(), trainVecs.data(), trainVecs.size(), raft_handle.get_stream());
-//
-        rmm::device_uvector<float> addVecsDev(addVecs.size(), raft_handle.get_stream());
-        raft::copy(addVecsDev.data(), addVecs.data(), addVecs.size(), raft_handle.get_stream());
 
-//        gpuIndex.train(opt.numTrain, trainVecsDev.data());
-//        gpuIndex.add(opt.numAdd, addVecsDev.data());
-        gpuIndex.setNumProbes(opt.nprobe);
+        faiss::gpu::RaftIndexIVFFlat raftIndex(
+                &res, opt.dim, opt.numCentroids, metricType, config);
 
-        bool compFloat16 = useFloat16CoarseQuantizer;
-        faiss::gpu::compareIndices(
-                cpuIndex,
-                gpuIndex,
+        faiss::gpu::GpuIndexIVFFlat gpuIndex(
+                &res, opt.dim, opt.numCentroids, metricType, config);
+
+        std::cout << "Training raft index" << std::endl;
+        train_index(raft_handle, opt, raftIndex, trainVecs, addVecs);
+
+        std::cout << "Training gpu index" << std::endl;
+        train_index(raft_handle, opt, gpuIndex, trainVecs, addVecs);
+
+        std::cout << "Computing ground truth" << std::endl;
+        rmm::device_uvector<faiss::Index::idx_t> ref_inds(opt.numQuery * opt.k, raft_handle.get_stream());
+        rmm::device_uvector<float> ref_dists(opt.numQuery * opt.k, raft_handle.get_stream());
+
+        invoke_bfknn(raft_handle, opt, ref_dists.data(), ref_inds.data(), metricType, addVecs, queryVecs);
+
+        std::cout << "Done." << std::endl;
+        raft::print_device_vector("ref_dists", ref_dists.data(), opt.k, std::cout);
+        raft::print_device_vector("ref_inds", ref_inds.data(), opt.k, std::cout);
+
+        rmm::device_uvector<faiss::Index::idx_t> raft_inds(opt.numQuery * opt.k, raft_handle.get_stream());
+        rmm::device_uvector<float> raft_dists(opt.numQuery * opt.k, raft_handle.get_stream());
+
+        raftIndex.search(
                 opt.numQuery,
-                opt.dim,
+                queryVecs.data(),
                 opt.k,
-                opt.toString(),
-                compFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
-                // FIXME: the fp16 bounds are
-                // useless when math (the accumulator) is
-                // in fp16. Figure out another way to test
-                compFloat16 ? 0.70f : 0.1f,
-                compFloat16 ? 0.65f : 0.015f);
+                raft_dists.data(),
+                raft_inds.data());
+
+        rmm::device_uvector<faiss::Index::idx_t> gpu_inds(opt.numQuery * opt.k, raft_handle.get_stream());
+        rmm::device_uvector<float> gpu_dists(opt.numQuery * opt.k, raft_handle.get_stream());
+
+        gpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                gpu_dists.data(),
+                gpu_inds.data());
+
+
+        // TODO: Compare recall, perhaps by adding the indices/distances to a hashmap.
+
+        raft::print_device_vector("raft_dists", raft_dists.data(), opt.k, std::cout);
+        raft::print_device_vector("raft_inds", raft_inds.data(), opt.k, std::cout);
+
+        raft::print_device_vector("gpu_dists", gpu_dists.data(), opt.k, std::cout);
+        raft::print_device_vector("gpu_inds", gpu_inds.data(), opt.k, std::cout);
+
+//
+//        bool compFloat16 = useFloat16CoarseQuantizer;
+//        faiss::gpu::compareIndices(
+//                cpuIndex,
+//                gpuIndex,
+//                opt.numQuery,
+//                opt.dim,
+//                opt.k,
+//                opt.toString(),
+//                compFloat16 ? kF16MaxRelErr : kF32MaxRelErr,
+//                // FIXME: the fp16 bounds are
+//                // useless when math (the accumulator) is
+//                // in fp16. Figure out another way to test
+//                compFloat16 ? 0.70f : 0.1f,
+//                compFloat16 ? 0.65f : 0.015f);
     }
 }
 
