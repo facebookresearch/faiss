@@ -25,6 +25,7 @@ void IndexFlatCodes::add(idx_t n, const float* x) {
     }
     codes.resize((ntotal + n) * code_size);
     sa_encode(n, x, codes.data() + (ntotal * code_size));
+    is_removed.resize(ntotal + n);
     ntotal += n;
 }
 

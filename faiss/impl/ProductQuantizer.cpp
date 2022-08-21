@@ -111,7 +111,8 @@ static inline void pq_estimators_from_tables(
         const float* dis_table,
         size_t k,
         float* heap_dis,
-        int64_t* heap_ids) {
+        int64_t* heap_ids,
+        const uint8_t* is_removed = nullptr) {
     if (pq.M == 4) {
         pq_estimators_from_tables_M4<CT, C>(
                 codes, ncodes, dis_table, pq.ksub, k, heap_dis, heap_ids);
@@ -128,6 +129,7 @@ static inline void pq_estimators_from_tables(
     const size_t M = pq.M;
     const size_t ksub = pq.ksub;
     for (size_t j = 0; j < ncodes; j++) {
+        if(is_removed != nullptr && is_removed[j]) continue;
         float dis = 0;
         const float* __restrict dt = dis_table;
         for (int m = 0; m < M; m++) {
@@ -149,10 +151,12 @@ static inline void pq_estimators_from_tables_generic(
         const float* dis_table,
         size_t k,
         float* heap_dis,
-        int64_t* heap_ids) {
+        int64_t* heap_ids,
+        const uint8_t* is_removed = nullptr) {
     const size_t M = pq.M;
     const size_t ksub = pq.ksub;
     for (size_t j = 0; j < ncodes; ++j) {
+        if(is_removed != nullptr && is_removed[j]) continue;
         PQDecoderGeneric decoder(codes + j * pq.code_size, nbits);
         float dis = 0;
         const float* __restrict dt = dis_table;
@@ -643,7 +647,8 @@ static void pq_knn_search_with_tables(
         const uint8_t* codes,
         const size_t ncodes,
         HeapArray<C>* res,
-        bool init_finalize_heap) {
+        bool init_finalize_heap,
+        const uint8_t* is_removed = nullptr) {
     size_t k = res->k, nx = res->nh;
     size_t ksub = pq.ksub, M = pq.M;
 
@@ -663,7 +668,7 @@ static void pq_knn_search_with_tables(
         switch (nbits) {
             case 8:
                 pq_estimators_from_tables<uint8_t, C>(
-                        pq, codes, ncodes, dis_table, k, heap_dis, heap_ids);
+                        pq, codes, ncodes, dis_table, k, heap_dis, heap_ids, is_removed);
                 break;
 
             case 16:
@@ -674,7 +679,8 @@ static void pq_knn_search_with_tables(
                         dis_table,
                         k,
                         heap_dis,
-                        heap_ids);
+                        heap_ids, 
+                        is_removed);
                 break;
 
             default:
@@ -686,7 +692,8 @@ static void pq_knn_search_with_tables(
                         dis_table,
                         k,
                         heap_dis,
-                        heap_ids);
+                        heap_ids,
+                        is_removed);
                 break;
         }
 
@@ -702,7 +709,8 @@ void ProductQuantizer::search(
         const uint8_t* codes,
         const size_t ncodes,
         float_maxheap_array_t* res,
-        bool init_finalize_heap) const {
+        bool init_finalize_heap,
+        const uint8_t* is_removed) const {
     FAISS_THROW_IF_NOT(nx == res->nh);
     std::unique_ptr<float[]> dis_tables(new float[nx * ksub * M]);
     compute_distance_tables(nx, x, dis_tables.get());
@@ -714,7 +722,8 @@ void ProductQuantizer::search(
             codes,
             ncodes,
             res,
-            init_finalize_heap);
+            init_finalize_heap,
+            is_removed);
 }
 
 void ProductQuantizer::search_ip(
@@ -723,7 +732,8 @@ void ProductQuantizer::search_ip(
         const uint8_t* codes,
         const size_t ncodes,
         float_minheap_array_t* res,
-        bool init_finalize_heap) const {
+        bool init_finalize_heap,
+        const uint8_t* is_removed) const {
     FAISS_THROW_IF_NOT(nx == res->nh);
     std::unique_ptr<float[]> dis_tables(new float[nx * ksub * M]);
     compute_inner_prod_tables(nx, x, dis_tables.get());
@@ -735,7 +745,8 @@ void ProductQuantizer::search_ip(
             codes,
             ncodes,
             res,
-            init_finalize_heap);
+            init_finalize_heap,
+            is_removed);
 }
 
 static float sqr(float x) {
@@ -776,7 +787,8 @@ void ProductQuantizer::search_sdc(
         const uint8_t* bcodes,
         const size_t nb,
         float_maxheap_array_t* res,
-        bool init_finalize_heap) const {
+        bool init_finalize_heap,
+        const uint8_t* is_removed) const {
     FAISS_THROW_IF_NOT(sdc_table.size() == M * ksub * ksub);
     FAISS_THROW_IF_NOT(nbits == 8);
     size_t k = res->k;
@@ -792,7 +804,8 @@ void ProductQuantizer::search_sdc(
             maxheap_heapify(k, heap_dis, heap_ids);
 
         const uint8_t* bcode = bcodes;
-        for (size_t j = 0; j < nb; j++) {
+        for (size_t j = 0; j < nb; j++, bcode += code_size) {
+            if(is_removed != nullptr && !is_removed[j]) continue;
             float dis = 0;
             const float* tab = sdc_table.data();
             for (int m = 0; m < M; m++) {
@@ -802,7 +815,6 @@ void ProductQuantizer::search_sdc(
             if (dis < heap_dis[0]) {
                 maxheap_replace_top(k, heap_dis, heap_ids, dis, j);
             }
-            bcode += code_size;
         }
 
         if (init_finalize_heap)

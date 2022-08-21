@@ -132,7 +132,8 @@ void hammings_knn_hc(
         const uint8_t* b,
         size_t nb,
         size_t ncodes,
-        int ordered);
+        int ordered,
+        const uint8_t* is_removed = nullptr);
 
 /* Legacy alias to hammings_knn_hc. */
 void hammings_knn(

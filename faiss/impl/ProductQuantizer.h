@@ -141,7 +141,8 @@ struct ProductQuantizer : Quantizer {
             const uint8_t* codes,
             const size_t ncodes,
             float_maxheap_array_t* res,
-            bool init_finalize_heap = true) const;
+            bool init_finalize_heap = true,
+            const uint8_t* is_removed = nullptr) const;
 
     /** same as search, but with inner product similarity */
     void search_ip(
@@ -150,7 +151,8 @@ struct ProductQuantizer : Quantizer {
             const uint8_t* codes,
             const size_t ncodes,
             float_minheap_array_t* res,
-            bool init_finalize_heap = true) const;
+            bool init_finalize_heap = true,
+            const uint8_t* is_removed = nullptr) const;
 
     /// Symmetric Distance Table
     std::vector<float> sdc_table;
@@ -164,7 +166,8 @@ struct ProductQuantizer : Quantizer {
             const uint8_t* bcodes,
             const size_t ncodes,
             float_maxheap_array_t* res,
-            bool init_finalize_heap = true) const;
+            bool init_finalize_heap = true,
+            const uint8_t* is_removed = nullptr) const;
 };
 
 // block size used in ProductQuantizer::compute_codes

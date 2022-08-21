@@ -47,6 +47,8 @@ struct IndexPQ : IndexFlatCodes {
             float* distances,
             idx_t* labels) const override;
 
+    size_t remove_ids(const IDSelector& sel) override;
+
     /* The standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 

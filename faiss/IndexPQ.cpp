@@ -15,6 +15,7 @@
 
 #include <algorithm>
 
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
@@ -66,6 +67,17 @@ void IndexPQ::train(idx_t n, const float* x) {
                 pq, ntrain_perm, x + (n - ntrain_perm) * d);
     }
     is_trained = true;
+}
+
+size_t IndexPQ::remove_ids(const IDSelector& sel) {
+    size_t nremove = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i) && !is_removed.empty() && !is_removed[i]) {
+            is_removed[i] = true;
+            nremove++;
+        }
+    }
+    return nremove;
 }
 
 namespace {
@@ -163,11 +175,11 @@ void IndexPQ::search(
         if (metric_type == METRIC_L2) {
             float_maxheap_array_t res = {
                     size_t(n), size_t(k), labels, distances};
-            pq.search(x, n, codes.data(), ntotal, &res, true);
+            pq.search(x, n, codes.data(), ntotal, &res, true, is_removed.data());
         } else {
             float_minheap_array_t res = {
                     size_t(n), size_t(k), labels, distances};
-            pq.search_ip(x, n, codes.data(), ntotal, &res, true);
+            pq.search_ip(x, n, codes.data(), ntotal, &res, true, is_removed.data());
         }
         indexPQ_stats.nq += n;
         indexPQ_stats.ncode += n * ntotal;
@@ -202,7 +214,7 @@ void IndexPQ::search(
             float_maxheap_array_t res = {
                     size_t(n), size_t(k), labels, distances};
 
-            pq.search_sdc(q_codes, n, codes.data(), ntotal, &res, true);
+            pq.search_sdc(q_codes, n, codes.data(), ntotal, &res, true, is_removed.data());
 
         } else {
             int* idistances = new int[n * k];
@@ -218,7 +230,8 @@ void IndexPQ::search(
                         codes.data(),
                         ntotal,
                         pq.code_size,
-                        true);
+                        true,
+                        is_removed.data());
 
             } else if (search_type == ST_generalized_HE) {
                 generalized_hammings_knn_hc(
@@ -227,7 +240,8 @@ void IndexPQ::search(
                         codes.data(),
                         ntotal,
                         pq.code_size,
-                        true);
+                        true,
+                        is_removed.data());
             }
 
             // convert distances to floats
@@ -266,7 +280,9 @@ static size_t polysemous_inner_loop(
 
     HammingComputer hc(q_code, code_size);
 
-    for (int64_t bi = 0; bi < ntotal; bi++) {
+    for (int64_t bi = 0; bi < ntotal; bi++, b_code += code_size) {
+        if(index.is_removed != NULL && !index.is_removed[bi]) continue;
+
         int hd = hc.hamming(b_code);
 
         if (hd < ht) {
@@ -283,7 +299,6 @@ static size_t polysemous_inner_loop(
                 maxheap_replace_top(k, heap_dis, heap_ids, dis, bi);
             }
         }
-        b_code += code_size;
     }
     return n_pass_i;
 }

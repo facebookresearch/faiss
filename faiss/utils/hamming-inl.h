@@ -518,7 +518,8 @@ void generalized_hammings_knn_hc(
         const uint8_t* b,
         size_t nb,
         size_t code_size,
-        int ordered = true);
+        int ordered = true,
+        const uint8_t* is_removed = nullptr);
 
 /** This class maintains a list of best distances seen so far.
  *

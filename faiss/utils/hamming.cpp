@@ -186,13 +186,15 @@ static void hammings_knn_hc(
         const uint8_t* bs2,
         size_t n2,
         bool order = true,
-        bool init_heap = true) {
+        bool init_heap = true,
+        const uint8_t* is_removed = nullptr) {
     size_t k = ha->k;
     if (init_heap)
         ha->heapify();
 
     const size_t block_size = hamming_batch_size;
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
+        if(is_removed != nullptr && is_removed[j0]) continue;
         const size_t j1 = std::min(j0 + block_size, n2);
 #pragma omp parallel for
         for (int64_t i = 0; i < ha->nh; i++) {
@@ -278,7 +280,8 @@ static void hammings_knn_hc_1(
         const uint64_t* bs2,
         size_t n2,
         bool order = true,
-        bool init_heap = true) {
+        bool init_heap = true,
+        const uint8_t* is_removed = nullptr) {
     const size_t nwords = 1;
     size_t k = ha->k;
 
@@ -296,6 +299,7 @@ static void hammings_knn_hc_1(
         int64_t* bh_ids_ = ha->ids + i * k;
         size_t j;
         for (j = 0; j < n2; j++, bs2_ += nwords) {
+            if(is_removed != nullptr && is_removed[j]) continue;
             dis = popcount64(bs1_ ^ *bs2_);
             if (dis < bh_val_0) {
                 faiss::maxheap_replace_top<hamdis_t>(
@@ -449,7 +453,8 @@ void hammings_knn_hc(
         const uint8_t* b,
         size_t nb,
         size_t ncodes,
-        int order) {
+        int order,
+        const uint8_t* is_removed) {
     switch (ncodes) {
         case 4:
             hammings_knn_hc<faiss::HammingComputer4>(
@@ -670,12 +675,13 @@ static void hamming_dis_inner_loop(
         size_t code_size,
         int k,
         hamdis_t* bh_val_,
-        int64_t* bh_ids_) {
+        int64_t* bh_ids_,
+        const uint8_t* is_removed = nullptr) {
     HammingComputer hc(ca, code_size);
 
-    for (size_t j = 0; j < nb; j++) {
+    for (size_t j = 0; j < nb; j++, cb += code_size) {
+        if(is_removed != nullptr && is_removed[j]) continue;
         int ndiff = hc.hamming(cb);
-        cb += code_size;
         if (ndiff < bh_val_[0]) {
             maxheap_replace_top<hamdis_t>(k, bh_val_, bh_ids_, ndiff, j);
         }
@@ -688,7 +694,8 @@ void generalized_hammings_knn_hc(
         const uint8_t* b,
         size_t nb,
         size_t code_size,
-        int ordered) {
+        int ordered,
+        const uint8_t* is_removed) {
     int na = ha->nh;
     int k = ha->k;
 
@@ -706,19 +713,19 @@ void generalized_hammings_knn_hc(
         switch (code_size) {
             case 8:
                 hamming_dis_inner_loop<GenHammingComputer8>(
-                        ca, cb, nb, 8, k, bh_val_, bh_ids_);
+                        ca, cb, nb, 8, k, bh_val_, bh_ids_, is_removed);
                 break;
             case 16:
                 hamming_dis_inner_loop<GenHammingComputer16>(
-                        ca, cb, nb, 16, k, bh_val_, bh_ids_);
+                        ca, cb, nb, 16, k, bh_val_, bh_ids_, is_removed);
                 break;
             case 32:
                 hamming_dis_inner_loop<GenHammingComputer32>(
-                        ca, cb, nb, 32, k, bh_val_, bh_ids_);
+                        ca, cb, nb, 32, k, bh_val_, bh_ids_, is_removed);
                 break;
             default:
                 hamming_dis_inner_loop<GenHammingComputerM8>(
-                        ca, cb, nb, code_size, k, bh_val_, bh_ids_);
+                        ca, cb, nb, code_size, k, bh_val_, bh_ids_, is_removed);
                 break;
         }
     }
