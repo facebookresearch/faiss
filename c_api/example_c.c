@@ -82,7 +82,7 @@ int main() {
     { // search xq
         idx_t* I = malloc(k * nq * sizeof(idx_t));
         float* D = malloc(k * nq * sizeof(float));
-        FAISS_TRY(faiss_Index_search(index, 5, xb, k, D, I));
+        FAISS_TRY(faiss_Index_search(index, nq, xq, k, D, I));
         printf("I=\n");
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < k; j++)
