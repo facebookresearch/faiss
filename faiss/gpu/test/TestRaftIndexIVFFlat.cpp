@@ -13,7 +13,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 
 #include <faiss/gpu/GpuDistance.h>
-#include <faiss/gpu/raft/RmmGpuResources.hpp>
+#include <raft/core/cudart_utils.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <sstream>
@@ -25,13 +25,13 @@ constexpr float kF32MaxRelErr = 0.03f;
 
 struct Options {
     Options() {
-        numAdd = 2 * faiss::gpu::randVal(2000, 5000);
+        numAdd = 2 * faiss::gpu::randVal(20000, 50000);
         dim = faiss::gpu::randVal(64, 200);
 
         numCentroids = std::sqrt((float)numAdd / 2);
         numTrain = numCentroids * 40;
         nprobe = faiss::gpu::randVal(std::min(10, numCentroids), numCentroids);
-        numQuery = faiss::gpu::randVal(32, 100);
+        numQuery = numAdd / 10;//faiss::gpu::randVal(32, 100);
 
         // Due to the approximate nature of the query and of floating point
         // differences between GPU and CPU, to stay within our error bounds,
@@ -70,6 +70,7 @@ template<typename idx_type>
 void train_index(const raft::handle_t &raft_handle, Options &opt, idx_type &index, std::vector<float> &trainVecs, std::vector<float> &addVecs) {
     index.train(opt.numTrain, trainVecs.data());
     index.add(opt.numAdd, addVecs.data());
+//    index.train(opt.numTrain, trainVecs.data());
     index.setNumProbes(opt.nprobe);
 }
 
@@ -166,6 +167,7 @@ void queryTest(
         rmm::device_uvector<faiss::Index::idx_t> raft_inds(opt.numQuery * opt.k, raft_handle.get_stream());
         rmm::device_uvector<float> raft_dists(opt.numQuery * opt.k, raft_handle.get_stream());
 
+        uint32_t rstart = raft::curTimeMillis();
         raftIndex.search(
                 opt.numQuery,
                 queryVecs.data(),
@@ -173,9 +175,14 @@ void queryTest(
                 raft_dists.data(),
                 raft_inds.data());
 
+        raft_handle.sync_stream();
+        uint32_t rstop = raft::curTimeMillis();
+        std::cout << "Raft time " << rstart << " " << rstop << " " << (rstop - rstart) << std::endl;
+
         rmm::device_uvector<faiss::Index::idx_t> gpu_inds(opt.numQuery * opt.k, raft_handle.get_stream());
         rmm::device_uvector<float> gpu_dists(opt.numQuery * opt.k, raft_handle.get_stream());
 
+        uint32_t gstart = raft::curTimeMillis();
         gpuIndex.search(
                 opt.numQuery,
                 queryVecs.data(),
@@ -183,6 +190,10 @@ void queryTest(
                 gpu_dists.data(),
                 gpu_inds.data());
 
+        raft_handle.sync_stream();
+        uint32_t gstop = raft::curTimeMillis();
+
+        std::cout << "FAISS time " << gstart << " " << gstop << " " << (gstop - gstart) << std::endl;
 
         // TODO: Compare recall, perhaps by adding the indices/distances to a hashmap.
 
