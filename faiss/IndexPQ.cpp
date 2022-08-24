@@ -281,7 +281,7 @@ static size_t polysemous_inner_loop(
     HammingComputer hc(q_code, code_size);
 
     for (int64_t bi = 0; bi < ntotal; bi++, b_code += code_size) {
-        if(index.is_removed != NULL && !index.is_removed[bi]) continue;
+        if(!index.is_removed.empty() && !index.is_removed[bi]) continue;
 
         int hd = hc.hamming(b_code);
 
