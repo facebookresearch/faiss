@@ -6,17 +6,16 @@
 
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
-file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-22.08/RAPIDS.cmake
-        ${CMAKE_BINARY_DIR}/RAPIDS.cmake)
-include(${CMAKE_BINARY_DIR}/RAPIDS.cmake)
-include(rapids-cmake)
-include(rapids-cpm)
-include(rapids-cuda)
-include(rapids-export)
-include(rapids-find)
+# Valid values are "generic", "avx2".
+option(FAISS_OPT_LEVEL "" "generic")
+option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
+option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
+option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
+option(FAISS_ENABLE_C_API "Build C API." OFF)
 
-rapids_cuda_init_architectures(faiss)
-
+if(FAISS_ENABLE_RAFT)
+  include(fetch_rapids.cmake)
+endif()
 
 project(faiss
   VERSION 1.6.4
@@ -29,21 +28,20 @@ set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Valid values are "generic", "avx2".
-option(FAISS_OPT_LEVEL "" "generic")
-option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
-option(FAISS_ENABLE_RAFT "Enable RAFT for GPU indexes." OFF)
-option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
-option(FAISS_ENABLE_C_API "Build C API." OFF)
+if(FAISS_ENABLE_RAFT)
+  include(rapids-cmake)
+  include(rapids-cpm)
+  rapids_cpm_init()
+  include(rapids-cuda)
+  include(rapids-export)
+  include(rapids-find)
+  rapids_cuda_init_architectures(faiss)
+  include(cmake/thirdparty/get_raft.cmake)
+endif()
 
 if(FAISS_ENABLE_GPU)
   set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
   enable_language(CUDA)
-endif()
-
-if(FAISS_ENABLE_RAFT)
-  rapids_cpm_init()
-  include(cmake/thirdparty/get_raft.cmake)
 endif()
 
 add_subdirectory(faiss)

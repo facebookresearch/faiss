@@ -16,6 +16,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
+#include <raft/core/nvtx.hpp>
 #include <raft/spatial/knn/ivf_flat.cuh>
 
 #include <limits>
@@ -106,7 +107,7 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                 FAISS_THROW_MSG("Metric is not supported.");
         }
 
-        raft_knn_index.emplace(raft_handle, pams.metric, this->nlist, this->d);
+        raft_knn_index.emplace(raft_handle, pams.metric, (uint32_t)this->nlist, (uint32_t)this->d);
 
         // Copy (reconstructed) centroids over, rather than re-training
         rmm::device_uvector<float> buf_dev(total_elems, stream);
@@ -179,7 +180,13 @@ size_t RaftIndexIVFFlat::reclaimMemory() {
 void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
+
+    raft::common::nvtx::range<raft::common::nvtx::domain::raft> fun_scope(
+            "RaftIndexIVFFlat::train (%ld)", n);
+
     std::cout << "Calling train() with " << n << " rows" << std::endl;
+
+    uint32_t start = raft::curTimeMillis();
     if (this->is_trained) {
         FAISS_ASSERT(raft_knn_index.has_value());
         return;
@@ -197,6 +204,9 @@ void RaftIndexIVFFlat::train(Index::idx_t n, const float* x) {
                                             n, (faiss::Index::idx_t)d));
 
     raft_handle.sync_stream();
+    uint32_t stop = raft::curTimeMillis();
+
+    std::cout << "train took " << (stop - start) << "ms. " << std::endl;
     this->is_trained = true;
 }
 
@@ -293,12 +303,15 @@ void RaftIndexIVFFlat::searchImpl_(
         int k,
         float* distances,
         Index::idx_t* labels) const {
+
+    raft::common::nvtx::range<raft::common::nvtx::domain::raft> fun_scope(
+            "RaftIndexIVFFlat::searchImpl_ (%ld)", n);
+
     // Device is already set in GpuIndex::search
     FAISS_ASSERT(raft_knn_index.has_value());
     FAISS_ASSERT(n > 0);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
 
-    std::cout << "Calling searchImpl_ with " << n << " rows" << std::endl;
     raft::spatial::knn::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
     raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
