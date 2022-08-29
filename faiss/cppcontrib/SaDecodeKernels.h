@@ -8,10 +8,14 @@
 //   * Residual[1]x8,PQ[2]x8
 //   * IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
 //   * Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
+//   * PQ[1]x8
 //
 // The goal was to achieve the maximum performance, so the template version it
 // is. The provided index families share the same code for sa_decode.
-// The front-end code looks the following:
+//
+// The front-end code provides two high-level structures.
+//
+// First one:
 //   {
 //     template <
 //        intptr_t DIM,
@@ -35,8 +39,22 @@
 // Additional supported COARSE_BITS values may be added later.
 // FINE_BITS might be added later.
 //
+// Second one:
+//   {
+//     template <
+//        intptr_t DIM,
+//        intptr_t FINE_SIZE>
+//     struct IndexPQDecoder { /*...*/ };
+//   }
+// * DIM is the dimensionality of data
+// * FINE_SIZE is the dimensionality of the ProductQuantizer dsq
+// For example, "PQ8np" for 160-dim data translates into
+//   IndexPQDecoder<160,20>
+//
 // Unlike the general purpose version in faiss::Index::sa_decode(),
-//   this version provides the following functions:
+//   this version provides the following functions (please note that
+//   pqCoarseCentroids params are not available for IndexPQDecoder,
+//   but the functionality is the same as for Index2LevelDecoder):
 // * ::store, which is similar to sa_decode(1, input, output),
 //   The method signature is the following:
 //   {
@@ -92,9 +110,12 @@
 //   that I needed.
 
 #ifdef __AVX2__
-#include <faiss/cppcontrib/SaDecodeKernels-avx2-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-avx2-inl.h>
+#include <faiss/cppcontrib/sa_decode/PQ-avx2-inl.h>
 #elif defined(__ARM_NEON)
-#include <faiss/cppcontrib/SaDecodeKernels-neon-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-neon-inl.h>
+#include <faiss/cppcontrib/sa_decode/PQ-neon-inl.h>
 #else
-#include <faiss/cppcontrib/SaDecodeKernels-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-inl.h>
+#include <faiss/cppcontrib/sa_decode/PQ-inl.h>
 #endif
