@@ -9,6 +9,9 @@
 //   * IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
 //   * Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
 //   * PQ[1]x8
+// Additionally, AVX2 version supports
+//   * PQ[1]x10
+//   * PQ[1]x16
 //
 // The goal was to achieve the maximum performance, so the template version it
 // is. The provided index families share the same code for sa_decode.
@@ -43,7 +46,8 @@
 //   {
 //     template <
 //        intptr_t DIM,
-//        intptr_t FINE_SIZE>
+//        intptr_t FINE_SIZE,
+//        intptr_t FINE_BITS>
 //     struct IndexPQDecoder { /*...*/ };
 //   }
 // * DIM is the dimensionality of data

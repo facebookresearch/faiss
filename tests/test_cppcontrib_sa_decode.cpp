@@ -498,3 +498,16 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8>;
     testIndexPQDecoder<T>(NSAMPLES, 160, "PQ20np");
 }
+
+// implemented for AVX2 so far
+#ifdef __AVX2__
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x10) {
+    using T = faiss::cppcontrib::IndexPQDecoder<256, 16, 10>;
+    testIndexPQDecoder<T>(NSAMPLES, 256, "PQ16x10np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x10) {
+    using T = faiss::cppcontrib::IndexPQDecoder<160, 8, 10>;
+    testIndexPQDecoder<T>(NSAMPLES, 160, "PQ20x10np");
+}
+#endif
