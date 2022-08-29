@@ -174,6 +174,85 @@ struct Index2LevelDecoder {
                     weight1 * (*coarsePtr1 + *finePtr1);
         }
     }
+
+    // process 3 samples
+    // Performs
+    //  outputAccum += weight0 * decoded(code0) + weight1 * decoded(code1)
+    //    + weight2 * decoded(code2)
+    static void accum(
+            const float* const __restrict pqCoarseCentroids0,
+            const float* const __restrict pqFineCentroids0,
+            const uint8_t* const __restrict code0,
+            const float weight0,
+            const float* const __restrict pqCoarseCentroids1,
+            const float* const __restrict pqFineCentroids1,
+            const uint8_t* const __restrict code1,
+            const float weight1,
+            const float* const __restrict pqCoarseCentroids2,
+            const float* const __restrict pqFineCentroids2,
+            const uint8_t* const __restrict code2,
+            const float weight2,
+            float* const __restrict outputAccum) {
+        // coarse quantizer
+        const coarse_storage_type* const __restrict coarse0 =
+                reinterpret_cast<const coarse_storage_type*>(code0);
+        const coarse_storage_type* const __restrict coarse1 =
+                reinterpret_cast<const coarse_storage_type*>(code1);
+        const coarse_storage_type* const __restrict coarse2 =
+                reinterpret_cast<const coarse_storage_type*>(code2);
+
+        // fine quantizer
+        const uint8_t* const __restrict fine0 =
+                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine1 =
+                code1 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine2 =
+                code2 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t coarseCentroidIdx = i / COARSE_SIZE;
+            const intptr_t coarseCentroidOffset = i % COARSE_SIZE;
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t coarseCode0 = coarse0[coarseCentroidIdx];
+            const intptr_t fineCode0 = fine0[fineCentroidIdx];
+            const intptr_t coarseCode1 = coarse1[coarseCentroidIdx];
+            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+            const intptr_t coarseCode2 = coarse2[coarseCentroidIdx];
+            const intptr_t fineCode2 = fine2[fineCentroidIdx];
+
+            const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *
+                            COARSE_SIZE +
+                    coarseCentroidOffset;
+            const float* const __restrict finePtr0 = pqFineCentroids0 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict coarsePtr1 = pqCoarseCentroids1 +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode1) *
+                            COARSE_SIZE +
+                    coarseCentroidOffset;
+            const float* const __restrict finePtr1 = pqFineCentroids1 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict coarsePtr2 = pqCoarseCentroids2 +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode2) *
+                            COARSE_SIZE +
+                    coarseCentroidOffset;
+            const float* const __restrict finePtr2 = pqFineCentroids2 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode2) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputAccum[i] += weight0 * (*coarsePtr0 + *finePtr0) +
+                    weight1 * (*coarsePtr1 + *finePtr1) +
+                    weight2 * (*coarsePtr2 + *finePtr2);
+        }
+    }
 };
 
 } // namespace cppcontrib

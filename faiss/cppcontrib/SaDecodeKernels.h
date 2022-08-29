@@ -127,6 +127,25 @@
 //      const float weight1,
 //      float* const __restrict outputAccum);
 //   }
+// * And one more overload for ::accum that decodes and accumulates
+//   three vectors per call. Sometimes, it makes sense, at least for AVX2.
+//   The method signature is the following:
+//   {
+//    static void accum(
+//      const float* const __restrict pqCoarseCentroids0,
+//      const float* const __restrict pqFineCentroids0,
+//      const uint8_t* const __restrict code0,
+//      const float weight0,
+//      const float* const __restrict pqCoarseCentroids1,
+//      const float* const __restrict pqFineCentroids1,
+//      const uint8_t* const __restrict code1,
+//      const float weight1,
+//      const float* const __restrict pqCoarseCentroids2,
+//      const float* const __restrict pqFineCentroids2,
+//      const uint8_t* const __restrict code2,
+//      const float weight2,
+//      float* const __restrict outputAccum);
+//   }
 // The provided version is not multithreaded.
 //
 // Currently, an AVX2+FMA implementation is available. AVX512 version is also

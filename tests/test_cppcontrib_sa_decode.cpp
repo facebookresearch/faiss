@@ -201,6 +201,64 @@ void verifyIndex2LevelDecoder(
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2s[j]);
         }
     }
+
+    // test contrib::accum, 3 samples per iteration.
+    rng.seed(123);
+
+    std::vector<float> outputContrib3s(d, 0);
+    const size_t n3 = (n / 3) * 3;
+    for (size_t i = 0; i < n3; i += 3) {
+        // populate outputContribs with some existing data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+            outputContrib3s[j] = (j + 1) * (j + 1);
+        }
+
+        // do a single step, 3 samples per step
+        const float weight0 = u(rng);
+        const float weight1 = u(rng);
+        const float weight2 = u(rng);
+
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3s.data());
+
+        // do three steps, 1 sample per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data());
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib1s.data());
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib1s.data());
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3s[j]);
+        }
+    }
 }
 
 template <typename T>
@@ -302,6 +360,58 @@ void verifyIndexPQDecoder(
         // compare
         for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2s[j]);
+        }
+    }
+
+    // test contrib::accum, 3 samples per iteration.
+    rng.seed(123);
+
+    std::vector<float> outputContrib3s(d, 0);
+    const size_t n3 = (n / 3) * 3;
+    for (size_t i = 0; i < n3; i += 3) {
+        // populate outputContribs with some existing data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+            outputContrib3s[j] = (j + 1) * (j + 1);
+        }
+
+        // do a single step, 3 samples per step
+        const float weight0 = u(rng);
+        const float weight1 = u(rng);
+        const float weight2 = u(rng);
+
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3s.data());
+
+        // do three steps, 1 sample per step
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data());
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib1s.data());
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib1s.data());
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3s[j]);
         }
     }
 }
