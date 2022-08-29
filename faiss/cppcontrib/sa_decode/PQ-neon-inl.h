@@ -93,8 +93,6 @@ inline float32x4x2_t elementaryBlock8x1b(const float* const __restrict fine) {
     // load fine
     const auto fineValue0 = vld1q_f32(fine);
     const auto fineValue1 = vld1q_f32(fine + 4);
-
-    // add coarse and fine
     return {fineValue0, fineValue1};
 }
 
@@ -582,8 +580,12 @@ struct IndexPQDecoderImpl<
 } // namespace
 
 // Suitable for PQ[1]x8
-template <intptr_t DIM, intptr_t FINE_SIZE>
+template <intptr_t DIM, intptr_t FINE_SIZE, intptr_t FINE_BITS = 8>
 struct IndexPQDecoder {
+    static_assert(
+            FINE_BITS == 8,
+            "Only 8 bits is currently supported for FINE_BITS");
+
     // Process 1 sample.
     static void store(
             const float* const __restrict pqFineCentroids,
