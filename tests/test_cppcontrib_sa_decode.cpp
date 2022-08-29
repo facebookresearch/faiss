@@ -478,11 +478,16 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ4) {
 
 //
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF1024_PQ16) {
+    // It is acceptable to use COARSE_BITS=16 in this case,
+    // because there's only one coarse quantizer element.
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "IVF1024,PQ16np");
 }
 
 TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual1x9_PQ8) {
+    // It is acceptable to use COARSE_BITS=16 in this case,
+    // because there's only one coarse quantizer element.
+    // It won't work for "Residual2x9,PQ8".
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 8, 16>;
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "Residual1x9,PQ8");
 }
@@ -517,8 +522,16 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual4x8_PQ8x10) {
 }
 
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual1x9_PQ16x10) {
+    // It is acceptable to use COARSE_BITS=16 in this case,
+    // because there's only one coarse quantizer element.
+    // It won't work for "Residual2x9,PQ16x10".
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES, 256, "Residual1x9,PQ16x10");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x10_PQ16x10) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16, 10, 10>;
+    testIndex2LevelDecoder<T>(NSAMPLES, 256, "Residual4x10,PQ16x10");
 }
 
 #endif
