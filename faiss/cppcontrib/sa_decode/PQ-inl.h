@@ -13,8 +13,14 @@ namespace cppcontrib {
 ////////////////////////////////////////////////////////////////////////////////////
 
 // Suitable for PQ[1]x8
-template <intptr_t DIM, intptr_t FINE_SIZE>
+template <intptr_t DIM, intptr_t FINE_SIZE, intptr_t FINE_BITS = 8>
 struct IndexPQDecoder {
+    static_assert(
+            FINE_BITS == 8,
+            "Only 8 bits is currently supported for FINE_BITS");
+
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
+
     // Process 1 sample.
     // Performs outputStore = decoded(code)
     static void store(
@@ -32,7 +38,8 @@ struct IndexPQDecoder {
             const intptr_t fineCode = fine[fineCentroidIdx];
 
             const float* const __restrict finePtr = pqFineCentroids +
-                    (fineCentroidIdx * 256 + fineCode) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputStore[i] = *finePtr;
@@ -57,7 +64,8 @@ struct IndexPQDecoder {
             const intptr_t fineCode = fine[fineCentroidIdx];
 
             const float* const __restrict finePtr = pqFineCentroids +
-                    (fineCentroidIdx * 256 + fineCode) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputAccum[i] += weight * (*finePtr);
@@ -88,10 +96,12 @@ struct IndexPQDecoder {
             const intptr_t fineCode1 = fine1[fineCentroidIdx];
 
             const float* const __restrict finePtr0 = pqFineCentroids0 +
-                    (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
                     fineCentroidOffset;
             const float* const __restrict finePtr1 = pqFineCentroids1 +
-                    (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputAccum[i] += weight0 * (*finePtr0) + weight1 * (*finePtr1);
