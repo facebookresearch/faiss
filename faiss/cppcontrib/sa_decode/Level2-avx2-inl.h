@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <faiss/cppcontrib/detail/CoarseBitType.h>
 #include <faiss/cppcontrib/detail/UintReader.h>
 
 namespace faiss {
@@ -189,9 +188,15 @@ struct Index2LevelDecoderImpl<
     static constexpr intptr_t QPOS_LEFT = FINE_SIZE - fineCentroidOffset;
 
     // coarse quantizer storage
-    using coarse_storage_type =
-            typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    // coarse quantizer bytes start from 0
+    // fine quantizer bytes start from N_COARSE_ELEMENTS_BYTES
+    static constexpr intptr_t N_COARSE_ELEMENTS = DIM / COARSE_SIZE;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BITS =
+            N_COARSE_ELEMENTS * COARSE_BITS;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BYTES =
+            (N_COARSE_ELEMENTS_BITS + 7) / 8;
 
     static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
@@ -205,8 +210,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -243,8 +247,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -290,10 +293,8 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse1 = code1;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
-        const uint8_t* const __restrict fine1 =
-                code1 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
+        const uint8_t* const __restrict fine1 = code1 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -361,9 +362,15 @@ struct Index2LevelDecoderImpl<
     static constexpr intptr_t QPOS_LEFT = FINE_SIZE - fineCentroidOffset;
 
     // coarse quantizer storage
-    using coarse_storage_type =
-            typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    // coarse quantizer bytes start from 0
+    // fine quantizer bytes start from N_COARSE_ELEMENTS_BYTES
+    static constexpr intptr_t N_COARSE_ELEMENTS = DIM / COARSE_SIZE;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BITS =
+            N_COARSE_ELEMENTS * COARSE_BITS;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BYTES =
+            (N_COARSE_ELEMENTS_BITS + 7) / 8;
 
     static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
@@ -377,8 +384,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -412,8 +418,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -456,10 +461,8 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse1 = code1;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
-        const uint8_t* const __restrict fine1 =
-                code1 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
+        const uint8_t* const __restrict fine1 = code1 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -522,9 +525,15 @@ struct Index2LevelDecoderImpl<
     static constexpr intptr_t QPOS_LEFT = FINE_SIZE - fineCentroidOffset;
 
     // coarse quantizer storage
-    using coarse_storage_type =
-            typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    // coarse quantizer bytes start from 0
+    // fine quantizer bytes start from N_COARSE_ELEMENTS_BYTES
+    static constexpr intptr_t N_COARSE_ELEMENTS = DIM / COARSE_SIZE;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BITS =
+            N_COARSE_ELEMENTS * COARSE_BITS;
+    static constexpr intptr_t N_COARSE_ELEMENTS_BYTES =
+            (N_COARSE_ELEMENTS_BITS + 7) / 8;
 
     static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
@@ -538,8 +547,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -573,8 +581,7 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse0 = code0;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -617,10 +624,8 @@ struct Index2LevelDecoderImpl<
         const uint8_t* const __restrict coarse1 = code1;
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 =
-                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
-        const uint8_t* const __restrict fine1 =
-                code1 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine0 = code0 + N_COARSE_ELEMENTS_BYTES;
+        const uint8_t* const __restrict fine1 = code1 + N_COARSE_ELEMENTS_BYTES;
 
         // clang-format off
 
@@ -714,7 +719,7 @@ struct Index2LevelDecoderImpl<
 // Suitable for IVF256,PQ[1]x8
 // Suitable for Residual[1]x8,PQ[2]x8
 // Suitable for IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
-// Suitable for Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
+// Suitable for Residual[1]x[9-16 bit],PQ[2]x[3] (such as Residual2x9,PQ8)
 template <
         intptr_t DIM,
         intptr_t COARSE_SIZE,
@@ -723,8 +728,8 @@ template <
         intptr_t FINE_BITS = 8>
 struct Index2LevelDecoder {
     static_assert(
-            COARSE_BITS == 8 || COARSE_BITS == 16,
-            "Only 8 or 16 bits are currently supported for COARSE_BITS");
+            COARSE_BITS == 8 || COARSE_BITS == 10 || COARSE_BITS == 16,
+            "Only 8, 10 or 16 bits are currently supported for COARSE_BITS");
     static_assert(
             FINE_BITS == 8 || FINE_BITS == 10 || FINE_BITS == 16,
             "Only 8, 10 or 16 bits are currently supported for FINE_BITS");
