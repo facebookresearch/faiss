@@ -10,8 +10,14 @@
 //   * Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
 //   * PQ[1]x8
 // Additionally, AVX2 and ARM versions support
+//   * Residual[1]x8,PQ[2]x10
+//   * Residual[1]x8,PQ[2]x16
+//   * Residual1x[9-16 bit],PQ[1]x10 (such as Residual1x9,PQ16x10)
+//   * Residual1x[9-16 bit],PQ[1]x16 (such as Residual1x9,PQ16x16)
 //   * PQ[1]x10
 //   * PQ[1]x16
+// Unfortunately, currently Faiss does not support something like
+//   IVF256,PQ16x10np
 //
 // The goal was to achieve the maximum performance, so the template version it
 // is. The provided index families share the same code for sa_decode.

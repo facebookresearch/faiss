@@ -152,6 +152,7 @@ template <
         intptr_t COARSE_SIZE,
         intptr_t FINE_SIZE,
         intptr_t COARSE_BITS,
+        intptr_t FINE_BITS,
         intptr_t CPOS,
         bool FINE_SIZE_EQ_4 = FINE_SIZE == 4,
         bool QPOS_LEFT_GE_8 = (FINE_SIZE - CPOS % FINE_SIZE >= 8),
@@ -163,6 +164,7 @@ template <
         intptr_t DIM,
         intptr_t COARSE_SIZE,
         intptr_t COARSE_BITS,
+        intptr_t FINE_BITS,
         intptr_t CPOS,
         bool QPOS_LEFT_GE_8,
         bool QPOS_LEFT_GE_4>
@@ -171,6 +173,7 @@ struct Index2LevelDecoderImpl<
         COARSE_SIZE,
         4,
         COARSE_BITS,
+        FINE_BITS,
         CPOS,
         true,
         QPOS_LEFT_GE_8,
@@ -190,6 +193,8 @@ struct Index2LevelDecoderImpl<
             typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
 
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
+
     // process 1 sample
     static void store(
             const float* const __restrict pqCoarseCentroids0,
@@ -209,18 +214,18 @@ struct Index2LevelDecoderImpl<
         // but 8 floats per loop
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 1>::get(fine0);
 
         const __m256 storeValue = elementaryBlock4x2b(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset);
+              pqFineCentroids0 + ((fineCentroidIdx + 0) * FINE_TABLE_BYTES + fineCode0a) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + ((fineCentroidIdx + 1) * FINE_TABLE_BYTES + fineCode0b) * FINE_SIZE + fineCentroidOffset);
 
         _mm256_storeu_ps(outputStore + CPOS, storeValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::store(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::store(
               pqCoarseCentroids0, pqFineCentroids0, code0,
               outputStore);
 
@@ -247,22 +252,22 @@ struct Index2LevelDecoderImpl<
         // but 8 floats per loop
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 1>::get(fine0);
 
         __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x2bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + ((fineCentroidIdx + 0) * FINE_TABLE_BYTES + fineCode0a) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + ((fineCentroidIdx + 1) * FINE_TABLE_BYTES + fineCode0b) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         _mm256_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               outputAccum);
 
@@ -296,32 +301,32 @@ struct Index2LevelDecoderImpl<
         // but 8 floats per loop
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 0>::get(fine0);
-        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 1>::get(fine0);
+        const intptr_t fineCode0a = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 0>::get(fine0);
+        const intptr_t fineCode0b = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 1>::get(fine0);
         const intptr_t coarseCode1 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1a = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 0>::get(fine1);
-        const intptr_t fineCode1b = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx + 1>::get(fine1);
+        const intptr_t fineCode1a = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 0>::get(fine1);
+        const intptr_t fineCode1b = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx + 1>::get(fine1);
 
         __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x2bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 0) * 256 + fineCode0a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids0 + ((fineCentroidIdx + 1) * 256 + fineCode0b) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + ((fineCentroidIdx + 0) * FINE_TABLE_BYTES + fineCode0a) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + ((fineCentroidIdx + 1) * FINE_TABLE_BYTES + fineCode0b) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         existingValue = elementaryBlock4x2bAccum(
               pqCoarseCentroids1 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + ((fineCentroidIdx + 0) * 256 + fineCode1a) * FINE_SIZE + fineCentroidOffset,
-              pqFineCentroids1 + ((fineCentroidIdx + 1) * 256 + fineCode1b) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids1 + ((fineCentroidIdx + 0) * FINE_TABLE_BYTES + fineCode1a) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids1 + ((fineCentroidIdx + 1) * FINE_TABLE_BYTES + fineCode1b) * FINE_SIZE + fineCentroidOffset,
               weight1,
               existingValue);
 
         _mm256_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
               outputAccum);
@@ -335,12 +340,14 @@ template <
         intptr_t COARSE_SIZE,
         intptr_t FINE_SIZE,
         intptr_t COARSE_BITS,
+        intptr_t FINE_BITS,
         intptr_t CPOS>
 struct Index2LevelDecoderImpl<
         DIM,
         COARSE_SIZE,
         FINE_SIZE,
         COARSE_BITS,
+        FINE_BITS,
         CPOS,
         false,
         true,
@@ -357,6 +364,8 @@ struct Index2LevelDecoderImpl<
     using coarse_storage_type =
             typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
     // process 1 sample
     static void store(
@@ -376,16 +385,16 @@ struct Index2LevelDecoderImpl<
         // process chunks, 8 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine0);
 
         const __m256 storeValue = elementaryBlock8x1b(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset);
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset);
 
         _mm256_storeu_ps(outputStore + CPOS, storeValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::store(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::store(
               pqCoarseCentroids0, pqFineCentroids0, code0,
               outputStore);
 
@@ -411,20 +420,20 @@ struct Index2LevelDecoderImpl<
         // process chunks, 8 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine0);
 
         __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock8x1bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         _mm256_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               outputAccum);
 
@@ -457,28 +466,28 @@ struct Index2LevelDecoderImpl<
         // process chunks, 8 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine0);
         const intptr_t coarseCode1 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine1);
+        const intptr_t fineCode1 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine1);
 
         __m256 existingValue = _mm256_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock8x1bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         existingValue = elementaryBlock8x1bAccum(
               pqCoarseCentroids1 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids1 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) * FINE_SIZE + fineCentroidOffset,
               weight1,
               existingValue);
 
         _mm256_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 8>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 8>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
               outputAccum);
@@ -492,12 +501,14 @@ template <
         intptr_t COARSE_SIZE,
         intptr_t FINE_SIZE,
         intptr_t COARSE_BITS,
+        intptr_t FINE_BITS,
         intptr_t CPOS>
 struct Index2LevelDecoderImpl<
         DIM,
         COARSE_SIZE,
         FINE_SIZE,
         COARSE_BITS,
+        FINE_BITS,
         CPOS,
         false,
         false,
@@ -514,6 +525,8 @@ struct Index2LevelDecoderImpl<
     using coarse_storage_type =
             typename detail::CoarseBitType<COARSE_BITS>::bit_type;
     static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
     // process 1 sample
     static void store(
@@ -533,16 +546,16 @@ struct Index2LevelDecoderImpl<
         // process chunks, 4 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine0);
 
         const __m128 storeValue = elementaryBlock4x1b(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset);
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset);
 
         _mm_storeu_ps(outputStore + CPOS, storeValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 4>::store(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 4>::store(
               pqCoarseCentroids0, pqFineCentroids0, code0,
               outputStore);
 
@@ -568,20 +581,20 @@ struct Index2LevelDecoderImpl<
         // process chunks, 4 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8,fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS,fineCentroidIdx>::get(fine0);
 
         __m128 existingValue = _mm_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x1bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         _mm_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 4>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 4>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               outputAccum);
 
@@ -614,28 +627,28 @@ struct Index2LevelDecoderImpl<
         // process chunks, 4 float
 
         const intptr_t coarseCode0 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse0);
-        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine0);
+        const intptr_t fineCode0 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine0);
         const intptr_t coarseCode1 = detail::UintReader<DIM, COARSE_SIZE, COARSE_BITS, coarseCentroidIdx>::get(coarse1);
-        const intptr_t fineCode1 = detail::UintReader<DIM, FINE_SIZE, 8, fineCentroidIdx>::get(fine1);
+        const intptr_t fineCode1 = detail::UintReader<DIM, FINE_SIZE, FINE_BITS, fineCentroidIdx>::get(fine1);
 
         __m128 existingValue = _mm_loadu_ps(outputAccum + CPOS);
 
         existingValue = elementaryBlock4x1bAccum(
               pqCoarseCentroids0 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids0 + (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids0 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) * FINE_SIZE + fineCentroidOffset,
               weight0,
               existingValue);
 
         existingValue = elementaryBlock4x1bAccum(
               pqCoarseCentroids1 + (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode1) * COARSE_SIZE + coarseCentroidOffset,
-              pqFineCentroids1 + (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE + fineCentroidOffset,
+              pqFineCentroids1 + (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) * FINE_SIZE + fineCentroidOffset,
               weight1,
               existingValue);
 
         _mm_storeu_ps(outputAccum + CPOS, existingValue);
 
         // next
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, CPOS + 4>::accum(
+        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, FINE_BITS, CPOS + 4>::accum(
               pqCoarseCentroids0, pqFineCentroids0, code0, weight0,
               pqCoarseCentroids1, pqFineCentroids1, code1, weight1,
               outputAccum);
@@ -650,6 +663,7 @@ template <
         intptr_t COARSE_SIZE,
         intptr_t FINE_SIZE,
         intptr_t COARSE_BITS,
+        intptr_t FINE_BITS,
         bool FINE_SIZE_EQ_4,
         bool QPOS_LEFT_GE_8,
         bool QPOS_LEFT_GE_4>
@@ -658,6 +672,7 @@ struct Index2LevelDecoderImpl<
         COARSE_SIZE,
         FINE_SIZE,
         COARSE_BITS,
+        FINE_BITS,
         DIM,
         FINE_SIZE_EQ_4,
         QPOS_LEFT_GE_8,
@@ -704,11 +719,15 @@ template <
         intptr_t DIM,
         intptr_t COARSE_SIZE,
         intptr_t FINE_SIZE,
-        intptr_t COARSE_BITS = 8>
+        intptr_t COARSE_BITS = 8,
+        intptr_t FINE_BITS = 8>
 struct Index2LevelDecoder {
     static_assert(
             COARSE_BITS == 8 || COARSE_BITS == 16,
             "Only 8 or 16 bits are currently supported for COARSE_BITS");
+    static_assert(
+            FINE_BITS == 8 || FINE_BITS == 10 || FINE_BITS == 16,
+            "Only 8, 10 or 16 bits are currently supported for FINE_BITS");
 
     // Process 1 sample.
     static void store(
@@ -716,7 +735,13 @@ struct Index2LevelDecoder {
             const float* const __restrict pqFineCentroids,
             const uint8_t* const __restrict code,
             float* const __restrict outputStore) {
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, 0>::
+        Index2LevelDecoderImpl<
+                DIM,
+                COARSE_SIZE,
+                FINE_SIZE,
+                COARSE_BITS,
+                FINE_BITS,
+                0>::
                 store(pqCoarseCentroids, pqFineCentroids, code, outputStore);
     }
 
@@ -728,7 +753,13 @@ struct Index2LevelDecoder {
             const uint8_t* const __restrict code,
             const float weight,
             float* const __restrict outputAccum) {
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, 0>::
+        Index2LevelDecoderImpl<
+                DIM,
+                COARSE_SIZE,
+                FINE_SIZE,
+                COARSE_BITS,
+                FINE_BITS,
+                0>::
                 accum(pqCoarseCentroids,
                       pqFineCentroids,
                       code,
@@ -749,7 +780,13 @@ struct Index2LevelDecoder {
             const uint8_t* const __restrict code1,
             const float weight1,
             float* const __restrict outputAccum) {
-        Index2LevelDecoderImpl<DIM, COARSE_SIZE, FINE_SIZE, COARSE_BITS, 0>::
+        Index2LevelDecoderImpl<
+                DIM,
+                COARSE_SIZE,
+                FINE_SIZE,
+                COARSE_BITS,
+                FINE_BITS,
+                0>::
                 accum(pqCoarseCentroids0,
                       pqFineCentroids0,
                       code0,
