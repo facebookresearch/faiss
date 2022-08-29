@@ -156,11 +156,18 @@ void verify(
         ASSERT_FLOAT_EQ(outputFaiss[j], outputContrib1s[j]);
     }
 
-    // test contrib::accum, 2 samples per iteration
+    // test contrib::accum, 2 samples per iteration.
     rng.seed(123);
 
     std::vector<float> outputContrib2s(d, 0);
     for (size_t i = 0; i < n; i += 2) {
+        // populate outputContribs with some existing data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+            outputContrib2s[j] = (j + 1) * (j + 1);
+        }
+
+        // do a single step, 2 samples per step
         const float weight0 = u(rng);
         const float weight1 = u(rng);
 
@@ -174,11 +181,25 @@ void verify(
                 encodedData.data() + (i + 1) * codeSize,
                 weight1,
                 outputContrib2s.data());
-    }
 
-    // verify
-    for (size_t j = 0; j < d; j++) {
-        ASSERT_NEAR(outputFaiss[j], outputContrib2s[j], 1e-2);
+        // do two steps, 1 sample per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data());
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib1s.data());
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2s[j]);
+        }
     }
 }
 
@@ -334,4 +355,15 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ8) {
 TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual4x8_PQ4) {
     using T = faiss::cppcontrib::Index2LevelDecoder<64, 16, 16>;
     test<T>(NSAMPLES, 64, "Residual4x8,PQ4");
+}
+
+//
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF1024_PQ16) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16>;
+    test<T>(NSAMPLES, 256, "IVF1024,PQ16np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D64_Residual1x9_PQ8) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<64, 64, 8, 16>;
+    test<T>(NSAMPLES, 64, "Residual1x9,PQ8");
 }
