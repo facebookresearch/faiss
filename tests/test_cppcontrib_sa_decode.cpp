@@ -500,7 +500,7 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20) {
 }
 
 // implemented for AVX2 so far
-#ifdef __AVX2__
+#if defined(__AVX2__) || defined(__ARM_NEON)
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x10) {
     using T = faiss::cppcontrib::IndexPQDecoder<256, 16, 10>;
     testIndexPQDecoder<T>(NSAMPLES, 256, "PQ16x10np");
