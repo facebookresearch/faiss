@@ -9,7 +9,7 @@
 //   * IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
 //   * Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
 //   * PQ[1]x8
-// Additionally, AVX2 version supports
+// Additionally, AVX2 and ARM versions support
 //   * PQ[1]x10
 //   * PQ[1]x16
 //
