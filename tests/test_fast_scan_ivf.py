@@ -298,8 +298,8 @@ class TestIVFImplem12(unittest.TestCase):
 
     IMPLEM = 12
 
-    def do_test(self, by_residual, metric=faiss.METRIC_L2, d=32):
-        ds = datasets.SyntheticDataset(d, 2000, 5000, 200)
+    def do_test(self, by_residual, metric=faiss.METRIC_L2, d=32, nq=200):
+        ds = datasets.SyntheticDataset(d, 2000, 5000, nq)
 
         index = faiss.index_factory(d, f"IVF32,PQ{d//2}x4np", metric)
         # force coarse quantizer
@@ -350,6 +350,26 @@ class TestIVFImplem12(unittest.TestCase):
     def test_by_residual_odd_dim(self):
         self.do_test(True, d=30)
 
+    # testin single query
+    def test_no_residual_single_query(self):
+        self.do_test(False, nq=1)
+
+    def test_by_residual_single_query(self):
+        self.do_test(True, nq=1)
+
+    def test_no_residual_ip_single_query(self):
+        self.do_test(False, metric=faiss.METRIC_INNER_PRODUCT, nq=1)
+
+    def test_by_residual_ip_single_query(self):
+        self.do_test(True, metric=faiss.METRIC_INNER_PRODUCT, nq=1)
+
+    def test_no_residual_odd_dim_single_query(self):
+        self.do_test(False, d=30, nq=1)
+
+    def test_by_residual_odd_dim_single_query(self):
+        self.do_test(True, d=30, nq=1)
+
+
 
 class TestIVFImplem10(TestIVFImplem12):
     IMPLEM = 10
@@ -361,6 +381,14 @@ class TestIVFImplem11(TestIVFImplem12):
 
 class TestIVFImplem13(TestIVFImplem12):
     IMPLEM = 13
+
+
+class TestIVFImplem14(TestIVFImplem12):
+    IMPLEM = 14
+
+
+class TestIVFImplem15(TestIVFImplem12):
+    IMPLEM = 15
 
 
 class TestAdd(unittest.TestCase):
@@ -536,7 +564,7 @@ class TestIVFAQFastScan(unittest.TestCase):
         # generated programatically below
         for metric in 'L2', 'IP':
             for byr in True, False:
-                for implem in 0, 10, 11, 12, 13:
+                for implem in 0, 10, 11, 12, 13, 14, 15:
                     self.subtest_accuracy('RQ', 'rq', byr, implem, metric)
                     self.subtest_accuracy('LSQ', 'lsq', byr, implem, metric)
 
@@ -579,7 +607,7 @@ class TestIVFAQFastScan(unittest.TestCase):
 
     def xx_test_rescale_accuracy(self):
         for byr in True, False:
-            for implem in 0, 10, 11, 12, 13:
+            for implem in 0, 10, 11, 12, 13, 14, 15:
                 self.subtest_accuracy('RQ', 'rq', byr, implem, 'L2')
                 self.subtest_accuracy('LSQ', 'lsq', byr, implem, 'L2')
 
@@ -702,7 +730,7 @@ def add_TestIVFAQFastScan_subtest_rescale_accuracy(aq, st, by_residual, implem):
     )
 
 for byr in True, False:
-    for implem in 0, 10, 11, 12, 13:
+    for implem in 0, 10, 11, 12, 13, 14, 15:
         for mt in 'L2', 'IP':
             add_TestIVFAQFastScan_subtest_accuracy('RQ', 'rq', byr, implem, mt)
             add_TestIVFAQFastScan_subtest_accuracy('LSQ', 'lsq', byr, implem, mt)
