@@ -16,7 +16,12 @@ file(GLOB FAISS_C_API_GPU_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.h")
 faiss_install_headers("${FAISS_C_API_GPU_HEADERS}" c_api/gpu)
 
 find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas)
+
+if(NOT FAISS_USE_CUDA_TOOLKIT_STATIC)
+  target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas)
+else()
+  target_link_libraries(faiss_c PUBLIC CUDA::cudart_static CUDA::cublas_static)
+endif()
 
 add_executable(example_gpu_c EXCLUDE_FROM_ALL example_gpu_c.c)
 target_link_libraries(example_gpu_c PRIVATE faiss_c)

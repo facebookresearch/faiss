@@ -176,7 +176,14 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
-target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
+
+if(NOT FAISS_USE_CUDA_TOOLKIT_STATIC)
+  target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
+  target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
+else()
+  target_link_libraries(faiss PRIVATE CUDA::cudart_static CUDA::cublas_static)
+  target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart_static CUDA::cublas_static)
+endif()
+
 target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
 target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)

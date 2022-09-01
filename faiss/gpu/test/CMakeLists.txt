@@ -10,7 +10,13 @@ find_package(CUDAToolkit REQUIRED)
 include(GoogleTest)
 
 add_library(faiss_gpu_test_helper TestUtils.cpp)
-target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart)
+target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest)
+
+if(NOT FAISS_USE_CUDA_TOOLKIT_STATIC)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC CUDA::cudart)
+else()
+  target_link_libraries(faiss_gpu_test_helper PUBLIC CUDA::cudart_static)
+endif()
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
@@ -33,4 +39,10 @@ add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
 
 target_link_libraries(demo_ivfpq_indexing_gpu
-  PRIVATE faiss gtest_main CUDA::cudart)
+  PRIVATE faiss gtest_main)
+
+if(NOT FAISS_USE_CUDA_TOOLKIT_STATIC)
+  target_link_libraries(demo_ivfpq_indexing_gpu PRIVATE CUDA::cudart)
+else()
+  target_link_libraries(demo_ivfpq_indexing_gpu PRIVATE CUDA::cudart_static)
+endif()

@@ -22,6 +22,7 @@ option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
 option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
+option(FAISS_USE_CUDA_TOOLKIT_STATIC "Statically link the CUDA toolkit runtime and libraries" OFF)
 
 if(FAISS_ENABLE_GPU)
   set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
