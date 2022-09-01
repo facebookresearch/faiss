@@ -502,6 +502,18 @@ struct simd16uint16 {
                         .template call<&vorrq_u16>()};
     }
 
+    template <
+            typename T,
+            typename std::enable_if<
+                    detail::simdlib::is_simd256bit<T>::value,
+                    std::nullptr_t>::type = nullptr>
+    simd16uint16 operator^(const T& other) const {
+        return simd16uint16{
+                detail::simdlib::binary_func(
+                        data, detail::simdlib::reinterpret_u16(other.data))
+                        .template call<&veorq_u16>()};
+    }
+
     // returns binary masks
     simd16uint16 operator==(const simd16uint16& other) const {
         return simd16uint16{detail::simdlib::binary_func(data, other.data)
@@ -601,6 +613,12 @@ inline uint32_t cmp_le32(
     return detail::simdlib::cmp_xe32<&vcleq_u16>(d0.data, d1.data, thr.data);
 }
 
+// hadd does not cross lanes
+inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
+    return simd16uint16{
+            detail::simdlib::binary_func(a.data, b.data).call<&vpaddq_u16>()};
+}
+
 // vector of 32 unsigned 8-bit integers
 struct simd32uint8 {
     uint8x16x2_t data;
@@ -612,6 +630,47 @@ struct simd32uint8 {
     explicit simd32uint8(uint8_t x) : data{vdupq_n_u8(x), vdupq_n_u8(x)} {}
 
     explicit simd32uint8(const uint8x16x2_t& v) : data{v} {}
+
+    template <
+            uint8_t _0,
+            uint8_t _1,
+            uint8_t _2,
+            uint8_t _3,
+            uint8_t _4,
+            uint8_t _5,
+            uint8_t _6,
+            uint8_t _7,
+            uint8_t _8,
+            uint8_t _9,
+            uint8_t _10,
+            uint8_t _11,
+            uint8_t _12,
+            uint8_t _13,
+            uint8_t _14,
+            uint8_t _15,
+            uint8_t _16,
+            uint8_t _17,
+            uint8_t _18,
+            uint8_t _19,
+            uint8_t _20,
+            uint8_t _21,
+            uint8_t _22,
+            uint8_t _23,
+            uint8_t _24,
+            uint8_t _25,
+            uint8_t _26,
+            uint8_t _27,
+            uint8_t _28,
+            uint8_t _29,
+            uint8_t _30,
+            uint8_t _31>
+    static simd32uint8 create() {
+        constexpr uint8_t ds[32] = {_0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,
+                                    _8,  _9,  _10, _11, _12, _13, _14, _15,
+                                    _16, _17, _18, _19, _20, _21, _22, _23,
+                                    _24, _25, _26, _27, _28, _29, _30, _31};
+        return simd32uint8{ds};
+    }
 
     template <
             typename T,
@@ -836,6 +895,12 @@ struct simd8uint32 {
 
     void set1(uint32_t x) {
         detail::simdlib::set1(data, x).call<&vdupq_n_u32>();
+    }
+
+    simd8uint32 unzip() const {
+        return simd8uint32{uint32x4x2_t{
+                vuzp1q_u32(data.val[0], data.val[1]),
+                vuzp2q_u32(data.val[0], data.val[1])}};
     }
 };
 
