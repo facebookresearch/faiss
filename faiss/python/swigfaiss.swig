@@ -105,6 +105,8 @@ typedef uint64_t size_t;
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexRefine.h>
 
+#include <faiss/IndexRowwiseMinMax.h>
+
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/IndexBinaryFlat.h>
@@ -484,6 +486,7 @@ void gpu_sync_all_devices()
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
+%include  <faiss/IndexRowwiseMinMax.h>
 
 
 %ignore faiss::BufferList::Buffer;
@@ -611,6 +614,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRowwiseMinMax )
+    DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )

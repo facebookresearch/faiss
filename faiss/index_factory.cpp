@@ -44,6 +44,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -795,6 +796,30 @@ std::unique_ptr<Index> index_factory_sub(
                 "could not parse NSG code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp32 version
+    if (description.compare(0, 7, "MinMax,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMax(sub_index.release());
+        index->own_fields = true;
+
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp16 version
+    if (description.compare(0, 11, "MinMaxFP16,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMaxFP16(sub_index.release());
+        index->own_fields = true;
+
         return std::unique_ptr<Index>(index);
     }
 

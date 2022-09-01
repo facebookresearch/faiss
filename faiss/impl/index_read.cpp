@@ -44,6 +44,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -976,6 +977,22 @@ Index* read_index(IOReader* f, int io_flags) {
         ivpq->code_size = pq.code_size;
 
         idx = ivpq;
+    } else if (h == fourcc("IRMf")) {
+        IndexRowwiseMinMax* imm = new IndexRowwiseMinMax();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
+    } else if (h == fourcc("IRMh")) {
+        IndexRowwiseMinMaxFP16* imm = new IndexRowwiseMinMaxFP16();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

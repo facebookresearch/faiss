@@ -40,6 +40,7 @@ set(FAISS_SRC
   IndexPreTransform.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
+  IndexRowwiseMinMax.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   MatrixStats.cpp
@@ -121,6 +122,7 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
+  IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h
