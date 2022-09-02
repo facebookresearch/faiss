@@ -148,11 +148,15 @@ __global__ void ivfIndicesRemove(
     }
 
     if (opt == INDICES_32_BIT) {
-        ((int*) listIndices[listId])[offset] = ((int*) listIndices[listId])[replaceOffset];
-        listIndicesReplaceOffset[vec] = ((int*) listIndices[listId])[replaceOffset];
+        ((int*)listIndices[listId])[offset] =
+                ((int*)listIndices[listId])[replaceOffset];
+        listIndicesReplaceOffset[vec] =
+                ((int*)listIndices[listId])[replaceOffset];
     } else if (opt == INDICES_64_BIT) {
-        ((Index::idx_t*) listIndices[listId])[offset] = ((Index::idx_t*) listIndices[listId])[replaceOffset];
-        listIndicesReplaceOffset[vec] = ((Index::idx_t*) listIndices[listId])[replaceOffset];
+        ((Index::idx_t*)listIndices[listId])[offset] =
+                ((Index::idx_t*)listIndices[listId])[replaceOffset];
+        listIndicesReplaceOffset[vec] =
+                ((Index::idx_t*)listIndices[listId])[replaceOffset];
     }
 }
 
@@ -164,7 +168,6 @@ void runIVFIndicesRemove(
         IndicesOptions opt,
         DeviceVector<void*>& listIndices,
         cudaStream_t stream) {
-
     FAISS_ASSERT(
             opt == INDICES_CPU || opt == INDICES_IVF || opt == INDICES_32_BIT ||
             opt == INDICES_64_BIT);
@@ -175,11 +178,15 @@ void runIVFIndicesRemove(
         int blocks = utils::divUp(num, threads);
 
         ivfIndicesRemove<<<blocks, threads, 0, stream>>>(
-                listIds, listOffset, listReplaceOffset,listIndicesReplaceOffset, opt, listIndices.data());
+                listIds,
+                listOffset,
+                listReplaceOffset,
+                listIndicesReplaceOffset,
+                opt,
+                listIndices.data());
 
         CUDA_TEST_ERROR();
     }
-
 }
 
 //
@@ -363,15 +370,12 @@ void runIVFPQAppend(
     CUDA_TEST_ERROR();
 }
 
-
-
 __global__ void ivfpqRemove(
         Tensor<int, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         Tensor<int, 1, true> listReplaceOffset,
         void** listCodes,
-        size_t codeSize ) {
-
+        size_t codeSize) {
     int encodingToRemove = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (encodingToRemove >= listIds.getSize(0)) {
@@ -386,7 +390,7 @@ __global__ void ivfpqRemove(
         return;
     }
 
-    auto encoding = ((uint8_t*) listCodes[listId]) + replaceOffset * codeSize;
+    auto encoding = ((uint8_t*)listCodes[listId]) + replaceOffset * codeSize;
 
     auto codeStart = ((uint8_t*)listCodes[listId]) + offset * codeSize;
 

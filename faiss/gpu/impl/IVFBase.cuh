@@ -13,9 +13,9 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
 
 namespace faiss {
 struct InvertedLists;
@@ -83,7 +83,7 @@ class IVFBase {
             Tensor<Index::idx_t, 1, true>& indices);
 
     /// remove vectors
-    size_t removeVectors(size_t n,const Index::idx_t* indices);
+    size_t removeVectors(size_t n, const Index::idx_t* indices);
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation
@@ -151,25 +151,24 @@ class IVFBase {
             int listId,
             const Index::idx_t* indices,
             size_t numVecs);
-    
+
     uint64_t locBuild(uint64_t listId, uint64_t offset) {
-      return listId << 32 | offset;
+        return listId << 32 | offset;
     }
     int locListId(uint64_t location) {
-      return static_cast<int>(location >> 32);
+        return static_cast<int>(location >> 32);
     }
     int locOffset(uint64_t location) {
-      return static_cast<int>(location & 0xffffffff);
+        return static_cast<int>(location & 0xffffffff);
     }
     /// do the mapping of index to storage location
-    void indexMapping(const std::vector<int>& listIds,
-                      const std::vector<int>& listOffset,
-                      const HostTensor<Index::idx_t, 1, true>& indices);
+    void indexMapping(
+            const std::vector<int>& listIds,
+            const std::vector<int>& listOffset,
+            const HostTensor<Index::idx_t, 1, true>& indices);
 
     /// do the mapping of index to storage location
-    void indexMapping(int listId,
-                     const Index::idx_t* indices,
-                     size_t numVecs);
+    void indexMapping(int listId, const Index::idx_t* indices, size_t numVecs);
 
    protected:
     /// Collection of GPU resources that we use
@@ -246,7 +245,7 @@ class IVFBase {
     std::vector<std::vector<Index::idx_t>> listOffsetToUserIndex_;
 
     /// use this map to store the mapping of index to storage location
-    std::map<Index::idx_t,uint64_t> indexMap;
+    std::map<Index::idx_t, uint64_t> indexMap;
 };
 
 } // namespace gpu

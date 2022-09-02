@@ -257,12 +257,11 @@ void IVFPQ::appendVectors_(
 }
 
 void IVFPQ::removeVectors_(
-            Tensor<int, 1, true>& listIds,
-            Tensor<int, 1, true>& listOffset,
-            Tensor<int, 1, true>& listReplaceOffset,
-            Tensor<long, 1, true>& listIndicesReplaceOffset,
-            cudaStream_t stream) {
-   
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
+        Tensor<long, 1, true>& listIndicesReplaceOffset,
+        cudaStream_t stream) {
     runIVFIndicesRemove(
             listIds,
             listOffset,
@@ -273,11 +272,9 @@ void IVFPQ::removeVectors_(
             stream);
 
     if (interleavedLayout_) {
-
-        FAISS_ASSERT_MSG(false,"not implemented for interleaved layout");
+        FAISS_ASSERT_MSG(false, "not implemented for interleaved layout");
 
     } else {
-
         runIVFPQRemove(
                 listIds,
                 listOffset,
@@ -286,7 +283,6 @@ void IVFPQ::removeVectors_(
                 getGpuVectorsEncodingSize_(1),
                 stream);
     }
-
 }
 
 size_t IVFPQ::getGpuVectorsEncodingSize_(int numVecs) const {
