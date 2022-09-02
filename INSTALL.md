@@ -56,7 +56,7 @@ conda-forge package "feedstock".
 
 # Installing Faiss via vcpkg
 
-You can also install Faiss using vcpkg with the following command:
+You can also install Faiss using [vcpkg](https://github.com/microsoft/vcpkg) with the following command:
 ```shell
 $ git clone https://github.com/microsoft/vcpkg.git
 
