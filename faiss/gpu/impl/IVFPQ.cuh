@@ -80,6 +80,14 @@ class IVFPQ : public IVFBase {
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) override;
 
+    /// Remove vectors from device
+    void removeVectors_(
+            Tensor<int, 1, true>& listIds,
+            Tensor<int, 1, true>& listOffset,
+            Tensor<int, 1, true>& listReplaceOffset,
+            Tensor<long, 1, true>& listIndicesReplaceOffset,
+            cudaStream_t stream) override;
+
     /// Sets the current product quantizer centroids; the data can be
     /// resident on either the host or the device. It will be transposed
     /// into our preferred data layout

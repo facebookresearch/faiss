@@ -24,6 +24,16 @@ void runIVFIndicesAppend(
         DeviceVector<void*>& listIndices,
         cudaStream_t stream);
 
+/// Remove user indices from IVF lists
+void runIVFIndicesRemove(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
+        Tensor<long, 1, true>& listIndicesReplaceOffset,
+        IndicesOptions opt,
+        DeviceVector<void*>& listIndices,
+        cudaStream_t stream);
+
 /// Update device-side list pointers in a batch
 void runUpdateListPointers(
         Tensor<int, 1, true>& listIds,
@@ -41,6 +51,15 @@ void runIVFPQAppend(
         Tensor<int, 1, true>& listOffset,
         Tensor<uint8_t, 2, true>& encodings,
         DeviceVector<void*>& listCodes,
+        cudaStream_t stream);
+
+/// Remove PQ codes from IVF lists (non-interleaved format)
+void runIVFPQRemove(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true> listReplaceOffset,
+        DeviceVector<void*>& listCodes,
+        size_t codeSize,
         cudaStream_t stream);
 
 /// Append PQ codes to IVF lists (interleaved format)

@@ -12,8 +12,10 @@
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
+#include <faiss/gpu/utils/HostTensor.cuh>
 #include <memory>
 #include <vector>
+#include <map>
 
 namespace faiss {
 struct InvertedLists;
@@ -80,6 +82,9 @@ class IVFBase {
             Tensor<float, 2, true>& vecs,
             Tensor<Index::idx_t, 1, true>& indices);
 
+    /// remove vectors
+    size_t removeVectors(size_t n,const Index::idx_t* indices);
+
    protected:
     /// Adds a set of codes and indices to a list, with the representation
     /// coming from the CPU equivalent
@@ -120,6 +125,14 @@ class IVFBase {
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) = 0;
 
+    /// Remove vectors from device
+    virtual void removeVectors_(
+            Tensor<int, 1, true>& listIds,
+            Tensor<int, 1, true>& listOffset,
+            Tensor<int, 1, true>& listReplaceOffset,
+            Tensor<long, 1, true>& listIndicesReplaceOffset,
+            cudaStream_t stream);
+
     /// Reclaim memory consumed on the device for our inverted lists
     /// `exact` means we trim exactly to the memory needed
     size_t reclaimMemory_(bool exact);
@@ -138,6 +151,25 @@ class IVFBase {
             int listId,
             const Index::idx_t* indices,
             size_t numVecs);
+    
+    uint64_t locBuild(uint64_t listId, uint64_t offset) {
+      return listId << 32 | offset;
+    }
+    int locListId(uint64_t location) {
+      return static_cast<int>(location >> 32);
+    }
+    int locOffset(uint64_t location) {
+      return static_cast<int>(location & 0xffffffff);
+    }
+    /// do the mapping of index to storage location
+    void indexMapping(const std::vector<int>& listIds,
+                      const std::vector<int>& listOffset,
+                      const HostTensor<Index::idx_t, 1, true>& indices);
+
+    /// do the mapping of index to storage location
+    void indexMapping(int listId,
+                     const Index::idx_t* indices,
+                     size_t numVecs);
 
    protected:
     /// Collection of GPU resources that we use
@@ -212,6 +244,9 @@ class IVFBase {
     /// INDICES_CPU), then this maintains a CPU-side map of what
     /// (inverted list id, offset) maps to which user index
     std::vector<std::vector<Index::idx_t>> listOffsetToUserIndex_;
+
+    /// use this map to store the mapping of index to storage location
+    std::map<Index::idx_t,uint64_t> indexMap;
 };
 
 } // namespace gpu

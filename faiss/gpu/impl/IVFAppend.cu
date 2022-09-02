@@ -125,6 +125,63 @@ void runIVFIndicesAppend(
     }
 }
 
+// Remove indices for vectors being removed from the IVF indices lists
+__global__ void ivfIndicesRemove(
+        Tensor<int, 1, true> listIds,
+        Tensor<int, 1, true> listOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
+        Tensor<Index::idx_t, 1, true>& listIndicesReplaceOffset,
+        IndicesOptions opt,
+        void** listIndices) {
+    int vec = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (vec >= listIds.getSize(0)) {
+        return;
+    }
+
+    int listId = listIds[vec];
+    int offset = listOffset[vec];
+    int replaceOffset = listReplaceOffset[vec];
+
+    if (listId == -1 || offset == -1) {
+        return;
+    }
+
+    if (opt == INDICES_32_BIT) {
+        ((int*) listIndices[listId])[offset] = ((int*) listIndices[listId])[replaceOffset];
+        listIndicesReplaceOffset[vec] = ((int*) listIndices[listId])[replaceOffset];
+    } else if (opt == INDICES_64_BIT) {
+        ((Index::idx_t*) listIndices[listId])[offset] = ((Index::idx_t*) listIndices[listId])[replaceOffset];
+        listIndicesReplaceOffset[vec] = ((Index::idx_t*) listIndices[listId])[replaceOffset];
+    }
+}
+
+void runIVFIndicesRemove(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
+        Tensor<long, 1, true>& listIndicesReplaceOffset,
+        IndicesOptions opt,
+        DeviceVector<void*>& listIndices,
+        cudaStream_t stream) {
+
+    FAISS_ASSERT(
+            opt == INDICES_CPU || opt == INDICES_IVF || opt == INDICES_32_BIT ||
+            opt == INDICES_64_BIT);
+
+    if (opt != INDICES_CPU && opt != INDICES_IVF) {
+        int num = listIds.getSize(0);
+        int threads = std::min(num, getMaxThreadsCurrentDevice());
+        int blocks = utils::divUp(num, threads);
+
+        ivfIndicesRemove<<<blocks, threads, 0, stream>>>(
+                listIds, listOffset, listReplaceOffset,listIndicesReplaceOffset, opt, listIndices.data());
+
+        CUDA_TEST_ERROR();
+    }
+
+}
+
 //
 // IVF non-interleaved append
 //
@@ -302,6 +359,54 @@ void runIVFPQAppend(
 
     ivfpqAppend<<<threads, blocks, 0, stream>>>(
             listIds, listOffset, encodings, listCodes.data());
+
+    CUDA_TEST_ERROR();
+}
+
+
+
+__global__ void ivfpqRemove(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true> listReplaceOffset,
+        void** listCodes,
+        size_t codeSize ) {
+
+    int encodingToRemove = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (encodingToRemove >= listIds.getSize(0)) {
+        return;
+    }
+
+    int listId = listIds[encodingToRemove];
+    int offset = listOffset[encodingToRemove];
+    int replaceOffset = listReplaceOffset[encodingToRemove];
+
+    if (listId == -1 || offset == -1) {
+        return;
+    }
+
+    auto encoding = ((uint8_t*) listCodes[listId]) + replaceOffset * codeSize;
+
+    auto codeStart = ((uint8_t*)listCodes[listId]) + offset * codeSize;
+
+    for (size_t i = 0; i < codeSize; ++i) {
+        codeStart[i] = encoding[i];
+    }
+}
+
+void runIVFPQRemove(
+        Tensor<int, 1, true>& listIds,
+        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true> listReplaceOffset,
+        DeviceVector<void*>& listCodes,
+        size_t codeSize,
+        cudaStream_t stream) {
+    int threads = std::min(listIds.getSize(0), getMaxThreadsCurrentDevice());
+    int blocks = utils::divUp(listIds.getSize(0), threads);
+
+    ivfpqRemove<<<threads, blocks, 0, stream>>>(
+            listIds, listOffset, listReplaceOffset, listCodes.data(), codeSize);
 
     CUDA_TEST_ERROR();
 }

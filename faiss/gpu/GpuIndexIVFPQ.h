@@ -131,6 +131,9 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     /// debugging purposes.
     std::vector<Index::idx_t> getListIndices(int listId) const override;
 
+    // removes IDs from the index. Returns the number of elements removed.
+    size_t remove_ids(const IDSelector& sel) override;
+
    public:
     /// Like the CPU version, we expose a publically-visible ProductQuantizer
     /// for manipulation
