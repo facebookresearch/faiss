@@ -54,6 +54,23 @@ If you are having problems using a package built by conda-forge, please raise
 an [issue](https://github.com/conda-forge/faiss-split-feedstock/issues) on the
 conda-forge package "feedstock".
 
+# Installing Faiss via vcpkg
+
+You can also install Faiss using vcpkg with the following command:
+```shell
+$ git clone https://github.com/microsoft/vcpkg.git
+
+# for powershell
+$ ./bootstrap-vcpkg.bat
+# for bash
+$ bootstrap-vcpkg.sh
+
+$ ./vcpkg install faiss
+```
+
+If you are having build issues building Faiss with vcpkg, please raise
+[issue](https://github.com/microsoft/vcpkg/issues) on vcpkg.
+
 # Building from source
 
 Faiss can be built from source using CMake.
