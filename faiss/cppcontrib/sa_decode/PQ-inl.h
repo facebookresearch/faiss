@@ -1,0 +1,113 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+
+namespace faiss {
+namespace cppcontrib {
+
+////////////////////////////////////////////////////////////////////////////////////
+/// IndexPQDecoder
+////////////////////////////////////////////////////////////////////////////////////
+
+// Suitable for PQ[1]x8
+template <intptr_t DIM, intptr_t FINE_SIZE, intptr_t FINE_BITS = 8>
+struct IndexPQDecoder {
+    static_assert(
+            FINE_BITS == 8,
+            "Only 8 bits is currently supported for FINE_BITS");
+
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
+
+    // Process 1 sample.
+    // Performs outputStore = decoded(code)
+    static void store(
+            const float* const __restrict pqFineCentroids,
+            const uint8_t* const __restrict code,
+            float* const __restrict outputStore) {
+        // fine quantizer
+        const uint8_t* const __restrict fine = code;
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t fineCode = fine[fineCentroidIdx];
+
+            const float* const __restrict finePtr = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputStore[i] = *finePtr;
+        }
+    }
+
+    // Process 1 sample.
+    // Performs outputAccum += weight * decoded(code)
+    static void accum(
+            const float* const __restrict pqFineCentroids,
+            const uint8_t* const __restrict code,
+            const float weight,
+            float* const __restrict outputAccum) {
+        // fine quantizer
+        const uint8_t* const __restrict fine = code;
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t fineCode = fine[fineCentroidIdx];
+
+            const float* const __restrict finePtr = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputAccum[i] += weight * (*finePtr);
+        }
+    }
+
+    // process 2 samples
+    // Performs
+    //  outputAccum += weight0 * decoded(code0) + weight1 * decoded(code1)
+    static void accum(
+            const float* const __restrict pqFineCentroids0,
+            const uint8_t* const __restrict code0,
+            const float weight0,
+            const float* const __restrict pqFineCentroids1,
+            const uint8_t* const __restrict code1,
+            const float weight1,
+            float* const __restrict outputAccum) {
+        // fine quantizer
+        const uint8_t* const __restrict fine0 = code0;
+        const uint8_t* const __restrict fine1 = code1;
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t fineCode0 = fine0[fineCentroidIdx];
+            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+
+            const float* const __restrict finePtr0 = pqFineCentroids0 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict finePtr1 = pqFineCentroids1 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputAccum[i] += weight0 * (*finePtr0) + weight1 * (*finePtr1);
+        }
+    }
+};
+
+} // namespace cppcontrib
+} // namespace faiss
