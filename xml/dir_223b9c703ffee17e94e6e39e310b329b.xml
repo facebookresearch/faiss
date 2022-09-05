@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_223b9c703ffee17e94e6e39e310b329b" kind="dir">
+    <compoundname>faiss/cppcontrib/sa_decode</compoundname>
+    <innerfile refid="Level2-avx2-inl_8h">Level2-avx2-inl.h</innerfile>
+    <innerfile refid="Level2-inl_8h">Level2-inl.h</innerfile>
+    <innerfile refid="Level2-neon-inl_8h">Level2-neon-inl.h</innerfile>
+    <innerfile refid="PQ-avx2-inl_8h">PQ-avx2-inl.h</innerfile>
+    <innerfile refid="PQ-inl_8h">PQ-inl.h</innerfile>
+    <innerfile refid="PQ-neon-inl_8h">PQ-neon-inl.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/sa_decode/"/>
+  </compounddef>
+</doxygen>

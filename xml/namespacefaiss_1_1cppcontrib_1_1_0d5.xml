@@ -3,9 +3,10 @@
   <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d5" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib::@5</compoundname>
     <briefdescription>
+<para><ref refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kindref="compound">Index2LevelDecoder</ref>. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/SaDecodeKernels-neon-inl.h" line="13" column="11"/>
+    <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="19" column="11"/>
   </compounddef>
 </doxygen>

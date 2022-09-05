@@ -3,10 +3,12 @@
   <compounddef id="namespacefaiss_1_1cppcontrib" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib</compoundname>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" prot="public">faiss::cppcontrib::Index2LevelDecoder</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" prot="public">faiss::cppcontrib::IndexPQDecoder</innerclass>
+    <innernamespace refid="namespacefaiss_1_1cppcontrib_1_1detail">faiss::cppcontrib::detail</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/SaDecodeKernels-avx2-inl.h" line="11" column="20"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="6" column="20"/>
   </compounddef>
 </doxygen>

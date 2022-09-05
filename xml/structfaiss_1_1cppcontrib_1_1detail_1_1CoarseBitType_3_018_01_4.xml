@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4_1a39c526b1bc2ae7ff4c4693445d822170" prot="public" static="no">
+        <type>uint8_t</type>
+        <definition>using faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;::bit_type =  uint8_t</definition>
+        <argsstring></argsstring>
+        <name>bit_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="14" column="5" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="13" column="21" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="13" bodyend="15"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4_1a39c526b1bc2ae7ff4c4693445d822170" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</scope><name>bit_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

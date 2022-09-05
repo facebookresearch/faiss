@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacefaiss_1_1cppcontrib_1_1detail" kind="namespace" language="C++">
+    <compoundname>faiss::cppcontrib::detail</compoundname>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" prot="public">faiss::cppcontrib::detail::CoarseBitType</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</innerclass>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="UintReader_8h_1a7d4c5421a72ecb5ccaf38b8d13c639b8" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>intptr_t</type>
+            <declname>DIM</declname>
+            <defname>DIM</defname>
+          </param>
+          <param>
+            <type>intptr_t</type>
+            <declname>CODE_SIZE</declname>
+            <defname>CODE_SIZE</defname>
+          </param>
+          <param>
+            <type>intptr_t</type>
+            <declname>CODE_BITS</declname>
+            <defname>CODE_BITS</defname>
+          </param>
+          <param>
+            <type>intptr_t</type>
+            <declname>CPOS</declname>
+            <defname>CPOS</defname>
+          </param>
+        </templateparamlist>
+        <type>typename UintReaderImplType&lt; DIM/CODE_SIZE, CODE_BITS, CPOS &gt;::reader_type</type>
+        <definition>using faiss::cppcontrib::detail::UintReader = typedef typename UintReaderImplType&lt;DIM / CODE_SIZE, CODE_BITS, CPOS&gt;:: reader_type</definition>
+        <argsstring></argsstring>
+        <name>UintReader</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="185" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="UintReader_8h_1a4e74e176d1b9d3deefcce7fa1300cb2d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>intptr_t</type>
+            <declname>N_ELEMENTS</declname>
+            <defname>N_ELEMENTS</defname>
+          </param>
+          <param>
+            <type>intptr_t</type>
+            <declname>CODE_BITS</declname>
+            <defname>CODE_BITS</defname>
+          </param>
+          <param>
+            <type>intptr_t</type>
+            <declname>CPOS</declname>
+            <defname>CPOS</defname>
+          </param>
+        </templateparamlist>
+        <type>typename UintReaderImplType&lt; N_ELEMENTS, CODE_BITS, CPOS &gt;::reader_type</type>
+        <definition>using faiss::cppcontrib::detail::UintReaderRaw = typedef typename UintReaderImplType&lt;N_ELEMENTS, CODE_BITS, CPOS&gt;::reader_type</definition>
+        <argsstring></argsstring>
+        <name>UintReaderRaw</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="190" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="191" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="7" column="16"/>
+  </compounddef>
+</doxygen>

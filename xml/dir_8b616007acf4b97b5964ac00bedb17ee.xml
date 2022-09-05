@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_8b616007acf4b97b5964ac00bedb17ee" kind="dir">
+    <compoundname>faiss/cppcontrib/detail</compoundname>
+    <innerfile refid="CoarseBitType_8h">CoarseBitType.h</innerfile>
+    <innerfile refid="UintReader_8h">UintReader.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/detail/"/>
+  </compounddef>
+</doxygen>

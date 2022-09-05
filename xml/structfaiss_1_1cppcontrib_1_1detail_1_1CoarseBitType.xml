@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::cppcontrib::detail::CoarseBitType</compoundname>
+    <templateparamlist>
+      <param>
+        <type>int</type>
+        <declname>COARSE_BITS</declname>
+        <defname>COARSE_BITS</defname>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="10" column="20" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="10" bodyend="10"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
