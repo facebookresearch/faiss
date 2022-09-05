@@ -6,21 +6,42 @@
 //   function for the following index families:
 //   * IVF256,PQ[1]x8np
 //   * Residual[1]x8,PQ[2]x8
+//   * IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
+//   * Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
+// Additionally, AVX2 and ARM versions support
+//   * Residual[1]x8,PQ[2]x10
+//   * Residual[1]x8,PQ[2]x16
+//   * Residual1x[9-16 bit],PQ[1]x10 (such as Residual1x9,PQ16x10)
+//   * Residual1x[9-16 bit],PQ[1]x16 (such as Residual1x9,PQ16x16)
 //
 // The goal was to achieve the maximum performance, so the template version it
 // is. The provided index families share the same code for sa_decode.
-// The front-end code looks the following:
+//
+// The front-end code provides two high-level structures.
+//
+// First one:
 //   {
-//     template <intptr_t DIM, intptr_t COARSE_SIZE, intptr_t FINE_SIZE>
+//     template <
+//        intptr_t DIM,
+//        intptr_t COARSE_SIZE,
+//        intptr_t FINE_SIZE,
+//        intptr_t COARSE_BITS = 8>
 //     struct Index2LevelDecoder { /*...*/ };
 //   }
 // * DIM is the dimensionality of data
 // * COARSE_SIZE is the dimensionality of the coarse quantizer (IVF, Residual)
 // * FINE_SIZE is the dimensionality of the ProductQuantizer dsq
+// * COARSE_BITS is the number of bits that are needed to represent a coarse
+//   quantizer code.
 // For example, "IVF256,PQ8np" for 160-dim data translates into
-//   Index2LevelDecoder<160,160,20>
+//   Index2LevelDecoder<160,160,20,8>
 // For example, "Residual4x8,PQ16" for 256-dim data translates into
-//   Index2LevelDecoder<256,64,16>
+//   Index2LevelDecoder<256,64,1,8>
+// For example, "IVF1024,PQ16np" for 256-dim data translates into
+//   Index2LevelDecoder<256,256,16,16>
+//
+// Additional supported COARSE_BITS values may be added later.
+// FINE_BITS might be added later.
 //
 // Unlike the general purpose version in faiss::Index::sa_decode(),
 //   this version provides the following functions:
@@ -79,9 +100,9 @@
 //   that I needed.
 
 #ifdef __AVX2__
-#include <faiss/cppcontrib/SaDecodeKernels-avx2-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-avx2-inl.h>
 #elif defined(__ARM_NEON)
-#include <faiss/cppcontrib/SaDecodeKernels-neon-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-neon-inl.h>
 #else
-#include <faiss/cppcontrib/SaDecodeKernels-inl.h>
+#include <faiss/cppcontrib/sa_decode/Level2-inl.h>
 #endif
