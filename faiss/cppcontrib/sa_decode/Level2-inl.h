@@ -5,13 +5,40 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <faiss/cppcontrib/detail/CoarseBitType.h>
+
 namespace faiss {
 namespace cppcontrib {
 
+////////////////////////////////////////////////////////////////////////////////////
+/// Index2LevelDecoder
+////////////////////////////////////////////////////////////////////////////////////
+
 // Suitable for IVF256,PQ[1]x8
 // Suitable for Residual[1]x8,PQ[2]x8
-template <intptr_t DIM, intptr_t COARSE_SIZE, intptr_t FINE_SIZE>
+// Suitable for IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
+// Suitable for Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
+template <
+        intptr_t DIM,
+        intptr_t COARSE_SIZE,
+        intptr_t FINE_SIZE,
+        intptr_t COARSE_BITS = 8,
+        intptr_t FINE_BITS = 8>
 struct Index2LevelDecoder {
+    static_assert(
+            COARSE_BITS == 8 || COARSE_BITS == 16,
+            "Only 8 or 16 bits are currently supported for COARSE_BITS");
+    static_assert(
+            FINE_BITS == 8,
+            "Only 8 bits is currently supported for FINE_BITS");
+
+    // coarse quantizer storage
+    using coarse_storage_type =
+            typename detail::CoarseBitType<COARSE_BITS>::bit_type;
+    static constexpr intptr_t COARSE_TABLE_BYTES = (1 << COARSE_BITS);
+
+    static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
+
     // Process 1 sample.
     // Performs outputStore = decoded(code)
     static void store(
@@ -20,10 +47,12 @@ struct Index2LevelDecoder {
             const uint8_t* const __restrict code,
             float* const __restrict outputStore) {
         // coarse quantizer
-        const uint8_t* const __restrict coarse = code;
+        const coarse_storage_type* const __restrict coarse =
+                reinterpret_cast<const coarse_storage_type*>(code);
 
         // fine quantizer
-        const uint8_t* const __restrict fine = code + (DIM / COARSE_SIZE);
+        const uint8_t* const __restrict fine =
+                code + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
 
 #pragma unroll
         for (intptr_t i = 0; i < DIM; i++) {
@@ -36,10 +65,12 @@ struct Index2LevelDecoder {
             const intptr_t fineCode = fine[fineCentroidIdx];
 
             const float* const __restrict coarsePtr = pqCoarseCentroids +
-                    (coarseCentroidIdx * 256 + coarseCode) * COARSE_SIZE +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode) *
+                            COARSE_SIZE +
                     coarseCentroidOffset;
             const float* const __restrict finePtr = pqFineCentroids +
-                    (fineCentroidIdx * 256 + fineCode) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputStore[i] = *coarsePtr + *finePtr;
@@ -55,10 +86,12 @@ struct Index2LevelDecoder {
             const float weight,
             float* const __restrict outputAccum) {
         // coarse quantizer
-        const uint8_t* const __restrict coarse = code;
+        const coarse_storage_type* const __restrict coarse =
+                reinterpret_cast<const coarse_storage_type*>(code);
 
         // fine quantizer
-        const uint8_t* const __restrict fine = code + (DIM / COARSE_SIZE);
+        const uint8_t* const __restrict fine =
+                code + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
 
 #pragma unroll
         for (intptr_t i = 0; i < DIM; i++) {
@@ -71,10 +104,12 @@ struct Index2LevelDecoder {
             const intptr_t fineCode = fine[fineCentroidIdx];
 
             const float* const __restrict coarsePtr = pqCoarseCentroids +
-                    (coarseCentroidIdx * 256 + coarseCode) * COARSE_SIZE +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode) *
+                            COARSE_SIZE +
                     coarseCentroidOffset;
             const float* const __restrict finePtr = pqFineCentroids +
-                    (fineCentroidIdx * 256 + fineCode) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputAccum[i] += weight * (*coarsePtr + *finePtr);
@@ -95,12 +130,16 @@ struct Index2LevelDecoder {
             const float weight1,
             float* const __restrict outputAccum) {
         // coarse quantizer
-        const uint8_t* const __restrict coarse0 = code0;
-        const uint8_t* const __restrict coarse1 = code1;
+        const coarse_storage_type* const __restrict coarse0 =
+                reinterpret_cast<const coarse_storage_type*>(code0);
+        const coarse_storage_type* const __restrict coarse1 =
+                reinterpret_cast<const coarse_storage_type*>(code1);
 
         // fine quantizer
-        const uint8_t* const __restrict fine0 = code0 + (DIM / COARSE_SIZE);
-        const uint8_t* const __restrict fine1 = code1 + (DIM / COARSE_SIZE);
+        const uint8_t* const __restrict fine0 =
+                code0 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
+        const uint8_t* const __restrict fine1 =
+                code1 + (DIM / COARSE_SIZE) * sizeof(coarse_storage_type);
 
 #pragma unroll
         for (intptr_t i = 0; i < DIM; i++) {
@@ -115,16 +154,20 @@ struct Index2LevelDecoder {
             const intptr_t fineCode1 = fine1[fineCentroidIdx];
 
             const float* const __restrict coarsePtr0 = pqCoarseCentroids0 +
-                    (coarseCentroidIdx * 256 + coarseCode0) * COARSE_SIZE +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode0) *
+                            COARSE_SIZE +
                     coarseCentroidOffset;
             const float* const __restrict finePtr0 = pqFineCentroids0 +
-                    (fineCentroidIdx * 256 + fineCode0) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
                     fineCentroidOffset;
             const float* const __restrict coarsePtr1 = pqCoarseCentroids1 +
-                    (coarseCentroidIdx * 256 + coarseCode1) * COARSE_SIZE +
+                    (coarseCentroidIdx * COARSE_TABLE_BYTES + coarseCode1) *
+                            COARSE_SIZE +
                     coarseCentroidOffset;
             const float* const __restrict finePtr1 = pqFineCentroids1 +
-                    (fineCentroidIdx * 256 + fineCode1) * FINE_SIZE +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
                     fineCentroidOffset;
 
             outputAccum[i] += weight0 * (*coarsePtr0 + *finePtr0) +
