@@ -48,7 +48,7 @@
         <childnode refid="49" relation="include">
         </childnode>
       </node>
-      <node id="60">
+      <node id="61">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
@@ -329,11 +329,13 @@
         </childnode>
         <childnode refid="59" relation="include">
         </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="60" relation="include">
+        <childnode refid="61" relation="include">
         </childnode>
       </node>
       <node id="56">
@@ -417,6 +419,10 @@
       <node id="4">
         <label>faiss/gpu/GpuAutoTune.h</label>
         <link refid="GpuAutoTune_8h_source"/>
+      </node>
+      <node id="60">
+        <label>faiss/IndexRowwiseMinMax.h</label>
+        <link refid="IndexRowwiseMinMax_8h_source"/>
       </node>
       <node id="38">
         <label>faiss/IVFlib.h</label>

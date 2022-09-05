@@ -109,6 +109,9 @@
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexResidualQuantizer" prot="public">faiss::IndexResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexResidualQuantizerFastScan" prot="public">faiss::IndexResidualQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRowwiseMinMax" prot="public">faiss::IndexRowwiseMinMax</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRowwiseMinMaxBase" prot="public">faiss::IndexRowwiseMinMaxBase</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRowwiseMinMaxFP16" prot="public">faiss::IndexRowwiseMinMaxFP16</innerclass>
     <innerclass refid="structfaiss_1_1IndexScalarQuantizer" prot="public">faiss::IndexScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexShardsTemplate" prot="public">faiss::IndexShardsTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
@@ -616,6 +619,33 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexPQ.h" line="157" column="22" declfile="faiss/IndexPQ.h" declline="157" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1aba7a634cdecea2a884b1cb7ee50cb4f3" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::rowwise_minmax_sa_encode_bs</definition>
+        <argsstring></argsstring>
+        <name>rowwise_minmax_sa_encode_bs</name>
+        <briefdescription>
+<para>block size for performing sa_encode and sa_decode </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRowwiseMinMax.h" line="86" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="86" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a437d8466031f88222a50f88e88a7f931" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::rowwise_minmax_sa_decode_bs</definition>
+        <argsstring></argsstring>
+        <name>rowwise_minmax_sa_decode_bs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRowwiseMinMax.h" line="87" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="87" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a9875918581ad243ce5483a090c9da918" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
