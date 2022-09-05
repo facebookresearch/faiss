@@ -45,6 +45,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -774,6 +775,22 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(ivpq->qbs2);
         write_ProductQuantizer(&ivpq->pq, f);
         write_InvertedLists(ivpq->invlists, f);
+    } else if (
+            const IndexRowwiseMinMax* imm =
+                    dynamic_cast<const IndexRowwiseMinMax*>(idx)) {
+        // IndexRowwiseMinmaxFloat
+        uint32_t h = fourcc("IRMf");
+        WRITE1(h);
+        write_index_header(imm, f);
+        write_index(imm->index, f);
+    } else if (
+            const IndexRowwiseMinMaxFP16* imm =
+                    dynamic_cast<const IndexRowwiseMinMaxFP16*>(idx)) {
+        // IndexRowwiseMinmaxHalf
+        uint32_t h = fourcc("IRMh");
+        WRITE1(h);
+        write_index_header(imm, f);
+        write_index(imm->index, f);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }
