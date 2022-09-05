@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>File SaDecodeKernels-inl.h &mdash; Faiss  documentation</title>
+  <title>File PQ-neon-inl.h &mdash; Faiss  documentation</title>
   
 
   
@@ -25,7 +25,7 @@
   
 
   
-    <link rel="canonical" href="https://faiss.ai/cpp_api/file/SaDecodeKernels-inl_8h.html" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/file/PQ-neon-inl_8h.html" />
 
   
   <!--[if lt IE 9]>
@@ -45,8 +45,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="File SaDecodeKernels-neon-inl.h" href="SaDecodeKernels-neon-inl_8h.html" />
-    <link rel="prev" title="File SaDecodeKernels-avx2-inl.h" href="SaDecodeKernels-avx2-inl_8h.html" /> 
+    <link rel="next" title="File Pair.cuh" href="Pair_8cuh.html" />
+    <link rel="prev" title="File PQ-inl.h" href="PQ-inl_8h.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -106,6 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="BlockSelectImpl_8cuh.html">File BlockSelectImpl.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BlockSelectKernel_8cuh.html">File BlockSelectKernel.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Clustering_8h.html">File Clustering.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CoarseBitType_8h.html">File CoarseBitType.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Comparators_8cuh.html">File Comparators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConversionOperators_8cuh.html">File ConversionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CopyUtils_8cuh.html">File CopyUtils.cuh</a></li>
@@ -174,6 +175,9 @@
 <li class="toctree-l2"><a class="reference internal" href="Index_8h.html">File Index.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="InvertedListsIOHook_8h.html">File InvertedListsIOHook.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="InvertedLists_8h.html">File InvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-avx2-inl_8h.html">File Level2-avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-inl_8h.html">File Level2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level2-neon-inl_8h.html">File Level2-neon-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Limits_8cuh.html">File Limits.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoadStoreOperators_8cuh.html">File LoadStoreOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="MathOperators_8cuh.html">File MathOperators.cuh</a></li>
@@ -187,13 +191,13 @@
 <li class="toctree-l2"><a class="reference internal" href="MetricType_8h.html">File MetricType.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NoTypeTensor_8cuh.html">File NoTypeTensor.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OnDiskInvertedLists_8h.html">File OnDiskInvertedLists.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQ-avx2-inl_8h.html">File PQ-avx2-inl.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQ-inl_8h.html">File PQ-inl.h</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File PQ-neon-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Pair_8cuh.html">File Pair.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SaDecodeKernels-avx2-inl_8h.html">File SaDecodeKernels-avx2-inl.h</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">File SaDecodeKernels-inl.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SaDecodeKernels-neon-inl_8h.html">File SaDecodeKernels-neon-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SaDecodeKernels_8h.html">File SaDecodeKernels.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Select_8cuh.html">File Select.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="StackDeviceMemory_8h.html">File StackDeviceMemory.h</a></li>
@@ -205,6 +209,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ThrustUtils_8cuh.html">File ThrustUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Timer_8h.html">File Timer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Transpose_8cuh.html">File Transpose.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UintReader_8h.html">File UintReader.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="VectorTransform_8h.html">File VectorTransform.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WarpPackedBits_8cuh.html">File WarpPackedBits.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WarpSelectImpl_8cuh.html">File WarpSelectImpl.cuh</a></li>
@@ -286,13 +291,13 @@
         
           <li><a href="../filelist.html">File list</a> &raquo;</li>
         
-      <li>File SaDecodeKernels-inl.h</li>
+      <li>File PQ-neon-inl.h</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/cpp_api/file/SaDecodeKernels-inl_8h.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/cpp_api/file/PQ-neon-inl_8h.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -305,8 +310,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="file-sadecodekernels-inl-h">
-<h1>File SaDecodeKernels-inl.h<a class="headerlink" href="#file-sadecodekernels-inl-h" title="Permalink to this heading">¶</a></h1>
+  <section id="file-pq-neon-inl-h">
+<h1>File PQ-neon-inl.h<a class="headerlink" href="#file-pq-neon-inl-h" title="Permalink to this heading">¶</a></h1>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45faiss">
 <span id="_CPPv35faiss"></span><span id="_CPPv25faiss"></span><span id="faiss"></span><span class="target" id="namespacefaiss"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faiss</span></span></span><br /></dt>
@@ -330,9 +335,11 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontribE">
 <span id="_CPPv3N5faiss10cppcontribE"></span><span id="_CPPv2N5faiss10cppcontribE"></span><span id="faiss::cppcontrib"></span><span class="target" id="namespacefaiss_1_1cppcontrib"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cppcontrib</span></span></span><br /></dt>
 <dd><dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE">
-<span id="_CPPv3I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span id="_CPPv2I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DIM</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">COARSE_SIZE</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FINE_SIZE</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Index2LevelDecoder</span></span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib14IndexPQDecoderE">
+<span id="_CPPv3I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib14IndexPQDecoderE"></span><span id="_CPPv2I_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib14IndexPQDecoderE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DIM</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FINE_SIZE</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FINE_BITS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexPQDecoder</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;PQ-inl.h&gt;</em></div>
+</dd></dl>
 
 </dd></dl>
 
@@ -346,8 +353,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="SaDecodeKernels-neon-inl_8h.html" class="btn btn-neutral float-right" title="File SaDecodeKernels-neon-inl.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="SaDecodeKernels-avx2-inl_8h.html" class="btn btn-neutral float-left" title="File SaDecodeKernels-avx2-inl.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Pair_8cuh.html" class="btn btn-neutral float-right" title="File Pair.cuh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PQ-inl_8h.html" class="btn btn-neutral float-left" title="File PQ-inl.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
