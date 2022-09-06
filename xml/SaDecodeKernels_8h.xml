@@ -2,6 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="SaDecodeKernels_8h" kind="file" language="C++">
     <compoundname>SaDecodeKernels.h</compoundname>
+    <includes refid="MinMax-inl_8h" local="no">faiss/cppcontrib/sa_decode/MinMax-inl.h</includes>
+    <includes refid="MinMaxFP16-inl_8h" local="no">faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</includes>
     <includes refid="Level2-inl_8h" local="no">faiss/cppcontrib/sa_decode/Level2-inl.h</includes>
     <includes refid="PQ-inl_8h" local="no">faiss/cppcontrib/sa_decode/PQ-inl.h</includes>
     <incdepgraph>
@@ -10,10 +12,14 @@
         <link refid="SaDecodeKernels_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="12">
         <label>faiss/cppcontrib/sa_decode/PQ-inl.h</label>
         <link refid="PQ-inl_8h_source"/>
         <childnode refid="3" relation="include">
@@ -21,27 +27,69 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="7">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
+      <node id="10">
         <label>faiss/cppcontrib/sa_decode/Level2-inl.h</label>
         <link refid="Level2-inl_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/utils/fp16.h</label>
+        <link refid="fp16_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="4">
         <label>cstdint</label>
       </node>
+      <node id="8">
+        <label>faiss/utils/fp16-inl.h</label>
+        <link refid="fp16-inl_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
       <node id="5">
+        <label>faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h</label>
+        <link refid="MinMaxFP16-inl_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss/cppcontrib/detail/CoarseBitType.h</label>
         <link refid="CoarseBitType_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>faiss/cppcontrib/sa_decode/MinMax-inl.h</label>
+        <link refid="MinMax-inl_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>cstddef</label>
+      </node>
+      <node id="9">
+        <label>algorithm</label>
       </node>
     </incdepgraph>
     <briefdescription>
@@ -203,16 +251,19 @@
 <codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>doable,<sp/>but<sp/>it<sp/>was<sp/>found<sp/>to<sp/>be<sp/>slower<sp/>than<sp/>AVX2<sp/>for<sp/>real<sp/>world<sp/>applications</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>that<sp/>I<sp/>needed.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__ARM_NEON)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="161"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/MinMax-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__ARM_NEON)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-neon-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/Level2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/cppcontrib/sa_decode/PQ-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/SaDecodeKernels.h"/>
   </compounddef>

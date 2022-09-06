@@ -3,6 +3,8 @@
   <compounddef id="namespacefaiss_1_1cppcontrib" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib</compoundname>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" prot="public">faiss::cppcontrib::Index2LevelDecoder</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder" prot="public">faiss::cppcontrib::IndexMinMaxDecoder</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" prot="public">faiss::cppcontrib::IndexMinMaxFP16Decoder</innerclass>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" prot="public">faiss::cppcontrib::IndexPQDecoder</innerclass>
     <innernamespace refid="namespacefaiss_1_1cppcontrib_1_1detail">faiss::cppcontrib::detail</innernamespace>
     <briefdescription>

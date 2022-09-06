@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d8" kind="namespace" language="C++">
-    <compoundname>faiss::cppcontrib::@8</compoundname>
+  <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d12" kind="namespace" language="C++">
+    <compoundname>faiss::cppcontrib::@12</compoundname>
     <briefdescription>
 <para><ref refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" kindref="compound">IndexPQDecoder</ref>. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="19" column="11"/>
+    <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="19" column="11"/>
   </compounddef>
 </doxygen>

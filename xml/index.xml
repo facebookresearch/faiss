@@ -1304,6 +1304,11 @@
   </compound>
   <compound refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kind="struct"><name>faiss::cppcontrib::Index2LevelDecoder</name>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a8246e2a8a9f0acbde2b30a03133386d3" kind="typedef"><name>coarse_storage_type</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a882e1c47862b17e80950460ccbfbe715" kind="variable"><name>dim</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aa2d15439ad8d9db007e34c5d0fde6c0a" kind="variable"><name>coarseSize</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a2f76231cb246817f9efa065153e249bf" kind="variable"><name>fineSize</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a572d7d4eca017ddbfe0373c896150a8a" kind="variable"><name>coarseBits</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5670b07e2e4ea47538ce78094baa5d87" kind="variable"><name>fineBits</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a07fd20a739aba8c9d09f4bdeca52e503" kind="variable"><name>COARSE_TABLE_BYTES</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a0aabe1865f48d3b32c887c1c33cb0f4b" kind="variable"><name>FINE_TABLE_BYTES</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aefda40c1c11715543c8f835c7900291e" kind="function"><name>store</name></member>
@@ -3841,6 +3846,20 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder" kind="struct"><name>faiss::cppcontrib::IndexMinMaxDecoder</name>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1ae3d17b845b8ac32925daf436065f29b9" kind="variable"><name>dim</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a0cf88dc4f18103ed3f5bbcc8244af85a" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a1d014d2fb657b4600917b7b628634f4f" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a13e0bd42f48ab4dc8f9a6825ae6b8a5e" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a62326dc56a784a8122bf08dc2599be85" kind="function"><name>accum</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" kind="struct"><name>faiss::cppcontrib::IndexMinMaxFP16Decoder</name>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa9f873fea4bee08ed32664b003d81b09" kind="variable"><name>dim</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1abeebc156b71fa108b31683f2c92a7123" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa077829fca87fca55037f4a8907b875c" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a72e69902a76d8d3f6e27b090955242c8" kind="function"><name>accum</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IndexNNDescent" kind="struct"><name>faiss::IndexNNDescent</name>
     <member refid="structfaiss_1_1IndexNNDescent_1a548293c07bf7047a4c7995ee5def04a8" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1IndexNNDescent_1ac91c79b77462a85ac82bcea98bde8bb3" kind="typedef"><name>idx_t</name></member>
@@ -4136,6 +4155,9 @@
     <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
   </compound>
   <compound refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" kind="struct"><name>faiss::cppcontrib::IndexPQDecoder</name>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a8c0c9c90a433402a270b3c69cbb03679" kind="variable"><name>dim</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a4fc2e194e2250cab8824f33419a8f73e" kind="variable"><name>fineSize</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a0210b59a89002df104a19396303b229b" kind="variable"><name>fineBits</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1695e68558fd2f4923abe3c69970e085" kind="variable"><name>FINE_TABLE_BYTES</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" kind="function"><name>accum</name></member>
@@ -4674,6 +4696,7 @@
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
     <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1add65ec81582758713652b40bef00b024" kind="function"><name>IndexRowwiseMinMaxBase</name></member>
     <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a4f20ffb075b81b0bee2f74b6aea0773b" kind="function"><name>IndexRowwiseMinMaxBase</name></member>
+    <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a6a5b2154c5736881a4ee75b7b6488b2a" kind="function"><name>~IndexRowwiseMinMaxBase</name></member>
     <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a2c727d28e4d8dc5eedfbea69695cf323" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1afe580e9b82776015a21689ed9a211e47" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1ae2ae0c124b00ce684b6f2195061102f5" kind="function"><name>reset</name></member>
@@ -6369,11 +6392,11 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d87" kind="namespace"><name>faiss::@87</name>
+  <compound refid="namespacefaiss_1_1_0d100" kind="namespace"><name>faiss::@100</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d97" kind="namespace"><name>faiss::@97</name>
+  <compound refid="namespacefaiss_1_1_0d101" kind="namespace"><name>faiss::@101</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d98" kind="namespace"><name>faiss::@98</name>
+  <compound refid="namespacefaiss_1_1_0d89" kind="namespace"><name>faiss::@89</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d99" kind="namespace"><name>faiss::@99</name>
   </compound>
@@ -6381,11 +6404,11 @@
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d10" kind="namespace"><name>faiss::cppcontrib::@10</name>
   </compound>
+  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d12" kind="namespace"><name>faiss::cppcontrib::@12</name>
+  </compound>
   <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d5" kind="namespace"><name>faiss::cppcontrib::@5</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d7" kind="namespace"><name>faiss::cppcontrib::@7</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1cppcontrib_1_1_0d8" kind="namespace"><name>faiss::cppcontrib::@8</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib_1_1detail" kind="namespace"><name>faiss::cppcontrib::detail</name>
     <member refid="UintReader_8h_1a7d4c5421a72ecb5ccaf38b8d13c639b8" kind="typedef"><name>UintReader</name></member>
@@ -6543,6 +6566,10 @@
   <compound refid="Level2-inl_8h" kind="file"><name>Level2-inl.h</name>
   </compound>
   <compound refid="Level2-neon-inl_8h" kind="file"><name>Level2-neon-inl.h</name>
+  </compound>
+  <compound refid="MinMax-inl_8h" kind="file"><name>MinMax-inl.h</name>
+  </compound>
+  <compound refid="MinMaxFP16-inl_8h" kind="file"><name>MinMaxFP16-inl.h</name>
   </compound>
   <compound refid="PQ-avx2-inl_8h" kind="file"><name>PQ-avx2-inl.h</name>
   </compound>

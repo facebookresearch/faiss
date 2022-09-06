@@ -5,6 +5,8 @@
     <innerfile refid="Level2-avx2-inl_8h">Level2-avx2-inl.h</innerfile>
     <innerfile refid="Level2-inl_8h">Level2-inl.h</innerfile>
     <innerfile refid="Level2-neon-inl_8h">Level2-neon-inl.h</innerfile>
+    <innerfile refid="MinMax-inl_8h">MinMax-inl.h</innerfile>
+    <innerfile refid="MinMaxFP16-inl_8h">MinMaxFP16-inl.h</innerfile>
     <innerfile refid="PQ-avx2-inl_8h">PQ-avx2-inl.h</innerfile>
     <innerfile refid="PQ-inl_8h">PQ-inl.h</innerfile>
     <innerfile refid="PQ-neon-inl_8h">PQ-neon-inl.h</innerfile>

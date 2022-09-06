@@ -632,7 +632,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="86" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="86" declcolumn="22"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="87" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="87" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a437d8466031f88222a50f88e88a7f931" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -645,7 +645,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="87" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="87" declcolumn="22"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="88" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="88" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a9875918581ad243ce5483a090c9da918" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>

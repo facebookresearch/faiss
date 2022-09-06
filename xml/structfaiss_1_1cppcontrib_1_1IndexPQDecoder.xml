@@ -22,6 +22,48 @@
       </param>
     </templateparamlist>
       <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a8c0c9c90a433402a270b3c69cbb03679" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr intptr_t</type>
+        <definition>static constexpr intptr_t faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::dim</definition>
+        <argsstring></argsstring>
+        <name>dim</name>
+        <initializer>= DIM</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="752" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="752" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a4fc2e194e2250cab8824f33419a8f73e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr intptr_t</type>
+        <definition>static constexpr intptr_t faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::fineSize</definition>
+        <argsstring></argsstring>
+        <name>fineSize</name>
+        <initializer>= FINE_SIZE</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="753" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="753" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a0210b59a89002df104a19396303b229b" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr intptr_t</type>
+        <definition>static constexpr intptr_t faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::fineBits</definition>
+        <argsstring></argsstring>
+        <name>fineBits</name>
+        <initializer>= FINE_BITS</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="754" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="754" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1695e68558fd2f4923abe3c69970e085" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
         <definition>constexpr intptr_t faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::FINE_TABLE_BYTES</definition>
@@ -34,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="22" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="26" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -61,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="753" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="753" bodyend="759"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="757" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="757" bodyend="763"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -90,7 +132,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="763" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="763" bodyend="770"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="767" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="767" bodyend="774"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -131,7 +173,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="775" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="775" bodyend="791"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="779" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="779" bodyend="795"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -184,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="796" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="796" bodyend="818"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="800" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="800" bodyend="822"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -209,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="26" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="26" bodyend="47"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="30" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="30" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -238,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="51" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="51" bodyend="73"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="55" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="55" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -279,7 +321,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="78" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="78" bodyend="109"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="82" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="82" bodyend="113"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -332,7 +374,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="114" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="114" bodyend="155"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="118" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="118" bodyend="159"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -357,7 +399,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="903" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="903" bodyend="909"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="907" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="907" bodyend="913"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -386,7 +428,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="913" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="913" bodyend="920"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="917" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="917" bodyend="924"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -427,7 +469,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="925" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="925" bodyend="941"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="929" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="929" bodyend="945"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -480,7 +522,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="946" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="946" bodyend="968"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="950" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="950" bodyend="972"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -488,7 +530,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="747" column="21" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="747" bodyend="819"/>
+    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="747" column="21" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="747" bodyend="823"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
@@ -499,7 +541,10 @@
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a8c0c9c90a433402a270b3c69cbb03679" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>dim</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1695e68558fd2f4923abe3c69970e085" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>FINE_TABLE_BYTES</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a0210b59a89002df104a19396303b229b" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>fineBits</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a4fc2e194e2250cab8824f33419a8f73e" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>fineSize</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>store</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>store</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>store</name></member>

@@ -7,6 +7,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="19" column="11"/>
+    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="19" column="11"/>
   </compounddef>
 </doxygen>

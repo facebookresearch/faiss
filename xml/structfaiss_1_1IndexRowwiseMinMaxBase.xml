@@ -151,6 +151,19 @@
         </inbodydescription>
         <location file="faiss/IndexRowwiseMinMax.h" line="43" column="5"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexRowwiseMinMaxBase_1a6a5b2154c5736881a4ee75b7b6488b2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IndexRowwiseMinMaxBase::~IndexRowwiseMinMaxBase</definition>
+        <argsstring>() override</argsstring>
+        <name>~IndexRowwiseMinMaxBase</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRowwiseMinMax.h" line="44" column="5"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRowwiseMinMaxBase_1a2c727d28e4d8dc5eedfbea69695cf323" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::IndexRowwiseMinMaxBase::add</definition>
@@ -182,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="45" column="10"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="46" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRowwiseMinMaxBase_1afe580e9b82776015a21689ed9a211e47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -244,7 +257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="46" column="10"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="47" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRowwiseMinMaxBase_1ae2ae0c124b00ce684b6f2195061102f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -259,7 +272,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="52" column="10"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="53" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRowwiseMinMaxBase_1a594aec2b7bf912824b6d1559ecf85c34" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -282,7 +295,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="54" column="18"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="55" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -964,8 +977,8 @@
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1afe1ce4711953b8a679f83210fee8a30b">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1ac1eaeea883e641e50c5b770fb02edc25">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a9844bbc4ea9311674b0921108988222d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a9844bbc4ea9311674b0921108988222d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1ab04e9ffc561f4de77af64d9ab122d58f">sa_decode</reimplementedby>
@@ -1117,7 +1130,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexRowwiseMinMax.h" line="34" column="35" bodyfile="faiss/IndexRowwiseMinMax.h" bodystart="34" bodyend="55"/>
+    <location file="faiss/IndexRowwiseMinMax.h" line="34" column="35" bodyfile="faiss/IndexRowwiseMinMax.h" bodystart="34" bodyend="56"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a2c727d28e4d8dc5eedfbea69695cf323" prot="public" virt="virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>add_with_ids</name></member>
@@ -1129,8 +1142,8 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>idx_t</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a6def68df271f8809c1ed2cfa3107f082" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>index</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1add65ec81582758713652b40bef00b024" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>IndexRowwiseMinMaxBase</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a4f20ffb075b81b0bee2f74b6aea0773b" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>IndexRowwiseMinMaxBase</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>is_trained</name></member>
@@ -1153,6 +1166,7 @@
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a594aec2b7bf912824b6d1559ecf85c34" prot="public" virt="pure-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>train_inplace</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>~Index</name></member>
+      <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a6a5b2154c5736881a4ee75b7b6488b2a" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxBase</scope><name>~IndexRowwiseMinMaxBase</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

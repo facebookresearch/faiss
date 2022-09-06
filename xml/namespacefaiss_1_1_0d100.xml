@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
-  <compounddef id="namespacefaiss_1_1_0d97" kind="namespace" language="C++">
-    <compoundname>faiss::@97</compoundname>
+  <compounddef id="namespacefaiss_1_1_0d100" kind="namespace" language="C++">
+    <compoundname>faiss::@100</compoundname>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simdlib_avx2.h" line="442" column="11"/>
+    <location file="faiss/utils/simdlib_emulated.h" line="583" column="11"/>
   </compounddef>
 </doxygen>
