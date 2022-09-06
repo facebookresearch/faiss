@@ -1314,6 +1314,12 @@ struct Index2LevelDecoder {
             FINE_BITS == 8 || FINE_BITS == 10 || FINE_BITS == 16,
             "Only 8, 10 or 16 bits are currently supported for FINE_BITS");
 
+    static constexpr intptr_t dim = DIM;
+    static constexpr intptr_t coarseSize = COARSE_SIZE;
+    static constexpr intptr_t fineSize = FINE_SIZE;
+    static constexpr intptr_t coarseBits = COARSE_BITS;
+    static constexpr intptr_t fineBits = FINE_BITS;
+
     // Process 1 sample.
     static void store(
             const float* const __restrict pqCoarseCentroids,

@@ -15,6 +15,7 @@
 #include <faiss/index_factory.h>
 #include <faiss/index_io.h>
 
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/cppcontrib/SaDecodeKernels.h>
 
 using namespace ::testing;
@@ -41,46 +42,47 @@ std::tuple<std::shared_ptr<faiss::Index>, std::vector<uint8_t>> trainDataset(
 }
 
 bool testIfIVFPQ(
-        const std::shared_ptr<faiss::Index>& index,
-        float** pqCoarseCentroidsQ,
-        float** pqFineCentroidsQ) {
+        const faiss::Index* const index,
+        const float** pqCoarseCentroidsQ,
+        const float** pqFineCentroidsQ) {
     if (pqFineCentroidsQ == nullptr || pqCoarseCentroidsQ == nullptr) {
         return false;
     }
 
-    faiss::IndexIVFPQ* const indexQ =
-            dynamic_cast<faiss::IndexIVFPQ*>(index.get());
+    const faiss::IndexIVFPQ* const indexQ =
+            dynamic_cast<const faiss::IndexIVFPQ*>(index);
     if (indexQ == nullptr) {
         return false;
     }
 
-    auto const coarseIndexQ =
-            dynamic_cast<faiss::IndexFlatCodes*>(indexQ->quantizer);
+    const auto coarseIndexQ =
+            dynamic_cast<const faiss::IndexFlatCodes*>(indexQ->quantizer);
     if (coarseIndexQ == nullptr) {
         return false;
     }
 
     *pqFineCentroidsQ = indexQ->pq.centroids.data();
-    *pqCoarseCentroidsQ = reinterpret_cast<float*>(coarseIndexQ->codes.data());
+    *pqCoarseCentroidsQ =
+            reinterpret_cast<const float*>(coarseIndexQ->codes.data());
     return true;
 }
 
 bool testIfResidualPQ(
-        const std::shared_ptr<faiss::Index>& index,
-        float** pqCoarseCentroidsQ,
-        float** pqFineCentroidsQ) {
+        const faiss::Index* const index,
+        const float** pqCoarseCentroidsQ,
+        const float** pqFineCentroidsQ) {
     if (pqFineCentroidsQ == nullptr || pqCoarseCentroidsQ == nullptr) {
         return false;
     }
 
-    faiss::Index2Layer* const indexQ =
-            dynamic_cast<faiss::Index2Layer*>(index.get());
+    const faiss::Index2Layer* const indexQ =
+            dynamic_cast<const faiss::Index2Layer*>(index);
     if (indexQ == nullptr) {
         return false;
     }
 
-    auto const coarseIndexQ =
-            dynamic_cast<faiss::MultiIndexQuantizer*>(indexQ->q1.quantizer);
+    const auto coarseIndexQ = dynamic_cast<const faiss::MultiIndexQuantizer*>(
+            indexQ->q1.quantizer);
     if (coarseIndexQ == nullptr) {
         return false;
     }
@@ -97,12 +99,12 @@ void verifyIndex2LevelDecoder(
         const std::shared_ptr<faiss::Index>& index,
         const std::vector<uint8_t>& encodedData) {
     //
-    float* pqFineCentroidsQ = nullptr;
-    float* pqCoarseCentroidsQ = nullptr;
+    const float* pqFineCentroidsQ = nullptr;
+    const float* pqCoarseCentroidsQ = nullptr;
 
     //
-    testIfIVFPQ(index, &pqCoarseCentroidsQ, &pqFineCentroidsQ);
-    testIfResidualPQ(index, &pqCoarseCentroidsQ, &pqFineCentroidsQ);
+    testIfIVFPQ(index.get(), &pqCoarseCentroidsQ, &pqFineCentroidsQ);
+    testIfResidualPQ(index.get(), &pqCoarseCentroidsQ, &pqFineCentroidsQ);
 
     //
     const size_t codeSize = index->sa_code_size();
@@ -262,13 +264,227 @@ void verifyIndex2LevelDecoder(
 }
 
 template <typename T>
+void verifyMinMaxIndex2LevelDecoder(
+        const uint64_t n,
+        const uint64_t d,
+        const std::shared_ptr<faiss::Index>& index,
+        const std::vector<uint8_t>& encodedData) {
+    //
+    const float* pqFineCentroidsQ = nullptr;
+    const float* pqCoarseCentroidsQ = nullptr;
+
+    // extract an index that is wrapped with IndexRowwiseMinMaxBase
+    const std::shared_ptr<faiss::IndexRowwiseMinMaxBase> indexMinMax =
+            std::dynamic_pointer_cast<faiss::IndexRowwiseMinMaxBase>(index);
+    ASSERT_NE(indexMinMax.get(), nullptr);
+
+    auto subIndex = indexMinMax->index;
+
+    //
+    testIfIVFPQ(subIndex, &pqCoarseCentroidsQ, &pqFineCentroidsQ);
+    testIfResidualPQ(subIndex, &pqCoarseCentroidsQ, &pqFineCentroidsQ);
+
+    //
+    const size_t codeSize = index->sa_code_size();
+
+    //
+    std::default_random_engine rng(123);
+    std::uniform_real_distribution<float> u(0, 1);
+
+    // test general purpose version vs contrib::store
+    std::vector<float> outputFaiss(d, 0);
+    std::vector<float> tmpFaiss(d, 0);
+    std::vector<float> tmpContrib(d, 0);
+    for (size_t i = 0; i < n; i++) {
+        // compute using faiss
+        index->sa_decode(1, encodedData.data() + i * codeSize, tmpFaiss.data());
+
+        // compute using contrib
+        T::store(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + i * codeSize,
+                tmpContrib.data());
+
+        // compare
+        for (size_t j = 0; j < d; j++)
+            ASSERT_FLOAT_EQ(tmpFaiss[j], tmpContrib[j]);
+
+        // save for the further comparison
+        const float weight = u(rng);
+        for (size_t j = 0; j < d; j++)
+            outputFaiss[j] += weight * tmpFaiss[j];
+    }
+
+    // test contrib::accum, 1 sample per iteration.
+    // This needs a way of handling that is different from just IVFPQ and PQ
+    // because of the scaling, but rather similar to how 2 samples per iteration
+    // is processed.
+    rng.seed(123);
+
+    std::vector<float> outputContrib1s(d, 0);
+    float outputMinv1s = 0;
+    for (size_t i = 0; i < n; i++) {
+        // compute using faiss
+        index->sa_decode(1, encodedData.data() + i * codeSize, tmpFaiss.data());
+
+        // populate some initial data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+        }
+        outputMinv1s = 0;
+
+        // generate a weight
+        const float weight0 = u(rng);
+
+        //
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data(),
+                outputMinv1s);
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    tmpFaiss[j] * weight0 + (j + 1) * (j + 1));
+        }
+    }
+
+    // test contrib::accum, 2 samples per iteration.
+    rng.seed(123);
+
+    std::vector<float> outputContrib2s(d, 0);
+    float outputMinv2s = 0;
+    for (size_t i = 0; i < n; i += 2) {
+        // populate outputContribs with some existing data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+            outputContrib2s[j] = (j + 1) * (j + 1);
+        }
+        outputMinv1s = 0;
+        outputMinv2s = 0;
+
+        // do a single step, 2 samples per step
+        const float weight0 = u(rng);
+        const float weight1 = u(rng);
+
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib2s.data(),
+                outputMinv2s);
+
+        // do two steps, 1 sample per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data(),
+                outputMinv1s);
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib1s.data(),
+                outputMinv1s);
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib2s[j] + outputMinv2s);
+        }
+    }
+
+    // test contrib::accum, 3 samples per iteration.
+    rng.seed(123);
+
+    std::vector<float> outputContrib3s(d, 0);
+    float outputMinv3s = 0;
+    const size_t n3 = (n / 3) * 3;
+    for (size_t i = 0; i < n3; i += 3) {
+        // populate outputContribs with some existing data
+        for (size_t j = 0; j < d; j++) {
+            outputContrib1s[j] = (j + 1) * (j + 1);
+            outputContrib3s[j] = (j + 1) * (j + 1);
+        }
+        outputMinv1s = 0;
+        outputMinv3s = 0;
+
+        // do a single step, 3 samples per step
+        const float weight0 = u(rng);
+        const float weight1 = u(rng);
+        const float weight2 = u(rng);
+
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3s.data(),
+                outputMinv3s);
+
+        // do three steps, 1 sample per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                outputContrib1s.data(),
+                outputMinv1s);
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib1s.data(),
+                outputMinv1s);
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib1s.data(),
+                outputMinv1s);
+
+        // compare
+        for (size_t j = 0; j < d; j++) {
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib3s[j] + outputMinv3s);
+        }
+    }
+}
+
+template <typename T>
 void verifyIndexPQDecoder(
         const uint64_t n,
         const uint64_t d,
         const std::shared_ptr<faiss::Index>& index,
         const std::vector<uint8_t>& encodedData) {
     //
-    faiss::IndexPQ* const indexQ = dynamic_cast<faiss::IndexPQ*>(index.get());
+    const faiss::IndexPQ* const indexQ =
+            dynamic_cast<const faiss::IndexPQ*>(index.get());
     const float* const pqFineCentroidsQ = indexQ->pq.centroids.data();
 
     //
@@ -446,6 +662,19 @@ void testIndex2LevelDecoder(
 }
 
 template <typename T>
+void testMinMaxIndex2LevelDecoder(
+        const uint64_t n,
+        const uint64_t d,
+        const std::string& description) {
+    auto data = generate(n, d);
+    std::shared_ptr<faiss::Index> index;
+    std::vector<uint8_t> encodedData;
+    std::tie(index, encodedData) = trainDataset(data, n, d, description);
+
+    verifyMinMaxIndex2LevelDecoder<T>(n, d, index, encodedData);
+}
+
+template <typename T>
 void testIndexPQDecoder(
         const uint64_t n,
         const uint64_t d,
@@ -612,6 +841,20 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16) {
 TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8>;
     testIndexPQDecoder<T>(NSAMPLES, 160, "PQ20np");
+}
+
+// test IndexRowwiseMinMaxFP16
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16) {
+    using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
+    using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
+    testMinMaxIndex2LevelDecoder<T>(NSAMPLES, 256, "MinMaxFP16,IVF256,PQ16np");
+}
+
+// test IndexRowwiseMinMax
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAX_IVF256_PQ16) {
+    using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16>;
+    using T = faiss::cppcontrib::IndexMinMaxDecoder<SubT>;
+    testMinMaxIndex2LevelDecoder<T>(NSAMPLES, 256, "MinMax,IVF256,PQ16np");
 }
 
 // implemented for AVX2 and ARM so far

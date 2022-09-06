@@ -19,6 +19,10 @@ struct IndexPQDecoder {
             FINE_BITS == 8,
             "Only 8 bits is currently supported for FINE_BITS");
 
+    static constexpr intptr_t dim = DIM;
+    static constexpr intptr_t fineSize = FINE_SIZE;
+    static constexpr intptr_t fineBits = FINE_BITS;
+
     static constexpr intptr_t FINE_TABLE_BYTES = (1 << FINE_BITS);
 
     // Process 1 sample.
