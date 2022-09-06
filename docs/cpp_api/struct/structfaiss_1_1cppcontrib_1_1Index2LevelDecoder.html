@@ -45,7 +45,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::cppcontrib::IndexPQDecoder" href="structfaiss_1_1cppcontrib_1_1IndexPQDecoder.html" />
+    <link rel="next" title="Struct faiss::cppcontrib::IndexMinMaxDecoder" href="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder.html" />
     <link rel="prev" title="Struct faiss::VectorTransform" href="structfaiss_1_1VectorTransform.html" /> 
 </head>
 
@@ -265,6 +265,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorTransform.html">Struct faiss::VectorTransform</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::cppcontrib::Index2LevelDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder.html">Struct faiss::cppcontrib::IndexMinMaxDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder.html">Struct faiss::cppcontrib::IndexMinMaxFP16Decoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1IndexPQDecoder.html">Struct faiss::cppcontrib::IndexPQDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType.html">Struct faiss::cppcontrib::detail::CoarseBitType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4.html">Struct faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</a></li>
@@ -449,6 +451,31 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder3dimE">
+<span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder3dimE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder3dimE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::dim__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a882e1c47862b17e80950460ccbfbe715"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::DIM"><span class="n"><span class="pre">DIM</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder10coarseSizeE">
+<span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder10coarseSizeE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder10coarseSizeE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::coarseSize__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aa2d15439ad8d9db007e34c5d0fde6c0a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseSize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::COARSE_SIZE"><span class="n"><span class="pre">COARSE_SIZE</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder8fineSizeE">
+<span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder8fineSizeE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder8fineSizeE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::fineSize__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a2f76231cb246817f9efa065153e249bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineSize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::FINE_SIZE"><span class="n"><span class="pre">FINE_SIZE</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder10coarseBitsE">
+<span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder10coarseBitsE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder10coarseBitsE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::coarseBits__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a572d7d4eca017ddbfe0373c896150a8a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarseBits</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::COARSE_BITS"><span class="n"><span class="pre">COARSE_BITS</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder8fineBitsE">
+<span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder8fineBitsE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder8fineBitsE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::fineBits__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5670b07e2e4ea47538ce78094baa5d87"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fineBits</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::FINE_BITS"><span class="n"><span class="pre">FINE_BITS</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10cppcontrib18Index2LevelDecoder18COARSE_TABLE_BYTESE">
 <span id="_CPPv3N5faiss10cppcontrib18Index2LevelDecoder18COARSE_TABLE_BYTESE"></span><span id="_CPPv2N5faiss10cppcontrib18Index2LevelDecoder18COARSE_TABLE_BYTESE"></span><span id="faiss::cppcontrib::Index2LevelDecoder::COARSE_TABLE_BYTES__intptr_t"></span><span class="target" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a07fd20a739aba8c9d09f4bdeca52e503"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">intptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">COARSE_TABLE_BYTES</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">1</span></span><span class="w"> </span><span class="o"><span class="pre">&lt;&lt;</span></span><span class="w"> </span><a class="reference internal" href="../file/Level2-avx2-inl_8h.html#_CPPv4I_8intptr_t_8intptr_t_8intptr_t_8intptr_t_8intptr_tEN5faiss10cppcontrib18Index2LevelDecoderE" title="faiss::cppcontrib::Index2LevelDecoder::COARSE_BITS"><span class="n"><span class="pre">COARSE_BITS</span></span></a><span class="p"><span class="pre">)</span></span><br /></dt>
 <dd></dd></dl>
@@ -469,7 +496,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="structfaiss_1_1cppcontrib_1_1IndexPQDecoder.html" class="btn btn-neutral float-right" title="Struct faiss::cppcontrib::IndexPQDecoder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder.html" class="btn btn-neutral float-right" title="Struct faiss::cppcontrib::IndexMinMaxDecoder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="structfaiss_1_1VectorTransform.html" class="btn btn-neutral float-left" title="Struct faiss::VectorTransform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
