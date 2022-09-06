@@ -152,6 +152,9 @@
 //   doable, but it was found to be slower than AVX2 for real world applications
 //   that I needed.
 
+#include <faiss/cppcontrib/sa_decode/MinMax-inl.h>
+#include <faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h>
+
 #ifdef __AVX2__
 #include <faiss/cppcontrib/sa_decode/Level2-avx2-inl.h>
 #include <faiss/cppcontrib/sa_decode/PQ-avx2-inl.h>
