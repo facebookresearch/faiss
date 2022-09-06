@@ -777,6 +777,27 @@ def handle_IOReader(the_class):
 
 handle_IOReader(IOReader)
 
+def handle_IndexRowwiseMinMax(the_class):
+    def replacement_train_inplace(self, x):
+        """Trains the index on a representative set of vectors inplace.
+        The index must be trained before vectors can be added to it.
+
+        This call WILL change the values in the input array, because
+        of two scaling proceduces being performed inplace.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        self.train_inplace_c(n, swig_ptr(x))
+
+    replace_method(the_class, 'train_inplace', replacement_train_inplace)
+
 this_module = sys.modules[__name__]
 
 
@@ -805,6 +826,10 @@ for symbol in dir(this_module):
 
         if issubclass(the_class, Quantizer):
             handle_Quantizer(the_class)
+
+        if issubclass(the_class, IndexRowwiseMinMax) or \
+            issubclass(the_class, IndexRowwiseMinMaxFP16):
+            handle_IndexRowwiseMinMax(the_class)
 
 
 ###########################################
@@ -910,6 +935,8 @@ add_ref_in_constructor(IndexIVFLocalSearchQuantizerFastScan, 0)
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
+add_ref_in_constructor(IndexRowwiseMinMax, 0)
+add_ref_in_constructor(IndexRowwiseMinMaxFP16, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)
