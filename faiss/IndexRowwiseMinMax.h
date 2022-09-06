@@ -41,6 +41,7 @@ struct IndexRowwiseMinMaxBase : Index {
     explicit IndexRowwiseMinMaxBase(Index* index);
 
     IndexRowwiseMinMaxBase();
+    ~IndexRowwiseMinMaxBase() override;
 
     void add(idx_t n, const float* x) override;
     void search(
