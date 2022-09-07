@@ -105,6 +105,8 @@ typedef uint64_t size_t;
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexRefine.h>
 
+#include <faiss/IndexRowwiseMinMax.h>
+
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/IndexBinaryFlat.h>
@@ -130,6 +132,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -397,6 +400,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/AdditiveQuantizer.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
+%include  <faiss/impl/ProductAdditiveQuantizer.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -482,6 +486,7 @@ void gpu_sync_all_devices()
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
+%include  <faiss/IndexRowwiseMinMax.h>
 
 
 %ignore faiss::BufferList::Buffer;
@@ -571,8 +576,12 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
     DOWNCAST ( IndexIVFLocalSearchQuantizer )
+    DOWNCAST ( IndexIVFProductResidualQuantizer )
+    DOWNCAST ( IndexIVFProductLocalSearchQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizerFastScan )
     DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexIVFProductResidualQuantizerFastScan )
+    DOWNCAST ( IndexIVFProductLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -585,8 +594,12 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexLocalSearchQuantizer )
     DOWNCAST ( IndexResidualQuantizerFastScan )
     DOWNCAST ( IndexLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexProductResidualQuantizerFastScan )
+    DOWNCAST ( IndexProductLocalSearchQuantizerFastScan )
     DOWNCAST ( ResidualCoarseQuantizer )
     DOWNCAST ( LocalSearchCoarseQuantizer )
+    DOWNCAST ( IndexProductResidualQuantizer )
+    DOWNCAST ( IndexProductLocalSearchQuantizer )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
     DOWNCAST ( IndexLattice )
@@ -601,6 +614,8 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRowwiseMinMax )
+    DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -680,6 +695,8 @@ void gpu_sync_all_devices()
     DOWNCAST (ProductQuantizer)
     DOWNCAST (LocalSearchQuantizer)
     DOWNCAST (ResidualQuantizer)
+    DOWNCAST (ProductLocalSearchQuantizer)
+    DOWNCAST (ProductResidualQuantizer)
     {
         assert(false);
     }

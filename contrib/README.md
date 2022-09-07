@@ -19,7 +19,7 @@ A very simple Remote Procedure Call library, where function parameters and resul
 ### client_server.py
 
 The server handles requests to a Faiss index. The client calls the remote index.
-This is mainly to shard datasets over several machines, see [Distributd index](https://github.com/facebookresearch/faiss/wiki/Indexes-that-do-not-fit-in-RAM#distributed-index)
+This is mainly to shard datasets over several machines, see [Distributed index](https://github.com/facebookresearch/faiss/wiki/Indexes-that-do-not-fit-in-RAM#distributed-index)
 
 ### ondisk.py
 
@@ -52,7 +52,7 @@ A few functions to override the coarse quantizer in IVF, providing additional fl
 
 (may require h5py)
 
-Defintion of how to access data for some standard datsets.
+Definition of how to access data for some standard datasets.
 
 ### factory_tools.py
 

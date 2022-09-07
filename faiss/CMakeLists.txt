@@ -40,6 +40,7 @@ set(FAISS_SRC
   IndexPreTransform.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
+  IndexRowwiseMinMax.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   MatrixStats.cpp
@@ -56,6 +57,7 @@ set(FAISS_SRC
   impl/AdditiveQuantizer.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
+  impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
   impl/index_read.cpp
   impl/index_write.cpp
@@ -120,6 +122,7 @@ set(FAISS_HEADERS
   IndexPreTransform.h
   IndexRefine.h
   IndexReplicas.h
+  IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
   MatrixStats.h
@@ -136,6 +139,7 @@ set(FAISS_HEADERS
   impl/FaissException.h
   impl/HNSW.h
   impl/LocalSearchQuantizer.h
+  impl/ProductAdditiveQuantizer.h
   impl/LookupTableScaler.h
   impl/NNDescent.h
   impl/NSG.h
@@ -165,6 +169,9 @@ set(FAISS_HEADERS
   utils/distances.h
   utils/extra_distances-inl.h
   utils/extra_distances.h
+  utils/fp16-fp16c.h
+  utils/fp16-inl.h
+  utils/fp16.h
   utils/hamming-inl.h
   utils/hamming.h
   utils/ordered_key_value.h

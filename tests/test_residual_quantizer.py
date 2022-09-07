@@ -15,6 +15,7 @@ from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 # Reference implementation of encoding with beam search
 ###########################################################
 
+faiss.omp_set_num_threads(4)
 
 def pairwise_distances(a, b):
     anorms = (a ** 2).sum(1)
@@ -1130,3 +1131,146 @@ class TestCrossCodebookComputations(unittest.TestCase):
         rq.use_beam_LUT = 1
         codes_new = rq.compute_codes(xb)
         np.testing.assert_array_equal(codes_ref_residuals, codes_new)
+
+
+class TestProductResidualQuantizer(unittest.TestCase):
+
+    def test_codec(self):
+        """check that the error is in the same ballpark as PQ."""
+        ds = datasets.SyntheticDataset(64, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+
+        prq = faiss.ProductResidualQuantizer(ds.d, nsplits, Msub, nbits)
+        prq.train(xt)
+        err_prq = eval_codec(prq, xb)
+
+        pq = faiss.ProductQuantizer(ds.d, nsplits * Msub, nbits)
+        pq.train(xt)
+        err_pq = eval_codec(pq, xb)
+
+        print(err_prq, err_pq)
+        self.assertLess(err_prq, err_pq)
+
+    def test_with_rq(self):
+        """compare with RQ when nsplits = 1"""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 4
+
+        prq = faiss.ProductResidualQuantizer(ds.d, 1, M, nbits)
+        prq.train(xt)
+        err_prq = eval_codec(prq, xb)
+
+        rq = faiss.ResidualQuantizer(ds.d, M, nbits)
+        rq.train(xt)
+        err_rq = eval_codec(rq, xb)
+
+        print(err_prq, err_rq)
+        self.assertEqual(err_prq, err_rq)
+
+
+class TestIndexProductResidualQuantizer(unittest.TestCase):
+
+    def test_accuracy1(self):
+        """check that the error is in the same ballpark as RQ."""
+        recall1 = self.eval_index_accuracy("PRQ4x3x5_Nqint8")
+        recall2 = self.eval_index_accuracy("RQ12x5_Nqint8")
+        self.assertGreaterEqual(recall1 * 1.1, recall2)  # 657 vs 665
+
+    def test_accuracy2(self):
+        """when nsplits = 1, PRQ should be the same as RQ"""
+        recall1 = self.eval_index_accuracy("PRQ1x3x5_Nqint8")
+        recall2 = self.eval_index_accuracy("RQ3x5_Nqint8")
+        self.assertEqual(recall1, recall2)
+
+    def eval_index_accuracy(self, index_key):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+        index = faiss.index_factory(ds.d, index_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D, I = index.search(ds.get_queries(), 10)
+        inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        return inter
+
+    def test_factory(self):
+        AQ = faiss.AdditiveQuantizer
+        ns, Msub, nbits = 2, 4, 8
+        index = faiss.index_factory(64, f"PRQ{ns}x{Msub}x{nbits}_Nqint8")
+        assert isinstance(index, faiss.IndexProductResidualQuantizer)
+        self.assertEqual(index.prq.nsplits, ns)
+        self.assertEqual(index.prq.subquantizer(0).M, Msub)
+        self.assertEqual(index.prq.subquantizer(0).nbits.at(0), nbits)
+        self.assertEqual(index.prq.search_type, AQ.ST_norm_qint8)
+
+        code_size = (ns * Msub * nbits + 7) // 8 + 1
+        self.assertEqual(index.prq.code_size, code_size)
+
+
+class TestIndexIVFProductResidualQuantizer(unittest.TestCase):
+
+    def eval_index_accuracy(self, factory_key):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+        index = faiss.index_factory(ds.d, factory_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 5, 10, 20, 50:
+            index.nprobe = nprobe
+            D, I = index.search(ds.get_queries(), 10)
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            inters.append(inter)
+
+        inters = np.array(inters)
+        self.assertTrue(np.all(inters[1:] >= inters[:-1]))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        return inter
+
+    def test_index_accuracy(self):
+        self.eval_index_accuracy("IVF100,PRQ2x2x5_Nqint8")
+
+    def test_index_accuracy2(self):
+        """check that the error is in the same ballpark as RQ."""
+        inter1 = self.eval_index_accuracy("IVF100,PRQ2x2x5_Nqint8")
+        inter2 = self.eval_index_accuracy("IVF100,RQ4x5_Nqint8")
+        # print(inter1, inter2)  # 392 vs 374
+        self.assertGreaterEqual(inter1 * 1.1, inter2)
+
+    def test_factory(self):
+        AQ = faiss.AdditiveQuantizer
+        ns, Msub, nbits = 2, 4, 8
+        index = faiss.index_factory(64, f"IVF100,PRQ{ns}x{Msub}x{nbits}_Nqint8")
+        assert isinstance(index, faiss.IndexIVFProductResidualQuantizer)
+        self.assertEqual(index.nlist, 100)
+        self.assertEqual(index.prq.nsplits, ns)
+        self.assertEqual(index.prq.subquantizer(0).M, Msub)
+        self.assertEqual(index.prq.subquantizer(0).nbits.at(0), nbits)
+        self.assertEqual(index.prq.search_type, AQ.ST_norm_qint8)
+
+        code_size = (ns * Msub * nbits + 7) // 8 + 1
+        self.assertEqual(index.prq.code_size, code_size)

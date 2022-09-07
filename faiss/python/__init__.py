@@ -437,8 +437,7 @@ def handle_Index(the_class):
 
         Returns
         -------
-        x : array_like
-            Reconstructed vector, size `self.d`, `dtype`=float32
+        x : array_like reconstructed vector, size `self.d`, `dtype`=float32
         """
         if x is None:
             x = np.empty(self.d, dtype=np.float32)
@@ -446,6 +445,30 @@ def handle_Index(the_class):
             assert x.shape == (self.d, )
 
         self.reconstruct_c(key, swig_ptr(x))
+        return x
+
+    def replacement_reconstruct_batch(self, key, x=None):
+        """Approximate reconstruction of several vectors from the index.
+
+        Parameters
+        ----------
+        key : array of ints
+            Ids of the vectors to reconstruct
+        x : array_like, optional
+            pre-allocated array to store the results
+
+        Returns
+        -------
+        x : array_like
+            reconstrcuted vectors, size `len(key), self.d`
+        """
+        key = np.ascontiguousarray(key, dtype='int64')
+        n, = key.shape
+        if x is None:
+            x = np.empty((n, self.d), dtype=np.float32)
+        else:
+            assert x.shape == (n, self.d)
+        self.reconstruct_batch_c(n, swig_ptr(key), swig_ptr(x))
         return x
 
     def replacement_reconstruct_n(self, n0, ni, x=None):
@@ -564,6 +587,7 @@ def handle_Index(the_class):
     replace_method(the_class, 'search', replacement_search)
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'reconstruct', replacement_reconstruct)
+    replace_method(the_class, 'reconstruct_batch', replacement_reconstruct_batch)
     replace_method(the_class, 'reconstruct_n', replacement_reconstruct_n)
     replace_method(the_class, 'range_search', replacement_range_search)
     replace_method(the_class, 'update_vectors', replacement_update_vectors,
@@ -753,6 +777,27 @@ def handle_IOReader(the_class):
 
 handle_IOReader(IOReader)
 
+def handle_IndexRowwiseMinMax(the_class):
+    def replacement_train_inplace(self, x):
+        """Trains the index on a representative set of vectors inplace.
+        The index must be trained before vectors can be added to it.
+
+        This call WILL change the values in the input array, because
+        of two scaling proceduces being performed inplace.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        self.train_inplace_c(n, swig_ptr(x))
+
+    replace_method(the_class, 'train_inplace', replacement_train_inplace)
+
 this_module = sys.modules[__name__]
 
 
@@ -781,6 +826,11 @@ for symbol in dir(this_module):
 
         if issubclass(the_class, Quantizer):
             handle_Quantizer(the_class)
+
+        if issubclass(the_class, IndexRowwiseMinMax) or \
+            issubclass(the_class, IndexRowwiseMinMaxFP16):
+            handle_IndexRowwiseMinMax(the_class)
+
 
 ###########################################
 # Utility to add a deprecation warning to
@@ -885,6 +935,8 @@ add_ref_in_constructor(IndexIVFLocalSearchQuantizerFastScan, 0)
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
+add_ref_in_constructor(IndexRowwiseMinMax, 0)
+add_ref_in_constructor(IndexRowwiseMinMaxFP16, 0)
 add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_constructor(IndexHNSW, 0)

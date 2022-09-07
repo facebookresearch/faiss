@@ -499,8 +499,6 @@ IndexIVFLocalSearchQuantizerFastScan::IndexIVFLocalSearchQuantizerFastScan() {
     aq = &lsq;
 }
 
-IndexIVFLocalSearchQuantizerFastScan::~IndexIVFLocalSearchQuantizerFastScan() {}
-
 /********** IndexIVFResidualQuantizerFastScan ************/
 IndexIVFResidualQuantizerFastScan::IndexIVFResidualQuantizerFastScan(
         Index* quantizer,
@@ -527,6 +525,62 @@ IndexIVFResidualQuantizerFastScan::IndexIVFResidualQuantizerFastScan() {
     aq = &rq;
 }
 
-IndexIVFResidualQuantizerFastScan::~IndexIVFResidualQuantizerFastScan() {}
+/********** IndexIVFProductLocalSearchQuantizerFastScan ************/
+IndexIVFProductLocalSearchQuantizerFastScan::
+        IndexIVFProductLocalSearchQuantizerFastScan(
+                Index* quantizer,
+                size_t d,
+                size_t nlist,
+                size_t nsplits,
+                size_t Msub,
+                size_t nbits,
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : IndexIVFAdditiveQuantizerFastScan(
+                  quantizer,
+                  nullptr,
+                  d,
+                  nlist,
+                  metric,
+                  bbs),
+          plsq(d, nsplits, Msub, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4);
+    init(&plsq, nlist, metric, bbs);
+}
+
+IndexIVFProductLocalSearchQuantizerFastScan::
+        IndexIVFProductLocalSearchQuantizerFastScan() {
+    aq = &plsq;
+}
+
+/********** IndexIVFProductResidualQuantizerFastScan ************/
+IndexIVFProductResidualQuantizerFastScan::
+        IndexIVFProductResidualQuantizerFastScan(
+                Index* quantizer,
+                size_t d,
+                size_t nlist,
+                size_t nsplits,
+                size_t Msub,
+                size_t nbits,
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : IndexIVFAdditiveQuantizerFastScan(
+                  quantizer,
+                  nullptr,
+                  d,
+                  nlist,
+                  metric,
+                  bbs),
+          prq(d, nsplits, Msub, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4);
+    init(&prq, nlist, metric, bbs);
+}
+
+IndexIVFProductResidualQuantizerFastScan::
+        IndexIVFProductResidualQuantizerFastScan() {
+    aq = &prq;
+}
 
 } // namespace faiss

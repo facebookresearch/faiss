@@ -32,7 +32,7 @@ static void bench(benchmark::State& state) {
     sq.train(n, x.data());
 
     size_t code_size = sq.code_size;
-    printf("code size: %ld\n", sq.code_size);
+    state.counters["code_size"] = sq.code_size;
 
     // encode
     std::vector<uint8_t> codes(code_size * n);
@@ -42,8 +42,8 @@ static void bench(benchmark::State& state) {
     std::vector<float> x2(d * n);
     sq.decode(codes.data(), x2.data(), n);
 
-    printf("sqL2 recons error: %g\n",
-           fvec_L2sqr(x.data(), x2.data(), n * d) / n);
+    state.counters["sql2_recons_error"] =
+            fvec_L2sqr(x.data(), x2.data(), n * d) / n;
 
     // encode again
     std::vector<uint8_t> codes2(code_size * n);
@@ -55,13 +55,15 @@ static void bench(benchmark::State& state) {
             ndiff++;
     }
 
-    printf("ndiff for idempotence: %ld / %ld\n", ndiff, codes.size());
+    state.counters["ndiff_for_idempotence"] = ndiff;
+
+    state.counters["code_size_two"] = codes.size();
 
     std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
             sq.get_distance_computer());
     dc->codes = codes.data();
     dc->code_size = sq.code_size;
-    printf("code size: %ld\n", dc->code_size);
+    state.counters["code_size_three"] = dc->code_size;
 
     for (auto _ : state) {
         float sum_dis = 0;
@@ -73,6 +75,7 @@ static void bench(benchmark::State& state) {
         }
     }
 }
-
-BENCHMARK(bench);
+// I think maybe n and d should be input arguments
+// for thigns to really make sense, idk.
+BENCHMARK(bench)->Iterations(20);
 BENCHMARK_MAIN();

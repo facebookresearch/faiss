@@ -14,6 +14,7 @@ import unittest
 
 from faiss.contrib import datasets
 
+faiss.omp_set_num_threads(4)
 
 sp = faiss.swig_ptr
 
@@ -494,3 +495,179 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
         D2, I2 = index.search(xq, k=k)
 
         np.testing.assert_array_equal(I, I2)
+
+
+class TestProductLocalSearchQuantizer(unittest.TestCase):
+
+    def test_codec(self):
+        """check that the error is in the same ballpark as PQ."""
+        ds = datasets.SyntheticDataset(64, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        pq = faiss.ProductQuantizer(ds.d, nsplits * Msub, nbits)
+        pq.train(xt)
+        err_pq = eval_codec(pq, xb)
+
+        print(err_plsq, err_pq)
+        self.assertLess(err_plsq, err_pq)
+
+    def test_with_lsq(self):
+        """compare with LSQ when nsplits = 1"""
+        ds = datasets.SyntheticDataset(32, 3000, 3000, 0)
+
+        xt = ds.get_train()
+        xb = ds.get_database()
+
+        M = 4
+        nbits = 4
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, 1, M, nbits)
+        plsq.train(xt)
+        err_plsq = eval_codec(plsq, xb)
+
+        lsq = faiss.LocalSearchQuantizer(ds.d, M, nbits)
+        lsq.train(xt)
+        err_lsq = eval_codec(lsq, xb)
+
+        print(err_plsq, err_lsq)
+        self.assertEqual(err_plsq, err_lsq)
+
+    def test_lut(self):
+        """test compute_LUT function"""
+        ds = datasets.SyntheticDataset(16, 1000, 0, 100)
+
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        nsplits = 2
+        Msub = 2
+        nbits = 4
+        nq, d = xq.shape
+        dsub = d // nsplits
+
+        plsq = faiss.ProductLocalSearchQuantizer(ds.d, nsplits, Msub, nbits)
+        plsq.train(xt)
+
+        subcodebook_size = Msub * (1 << nbits)
+        codebook_size = nsplits * subcodebook_size
+        lut = np.zeros((nq, codebook_size), dtype=np.float32)
+        plsq.compute_LUT(nq, sp(xq), sp(lut))
+
+        codebooks = faiss.vector_to_array(plsq.codebooks)
+        codebooks = codebooks.reshape(nsplits, subcodebook_size, dsub)
+        xq = xq.reshape(nq, nsplits, dsub)
+        lut_ref = np.zeros((nq, nsplits, subcodebook_size), dtype=np.float32)
+        for i in range(nsplits):
+            lut_ref[:, i] = xq[:, i] @ codebooks[i].T
+        lut_ref = lut_ref.reshape(nq, codebook_size)
+
+        # max rtoal in OSX: 2.87e-6
+        np.testing.assert_allclose(lut, lut_ref, rtol=5e-06)
+
+
+class TestIndexProductLocalSearchQuantizer(unittest.TestCase):
+
+    def test_accuracy1(self):
+        """check that the error is in the same ballpark as LSQ."""
+        recall1 = self.eval_index_accuracy("PLSQ4x3x5_Nqint8")
+        recall2 = self.eval_index_accuracy("LSQ12x5_Nqint8")
+        self.assertGreaterEqual(recall1, recall2)  # 622 vs 551
+
+    def test_accuracy2(self):
+        """when nsplits = 1, PLSQ should be almost the same as LSQ"""
+        recall1 = self.eval_index_accuracy("PLSQ1x3x5_Nqint8")
+        recall2 = self.eval_index_accuracy("LSQ3x5_Nqint8")
+        diff = abs(recall1 - recall2)  # 273 vs 275 in OSX
+        self.assertGreaterEqual(5, diff)
+
+    def eval_index_accuracy(self, index_key):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+        index = faiss.index_factory(ds.d, index_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D, I = index.search(ds.get_queries(), 10)
+        inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        return inter
+
+    def test_factory(self):
+        AQ = faiss.AdditiveQuantizer
+        ns, Msub, nbits = 2, 4, 8
+        index = faiss.index_factory(64, f"PLSQ{ns}x{Msub}x{nbits}_Nqint8")
+        assert isinstance(index, faiss.IndexProductLocalSearchQuantizer)
+        self.assertEqual(index.plsq.nsplits, ns)
+        self.assertEqual(index.plsq.subquantizer(0).M, Msub)
+        self.assertEqual(index.plsq.subquantizer(0).nbits.at(0), nbits)
+        self.assertEqual(index.plsq.search_type, AQ.ST_norm_qint8)
+
+        code_size = (ns * Msub * nbits + 7) // 8 + 1
+        self.assertEqual(index.plsq.code_size, code_size)
+
+
+class TestIndexIVFProductLocalSearchQuantizer(unittest.TestCase):
+
+    def eval_index_accuracy(self, factory_key):
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 100)
+        index = faiss.index_factory(ds.d, factory_key)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        inters = []
+        for nprobe in 1, 2, 4, 8, 16:
+            index.nprobe = nprobe
+            D, I = index.search(ds.get_queries(), 10)
+            inter = faiss.eval_intersection(I, ds.get_groundtruth(10))
+            inters.append(inter)
+
+        inters = np.array(inters)
+        self.assertTrue(np.all(inters[1:] >= inters[:-1]))
+
+        # do a little I/O test
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(I2, I)
+        np.testing.assert_array_equal(D2, D)
+
+        return inter
+
+    def test_index_accuracy(self):
+        self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
+
+    def test_index_accuracy2(self):
+        """check that the error is in the same ballpark as LSQ."""
+        inter1 = self.eval_index_accuracy("IVF32,PLSQ2x2x5_Nqint8")
+        inter2 = self.eval_index_accuracy("IVF32,LSQ4x5_Nqint8")
+        # print(inter1, inter2)  # 381 vs 374
+        self.assertGreaterEqual(inter1 * 1.1, inter2)
+
+    def test_factory(self):
+        AQ = faiss.AdditiveQuantizer
+        ns, Msub, nbits = 2, 4, 8
+        index = faiss.index_factory(64, f"IVF32,PLSQ{ns}x{Msub}x{nbits}_Nqint8")
+        assert isinstance(index, faiss.IndexIVFProductLocalSearchQuantizer)
+        self.assertEqual(index.nlist, 32)
+        self.assertEqual(index.plsq.nsplits, ns)
+        self.assertEqual(index.plsq.subquantizer(0).M, Msub)
+        self.assertEqual(index.plsq.subquantizer(0).nbits.at(0), nbits)
+        self.assertEqual(index.plsq.search_type, AQ.ST_norm_qint8)
+
+        code_size = (ns * Msub * nbits + 7) // 8 + 1
+        self.assertEqual(index.plsq.code_size, code_size)

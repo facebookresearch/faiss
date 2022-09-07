@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cinttypes>
 #include <cstdio>
+#include <set>
 
 #include <omp.h>
 
@@ -42,7 +43,9 @@ IndexIVFFastScan::IndexIVFFastScan(
         size_t nlist,
         size_t code_size,
         MetricType metric)
-        : IndexIVF(quantizer, d, nlist, code_size, metric) {}
+        : IndexIVF(quantizer, d, nlist, code_size, metric) {
+    FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
+}
 
 IndexIVFFastScan::IndexIVFFastScan() {
     bbs = 0;
@@ -352,7 +355,7 @@ void IndexIVFFastScan::search_dispatch_implem(
     } else if (impl == 2) {
         search_implem_2<C>(n, x, k, distances, labels, scaler);
 
-    } else if (impl >= 10 && impl <= 13) {
+    } else if (impl >= 10 && impl <= 15) {
         size_t ndis = 0, nlist_visited = 0;
 
         if (n < 2) {
@@ -367,6 +370,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                         &ndis,
                         &nlist_visited,
                         scaler);
+            } else if (impl == 14 || impl == 15) {
+                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
             } else {
                 search_implem_10<C>(
                         n,
@@ -400,35 +405,40 @@ void IndexIVFFastScan::search_dispatch_implem(
                 // LUTs unlikely to be a limiting factor
                 nslice = omp_get_max_threads();
             }
-
+            if (impl == 14 ||
+                impl == 15) { // this might require slicing if there are too
+                              // many queries (for now we keep this simple)
+                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
+            } else {
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
-            for (int slice = 0; slice < nslice; slice++) {
-                idx_t i0 = n * slice / nslice;
-                idx_t i1 = n * (slice + 1) / nslice;
-                float* dis_i = distances + i0 * k;
-                idx_t* lab_i = labels + i0 * k;
-                if (impl == 12 || impl == 13) {
-                    search_implem_12<C>(
-                            i1 - i0,
-                            x + i0 * d,
-                            k,
-                            dis_i,
-                            lab_i,
-                            impl,
-                            &ndis,
-                            &nlist_visited,
-                            scaler);
-                } else {
-                    search_implem_10<C>(
-                            i1 - i0,
-                            x + i0 * d,
-                            k,
-                            dis_i,
-                            lab_i,
-                            impl,
-                            &ndis,
-                            &nlist_visited,
-                            scaler);
+                for (int slice = 0; slice < nslice; slice++) {
+                    idx_t i0 = n * slice / nslice;
+                    idx_t i1 = n * (slice + 1) / nslice;
+                    float* dis_i = distances + i0 * k;
+                    idx_t* lab_i = labels + i0 * k;
+                    if (impl == 12 || impl == 13) {
+                        search_implem_12<C>(
+                                i1 - i0,
+                                x + i0 * d,
+                                k,
+                                dis_i,
+                                lab_i,
+                                impl,
+                                &ndis,
+                                &nlist_visited,
+                                scaler);
+                    } else {
+                        search_implem_10<C>(
+                                i1 - i0,
+                                x + i0 * d,
+                                k,
+                                dis_i,
+                                lab_i,
+                                impl,
+                                &ndis,
+                                &nlist_visited,
+                                scaler);
+                    }
                 }
             }
         }
@@ -920,6 +930,280 @@ void IndexIVFFastScan::search_implem_12(
 
     *ndis_out = ndis;
     *nlist_out = nlist;
+}
+
+template <class C, class Scaler>
+void IndexIVFFastScan::search_implem_14(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        int impl,
+        const Scaler& scaler) const {
+    if (n == 0) { // does not work well with reservoir
+        return;
+    }
+    FAISS_THROW_IF_NOT(bbs == 32);
+
+    std::unique_ptr<idx_t[]> coarse_ids(new idx_t[n * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
+
+    uint64_t ttg0 = get_cy();
+
+    quantizer->search(n, x, nprobe, coarse_dis.get(), coarse_ids.get());
+
+    uint64_t ttg1 = get_cy();
+    uint64_t coarse_search_tt = ttg1 - ttg0;
+
+    size_t dim12 = ksub * M2;
+    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint16_t> biases;
+    std::unique_ptr<float[]> normalizers(new float[2 * n]);
+
+    compute_LUT_uint8(
+            n,
+            x,
+            coarse_ids.get(),
+            coarse_dis.get(),
+            dis_tables,
+            biases,
+            normalizers.get());
+
+    uint64_t ttg2 = get_cy();
+    uint64_t lut_compute_tt = ttg2 - ttg1;
+
+    struct QC {
+        int qno;     // sequence number of the query
+        int list_no; // list to visit
+        int rank;    // this is the rank'th result of the coarse quantizer
+    };
+    bool single_LUT = !lookup_table_is_3d();
+
+    std::vector<QC> qcs;
+    {
+        int ij = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < nprobe; j++) {
+                if (coarse_ids[ij] >= 0) {
+                    qcs.push_back(QC{i, int(coarse_ids[ij]), int(j)});
+                }
+                ij++;
+            }
+        }
+        std::sort(qcs.begin(), qcs.end(), [](const QC& a, const QC& b) {
+            return a.list_no < b.list_no;
+        });
+    }
+
+    struct SE {
+        size_t start; // start in the QC vector
+        size_t end;   // end in the QC vector
+        size_t list_size;
+    };
+    std::vector<SE> ses;
+    size_t i0_l = 0;
+    while (i0_l < qcs.size()) {
+        // find all queries that access this inverted list
+        int list_no = qcs[i0_l].list_no;
+        size_t i1 = i0_l + 1;
+
+        while (i1 < qcs.size() && i1 < i0_l + qbs2) {
+            if (qcs[i1].list_no != list_no) {
+                break;
+            }
+            i1++;
+        }
+
+        size_t list_size = invlists->list_size(list_no);
+
+        if (list_size == 0) {
+            i0_l = i1;
+            continue;
+        }
+        ses.push_back(SE{i0_l, i1, list_size});
+        i0_l = i1;
+    }
+    uint64_t ttg3 = get_cy();
+    uint64_t compute_clusters_tt = ttg3 - ttg2;
+
+    // function to handle the global heap
+    using HeapForIP = CMin<float, idx_t>;
+    using HeapForL2 = CMax<float, idx_t>;
+    auto init_result = [&](float* simi, idx_t* idxi) {
+        if (metric_type == METRIC_INNER_PRODUCT) {
+            heap_heapify<HeapForIP>(k, simi, idxi);
+        } else {
+            heap_heapify<HeapForL2>(k, simi, idxi);
+        }
+    };
+
+    auto add_local_results = [&](const float* local_dis,
+                                 const idx_t* local_idx,
+                                 float* simi,
+                                 idx_t* idxi) {
+        if (metric_type == METRIC_INNER_PRODUCT) {
+            heap_addn<HeapForIP>(k, simi, idxi, local_dis, local_idx, k);
+        } else {
+            heap_addn<HeapForL2>(k, simi, idxi, local_dis, local_idx, k);
+        }
+    };
+
+    auto reorder_result = [&](float* simi, idx_t* idxi) {
+        if (metric_type == METRIC_INNER_PRODUCT) {
+            heap_reorder<HeapForIP>(k, simi, idxi);
+        } else {
+            heap_reorder<HeapForL2>(k, simi, idxi);
+        }
+    };
+    uint64_t ttg4 = get_cy();
+    uint64_t fn_tt = ttg4 - ttg3;
+
+    size_t ndis = 0;
+    size_t nlist_visited = 0;
+
+#pragma omp parallel reduction(+ : ndis, nlist_visited)
+    {
+        // storage for each thread
+        std::vector<idx_t> local_idx(k * n);
+        std::vector<float> local_dis(k * n);
+
+        // prepare the result handlers
+        std::unique_ptr<SIMDResultHandler<C, true>> handler;
+        AlignedTable<uint16_t> tmp_distances;
+
+        using HeapHC = HeapHandler<C, true>;
+        using ReservoirHC = ReservoirHandler<C, true>;
+        using SingleResultHC = SingleResultHandler<C, true>;
+
+        if (k == 1) {
+            handler.reset(new SingleResultHC(n, 0));
+        } else if (impl == 14) {
+            tmp_distances.resize(n * k);
+            handler.reset(
+                    new HeapHC(n, tmp_distances.get(), local_idx.data(), k, 0));
+        } else if (impl == 15) {
+            handler.reset(new ReservoirHC(n, 0, k, 2 * k));
+        }
+
+        int qbs2 = this->qbs2 ? this->qbs2 : 11;
+
+        std::vector<uint16_t> tmp_bias;
+        if (biases.get()) {
+            tmp_bias.resize(qbs2);
+            handler->dbias = tmp_bias.data();
+        }
+
+        uint64_t ttg5 = get_cy();
+        uint64_t handler_tt = ttg5 - ttg4;
+
+        std::set<int> q_set;
+        uint64_t t_copy_pack = 0, t_scan = 0;
+#pragma omp for schedule(dynamic)
+        for (idx_t cluster = 0; cluster < ses.size(); cluster++) {
+            uint64_t tt0 = get_cy();
+            size_t i0 = ses[cluster].start;
+            size_t i1 = ses[cluster].end;
+            size_t list_size = ses[cluster].list_size;
+            nlist_visited++;
+            int list_no = qcs[i0].list_no;
+
+            // re-organize LUTs and biases into the right order
+            int nc = i1 - i0;
+
+            std::vector<int> q_map(nc), lut_entries(nc);
+            AlignedTable<uint8_t> LUT(nc * dim12);
+            memset(LUT.get(), -1, nc * dim12);
+            int qbs = pq4_preferred_qbs(nc);
+
+            for (size_t i = i0; i < i1; i++) {
+                const QC& qc = qcs[i];
+                q_map[i - i0] = qc.qno;
+                q_set.insert(qc.qno);
+                int ij = qc.qno * nprobe + qc.rank;
+                lut_entries[i - i0] = single_LUT ? qc.qno : ij;
+                if (biases.get()) {
+                    tmp_bias[i - i0] = biases[ij];
+                }
+            }
+            pq4_pack_LUT_qbs_q_map(
+                    qbs, M2, dis_tables.get(), lut_entries.data(), LUT.get());
+
+            // access the inverted list
+
+            ndis += (i1 - i0) * list_size;
+
+            InvertedLists::ScopedCodes codes(invlists, list_no);
+            InvertedLists::ScopedIds ids(invlists, list_no);
+
+            // prepare the handler
+
+            handler->ntotal = list_size;
+            handler->q_map = q_map.data();
+            handler->id_map = ids.get();
+            uint64_t tt1 = get_cy();
+
+#define DISPATCH(classHC)                                                  \
+    if (dynamic_cast<classHC*>(handler.get())) {                           \
+        auto* res = static_cast<classHC*>(handler.get());                  \
+        pq4_accumulate_loop_qbs(                                           \
+                qbs, list_size, M2, codes.get(), LUT.get(), *res, scaler); \
+    }
+            DISPATCH(HeapHC)
+            else DISPATCH(ReservoirHC) else DISPATCH(SingleResultHC)
+
+                    uint64_t tt2 = get_cy();
+            t_copy_pack += tt1 - tt0;
+            t_scan += tt2 - tt1;
+        }
+
+        // labels is in-place for HeapHC
+        handler->to_flat_arrays(
+                local_dis.data(),
+                local_idx.data(),
+                skip & 16 ? nullptr : normalizers.get());
+
+#pragma omp single
+        {
+            // we init the results as a heap
+            for (idx_t i = 0; i < n; i++) {
+                init_result(distances + i * k, labels + i * k);
+            }
+        }
+#pragma omp barrier
+#pragma omp critical
+        {
+            // write to global heap  #go over only the queries
+            for (std::set<int>::iterator it = q_set.begin(); it != q_set.end();
+                 ++it) {
+                add_local_results(
+                        local_dis.data() + *it * k,
+                        local_idx.data() + *it * k,
+                        distances + *it * k,
+                        labels + *it * k);
+            }
+
+            IVFFastScan_stats.t_copy_pack += t_copy_pack;
+            IVFFastScan_stats.t_scan += t_scan;
+
+            if (auto* rh = dynamic_cast<ReservoirHC*>(handler.get())) {
+                for (int i = 0; i < 4; i++) {
+                    IVFFastScan_stats.reservoir_times[i] += rh->times[i];
+                }
+            }
+        }
+#pragma omp barrier
+#pragma omp single
+        {
+            for (idx_t i = 0; i < n; i++) {
+                reorder_result(distances + i * k, labels + i * k);
+            }
+        }
+    }
+
+    indexIVF_stats.nq += n;
+    indexIVF_stats.ndis += ndis;
+    indexIVF_stats.nlist += nlist_visited;
 }
 
 void IndexIVFFastScan::reconstruct_from_offset(

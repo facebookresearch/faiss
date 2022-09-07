@@ -16,6 +16,7 @@
 
 #include <faiss/Clustering.h>
 #include <faiss/impl/Quantizer.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
@@ -165,6 +166,9 @@ struct ProductQuantizer : Quantizer {
             float_maxheap_array_t* res,
             bool init_finalize_heap = true) const;
 };
+
+// block size used in ProductQuantizer::compute_codes
+FAISS_API extern int product_quantizer_compute_codes_bs;
 
 /*************************************************
  * Objects to encode / decode strings of bits

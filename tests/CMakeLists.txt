@@ -21,11 +21,17 @@ set(FAISS_TEST_SRC
   test_transfer_invlists.cpp
   test_mem_leak.cpp
   test_ivfflat_pmode.cpp
+  test_cppcontrib_sa_decode.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
+  if(NOT WIN32)
+    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma>)
+  else()
+    target_compile_options(faiss_test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
+  endif()
   target_link_libraries(faiss_test PRIVATE faiss_avx2)
 else()
   target_link_libraries(faiss_test PRIVATE faiss)

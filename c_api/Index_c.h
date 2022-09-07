@@ -212,6 +212,41 @@ int faiss_Index_compute_residual_n(
         float* residuals,
         const idx_t* keys);
 
+/* The standalone codec interface */
+
+/** The size of the produced codes in bytes.
+ *
+ * @param index   opaque pointer to index object
+ * @param size    the returned size in bytes
+ */
+int faiss_Index_sa_code_size(const FaissIndex* index, size_t* size);
+
+/** encode a set of vectors
+ *
+ * @param index   opaque pointer to index object
+ * @param n       number of vectors
+ * @param x       input vectors, size n * d
+ * @param bytes   output encoded vectors, size n * sa_code_size()
+ */
+int faiss_Index_sa_encode(
+        const FaissIndex* index,
+        idx_t n,
+        const float* x,
+        uint8_t* bytes);
+
+/** encode a set of vectors
+ *
+ * @param index   opaque pointer to index object
+ * @param n       number of vectors
+ * @param bytes   input encoded vectors, size n * sa_code_size()
+ * @param x       output vectors, size n * d
+ */
+int faiss_Index_sa_decode(
+        const FaissIndex* index,
+        idx_t n,
+        const uint8_t* bytes,
+        float* x);
+
 #ifdef __cplusplus
 }
 #endif

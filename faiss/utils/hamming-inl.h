@@ -9,6 +9,60 @@ namespace faiss {
 
 extern const uint8_t hamdis_tab_ham_bytes[256];
 
+/* Elementary Hamming distance computation: unoptimized  */
+template <size_t nbits, typename T>
+inline T hamming(const uint8_t* bs1, const uint8_t* bs2) {
+    const size_t nbytes = nbits / 8;
+    size_t i;
+    T h = 0;
+    for (i = 0; i < nbytes; i++) {
+        h += (T)hamdis_tab_ham_bytes[bs1[i] ^ bs2[i]];
+    }
+    return h;
+}
+
+/* Hamming distances for multiples of 64 bits */
+template <size_t nbits>
+inline hamdis_t hamming(const uint64_t* bs1, const uint64_t* bs2) {
+    const size_t nwords = nbits / 64;
+    size_t i;
+    hamdis_t h = 0;
+    for (i = 0; i < nwords; i++) {
+        h += popcount64(bs1[i] ^ bs2[i]);
+    }
+    return h;
+}
+
+/* specialized (optimized) functions */
+template <>
+inline hamdis_t hamming<64>(const uint64_t* pa, const uint64_t* pb) {
+    return popcount64(pa[0] ^ pb[0]);
+}
+
+template <>
+inline hamdis_t hamming<128>(const uint64_t* pa, const uint64_t* pb) {
+    return popcount64(pa[0] ^ pb[0]) + popcount64(pa[1] ^ pb[1]);
+}
+
+template <>
+inline hamdis_t hamming<256>(const uint64_t* pa, const uint64_t* pb) {
+    return popcount64(pa[0] ^ pb[0]) + popcount64(pa[1] ^ pb[1]) +
+            popcount64(pa[2] ^ pb[2]) + popcount64(pa[3] ^ pb[3]);
+}
+
+/* Hamming distances for multiple of 64 bits */
+inline hamdis_t hamming(
+        const uint64_t* bs1,
+        const uint64_t* bs2,
+        size_t nwords) {
+    hamdis_t h = 0;
+    for (size_t i = 0; i < nwords; i++) {
+        h += popcount64(bs1[i] ^ bs2[i]);
+    }
+    return h;
+}
+
+// BitstringWriter and BitstringReader functions
 inline BitstringWriter::BitstringWriter(uint8_t* code, size_t code_size)
         : code(code), code_size(code_size), i(0) {
     memset(code, 0, code_size);

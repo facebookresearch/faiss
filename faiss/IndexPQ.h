@@ -153,6 +153,9 @@ struct MultiIndexQuantizer : Index {
     void reconstruct(idx_t key, float* recons) const override;
 };
 
+// block size used in MultiIndexQuantizer::search
+FAISS_API extern int multi_index_quantizer_search_bs;
+
 /** MultiIndexQuantizer where the PQ assignmnet is performed by sub-indexes
  */
 struct MultiIndexQuantizer2 : MultiIndexQuantizer {

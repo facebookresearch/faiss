@@ -10,7 +10,7 @@ Hopefully, changing to another type of scheduler should be quite straightforward
 
 ## Distributed k-means
 
-To cluster 500M vectors to 10M centroids, it is useful to have a distriubuted k-means implementation.
+To cluster 500M vectors to 10M centroids, it is useful to have a distributed k-means implementation.
 The distribution simply consists in splitting the training vectors across machines (servers) and have them do the assignment.
 The master/client then synthesizes the results and updates the centroids.
 
@@ -18,7 +18,7 @@ The distributed k-means implementation here is based on 3 files:
 
 - [`distributed_kmeans.py`](distributed_kmeans.py) contains the k-means implementation.
 The main loop of k-means is re-implemented in python but follows closely the Faiss C++ implementation, and should not be significantly less efficient.
-It relies on a `DatasetAssign` object that does the assignement to centrtoids, which is the bulk of the computation.
+It relies on a `DatasetAssign` object that does the assignment to centroids, which is the bulk of the computation.
 The object can be a Faiss CPU index, a GPU index or a set of remote GPU or CPU indexes.
 
 - [`run_on_cluster.bash`](run_on_cluster.bash) contains the shell code to run the distributed k-means on a cluster.
@@ -30,7 +30,7 @@ The file is also assumed to be accessible from all server machines with eg. a di
 
 ### Local tests
 
-Edit `distibuted_kmeans.py` to point `testdata` to your local copy of the dataset.
+Edit `distributed_kmeans.py` to point `testdata` to your local copy of the dataset.
 
 Then, 4 levels of sanity check can be run:
 ```bash
@@ -47,7 +47,7 @@ The output should look like [This gist](https://gist.github.com/mdouze/ffa01fe66
 
 ### Distributed sanity check
 
-To run the distributed k-means, `distibuted_kmeans.py` has to be run both on the servers (`--server` option) and client sides (`--client` option).
+To run the distributed k-means, `distributed_kmeans.py` has to be run both on the servers (`--server` option) and client sides (`--client` option).
 Edit the top of `run_on_cluster.bash` to set the path of the data to cluster.
 
 Sanity checks can be run with
@@ -56,7 +56,7 @@ Sanity checks can be run with
 bash run_on_cluster.bash test_kmeans_0
 # using all the machine's GPUs
 bash run_on_cluster.bash test_kmeans_1
-# distrbuted run, with one local server per GPU
+# distributed run, with one local server per GPU
 bash run_on_cluster.bash test_kmeans_2
 ```
 The test `test_kmeans_2` simulates a distributed run on a single machine by starting one server process per GPU and connecting to the servers via the rpc protocol.
@@ -67,10 +67,10 @@ The output should look like [this gist](https://gist.github.com/mdouze/5b2dc69b7
 ### Distributed run
 
 The way the script can be distributed depends on the cluster's scheduling system.
-Here we use Slurm, but it should be relatively easy to adapt to any scheduler that can allocate a set of matchines and start the same exectuable on all of them.
+Here we use Slurm, but it should be relatively easy to adapt to any scheduler that can allocate a set of machines and start the same executable on all of them.
 
 The command
-```
+```bash
 bash run_on_cluster.bash slurm_distributed_kmeans
 ```
 asks SLURM for 5 machines with 4 GPUs each with the `srun` command.
@@ -90,12 +90,12 @@ The output should look like [this gist](https://gist.github.com/mdouze/8d25e89fb
 For the real run, we run the clustering on 50M vectors to 1M centroids.
 This is just a matter of using as many machines / GPUs as possible in setting the output centroids with the `--out filename` option.
 Then run
-```
+```bash
 bash run_on_cluster.bash deep1b_clustering
 ```
 
 The last lines of output read like:
-```
+```bash
   Iteration 19 (898.92 s, search 875.71 s): objective=1.33601e+07 imbalance=1.303 nsplit=0
  0: writing centroids to /checkpoint/matthijs/ondisk_distributed/1M_centroids.npy
 ```
@@ -121,25 +121,25 @@ This is performed by the script [`make_trained_index.py`](make_trained_index.py)
 
 ## Building the index by slices
 
-We call the slices "vslices" as they are vertical slices of the big matrix, see explanation in the wiki section [Split across datanbase partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions).
+We call the slices "vslices" as they are vertical slices of the big matrix, see explanation in the wiki section [Split across database partitions](https://github.com/facebookresearch/faiss/wiki/Indexing-1T-vectors#split-across-database-partitions).
 
 The script [make_index_vslice.py](make_index_vslice.py) makes an index for a subset of the vectors of the input data and stores it as an independent index.
 There are 200 slices of 5M vectors each for Deep1B.
 It can be run in a brute-force parallel fashion, there is no constraint on ordering.
 To run the script in parallel on a slurm cluster, use:
-```
+```bash
 bash run_on_cluster.bash make_index_vslices
 ```
 For a real dataset, the data would be read from a DBMS.
 In that case, reading the data and indexing it in parallel is worthwhile because reading is very slow.
 
-## Splitting accross inverted lists
+## Splitting across inverted lists
 
 The 200 slices need to be merged together.
 This is done with the script [merge_to_ondisk.py](merge_to_ondisk.py), that memory maps the 200 vertical slice indexes, extracts a subset of the inverted lists and writes them to a contiguous horizontal slice.
 We slice the inverted lists into 50 horizontal slices.
 This is run with
-```
+```bash
 bash run_on_cluster.bash make_index_hslices
 ```
 
@@ -150,11 +150,11 @@ The horizontal slices need to be loaded in the right order and combined into an 
 This is done in the [combined_index.py](combined_index.py) script.
 It provides a `CombinedIndexDeep1B` object that contains an index object that can be searched.
 To test, run:
-```
+```bash
 python combined_index.py
 ```
 The output should look like:
-```
+```bash
 (faiss_1.5.2) matthijs@devfair0144:~/faiss_versions/faiss_1Tcode/faiss/benchs/distributed_ondisk$ python combined_index.py
 reading /checkpoint/matthijs/ondisk_distributed//hslices/slice49.faissindex
 loading empty index /checkpoint/matthijs/ondisk_distributed/trained.faissindex
@@ -169,14 +169,14 @@ ie. searching is a lot slower than from RAM.
 
 ## Distributed query
 
-To reduce the bandwidth required from the machine that does the queries, it is possible to split the search accross several search servers.
+To reduce the bandwidth required from the machine that does the queries, it is possible to split the search across several search servers.
 This way, only the effective results are returned to the main machine.
 
 The search client and server are implemented in [`search_server.py`](search_server.py).
 It can be used as a script to start a search server for `CombinedIndexDeep1B` or as a module to load the clients.
 
 The search servers can be started with
-```
+```bash
 bash run_on_cluster.bash run_search_servers
 ```
 (adjust to the number of servers that can be used).
