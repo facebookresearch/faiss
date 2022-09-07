@@ -139,7 +139,7 @@ struct IVFFlatScanner : InvertedListScanner {
         this->store_pairs = store_pairs;
     }
 
-    const float* xi;
+    const float* xi = NULL;
     void set_query(const float* query) override {
         this->xi = query;
     }
@@ -154,6 +154,7 @@ struct IVFFlatScanner : InvertedListScanner {
                        query_base + queries[i] * d,
                        d * float_size);
             }
+            delete[] xi;
             this->xi = new_xi;
             nx = queries.size();
             store_new_xi = true;
