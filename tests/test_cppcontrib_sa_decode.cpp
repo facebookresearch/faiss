@@ -162,11 +162,13 @@ void verifyIndex2LevelDecoder(
     rng.seed(123);
 
     std::vector<float> outputContrib2s(d, 0);
+    std::vector<float> outputContrib2sSame(d, 0);
     for (size_t i = 0; i < n; i += 2) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib2s[j] = (j + 1) * (j + 1);
+            outputContrib2sSame[j] = (j + 1) * (j + 1);
         }
 
         // do a single step, 2 samples per step
@@ -183,6 +185,16 @@ void verifyIndex2LevelDecoder(
                 encodedData.data() + (i + 1) * codeSize,
                 weight1,
                 outputContrib2s.data());
+
+        // do a single step, 2 samples per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib2sSame.data());
 
         // do two steps, 1 sample per step
         T::accum(
@@ -201,6 +213,7 @@ void verifyIndex2LevelDecoder(
         // compare
         for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2s[j]);
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2sSame[j]);
         }
     }
 
@@ -208,12 +221,14 @@ void verifyIndex2LevelDecoder(
     rng.seed(123);
 
     std::vector<float> outputContrib3s(d, 0);
+    std::vector<float> outputContrib3sSame(d, 0);
     const size_t n3 = (n / 3) * 3;
     for (size_t i = 0; i < n3; i += 3) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib3s[j] = (j + 1) * (j + 1);
+            outputContrib3sSame[j] = (j + 1) * (j + 1);
         }
 
         // do a single step, 3 samples per step
@@ -235,6 +250,18 @@ void verifyIndex2LevelDecoder(
                 encodedData.data() + (i + 2) * codeSize,
                 weight2,
                 outputContrib3s.data());
+
+        // do a single step, 3 samples per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3sSame.data());
 
         // do three steps, 1 sample per step
         T::accum(
@@ -259,6 +286,7 @@ void verifyIndex2LevelDecoder(
         // compare
         for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3s[j]);
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3sSame[j]);
         }
     }
 }
@@ -358,15 +386,19 @@ void verifyMinMaxIndex2LevelDecoder(
     rng.seed(123);
 
     std::vector<float> outputContrib2s(d, 0);
+    std::vector<float> outputContrib2sSame(d, 0);
     float outputMinv2s = 0;
+    float outputMinv2sSame = 0;
     for (size_t i = 0; i < n; i += 2) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib2s[j] = (j + 1) * (j + 1);
+            outputContrib2sSame[j] = (j + 1) * (j + 1);
         }
         outputMinv1s = 0;
         outputMinv2s = 0;
+        outputMinv2sSame = 0;
 
         // do a single step, 2 samples per step
         const float weight0 = u(rng);
@@ -383,6 +415,17 @@ void verifyMinMaxIndex2LevelDecoder(
                 weight1,
                 outputContrib2s.data(),
                 outputMinv2s);
+
+        // do a single step, 2 samples per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib2sSame.data(),
+                outputMinv2sSame);
 
         // do two steps, 1 sample per step
         T::accum(
@@ -405,6 +448,9 @@ void verifyMinMaxIndex2LevelDecoder(
             ASSERT_FLOAT_EQ(
                     outputContrib1s[j] + outputMinv1s,
                     outputContrib2s[j] + outputMinv2s);
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib2sSame[j] + outputMinv2sSame);
         }
     }
 
@@ -413,15 +459,19 @@ void verifyMinMaxIndex2LevelDecoder(
 
     std::vector<float> outputContrib3s(d, 0);
     float outputMinv3s = 0;
+    std::vector<float> outputContrib3sSame(d, 0);
+    float outputMinv3sSame = 0;
     const size_t n3 = (n / 3) * 3;
     for (size_t i = 0; i < n3; i += 3) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib3s[j] = (j + 1) * (j + 1);
+            outputContrib3sSame[j] = (j + 1) * (j + 1);
         }
         outputMinv1s = 0;
         outputMinv3s = 0;
+        outputMinv3sSame = 0;
 
         // do a single step, 3 samples per step
         const float weight0 = u(rng);
@@ -443,6 +493,19 @@ void verifyMinMaxIndex2LevelDecoder(
                 weight2,
                 outputContrib3s.data(),
                 outputMinv3s);
+
+        // do a single step, 3 samples per step
+        T::accum(
+                pqCoarseCentroidsQ,
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3sSame.data(),
+                outputMinv3sSame);
 
         // do three steps, 1 sample per step
         T::accum(
@@ -472,6 +535,9 @@ void verifyMinMaxIndex2LevelDecoder(
             ASSERT_FLOAT_EQ(
                     outputContrib1s[j] + outputMinv1s,
                     outputContrib3s[j] + outputMinv3s);
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib3sSame[j] + outputMinv3sSame);
         }
     }
 }
@@ -541,11 +607,13 @@ void verifyIndexPQDecoder(
     rng.seed(123);
 
     std::vector<float> outputContrib2s(d, 0);
+    std::vector<float> outputContrib2sSame(d, 0);
     for (size_t i = 0; i < n; i += 2) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib2s[j] = (j + 1) * (j + 1);
+            outputContrib2sSame[j] = (j + 1) * (j + 1);
         }
 
         // do a single step, 2 samples per step
@@ -560,6 +628,15 @@ void verifyIndexPQDecoder(
                 encodedData.data() + (i + 1) * codeSize,
                 weight1,
                 outputContrib2s.data());
+
+        // do a single step, 2 samples per step
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib2sSame.data());
 
         // do two steps, 1 sample per step
         T::accum(
@@ -576,6 +653,7 @@ void verifyIndexPQDecoder(
         // compare
         for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2s[j]);
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib2sSame[j]);
         }
     }
 
@@ -583,12 +661,14 @@ void verifyIndexPQDecoder(
     rng.seed(123);
 
     std::vector<float> outputContrib3s(d, 0);
+    std::vector<float> outputContrib3sSame(d, 0);
     const size_t n3 = (n / 3) * 3;
     for (size_t i = 0; i < n3; i += 3) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib3s[j] = (j + 1) * (j + 1);
+            outputContrib3sSame[j] = (j + 1) * (j + 1);
         }
 
         // do a single step, 3 samples per step
@@ -607,6 +687,17 @@ void verifyIndexPQDecoder(
                 encodedData.data() + (i + 2) * codeSize,
                 weight2,
                 outputContrib3s.data());
+
+        // do a single step, 3 samples per step
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3sSame.data());
 
         // do three steps, 1 sample per step
         T::accum(
@@ -628,6 +719,7 @@ void verifyIndexPQDecoder(
         // compare
         for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3s[j]);
+            ASSERT_FLOAT_EQ(outputContrib1s[j], outputContrib3sSame[j]);
         }
     }
 }
@@ -723,14 +815,18 @@ void verifyMinMaxIndexPQDecoder(
 
     std::vector<float> outputContrib2s(d, 0);
     float outputMinv2s = 0;
+    std::vector<float> outputContrib2sSame(d, 0);
+    float outputMinv2sSame = 0;
     for (size_t i = 0; i < n; i += 2) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib2s[j] = (j + 1) * (j + 1);
+            outputContrib2sSame[j] = (j + 1) * (j + 1);
         }
         outputMinv1s = 0;
         outputMinv2s = 0;
+        outputMinv2sSame = 0;
 
         // do a single step, 2 samples per step
         const float weight0 = u(rng);
@@ -745,6 +841,16 @@ void verifyMinMaxIndexPQDecoder(
                 weight1,
                 outputContrib2s.data(),
                 outputMinv2s);
+
+        // do a single step, 2 samples per step
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                outputContrib2sSame.data(),
+                outputMinv2sSame);
 
         // do two steps, 1 sample per step
         T::accum(
@@ -765,6 +871,9 @@ void verifyMinMaxIndexPQDecoder(
             ASSERT_FLOAT_EQ(
                     outputContrib1s[j] + outputMinv1s,
                     outputContrib2s[j] + outputMinv2s);
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib2sSame[j] + outputMinv2sSame);
         }
     }
 
@@ -773,15 +882,19 @@ void verifyMinMaxIndexPQDecoder(
 
     std::vector<float> outputContrib3s(d, 0);
     float outputMinv3s = 0;
+    std::vector<float> outputContrib3sSame(d, 0);
+    float outputMinv3sSame = 0;
     const size_t n3 = (n / 3) * 3;
     for (size_t i = 0; i < n3; i += 3) {
         // populate outputContribs with some existing data
         for (size_t j = 0; j < d; j++) {
             outputContrib1s[j] = (j + 1) * (j + 1);
             outputContrib3s[j] = (j + 1) * (j + 1);
+            outputContrib3sSame[j] = (j + 1) * (j + 1);
         }
         outputMinv1s = 0;
         outputMinv3s = 0;
+        outputMinv3sSame = 0;
 
         // do a single step, 3 samples per step
         const float weight0 = u(rng);
@@ -800,6 +913,18 @@ void verifyMinMaxIndexPQDecoder(
                 weight2,
                 outputContrib3s.data(),
                 outputMinv3s);
+
+        // do a single step, 3 samples per step
+        T::accum(
+                pqFineCentroidsQ,
+                encodedData.data() + (i + 0) * codeSize,
+                weight0,
+                encodedData.data() + (i + 1) * codeSize,
+                weight1,
+                encodedData.data() + (i + 2) * codeSize,
+                weight2,
+                outputContrib3sSame.data(),
+                outputMinv3sSame);
 
         // do three steps, 1 sample per step
         T::accum(
@@ -826,6 +951,9 @@ void verifyMinMaxIndexPQDecoder(
             ASSERT_FLOAT_EQ(
                     outputContrib1s[j] + outputMinv1s,
                     outputContrib3s[j] + outputMinv3s);
+            ASSERT_FLOAT_EQ(
+                    outputContrib1s[j] + outputMinv1s,
+                    outputContrib3sSame[j] + outputMinv3sSame);
         }
     }
 }

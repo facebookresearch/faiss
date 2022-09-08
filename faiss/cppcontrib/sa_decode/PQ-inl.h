@@ -76,7 +76,9 @@ struct IndexPQDecoder {
         }
     }
 
-    // process 2 samples
+    // Process 2 samples.
+    // Each code uses its own fine pq centroids table.
+    //
     // Performs
     //  outputAccum += weight0 * decoded(code0) + weight1 * decoded(code1)
     static void accum(
@@ -112,7 +114,46 @@ struct IndexPQDecoder {
         }
     }
 
-    // process 3 samples
+    // Process 2 samples.
+    // Fine pq centroids table is shared among codes.
+    //
+    // Performs
+    //  outputAccum += weight0 * decoded(code0) + weight1 * decoded(code1)
+    static void accum(
+            const float* const __restrict pqFineCentroids,
+            const uint8_t* const __restrict code0,
+            const float weight0,
+            const uint8_t* const __restrict code1,
+            const float weight1,
+            float* const __restrict outputAccum) {
+        // fine quantizer
+        const uint8_t* const __restrict fine0 = code0;
+        const uint8_t* const __restrict fine1 = code1;
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t fineCode0 = fine0[fineCentroidIdx];
+            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+
+            const float* const __restrict finePtr0 = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict finePtr1 = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputAccum[i] += weight0 * (*finePtr0) + weight1 * (*finePtr1);
+        }
+    }
+
+    // Process 3 samples.
+    // Each code uses its own fine pq centroids table.
+    //
     // Performs outputAccum += weight0 * decoded(code0) + weight1 *
     //   decoded(code1) + weight2 * decoded(code2)
     static void accum(
@@ -149,6 +190,52 @@ struct IndexPQDecoder {
                             FINE_SIZE +
                     fineCentroidOffset;
             const float* const __restrict finePtr2 = pqFineCentroids2 +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode2) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+
+            outputAccum[i] += weight0 * (*finePtr0) + weight1 * (*finePtr1) +
+                    weight2 * (*finePtr2);
+        }
+    }
+
+    // Process 3 samples.
+    // Fine pq centroids table is shared among codes.
+    //
+    // Performs outputAccum += weight0 * decoded(code0) + weight1 *
+    //   decoded(code1) + weight2 * decoded(code2)
+    static void accum(
+            const float* const __restrict pqFineCentroids,
+            const uint8_t* const __restrict code0,
+            const float weight0,
+            const uint8_t* const __restrict code1,
+            const float weight1,
+            const uint8_t* const __restrict code2,
+            const float weight2,
+            float* const __restrict outputAccum) {
+        // fine quantizer
+        const uint8_t* const __restrict fine0 = code0;
+        const uint8_t* const __restrict fine1 = code1;
+        const uint8_t* const __restrict fine2 = code2;
+
+#pragma unroll
+        for (intptr_t i = 0; i < DIM; i++) {
+            const intptr_t fineCentroidIdx = i / FINE_SIZE;
+            const intptr_t fineCentroidOffset = i % FINE_SIZE;
+
+            const intptr_t fineCode0 = fine0[fineCentroidIdx];
+            const intptr_t fineCode1 = fine1[fineCentroidIdx];
+            const intptr_t fineCode2 = fine2[fineCentroidIdx];
+
+            const float* const __restrict finePtr0 = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode0) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict finePtr1 = pqFineCentroids +
+                    (fineCentroidIdx * FINE_TABLE_BYTES + fineCode1) *
+                            FINE_SIZE +
+                    fineCentroidOffset;
+            const float* const __restrict finePtr2 = pqFineCentroids +
                     (fineCentroidIdx * FINE_TABLE_BYTES + fineCode2) *
                             FINE_SIZE +
                     fineCentroidOffset;

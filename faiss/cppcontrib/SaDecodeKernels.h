@@ -114,7 +114,8 @@
 //   superscalar architecture. Doing more vectors per call is less attractive
 //   because of the possible lack of available CPU registers, but it is still
 //   doable.
-//   The method signature is the following:
+//   If each code uses its own coarse quantizer centroids table and its own fine
+//   quantizer centroids table, then the following overload can be used:
 //   {
 //    static void accum(
 //      const float* const __restrict pqCoarseCentroids0,
@@ -127,9 +128,23 @@
 //      const float weight1,
 //      float* const __restrict outputAccum);
 //   }
+//   If codes share the coarse quantizer centroids table and also share
+//   the fine quantizer centroids table, then the following overload can be
+//   used:
+//   {
+//    static void accum(
+//      const float* const __restrict pqCoarseCentroids,
+//      const float* const __restrict pqFineCentroids,
+//      const uint8_t* const __restrict code0,
+//      const float weight0,
+//      const uint8_t* const __restrict code1,
+//      const float weight1,
+//      float* const __restrict outputAccum);
+//   }
 // * And one more overload for ::accum that decodes and accumulates
 //   three vectors per call. Sometimes, it makes sense, at least for AVX2.
-//   The method signature is the following:
+//   If each code uses its own coarse quantizer centroids table and its own fine
+//   quantizer centroids table, then the following overload can be used:
 //   {
 //    static void accum(
 //      const float* const __restrict pqCoarseCentroids0,
@@ -146,6 +161,22 @@
 //      const float weight2,
 //      float* const __restrict outputAccum);
 //   }
+//   If codes share the coarse quantizer centroids table and also share
+//   the fine quantizer centroids table, then the following overload can be
+//   used:
+//   {
+//    static void accum(
+//      const float* const __restrict pqCoarseCentroids,
+//      const float* const __restrict pqFineCentroids,
+//      const uint8_t* const __restrict code0,
+//      const float weight0,
+//      const uint8_t* const __restrict code1,
+//      const float weight1,
+//      const uint8_t* const __restrict code2,
+//      const float weight2,
+//      float* const __restrict outputAccum);
+//   }
+//
 // The provided version is not multithreaded.
 //
 // Currently, an AVX2+FMA implementation is available. AVX512 version is also
