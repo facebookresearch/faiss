@@ -100,7 +100,7 @@ void IndexIVFFastScan::add_with_ids(
                 }
                 size_t mem = get_mem_usage_kb() / (1 << 10);
 
-                printf("IndexIVFFastScan::add_with_ids %zd/%zd, time %.2f/%.2f, RSS %zdMB",
+                printf("IndexIVFFastScan::add_with_ids %zd/%zd, time %.2f/%.2f, RSS %zdMB\n",
                        size_t(i1),
                        size_t(n),
                        elapsed_time,
