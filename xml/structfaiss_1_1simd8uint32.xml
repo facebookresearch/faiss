@@ -312,13 +312,13 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_emulated.h" line="439" column="14" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="439" bodyend="439"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1simd8uint32_1aad9c42ae0f659b87d99ec395e925bf23" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::simd8uint32::simd8uint32</definition>
-        <argsstring>(const uint8_t *x)</argsstring>
+        <argsstring>(const uint32_t *x)</argsstring>
         <name>simd8uint32</name>
         <param>
-          <type>const uint8_t *</type>
+          <type>const uint32_t *</type>
           <declname>x</declname>
         </param>
         <briefdescription>
@@ -752,7 +752,7 @@
       <member refid="structfaiss_1_1simd8uint32_1a89da3bccd3b703777fe4127f5fc764a7" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
       <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
       <member refid="structfaiss_1_1simd8uint32_1a9583099d313bf8ecdbfcc7c6486cc002" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
-      <member refid="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
+      <member refid="structfaiss_1_1simd8uint32_1aad9c42ae0f659b87d99ec395e925bf23" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
       <member refid="structfaiss_1_1simd8uint32_1a91007d2e6b4014a04af520fb2613563b" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
       <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>
       <member refid="structfaiss_1_1simd8uint32_1a4afdab340dd761c338ae8ba062eea447" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>simd8uint32</name></member>

@@ -5875,7 +5875,7 @@
     <member refid="structfaiss_1_1simd8uint32_1a89da3bccd3b703777fe4127f5fc764a7" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9583099d313bf8ecdbfcc7c6486cc002" kind="function"><name>simd8uint32</name></member>
-    <member refid="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1aad9c42ae0f659b87d99ec395e925bf23" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a6bd39771259f83652ead2bd46591d20c" kind="function"><name>elements_to_string</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
