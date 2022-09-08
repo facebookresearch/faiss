@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="752" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="752" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1087" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1087" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a4fc2e194e2250cab8824f33419a8f73e" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="753" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="753" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1088" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1088" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a0210b59a89002df104a19396303b229b" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="754" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="754" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1089" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1089" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1695e68558fd2f4923abe3c69970e085" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -103,7 +103,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="757" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="757" bodyend="763"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1092" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1092" bodyend="1098"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -132,7 +132,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="767" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="767" bodyend="774"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1102" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1102" bodyend="1109"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -173,7 +173,44 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="779" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="779" bodyend="795"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1116" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1116" bodyend="1132"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1139" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1139" bodyend="1148"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -226,7 +263,52 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="800" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="800" bodyend="822"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1155" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1155" bodyend="1177"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight2</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1184" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1184" bodyend="1202"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -321,7 +403,44 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="82" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="82" bodyend="113"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="84" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="84" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="122" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="122" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -374,7 +493,52 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="118" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="118" bodyend="159"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="159" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="159" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight2</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="207" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="207" bodyend="246"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -399,7 +563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="907" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="907" bodyend="913"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1337" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1337" bodyend="1343"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -428,7 +592,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="917" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="917" bodyend="924"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1347" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1347" bodyend="1354"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -469,7 +633,44 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="929" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="929" bodyend="945"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1361" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1361" bodyend="1377"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1384" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1384" bodyend="1393"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -522,7 +723,52 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="950" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="950" bodyend="972"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1400" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1400" bodyend="1422"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexPQDecoder&lt; DIM, FINE_SIZE, FINE_BITS &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code0, const float weight0, const uint8_t *const __restrict code1, const float weight1, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight2</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" line="1429" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-neon-inl.h" bodystart="1429" bodyend="1447"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -530,17 +776,23 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="747" column="21" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="747" bodyend="823"/>
+    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1082" column="21" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1082" bodyend="1203"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a8c0c9c90a433402a270b3c69cbb03679" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>dim</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1695e68558fd2f4923abe3c69970e085" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>FINE_TABLE_BYTES</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a0210b59a89002df104a19396303b229b" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>fineBits</name></member>

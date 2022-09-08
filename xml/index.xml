@@ -1314,15 +1314,21 @@
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aefda40c1c11715543c8f835c7900291e" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5b6fdcdbacf5264a1404d1c19cb615e4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1afdde05380d694a2cad899861501bffa8" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ad632bafbb0c924d0e193cf5bab73ab3e" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aefda40c1c11715543c8f835c7900291e" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5b6fdcdbacf5264a1404d1c19cb615e4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1afdde05380d694a2cad899861501bffa8" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ad632bafbb0c924d0e193cf5bab73ab3e" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aefda40c1c11715543c8f835c7900291e" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5b6fdcdbacf5264a1404d1c19cb615e4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1afdde05380d694a2cad899861501bffa8" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ad632bafbb0c924d0e193cf5bab73ab3e" kind="function"><name>accum</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexAdditiveQuantizer" kind="struct"><name>faiss::IndexAdditiveQuantizer</name>
     <member refid="structfaiss_1_1IndexAdditiveQuantizer_1a1432509b1f127e2b84a67ee3de2a290d" kind="typedef"><name>Search_type_t</name></member>
@@ -3853,9 +3859,13 @@
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a1d014d2fb657b4600917b7b628634f4f" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a91e48d90e3a241ed5ce28cc1fa7acdb6" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a13e0bd42f48ab4dc8f9a6825ae6b8a5e" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1ad519b6bf87cc199fa01ba9901b0c172b" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1aa5f275889173f9de623904e47ec3e155" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a83c28ef2904ef629940ceb8710213451" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a62326dc56a784a8122bf08dc2599be85" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a604835e6e647001b323c82b7ee299bce" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a5e5679d6d87557d6250775e09d64332b" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a3abfcccdea856afdc146ca1d63f59027" kind="function"><name>accum</name></member>
   </compound>
   <compound refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder" kind="struct"><name>faiss::cppcontrib::IndexMinMaxFP16Decoder</name>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa9f873fea4bee08ed32664b003d81b09" kind="variable"><name>dim</name></member>
@@ -3864,9 +3874,13 @@
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa0c66ca74280e1829f8407f4365e1d09" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa077829fca87fca55037f4a8907b875c" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a239c9e0dda4c6be9eef06c1b64fc4e3c" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aead016494cc0c013f94cd20c680ff63a" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a7df199bf383988865f476adb5a3536c4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a72e69902a76d8d3f6e27b090955242c8" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a984126a6a0ab44b38a3a8bd69a55fc09" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a552c32684c3c463fa42a5ba3d557c5f3" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a1eb751dead2e9f8f570a14b560aeaa69" kind="function"><name>accum</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexNNDescent" kind="struct"><name>faiss::IndexNNDescent</name>
     <member refid="structfaiss_1_1IndexNNDescent_1a548293c07bf7047a4c7995ee5def04a8" kind="typedef"><name>storage_idx_t</name></member>
@@ -4170,15 +4184,21 @@
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" kind="function"><name>store</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" kind="function"><name>accum</name></member>
     <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" kind="function"><name>accum</name></member>
+    <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" kind="function"><name>accum</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexPQFastScan" kind="struct"><name>faiss::IndexPQFastScan</name>
     <member refid="structfaiss_1_1IndexPQFastScan_1a70691701e6ea9a56c30cd4a325da8191" kind="variable"><name>pq</name></member>
