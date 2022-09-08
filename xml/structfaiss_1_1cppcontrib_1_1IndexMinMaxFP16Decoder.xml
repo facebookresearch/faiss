@@ -53,6 +53,31 @@
         </inbodydescription>
         <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="17" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="17" bodyend="35"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa98eda0e5cf78ab3a43d01748cc56877" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::store</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, float *const __restrict outputStore)</argsstring>
+        <name>store</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputStore</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="39" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="39" bodyend="53"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
@@ -88,7 +113,40 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="41" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="41" bodyend="61"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="59" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="59" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa0c66ca74280e1829f8407f4365e1d09" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids, const uint8_t *const __restrict code, const float weight, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>minvAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="85" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="85" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa077829fca87fca55037f4a8907b875c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -141,7 +199,52 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="68" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="68" bodyend="101"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="110" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="110" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aead016494cc0c013f94cd20c680ff63a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>minvAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="150" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="150" bodyend="179"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a72e69902a76d8d3f6e27b090955242c8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -210,20 +313,81 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="109" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="109" bodyend="155"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="187" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="187" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a552c32684c3c463fa42a5ba3d557c5f3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::cppcontrib::IndexMinMaxFP16Decoder&lt; SubIndexT &gt;::accum</definition>
+        <argsstring>(const float *const __restrict pqFineCentroids0, const uint8_t *const __restrict code0, const float weight0, const float *const __restrict pqFineCentroids1, const uint8_t *const __restrict code1, const float weight1, const float *const __restrict pqFineCentroids2, const uint8_t *const __restrict code2, const float weight2, float *const __restrict outputAccum, float &amp;minvAccum)</argsstring>
+        <name>accum</name>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight0</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight1</declname>
+        </param>
+        <param>
+          <type>const float *const __restrict</type>
+          <declname>pqFineCentroids2</declname>
+        </param>
+        <param>
+          <type>const uint8_t *const __restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>weight2</declname>
+        </param>
+        <param>
+          <type>float *const __restrict</type>
+          <declname>outputAccum</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>minvAccum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="241" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="241" bodyend="281"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="12" column="29" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="12" bodyend="156"/>
+    <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="12" column="29" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="12" bodyend="282"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa0c66ca74280e1829f8407f4365e1d09" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa077829fca87fca55037f4a8907b875c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aead016494cc0c013f94cd20c680ff63a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a72e69902a76d8d3f6e27b090955242c8" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a552c32684c3c463fa42a5ba3d557c5f3" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa9f873fea4bee08ed32664b003d81b09" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>dim</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1abeebc156b71fa108b31683f2c92a7123" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>store</name></member>
+      <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa98eda0e5cf78ab3a43d01748cc56877" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>store</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
