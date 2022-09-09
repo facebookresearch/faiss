@@ -98,7 +98,7 @@ jobs:
 
   build_osx:
     macos:
-      xcode: 12.4.0
+      xcode: 12.5.1
     environment:
       OMP_NUM_THREADS: 10
     steps:

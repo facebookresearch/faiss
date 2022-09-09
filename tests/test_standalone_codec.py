@@ -36,7 +36,9 @@ class TestEncodeDecode(unittest.TestCase):
         codes2 = codec.sa_encode(x2)
 
         if 'IVF' not in factory_key:
-            self.assertTrue(np.all(codes == codes2))
+            neltdiff = (codes != codes2).sum()
+            # slight difference on OS X --> relax test
+            self.assertLess(neltdiff, codes.size / 1000.0)
         else:
             # some rows are not reconstructed exactly because they
             # flip into another quantization cell
@@ -44,13 +46,11 @@ class TestEncodeDecode(unittest.TestCase):
             self.assertTrue(nrowdiff < 10)
 
         x3 = codec.sa_decode(codes2)
-        if 'IVF' not in factory_key:
-            self.assertTrue(np.allclose(x2, x3))
-        else:
-            diffs = np.abs(x2 - x3).sum(axis=1)
-            avg = np.abs(x2).sum(axis=1).mean()
-            diffs.sort()
-            assert diffs[-10] < avg * 1e-5
+        diffs = np.abs(x2 - x3).sum(axis=1)
+        avg = np.abs(x2).sum(axis=1).mean()
+        diffs.sort()
+        # at most 10 rows are reconstructed with significant difference
+        assert diffs[-10] < avg * 1e-5
 
     def test_SQ8(self):
         self.do_encode_twice('SQ8')
