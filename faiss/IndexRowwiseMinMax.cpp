@@ -338,6 +338,13 @@ IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase(Index* index)
 IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase()
         : index{nullptr}, own_fields{false} {}
 
+IndexRowwiseMinMaxBase::~IndexRowwiseMinMaxBase() {
+    if (own_fields) {
+        delete index;
+        index = nullptr;
+    }
+}
+
 void IndexRowwiseMinMaxBase::add(idx_t n, const float* x) {
     FAISS_THROW_MSG("add not implemented for this type of index");
 }

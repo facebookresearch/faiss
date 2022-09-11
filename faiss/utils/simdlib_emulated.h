@@ -438,7 +438,7 @@ struct simd8uint32 : simd256bit {
 
     explicit simd8uint32(const simd256bit& x) : simd256bit(x) {}
 
-    explicit simd8uint32(const uint8_t* x) : simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint32_t* x) : simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
