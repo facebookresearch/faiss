@@ -705,14 +705,13 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
     /// swap positions with the vector at the end of the list
     size_t removeSize = 0;
     std::unordered_map<int, std::vector<int>> assignCounts;
-    size_t bytesPerVector_ = getGpuVectorsEncodingSize_(1);
     for (int i = 0; i < n; i++) {
         auto it = indexMap.find(indices[i]);
         if (it != indexMap.end()) {
             int listId = locListId(it->second);
             int offset = locOffset(it->second);
             if (listId >= 0 && listId < deviceListData_.size() && offset >= 0 &&
-                offset < deviceListData_[listId]->numVecs / bytesPerVector_) {
+                offset < deviceListData_[listId]->numVecs) {
                 auto it = assignCounts.find(listId);
                 if (it != assignCounts.end()) {
                     it->second.emplace_back(offset);
@@ -745,8 +744,7 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
         auto& data = deviceListData_[counts.first];
         std::vector<int> listReplaceOffset(counts.second.size(), -1);
         for (auto& offset : counts.second) {
-            if (offset <
-                (data->numVecs / bytesPerVector_ - counts.second.size())) {
+            if (offset < (data->numVecs - counts.second.size())) {
                 for (int i = 0; i < listReplaceOffset.size(); i++) {
                     if (listReplaceOffset[i] == -1) {
                         listReplaceOffset[i] = offset;
@@ -754,7 +752,7 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
                         listIdsHost[removeSizeOnGpu] = counts.first;
                         listOffsetHost[removeSizeOnGpu] = offset;
                         listReplaceOffsetHost[removeSizeOnGpu] =
-                                data->numVecs / bytesPerVector_ - i - 1;
+                                data->numVecs - i - 1;
                         removeSizeOnGpu++;
                         break;
                     }
@@ -762,8 +760,7 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
             }
             // do not need swap
             else {
-                listReplaceOffset
-                        [data->numVecs / bytesPerVector_ - offset - 1] = offset;
+                listReplaceOffset[data->numVecs - offset - 1] = offset;
             }
         }
     }
@@ -777,25 +774,26 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
             listReplaceOffsetHost.resize(removeSizeOnGpu);
         }
 
-        auto listIds = toDeviceTemporary(resources_, listIdsHost, stream);
-        auto listOffset = toDeviceTemporary(resources_, listOffsetHost, stream);
-        auto listReplaceOffset =
+        auto listIdsDevice = toDeviceTemporary(resources_, listIdsHost, stream);
+        auto listOffsetDevice =
+                toDeviceTemporary(resources_, listOffsetHost, stream);
+        auto listReplaceOffsetDevice =
                 toDeviceTemporary(resources_, listReplaceOffsetHost, stream);
 
-        std::vector<Index::idx_t> indicesReplaceOffset(removeSizeOnGpu, -1);
-        auto listIndicesReplaceOffset =
-                toDeviceTemporary(resources_, indicesReplaceOffset, stream);
+        std::vector<Index::idx_t> listIndicesReplaceOffset(removeSizeOnGpu, -1);
+        auto listIndicesReplaceOffsetDevice =
+                toDeviceTemporary(resources_, listIndicesReplaceOffset, stream);
 
         removeVectors_(
-                listIds,
-                listOffset,
-                listReplaceOffset,
-                listIndicesReplaceOffset,
+                listIdsDevice,
+                listOffsetDevice,
+                listReplaceOffsetDevice,
+                listIndicesReplaceOffsetDevice,
                 stream);
 
         // update map entry for replaced element
         HostTensor<Index::idx_t, 1, true> listIndicesReplaceOffsetHost(
-                listIndicesReplaceOffset, stream);
+                listIndicesReplaceOffsetDevice, stream);
         for (int i = 0; i < removeSizeOnGpu; i++) {
             if ((Index::idx_t)listIndicesReplaceOffsetHost[i] != -1) {
                 auto it = indexMap.find(

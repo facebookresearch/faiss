@@ -57,7 +57,7 @@ void runIVFPQAppend(
 void runIVFPQRemove(
         Tensor<int, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
-        Tensor<int, 1, true> listReplaceOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
         DeviceVector<void*>& listCodes,
         size_t codeSize,
         cudaStream_t stream);

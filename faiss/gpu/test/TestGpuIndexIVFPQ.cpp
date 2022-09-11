@@ -11,7 +11,10 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <gtest/gtest.h>
+#include <stdlib.h>
+#include <time.h>
 #include <cmath>
 #include <sstream>
 #include <vector>
@@ -733,6 +736,98 @@ TEST(TestGpuIndexIVFPQ, UnifiedMemory) {
             0.015f,
             0.1f,
             0.015f);
+}
+
+TEST(TestGpuIndexIVFPQ, Remove) {
+    Options opt;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    // Use the default temporary memory management to test the memory manager
+    faiss::gpu::StandardGpuResources res;
+
+    faiss::gpu::GpuIndexIVFPQConfig config;
+    config.device = opt.device;
+    config.usePrecomputedTables = opt.usePrecomputed;
+    config.indicesOptions = opt.indicesOpt;
+    config.useFloat16LookupTables = opt.useFloat16;
+
+    faiss::gpu::GpuIndexIVFPQ gpuIndex(
+            &res,
+            opt.dim,
+            opt.numCentroids,
+            opt.codes,
+            opt.bitsPerCode,
+            faiss::METRIC_L2,
+            config);
+
+    gpuIndex.setNumProbes(opt.nprobe);
+
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+
+    std::vector<faiss::Index::idx_t> ids(opt.numAdd);
+    for (size_t i = 0; i < opt.numAdd; i++) {
+        ids[i] = i;
+    }
+    gpuIndex.add_with_ids(opt.numAdd, addVecs.data(), ids.data());
+
+    int numQuery = 5;
+    srand((unsigned)time(NULL));
+    std::vector<int> rn(numQuery);
+    for (size_t i = 0; i < numQuery; i++) {
+        rn[i] = rand() % ids.size();
+    }
+
+    std::vector<float> qs(numQuery * opt.dim);
+    for (size_t i = 0; i < numQuery; i++) {
+        memcpy(qs.data() + opt.dim * i,
+               &addVecs[opt.dim * rn[i]],
+               opt.dim * sizeof(float));
+    }
+
+    std::vector<float> distances(numQuery * opt.k, 0);
+    std::vector<faiss::Index::idx_t> indices(numQuery * opt.k, 0);
+
+    gpuIndex.search(
+            numQuery, qs.data(), opt.k, distances.data(), indices.data());
+
+    for (int q = 0; q < numQuery; ++q) {
+        EXPECT_EQ(indices[q * opt.k], ids[rn[q]]);
+    }
+
+    // remove
+    std::vector<faiss::Index::idx_t> rem(numQuery);
+    for (size_t i = 0; i < numQuery; i++) {
+        rem[i] = ids[rn[i]];
+    }
+    faiss::IDSelectorArray selectIDs(rem.size(), rem.data());
+    size_t removedSize = gpuIndex.remove_ids(selectIDs);
+    EXPECT_EQ(removedSize, numQuery);
+
+    gpuIndex.search(
+            numQuery, qs.data(), opt.k, distances.data(), indices.data());
+
+    for (int q = 0; q < numQuery; ++q) {
+        EXPECT_NE(indices[q * opt.k], ids[rn[q]]);
+    }
+
+    // remove all
+    faiss::IDSelectorArray selectIDAll(ids.size(), ids.data());
+    removedSize = gpuIndex.remove_ids(selectIDAll);
+    EXPECT_EQ(removedSize, opt.numAdd - numQuery);
+
+    gpuIndex.search(
+            numQuery, qs.data(), opt.k, distances.data(), indices.data());
+
+    for (int q = 0; q < numQuery; ++q) {
+        for (int k = 0; k < opt.k; ++k) {
+            EXPECT_EQ(indices[q * opt.k + k], -1);
+            EXPECT_EQ(
+                    distances[q * opt.k + k],
+                    std::numeric_limits<float>::max());
+        }
+    }
 }
 
 int main(int argc, char** argv) {

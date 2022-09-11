@@ -129,8 +129,8 @@ void runIVFIndicesAppend(
 __global__ void ivfIndicesRemove(
         Tensor<int, 1, true> listIds,
         Tensor<int, 1, true> listOffset,
-        Tensor<int, 1, true>& listReplaceOffset,
-        Tensor<Index::idx_t, 1, true>& listIndicesReplaceOffset,
+        Tensor<int, 1, true> listReplaceOffset,
+        Tensor<Index::idx_t, 1, true> listIndicesReplaceOffset,
         IndicesOptions opt,
         void** listIndices) {
     int vec = blockIdx.x * blockDim.x + threadIdx.x;
@@ -143,7 +143,7 @@ __global__ void ivfIndicesRemove(
     int offset = listOffset[vec];
     int replaceOffset = listReplaceOffset[vec];
 
-    if (listId == -1 || offset == -1) {
+    if (listId == -1 || offset == -1 || replaceOffset == -1) {
         return;
     }
 
@@ -371,8 +371,8 @@ void runIVFPQAppend(
 }
 
 __global__ void ivfpqRemove(
-        Tensor<int, 1, true>& listIds,
-        Tensor<int, 1, true>& listOffset,
+        Tensor<int, 1, true> listIds,
+        Tensor<int, 1, true> listOffset,
         Tensor<int, 1, true> listReplaceOffset,
         void** listCodes,
         size_t codeSize) {
@@ -386,7 +386,7 @@ __global__ void ivfpqRemove(
     int offset = listOffset[encodingToRemove];
     int replaceOffset = listReplaceOffset[encodingToRemove];
 
-    if (listId == -1 || offset == -1) {
+    if (listId == -1 || offset == -1 || replaceOffset == -1) {
         return;
     }
 
@@ -402,7 +402,7 @@ __global__ void ivfpqRemove(
 void runIVFPQRemove(
         Tensor<int, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
-        Tensor<int, 1, true> listReplaceOffset,
+        Tensor<int, 1, true>& listReplaceOffset,
         DeviceVector<void*>& listCodes,
         size_t codeSize,
         cudaStream_t stream) {
