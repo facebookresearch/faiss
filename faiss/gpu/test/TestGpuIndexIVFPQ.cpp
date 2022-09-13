@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 #include <cmath>
 #include <sstream>
 #include <vector>
@@ -765,11 +766,12 @@ TEST(TestGpuIndexIVFPQ, Remove) {
     gpuIndex.setNumProbes(opt.nprobe);
 
     gpuIndex.train(opt.numTrain, trainVecs.data());
-
     std::vector<faiss::Index::idx_t> ids(opt.numAdd);
     for (size_t i = 0; i < opt.numAdd; i++) {
         ids[i] = i;
     }
+    random_shuffle(ids.begin(), ids.end());
+
     gpuIndex.add_with_ids(opt.numAdd, addVecs.data(), ids.data());
 
     int numQuery = 5;

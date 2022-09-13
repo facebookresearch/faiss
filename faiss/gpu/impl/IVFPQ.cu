@@ -272,7 +272,7 @@ void IVFPQ::removeVectors_(
             stream);
 
     if (interleavedLayout_) {
-        FAISS_ASSERT_MSG(false, "not implemented for interleaved layout");
+        FAISS_THROW_MSG("not support for interleaved layout yet");
 
     } else {
         runIVFPQRemove(

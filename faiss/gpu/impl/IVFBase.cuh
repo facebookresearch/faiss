@@ -13,8 +13,8 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace faiss {
@@ -26,6 +26,11 @@ namespace gpu {
 
 class GpuResources;
 class FlatIndex;
+
+struct IVFLocation {
+    uint32_t listId;
+    uint32_t offset;
+};
 
 /// Base inverted list functionality for IVFFlat and IVFPQ
 class IVFBase {
@@ -83,7 +88,7 @@ class IVFBase {
             Tensor<Index::idx_t, 1, true>& indices);
 
     /// remove vectors
-    size_t removeVectors(size_t n, const Index::idx_t* indices);
+    size_t removeVectors(size_t n, const Index::idx_t* indicesHost);
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation
@@ -152,15 +157,6 @@ class IVFBase {
             const Index::idx_t* indices,
             size_t numVecs);
 
-    uint64_t locBuild(uint64_t listId, uint64_t offset) {
-        return listId << 32 | offset;
-    }
-    int locListId(uint64_t location) {
-        return static_cast<int>(location >> 32);
-    }
-    int locOffset(uint64_t location) {
-        return static_cast<int>(location & 0xffffffff);
-    }
     /// do the mapping of index to storage location
     void indexMapping(
             const std::vector<int>& listIds,
@@ -245,7 +241,7 @@ class IVFBase {
     std::vector<std::vector<Index::idx_t>> listOffsetToUserIndex_;
 
     /// use this map to store the mapping of index to storage location
-    std::map<Index::idx_t, uint64_t> indexMap;
+    std::unordered_map<Index::idx_t, IVFLocation> indexMap;
 };
 
 } // namespace gpu

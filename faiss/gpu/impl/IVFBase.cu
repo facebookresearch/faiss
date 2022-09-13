@@ -694,11 +694,14 @@ void IVFBase::removeVectors_(
         Tensor<int, 1, true>& listReplaceOffset,
         Tensor<long, 1, true>& listIndicesReplaceOffset,
         cudaStream_t stream) {
-    FAISS_ASSERT_MSG(false, "need to be implemented in subclasses");
+    FAISS_THROW_MSG("need to be implemented in subclasses");
 }
 
-size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
-    if (n == 0 || !indices) {
+size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indicesHost) {
+    if (interleavedLayout_) {
+        FAISS_THROW_MSG("not support for interleaved layout yet");
+    }
+    if (n == 0 || !indicesHost) {
         return 0;
     }
 
@@ -706,10 +709,10 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
     size_t removeSize = 0;
     std::unordered_map<int, std::vector<int>> assignCounts;
     for (int i = 0; i < n; i++) {
-        auto it = indexMap.find(indices[i]);
+        auto it = indexMap.find(indicesHost[i]);
         if (it != indexMap.end()) {
-            int listId = locListId(it->second);
-            int offset = locOffset(it->second);
+            int listId = it->second.listId;
+            int offset = it->second.offset;
             if (listId >= 0 && listId < deviceListData_.size() && offset >= 0 &&
                 offset < deviceListData_[listId]->numVecs) {
                 auto it = assignCounts.find(listId);
@@ -774,6 +777,34 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
             listReplaceOffsetHost.resize(removeSizeOnGpu);
         }
 
+        if (indicesOptions_ == INDICES_CPU) {
+            for (int i = 0; i < listIdsHost.size(); i++) {
+                int listId = listIdsHost[i];
+
+                if (listId < 0) {
+                    continue;
+                }
+                FAISS_ASSERT(listId < listOffsetToUserIndex_.size());
+                auto& userIndices = listOffsetToUserIndex_[listId];
+
+                int offset = listOffsetHost[i];
+                FAISS_ASSERT(offset >= 0);
+                FAISS_ASSERT(offset < userIndices.size());
+
+                int replaceOffset = listReplaceOffsetHost[i];
+                FAISS_ASSERT(replaceOffset >= 0);
+                FAISS_ASSERT(replaceOffset < userIndices.size());
+
+                userIndices[offset] = userIndices[replaceOffset];
+
+                auto it = indexMap.find(userIndices[replaceOffset]);
+                if (it != indexMap.end()) {
+                    it->second.listId = (uint32_t)listId;
+                    it->second.offset = (uint32_t)offset;
+                }
+            }
+        }
+
         auto listIdsDevice = toDeviceTemporary(resources_, listIdsHost, stream);
         auto listOffsetDevice =
                 toDeviceTemporary(resources_, listOffsetHost, stream);
@@ -799,8 +830,8 @@ size_t IVFBase::removeVectors(size_t n, const Index::idx_t* indices) {
                 auto it = indexMap.find(
                         (Index::idx_t)listIndicesReplaceOffsetHost[i]);
                 if (it != indexMap.end()) {
-                    it->second = locBuild(
-                            (int)listIdsHost[i], (int)listOffsetHost[i]);
+                    it->second.listId = (uint32_t)listIdsHost[i];
+                    it->second.offset = (uint32_t)listOffsetHost[i];
                 }
             }
         }
@@ -866,11 +897,12 @@ void IVFBase::indexMapping(
         const std::vector<int>& listIds,
         const std::vector<int>& listOffset,
         const HostTensor<Index::idx_t, 1, true>& indices) {
+    IVFLocation loc;
     for (int i = 0; i < listIds.size(); i++) {
-        if ((int)listIds[i] != -1 && (int)listOffset[i] != -1) {
-            indexMap.emplace(
-                    (Index::idx_t)indices[i],
-                    locBuild(listIds[i], listOffset[i]));
+        if (listIds[i] != -1 && listOffset[i] != -1) {
+            loc.listId = (uint32_t)listIds[i];
+            loc.offset = (uint32_t)listOffset[i];
+            indexMap.emplace((Index::idx_t)indices[i], loc);
         }
     }
 }
@@ -879,8 +911,11 @@ void IVFBase::indexMapping(
         int listId,
         const Index::idx_t* indices,
         size_t numVecs) {
-    for (int i = 0; i < numVecs; i++) {
-        indexMap.emplace(indices[i], locBuild(listId, i));
+    IVFLocation loc;
+    for (size_t i = 0; i < numVecs; i++) {
+        loc.listId = (uint32_t)listId;
+        loc.offset = (uint32_t)i;
+        indexMap.emplace(indices[i], loc);
     }
 }
 

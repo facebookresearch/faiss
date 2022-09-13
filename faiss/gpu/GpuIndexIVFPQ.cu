@@ -459,6 +459,10 @@ void GpuIndexIVFPQ::verifySettings_() const {
 
 size_t GpuIndexIVFPQ::remove_ids(const IDSelector& sel) {
     const IDSelectorArray* sela = dynamic_cast<const IDSelectorArray*>(&sel);
+    if (sela == NULL) {
+        FAISS_THROW_MSG("it should be an IDSelectorArray instance");
+    }
+
     if (sela->n <= 0 || !sela->ids) {
         return 0;
     }
