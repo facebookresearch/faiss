@@ -278,13 +278,14 @@ void OnDiskInvertedLists::do_mmap() {
     uint8_t* ptro =
             (uint8_t*)mmap(nullptr, totsize, prot, MAP_SHARED, fileno(f), 0);
 
+    fclose(f);
+
     FAISS_THROW_IF_NOT_FMT(
             ptro != MAP_FAILED,
             "could not mmap %s: %s",
             filename.c_str(),
             strerror(errno));
     ptr = ptro;
-    fclose(f);
 }
 
 void OnDiskInvertedLists::update_totsize(size_t new_size) {
