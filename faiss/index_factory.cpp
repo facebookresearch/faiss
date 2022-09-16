@@ -738,6 +738,14 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
     // support both
+    if (re_match(description, "(.+),IDMap2", sm) ||
+        re_match(description, "IDMap2,(.+)", sm)) {
+        IndexIDMap2* idmap2 = new IndexIDMap2(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap2->own_fields = true;
+        return std::unique_ptr<Index>(idmap2);
+    }
+
     if (re_match(description, "(.+),IDMap", sm) ||
         re_match(description, "IDMap,(.+)", sm)) {
         IndexIDMap* idmap = new IndexIDMap(
