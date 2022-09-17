@@ -234,7 +234,7 @@ int faiss_Index_sa_encode(
         const float* x,
         uint8_t* bytes);
 
-/** encode a set of vectors
+/** decode a set of vectors
  *
  * @param index   opaque pointer to index object
  * @param n       number of vectors
