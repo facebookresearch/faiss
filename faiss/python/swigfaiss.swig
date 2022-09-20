@@ -565,8 +565,8 @@ void gpu_sync_all_devices()
 
 // Subclasses should appear before their parent
 %typemap(out) faiss::Index * {
-    DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
+    DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )
@@ -636,8 +636,8 @@ void gpu_sync_all_devices()
 
 %typemap(out) faiss::IndexBinary * {
     DOWNCAST2 ( IndexBinaryReplicas, IndexReplicasTemplateT_faiss__IndexBinary_t )
-    DOWNCAST2 ( IndexBinaryIDMap, IndexIDMapTemplateT_faiss__IndexBinary_t )
     DOWNCAST2 ( IndexBinaryIDMap2, IndexIDMap2TemplateT_faiss__IndexBinary_t )
+    DOWNCAST2 ( IndexBinaryIDMap, IndexIDMapTemplateT_faiss__IndexBinary_t )
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
