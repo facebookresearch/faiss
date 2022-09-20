@@ -26,7 +26,7 @@ namespace {
 struct Tempfilename {
     static pthread_mutex_t mutex;
 
-    std::string filename = "faiss_tmp_XXXXXX";
+    std::string filename = "/tmp/faiss_tmp_XXXXXX";
 
     Tempfilename() {
         pthread_mutex_lock(&mutex);

@@ -13,25 +13,18 @@
 #include <stdint.h>
 #include <vector>
 
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/ScalarQuantizer.h>
 
 namespace faiss {
 
 /**
- * The uniform quantizer has a range [vmin, vmax]. The range can be
- * the same for all dimensions (uniform) or specific per dimension
- * (default).
+ * Flat index built on a scalar quantizer.
  */
-
-struct IndexScalarQuantizer : Index {
+struct IndexScalarQuantizer : IndexFlatCodes {
     /// Used to encode the vectors
     ScalarQuantizer sq;
-
-    /// Codes. Size ntotal * pq.code_size
-    std::vector<uint8_t> codes;
-
-    size_t code_size;
 
     /** Constructor.
      *
@@ -48,8 +41,6 @@ struct IndexScalarQuantizer : Index {
 
     void train(idx_t n, const float* x) override;
 
-    void add(idx_t n, const float* x) override;
-
     void search(
             idx_t n,
             const float* x,
@@ -57,17 +48,9 @@ struct IndexScalarQuantizer : Index {
             float* distances,
             idx_t* labels) const override;
 
-    void reset() override;
-
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
-
-    void reconstruct(idx_t key, float* recons) const override;
-
-    DistanceComputer* get_distance_computer() const override;
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
     /* standalone codec interface */
-    size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

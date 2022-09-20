@@ -9,10 +9,8 @@ import numpy as np
 
 import faiss
 import unittest
-import array
 
 from common_faiss_tests import get_dataset_2
-
 
 
 class TestPCA(unittest.TestCase):
@@ -35,6 +33,37 @@ class TestPCA(unittest.TestCase):
             self.assertGreater(prev, o)
             prev = o
 
+    def test_pca_epsilon(self):
+        d = 64
+        n = 1000
+        np.random.seed(123)
+        x = np.random.random(size=(n, d)).astype('float32')
+
+        # make sure data is in a sub-space
+        x[:, ::2] = 0
+
+        # check division by 0 with default computation
+        pca = faiss.PCAMatrix(d, 60, -0.5)
+        pca.train(x)
+        y = pca.apply(x)
+        self.assertFalse(np.all(np.isfinite(y)))
+
+        # check add epsilon
+        pca = faiss.PCAMatrix(d, 60, -0.5)
+        pca.epsilon = 1e-5
+        pca.train(x)
+        y = pca.apply(x)
+        self.assertTrue(np.all(np.isfinite(y)))
+
+        # check I/O
+        index = faiss.index_factory(d, "PCAW60,Flat")
+        index = faiss.deserialize_index(faiss.serialize_index(index))
+        pca1 = faiss.downcast_VectorTransform(index.chain.at(0))
+        pca1.epsilon = 1e-5
+        index.train(x)
+        pca = faiss.downcast_VectorTransform(index.chain.at(0))
+        y = pca.apply(x)
+        self.assertTrue(np.all(np.isfinite(y)))
 
 
 class TestRevSwigPtr(unittest.TestCase):
@@ -46,7 +75,7 @@ class TestRevSwigPtr(unittest.TestCase):
             i * 10 + np.array([1, 2, 3, 4], dtype='float32')
             for i in range(5)])
         index.add(xb0)
-        xb = faiss.rev_swig_ptr(index.xb.data(), 4 * 5).reshape(5, 4)
+        xb = faiss.rev_swig_ptr(index.get_xb(), 4 * 5).reshape(5, 4)
         self.assertEqual(np.abs(xb0 - xb).sum(), 0)
 
 
@@ -296,6 +325,32 @@ class TestScalarQuantizer(unittest.TestCase):
                     # print(dis, D[i, j])
                     assert abs(D[i, j] - dis) / dis < 1e-5
 
+    def test_reconstruct(self):
+        self.do_reconstruct(True)
+
+    def test_reconstruct_no_residual(self):
+        self.do_reconstruct(False)
+
+    def do_reconstruct(self, by_residual):
+        d = 32
+        xt, xb, xq = get_dataset_2(d, 100, 5, 5)
+
+        index = faiss.index_factory(d, "IVF10,SQ8")
+        index.by_residual = by_residual
+        index.train(xt)
+        index.add(xb)
+        index.nprobe = 10
+        D, I = index.search(xq, 4)
+        xb2 = index.reconstruct_n(0, index.ntotal)
+        for i in range(5):
+            for j in range(4):
+                self.assertAlmostEqual(
+                    ((xq[i] - xb2[I[i, j]]) ** 2).sum(),
+                    D[i, j],
+                    places=4
+                )
+
+
 class TestRandom(unittest.TestCase):
 
     def test_rand(self):
@@ -310,6 +365,24 @@ class TestRandom(unittest.TestCase):
         c = np.bincount(x, minlength=100)
         print(c)
         assert c.max() - c.min() < 50 * 2
+
+    def test_rand_vector(self):
+        """ test if the smooth_vectors function is reasonably compressible with
+        a small PQ """
+        x = faiss.rand_smooth_vectors(1300, 32)
+        xt = x[:1000]
+        xb = x[1000:1200]
+        xq = x[1200:]
+        _, gt = faiss.knn(xq, xb, 10)
+        index = faiss.IndexPQ(32, 4, 4)
+        index.train(xt)
+        index.add(xb)
+        D, I = index.search(xq, 10)
+        ninter = faiss.eval_intersection(I, gt)
+        # 445 for SyntheticDataset
+        self.assertGreater(ninter, 420)
+        self.assertLess(ninter, 460)
+
 
 
 class TestPairwiseDis(unittest.TestCase):
@@ -500,3 +573,27 @@ class TestResultHeap(unittest.TestCase):
 
         np.testing.assert_equal(all_rh[1].D, all_rh[3].D)
         np.testing.assert_equal(all_rh[1].I, all_rh[3].I)
+
+
+class TestReconstructBatch(unittest.TestCase):
+
+    def test_indexflat(self):
+        index = faiss.IndexFlatL2(32)
+        x = faiss.randn((100, 32), 1234)
+        index.add(x)
+
+        subset = [4, 7, 45]
+        np.testing.assert_equal(x[subset], index.reconstruct_batch(subset))
+
+    def test_exception(self):
+        index = faiss.index_factory(32, "IVF2,Flat")
+        x = faiss.randn((100, 32), 1234)
+        index.train(x)
+        index.add(x)
+
+        # make sure it raises an exception even if it enters the openmp for
+        subset = np.zeros(1200, dtype=int)
+        self.assertRaises(
+            RuntimeError,
+            lambda : index.reconstruct_batch(subset),
+        )

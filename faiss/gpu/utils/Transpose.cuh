@@ -101,14 +101,14 @@ __global__ void transposeOuter(
         IndexT t1,
         IndexT t2,
         IndexT i1) {
-    IndexT gt1 = blockIdx.y;
     IndexT gt2 = blockIdx.x;
+    for (IndexT gt1 = blockIdx.y; gt1 < t1; gt1 += gridDim.y) {
+        auto curIn = in + i1 * (gt1 * t2 + gt2);
+        auto curOut = out + i1 * (gt2 * t1 + gt1);
 
-    in += i1 * (gt1 * t2 + gt2);
-    out += i1 * (gt2 * t1 + gt1);
-
-    for (IndexT i = threadIdx.x; i < i1; i += blockDim.x) {
-        out[i] = in[i];
+        for (IndexT i = threadIdx.x; i < i1; i += blockDim.x) {
+            curOut[i] = curIn[i];
+        }
     }
 }
 
@@ -166,7 +166,10 @@ void runTransposeAny(
             innerSize *= in.getSize(i);
         }
 
-        auto grid = dim3(in.getSize(1), in.getSize(0));
+        // The grid y dimension is more limited; we do a grid loop if necessary
+        int maxGridY = getCurrentDeviceProperties().maxGridSize[1];
+        auto grid = dim3(in.getSize(1), std::min(in.getSize(0), maxGridY));
+
         int block = (innerSize < maxThreads) ? innerSize : maxThreads;
 
         if (totalSize <= (size_t)std::numeric_limits<int>::max()) {

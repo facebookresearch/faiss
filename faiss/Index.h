@@ -18,7 +18,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 1
+#define FAISS_VERSION_PATCH 2
 
 /**
  * @namespace faiss
@@ -38,7 +38,8 @@
 
 namespace faiss {
 
-/// Forward declarations see AuxIndexStructures.h
+/// Forward declarations see impl/AuxIndexStructures.h and
+/// impl/DistanceComputer.h
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
@@ -157,6 +158,16 @@ struct Index {
      */
     virtual void reconstruct(idx_t key, float* recons) const;
 
+    /** Reconstruct several stored vectors (or an approximation if lossy coding)
+     *
+     * this function may not be defined for some indexes
+     * @param n        number of vectors to reconstruct
+     * @param keys        ids of the vectors to reconstruct (size n)
+     * @param recons      reconstucted vector (size n * d)
+     */
+    virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
+            const;
+
     /** Reconstruct vectors i0 to i0 + ni - 1
      *
      * this function may not be defined for some indexes
@@ -234,7 +245,7 @@ struct Index {
      */
     virtual void sa_encode(idx_t n, const float* x, uint8_t* bytes) const;
 
-    /** encode a set of vectors
+    /** decode a set of vectors
      *
      * @param n       number of vectors
      * @param bytes   input encoded vectors, size n * sa_code_size()

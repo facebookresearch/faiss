@@ -4,8 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 """this is a basic test script for simple indices work"""
-from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import sys
 import numpy as np
 import unittest
@@ -340,6 +340,8 @@ class TestHNSW(unittest.TestCase):
 
 class TestReplicasAndShards(unittest.TestCase):
 
+    @unittest.skipIf(os.name == "posix" and os.uname().sysname == "Darwin",
+                     "There is a bug in the OpenMP implementation on OSX.")
     def test_replicas(self):
         d = 32
         nq = 100
@@ -351,13 +353,6 @@ class TestReplicasAndShards(unittest.TestCase):
         index_ref.add(xb)
 
         Dref, Iref = index_ref.search(xq, 10)
-
-        # there is a OpenMP bug in this configuration, so disable threading
-        if sys.platform == "darwin" and "Clang 12" in sys.version:
-            nthreads = faiss.omp_get_max_threads()
-            faiss.omp_set_num_threads(1)
-        else:
-            nthreads = None
 
         nrep = 5
         index = faiss.IndexBinaryReplicas()
@@ -378,9 +373,6 @@ class TestReplicasAndShards(unittest.TestCase):
 
         index2.add(xb)
         D2, I2 = index2.search(xq, 10)
-
-        if nthreads is not None:
-            faiss.omp_set_num_threads(nthreads)
 
         self.assertTrue((Dref == D2).all())
         self.assertTrue((Iref == I2).all())

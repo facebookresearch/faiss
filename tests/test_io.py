@@ -13,8 +13,6 @@ import sys
 import pickle
 from multiprocessing.dummy import Pool as ThreadPool
 
-from common_faiss_tests import get_dataset, get_dataset_2
-
 
 class TestIOVariants(unittest.TestCase):
 
@@ -77,9 +75,10 @@ class TestCallbacks(unittest.TestCase):
         index2 = faiss.deserialize_index(np.frombuffer(buf, dtype='uint8'))
 
         self.assertEqual(index.d, index2.d)
-        self.assertTrue(np.all(
-            faiss.vector_to_array(index.xb) == faiss.vector_to_array(index2.xb)
-        ))
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.codes),
+            faiss.vector_to_array(index2.codes)
+        )
 
         # This is not a callable function: shoudl raise an exception
         writer = faiss.PyCallbackIOWriter("blabla")
@@ -132,8 +131,8 @@ class TestCallbacks(unittest.TestCase):
 
             self.assertEqual(index.d, index2.d)
             np.testing.assert_array_equal(
-                faiss.vector_to_array(index.xb),
-                faiss.vector_to_array(index2.xb)
+                faiss.vector_to_array(index.codes),
+                faiss.vector_to_array(index2.codes)
             )
 
             # This is not a callable function: should raise an exception
@@ -178,8 +177,8 @@ class TestCallbacks(unittest.TestCase):
 
             self.assertEqual(index.d, index2.d)
             np.testing.assert_array_equal(
-                faiss.vector_to_array(index.xb),
-                faiss.vector_to_array(index2.xb)
+                faiss.vector_to_array(index.codes),
+                faiss.vector_to_array(index2.codes)
             )
 
         finally:

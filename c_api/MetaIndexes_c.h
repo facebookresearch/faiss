@@ -46,6 +46,14 @@ void faiss_IndexIDMap_id_map(
         idx_t** p_id_map,
         size_t* p_size);
 
+/** get a pointer to the sub-index (the `index` field).
+ * The outputs of this function become invalid after any operation that can
+ * modify the index.
+ *
+ * @param index   opaque pointer to index object
+ */
+FaissIndex* faiss_IndexIDMap_sub_index(FaissIndexIDMap* index);
+
 /** same as IndexIDMap but also provides an efficient reconstruction
     implementation via a 2-way index */
 FAISS_DECLARE_CLASS_INHERITED(IndexIDMap2, Index)
@@ -64,6 +72,27 @@ int faiss_IndexIDMap2_construct_rev_map(FaissIndexIDMap2* index);
  * @return the same pointer if the index is a IDMap2 index, NULL otherwise
  */
 FAISS_DECLARE_INDEX_DOWNCAST(IndexIDMap2)
+
+/** get a pointer to the index map's internal ID vector (the `id_map` field).
+ * The outputs of this function become invalid after any operation that can
+ * modify the index.
+ *
+ * @param index   opaque pointer to index object
+ * @param p_id_map    output, the pointer to the beginning of `id_map`.
+ * @param p_size  output, the current length of `id_map`.
+ */
+void faiss_IndexIDMap2_id_map(
+        FaissIndexIDMap2* index,
+        idx_t** p_id_map,
+        size_t* p_size);
+
+/** get a pointer to the sub-index (the `index` field).
+ * The outputs of this function become invalid after any operation that can
+ * modify the index.
+ *
+ * @param index   opaque pointer to index object
+ */
+FaissIndex* faiss_IndexIDMap2_sub_index(FaissIndexIDMap2* index);
 
 #ifdef __cplusplus
 }

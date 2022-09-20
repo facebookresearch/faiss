@@ -77,7 +77,8 @@ class TestRemove(unittest.TestCase):
         xb[:, 0] = np.arange(10, dtype='int64') + 1000
         index.add(xb)
         index.remove_ids(np.arange(5, dtype='int64') * 2)
-        xb2 = faiss.vector_float_to_array(index.xb).reshape(5, 5)
+        xb2 = faiss.vector_float_to_array(index.codes)
+        xb2 = xb2.view("float32").reshape(5, 5)
         assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
 
     def test_remove_id_map(self):

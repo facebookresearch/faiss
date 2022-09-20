@@ -19,8 +19,10 @@
 #include <immintrin.h>
 #endif
 
+#include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/fp16.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -201,114 +203,6 @@ struct Codec6bit {
 #endif
 };
 
-#ifdef USE_F16C
-
-uint16_t encode_fp16(float x) {
-    __m128 xf = _mm_set1_ps(x);
-    __m128i xi =
-            _mm_cvtps_ph(xf, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
-    return _mm_cvtsi128_si32(xi) & 0xffff;
-}
-
-float decode_fp16(uint16_t x) {
-    __m128i xi = _mm_set1_epi16(x);
-    __m128 xf = _mm_cvtph_ps(xi);
-    return _mm_cvtss_f32(xf);
-}
-
-#else
-
-// non-intrinsic FP16 <-> FP32 code adapted from
-// https://github.com/ispc/ispc/blob/master/stdlib.ispc
-
-float floatbits(uint32_t x) {
-    void* xptr = &x;
-    return *(float*)xptr;
-}
-
-uint32_t intbits(float f) {
-    void* fptr = &f;
-    return *(uint32_t*)fptr;
-}
-
-uint16_t encode_fp16(float f) {
-    // via Fabian "ryg" Giesen.
-    // https://gist.github.com/2156668
-    uint32_t sign_mask = 0x80000000u;
-    int32_t o;
-
-    uint32_t fint = intbits(f);
-    uint32_t sign = fint & sign_mask;
-    fint ^= sign;
-
-    // NOTE all the integer compares in this function can be safely
-    // compiled into signed compares since all operands are below
-    // 0x80000000. Important if you want fast straight SSE2 code (since
-    // there's no unsigned PCMPGTD).
-
-    // Inf or NaN (all exponent bits set)
-    // NaN->qNaN and Inf->Inf
-    // unconditional assignment here, will override with right value for
-    // the regular case below.
-    uint32_t f32infty = 255u << 23;
-    o = (fint > f32infty) ? 0x7e00u : 0x7c00u;
-
-    // (De)normalized number or zero
-    // update fint unconditionally to save the blending; we don't need it
-    // anymore for the Inf/NaN case anyway.
-
-    const uint32_t round_mask = ~0xfffu;
-    const uint32_t magic = 15u << 23;
-
-    // Shift exponent down, denormalize if necessary.
-    // NOTE This represents half-float denormals using single
-    // precision denormals.  The main reason to do this is that
-    // there's no shift with per-lane variable shifts in SSE*, which
-    // we'd otherwise need. It has some funky side effects though:
-    // - This conversion will actually respect the FTZ (Flush To Zero)
-    //   flag in MXCSR - if it's set, no half-float denormals will be
-    //   generated. I'm honestly not sure whether this is good or
-    //   bad. It's definitely interesting.
-    // - If the underlying HW doesn't support denormals (not an issue
-    //   with Intel CPUs, but might be a problem on GPUs or PS3 SPUs),
-    //   you will always get flush-to-zero behavior. This is bad,
-    //   unless you're on a CPU where you don't care.
-    // - Denormals tend to be slow. FP32 denormals are rare in
-    //   practice outside of things like recursive filters in DSP -
-    //   not a typical half-float application. Whether FP16 denormals
-    //   are rare in practice, I don't know. Whatever slow path your
-    //   HW may or may not have for denormals, this may well hit it.
-    float fscale = floatbits(fint & round_mask) * floatbits(magic);
-    fscale = std::min(fscale, floatbits((31u << 23) - 0x1000u));
-    int32_t fint2 = intbits(fscale) - round_mask;
-
-    if (fint < f32infty)
-        o = fint2 >> 13; // Take the bits!
-
-    return (o | (sign >> 16));
-}
-
-float decode_fp16(uint16_t h) {
-    // https://gist.github.com/2144712
-    // Fabian "ryg" Giesen.
-
-    const uint32_t shifted_exp = 0x7c00u << 13; // exponent mask after shift
-
-    int32_t o = ((int32_t)(h & 0x7fffu)) << 13; // exponent/mantissa bits
-    int32_t exp = shifted_exp & o;              // just the exponent
-    o += (int32_t)(127 - 15) << 23;             // exponent adjust
-
-    int32_t infnan_val = o + ((int32_t)(128 - 16) << 23);
-    int32_t zerodenorm_val =
-            intbits(floatbits(o + (1u << 23)) - floatbits(113u << 23));
-    int32_t reg_val = (exp == 0) ? zerodenorm_val : o;
-
-    int32_t sign_bit = ((int32_t)(h & 0x8000u)) << 16;
-    return floatbits(((exp == shifted_exp) ? infnan_val : reg_val) | sign_bit);
-}
-
-#endif
-
 /*******************************************************************
  * Quantizer: normalizes scalar vector components, then passes them
  * through a codec
@@ -318,7 +212,7 @@ template <class Codec, bool uniform, int SIMD>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -372,7 +266,7 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -433,7 +327,7 @@ template <int SIMDWIDTH>
 struct QuantizerFP16 {};
 
 template <>
-struct QuantizerFP16<1> : ScalarQuantizer::Quantizer {
+struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -478,7 +372,7 @@ template <int SIMDWIDTH>
 struct Quantizer8bitDirect {};
 
 template <>
-struct Quantizer8bitDirect<1> : ScalarQuantizer::Quantizer {
+struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
@@ -518,7 +412,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 #endif
 
 template <int SIMDWIDTH>
-ScalarQuantizer::Quantizer* select_quantizer_1(
+ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
@@ -911,11 +805,6 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
         q = x;
     }
 
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
-    }
-
     float symmetric_dis(idx_t i, idx_t j) override {
         return compute_code_distance(
                 codes + i * code_size, codes + j * code_size);
@@ -961,11 +850,6 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
 
     void set_query(const float* x) final {
         q = x;
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1019,11 +903,6 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     int compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1087,11 +966,6 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
     int compute_distance(const float* x, const uint8_t* code) {
         set_query(x);
         return compute_code_distance(tmp.data(), code);
-    }
-
-    /// compute distance of vector i to current query
-    float operator()(idx_t i) final {
-        return query_to_code(codes + i * code_size);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -1173,17 +1047,12 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : qtype(qtype), rangestat(RS_minmax), rangestat_arg(0), d(d) {
+        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
     set_derived_sizes();
 }
 
 ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit),
-          rangestat(RS_minmax),
-          rangestat_arg(0),
-          d(0),
-          bits(0),
-          code_size(0) {}
+        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1273,7 +1142,7 @@ void ScalarQuantizer::train_residual(
     }
 }
 
-ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
+ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #ifdef USE_F16C
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
@@ -1286,7 +1155,7 @@ ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
@@ -1295,7 +1164,7 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++)
@@ -1335,12 +1204,9 @@ namespace {
 template <class DCClass>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
-    bool store_pairs, by_residual;
+    bool by_residual;
 
-    size_t code_size;
-
-    idx_t list_no; /// current list (set to 0 for Flat index
-    float accu0;   /// added to all distances
+    float accu0; /// added to all distances
 
     IVFSQScannerIP(
             int d,
@@ -1348,12 +1214,10 @@ struct IVFSQScannerIP : InvertedListScanner {
             size_t code_size,
             bool store_pairs,
             bool by_residual)
-            : dc(d, trained),
-              store_pairs(store_pairs),
-              by_residual(by_residual),
-              code_size(code_size),
-              list_no(0),
-              accu0(0) {}
+            : dc(d, trained), by_residual(by_residual), accu0(0) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         dc.set_query(query);
@@ -1411,10 +1275,8 @@ template <class DCClass>
 struct IVFSQScannerL2 : InvertedListScanner {
     DCClass dc;
 
-    bool store_pairs, by_residual;
-    size_t code_size;
+    bool by_residual;
     const Index* quantizer;
-    idx_t list_no;  /// current inverted list
     const float* x; /// current query
 
     std::vector<float> tmp;
@@ -1427,13 +1289,13 @@ struct IVFSQScannerL2 : InvertedListScanner {
             bool store_pairs,
             bool by_residual)
             : dc(d, trained),
-              store_pairs(store_pairs),
               by_residual(by_residual),
-              code_size(code_size),
               quantizer(quantizer),
-              list_no(0),
               x(nullptr),
-              tmp(d) {}
+              tmp(d) {
+        this->store_pairs = store_pairs;
+        this->code_size = code_size;
+    }
 
     void set_query(const float* query) override {
         x = query;
@@ -1443,8 +1305,8 @@ struct IVFSQScannerL2 : InvertedListScanner {
     }
 
     void set_list(idx_t list_no, float /*coarse_dis*/) override {
+        this->list_no = list_no;
         if (by_residual) {
-            this->list_no = list_no;
             // shift of x_in wrt centroid
             quantizer->compute_residual(x, tmp.data(), list_no);
             dc.set_query(tmp.data());

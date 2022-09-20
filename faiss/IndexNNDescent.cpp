@@ -167,9 +167,7 @@ void IndexNNDescent::search(
                 float* simi = distances + i * k;
                 dis->set_query(x + i * d);
 
-                maxheap_heapify(k, simi, idxi);
                 nndescent.search(*dis, k, idxi, simi, vt);
-                maxheap_reorder(k, simi, idxi);
             }
         }
         InterruptCallback::check();

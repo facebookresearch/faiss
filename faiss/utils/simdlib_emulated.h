@@ -120,6 +120,11 @@ struct simd16uint16 : simd256bit {
         }
     }
 
+    simd16uint16 operator*(const simd16uint16& other) const {
+        return binary_func(
+                *this, other, [](uint16_t a, uint16_t b) { return a * b; });
+    }
+
     // shift must be known at compile time
     simd16uint16 operator>>(const int shift) const {
         return unary_func(*this, [shift](uint16_t a) { return a >> shift; });
@@ -433,7 +438,7 @@ struct simd8uint32 : simd256bit {
 
     explicit simd8uint32(const simd256bit& x) : simd256bit(x) {}
 
-    explicit simd8uint32(const uint8_t* x) : simd256bit((const void*)x) {}
+    explicit simd8uint32(const uint32_t* x) : simd256bit((const void*)x) {}
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;

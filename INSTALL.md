@@ -101,8 +101,8 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `sse4`, and `avx2`, by increasing order of optimization),
+  generate code using optimized SIMD instructions (possible values are `generic`
+  and `avx2`, by increasing order of optimization),
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS
@@ -175,7 +175,7 @@ $ PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)" pytest tests/test_*.py
 ### Basic example
 
 A basic usage example is available in
-[`demos/demo_ivfpq_indexing.cpp`](https://github.com/facebookresearch/faiss/blob/master/demos/demo_ivfpq_indexing.cpp).
+[`demos/demo_ivfpq_indexing.cpp`](https://github.com/facebookresearch/faiss/blob/main/demos/demo_ivfpq_indexing.cpp).
 
 It creates a small index, stores it and performs some searches. A normal runtime
 is around 20s. With a fast machine and Intel MKL's BLAS it runs in 2.5s.

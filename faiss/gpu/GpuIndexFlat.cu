@@ -118,7 +118,7 @@ void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
     // The index could be empty
     if (index->ntotal > 0) {
         data_->add(
-                index->xb.data(),
+                index->get_xb(),
                 index->ntotal,
                 resources_->getDefaultStream(config_.device));
     }
@@ -128,19 +128,20 @@ void GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
     DeviceScope scope(config_.device);
 
     GpuIndex::copyTo(index);
+    index->code_size = sizeof(float) * this->d;
 
     FAISS_ASSERT(data_);
     FAISS_ASSERT(data_->getSize() == this->ntotal);
-    index->xb.resize(this->ntotal * this->d);
+    index->codes.resize(this->ntotal * index->code_size);
 
     auto stream = resources_->getDefaultStream(config_.device);
 
     if (this->ntotal > 0) {
         if (flatConfig_.useFloat16) {
             auto vecFloat32 = data_->getVectorsFloat32Copy(stream);
-            fromDevice(vecFloat32, index->xb.data(), stream);
+            fromDevice(vecFloat32, index->get_xb(), stream);
         } else {
-            fromDevice(data_->getVectorsFloat32Ref(), index->xb.data(), stream);
+            fromDevice(data_->getVectorsFloat32Ref(), index->get_xb(), stream);
         }
     }
 }

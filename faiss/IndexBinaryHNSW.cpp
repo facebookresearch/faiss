@@ -26,6 +26,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>

@@ -9,17 +9,18 @@
 
 #include <cuda.h>
 #include <faiss/gpu/GpuResources.h>
+#include <thrust/device_vector.h>
 #include <unordered_set>
 
 namespace faiss {
 namespace gpu {
 
 /// Allocator for Thrust that comes out of a specified memory space
-class GpuResourcesThrustAllocator {
+class ThrustAllocator {
    public:
     typedef char value_type;
 
-    inline GpuResourcesThrustAllocator(
+    inline ThrustAllocator(
             GpuResources* res,
             cudaStream_t stream,
             void* mem,
@@ -30,7 +31,7 @@ class GpuResourcesThrustAllocator {
               cur_((char*)mem),
               end_((char*)mem + size) {}
 
-    inline ~GpuResourcesThrustAllocator() {
+    inline ~ThrustAllocator() {
         // In the case of an exception being thrown, we may not have called
         // deallocate on all of our sub-allocations. Free them here
         for (auto p : mallocAllocs_) {

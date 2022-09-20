@@ -68,6 +68,7 @@ swig_add_library(swigfaiss
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
+set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
 set_property(SOURCE swigfaiss_avx2.swig
   PROPERTY SWIG_MODULE_NAME swigfaiss_avx2)
@@ -76,6 +77,7 @@ swig_add_library(swigfaiss_avx2
   LANGUAGE python
   SOURCES swigfaiss_avx2.swig
 )
+set_property(TARGET swigfaiss_avx2 PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
   set_target_properties(swigfaiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()

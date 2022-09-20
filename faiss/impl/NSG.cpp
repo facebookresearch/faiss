@@ -14,7 +14,7 @@
 #include <mutex>
 #include <stack>
 
-#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 
 namespace faiss {
 
@@ -160,9 +160,6 @@ void NSG::search(
     std::vector<Node> tmp;
     search_on_graph<false>(
             *final_graph, dis, vt, enterpoint, pool_size, retset, tmp);
-
-    std::partial_sort(
-            retset.begin(), retset.begin() + k, retset.begin() + pool_size);
 
     for (size_t i = 0; i < k; i++) {
         I[i] = retset[i].id;

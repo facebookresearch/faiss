@@ -14,13 +14,13 @@ import datasets
 from datasets import sanitize
 
 
-
 ######################################################
 # Command-line parsing
 ######################################################
 
 
 parser = argparse.ArgumentParser()
+
 
 def aa(*args, **kwargs):
     group.add_argument(*args, **kwargs)
@@ -31,26 +31,42 @@ group = parser.add_argument_group('dataset options')
 aa('--db', default='deep1M', help='dataset')
 aa('--compute_gt', default=False, action='store_true',
     help='compute and store the groundtruth')
+aa('--force_IP', default=False, action="store_true",
+    help='force IP search instead of L2')
 
 group = parser.add_argument_group('index consturction')
 
 aa('--indexkey', default='HNSW32', help='index_factory type')
-aa('--by_residual', default=-1, type=int,
-    help="set if index should use residuals (default=unchanged)")
-aa('--M0', default=-1, type=int, help='size of base level')
 aa('--maxtrain', default=256 * 256, type=int,
    help='maximum number of training points (0 to set automatically)')
 aa('--indexfile', default='', help='file to read or write index from')
 aa('--add_bs', default=-1, type=int,
    help='add elements index by batches of this size')
+
+
+group = parser.add_argument_group('IVF options')
+aa('--by_residual', default=-1, type=int,
+    help="set if index should use residuals (default=unchanged)")
 aa('--no_precomputed_tables', action='store_true', default=False,
    help='disable precomputed tables (uses less memory)')
+aa('--get_centroids_from', default='',
+   help='get the centroids from this index (to speed up training)')
 aa('--clustering_niter', default=-1, type=int,
    help='number of clustering iterations (-1 = leave default)')
 aa('--train_on_gpu', default=False, action='store_true',
    help='do training on GPU')
-aa('--get_centroids_from', default='',
-   help='get the centroids from this index (to speed up training)')
+
+
+group = parser.add_argument_group('index-specific options')
+aa('--M0', default=-1, type=int, help='size of base level for HNSW')
+aa('--RQ_train_default', default=False, action="store_true",
+    help='disable progressive dim training for RQ')
+aa('--RQ_beam_size', default=-1, type=int,
+    help='set beam size at add time')
+aa('--LSQ_encode_ils_iters', default=-1, type=int,
+    help='ILS iterations for LSQ')
+aa('--RQ_use_beam_LUT', default=-1, type=int,
+    help='use beam LUT at add time')
 
 group = parser.add_argument_group('searching')
 
@@ -85,6 +101,8 @@ os.system('echo -n "nb processors "; '
 ds = datasets.load_dataset(
     dataset=args.db, compute_gt=args.compute_gt)
 
+if args.force_IP:
+    ds.metric = "IP"
 
 print(ds)
 
@@ -109,6 +127,29 @@ def unwind_index_ivf(index):
         return index, None
     else:
         return None, None
+
+
+def apply_AQ_options(index, args):
+    # if not(
+    #    isinstance(index, faiss.IndexAdditiveQuantize) or
+    #    isinstance(index, faiss.IndexIVFAdditiveQuantizer)):
+    #    return
+    if args.RQ_train_default:
+        print("set default training for RQ")
+        index.rq.train_type
+        index.rq.train_type = faiss.ResidualQuantizer.Train_default
+    if args.RQ_beam_size != -1:
+        print("set RQ beam size to", args.RQ_beam_size)
+        index.rq.max_beam_size
+        index.rq.max_beam_size = args.RQ_beam_size
+    if args.LSQ_encode_ils_iters != -1:
+        print("set LSQ ils iterations to", args.LSQ_encode_ils_iters)
+        index.lsq.encode_ils_iters
+        index.lsq.encode_ils_iters = args.LSQ_encode_ils_iters
+    if args.RQ_use_beam_LUT != -1:
+        print("set RQ beam LUT to", args.RQ_use_beam_LUT)
+        index.rq.use_beam_LUT
+        index.rq.use_beam_LUT = args.RQ_use_beam_LUT
 
 
 if args.indexfile and os.path.exists(args.indexfile):
@@ -141,7 +182,6 @@ else:
         index_ivf.by_residual   # check if field exists
         index_ivf.by_residual = by_residual
 
-
     if index_ivf:
         print("Update add-time parameters")
         # adjust default parameters used at add time for quantizers
@@ -163,6 +203,8 @@ else:
             print("   update quantizer efSearch=", quantizer.hnsw.efSearch, end=" -> ")
             quantizer.hnsw.efSearch = 40 if index_ivf.nlist < 4e6 else 64
             print(quantizer.hnsw.efSearch)
+
+    apply_AQ_options(index_ivf or index, args)
 
     if index_ivf:
         index_ivf.verbose = True
@@ -270,6 +312,12 @@ if args.no_precomputed_tables:
 if args.indexfile:
     print("index size on disk: ", os.stat(args.indexfile).st_size)
 
+if hasattr(index, "code_size"):
+    print("vector code_size", index.code_size)
+
+if hasattr(index_ivf, "code_size"):
+    print("vector code_size (IVF)", index_ivf.code_size)
+
 print("current RSS:", faiss.get_mem_usage_kb() * 1024)
 
 precomputed_table_size = 0
@@ -290,6 +338,8 @@ assert gt.shape[1] == args.k, pdb.set_trace()
 if args.searchthreads != -1:
     print("Setting nb of threads to", args.searchthreads)
     faiss.omp_set_num_threads(args.searchthreads)
+else:
+    print("nb search threads: ", faiss.omp_get_max_threads())
 
 ps = faiss.ParameterSpace()
 ps.initialize(index)

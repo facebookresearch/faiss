@@ -129,6 +129,9 @@ struct PCAMatrix : LinearTransform {
      */
     float eigen_power;
 
+    /// value added to eigenvalues to avoid division by 0 when whitening
+    float epsilon;
+
     /// random rotation after PCA
     bool random_rotation;
 

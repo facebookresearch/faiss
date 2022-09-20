@@ -260,6 +260,11 @@ struct simd16uint16 {
         detail::simdlib::set1(data, &vdupq_n_u16, x);
     }
 
+    simd16uint16 operator*(const simd16uint16& other) const {
+        return simd16uint16{
+                detail::simdlib::binary_func(data, other.data, &vmulq_u16)};
+    }
+
     // shift must be known at compile time
     simd16uint16 operator>>(const int shift) const {
         switch (shift) {
@@ -641,8 +646,8 @@ inline simd32uint8 blendv(
     const uint8x16x2_t msb_mask = {
             vtstq_u8(mask.data.val[0], msb), vtstq_u8(mask.data.val[1], msb)};
     const uint8x16x2_t selected = {
-            vbslq_u8(msb_mask.val[0], a.data.val[0], b.data.val[0]),
-            vbslq_u8(msb_mask.val[1], a.data.val[1], b.data.val[1])};
+            vbslq_u8(msb_mask.val[0], b.data.val[0], a.data.val[0]),
+            vbslq_u8(msb_mask.val[1], b.data.val[1], a.data.val[1])};
     return simd32uint8{selected};
 }
 

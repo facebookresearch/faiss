@@ -125,7 +125,7 @@ void runIVFInterleavedScan2(
         Tensor<int, 3, true>& indicesIn,
         Tensor<int, 2, true>& listIds,
         int k,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
         Tensor<float, 2, true>& distanceOut,
@@ -138,7 +138,7 @@ void runIVFInterleavedScan2(
                     indicesIn,                               \
                     listIds,                                 \
                     k,                                       \
-                    listIndices.data().get(),                \
+                    listIndices.data(),                      \
                     indicesOptions,                          \
                     dir,                                     \
                     distanceOut,                             \
@@ -169,10 +169,10 @@ void runIVFInterleavedScan2(
 void runIVFInterleavedScan(
         Tensor<float, 2, true>& queries,
         Tensor<int, 2, true>& listIds,
-        thrust::device_vector<void*>& listData,
-        thrust::device_vector<void*>& listIndices,
+        DeviceVector<void*>& listData,
+        DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        thrust::device_vector<int>& listLengths,
+        DeviceVector<int>& listLengths,
         int k,
         faiss::MetricType metric,
         bool useResidual,

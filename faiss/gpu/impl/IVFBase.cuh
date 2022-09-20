@@ -10,7 +10,6 @@
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-#include <thrust/device_vector.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <memory>
@@ -178,15 +177,15 @@ class IVFBase {
 
     /// Device representation of all inverted list data
     /// id -> data
-    thrust::device_vector<void*> deviceListDataPointers_;
+    DeviceVector<void*> deviceListDataPointers_;
 
     /// Device representation of all inverted list index pointers
     /// id -> data
-    thrust::device_vector<void*> deviceListIndexPointers_;
+    DeviceVector<void*> deviceListIndexPointers_;
 
     /// Device representation of all inverted list lengths
     /// id -> length in number of vectors
-    thrust::device_vector<int> deviceListLengths_;
+    DeviceVector<int> deviceListLengths_;
 
     /// Maximum list length seen
     int maxListLength_;

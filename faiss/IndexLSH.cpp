@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexLSH.h>
 
 #include <cstdio>
@@ -25,14 +23,12 @@ namespace faiss {
  ***************************************************************/
 
 IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
-        : Index(d),
+        : IndexFlatCodes((nbits + 7) / 8, d),
           nbits(nbits),
           rotate_data(rotate_data),
           train_thresholds(train_thresholds),
           rrot(d, nbits) {
     is_trained = !train_thresholds;
-
-    bytes_per_vec = (nbits + 7) / 8;
 
     if (rotate_data) {
         rrot.init(5);
@@ -41,11 +37,7 @@ IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
     }
 }
 
-IndexLSH::IndexLSH()
-        : nbits(0),
-          bytes_per_vec(0),
-          rotate_data(false),
-          train_thresholds(false) {}
+IndexLSH::IndexLSH() : nbits(0), rotate_data(false), train_thresholds(false) {}
 
 const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
     float* xt = nullptr;
@@ -106,15 +98,6 @@ void IndexLSH::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexLSH::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((ntotal + n) * bytes_per_vec);
-
-    sa_encode(n, x, &codes[ntotal * bytes_per_vec]);
-
-    ntotal += n;
-}
-
 void IndexLSH::search(
         idx_t n,
         const float* x,
@@ -127,7 +110,7 @@ void IndexLSH::search(
     const float* xt = apply_preprocess(n, x);
     ScopeDeleter<float> del(xt == x ? nullptr : xt);
 
-    uint8_t* qcodes = new uint8_t[n * bytes_per_vec];
+    uint8_t* qcodes = new uint8_t[n * code_size];
     ScopeDeleter<uint8_t> del2(qcodes);
 
     fvecs2bitvecs(xt, qcodes, nbits, n);
@@ -137,7 +120,7 @@ void IndexLSH::search(
 
     int_maxheap_array_t res = {size_t(n), size_t(k), labels, idistances};
 
-    hammings_knn_hc(&res, qcodes, codes.data(), ntotal, bytes_per_vec, true);
+    hammings_knn_hc(&res, qcodes, codes.data(), ntotal, code_size, true);
 
     // convert distances to floats
     for (int i = 0; i < k * n; i++)
@@ -156,15 +139,6 @@ void IndexLSH::transfer_thresholds(LinearTransform* vt) {
         vt->b[i] -= thresholds[i];
     train_thresholds = false;
     thresholds.clear();
-}
-
-void IndexLSH::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-size_t IndexLSH::sa_code_size() const {
-    return bytes_per_vec;
 }
 
 void IndexLSH::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {

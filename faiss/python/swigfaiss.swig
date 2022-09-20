@@ -70,24 +70,31 @@ typedef uint64_t size_t;
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
-#include <faiss/IndexResidual.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
 
+#include <faiss/IndexFastScan.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexIVFFastScan.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/utils/quantize_lut.h>
 
 #include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
+
+#include <faiss/impl/kmeans1d.h>
 
 #include <faiss/impl/NNDescent.h>
 #include <faiss/IndexNNDescent.h>
@@ -97,6 +104,8 @@ typedef uint64_t size_t;
 
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexRefine.h>
+
+#include <faiss/IndexRowwiseMinMax.h>
 
 #include <faiss/impl/FaissAssert.h>
 
@@ -119,9 +128,11 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -286,6 +297,7 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuDistance.h>
+#include <faiss/gpu/GpuIcmEncoder.h>
 
 int get_num_gpus()
 {
@@ -317,6 +329,7 @@ void gpu_sync_all_devices()
 %ignore *::allocMemoryHandle;
 %ignore faiss::gpu::GpuMemoryReservation;
 %ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
+%ignore faiss::gpu::AllocType;
 
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
@@ -370,25 +383,32 @@ void gpu_sync_all_devices()
 
 %newobject *::get_distance_computer() const;
 %include  <faiss/Index.h>
+
+%include <faiss/impl/DistanceComputer.h>
+
+%newobject *::get_FlatCodesDistanceComputer() const;
+%include  <faiss/IndexFlatCodes.h>
+%include  <faiss/IndexFlat.h>
 %include  <faiss/Clustering.h>
 
 %include  <faiss/utils/extra_distances.h>
 
 %ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
 
+%include  <faiss/impl/Quantizer.h>
 %include  <faiss/impl/ProductQuantizer.h>
 %include  <faiss/impl/AdditiveQuantizer.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
+%include  <faiss/impl/ProductAdditiveQuantizer.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
-%include  <faiss/IndexFlat.h>
 %include  <faiss/IndexRefine.h>
 %include  <faiss/IndexLSH.h>
 %include  <faiss/impl/PolysemousTraining.h>
 %include  <faiss/IndexPQ.h>
-%include  <faiss/IndexResidual.h>
+%include  <faiss/IndexAdditiveQuantizer.h>
 %include  <faiss/impl/io.h>
 
 %include  <faiss/invlists/InvertedLists.h>
@@ -396,8 +416,6 @@ void gpu_sync_all_devices()
 %ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
-%ignore InvertedListScanner;
-%ignore BinaryInvertedListScanner;
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
@@ -407,8 +425,11 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ScalarQuantizer.h>
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
+%include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
+
+%include <faiss/impl/kmeans1d.h>
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
@@ -432,7 +453,11 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
+%include  <faiss/IndexFastScan.h>
+%include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFPQFastScan.h>
 %include  <faiss/utils/quantize_lut.h>
 
@@ -461,6 +486,7 @@ void gpu_sync_all_devices()
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
+%include  <faiss/IndexRowwiseMinMax.h>
 
 
 %ignore faiss::BufferList::Buffer;
@@ -470,7 +496,8 @@ void gpu_sync_all_devices()
 %ignore faiss::InterruptCallback::instance;
 %ignore faiss::InterruptCallback::lock;
 
-%include  <faiss/impl/AuxIndexStructures.h>
+%include <faiss/impl/AuxIndexStructures.h>
+
 
 
 #ifdef GPU_WRAPPER
@@ -488,6 +515,7 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
 %include  <faiss/gpu/GpuIndexBinaryFlat.h>
 %include  <faiss/gpu/GpuDistance.h>
+%include  <faiss/gpu/GpuIcmEncoder.h>
 
 
 #endif
@@ -532,6 +560,7 @@ void gpu_sync_all_devices()
 %newobject read_VectorTransform;
 %newobject read_ProductQuantizer;
 %newobject clone_index;
+%newobject clone_Quantizer;
 %newobject clone_VectorTransform;
 
 // Subclasses should appear before their parent
@@ -545,6 +574,14 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFPQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
+    DOWNCAST ( IndexIVFResidualQuantizer )
+    DOWNCAST ( IndexIVFLocalSearchQuantizer )
+    DOWNCAST ( IndexIVFProductResidualQuantizer )
+    DOWNCAST ( IndexIVFProductLocalSearchQuantizer )
+    DOWNCAST ( IndexIVFResidualQuantizerFastScan )
+    DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexIVFProductResidualQuantizerFastScan )
+    DOWNCAST ( IndexIVFProductLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -553,8 +590,16 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
     DOWNCAST ( IndexPQ )
-    DOWNCAST ( IndexResidual )
+    DOWNCAST ( IndexResidualQuantizer )
+    DOWNCAST ( IndexLocalSearchQuantizer )
+    DOWNCAST ( IndexResidualQuantizerFastScan )
+    DOWNCAST ( IndexLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexProductResidualQuantizerFastScan )
+    DOWNCAST ( IndexProductLocalSearchQuantizerFastScan )
     DOWNCAST ( ResidualCoarseQuantizer )
+    DOWNCAST ( LocalSearchCoarseQuantizer )
+    DOWNCAST ( IndexProductResidualQuantizer )
+    DOWNCAST ( IndexProductLocalSearchQuantizer )
     DOWNCAST ( IndexScalarQuantizer )
     DOWNCAST ( IndexLSH )
     DOWNCAST ( IndexLattice )
@@ -566,7 +611,11 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
+    DOWNCAST ( IndexNSGPQ )
+    DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRowwiseMinMax )
+    DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -641,6 +690,18 @@ void gpu_sync_all_devices()
     }
 }
 
+%typemap(out) faiss::Quantizer * {
+    DOWNCAST (ScalarQuantizer)
+    DOWNCAST (ProductQuantizer)
+    DOWNCAST (LocalSearchQuantizer)
+    DOWNCAST (ResidualQuantizer)
+    DOWNCAST (ProductLocalSearchQuantizer)
+    DOWNCAST (ProductResidualQuantizer)
+    {
+        assert(false);
+    }
+}
+
 // just to downcast pointers that come from elsewhere (eg. direct
 // access to object fields)
 %inline %{
@@ -659,6 +720,15 @@ faiss::IndexBinary * downcast_IndexBinary (faiss::IndexBinary *index)
 faiss::InvertedLists * downcast_InvertedLists (faiss::InvertedLists *il)
 {
     return il;
+}
+// backwards compatibility
+faiss::Quantizer * downcast_AdditiveQuantizer (faiss::AdditiveQuantizer *aq)
+{
+    return aq;
+}
+faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
+{
+    return aq;
 }
 %}
 

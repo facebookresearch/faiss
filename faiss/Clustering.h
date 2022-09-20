@@ -111,6 +111,20 @@ struct Clustering : ClusteringParameters {
     virtual ~Clustering() {}
 };
 
+/** Exact 1D clustering algorithm
+ *
+ * Since it does not use an index, it does not overload the train() function
+ */
+struct Clustering1D : Clustering {
+    explicit Clustering1D(int k);
+
+    Clustering1D(int k, const ClusteringParameters& cp);
+
+    void train_exact(idx_t n, const float* x);
+
+    virtual ~Clustering1D() {}
+};
+
 struct ProgressiveDimClusteringParameters : ClusteringParameters {
     int progressive_dim_steps; ///< number of incremental steps
     bool apply_pca;            ///< apply PCA on input

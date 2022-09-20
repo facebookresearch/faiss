@@ -13,6 +13,7 @@
 #define FAISS_INDEX_IO_C_H
 
 #include <stdio.h>
+#include "IndexBinary_c.h"
 #include "Index_c.h"
 #include "faiss_c.h"
 
@@ -44,6 +45,33 @@ int faiss_read_index(FILE* f, int io_flags, FaissIndex** p_out);
  */
 int faiss_read_index_fname(const char* fname, int io_flags, FaissIndex** p_out);
 
+/** Write index to a file.
+ * This is equivalent to `faiss::write_index_binary` when a file descriptor is
+ * provided.
+ */
+int faiss_write_index_binary(const FaissIndexBinary* idx, FILE* f);
+
+/** Write index to a file.
+ * This is equivalent to `faiss::write_index_binary` when a file path is
+ * provided.
+ */
+int faiss_write_index_binary_fname(
+        const FaissIndexBinary* idx,
+        const char* fname);
+
+/** Read index from a file.
+ * This is equivalent to `faiss:read_index_binary` when a file descriptor is
+ * given.
+ */
+int faiss_read_index_binary(FILE* f, int io_flags, FaissIndexBinary** p_out);
+
+/** Read index from a file.
+ * This is equivalent to `faiss:read_index_binary` when a file path is given.
+ */
+int faiss_read_index_binary_fname(
+        const char* fname,
+        int io_flags,
+        FaissIndexBinary** p_out);
 #ifdef __cplusplus
 }
 #endif

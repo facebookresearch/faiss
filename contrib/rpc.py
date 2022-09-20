@@ -10,14 +10,18 @@ Exposes all functions of a Server object.
 Uses pickle for serialization and the socket interface.
 """
 
-import os,pdb,pickle,time,errno,sys,_thread,traceback,socket,threading,gc
-
+import os
+import pickle
+import sys
+import _thread
+import traceback
+import socket
 import logging
 
 LOG = logging.getLogger(__name__)
 
 # default
-PORT=12032
+PORT = 12032
 
 
 #########################################################################
@@ -29,6 +33,7 @@ def inline_send_handle(f, conn):
     size = st.st_size
     pickle.dump(size, conn)
     conn.write(f.read(size))
+
 
 def inline_send_string(s, conn):
     size = len(s)
@@ -128,7 +133,7 @@ class Server:
             f=getattr(self,fname)
         except AttributeError:
             st = AttributeError("unknown method "+fname)
-            self.log("unknown method ")
+            self.log("unknown method")
 
         try:
             ret = f(*args)
@@ -198,7 +203,7 @@ class Client:
         socktype = socket.AF_INET6 if v6 else socket.AF_INET
 
         sock = socket.socket(socktype, socket.SOCK_STREAM)
-        LOG.info("connecting", HOST, port, socktype)
+        LOG.info("connecting to %s:%d, socket type: %s", HOST, port, socktype)
         sock.connect((HOST, port))
         self.sock = sock
         self.fs = FileSock(sock)
@@ -226,13 +231,13 @@ def run_server(new_handler, port=PORT, report_to_file=None, v6=False):
     s = socket.socket(socktype, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    LOG.info("bind %s:%d" % (HOST, port))
+    LOG.info("bind %s:%d", HOST, port)
     s.bind((HOST, port))
     s.listen(5)
 
     LOG.info("accepting connections")
     if report_to_file is not None:
-        LOG.info('storing host+port in', report_to_file)
+        LOG.info('storing host+port in %s', report_to_file)
         open(report_to_file, 'w').write('%s:%d ' % (socket.gethostname(), port))
 
     while True:
@@ -242,10 +247,10 @@ def run_server(new_handler, port=PORT, report_to_file=None, v6=False):
             if e[1]=='Interrupted system call': continue
             raise
 
-        LOG.info('Connected by', addr, end=' ')
+        LOG.info('Connected to %s', addr)
 
         ibs = new_handler(conn)
 
         tid = _thread.start_new_thread(ibs.exec_loop,())
 
-        LOG.info("tid",tid)
+        LOG.debug("Thread ID: %d", tid)

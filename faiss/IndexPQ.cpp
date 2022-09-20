@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
-
 #include <faiss/IndexPQ.h>
 
 #include <cinttypes>
@@ -17,7 +15,7 @@
 
 #include <algorithm>
 
-#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
@@ -28,12 +26,13 @@ namespace faiss {
  ********************************************************/
 
 IndexPQ::IndexPQ(int d, size_t M, size_t nbits, MetricType metric)
-        : Index(d, metric), pq(d, M, nbits) {
+        : IndexFlatCodes(0, d, metric), pq(d, M, nbits) {
     is_trained = false;
     do_polysemous_training = false;
     polysemous_ht = nbits * M + 1;
     search_type = ST_PQ;
     encode_signs = false;
+    code_size = pq.code_size;
 }
 
 IndexPQ::IndexPQ() {
@@ -69,69 +68,19 @@ void IndexPQ::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexPQ::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
-    codes.resize((n + ntotal) * pq.code_size);
-    pq.compute_codes(x, &codes[ntotal * pq.code_size], n);
-    ntotal += n;
-}
-
-size_t IndexPQ::remove_ids(const IDSelector& sel) {
-    idx_t j = 0;
-    for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
-            if (i > j) {
-                memmove(&codes[pq.code_size * j],
-                        &codes[pq.code_size * i],
-                        pq.code_size);
-            }
-            j++;
-        }
-    }
-    size_t nremove = ntotal - j;
-    if (nremove > 0) {
-        ntotal = j;
-        codes.resize(ntotal * pq.code_size);
-    }
-    return nremove;
-}
-
-void IndexPQ::reset() {
-    codes.clear();
-    ntotal = 0;
-}
-
-void IndexPQ::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
-    FAISS_THROW_IF_NOT(ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
-    for (idx_t i = 0; i < ni; i++) {
-        const uint8_t* code = &codes[(i0 + i) * pq.code_size];
-        pq.decode(code, recons + i * d);
-    }
-}
-
-void IndexPQ::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
-    pq.decode(&codes[key * pq.code_size], recons);
-}
-
 namespace {
 
 template <class PQDecoder>
-struct PQDistanceComputer : DistanceComputer {
+struct PQDistanceComputer : FlatCodesDistanceComputer {
     size_t d;
     MetricType metric;
     Index::idx_t nb;
-    const uint8_t* codes;
-    size_t code_size;
     const ProductQuantizer& pq;
     const float* sdc;
     std::vector<float> precomputed_table;
     size_t ndis;
 
-    float operator()(idx_t i) override {
-        const uint8_t* code = codes + i * code_size;
+    float distance_to_code(const uint8_t* code) final {
         const float* dt = precomputed_table.data();
         PQDecoder decoder(code, pq.nbits);
         float accu = 0;
@@ -158,13 +107,15 @@ struct PQDistanceComputer : DistanceComputer {
         return accu;
     }
 
-    explicit PQDistanceComputer(const IndexPQ& storage) : pq(storage.pq) {
+    explicit PQDistanceComputer(const IndexPQ& storage)
+            : FlatCodesDistanceComputer(
+                      storage.codes.data(),
+                      storage.code_size),
+              pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
         d = storage.d;
         metric = storage.metric_type;
-        codes = storage.codes.data();
-        code_size = pq.code_size;
         if (pq.sdc_table.size() == pq.ksub * pq.ksub * pq.M) {
             sdc = pq.sdc_table.data();
         } else {
@@ -184,7 +135,7 @@ struct PQDistanceComputer : DistanceComputer {
 
 } // namespace
 
-DistanceComputer* IndexPQ::get_distance_computer() const {
+FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
     if (pq.nbits == 8) {
         return new PQDistanceComputer<PQDecoder8>(*this);
     } else if (pq.nbits == 16) {
@@ -457,9 +408,6 @@ void IndexPQ::search_core_polysemous(
 }
 
 /* The standalone codec interface (just remaps to the PQ functions) */
-size_t IndexPQ::sa_code_size() const {
-    return pq.code_size;
-}
 
 void IndexPQ::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     pq.compute_codes(x, bytes, n);
@@ -914,6 +862,9 @@ void MultiIndexQuantizer::train(idx_t n, const float* x) {
         ntotal *= pq.ksub;
 }
 
+// block size used in MultiIndexQuantizer::search
+int multi_index_quantizer_search_bs = 32768;
+
 void MultiIndexQuantizer::search(
         idx_t n,
         const float* x,
@@ -926,7 +877,7 @@ void MultiIndexQuantizer::search(
     FAISS_THROW_IF_NOT(k > 0);
 
     // the allocation just below can be severe...
-    idx_t bs = 32768;
+    idx_t bs = multi_index_quantizer_search_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);

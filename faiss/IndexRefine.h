@@ -49,6 +49,16 @@ struct IndexRefine : Index {
     // reconstruct is routed to the refine_index
     void reconstruct(idx_t key, float* recons) const override;
 
+    /* standalone codec interface: the base_index codes are interleaved with the
+     * refine_index ones */
+    size_t sa_code_size() const override;
+
+    void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
+
+    /// The sa_decode decodes from the index_refine, which is assumed to be more
+    /// accurate
+    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
     ~IndexRefine() override;
 };
 

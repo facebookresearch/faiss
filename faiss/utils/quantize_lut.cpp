@@ -284,6 +284,68 @@ void quantize_LUT_and_bias(
         *b_out = b;
 }
 
+void aq_quantize_LUT_and_bias(
+        size_t nprobe,
+        size_t M,
+        size_t ksub,
+        const float* LUT,
+        const float* bias,
+        size_t M_norm,
+        int norm_scale,
+        uint8_t* LUTq,
+        size_t M2,
+        uint16_t* biasq,
+        float* a_out,
+        float* b_out) {
+    float a, b;
+    std::vector<float> mins(M);
+    float max_span_LUT = -HUGE_VAL, max_span_dis;
+    float bias_min = tab_min(bias, nprobe);
+    float bias_max = tab_max(bias, nprobe);
+    max_span_dis = bias_max - bias_min;
+    b = 0;
+    for (int i = 0; i < M; i++) {
+        mins[i] = tab_min(LUT + i * ksub, ksub);
+        float span = tab_max(LUT + i * ksub, ksub) - mins[i];
+        max_span_LUT = std::max(max_span_LUT, span);
+        max_span_dis += (i >= M - M_norm ? span * norm_scale : span);
+        b += mins[i];
+    }
+    a = std::min(255 / max_span_LUT, 65535 / max_span_dis);
+    b += bias_min;
+
+    for (int i = 0; i < M; i++) {
+        round_tab(LUT + i * ksub, ksub, a, mins[i], LUTq + i * ksub);
+    }
+    memset(LUTq + M * ksub, 0, ksub * (M2 - M));
+    round_tab(bias, nprobe, a, bias_min, biasq);
+
+    *a_out = a;
+    *b_out = b;
+}
+
+float aq_estimate_norm_scale(
+        size_t M,
+        size_t ksub,
+        size_t M_norm,
+        const float* LUT) {
+    float max_span_LUT = -HUGE_VAL;
+    for (int i = 0; i < M - M_norm; i++) {
+        float min = tab_min(LUT + i * ksub, ksub);
+        float span = tab_max(LUT + i * ksub, ksub) - min;
+        max_span_LUT = std::max(max_span_LUT, span);
+    }
+
+    float max_span_LUT_norm = -HUGE_VAL;
+    for (int i = M - M_norm; i < M; i++) {
+        float min = tab_min(LUT + i * ksub, ksub);
+        float span = tab_max(LUT + i * ksub, ksub) - min;
+        max_span_LUT_norm = std::max(max_span_LUT_norm, span);
+    }
+
+    return max_span_LUT_norm / max_span_LUT;
+}
+
 } // namespace quantize_lut
 
 } // namespace faiss

@@ -9,79 +9,19 @@
 Simple distributed kmeans implementation Relies on an abstraction
 for the training matrix, that can be sharded over several machines.
 """
-
-import faiss
-import time
-import numpy as np
+import os
 import sys
-import pdb
 import argparse
 
-from scipy.sparse import csc_matrix
+import numpy as np
+
+import faiss
 
 from multiprocessing.dummy import Pool as ThreadPool
-
-import rpc
-
-
-
-
-class DatasetAssign:
-    """Wrapper for a matrix that offers a function to assign the vectors
-    to centroids. All other implementations offer the same interface"""
-
-    def __init__(self, x):
-        self.x = np.ascontiguousarray(x, dtype='float32')
-
-    def count(self):
-        return self.x.shape[0]
-
-    def dim(self):
-        return self.x.shape[1]
-
-    def get_subset(self, indices):
-        return self.x[indices]
-
-    def perform_search(self, centroids):
-        index = faiss.IndexFlatL2(self.x.shape[1])
-        index.add(centroids)
-        return index.search(self.x, 1)
-
-    def assign_to(self, centroids, weights=None):
-        D, I = self.perform_search(centroids)
-
-        I = I.ravel()
-        D = D.ravel()
-        n = len(self.x)
-        if weights is None:
-            weights = np.ones(n, dtype='float32')
-        nc = len(centroids)
-        m = csc_matrix((weights, I, np.arange(n + 1)),
-                       shape=(nc, n))
-        sum_per_centroid = m * self.x
-
-        return I, D, sum_per_centroid
-
-
-class DatasetAssignGPU(DatasetAssign):
-    """ GPU version of the previous """
-
-    def __init__(self, x, gpu_id, verbose=False):
-        DatasetAssign.__init__(self, x)
-        index = faiss.IndexFlatL2(x.shape[1])
-        if gpu_id >= 0:
-            self.index = faiss.index_cpu_to_gpu(
-                faiss.StandardGpuResources(),
-                gpu_id, index)
-        else:
-            # -1 -> assign to all GPUs
-            self.index = faiss.index_cpu_to_all_gpus(index)
-
-
-    def perform_search(self, centroids):
-        self.index.reset()
-        self.index.add(centroids)
-        return self.index.search(self.x, 1)
+from faiss.contrib import rpc
+from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.vecs_io import bvecs_mmap, fvecs_mmap
+from faiss.contrib.clustering import DatasetAssign, DatasetAssignGPU, kmeans
 
 
 class DatasetAssignDispatch:
@@ -136,109 +76,6 @@ class DatasetAssignDispatch:
         return np.hstack(I), np.hstack(D), sum_per_centroid
 
 
-def imbalance_factor(k , assign):
-    return faiss.imbalance_factor(len(assign), k, faiss.swig_ptr(assign))
-
-
-def reassign_centroids(hassign, centroids, rs=None):
-    """ reassign centroids when some of them collapse """
-    if rs is None:
-        rs = np.random
-    k, d = centroids.shape
-    nsplit = 0
-    empty_cents = np.where(hassign == 0)[0]
-
-    if empty_cents.size == 0:
-        return 0
-
-    fac = np.ones(d)
-    fac[::2] += 1 / 1024.
-    fac[1::2] -= 1 / 1024.
-
-    # this is a single pass unless there are more than k/2
-    # empty centroids
-    while empty_cents.size > 0:
-        # choose which centroids to split
-        probas = hassign.astype('float') - 1
-        probas[probas < 0] = 0
-        probas /= probas.sum()
-        nnz = (probas > 0).sum()
-
-        nreplace = min(nnz, empty_cents.size)
-        cjs = rs.choice(k, size=nreplace, p=probas)
-
-        for ci, cj in zip(empty_cents[:nreplace], cjs):
-
-            c = centroids[cj]
-            centroids[ci] = c * fac
-            centroids[cj] = c / fac
-
-            hassign[ci] = hassign[cj] // 2
-            hassign[cj] -= hassign[ci]
-            nsplit += 1
-
-        empty_cents = empty_cents[nreplace:]
-
-    return nsplit
-
-
-def kmeans(k, data, niter=25, seed=1234, checkpoint=None):
-    """Pure python kmeans implementation. Follows the Faiss C++ version
-    quite closely, but takes a DatasetAssign instead of a training data
-    matrix. Also redo is not implemented. """
-    n, d = data.count(), data.dim()
-
-    print(("Clustering %d points in %dD to %d clusters, " +
-            "%d iterations seed %d") % (n, d, k, niter, seed))
-
-    rs = np.random.RandomState(seed)
-    print("preproc...")
-    t0 = time.time()
-    # initialization
-    perm = rs.choice(n, size=k, replace=False)
-    centroids = data.get_subset(perm)
-
-    print("  done")
-    t_search_tot = 0
-    obj = []
-    for i in range(niter):
-        t0s = time.time()
-
-        print('assigning', end='\r', flush=True)
-        assign, D, sums = data.assign_to(centroids)
-
-        print('compute centroids', end='\r', flush=True)
-
-        # pdb.set_trace()
-
-        t_search_tot += time.time() - t0s;
-
-        err = D.sum()
-        obj.append(err)
-
-        hassign = np.bincount(assign, minlength=k)
-
-        fac = hassign.reshape(-1, 1).astype('float32')
-        fac[fac == 0] = 1 # quiet warning
-
-        centroids = sums / fac
-
-        nsplit = reassign_centroids(hassign, centroids, rs)
-
-        print(("  Iteration %d (%.2f s, search %.2f s): "
-               "objective=%g imbalance=%.3f nsplit=%d") % (
-                   i, (time.time() - t0), t_search_tot,
-                   err, imbalance_factor (k, assign),
-                   nsplit)
-        )
-
-        if checkpoint is not None:
-            print('storing centroids in', checkpoint)
-            np.save(checkpoint, centroids)
-
-    return centroids
-
-
 class AssignServer(rpc.Server):
     """ Assign version that can be exposed via RPC """
 
@@ -251,25 +88,17 @@ class AssignServer(rpc.Server):
 
 
 
-def bvecs_mmap(fname):
-    x = np.memmap(fname, dtype='uint8', mode='r')
-    d = x[:4].view('int32')[0]
-    return x.reshape(-1, d + 4)[:, 4:]
-
-
-def ivecs_mmap(fname):
-    a = np.memmap(fname, dtype='int32', mode='r')
-    d = a[0]
-    return a.reshape(-1, d + 1)[:, 1:]
-
-def fvecs_mmap(fname):
-    return ivecs_mmap(fname).view('float32')
-
 
 def do_test(todo):
+
     testdata = '/datasets01_101/simsearch/041218/bigann/bigann_learn.bvecs'
 
-    x = bvecs_mmap(testdata)
+    if os.path.exists(testdata):
+        x = bvecs_mmap(testdata)
+    else:
+        print("using synthetic dataset")
+        ds = SyntheticDataset(128, 100000, 0, 0)
+        x = ds.get_train()
 
     # bad distribution to stress-test split code
     xx = x[:100000].copy()

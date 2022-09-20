@@ -47,21 +47,25 @@ inline void heap_pop(size_t k, typename C::T* bh_val, typename C::TI* bh_ids) {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     typename C::T val = bh_val[k];
+    typename C::TI id = bh_ids[k];
     size_t i = 1, i1, i2;
     while (1) {
         i1 = i << 1;
         i2 = i1 + 1;
         if (i1 > k)
             break;
-        if (i2 == k + 1 || C::cmp(bh_val[i1], bh_val[i2])) {
-            if (C::cmp(val, bh_val[i1]))
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
                 break;
+            }
             bh_val[i] = bh_val[i1];
             bh_ids[i] = bh_ids[i1];
             i = i1;
         } else {
-            if (C::cmp(val, bh_val[i2]))
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
                 break;
+            }
             bh_val[i] = bh_val[i2];
             bh_ids[i] = bh_ids[i2];
             i = i2;
@@ -80,24 +84,28 @@ inline void heap_push(
         typename C::T* bh_val,
         typename C::TI* bh_ids,
         typename C::T val,
-        typename C::TI ids) {
+        typename C::TI id) {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     size_t i = k, i_father;
     while (i > 1) {
         i_father = i >> 1;
-        if (!C::cmp(val, bh_val[i_father])) /* the heap structure is ok */
+        if (!C::cmp2(val, bh_val[i_father], id, bh_ids[i_father])) {
+            /* the heap structure is ok */
             break;
+        }
         bh_val[i] = bh_val[i_father];
         bh_ids[i] = bh_ids[i_father];
         i = i_father;
     }
     bh_val[i] = val;
-    bh_ids[i] = ids;
+    bh_ids[i] = id;
 }
 
-/** Replace the top element from the heap defined by bh_val[0..k-1] and
- * bh_ids[0..k-1].
+/**
+ * Replaces the top element from the heap defined by bh_val[0..k-1] and
+ * bh_ids[0..k-1], and for identical bh_val[] values also sorts by bh_ids[]
+ * values.
  */
 template <class C>
 inline void heap_replace_top(
@@ -105,31 +113,39 @@ inline void heap_replace_top(
         typename C::T* bh_val,
         typename C::TI* bh_ids,
         typename C::T val,
-        typename C::TI ids) {
+        typename C::TI id) {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     size_t i = 1, i1, i2;
     while (1) {
         i1 = i << 1;
         i2 = i1 + 1;
-        if (i1 > k)
+        if (i1 > k) {
             break;
-        if (i2 == k + 1 || C::cmp(bh_val[i1], bh_val[i2])) {
-            if (C::cmp(val, bh_val[i1]))
+        }
+
+        // Note that C::cmp2() is a bool function answering
+        // `(a1 > b1) || ((a1 == b1) && (a2 > b2))` for max
+        // heap and same with the `<` sign for min heap.
+        if ((i2 == k + 1) ||
+            C::cmp2(bh_val[i1], bh_val[i2], bh_ids[i1], bh_ids[i2])) {
+            if (C::cmp2(val, bh_val[i1], id, bh_ids[i1])) {
                 break;
+            }
             bh_val[i] = bh_val[i1];
             bh_ids[i] = bh_ids[i1];
             i = i1;
         } else {
-            if (C::cmp(val, bh_val[i2]))
+            if (C::cmp2(val, bh_val[i2], id, bh_ids[i2])) {
                 break;
+            }
             bh_val[i] = bh_val[i2];
             bh_ids[i] = bh_ids[i2];
             i = i2;
         }
     }
     bh_val[i] = val;
-    bh_ids[i] = ids;
+    bh_ids[i] = id;
 }
 
 /* Partial instanciation for heaps with TI = int64_t */
@@ -294,7 +310,7 @@ inline void maxheap_addn(
  * Heap finalization (reorder elements)
  *******************************************************************/
 
-/* This function maps a binary heap into an sorted structure.
+/* This function maps a binary heap into a sorted structure.
    It returns the number  */
 template <typename C>
 inline size_t heap_reorder(

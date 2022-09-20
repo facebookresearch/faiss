@@ -14,6 +14,7 @@
 #include <cmath>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 
@@ -89,18 +90,18 @@ void knn_extra_metrics_template(
 }
 
 template <class VD>
-struct ExtraDistanceComputer : DistanceComputer {
+struct ExtraDistanceComputer : FlatCodesDistanceComputer {
     VD vd;
     Index::idx_t nb;
     const float* q;
     const float* b;
 
-    float operator()(idx_t i) override {
-        return vd(q, b + i * vd.d);
+    float symmetric_dis(idx_t i, idx_t j) final {
+        return vd(b + j * vd.d, b + i * vd.d);
     }
 
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return vd(b + j * vd.d, b + i * vd.d);
+    float distance_to_code(const uint8_t* code) final {
+        return vd(q, (float*)code);
     }
 
     ExtraDistanceComputer(
@@ -108,7 +109,11 @@ struct ExtraDistanceComputer : DistanceComputer {
             const float* xb,
             size_t nb,
             const float* q = nullptr)
-            : vd(vd), nb(nb), q(q), b(xb) {}
+            : FlatCodesDistanceComputer((uint8_t*)xb, vd.d * sizeof(float)),
+              vd(vd),
+              nb(nb),
+              q(q),
+              b(xb) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -188,7 +193,7 @@ void knn_extra_metrics(
     }
 }
 
-DistanceComputer* get_extra_distance_computer(
+FlatCodesDistanceComputer* get_extra_distance_computer(
         size_t d,
         MetricType mt,
         float metric_arg,
