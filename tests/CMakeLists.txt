@@ -21,6 +21,7 @@ set(FAISS_TEST_SRC
   test_transfer_invlists.cpp
   test_mem_leak.cpp
   test_cppcontrib_sa_decode.cpp
+  test_cppcontrib_uintreader.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
