@@ -15,6 +15,7 @@
 #include <omp.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/utils.h>
@@ -242,7 +243,9 @@ void IndexIVFScalarQuantizer::add_core(
 }
 
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT(!sel);
     return sq.select_InvertedListScanner(
             metric_type, quantizer, store_pairs, by_residual);
 }

@@ -63,6 +63,8 @@ struct Level1Quantizer {
 };
 
 struct IVFSearchParameters {
+    /// if non-null, only these IDs will be considered during search
+    IDSelector* sel = nullptr;
     size_t nprobe;    ///< number of probes at query time
     size_t max_codes; ///< max nb of codes to visit to do a query
     IVFSearchParameters() : nprobe(1), max_codes(0) {}
@@ -242,7 +244,7 @@ struct IndexIVF : Index, Level1Quantizer {
      * The default search implementation uses this to compute the distances
      */
     virtual InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs = false) const;
+            bool store_pairs = false, const IDSelector *sel = nullptr) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
@@ -363,7 +365,15 @@ struct InvertedListScanner {
     idx_t list_no = -1;    ///< remember current list
     bool keep_max = false; ///< keep maximum instead of minimum
     /// store positions in invlists rather than labels
-    bool store_pairs = false;
+    bool store_pairs;
+
+    /// search in this subset of ids
+    const IDSelector* sel;
+
+    InvertedListScanner(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr)
+            : store_pairs(store_pairs), sel(sel) {}
 
     /// used in default implementation of scan_codes
     size_t code_size = 0;

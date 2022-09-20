@@ -50,7 +50,8 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
 

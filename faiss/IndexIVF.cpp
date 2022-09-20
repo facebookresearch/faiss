@@ -22,6 +22,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
@@ -401,6 +402,8 @@ void IndexIVF::search_preassigned(
 
     idx_t max_codes = params ? params->max_codes : this->max_codes;
 
+    IDSelector* sel = params ? params->sel : nullptr;
+
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
     using HeapForIP = CMin<float, idx_t>;
@@ -421,7 +424,8 @@ void IndexIVF::search_preassigned(
 
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
-        InvertedListScanner* scanner = get_InvertedListScanner(store_pairs);
+        InvertedListScanner* scanner =
+                get_InvertedListScanner(store_pairs, sel);
         ScopeDeleter1<InvertedListScanner> del(scanner);
 
         /*****************************************************
@@ -816,7 +820,8 @@ void IndexIVF::range_search_preassigned(
 }
 
 InvertedListScanner* IndexIVF::get_InvertedListScanner(
-        bool /*store_pairs*/) const {
+        bool /*store_pairs*/,
+        const IDSelector* /* sel */) const {
     return nullptr;
 }
 

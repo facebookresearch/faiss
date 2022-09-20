@@ -1257,7 +1257,8 @@ InvertedListScanner* get_InvertedListScanner1(
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs, const IDSelector *sel) const {
+    FAISS_THROW_IF_NOT(!sel);
     if (pq.nbits == 8) {
         return get_InvertedListScanner1<PQDecoder8>(*this, store_pairs);
     } else if (pq.nbits == 16) {

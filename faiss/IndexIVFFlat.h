@@ -42,7 +42,7 @@ struct IndexIVFFlat : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs, const IDSelector *sel) const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;

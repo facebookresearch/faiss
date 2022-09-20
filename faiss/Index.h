@@ -38,7 +38,7 @@
 
 namespace faiss {
 
-/// Forward declarations see impl/AuxIndexStructures.h and
+/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h and
 /// impl/DistanceComputer.h
 struct IDSelector;
 struct RangeSearchResult;
