@@ -1178,6 +1178,27 @@
         </inbodydescription>
         <location file="faiss/index_io.h" line="65" column="6" declfile="faiss/index_io.h" declline="65" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af06ee18cec9686419b641298e3a0667e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::write_VectorTransform</definition>
+        <argsstring>(const VectorTransform *vt, IOWriter *f)</argsstring>
+        <name>write_VectorTransform</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>IOWriter *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="66" column="6" declfile="faiss/index_io.h" declline="66" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a220b5d46772f1659de69061c976916f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
         <definition>VectorTransform* faiss::read_VectorTransform</definition>
@@ -1193,7 +1214,24 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="66" column="17" declfile="faiss/index_io.h" declline="66" declcolumn="17"/>
+        <location file="faiss/index_io.h" line="68" column="17" declfile="faiss/index_io.h" declline="68" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aa7947aa6ec50a5232008dae4c932c6aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> *</type>
+        <definition>VectorTransform* faiss::read_VectorTransform</definition>
+        <argsstring>(IOReader *f)</argsstring>
+        <name>read_VectorTransform</name>
+        <param>
+          <type>IOReader *</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="69" column="17" declfile="faiss/index_io.h" declline="69" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a424578a3c798b4f0deb428ca777882b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>ProductQuantizer *</type>
@@ -1210,7 +1248,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="68" column="18" declfile="faiss/index_io.h" declline="68" declcolumn="18"/>
+        <location file="faiss/index_io.h" line="71" column="18" declfile="faiss/index_io.h" declline="71" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a744fe50a3410862d1c282f0c8d779231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>ProductQuantizer *</type>
@@ -1227,7 +1265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="69" column="18" declfile="faiss/index_io.h" declline="69" declcolumn="18"/>
+        <location file="faiss/index_io.h" line="72" column="18" declfile="faiss/index_io.h" declline="72" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aeecb2752b0d13ace2d17ebc0189e9ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1248,7 +1286,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="71" column="6" declfile="faiss/index_io.h" declline="71" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="74" column="6" declfile="faiss/index_io.h" declline="74" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1adbd20721104c8523bbc53d82f839b03c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1269,7 +1307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="72" column="6" declfile="faiss/index_io.h" declline="72" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="75" column="6" declfile="faiss/index_io.h" declline="75" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aceed566acb3d5edfa90c70198ba5d962" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1290,7 +1328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="74" column="6" declfile="faiss/index_io.h" declline="74" declcolumn="6"/>
+        <location file="faiss/index_io.h" line="77" column="6" declfile="faiss/index_io.h" declline="77" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada48910294697ded009a42677f92beeb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -1312,7 +1350,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/index_io.h" line="75" column="15" declfile="faiss/index_io.h" declline="75" declcolumn="15"/>
+        <location file="faiss/index_io.h" line="78" column="15" declfile="faiss/index_io.h" declline="78" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a08f648e8a7cb35af103a982fee81986e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

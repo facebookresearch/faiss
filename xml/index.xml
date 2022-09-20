@@ -6261,7 +6261,9 @@
     <member refid="namespacefaiss_1a38d8255e46b834d2ca23bc926c1fbb6f" kind="function"><name>read_index_binary</name></member>
     <member refid="namespacefaiss_1abfceef97b9853955e1e81d922076001c" kind="function"><name>read_index_binary</name></member>
     <member refid="namespacefaiss_1ad72efd9404a8058159f1ae48225a2d94" kind="function"><name>write_VectorTransform</name></member>
+    <member refid="namespacefaiss_1af06ee18cec9686419b641298e3a0667e" kind="function"><name>write_VectorTransform</name></member>
     <member refid="namespacefaiss_1a220b5d46772f1659de69061c976916f4" kind="function"><name>read_VectorTransform</name></member>
+    <member refid="namespacefaiss_1aa7947aa6ec50a5232008dae4c932c6aa" kind="function"><name>read_VectorTransform</name></member>
     <member refid="namespacefaiss_1a424578a3c798b4f0deb428ca777882b6" kind="function"><name>read_ProductQuantizer</name></member>
     <member refid="namespacefaiss_1a744fe50a3410862d1c282f0c8d779231" kind="function"><name>read_ProductQuantizer</name></member>
     <member refid="namespacefaiss_1aeecb2752b0d13ace2d17ebc0189e9ea3" kind="function"><name>write_ProductQuantizer</name></member>
