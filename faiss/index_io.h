@@ -63,7 +63,10 @@ IndexBinary* read_index_binary(FILE* f, int io_flags = 0);
 IndexBinary* read_index_binary(IOReader* reader, int io_flags = 0);
 
 void write_VectorTransform(const VectorTransform* vt, const char* fname);
+void write_VectorTransform(const VectorTransform* vt, IOWriter* f);
+
 VectorTransform* read_VectorTransform(const char* fname);
+VectorTransform* read_VectorTransform(IOReader* f);
 
 ProductQuantizer* read_ProductQuantizer(const char* fname);
 ProductQuantizer* read_ProductQuantizer(IOReader* reader);
