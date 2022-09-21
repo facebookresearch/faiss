@@ -13,13 +13,13 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/IVFlib.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/invlists/OnDiskInvertedLists.h>
+#include <faiss/merge.h>
 
 namespace {
 
@@ -102,7 +102,7 @@ int compare_merged(
 
     if (standard_merge) {
         for (int i = 1; i < nindex; i++) {
-            faiss::ivflib::merge_into(
+            faiss::merge::merge_into(
                     index_shards->at(0), index_shards->at(i), shift_ids);
         }
 

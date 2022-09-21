@@ -168,4 +168,11 @@ DistanceComputer* Index::get_distance_computer() const {
     }
 }
 
+void Index::merge_from(Index* other, idx_t add_id){
+    FAISS_THROW_MSG("not implemented");
+}
+void Index::check_compatible_for_merge(const Index* other) const{
+    FAISS_THROW_MSG("not implemented");
+}
+
 } // namespace faiss

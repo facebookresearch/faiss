@@ -8,6 +8,7 @@ set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
   IVFlib.cpp
+  merge.cpp
   Index.cpp
   Index2Layer.cpp
   IndexAdditiveQuantizer.cpp
@@ -90,6 +91,7 @@ set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
   IVFlib.h
+  merge.h
   Index.h
   Index2Layer.h
   IndexAdditiveQuantizer.h

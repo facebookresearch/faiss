@@ -12,8 +12,8 @@ import numpy as np
 class TestIVFlib(unittest.TestCase):
 
     def test_methods_exported(self):
-        methods = ['check_compatible_for_merge', 'extract_index_ivf',
-                   'merge_into', 'search_centroid',
+        methods = ['extract_index_ivf',
+                   'search_centroid',
                    'search_and_return_centroids', 'get_invlist_range',
                    'set_invlist_range', 'search_with_parameters']
 

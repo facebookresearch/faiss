@@ -252,6 +252,9 @@ struct Index {
      * @param x       output vectors, size n * d
      */
     virtual void sa_decode(idx_t n, const uint8_t* bytes, float* x) const;
+
+    virtual void merge_from(Index* other, idx_t add_id);
+    virtual void check_compatible_for_merge(const Index* other) const;
 };
 
 } // namespace faiss

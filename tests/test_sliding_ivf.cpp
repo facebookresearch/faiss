@@ -103,7 +103,7 @@ Index* make_merged_index(
         std::unique_ptr<Index> sub_index(clone_index(sub_indexes[j].get()));
         IndexIVF* ivf0 = ivflib::extract_index_ivf(merged_index);
         IndexIVF* ivf1 = ivflib::extract_index_ivf(sub_index.get());
-        ivf0->merge_from(*ivf1, 0);
+        ivf0->merge_from(ivf1, 0);
         merged_index->ntotal = ivf0->ntotal;
     }
     return merged_index;
