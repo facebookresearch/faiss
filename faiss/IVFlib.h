@@ -25,10 +25,6 @@ struct ResidualQuantizer;
 
 namespace ivflib {
 
-/** check if two indexes have the same parameters and are trained in
- * the same way, otherwise throw. */
-void check_compatible_for_merge(const Index* index1, const Index* index2);
-
 /** get an IndexIVF from an index. The index may be an IndexIVF or
  * some wrapper class that encloses an IndexIVF
  *
@@ -40,13 +36,6 @@ IndexIVF* extract_index_ivf(Index* index);
 /// same as above but returns nullptr instead of throwing on failure
 const IndexIVF* try_extract_index_ivf(const Index* index);
 IndexIVF* try_extract_index_ivf(Index* index);
-
-/** Merge index1 into index0. Works on IndexIVF's and IndexIVF's
- *  embedded in a IndexPreTransform. On output, the index1 is empty.
- *
- * @param shift_ids: translate the ids from index1 to index0->prev_ntotal
- */
-void merge_into(Index* index0, Index* index1, bool shift_ids);
 
 typedef Index::idx_t idx_t;
 

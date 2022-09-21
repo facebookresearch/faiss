@@ -120,6 +120,7 @@ typedef uint64_t size_t;
 #include <faiss/clone_index.h>
 
 #include <faiss/IVFlib.h>
+#include <faiss/merge.h>
 #include <faiss/utils/utils.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -422,6 +423,9 @@ void gpu_sync_all_devices()
 %warnfilter(509) extract_index_ivf;
 %warnfilter(509) try_extract_index_ivf;
 %include  <faiss/IVFlib.h>
+%warnfilter(509) extract_index;
+%warnfilter(509) try_extract_index;
+%include  <faiss/merge.h>
 %include  <faiss/impl/ScalarQuantizer.h>
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>

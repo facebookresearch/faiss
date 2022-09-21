@@ -13,13 +13,13 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/IVFlib.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/invlists/OnDiskInvertedLists.h>
+#include <faiss/merge.h>
 
 namespace {
 
@@ -102,7 +102,7 @@ int compare_merged(
 
     if (standard_merge) {
         for (int i = 1; i < nindex; i++) {
-            faiss::ivflib::merge_into(
+            faiss::merge::merge_into(
                     index_shards->at(0), index_shards->at(i), shift_ids);
         }
 
@@ -146,7 +146,7 @@ int compare_merged(
 } // namespace
 
 // test on IVFFlat with implicit numbering
-TEST(MERGE, merge_flat_no_ids) {
+TEST(MERGE, merge_ivfflat_no_ids) {
     faiss::IndexShards index_shards(d);
     index_shards.own_fields = true;
     for (int i = 0; i < nindex; i++) {
@@ -161,8 +161,23 @@ TEST(MERGE, merge_flat_no_ids) {
     EXPECT_EQ(0, ndiff);
 }
 
+// test on Flat with implicit numbering
+TEST(MERGE, merge_flat_no_ids) {
+    faiss::IndexShards index_shards(d);
+    index_shards.own_fields = true;
+    for (int i = 0; i < nindex; i++) {
+        index_shards.add_shard(new faiss::IndexFlat(d));
+    }
+    EXPECT_TRUE(index_shards.is_trained);
+    index_shards.add(nb, cd.database.data());
+    size_t prev_ntotal = index_shards.ntotal;
+    int ndiff = compare_merged(&index_shards, false);
+    EXPECT_EQ(prev_ntotal, index_shards.ntotal);
+    EXPECT_EQ(0, ndiff);
+}
+
 // test on IVFFlat, explicit ids
-TEST(MERGE, merge_flat) {
+TEST(MERGE, merge_ivfflat) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_fields = true;
 
@@ -178,7 +193,7 @@ TEST(MERGE, merge_flat) {
 }
 
 // test on IVFFlat and a VectorTransform
-TEST(MERGE, merge_flat_vt) {
+TEST(MERGE, merge_ivfflat_vt) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_fields = true;
 
@@ -209,7 +224,7 @@ TEST(MERGE, merge_flat_vt) {
 }
 
 // put the merged invfile on disk
-TEST(MERGE, merge_flat_ondisk) {
+TEST(MERGE, merge_ivfflat_ondisk) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_fields = true;
     Tempfilename filename;
@@ -232,7 +247,7 @@ TEST(MERGE, merge_flat_ondisk) {
 }
 
 // now use ondisk specific merge
-TEST(MERGE, merge_flat_ondisk_2) {
+TEST(MERGE, merge_ivfflat_ondisk_2) {
     faiss::IndexShards index_shards(d, false, false);
     index_shards.own_fields = true;
 

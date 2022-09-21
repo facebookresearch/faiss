@@ -15,6 +15,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/merge.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -22,54 +23,9 @@
 namespace faiss {
 namespace ivflib {
 
-void check_compatible_for_merge(const Index* index0, const Index* index1) {
-    const faiss::IndexPreTransform* pt0 =
-            dynamic_cast<const faiss::IndexPreTransform*>(index0);
-
-    if (pt0) {
-        const faiss::IndexPreTransform* pt1 =
-                dynamic_cast<const faiss::IndexPreTransform*>(index1);
-        FAISS_THROW_IF_NOT_MSG(pt1, "both indexes should be pretransforms");
-
-        FAISS_THROW_IF_NOT(pt0->chain.size() == pt1->chain.size());
-        for (int i = 0; i < pt0->chain.size(); i++) {
-            FAISS_THROW_IF_NOT(typeid(pt0->chain[i]) == typeid(pt1->chain[i]));
-        }
-
-        index0 = pt0->index;
-        index1 = pt1->index;
-    }
-    FAISS_THROW_IF_NOT(typeid(index0) == typeid(index1));
-    FAISS_THROW_IF_NOT(
-            index0->d == index1->d &&
-            index0->metric_type == index1->metric_type);
-
-    const faiss::IndexIVF* ivf0 = dynamic_cast<const faiss::IndexIVF*>(index0);
-    if (ivf0) {
-        const faiss::IndexIVF* ivf1 =
-                dynamic_cast<const faiss::IndexIVF*>(index1);
-        FAISS_THROW_IF_NOT(ivf1);
-
-        ivf0->check_compatible_for_merge(*ivf1);
-    }
-
-    // TODO: check as thoroughfully for other index types
-}
-
 const IndexIVF* try_extract_index_ivf(const Index* index) {
-    if (auto* pt = dynamic_cast<const IndexPreTransform*>(index)) {
-        index = pt->index;
-    }
-
-    if (auto* idmap = dynamic_cast<const IndexIDMap*>(index)) {
-        index = idmap->index;
-    }
-    if (auto* idmap = dynamic_cast<const IndexIDMap2*>(index)) {
-        index = idmap->index;
-    }
-
-    auto* ivf = dynamic_cast<const IndexIVF*>(index);
-
+    const Index* index0 = merge::try_extract_index(index);
+    auto* ivf = dynamic_cast<const IndexIVF*>(index0);
     return ivf;
 }
 
@@ -85,18 +41,6 @@ const IndexIVF* extract_index_ivf(const Index* index) {
 
 IndexIVF* extract_index_ivf(Index* index) {
     return const_cast<IndexIVF*>(extract_index_ivf((const Index*)(index)));
-}
-
-void merge_into(faiss::Index* index0, faiss::Index* index1, bool shift_ids) {
-    check_compatible_for_merge(index0, index1);
-    IndexIVF* ivf0 = extract_index_ivf(index0);
-    IndexIVF* ivf1 = extract_index_ivf(index1);
-
-    ivf0->merge_from(*ivf1, shift_ids ? ivf0->ntotal : 0);
-
-    // useful for IndexPreTransform
-    index0->ntotal = ivf0->ntotal;
-    index1->ntotal = ivf1->ntotal;
 }
 
 void search_centroid(
@@ -200,7 +144,7 @@ void SlidingIndexWindow::step(const Index* sub_index, bool remove_oldest) {
 
     const ArrayInvertedLists* ils2 = nullptr;
     if (sub_index) {
-        check_compatible_for_merge(index, sub_index);
+        merge::check_compatible_for_merge(index, sub_index);
         ils2 = dynamic_cast<const ArrayInvertedLists*>(
                 extract_index_ivf(sub_index)->invlists);
         FAISS_THROW_IF_NOT_MSG(ils2, "supports only ArrayInvertedLists");
