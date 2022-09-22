@@ -75,25 +75,25 @@ FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
 
 void IndexFlatCodes::check_compatible_for_merge(const Index& otherIndex) const {
     // minimal sanity checks
-    const IndexFlatCodes& other =
-            dynamic_cast<const IndexFlatCodes&>(otherIndex);
-    FAISS_THROW_IF_NOT(&other);
-    FAISS_THROW_IF_NOT(other.d == d);
-    FAISS_THROW_IF_NOT(other.code_size == code_size);
+    const IndexFlatCodes* other =
+            dynamic_cast<const IndexFlatCodes*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
     FAISS_THROW_IF_NOT_MSG(
-            typeid(*this) == typeid(other),
+            typeid(*this) == typeid(*other),
             "can only merge indexes of the same type");
 }
 
 void IndexFlatCodes::merge_from(Index& otherIndex, idx_t add_id) {
     check_compatible_for_merge(otherIndex);
-    IndexFlatCodes& other = dynamic_cast<IndexFlatCodes&>(otherIndex);
-    codes.resize((ntotal + other.ntotal) * code_size);
+    IndexFlatCodes* other = static_cast<IndexFlatCodes*>(&otherIndex);
+    codes.resize((ntotal + other->ntotal) * code_size);
     memcpy(codes.data() + (ntotal * code_size),
-           other.codes.data(),
-           other.ntotal * code_size);
-    ntotal += other.ntotal;
-    other.reset();
+           other->codes.data(),
+           other->ntotal * code_size);
+    ntotal += other->ntotal;
+    other->reset();
 }
 
 } // namespace faiss
