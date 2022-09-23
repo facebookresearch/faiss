@@ -6332,6 +6332,7 @@
     <member refid="namespacefaiss_1aa75d478d14ec1ffd7b0718adf0dab26b" kind="variable"><name>IO_FLAG_READ_ONLY</name></member>
     <member refid="namespacefaiss_1a0afd2e723c83893be7aff1fa644d13b3" kind="variable"><name>IO_FLAG_ONDISK_SAME_DIR</name></member>
     <member refid="namespacefaiss_1af2f70735b00d2defcffa4c051830fd9f" kind="variable"><name>IO_FLAG_SKIP_IVF_DATA</name></member>
+    <member refid="namespacefaiss_1a1fd30db6a60c1619b8725165175aa8a9" kind="variable"><name>IO_FLAG_SKIP_PRECOMPUTE_TABLE</name></member>
     <member refid="namespacefaiss_1aff97660fb0994bea32b9c4714e324fa0" kind="variable"><name>IO_FLAG_MMAP</name></member>
     <member refid="namespacefaiss_1a308343dfd91ddc2dad5d62c9fa79a65e" kind="variable"><name>indexBinaryHash_stats</name></member>
     <member refid="namespacefaiss_1a740c0ca147e528a2d7913acad0fc9bc3" kind="variable"><name>FastScan_stats</name></member>
