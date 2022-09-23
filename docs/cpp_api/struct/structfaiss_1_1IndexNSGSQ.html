@@ -628,6 +628,18 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexNSGSQ10merge_fromER5Index5idx_t">
+<span id="_CPPv3N5faiss10IndexNSGSQ10merge_fromER5Index5idx_t"></span><span id="_CPPv2N5faiss10IndexNSGSQ10merge_fromER5Index5idx_t"></span><span id="faiss::IndexNSGSQ::merge_from__IndexR.idx_t"></span><span class="target" id="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss10IndexNSGSQ5idx_tE" title="faiss::IndexNSGSQ::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss10IndexNSGSQ26check_compatible_for_mergeERK5Index">
+<span id="_CPPv3NK5faiss10IndexNSGSQ26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss10IndexNSGSQ26check_compatible_for_mergeERK5Index"></span><span id="faiss::IndexNSGSQ::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
