@@ -486,10 +486,14 @@ static IndexIVFPQ* read_ivfpq(IOReader* f, uint32_t h, int io_flags) {
     }
 
     if (ivpq->is_trained) {
-        // precomputed table not stored. It is cheaper to recompute it
+        // precomputed table not stored. It is cheaper to recompute it.
+        // precompute_table() may be disabled with a flag.
         ivpq->use_precomputed_table = 0;
-        if (ivpq->by_residual)
-            ivpq->precompute_table();
+        if (ivpq->by_residual) {
+            if ((io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) == 0) {
+                ivpq->precompute_table();
+            }
+        }
         if (ivfpqr) {
             read_ProductQuantizer(&ivfpqr->refine_pq, f);
             READVECTOR(ivfpqr->refine_codes);

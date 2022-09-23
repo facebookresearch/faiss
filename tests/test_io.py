@@ -334,6 +334,37 @@ class Test_IO_VectorTransform(unittest.TestCase):
             assert vt.d_in == index.vt.d_in
             assert vt.d_out == index.vt.d_out
             assert vt.is_trained
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+
+class TestIVFPQRead(unittest.TestCase):
+    def test_reader(self):
+        d, n = 32, 1000
+        xq = np.random.uniform(size=(n, d)).astype('float32')
+        xb = np.random.uniform(size=(n, d)).astype('float32')
+
+        index = faiss.index_factory(32, "IVF32,PQ16np", faiss.METRIC_L2)
+        index.train(xb)
+        index.add(xb)
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+
+        try:
+            faiss.write_index(index, fname)
+
+            index_a = faiss.read_index(fname)
+            index_b = faiss.read_index(fname, faiss.IO_FLAG_SKIP_PRECOMPUTE_TABLE)
+
+            Da, Ia = index_a.search(xq, 10)
+            Db, Ib = index_b.search(xq, 10)
+            np.testing.assert_array_equal(Ia, Ib)
+            np.testing.assert_almost_equal(Da, Db, decimal=5)
+
+            codes_a = index_a.sa_encode(xq)
+            codes_b = index_b.sa_encode(xq)
+            np.testing.assert_array_equal(codes_a, codes_b)
 
         finally:
             if os.path.exists(fname):
