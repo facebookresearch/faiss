@@ -41,6 +41,10 @@ struct AdditiveQuantizer : Quantizer {
     std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
                                   ///< fastscan search
 
+    /// norms and distance matrixes with beam search can get large, so use this
+    /// to control for the amount of memory that can be allocated
+    size_t max_mem_distances;
+
     /// encode a norm into norm_bits bits
     uint64_t encode_norm(float norm) const;
 

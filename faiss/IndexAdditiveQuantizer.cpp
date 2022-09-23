@@ -432,6 +432,13 @@ void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
     if (verbose) {
         printf("AdditiveCoarseQuantizer::train: training on %zd vectors\n", size_t(n));
     }
+    size_t norms_size = sizeof(float) << aq->tot_bits;
+
+    FAISS_THROW_IF_NOT_MSG (
+        norms_size <= aq->max_mem_distances,
+        "the RCQ norms matrix will become too large, please reduce the number of quantization steps"
+    );
+
     aq->train(n, x);
     is_trained = true;
     ntotal = (idx_t)1 << aq->tot_bits;

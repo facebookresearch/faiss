@@ -68,7 +68,6 @@ ResidualQuantizer::ResidualQuantizer()
           niter_codebook_refine(5),
           max_beam_size(5),
           use_beam_LUT(0),
-          max_mem_distances(5 * (size_t(1) << 30)), // 5 GiB
           assign_index_factory(nullptr) {
     d = 0;
     M = 0;

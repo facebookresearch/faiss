@@ -57,10 +57,6 @@ struct ResidualQuantizer : AdditiveQuantizer {
     /// use LUT for beam search
     int use_beam_LUT;
 
-    /// distance matrixes with beam search can get large, so use this
-    /// to batch computations at encoding time.
-    size_t max_mem_distances;
-
     /// clustering parameters
     ProgressiveDimClusteringParameters cp;
 

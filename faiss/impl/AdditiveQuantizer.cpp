@@ -56,6 +56,7 @@ AdditiveQuantizer::AdditiveQuantizer(
           nbits(nbits),
           verbose(false),
           is_trained(false),
+          max_mem_distances(5 * (size_t(1) << 30)), // 5 GiB
           search_type(search_type) {
     norm_max = norm_min = NAN;
     tot_bits = 0;
