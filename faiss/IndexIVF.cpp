@@ -974,26 +974,28 @@ void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void IndexIVF::check_compatible_for_merge(const IndexIVF& other) const {
+void IndexIVF::check_compatible_for_merge(const Index& otherIndex) const {
     // minimal sanity checks
-    FAISS_THROW_IF_NOT(other.d == d);
-    FAISS_THROW_IF_NOT(other.nlist == nlist);
-    FAISS_THROW_IF_NOT(other.code_size == code_size);
+    const IndexIVF* other = dynamic_cast<const IndexIVF*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->nlist == nlist);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
     FAISS_THROW_IF_NOT_MSG(
-            typeid(*this) == typeid(other),
+            typeid(*this) == typeid(*other),
             "can only merge indexes of the same type");
     FAISS_THROW_IF_NOT_MSG(
-            this->direct_map.no() && other.direct_map.no(),
+            this->direct_map.no() && other->direct_map.no(),
             "merge direct_map not implemented");
 }
 
-void IndexIVF::merge_from(IndexIVF& other, idx_t add_id) {
-    check_compatible_for_merge(other);
+void IndexIVF::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    IndexIVF* other = static_cast<IndexIVF*>(&otherIndex);
+    invlists->merge_from(other->invlists, add_id);
 
-    invlists->merge_from(other.invlists, add_id);
-
-    ntotal += other.ntotal;
-    other.ntotal = 0;
+    ntotal += other->ntotal;
+    other->ntotal = 0;
 }
 
 void IndexIVF::replace_invlists(InvertedLists* il, bool own) {
