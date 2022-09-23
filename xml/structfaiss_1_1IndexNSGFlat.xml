@@ -862,6 +862,52 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="254" column="18"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Index::merge_from</definition>
+        <argsstring>(Index &amp;otherIndex, idx_t add_id=0)</argsstring>
+        <name>merge_from</name>
+        <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a9bca412954ab2ead5bc4f71ee8743e1e">merge_from</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e">merge_from</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca">merge_from</reimplementedby>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>otherIndex</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>add_id</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="260" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Index::check_compatible_for_merge</definition>
+        <argsstring>(const Index &amp;otherIndex) const</argsstring>
+        <name>check_compatible_for_merge</name>
+        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a">check_compatible_for_merge</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVF_1a5a097e5b50f8b220db61b52c6fdaf1f9">check_compatible_for_merge</reimplementedby>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>otherIndex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="265" column="18"/>
+      </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a8ef9a38cf4c8876a2d2d2c309125cd68" prot="public" static="no" mutable="no">
@@ -1182,6 +1228,7 @@
       <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexNSGFlat</scope><name>assign</name></member>
       <member refid="structfaiss_1_1IndexNSG_1a5f8d4dc0ef239c5d6d29252c728dd9fa" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>build</name></member>
       <member refid="structfaiss_1_1IndexNSG_1aa51ad0b18442396b6df5ee99fefe21c6" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>build_type</name></member>
+      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexNSGFlat</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1IndexNSG_1aeba92394231e269fd0ffd8fe1e6240ea" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>check_knn_graph</name></member>
       <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>component_t</name></member>
       <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexNSGFlat</scope><name>compute_residual</name></member>
@@ -1198,6 +1245,7 @@
       <member refid="structfaiss_1_1IndexNSGFlat_1a9a4f6e4a35c3856ca4a60a332a42fc4a" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>IndexNSGFlat</name></member>
       <member refid="structfaiss_1_1IndexNSG_1a48d5640864be98b5db017f7459c2f3fc" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>is_built</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexNSGFlat</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1IndexNSG_1a30deb28e0190cb7be986cf5e1584ce63" prot="public" virt="non-virtual"><scope>faiss::IndexNSGFlat</scope><name>nndescent_iter</name></member>
