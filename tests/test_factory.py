@@ -226,6 +226,16 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.index_factory(123, "Flat,IDMap")
         self.assertEqual(index.__class__, faiss.IndexIDMap)
 
+    def test_idmap2_suffix(self):
+        index = faiss.index_factory(123, "Flat,IDMap2")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
+    def test_idmap2_prefix(self):
+        index = faiss.index_factory(123, "IDMap2,Flat")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
     def test_ivf_hnsw(self):
         index = faiss.index_factory(123, "IVF100_HNSW,Flat")
         quantizer = faiss.downcast_index(index.quantizer)
