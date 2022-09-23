@@ -50,6 +50,8 @@ const int IO_FLAG_READ_ONLY = 2;
 const int IO_FLAG_ONDISK_SAME_DIR = 4;
 // don't load IVF data to RAM, only list sizes
 const int IO_FLAG_SKIP_IVF_DATA = 8;
+// don't initialize precomputed table after loading
+const int IO_FLAG_SKIP_PRECOMPUTE_TABLE = 16;
 // try to memmap data (useful to load an ArrayInvertedLists as an
 // OnDiskInvertedLists)
 const int IO_FLAG_MMAP = IO_FLAG_SKIP_IVF_DATA | 0x646f0000;
