@@ -39,8 +39,8 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
-#include <faiss/IndexNSG.h>
 #include <faiss/IndexNNDescent.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
@@ -959,7 +959,7 @@ Index* read_index(IOReader* f, int io_flags) {
         idxnsg->own_fields = true;
         idx = idxnsg;
     } else if (h == fourcc("INNf")) {
-        IndexNNDescent* idxnnd = new IndexNNDescentFlat();;
+        IndexNNDescent* idxnnd = new IndexNNDescentFlat();
         read_index_header(idxnnd, f);
         read_NNDescent(&idxnnd->nndescent, f);
         idxnnd->storage = read_index(f, io_flags);

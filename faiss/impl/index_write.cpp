@@ -40,8 +40,8 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
-#include <faiss/IndexNSG.h>
 #include <faiss/IndexNNDescent.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
@@ -764,7 +764,9 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxnsg->nndescent_iter);
         write_NSG(&idxnsg->nsg, f);
         write_index(idxnsg->storage, f);
-    } else if (const IndexNNDescent* idxnnd = dynamic_cast<const IndexNNDescent*>(idx)) {
+    } else if (
+            const IndexNNDescent* idxnnd =
+                    dynamic_cast<const IndexNNDescent*>(idx)) {
         auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
         FAISS_THROW_IF_NOT(idxnndflat != nullptr);
         uint32_t h = fourcc("INNf");

@@ -142,7 +142,9 @@ Index* Cloner::clone_Index(const Index* index) {
         res->own_fields = true;
         res->storage = clone_Index(insg->storage);
         return res;
-    } else if (const IndexNNDescent* innd = dynamic_cast<const IndexNNDescent*>(index)) {
+    } else if (
+            const IndexNNDescent* innd =
+                    dynamic_cast<const IndexNNDescent*>(index)) {
         IndexNNDescent* res = new IndexNNDescent(*innd);
         res->own_fields = true;
         res->storage = clone_Index(innd->storage);
