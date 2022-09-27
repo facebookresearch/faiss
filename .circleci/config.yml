@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@2.4.0
+  win: circleci/windows@4.1.1
 
 jobs:
   format:
@@ -156,6 +156,7 @@ jobs:
       - run:
           name: Build/test
           command: |
+            conda update conda
             conda install conda-build
             cd conda
             conda build faiss --python 3.7 -c pytorch
@@ -330,6 +331,7 @@ jobs:
       - run:
           name: Install conda-build/anaconda-client
           command: |
+            conda update conda
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
       - run:
