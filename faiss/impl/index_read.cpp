@@ -39,6 +39,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
@@ -401,6 +402,21 @@ static void read_NSG(NSG* nsg, IOReader* f) {
             }
         }
     }
+}
+
+static void read_NNDescent(NNDescent* nnd, IOReader* f) {
+    READ1(nnd->ntotal);
+    READ1(nnd->d);
+    READ1(nnd->K);
+    READ1(nnd->S);
+    READ1(nnd->R);
+    READ1(nnd->L);
+    READ1(nnd->iter);
+    READ1(nnd->search_L);
+    READ1(nnd->random_seed);
+    READ1(nnd->has_built);
+
+    READVECTOR(nnd->final_graph);
 }
 
 ProductQuantizer* read_ProductQuantizer(const char* fname) {
@@ -942,6 +958,13 @@ Index* read_index(IOReader* f, int io_flags) {
         idxnsg->storage = read_index(f, io_flags);
         idxnsg->own_fields = true;
         idx = idxnsg;
+    } else if (h == fourcc("INNf")) {
+        IndexNNDescent* idxnnd = new IndexNNDescentFlat();
+        read_index_header(idxnnd, f);
+        read_NNDescent(&idxnnd->nndescent, f);
+        idxnnd->storage = read_index(f, io_flags);
+        idxnnd->own_fields = true;
+        idx = idxnnd;
     } else if (h == fourcc("IPfs")) {
         IndexPQFastScan* idxpqfs = new IndexPQFastScan();
         read_index_header(idxpqfs, f);

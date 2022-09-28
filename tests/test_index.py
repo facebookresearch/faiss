@@ -825,6 +825,74 @@ class TestNSG(unittest.TestCase):
         self.subtest_io_and_clone(index, D, I)
 
 
+class TestNNDescent(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        unittest.TestCase.__init__(self, *args, **kwargs)
+        d = 32
+        nt = 0
+        nb = 1500
+        nq = 500
+        self.GK = 32
+
+        _, self.xb, self.xq = get_dataset_2(d, nt, nb, nq)
+
+    def test_nndescentflat(self):
+        d = self.xq.shape[1]
+        index = faiss.IndexNNDescentFlat(d, 32)
+        index.nndescent.search_L = 8
+
+        flat_index = faiss.IndexFlat(d)
+        flat_index.add(self.xb)
+        Dref, Iref = flat_index.search(self.xq, k=1)
+
+        index.train(self.xb)
+        index.add(self.xb)
+        D, I = index.search(self.xq, k=1)
+
+        # test accuracy
+        recalls = (Iref == I).sum()
+        print("IndexNNDescentFlat", recalls)
+        self.assertGreaterEqual(recalls, 450)  # 462
+
+        # do some IO tests
+        fd, tmpfile = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, tmpfile)
+            index2 = faiss.read_index(tmpfile)
+        finally:
+            if os.path.exists(tmpfile):
+                os.unlink(tmpfile)
+
+        D2, I2 = index2.search(self.xq, 1)
+        np.testing.assert_array_equal(D2, D)
+        np.testing.assert_array_equal(I2, I)
+
+        # also test clone
+        index3 = faiss.clone_index(index)
+        D3, I3 = index3.search(self.xq, 1)
+        np.testing.assert_array_equal(D3, D)
+        np.testing.assert_array_equal(I3, I)
+
+    def test_order(self):
+        """make sure that output results are sorted"""
+        d = self.xq.shape[1]
+        index = faiss.IndexNNDescentFlat(d, 32)
+
+        index.train(self.xb)
+        index.add(self.xb)
+
+        k = 10
+        nq = self.xq.shape[0]
+        D, _ = index.search(self.xq, k)
+
+        indices = np.argsort(D, axis=1)
+        gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
+        gt = np.repeat(gt, nq, axis=0)  # [nq, k]
+        np.testing.assert_array_equal(indices, gt)
+
+
 class TestDistancesPositive(unittest.TestCase):
 
     def test_l2_pos(self):

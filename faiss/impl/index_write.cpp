@@ -40,6 +40,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
@@ -349,6 +350,21 @@ static void write_NSG(const NSG* nsg, IOWriter* f) {
         }
         WRITE1(EMPTY_ID);
     }
+}
+
+static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
+    WRITE1(nnd->ntotal);
+    WRITE1(nnd->d);
+    WRITE1(nnd->K);
+    WRITE1(nnd->S);
+    WRITE1(nnd->R);
+    WRITE1(nnd->L);
+    WRITE1(nnd->iter);
+    WRITE1(nnd->search_L);
+    WRITE1(nnd->random_seed);
+    WRITE1(nnd->has_built);
+
+    WRITEVECTOR(nnd->final_graph);
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
@@ -748,6 +764,17 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(idxnsg->nndescent_iter);
         write_NSG(&idxnsg->nsg, f);
         write_index(idxnsg->storage, f);
+    } else if (
+            const IndexNNDescent* idxnnd =
+                    dynamic_cast<const IndexNNDescent*>(idx)) {
+        auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
+        FAISS_THROW_IF_NOT(idxnndflat != nullptr);
+        uint32_t h = fourcc("INNf");
+        FAISS_THROW_IF_NOT(h != 0);
+        WRITE1(h);
+        write_index_header(idxnnd, f);
+        write_NNDescent(&idxnnd->nndescent, f);
+        write_index(idxnnd->storage, f);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {
