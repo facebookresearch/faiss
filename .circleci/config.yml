@@ -98,54 +98,27 @@ jobs:
 
   build_osx:
     macos:
-      xcode: 12.5.1
+      xcode: 14.0.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
     environment:
       OMP_NUM_THREADS: 10
     steps:
       - checkout
       - run:
-          name: Install Homebrew packages
+          name: Install conda
           command: |
-            brew install cmake swig libomp
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build
       - run:
-          name: Install numpy/scipy
+          name: Install MacOSX10.9 SDK
           command: |
-            pip3 install numpy scipy
+            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
       - run:
-          name: Generate Makefiles
+          name: Build/test
           command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_C_API=ON \
-                  -DPython_EXECUTABLE=/usr/local/bin/python3 .
-      - run:
-          name: Build faiss library
-          command: |
-            make -k -C build -j faiss
-      - run:
-          name: Test faiss library
-          command: |
-            make -C build -j faiss_test
-            export GTEST_OUTPUT="xml:$PWD/test-results/googletest/"
-            make -C build test
-      - run:
-          name: Build python extension
-          command: |
-            make -C build -j swigfaiss
-            cd build/faiss/python
-            python3 setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            pip3 install pytest torch
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-      - store_test_results:
-          path: test-results
-      - run:
-          name: Build C API
-          command: |
-            make -k -C build -j faiss_c
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --python 3.8 -c pytorch
 
   build_windows:
     executor:
@@ -159,7 +132,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.7 -c pytorch
+            conda build faiss --python 3.8 -c pytorch
 
   build_arm:
     machine:
