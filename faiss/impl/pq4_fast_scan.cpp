@@ -126,26 +126,32 @@ uint8_t pq4_get_packed_element(
         const uint8_t* data,
         size_t bbs,
         size_t nsq,
-        size_t i,
+        size_t vector_id,
         size_t sq) {
     // move to correct bbs-sized block
-    data += (i / bbs * (nsq / 2) + sq / 2) * bbs;
-    sq = sq & 1;
-    i = i % bbs;
+    // number of blocks * block size
+    data += (vector_id / bbs) * ((nsq / 2) * bbs);
 
-    // another step
-    data += (i / 32) * 32;
-    i = i % 32;
+    // get the vector_id inside the block
+    vector_id = vector_id % bbs;
+    bool shift = vector_id > 15;
+    vector_id = vector_id & 15;
 
-    if (sq == 1) {
-        data += 16;
-    }
-    const uint8_t iperm0[16] = {
-            0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15};
-    if (i < 16) {
-        return data[iperm0[i]] & 15;
+    // get the address of the vector in sq
+    size_t address;
+    if (vector_id < 8) {
+        address = vector_id << 1;
     } else {
-        return data[iperm0[i - 16]] >> 4;
+        address = ((vector_id - 8) << 1) + 1;
+    }
+    if (sq & 1) {
+        address += 16;
+    }
+    uint8_t ans = data[(sq >> 1) * bbs + address];
+    if (shift) {
+        return ans >> 4;
+    } else {
+        return ans & 15;
     }
 }
 

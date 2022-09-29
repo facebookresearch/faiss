@@ -61,14 +61,14 @@ void pq4_pack_codes_range(
 
 /** get a single element from a packed codes table
  *
- * @param i        vector id
+ * @param vector_id        vector id
  * @param sq       subquantizer (< nsq)
  */
 uint8_t pq4_get_packed_element(
         const uint8_t* data,
         size_t bbs,
         size_t nsq,
-        size_t i,
+        size_t vector_id,
         size_t sq);
 
 /** Pack Look-up table for consumption by the kernel.
