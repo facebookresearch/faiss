@@ -268,7 +268,7 @@ jobs:
         type: string
         default: main
     macos:
-      xcode: 12.4.0
+      xcode: 14.0.0
     steps:
       - checkout
       - run:
