@@ -222,10 +222,10 @@
         </inbodydescription>
         <location file="faiss/IndexReplicas.h" line="58" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1ad6382e3ebaaca61607ad90fc80cdbd3c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1ad789f012a72a2b2db938d06ad1295019" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexReplicasTemplate&lt; IndexT &gt;::search</definition>
-        <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels) const override</argsstring>
+        <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
         <param>
           <type>idx_t</type>
@@ -246,6 +246,11 @@
         <param>
           <type>idx_t *</type>
           <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -275,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="71" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="72" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -289,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="75" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="76" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
@@ -309,7 +314,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="79" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="80" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -327,7 +332,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="82" column="10"/>
+        <location file="faiss/IndexReplicas.h" line="83" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -357,7 +362,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexReplicas.h" line="21" column="50" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="83"/>
+    <location file="faiss/IndexReplicas.h" line="21" column="50" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="84"/>
     <listofallmembers>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add_replica</name></member>
@@ -371,7 +376,7 @@
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a1cc7b38bf2e478ac1ee26d332953fb30" prot="protected" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>onAfterRemoveIndex</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a9fb6804492c12359b5cc2aa26fe6a6d6" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>reconstruct</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1affcfc49402a7c3d5604689bfbab00326" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>remove_replica</name></member>
-      <member refid="classfaiss_1_1IndexReplicasTemplate_1ad6382e3ebaaca61607ad90fc80cdbd3c" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>search</name></member>
+      <member refid="classfaiss_1_1IndexReplicasTemplate_1ad789f012a72a2b2db938d06ad1295019" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>search</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a7b1233eb598fc053e61b7ceccdb9d71d" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>syncWithSubIndexes</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a5cdb2a340a3b4f45ec244d5398a29005" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>train</name></member>
     </listofallmembers>

@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="94" column="10" bodyfile="faiss/IndexShards.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="95" column="10" bodyfile="faiss/IndexShards.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -271,10 +271,10 @@
         </inbodydescription>
         <location file="faiss/IndexShards.h" line="82" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ab3698d94a2c039f445115d52c4545640" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ad8c210aad3ef56b82cc5ea47105095f7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::search</definition>
-        <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels) const override</argsstring>
+        <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
         <name>search</name>
         <param>
           <type>idx_t</type>
@@ -295,6 +295,11 @@
         <param>
           <type>idx_t *</type>
           <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -323,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="92" column="10"/>
+        <location file="faiss/IndexShards.h" line="93" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -337,7 +342,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="98" column="10"/>
+        <location file="faiss/IndexShards.h" line="99" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
@@ -357,7 +362,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="102" column="10"/>
+        <location file="faiss/IndexShards.h" line="103" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -375,7 +380,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="105" column="10"/>
+        <location file="faiss/IndexShards.h" line="106" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -405,7 +410,7 @@
         <label>ThreadedIndex&lt; IndexT &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexShards.h" line="20" column="48" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="106"/>
+    <location file="faiss/IndexShards.h" line="20" column="48" bodyfile="faiss/IndexShards.h" bodystart="20" bodyend="107"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>add_shard</name></member>
@@ -419,7 +424,7 @@
       <member refid="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>onAfterAddIndex</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>onAfterRemoveIndex</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>remove_shard</name></member>
-      <member refid="structfaiss_1_1IndexShardsTemplate_1ab3698d94a2c039f445115d52c4545640" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1ad8c210aad3ef56b82cc5ea47105095f7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>successive_ids</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>syncWithSubIndexes</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>train</name></member>
