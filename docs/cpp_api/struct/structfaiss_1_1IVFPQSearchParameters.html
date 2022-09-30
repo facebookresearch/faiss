@@ -46,7 +46,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct faiss::IVFSearchParameters" href="structfaiss_1_1IVFSearchParameters.html" />
+    <link rel="next" title="Struct faiss::Index" href="structfaiss_1_1Index.html" />
     <link rel="prev" title="Struct faiss::IVFFastScanStats" href="structfaiss_1_1IVFFastScanStats.html" /> 
 </head>
 
@@ -147,7 +147,6 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IVFPQSearchParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizer.html">Struct faiss::IndexAdditiveQuantizer</a></li>
@@ -260,6 +259,9 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParameters.html">Struct faiss::SearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html">Struct faiss::SearchParametersIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html">Struct faiss::SearchParametersPreTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
@@ -376,7 +378,7 @@
 <h1>Struct faiss::IVFPQSearchParameters<a class="headerlink" href="#struct-faiss-ivfpqsearchparameters" title="Permalink to this heading">¶</a></h1>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21IVFPQSearchParametersE">
-<span id="_CPPv3N5faiss21IVFPQSearchParametersE"></span><span id="_CPPv2N5faiss21IVFPQSearchParametersE"></span><span id="faiss::IVFPQSearchParameters"></span><span class="target" id="structfaiss_1_1IVFPQSearchParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVFPQSearchParameters</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19IVFSearchParametersE" title="faiss::IVFSearchParameters"><span class="n"><span class="pre">IVFSearchParameters</span></span></a><br /></dt>
+<span id="_CPPv3N5faiss21IVFPQSearchParametersE"></span><span id="_CPPv2N5faiss21IVFPQSearchParametersE"></span><span id="faiss::IVFPQSearchParameters"></span><span class="target" id="structfaiss_1_1IVFPQSearchParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVFPQSearchParameters</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/IndexIVF_8h.html#_CPPv4N5faiss19SearchParametersIVFE" title="faiss::SearchParametersIVF"><span class="n"><span class="pre">SearchParametersIVF</span></span></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -406,14 +408,25 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21IVFPQSearchParameters6nprobeE">
-<span id="_CPPv3N5faiss21IVFPQSearchParameters6nprobeE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters6nprobeE"></span><span id="faiss::IVFPQSearchParameters::nprobe__s"></span><span class="target" id="structfaiss_1_1IVFSearchParameters_1a1183c0b7d9ffd5154b32765175f2a9cc"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nprobe</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss21IVFPQSearchParameters6nprobeE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters6nprobeE"></span><span id="faiss::IVFPQSearchParameters::nprobe__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nprobe</span></span></span><br /></dt>
 <dd><p>number of probes at query time </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss21IVFPQSearchParameters9max_codesE">
-<span id="_CPPv3N5faiss21IVFPQSearchParameters9max_codesE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters9max_codesE"></span><span id="faiss::IVFPQSearchParameters::max_codes__s"></span><span class="target" id="structfaiss_1_1IVFSearchParameters_1ac3e01728f6376ad727340525b2138782"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_codes</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss21IVFPQSearchParameters9max_codesE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters9max_codesE"></span><span id="faiss::IVFPQSearchParameters::max_codes__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_codes</span></span></span><br /></dt>
 <dd><p>max nb of codes to visit to do a query </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss21IVFPQSearchParameters16quantizer_paramsE">
+<span id="_CPPv3N5faiss21IVFPQSearchParameters16quantizer_paramsE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters16quantizer_paramsE"></span><span id="faiss::IVFPQSearchParameters::quantizer_params__SearchParametersP"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922"></span><a class="reference internal" href="../file/Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss21IVFPQSearchParameters3selE">
+<span id="_CPPv3N5faiss21IVFPQSearchParameters3selE"></span><span id="_CPPv2N5faiss21IVFPQSearchParameters3selE"></span><span id="faiss::IVFPQSearchParameters::sel__IDSelectorP"></span><span class="target" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a"></span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">sel</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><br /></dt>
+<dd><p>if non-null, only these IDs will be considered during search. </p>
 </dd></dl>
 
 </div>
@@ -427,7 +440,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="structfaiss_1_1IVFSearchParameters.html" class="btn btn-neutral float-right" title="Struct faiss::IVFSearchParameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structfaiss_1_1Index.html" class="btn btn-neutral float-right" title="Struct faiss::Index" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="structfaiss_1_1IVFFastScanStats.html" class="btn btn-neutral float-left" title="Struct faiss::IVFFastScanStats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

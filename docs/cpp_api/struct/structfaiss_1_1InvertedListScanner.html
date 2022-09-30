@@ -147,7 +147,6 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ITQTransform.html">Struct faiss::ITQTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFFastScanStats.html">Struct faiss::IVFFastScanStats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFPQSearchParameters.html">Struct faiss::IVFPQSearchParameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IVFSearchParameters.html">Struct faiss::IVFSearchParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index.html">Struct faiss::Index</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Index2Layer.html">Struct faiss::Index2Layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexAdditiveQuantizer.html">Struct faiss::IndexAdditiveQuantizer</a></li>
@@ -260,6 +259,9 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ReconstructFromNeighbors.html">Struct faiss::ReconstructFromNeighbors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1RemapDimensionsTransform.html">Struct faiss::RemapDimensionsTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParameters.html">Struct faiss::SearchParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html">Struct faiss::SearchParametersIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html">Struct faiss::SearchParametersPreTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
@@ -389,6 +391,11 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScanner19InvertedListScannerEbPK10IDSelector">
+<span id="_CPPv3N5faiss19InvertedListScanner19InvertedListScannerEbPK10IDSelector"></span><span id="_CPPv2N5faiss19InvertedListScanner19InvertedListScannerEbPK10IDSelector"></span><span id="faiss::InvertedListScanner::InvertedListScanner__b.IDSelectorCP"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a7a351436a857000778aeabc81f554daf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvertedListScanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">store_pairs</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScanner9set_queryEPKf">
 <span id="_CPPv3N5faiss19InvertedListScanner9set_queryEPKf"></span><span id="_CPPv2N5faiss19InvertedListScanner9set_queryEPKf"></span><span id="faiss::InvertedListScanner::set_query__floatCP"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a97cab8fbf8203bdda6c42fc4b8f92319"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_query</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">query_vector</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd><p>from now on we handle this query. </p>
@@ -456,8 +463,14 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScanner11store_pairsE">
-<span id="_CPPv3N5faiss19InvertedListScanner11store_pairsE"></span><span id="_CPPv2N5faiss19InvertedListScanner11store_pairsE"></span><span id="faiss::InvertedListScanner::store_pairs__b"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">store_pairs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<span id="_CPPv3N5faiss19InvertedListScanner11store_pairsE"></span><span id="_CPPv2N5faiss19InvertedListScanner11store_pairsE"></span><span id="faiss::InvertedListScanner::store_pairs__b"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">store_pairs</span></span></span><br /></dt>
 <dd><p>store positions in invlists rather than labels </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScanner3selE">
+<span id="_CPPv3N5faiss19InvertedListScanner3selE"></span><span id="_CPPv2N5faiss19InvertedListScanner3selE"></span><span id="faiss::InvertedListScanner::sel__IDSelectorCP"></span><span class="target" id="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">sel</span></span></span><br /></dt>
+<dd><p>search in this subset of ids </p>
 </dd></dl>
 
 <dl class="cpp var">
