@@ -155,6 +155,42 @@ uint8_t pq4_get_packed_element(
     }
 }
 
+void pq4_set_packed_element(
+        uint8_t* data,
+        uint8_t code,
+        size_t bbs,
+        size_t nsq,
+        size_t vector_id,
+        size_t sq) {
+    // move to correct bbs-sized block
+    // number of blocks * block size
+    data += (vector_id / bbs) * ((nsq / 2) * bbs);
+
+    // get the vector_id inside the block
+    vector_id = vector_id % bbs;
+    bool shift = vector_id > 15;
+    vector_id = vector_id & 15;
+
+    // get the address of the vector in sq
+    size_t address;
+    if (vector_id < 8) {
+        address = vector_id << 1;
+    } else {
+        address = ((vector_id - 8) << 1) + 1;
+    }
+    if (sq & 1) {
+        address += 16;
+    }
+    address = (sq >> 1) * bbs + address;
+    uint8_t temp = data[address];
+    if (shift) {
+        temp = (code << 4) | (temp & 15);
+    } else {
+        temp = code | (temp & ~15);
+    }
+    data[address] = temp;
+}
+
 /***************************************************************
  * Packing functions for Look-Up Tables (LUT)
  ***************************************************************/
