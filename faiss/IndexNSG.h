@@ -66,7 +66,8 @@ struct IndexNSG : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 

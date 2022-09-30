@@ -247,7 +247,9 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT(!sel);
     if (metric_type == METRIC_INNER_PRODUCT) {
         if (aq->search_type == AdditiveQuantizer::ST_decompress) {
             return new AQInvertedListScannerDecompress<true>(

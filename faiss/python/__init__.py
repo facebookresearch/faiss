@@ -297,7 +297,7 @@ def handle_Index(the_class):
         x = np.ascontiguousarray(x, dtype='float32')
         self.train_c(n, swig_ptr(x))
 
-    def replacement_search(self, x, k, D=None, I=None):
+    def replacement_search(self, x, k, *, params=None, D=None, I=None):
         """Find the k nearest neighbors of the set of vectors x in the index.
 
         Parameters
@@ -311,6 +311,8 @@ def handle_Index(the_class):
             Distance array to store the result.
         I : array_like, optional
             Labels array to store the results.
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
 
         Returns
         -------
@@ -338,10 +340,10 @@ def handle_Index(the_class):
         else:
             assert I.shape == (n, k)
 
-        self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I))
+        self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
         return D, I
 
-    def replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
+    def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
         """Find the k nearest neighbors of the set of vectors x in the index,
         and return an approximation of these vectors.
 
@@ -358,6 +360,8 @@ def handle_Index(the_class):
             Labels array to store the result.
         R : array_like, optional
             reconstruction array to store
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
 
         Returns
         -------
@@ -391,10 +395,11 @@ def handle_Index(the_class):
         else:
             assert R.shape == (n, k, d)
 
-        self.search_and_reconstruct_c(n, swig_ptr(x),
-                                      k, swig_ptr(D),
-                                      swig_ptr(I),
-                                      swig_ptr(R))
+        self.search_and_reconstruct_c(
+                n, swig_ptr(x), k,
+                swig_ptr(D), swig_ptr(I), swig_ptr(R),
+                params
+        )
         return D, I, R
 
     def replacement_remove_ids(self, x):
@@ -506,7 +511,7 @@ def handle_Index(the_class):
         self.update_vectors_c(n, swig_ptr(keys), swig_ptr(x))
 
     # The CPU does not support passed-in output buffers
-    def replacement_range_search(self, x, thresh):
+    def replacement_range_search(self, x, thresh, *, params=None):
         """Search vectors that are within a distance of the query vectors.
 
         Parameters
@@ -518,6 +523,8 @@ def handle_Index(the_class):
             Threshold to select neighbors. All elements within this radius are returned,
             except for maximum inner product indexes, where the elements above the
             threshold are returned
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
 
         Returns
         -------
@@ -536,7 +543,7 @@ def handle_Index(the_class):
         x = np.ascontiguousarray(x, dtype='float32')
 
         res = RangeSearchResult(n)
-        self.range_search_c(n, swig_ptr(x), thresh, res)
+        self.range_search_c(n, swig_ptr(x), thresh, res, params)
         # get pointers and copy them
         lims = rev_swig_ptr(res.lims, n + 1).copy()
         nd = int(lims[-1])
@@ -798,8 +805,30 @@ def handle_IndexRowwiseMinMax(the_class):
 
     replace_method(the_class, 'train_inplace', replacement_train_inplace)
 
-this_module = sys.modules[__name__]
 
+
+def handle_SearchParameters(the_class):
+    """ this wrapper is to enable initializations of the form
+    SearchParametersXX(a=3, b=SearchParamsYY)
+    This also requires the enclosing class to keep a reference on the
+    sub-object
+    """
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, **args):
+        self.original_init()
+        self.referenced_objects = []
+        for k, v in args.items():
+            assert hasattr(self, k)
+            setattr(self, k, v)
+            if inspect.isclass(v):
+                self.referenced_objects.append(v)
+
+    the_class.__init__ = replacement_init
+
+
+
+this_module = sys.modules[__name__]
 
 for symbol in dir(this_module):
     obj = getattr(this_module, symbol)
@@ -831,6 +860,8 @@ for symbol in dir(this_module):
             issubclass(the_class, IndexRowwiseMinMaxFP16):
             handle_IndexRowwiseMinMax(the_class)
 
+        if issubclass(the_class, SearchParameters):
+            handle_SearchParameters(the_class)
 
 ###########################################
 # Utility to add a deprecation warning to
@@ -1704,6 +1735,8 @@ class Kmeans:
 IndexProxy = IndexReplicas
 ConcatenatedInvertedLists = HStackInvertedLists
 IndexResidual = IndexResidualQuantizer
+
+IVFSearchParameters = SearchParametersIVF
 
 ###########################################
 # serialization of indexes to byte arrays

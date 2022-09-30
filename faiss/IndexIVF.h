@@ -11,11 +11,13 @@
 #define FAISS_INDEX_IVF_H
 
 #include <stdint.h>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -62,12 +64,17 @@ struct Level1Quantizer {
     ~Level1Quantizer();
 };
 
-struct IVFSearchParameters {
+struct SearchParametersIVF : SearchParameters {
     size_t nprobe;    ///< number of probes at query time
     size_t max_codes; ///< max nb of codes to visit to do a query
-    IVFSearchParameters() : nprobe(1), max_codes(0) {}
-    virtual ~IVFSearchParameters() {}
+    SearchParameters* quantizer_params = nullptr;
+
+    SearchParametersIVF() : nprobe(1), max_codes(0) {}
+    virtual ~SearchParametersIVF() {}
 };
+
+// the new convention puts the index type after SearchParameters
+using IVFSearchParameters = SearchParametersIVF;
 
 struct InvertedListScanner;
 struct IndexIVFStats;
@@ -218,13 +225,15 @@ struct IndexIVF : Index, Level1Quantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search_preassigned(
             idx_t nx,
@@ -242,7 +251,8 @@ struct IndexIVF : Index, Level1Quantizer {
      * The default search implementation uses this to compute the distances
      */
     virtual InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs = false) const;
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
@@ -284,7 +294,8 @@ struct IndexIVF : Index, Level1Quantizer {
             idx_t k,
             float* distances,
             idx_t* labels,
-            float* recons) const override;
+            float* recons,
+            const SearchParameters* params = nullptr) const override;
 
     /** Reconstruct a vector given the location in terms of (inv list index +
      * inv list offset) instead of the id.
@@ -357,7 +368,15 @@ struct InvertedListScanner {
     idx_t list_no = -1;    ///< remember current list
     bool keep_max = false; ///< keep maximum instead of minimum
     /// store positions in invlists rather than labels
-    bool store_pairs = false;
+    bool store_pairs;
+
+    /// search in this subset of ids
+    const IDSelector* sel;
+
+    InvertedListScanner(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr)
+            : store_pairs(store_pairs), sel(sel) {}
 
     /// used in default implementation of scan_codes
     size_t code_size = 0;

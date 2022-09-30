@@ -86,6 +86,10 @@ if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
+else()
+  # we need bigobj for the swig wrapper
+  add_compile_options(/bigobj)
+  add_link_options(/bigobj)
 endif()
 
 if(FAISS_ENABLE_GPU)

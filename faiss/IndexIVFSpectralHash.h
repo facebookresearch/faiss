@@ -70,7 +70,8 @@ struct IndexIVFSpectralHash : IndexIVF {
             bool include_listnos = false) const override;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     /** replace the vector transform for an empty (and possibly untrained) index
      */

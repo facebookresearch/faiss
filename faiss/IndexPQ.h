@@ -45,7 +45,8 @@ struct IndexPQ : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /* The standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
@@ -142,7 +143,8 @@ struct MultiIndexQuantizer : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// add and reset will crash at runtime
     void add(idx_t n, const float* x) override;
@@ -178,7 +180,8 @@ struct MultiIndexQuantizer2 : MultiIndexQuantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

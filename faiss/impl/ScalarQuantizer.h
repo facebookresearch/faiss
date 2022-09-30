@@ -121,6 +121,7 @@ struct ScalarQuantizer : Quantizer {
             MetricType mt,
             const Index* quantizer,
             bool store_pairs,
+            const IDSelector* sel,
             bool by_residual = false) const;
 };
 

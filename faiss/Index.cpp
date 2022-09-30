@@ -24,7 +24,12 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::range_search(idx_t, const float*, float, RangeSearchResult*) const {
+void Index::range_search(
+        idx_t,
+        const float*,
+        float,
+        RangeSearchResult*,
+        const SearchParameters* params) const {
     FAISS_THROW_MSG("range search not implemented");
 }
 
@@ -79,10 +84,11 @@ void Index::search_and_reconstruct(
         idx_t k,
         float* distances,
         idx_t* labels,
-        float* recons) const {
+        float* recons,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    search(n, x, k, distances, labels);
+    search(n, x, k, distances, labels, params);
     for (idx_t i = 0; i < n; ++i) {
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;

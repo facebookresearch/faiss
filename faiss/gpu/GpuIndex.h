@@ -74,7 +74,8 @@ class GpuIndex : public faiss::Index {
             const float* x,
             Index::idx_t k,
             float* distances,
-            Index::idx_t* labels) const override;
+            Index::idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// Overridden to force GPU indices to provide their own GPU-friendly
     /// implementation

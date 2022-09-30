@@ -345,16 +345,17 @@ IndexRowwiseMinMaxBase::~IndexRowwiseMinMaxBase() {
     }
 }
 
-void IndexRowwiseMinMaxBase::add(idx_t n, const float* x) {
+void IndexRowwiseMinMaxBase::add(idx_t, const float*) {
     FAISS_THROW_MSG("add not implemented for this type of index");
 }
 
 void IndexRowwiseMinMaxBase::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const {
+        idx_t,
+        const float*,
+        idx_t,
+        float*,
+        idx_t*,
+        const SearchParameters*) const {
     FAISS_THROW_MSG("search not implemented for this type of index");
 }
 
