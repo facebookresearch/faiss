@@ -38,7 +38,8 @@ struct IndexAdditiveQuantizer : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /* The standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
@@ -176,7 +177,8 @@ struct AdditiveCoarseQuantizer : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
     void train(idx_t n, const float* x) override;
@@ -221,7 +223,8 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     ResidualCoarseQuantizer();
 };

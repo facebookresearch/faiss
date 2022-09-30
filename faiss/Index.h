@@ -38,11 +38,18 @@
 
 namespace faiss {
 
-/// Forward declarations see impl/AuxIndexStructures.h and
+/// Forward declarations see impl/AuxIndexStructures.h, impl/IDSelector.h and
 /// impl/DistanceComputer.h
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+
+struct SearchParameters {
+    /// if non-null, only these IDs will be considered during search.
+    IDSelector* sel = nullptr;
+    /// make sure we can dynamic_cast this
+    virtual ~SearchParameters() {}
+};
 
 /** Abstract structure for an index, supports adding vectors and searching them.
  *
@@ -115,7 +122,8 @@ struct Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const = 0;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const = 0;
 
     /** query n vectors of dimension d to the index.
      *
@@ -131,7 +139,8 @@ struct Index {
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const;
 
     /** return the indexes of the k vectors closest to the query x.
      *
@@ -189,7 +198,8 @@ struct Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            float* recons) const;
+            float* recons,
+            const SearchParameters* params = nullptr) const;
 
     /** Computes a residual vector after indexing encoding.
      *

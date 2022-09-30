@@ -27,7 +27,10 @@ void IndexFlat::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     // we see the distances and labels as heaps
@@ -49,7 +52,11 @@ void IndexFlat::range_search(
         idx_t n,
         const float* x,
         float radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             range_search_inner_product(
@@ -208,9 +215,11 @@ void IndexFlat1D::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == ntotal, "Call update_permutation before search");
     const float* xb = get_xb();

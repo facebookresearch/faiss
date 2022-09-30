@@ -65,7 +65,8 @@ class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
             const component_t* x,
             idx_t k,
             distance_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// reconstructs from the first index
     void reconstruct(idx_t, component_t* v) const override;

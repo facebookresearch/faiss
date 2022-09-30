@@ -21,8 +21,12 @@ void IndexBinary::train(idx_t, const uint8_t*) {
     // Does nothing by default.
 }
 
-void IndexBinary::range_search(idx_t, const uint8_t*, int, RangeSearchResult*)
-        const {
+void IndexBinary::range_search(
+        idx_t,
+        const uint8_t*,
+        int,
+        RangeSearchResult*,
+        const SearchParameters*) const {
     FAISS_THROW_MSG("range search not implemented");
 }
 
@@ -57,10 +61,11 @@ void IndexBinary::search_and_reconstruct(
         idx_t k,
         int32_t* distances,
         idx_t* labels,
-        uint8_t* recons) const {
+        uint8_t* recons,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
 
-    search(n, x, k, distances, labels);
+    search(n, x, k, distances, labels, params);
     for (idx_t i = 0; i < n; ++i) {
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;

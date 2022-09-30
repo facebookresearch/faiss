@@ -293,7 +293,9 @@ struct IVFScanner : InvertedListScanner {
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT(!sel);
     switch (code_size) {
 #define HANDLE_CODE_SIZE(cs) \
     case cs:                 \

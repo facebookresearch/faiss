@@ -288,7 +288,10 @@ void IndexShardsTemplate<IndexT>::search(
         const component_t* x,
         idx_t k,
         distance_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     long nshard = this->count();

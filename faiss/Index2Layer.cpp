@@ -111,7 +111,8 @@ void Index2Layer::search(
         const float* /*x*/,
         idx_t /*k*/,
         float* /*distances*/,
-        idx_t* /*labels*/) const {
+        idx_t* /*labels*/,
+        const SearchParameters* /* params */) const {
     FAISS_THROW_MSG("not implemented");
 }
 

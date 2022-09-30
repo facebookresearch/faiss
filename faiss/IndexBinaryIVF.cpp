@@ -125,7 +125,10 @@ void IndexBinaryIVF::search(
         const uint8_t* x,
         idx_t k,
         int32_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
@@ -175,7 +178,10 @@ void IndexBinaryIVF::search_and_reconstruct(
         idx_t k,
         int32_t* distances,
         idx_t* labels,
-        uint8_t* recons) const {
+        uint8_t* recons,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     const size_t nprobe = std::min(nlist, this->nprobe);
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
@@ -650,7 +656,10 @@ void IndexBinaryIVF::range_search(
         idx_t n,
         const uint8_t* x,
         int radius,
-        RangeSearchResult* res) const {
+        RangeSearchResult* res,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     const size_t nprobe = std::min(nlist, this->nprobe);
     std::unique_ptr<idx_t[]> idx(new idx_t[n * nprobe]);
     std::unique_ptr<int32_t[]> coarse_dis(new int32_t[n * nprobe]);

@@ -49,6 +49,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AuxIndexStructures.cpp
+  impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
   impl/NSG.cpp
@@ -134,6 +135,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/IDSelector.h
   impl/DistanceComputer.h
   impl/FaissAssert.h
   impl/FaissException.h
@@ -207,6 +209,8 @@ else()
   # Ref. F16C (2nd paragraph): https://walbourn.github.io/directxmath-avx2/
   # Ref. POPCNT: https://docs.microsoft.com/en-us/cpp/intrinsics/popcnt16-popcnt-popcnt64
   target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
+  # we need bigobj for the swig wrapper
+  add_compile_options(/bigobj)
 endif()
 
 # Handle `#include <faiss/foo.h>`.

@@ -229,9 +229,10 @@ void GpuIndex::search(
         const float* x,
         Index::idx_t k,
         float* distances,
-        Index::idx_t* labels) const {
+        Index::idx_t* labels,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-
+    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
     // For now, only support <= max int results

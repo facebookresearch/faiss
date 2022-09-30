@@ -23,6 +23,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 
 namespace faiss {
 
@@ -303,14 +304,20 @@ void IndexIVF::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
-
-    const size_t nprobe = std::min(nlist, this->nprobe);
+    const IVFSearchParameters* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IVFSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
+    }
+    const size_t nprobe =
+            std::min(nlist, params ? params->nprobe : this->nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
     // search function for a subset of queries
-    auto sub_search_func = [this, k, nprobe](
+    auto sub_search_func = [this, k, nprobe, params](
                                    idx_t n,
                                    const float* x,
                                    float* distances,
@@ -320,7 +327,13 @@ void IndexIVF::search(
         std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
 
         double t0 = getmillisecs();
-        quantizer->search(n, x, nprobe, coarse_dis.get(), idx.get());
+        quantizer->search(
+                n,
+                x,
+                nprobe,
+                coarse_dis.get(),
+                idx.get(),
+                params ? params->quantizer_params : nullptr);
 
         double t1 = getmillisecs();
         invlists->prefetch_lists(idx.get(), n * nprobe);
@@ -334,7 +347,7 @@ void IndexIVF::search(
                 distances,
                 labels,
                 false,
-                nullptr,
+                params,
                 ivf_stats);
         double t2 = getmillisecs();
         ivf_stats->quantization_time += t1 - t0;
@@ -400,6 +413,7 @@ void IndexIVF::search_preassigned(
     FAISS_THROW_IF_NOT(nprobe > 0);
 
     idx_t max_codes = params ? params->max_codes : this->max_codes;
+    IDSelector* sel = params ? params->sel : nullptr;
 
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
@@ -421,7 +435,8 @@ void IndexIVF::search_preassigned(
 
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
-        InvertedListScanner* scanner = get_InvertedListScanner(store_pairs);
+        InvertedListScanner* scanner =
+                get_InvertedListScanner(store_pairs, sel);
         ScopeDeleter1<InvertedListScanner> del(scanner);
 
         /*****************************************************
@@ -651,13 +666,23 @@ void IndexIVF::range_search(
         idx_t nx,
         const float* x,
         float radius,
-        RangeSearchResult* result) const {
-    const size_t nprobe = std::min(nlist, this->nprobe);
+        RangeSearchResult* result,
+        const SearchParameters* params_in) const {
+    const IVFSearchParameters* params = nullptr;
+    const SearchParameters* quantizer_params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IVFSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
+        quantizer_params = params->quantizer_params;
+    }
+    const size_t nprobe =
+            std::min(nlist, params ? params->nprobe : this->nprobe);
     std::unique_ptr<idx_t[]> keys(new idx_t[nx * nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[nx * nprobe]);
 
     double t0 = getmillisecs();
-    quantizer->search(nx, x, nprobe, coarse_dis.get(), keys.get());
+    quantizer->search(
+            nx, x, nprobe, coarse_dis.get(), keys.get(), quantizer_params);
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
@@ -671,7 +696,7 @@ void IndexIVF::range_search(
             coarse_dis.get(),
             result,
             false,
-            nullptr,
+            params,
             &indexIVF_stats);
 
     indexIVF_stats.search_time += getmillisecs() - t0;
@@ -689,7 +714,10 @@ void IndexIVF::range_search_preassigned(
         IndexIVFStats* stats) const {
     idx_t nprobe = params ? params->nprobe : this->nprobe;
     nprobe = std::min((idx_t)nlist, nprobe);
+    FAISS_THROW_IF_NOT(nprobe > 0);
+
     idx_t max_codes = params ? params->max_codes : this->max_codes;
+    IDSelector* sel = params ? params->sel : nullptr;
 
     size_t nlistv = 0, ndis = 0;
 
@@ -711,7 +739,7 @@ void IndexIVF::range_search_preassigned(
     {
         RangeSearchPartialResult pres(result);
         std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs));
+                get_InvertedListScanner(store_pairs, sel));
         FAISS_THROW_IF_NOT(scanner.get());
         all_pres[omp_get_thread_num()] = &pres;
 
@@ -816,7 +844,8 @@ void IndexIVF::range_search_preassigned(
 }
 
 InvertedListScanner* IndexIVF::get_InvertedListScanner(
-        bool /*store_pairs*/) const {
+        bool /*store_pairs*/,
+        const IDSelector* /* sel */) const {
     return nullptr;
 }
 
@@ -863,10 +892,15 @@ void IndexIVF::search_and_reconstruct(
         idx_t k,
         float* distances,
         idx_t* labels,
-        float* recons) const {
-    FAISS_THROW_IF_NOT(k > 0);
-
-    const size_t nprobe = std::min(nlist, this->nprobe);
+        float* recons,
+        const SearchParameters* params_in) const {
+    const IVFSearchParameters* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IVFSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
+    }
+    const size_t nprobe =
+            std::min(nlist, params ? params->nprobe : this->nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
     idx_t* idx = new idx_t[n * nprobe];
@@ -888,7 +922,8 @@ void IndexIVF::search_and_reconstruct(
             coarse_dis,
             distances,
             labels,
-            true /* store_pairs */);
+            true /* store_pairs */,
+            params);
     for (idx_t i = 0; i < n; ++i) {
         for (idx_t j = 0; j < k; ++j) {
             idx_t ij = i * k + j;

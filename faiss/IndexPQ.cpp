@@ -154,10 +154,13 @@ void IndexPQ::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT(is_trained);
+
     if (search_type == ST_PQ) { // Simple PQ search
 
         if (metric_type == METRIC_L2) {
@@ -870,10 +873,13 @@ void MultiIndexQuantizer::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
-    if (n == 0)
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+    if (n == 0) {
         return;
-
+    }
     FAISS_THROW_IF_NOT(k > 0);
 
     // the allocation just below can be severe...
@@ -1012,9 +1018,14 @@ void MultiIndexQuantizer2::search(
         const float* x,
         idx_t K,
         float* distances,
-        idx_t* labels) const {
-    if (n == 0)
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+
+    if (n == 0) {
         return;
+    }
 
     int k2 = std::min(K, int64_t(pq.ksub));
     FAISS_THROW_IF_NOT(k2);
