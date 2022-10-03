@@ -15,6 +15,10 @@ os.mkdir("faiss")
 shutil.copytree("contrib", "faiss/contrib")
 shutil.copyfile("__init__.py", "faiss/__init__.py")
 shutil.copyfile("loader.py", "faiss/loader.py")
+shutil.copyfile("class_wrappers.py", "faiss/class_wrappers.py")
+shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
+shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
+shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
 ext = ".pyd" if platform.system() == 'Windows' else ".so"
 prefix = "Release/" * (platform.system() == 'Windows')
