@@ -153,22 +153,30 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>apply the random rotation, return new allocated matrix <parameterlist kind="param"><parameteritem>
+<para>apply the transformation and return the result in an allocated pointer <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors to transform </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>size n * d_in </para>
+<para>input vectors, size n * d_in </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>size n * d_out </para>
+<simplesect kind="return"><para>output vectors, size n * d_out </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="50" column="11"/>
+        <location file="faiss/VectorTransform.h" line="51" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -193,13 +201,38 @@
           <declname>xt</declname>
         </param>
         <briefdescription>
-<para>same as apply, but result is pre-allocated </para>
         </briefdescription>
         <detaileddescription>
+<para>apply the transformation and return the result in a provided matrix <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors to transform </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size n * d_in </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>xt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output vectors, size n * d_out </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="53" column="18"/>
+        <location file="faiss/VectorTransform.h" line="58" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -229,7 +262,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="57" column="18"/>
+        <location file="faiss/VectorTransform.h" line="62" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -242,7 +275,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="59" column="13" bodyfile="faiss/VectorTransform.h" bodystart="59" bodyend="59"/>
+        <location file="faiss/VectorTransform.h" line="64" column="13" bodyfile="faiss/VectorTransform.h" bodystart="64" bodyend="64"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -310,7 +343,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/VectorTransform.h" line="25" column="22" bodyfile="faiss/VectorTransform.h" bodystart="25" bodyend="60"/>
+    <location file="faiss/VectorTransform.h" line="25" column="22" bodyfile="faiss/VectorTransform.h" bodystart="25" bodyend="65"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" prot="public" virt="pure-virtual"><scope>faiss::VectorTransform</scope><name>apply_noalloc</name></member>
