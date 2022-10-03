@@ -27,7 +27,7 @@ class TestSelector(unittest.TestCase):
 
         # reference result
         rs = np.random.RandomState(123)
-        subset = rs.choice(ds.nb, 50, replace=False)
+        subset = rs.choice(ds.nb, 50, replace=False).astype("int64")
         # add_with_ids not supported for all index types
         # index.add_with_ids(ds.get_database()[subset], subset)
         index.add(ds.get_database()[subset])
@@ -97,7 +97,7 @@ class TestSelector(unittest.TestCase):
 
         # reference result
         rs = np.random.RandomState(123)
-        subset = rs.choice(ds.nb, 50, replace=False)
+        subset = rs.choice(ds.nb, 50, replace=False).astype("int64")
         sel = faiss.IDSelectorBatch(
             len(subset),
             faiss.swig_ptr(subset)

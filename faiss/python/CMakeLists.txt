@@ -88,8 +88,8 @@ if(NOT WIN32)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
 else()
   # we need bigobj for the swig wrapper
-  add_compile_options(/bigobj)
-  add_link_options(/bigobj)
+  target_compile_options(swigfaiss PRIVATE /bigobj)
+  target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
 endif()
 
 if(FAISS_ENABLE_GPU)
