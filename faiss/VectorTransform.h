@@ -43,13 +43,18 @@ struct VectorTransform {
      */
     virtual void train(idx_t n, const float* x);
 
-    /** apply the random rotation, return new allocated matrix
-     * @param     x size n * d_in
-     * @return    size n * d_out
+    /** apply the transformation and return the result in an allocated pointer
+     * @param     n number of vectors to transform
+     * @param     x input vectors, size n * d_in
+     * @return    output vectors, size n * d_out
      */
     float* apply(idx_t n, const float* x) const;
 
-    /// same as apply, but result is pre-allocated
+    /** apply the transformation and return the result in a provided matrix
+     * @param     n number of vectors to transform
+     * @param     x input vectors, size n * d_in
+     * @param    xt output vectors, size n * d_out
+     */
     virtual void apply_noalloc(idx_t n, const float* x, float* xt) const = 0;
 
     /// reverse transformation. May not be implemented or may return
