@@ -376,13 +376,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss18CenteringTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss18CenteringTransform5applyE5idx_tPKf"></span><span id="faiss::CenteringTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss18CenteringTransform5idx_tE" title="faiss::CenteringTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss18CenteringTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -485,13 +488,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss9ITQMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9ITQMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9ITQMatrix5applyE5idx_tPKf"></span><span id="faiss::ITQMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9ITQMatrix5idx_tE" title="faiss::ITQMatrix::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss9ITQMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -601,19 +607,31 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss12ITQTransform13apply_noallocE5idx_tPKfPf">
 <span id="_CPPv3NK5faiss12ITQTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss12ITQTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::ITQTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_noalloc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss12ITQTransform5idx_tE" title="faiss::ITQTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xt</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss12ITQTransform13apply_noallocE5idx_tPKfPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>same as apply, but result is pre-allocated </p>
+<dd><p>apply the transformation and return the result in a provided matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+<li><p><strong>xt</strong> – output vectors, size n * d_out </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss12ITQTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss12ITQTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss12ITQTransform5applyE5idx_tPKf"></span><span id="faiss::ITQTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss12ITQTransform5idx_tE" title="faiss::ITQTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss12ITQTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -747,13 +765,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss15LinearTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="faiss::LinearTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15LinearTransform5idx_tE" title="faiss::LinearTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15LinearTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -839,7 +860,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22NormalizationTransform13apply_noallocE5idx_tPKfPf">
 <span id="_CPPv3NK5faiss22NormalizationTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss22NormalizationTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::NormalizationTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_noalloc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss22NormalizationTransform5idx_tE" title="faiss::NormalizationTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xt</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss22NormalizationTransform13apply_noallocE5idx_tPKfPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>same as apply, but result is pre-allocated </p>
+<dd><p>apply the transformation and return the result in a provided matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+<li><p><strong>xt</strong> – output vectors, size n * d_out </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -865,13 +895,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss22NormalizationTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss22NormalizationTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss22NormalizationTransform5applyE5idx_tPKf"></span><span id="faiss::NormalizationTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss22NormalizationTransform5idx_tE" title="faiss::NormalizationTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss22NormalizationTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -973,13 +1006,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss9OPQMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9OPQMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9OPQMatrix5applyE5idx_tPKf"></span><span id="faiss::OPQMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9OPQMatrix5idx_tE" title="faiss::OPQMatrix::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss9OPQMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1143,13 +1179,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss9PCAMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss9PCAMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss9PCAMatrix5applyE5idx_tPKf"></span><span id="faiss::PCAMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss9PCAMatrix5idx_tE" title="faiss::PCAMatrix::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss9PCAMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1334,13 +1373,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss20RandomRotationMatrix5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss20RandomRotationMatrix5applyE5idx_tPKf"></span><span id="faiss::RandomRotationMatrix::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss20RandomRotationMatrix5idx_tE" title="faiss::RandomRotationMatrix::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss20RandomRotationMatrix5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1427,7 +1469,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss24RemapDimensionsTransform13apply_noallocE5idx_tPKfPf">
 <span id="_CPPv3NK5faiss24RemapDimensionsTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss24RemapDimensionsTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::RemapDimensionsTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_noalloc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss24RemapDimensionsTransform5idx_tE" title="faiss::RemapDimensionsTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xt</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss24RemapDimensionsTransform13apply_noallocE5idx_tPKfPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>same as apply, but result is pre-allocated </p>
+<dd><p>apply the transformation and return the result in a provided matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+<li><p><strong>xt</strong> – output vectors, size n * d_out </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1458,13 +1509,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf"></span><span id="faiss::RemapDimensionsTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss24RemapDimensionsTransform5idx_tE" title="faiss::RemapDimensionsTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss24RemapDimensionsTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1538,13 +1592,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss15VectorTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15VectorTransform5applyE5idx_tPKf"></span><span id="faiss::VectorTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15VectorTransform5applyE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
@@ -1552,7 +1609,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf">
 <span id="_CPPv3NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="_CPPv2NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf"></span><span id="faiss::VectorTransform::apply_noalloc__idx_t.floatCP.floatPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">apply_noalloc</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss15VectorTransform5idx_tE" title="faiss::VectorTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xt</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK5faiss15VectorTransform13apply_noallocE5idx_tPKfPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>same as apply, but result is pre-allocated </p>
+<dd><p>apply the transformation and return the result in a provided matrix </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+<li><p><strong>xt</strong> – output vectors, size n * d_out </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">

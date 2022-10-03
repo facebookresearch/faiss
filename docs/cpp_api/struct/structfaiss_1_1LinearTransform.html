@@ -448,13 +448,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss15LinearTransform5applyE5idx_tPKf">
 <span id="_CPPv3NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="_CPPv2NK5faiss15LinearTransform5applyE5idx_tPKf"></span><span id="faiss::LinearTransform::apply__idx_t.floatCPC"></span><span class="target" id="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">apply</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/VectorTransform_8h.html#_CPPv4N5faiss15LinearTransform5idx_tE" title="faiss::LinearTransform::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>apply the random rotation, return new allocated matrix </p>
+<dd><p>apply the transformation and return the result in an allocated pointer </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – size n * d_in </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors to transform </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d_in </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size n * d_out </p>
+<dd class="field-even"><p>output vectors, size n * d_out </p>
 </dd>
 </dl>
 </dd></dl>
