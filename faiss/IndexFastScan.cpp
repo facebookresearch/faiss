@@ -13,6 +13,7 @@
 
 #include <omp.h>
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
@@ -95,6 +96,31 @@ void IndexFastScan::add(idx_t n, const float* x) {
             tmp_codes.get(), M, ntotal, ntotal + n, bbs, M2, codes.get());
 
     ntotal += n;
+}
+
+size_t IndexFastScan::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                for (int sq = 0; sq < M; sq++){
+                    uint8_t code = pq4_get_packed_element(codes.data(), bbs, M, i, sq);
+                    pq4_set_packed_element(codes.data(), code, bbs, M, j, sq);
+                }
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        ntotal2 = roundup(ntotal, bbs);
+        size_t new_size = ntotal2 * M2 / 2;
+        codes.resize(new_size);
+    }
+    return nremove;
 }
 
 namespace {
