@@ -167,3 +167,34 @@ class IndexFlatCodes_merge(unittest.TestCase):
 
     def test_merge_IndexScalarQuantizer(self):
         self.do_flat_codes_test("SQ4")
+
+
+# Test merge_from method for IndexFastScan Types
+class IndexFastScan_merge(unittest.TestCase):
+
+    def do_fast_scan_test(self, index, size1):
+        ds = SyntheticDataset(110, 1000, 1000, 100)
+        index1 = faiss.index_factory(ds.d, index)
+        index1.train(ds.get_train())
+        index1.add(ds.get_database())
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index2 = faiss.index_factory(ds.d, index)
+        index2.train(ds.get_train())
+        index1.add(ds.get_database()[:size1])
+        index2.add(ds.get_database()[size1:])
+        index1.merge_from(index2)
+        _, Inew = index1.search(ds.get_queries(), 5)
+        np.testing.assert_array_equal(Inew, Iref)
+
+    def test_merge_IndexFastScan_complete_block(self):
+        self.do_fast_scan_test("PQ5x4fs", 320)
+
+    def test_merge_IndexFastScan_not_complete_block(self):
+        self.do_fast_scan_test("PQ11x4fs", 310)
+
+    def test_merge_IndexFastScan_even_M(self):
+        self.do_fast_scan_test("PQ10x4fs", 500)
+
+    def test_merge_IndexAdditiveQuantizerFastScan(self):
+        self.do_fast_scan_test("RQ10x4fs_32_Nrq2x4", 330)
