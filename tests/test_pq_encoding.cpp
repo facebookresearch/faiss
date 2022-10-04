@@ -103,21 +103,43 @@ TEST(PQEncoder16, encode) {
     }
 }
 
-TEST(PQFastScan, set_paacked_element) {
+TEST(PQFastScan, set_packed_element) {
     int d = 20, ntotal = 1000, M = 5, nbits = 4;
     const std::vector<float> ds = random_vector_float(ntotal * d);
     faiss::IndexPQFastScan index(d, M, nbits);
     index.train(ntotal, ds.data());
     index.add(ntotal, ds.data());
+
     for (int i = 0; i < 10; i++) {
-        int vector_id = rand() % ntotal, sq = rand() % M;
-        uint8_t before = faiss::pq4_get_packed_element(
-                index.codes.data(), index.bbs, M, vector_id, sq);
-        uint8_t code = ((before + 3) % 16);
-        faiss::pq4_set_packed_element(
-                index.codes.data(), code, index.bbs, M, vector_id, sq);
-        uint8_t after = faiss::pq4_get_packed_element(
-                index.codes.data(), index.bbs, M, vector_id, sq);
-        EXPECT_EQ(((before + 3) % 16), after);
+        int vector_id = rand() % ntotal;
+        std::vector<uint8_t> old(ntotal * M);
+        std::vector<uint8_t> code(M);
+        for (int i = 0; i < ntotal; i++) {
+            for (int sq = 0; sq < M; sq++) {
+                old[i * M + sq] = faiss::pq4_get_packed_element(
+                        index.codes.data(), index.bbs, M, i, sq);
+            }
+        }
+        for (int sq = 0; sq < M; sq++) {
+            faiss::pq4_set_packed_element(
+                    index.codes.data(),
+                    ((old[vector_id * M + sq] + 3) % 16),
+                    index.bbs,
+                    M,
+                    vector_id,
+                    sq);
+        }
+        for (int i = 0; i < ntotal; i++) {
+            for (int sq = 0; sq < M; sq++) {
+                uint8_t newcode = faiss::pq4_get_packed_element(
+                        index.codes.data(), index.bbs, M, i, sq);
+                uint8_t oldcode = old[i * M + sq];
+                if (i == vector_id) {
+                    EXPECT_EQ(newcode, (oldcode + 3) % 16);
+                } else {
+                    EXPECT_EQ(newcode, oldcode);
+                }
+            }
+        }
     }
 }

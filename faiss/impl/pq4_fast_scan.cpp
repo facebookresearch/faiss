@@ -122,19 +122,16 @@ void pq4_pack_codes_range(
     }
 }
 
-uint8_t pq4_get_packed_element(
+uint8_t get_address(
         const uint8_t* data,
-        size_t bbs,
-        size_t nsq,
-        size_t vector_id,
-        size_t sq) {
-    // move to correct bbs-sized block
-    // number of blocks * block size
-    data += (vector_id / bbs) * ((nsq / 2) * bbs);
-
+        size_t& bbs,
+        size_t& nsq,
+        size_t& vector_id,
+        size_t& sq,
+        bool& shift) {
     // get the vector_id inside the block
     vector_id = vector_id % bbs;
-    bool shift = vector_id > 15;
+    shift = vector_id > 15;
     vector_id = vector_id & 15;
 
     // get the address of the vector in sq
@@ -147,11 +144,24 @@ uint8_t pq4_get_packed_element(
     if (sq & 1) {
         address += 16;
     }
-    uint8_t ans = data[(sq >> 1) * bbs + address];
+    return (sq >> 1) * bbs + address;
+}
+
+uint8_t pq4_get_packed_element(
+        const uint8_t* data,
+        size_t bbs,
+        size_t nsq,
+        size_t vector_id,
+        size_t sq) {
+    // move to correct bbs-sized block
+    // number of blocks * block size
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_address(data, bbs, nsq, vector_id, sq, shift);
     if (shift) {
-        return ans >> 4;
+        return data[address] >> 4;
     } else {
-        return ans & 15;
+        return data[address] & 15;
     }
 }
 
@@ -164,31 +174,14 @@ void pq4_set_packed_element(
         size_t sq) {
     // move to correct bbs-sized block
     // number of blocks * block size
-    data += (vector_id / bbs) * ((nsq / 2) * bbs);
-
-    // get the vector_id inside the block
-    vector_id = vector_id % bbs;
-    bool shift = vector_id > 15;
-    vector_id = vector_id & 15;
-
-    // get the address of the vector in sq
-    size_t address;
-    if (vector_id < 8) {
-        address = vector_id << 1;
-    } else {
-        address = ((vector_id - 8) << 1) + 1;
-    }
-    if (sq & 1) {
-        address += 16;
-    }
-    address = (sq >> 1) * bbs + address;
-    uint8_t temp = data[address];
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_address(data, bbs, nsq, vector_id, sq, shift);
     if (shift) {
-        temp = (code << 4) | (temp & 15);
+        data[address] = (code << 4) | (data[address] & 15);
     } else {
-        temp = code | (temp & ~15);
+        data[address] = code | (data[address] & ~15);
     }
-    data[address] = temp;
 }
 
 /***************************************************************
