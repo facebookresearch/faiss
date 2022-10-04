@@ -122,13 +122,7 @@ void pq4_pack_codes_range(
     }
 }
 
-uint8_t get_address(
-        const uint8_t* data,
-        size_t& bbs,
-        size_t& nsq,
-        size_t& vector_id,
-        size_t& sq,
-        bool& shift) {
+uint8_t get_address(size_t bbs, size_t vector_id, size_t sq, bool& shift) {
     // get the vector_id inside the block
     vector_id = vector_id % bbs;
     shift = vector_id > 15;
@@ -157,7 +151,7 @@ uint8_t pq4_get_packed_element(
     // number of blocks * block size
     data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
     bool shift;
-    size_t address = get_address(data, bbs, nsq, vector_id, sq, shift);
+    size_t address = get_address(bbs, vector_id, sq, shift);
     if (shift) {
         return data[address] >> 4;
     } else {
@@ -176,7 +170,7 @@ void pq4_set_packed_element(
     // number of blocks * block size
     data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
     bool shift;
-    size_t address = get_address(data, bbs, nsq, vector_id, sq, shift);
+    size_t address = get_address(bbs, vector_id, sq, shift);
     if (shift) {
         data[address] = (code << 4) | (data[address] & 15);
     } else {
