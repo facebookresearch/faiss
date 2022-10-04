@@ -6,6 +6,7 @@
 
 import numpy as np
 import unittest
+import gc
 import faiss
 
 from faiss.contrib import factory_tools
@@ -296,3 +297,17 @@ class TestQuantizerClone(unittest.TestCase):
 
         codes2 = quant2.compute_codes(ds.get_database())
         np.testing.assert_array_equal(codes, codes2)
+
+
+class TestIVFSpectralHashOwnerhsip(unittest.TestCase):
+
+    def test_constructor(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        gc.collect()
+        index.quantizer.ntotal   # this should not crash
+
+    def test_replace_vt(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        index.replace_vt(faiss.ITQTransform(10, 10))
+        gc.collect()
+        index.vt.d_out # this should not crash
