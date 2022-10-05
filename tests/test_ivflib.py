@@ -173,19 +173,21 @@ class TestSearchCentroids(unittest.TestCase):
         distances, labels = faiss.search_centroids(index, xq, k)
         self.assertEqual((n, k), np.shape(labels))
         self.assertTrue(np.array_equal(labels, assign))
+        self.assertEqual((n, k), np.shape(distances))
 
         k = 5
         assign = ivf.quantizer.assign(xqn, k)
         labels = np.empty((n, k), dtype=np.int64)
-        faiss.search_centroids(index, xq, k, labels)
+        faiss.search_centroids(index, xq, k, labels=labels)
         self.assertTrue(np.array_equal(labels, assign))
 
         k = 7
         assign = ivf.quantizer.assign(xqn, k)
         labels = np.empty((n, k), dtype=np.int64)
         distances = np.empty((n, k), dtype=np.float32)
-        faiss.search_centroids(index, xq, k, labels, distances)
+        faiss.search_centroids(index, xq, k, distances, labels)
         self.assertTrue(np.array_equal(labels, assign))
+        self.assertEqual((n, k), np.shape(distances))
 
 
 class TestSmallData(unittest.TestCase):

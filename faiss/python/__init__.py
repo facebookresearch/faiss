@@ -239,7 +239,7 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
 search_centroids_c = search_centroids
 
 
-def search_centroids(index, x, k=1, labels=None, distances=None):
+def search_centroids(index, x, k=1, distances=None, labels=None):
     x = np.ascontiguousarray(x, dtype='float32')
     n, d = x.shape
     assert d == index.d
