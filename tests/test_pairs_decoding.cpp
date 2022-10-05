@@ -93,6 +93,71 @@ bool test_search_centroid(const char* index_key) {
     return true;
 }
 
+bool test_search_centroids(const char* index_key) {
+    std::vector<float> xb = make_data(nb); // database vectors
+    auto index = make_index(index_key, xb);
+
+    /* First test: find the centroids associated to the database
+       vectors and make sure that each vector does indeed appear in
+       the inverted list corresponding to its centroid for its
+       assigned centroid */
+
+    /* Next test: that the returned centroids and centroid_dists are identical to
+     * the ivf->search results per search vector unless there
+     * is a pre transform */
+
+    long k = 3;
+
+    std::vector<idx_t> centroid_ids(nb * k);
+    std::vector<float> centroid_dists(nb * k);
+    faiss::ivflib::search_centroids(
+            index.get(), xb.data(), nb, k,
+            centroid_dists.data(),
+            centroid_ids.data());
+
+    const faiss::IndexIVF* ivf = faiss::ivflib::extract_index_ivf(index.get());
+
+    float* y = xb.data();
+
+
+    for (int i = 0; i < nb; i++) {
+        bool found = false;
+        int list_no = centroid_ids[i * (int)k];
+        int list_size = ivf->invlists->list_size(list_no);
+        auto* list = ivf->invlists->get_ids(list_no);
+
+        for (int j = 0; j < list_size; j++) {
+            if (list[j] == i) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return false;
+    }
+
+    // if no pre transform, compare centroid distances and labels
+    // to those from the quantizer
+    if (index.get() == ivf) {
+        std::vector<idx_t> labels(nb * k);
+        std::vector<float> dists(nb * k);
+        ivf->quantizer->search(nb, y, k, dists.data(),
+                               labels.data());
+        for (int i = 0; i < nb; i++) {
+            for (int j = 0; j < k; j++) {
+                if (labels[i * (int)k + j] != centroid_ids[i * (int)k + j]) {
+                    return false;
+                }
+                if (dists[i * (int)k + j] - centroid_dists[i * (int)k + j] > FLT_EPSILON) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 int test_search_and_return_centroids(const char* index_key) {
     std::vector<float> xb = make_data(nb); // database vectors
     auto index = make_index(index_key, xb);
@@ -178,6 +243,16 @@ TEST(test_search_centroid, IVFFlat) {
 
 TEST(test_search_centroid, PCAIVFFlat) {
     bool ok = test_search_centroid("PCA16,IVF32,Flat");
+    EXPECT_TRUE(ok);
+}
+
+TEST(test_search_centroids, IVFFlat) {
+    bool ok = test_search_centroids("IVF32,Flat");
+    EXPECT_TRUE(ok);
+}
+
+TEST(test_search_centroids, PCAIVFFlat) {
+    bool ok = test_search_centroids("PCA16,IVF32,Flat");
     EXPECT_TRUE(ok);
 }
 

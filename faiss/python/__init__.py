@@ -231,6 +231,34 @@ def range_search_with_parameters(index, x, radius, params=None, output_stats=Fal
         }
         return lims, Dout, Iout, stats
 
+######################################################
+# search_centroids interface
+######################################################
+
+
+search_centroids_c = search_centroids
+
+
+def search_centroids(index, x, k=1, labels=None, distances=None):
+    x = np.ascontiguousarray(x, dtype='float32')
+    n, d = x.shape
+    assert d == index.d
+    assert k > 0
+    if labels is None:
+        labels = np.empty((n, k), dtype=np.int64)
+    else:
+        assert labels.shape == (n, k)
+    if distances is not None:
+        assert distances.shape == (n, k)
+    else:
+        distances = np.empty((n, k), dtype=np.float32)
+    search_centroids_c(
+        index, swig_ptr(x),
+        n, swig_ptr(distances),
+        swig_ptr(labels), k
+    )
+    return distances, labels
+
 
 # IndexProxy was renamed to IndexReplicas, remap the old name for any old code
 # people may have

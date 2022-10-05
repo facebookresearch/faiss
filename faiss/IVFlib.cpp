@@ -104,15 +104,31 @@ void search_centroid(
         const float* x,
         int n,
         idx_t* centroid_ids) {
+    search_centroids(index, x, n, 1, nullptr, centroid_ids);
+}
+
+void search_centroids(
+        faiss::Index* index,
+        const float* x,
+        int n,
+        idx_t k,
+        float* distances,
+        idx_t* centroid_ids) {
     std::unique_ptr<float[]> del;
     if (auto index_pre = dynamic_cast<faiss::IndexPreTransform*>(index)) {
         x = index_pre->apply_chain(n, x);
         del.reset((float*)x);
         index = index_pre->index;
     }
+
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
     assert(index_ivf);
-    index_ivf->quantizer->assign(n, x, centroid_ids);
+    if (!distances) {
+        std::vector<float> v(n * k);
+        index_ivf->quantizer->search(n, x, k, v.data(), centroid_ids);
+    } else {
+        index_ivf->quantizer->search(n, x, k, distances, centroid_ids);
+    }
 }
 
 void search_and_return_centroids(

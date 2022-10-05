@@ -9,11 +9,12 @@ import unittest
 import faiss
 import numpy as np
 
+
 class TestIVFlib(unittest.TestCase):
 
     def test_methods_exported(self):
         methods = ['check_compatible_for_merge', 'extract_index_ivf',
-                   'merge_into', 'search_centroid',
+                   'merge_into', 'search_centroid', 'search_centroids',
                    'search_and_return_centroids', 'get_invlist_range',
                    'set_invlist_range', 'search_with_parameters']
 
@@ -147,6 +148,44 @@ class TestSearchWithParameters(unittest.TestCase):
         np.testing.assert_array_equal(Dnew, Dref)
 
         self.assertEqual(stats2["ndis"], ref_ndis)
+
+
+class TestSearchCentroids(unittest.TestCase):
+
+    def test_search_centroids(self):
+        d = 20
+
+        index = faiss.index_factory(d, 'L2Norm,IVF100,SQ8')
+        rs = np.random.RandomState(123)
+        xt = rs.rand(5000, d).astype('float32')
+        xb = rs.rand(10000, d).astype('float32')
+        index.train(xt)
+        index.add(xb)
+
+        n = 200
+        k = 15
+        xq = rs.rand(n, d).astype('float32')
+        xqn = xq.copy()
+        faiss.normalize_L2(xqn)
+        ivf = faiss.extract_index_ivf(index)
+        assign = ivf.quantizer.assign(xqn, k)
+
+        distances, labels = faiss.search_centroids(index, xq, k)
+        self.assertEqual((n, k), np.shape(labels))
+        self.assertTrue(np.array_equal(labels, assign))
+
+        k = 5
+        assign = ivf.quantizer.assign(xqn, k)
+        labels = np.empty((n, k), dtype=np.int64)
+        faiss.search_centroids(index, xq, k, labels)
+        self.assertTrue(np.array_equal(labels, assign))
+
+        k = 7
+        assign = ivf.quantizer.assign(xqn, k)
+        labels = np.empty((n, k), dtype=np.int64)
+        distances = np.empty((n, k), dtype=np.float32)
+        faiss.search_centroids(index, xq, k, labels, distances)
+        self.assertTrue(np.array_equal(labels, assign))
 
 
 class TestSmallData(unittest.TestCase):
