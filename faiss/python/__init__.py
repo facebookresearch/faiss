@@ -253,9 +253,12 @@ def search_centroids(index, x, k=1, labels=None, distances=None):
     else:
         distances = np.empty((n, k), dtype=np.float32)
     search_centroids_c(
-        index, swig_ptr(x),
-        n, swig_ptr(distances),
-        swig_ptr(labels), k
+        index,
+        swig_ptr(x),
+        n,
+        k,
+        swig_ptr(distances),
+        swig_ptr(labels)
     )
     return distances, labels
 

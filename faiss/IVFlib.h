@@ -65,10 +65,12 @@ void search_centroid(Index* index, const float* x, int n, idx_t* centroid_ids);
  *
  * @param index      Index, which should be an IVF index
  *                   (otherwise there are no clusters)
- * @param embeddings object descriptors for which the centroids should be found,
- *                   size num_objects * d
+ * @param k          the number of centroids to return for each embedding
+ * @param distances
+ *                   centroid distances corresponding to the results (size n * k)
  * @param centroid_ids
- *                   cluster id each object belongs to, size num_objects
+ *                   centroid ids corresponding to the results (size n * k)
+ * other arguments are the same as the standard search function
  */
 void search_centroids(Index* index, const float* x, int n, idx_t k,
                       float* distances, idx_t* centroid_ids);
