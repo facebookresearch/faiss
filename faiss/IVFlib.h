@@ -67,13 +67,17 @@ void search_centroid(Index* index, const float* x, int n, idx_t* centroid_ids);
  *                   (otherwise there are no clusters)
  * @param k          the number of centroids to return for each embedding
  * @param distances
- *                   centroid distances corresponding to the results (size n * k)
+ *                   centroid distances corresponding to the results (size n *
+ *                   k)
  * @param centroid_ids
  *                   centroid ids corresponding to the results (size n * k)
  * other arguments are the same as the standard search function
  */
-void search_centroids(Index* index, const float* x, int n, idx_t k,
-                      float* distances, idx_t* centroid_ids);
+void search_centroids(Index* index,
+                      const float* x,
+                      int n, idx_t k,
+                      float* distances,
+                      idx_t* centroid_ids);
 
 /* Returns the nearest k clusters the embeddings belong to.
  *

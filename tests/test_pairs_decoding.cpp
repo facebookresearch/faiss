@@ -102,8 +102,8 @@ bool test_search_centroids(const char* index_key) {
        the inverted list corresponding to its centroid for its
        assigned centroid */
 
-    /* Next test: that the returned centroids and centroid_dists are identical to
-     * the ivf->search results per search vector unless there
+    /* Next test: that the returned centroids and centroid_dists are identical
+     * to the ivf->search results per search vector unless there
      * is a pre transform */
 
     long k = 3;
@@ -111,7 +111,10 @@ bool test_search_centroids(const char* index_key) {
     std::vector<idx_t> centroid_ids(nb * k);
     std::vector<float> centroid_dists(nb * k);
     faiss::ivflib::search_centroids(
-            index.get(), xb.data(), nb, k,
+            index.get(),
+            xb.data(),
+            nb,
+            k,
             centroid_dists.data(),
             centroid_ids.data());
 
@@ -141,14 +144,14 @@ bool test_search_centroids(const char* index_key) {
     if (index.get() == ivf) {
         std::vector<idx_t> labels(nb * k);
         std::vector<float> dists(nb * k);
-        ivf->quantizer->search(nb, y, k, dists.data(),
-                               labels.data());
+        ivf->quantizer->search(nb, y, k, dists.data(),labels.data());
         for (int i = 0; i < nb; i++) {
             for (int j = 0; j < k; j++) {
                 if (labels[i * (int)k + j] != centroid_ids[i * (int)k + j]) {
                     return false;
                 }
-                if (dists[i * (int)k + j] - centroid_dists[i * (int)k + j] > FLT_EPSILON) {
+                if (dists[i * (int)k + j] - centroid_dists[i * (int)k + j] >
+                    FLT_EPSILON) {
                     return false;
                 }
             }
