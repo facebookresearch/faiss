@@ -121,8 +121,7 @@ bool test_search_centroids(const char* index_key) {
     const faiss::IndexIVF* ivf = faiss::ivflib::extract_index_ivf(index.get());
 
     float* y = xb.data();
-
-
+    
     for (int i = 0; i < nb; i++) {
         bool found = false;
         int list_no = centroid_ids[i * (int)k];
