@@ -105,6 +105,23 @@ def add_ref_in_method(the_class, method_name, parameter_no):
     setattr(the_class, method_name, replacement_method)
 
 
+def add_ref_in_method_explicit_own(the_class, method_name):
+    # for methods of format set_XXX(object, own)
+    original_method = getattr(the_class, method_name)
+
+    def replacement_method(self, ref, own=False):
+        if not own:
+            if not hasattr(self, 'referenced_objects'):
+                self.referenced_objects = [ref]
+            else:
+                self.referenced_objects.append(ref)
+        else:
+            # transfer ownership to C++ class
+            ref.this.disown()
+        return original_method(self, ref, own)
+    setattr(the_class, method_name, replacement_method)
+
+
 def add_ref_in_function(function_name, parameter_no):
     # assumes the function returns an object
     original_function = getattr(this_module, function_name)
@@ -128,6 +145,9 @@ add_ref_in_constructor(IndexIVFResidualQuantizer, 0)
 add_ref_in_constructor(IndexIVFLocalSearchQuantizer, 0)
 add_ref_in_constructor(IndexIVFResidualQuantizerFastScan, 0)
 add_ref_in_constructor(IndexIVFLocalSearchQuantizerFastScan, 0)
+add_ref_in_constructor(IndexIVFSpectralHash, 0)
+add_ref_in_method_explicit_own(IndexIVFSpectralHash, "replace_vt")
+
 add_ref_in_constructor(Index2Layer, 0)
 add_ref_in_constructor(Level1Quantizer, 0)
 add_ref_in_constructor(IndexIVFScalarQuantizer, 0)
