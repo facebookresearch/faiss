@@ -268,10 +268,11 @@ def search_centroids(index, x, k=1, distances=None, labels=None):
         labels = np.empty((n, k), dtype=np.int64)
     else:
         assert labels.shape == (n, k)
-    if distances is not None:
-        assert distances.shape == (n, k)
-    else:
+    if distances is None:
         distances = np.empty((n, k), dtype=np.float32)
+    else:
+        assert distances.shape == (n, k)
+
     search_centroids_c(
         index,
         swig_ptr(x),

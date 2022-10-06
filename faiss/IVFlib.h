@@ -76,7 +76,8 @@ void search_centroid(Index* index, const float* x, int n, idx_t* centroid_ids);
 void search_centroids(
         Index* index,
         const float* x,
-        int n, idx_t k,
+        int n,
+        idx_t k,
         float* distances,
         idx_t* centroid_ids);
 
