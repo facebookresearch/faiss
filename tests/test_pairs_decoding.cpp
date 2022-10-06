@@ -144,7 +144,7 @@ bool test_search_centroids(const char* index_key) {
     if (index.get() == ivf) {
         std::vector<idx_t> labels(nb * k);
         std::vector<float> dists(nb * k);
-        ivf->quantizer->search(nb, y, k, dists.data(),labels.data());
+        ivf->quantizer->search(nb, y, k, dists.data(), labels.data());
         for (int i = 0; i < nb; i++) {
             for (int j = 0; j < k; j++) {
                 if (labels[i * (int)k + j] != centroid_ids[i * (int)k + j]) {
