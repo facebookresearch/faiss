@@ -29,19 +29,18 @@ void IndexFlat::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    IDSelector* sel = params ? params->sel : nullptr;
     FAISS_THROW_IF_NOT(k > 0);
 
     // we see the distances and labels as heaps
-
     if (metric_type == METRIC_INNER_PRODUCT) {
         float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_inner_product(x, get_xb(), d, n, ntotal, &res);
+        knn_inner_product(x, get_xb(), d, n, ntotal, &res, sel);
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_L2sqr(x, get_xb(), d, n, ntotal, &res);
+        knn_L2sqr(x, get_xb(), d, n, ntotal, &res, nullptr, sel);
     } else {
+        FAISS_THROW_IF_NOT(!sel);
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
         knn_extra_metrics(
                 x, get_xb(), d, n, ntotal, metric_type, metric_arg, &res);
@@ -54,16 +53,15 @@ void IndexFlat::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    IDSelector* sel = params ? params->sel : nullptr;
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             range_search_inner_product(
-                    x, get_xb(), d, n, ntotal, radius, result);
+                    x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         case METRIC_L2:
-            range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result);
+            range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
             FAISS_THROW_MSG("metric type not supported");

@@ -44,6 +44,11 @@ struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
 
+/** Parent class for the optional search paramenters.
+ *
+ * Sub-classes with additional search parameters should inherit this class.
+ * Ownership of the object fields is always to the caller.
+ */
 struct SearchParameters {
     /// if non-null, only these IDs will be considered during search.
     IDSelector* sel = nullptr;

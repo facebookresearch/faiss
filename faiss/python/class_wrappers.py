@@ -3,19 +3,32 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import numpy as np
 import inspect
 
-from faiss.loader import swig_ptr, RangeSearchResult, rev_swig_ptr, \
-    IDSelector, IDSelectorArray, IDSelectorBatch, try_extract_index_ivf, \
-    DirectMap, OperatingPoints
-
 import faiss
+import numpy as np
+
+from faiss.loader import (
+    DirectMap,
+    IDSelector,
+    IDSelectorArray,
+    IDSelectorBatch,
+    OperatingPoints,
+    RangeSearchResult,
+    rev_swig_ptr,
+    swig_ptr,
+    try_extract_index_ivf,
+)
 
 ##################################################################
 # The functions below add or replace some methods for classes
 # this is to be able to pass in numpy arrays directly
 # The C++ version of the classnames will be suffixed with _c
+#
+# The docstrings in the wrappers are intended to be similar to numpy
+# comments, they will appear with help(Class.method) or ?Class.method
+# For methods that are not replaced, the C++ documentation will be used if
+# swig 4.x is run with -doxygen.
 ##################################################################
 
 # For most arrays we force the convesion to the target type with
@@ -752,7 +765,7 @@ def handle_MatrixStats(the_class):
 
 
 def handle_IOWriter(the_class):
-
+    """ add a write_bytes method """
     def write_bytes(self, b):
         return self(swig_ptr(b), 1, len(b))
 
@@ -760,6 +773,7 @@ def handle_IOWriter(the_class):
 
 
 def handle_IOReader(the_class):
+    """ add a read_bytes method """
 
     def read_bytes(self, totsz):
         buf = bytearray(totsz)
@@ -814,21 +828,49 @@ def handle_MapLong2Long(the_class):
                 replacement_map_search_multiple)
 
 
+######################################################
+# SearchParameters and related interface
+######################################################
+
+
+def add_to_referenced_objects(self, ref):
+    if not hasattr(self, 'referenced_objects'):
+        self.referenced_objects = [ref]
+    else:
+        self.referenced_objects.append(ref)
+
 def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
     SearchParametersXX(a=3, b=SearchParamsYY)
     This also requires the enclosing class to keep a reference on the
-    sub-object
+    sub-object, since the C++ code assumes the object ownwership is
+    handled externally.
     """
     the_class.original_init = the_class.__init__
 
     def replacement_init(self, **args):
         self.original_init()
-        self.referenced_objects = []
         for k, v in args.items():
             assert hasattr(self, k)
             setattr(self, k, v)
             if inspect.isclass(v):
-                self.referenced_objects.append(v)
+                add_to_referenced_objects(self, v)
+
+    the_class.__init__ = replacement_init
+
+
+def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):
+    the_class.original_init = the_class.__init__
+
+    def replacement_init(self, *args):
+        if len(args) == 1:
+            # assume it's an array
+            subset, = args
+            if force_int64:
+                subset = np.ascontiguousarray(subset, dtype='int64')
+            args = (len(subset), faiss.swig_ptr(subset))
+            if not class_owns:
+                add_to_referenced_objects(self, subset)
+        self.original_init(*args)
 
     the_class.__init__ = replacement_init
