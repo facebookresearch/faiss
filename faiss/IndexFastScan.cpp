@@ -13,8 +13,8 @@
 
 #include <omp.h>
 
-#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
@@ -105,8 +105,9 @@ size_t IndexFastScan::remove_ids(const IDSelector& sel) {
             // should be removed
         } else {
             if (i > j) {
-                for (int sq = 0; sq < M; sq++){
-                    uint8_t code = pq4_get_packed_element(codes.data(), bbs, M, i, sq);
+                for (int sq = 0; sq < M; sq++) {
+                    uint8_t code =
+                            pq4_get_packed_element(codes.data(), bbs, M, i, sq);
                     pq4_set_packed_element(codes.data(), code, bbs, M, j, sq);
                 }
             }
@@ -141,9 +142,10 @@ void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
     codes.resize(ntotal2 * M2 / 2);
-    for (int i = 0; i < other->ntotal; i++){
-        for (int sq = 0; sq < M; sq++){
-            uint8_t code = pq4_get_packed_element(other->codes.data(), bbs, M, i, sq);
+    for (int i = 0; i < other->ntotal; i++) {
+        for (int sq = 0; sq < M; sq++) {
+            uint8_t code =
+                    pq4_get_packed_element(other->codes.data(), bbs, M, i, sq);
             pq4_set_packed_element(codes.data(), code, bbs, M, ntotal + i, sq);
         }
     }

@@ -110,7 +110,7 @@ TEST(PQFastScan, set_packed_element) {
     index.train(ntotal, ds.data());
     index.add(ntotal, ds.data());
 
-    for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
         int vector_id = rand() % ntotal;
         std::vector<uint8_t> old(ntotal * M);
         std::vector<uint8_t> code(M);

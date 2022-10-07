@@ -28,8 +28,10 @@ class TestRemoveFastScan(unittest.TestCase):
         index.remove_ids(np.array(removed))
         for i in range(ntotal):
             if i in removed:
+                # should throw RuntimeError as this vector should be removed
                 try:
                     after = index.reconstruct(i)
+                    assert False
                 except RuntimeError:
                     pass
             else:
@@ -41,11 +43,10 @@ class TestRemoveFastScan(unittest.TestCase):
         self.do_test(993, [992])
 
     # test remove element from every address 0 -> 31
+    # [0, 32 + 1, 2 * 32 + 2, ....]
+    # [0,   33  ,     66    , 99, 132, .....]
     def test_remove_every_address(self):
-        temp = np.arange(32).tolist()
-        removed = []
-        for i in range(32):
-            removed.append(i * 32 + temp[i])
+        removed = (33 * np.arange(32)).tolist()
         self.do_test(1100, removed)
 
     # test remove range of vectors and leave ntotal divisible by 32
