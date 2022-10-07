@@ -18,6 +18,8 @@
 
 namespace faiss {
 
+struct IDSelector;
+
 /*********************************************************
  * Optimized distance/norm/inner prod computations
  *********************************************************/
@@ -220,7 +222,8 @@ void knn_inner_product(
         size_t d,
         size_t nx,
         size_t ny,
-        float_minheap_array_t* res);
+        float_minheap_array_t* res,
+        const IDSelector* sel = nullptr);
 
 /**  Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, for the inner product metric.
@@ -238,7 +241,8 @@ void knn_inner_product(
         size_t ny,
         size_t k,
         float* distances,
-        int64_t* indexes);
+        int64_t* indexes,
+        const IDSelector* sel = nullptr);
 
 /** Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
@@ -246,6 +250,7 @@ void knn_inner_product(
  * @param y    database vectors, size ny * d
  * @param res  result heap strcture, which also provides k. Sorted on output
  * @param y_norm2    (optional) norms for the y vectors (nullptr or size ny)
+ * @param sel  search in this subset of vectors
  */
 void knn_L2sqr(
         const float* x,
@@ -254,7 +259,8 @@ void knn_L2sqr(
         size_t nx,
         size_t ny,
         float_maxheap_array_t* res,
-        const float* y_norm2 = nullptr);
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
 
 /**  Return the k nearest neighors of each of the nx vectors x among the ny
  *  vector y, for the L2 distance
@@ -264,6 +270,7 @@ void knn_L2sqr(
  * @param distances  output distances, size nq * k
  * @param indexes    output vector ids, size nq * k
  * @param y_norm2    (optional) norms for the y vectors (nullptr or size ny)
+ * @param sel  search in this subset of vectors
  */
 void knn_L2sqr(
         const float* x,
@@ -274,28 +281,52 @@ void knn_L2sqr(
         size_t k,
         float* distances,
         int64_t* indexes,
-        const float* y_norm2 = nullptr);
+        const float* y_norm2 = nullptr,
+        const IDSelector* sel = nullptr);
 
-/* Find the nearest neighbors for nx queries in a set of ny vectors
+/** Find the max inner product neighbors for nx queries in a set of ny vectors
  * indexed by ids. May be useful for re-ranking a pre-selected vector list
+ *
+ * @param x    query vectors, size nx * d
+ * @param y    database vectors, size (max(ids) + 1) * d
+ * @param ids  subset of database vectors to consider, size (nx, nsubset)
+ * @param res  result structure
+ * @param ld_ids stride for the ids array. -1: use nsubset, 0: all queries
+ * process the same subset
  */
 void knn_inner_products_by_idx(
         const float* x,
         const float* y,
-        const int64_t* ids,
+        const int64_t* subset,
         size_t d,
         size_t nx,
-        size_t ny,
-        float_minheap_array_t* res);
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        int64_t ld_ids = -1);
 
+/** Find the nearest neighbors for nx queries in a set of ny vectors
+ * indexed by ids. May be useful for re-ranking a pre-selected vector list
+ *
+ * @param x    query vectors, size nx * d
+ * @param y    database vectors, size (max(ids) + 1) * d
+ * @param subset subset of database vectors to consider, size (nx, nsubset)
+ * @param res  rIDesult structure
+ * @param ld_subset stride for the subset array. -1: use nsubset, 0: all queries
+ * process the same subset
+ */
 void knn_L2sqr_by_idx(
         const float* x,
         const float* y,
-        const int64_t* ids,
+        const int64_t* subset,
         size_t d,
         size_t nx,
-        size_t ny,
-        float_maxheap_array_t* res);
+        size_t nsubset,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        int64_t ld_subset = -1);
 
 /***************************************************************************
  * Range search
@@ -319,7 +350,8 @@ void range_search_L2sqr(
         size_t nx,
         size_t ny,
         float radius,
-        RangeSearchResult* result);
+        RangeSearchResult* result,
+        const IDSelector* sel = nullptr);
 
 /// same as range_search_L2sqr for the inner product similarity
 void range_search_inner_product(
@@ -329,7 +361,8 @@ void range_search_inner_product(
         size_t nx,
         size_t ny,
         float radius,
-        RangeSearchResult* result);
+        RangeSearchResult* result,
+        const IDSelector* sel = nullptr);
 
 /***************************************************************************
  * PQ tables computations

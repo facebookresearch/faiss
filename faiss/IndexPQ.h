@@ -88,7 +88,9 @@ struct IndexPQ : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const;
+            idx_t* labels,
+            int polysemous_ht,
+            bool generalized_hamming) const;
 
     /// prepare query for a polysemous search, but instead of
     /// computing the result, just get the histogram of Hamming
@@ -108,6 +110,12 @@ struct IndexPQ : IndexFlatCodes {
      * @param dis  output distances, size n * ntotal
      */
     void hamming_distance_table(idx_t n, const float* x, int32_t* dis) const;
+};
+
+/// override search parameters from the class
+struct SearchParametersPQ : SearchParameters {
+    IndexPQ::Search_type_t search_type;
+    int polysemous_ht;
 };
 
 /// statistics are robust to internal threading, but not if

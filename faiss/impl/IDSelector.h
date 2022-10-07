@@ -19,32 +19,51 @@ namespace faiss {
 
 /** Encapsulates a set of ids to handle. */
 struct IDSelector {
-    typedef Index::idx_t idx_t;
+    using idx_t = Index::idx_t;
     virtual bool is_member(idx_t id) const = 0;
     virtual ~IDSelector() {}
 };
 
-/** ids between [imni, imax) */
+/** ids between [imin, imax) */
 struct IDSelectorRange : IDSelector {
     idx_t imin, imax;
 
-    IDSelectorRange(idx_t imin, idx_t imax);
-    bool is_member(idx_t id) const override;
+    /// Assume that the ids to handle are sorted. In some cases this can speed
+    /// up processing
+    bool assume_sorted;
+
+    IDSelectorRange(idx_t imin, idx_t imax, bool assume_sorted = false);
+
+    bool is_member(idx_t id) const final;
+
+    /// for sorted ids, find the range of list indices where the valid ids are
+    /// stored
+    void find_sorted_ids_bounds(
+            size_t list_size,
+            const idx_t* ids,
+            size_t* jmin,
+            size_t* jmax) const;
+
     ~IDSelectorRange() override {}
 };
 
-/** simple list of elements to remove
+/** Simple array of elements
  *
- * this is inefficient in most cases, except for IndexIVF with
- * maintain_direct_map
+ * is_member calls are very inefficient, but some operations can use the ids
+ * directly.
  */
 struct IDSelectorArray : IDSelector {
     size_t n;
     const idx_t* ids;
 
-    // the pointer should remain valid during IDSelectorArray's lifetime
+    /** Construct with an array of ids to process
+     *
+     * @param n number of ids to store
+     * @param ids elements to store. The pointer should remain valid during
+     *            IDSelectorArray's lifetime
+     */
     IDSelectorArray(size_t n, const idx_t* ids);
-    bool is_member(idx_t id) const override;
+    bool is_member(idx_t id) const final;
     ~IDSelectorArray() override {}
 };
 
@@ -67,14 +86,47 @@ struct IDSelectorBatch : IDSelector {
     int nbits;
     idx_t mask;
 
+    /** Construct with an array of ids to process
+     *
+     * @param n number of ids to store
+     * @param ids elements to store. The pointer can be released after
+     *            construction
+     */
     IDSelectorBatch(size_t n, const idx_t* indices);
-    bool is_member(idx_t id) const override;
+    bool is_member(idx_t id) const final;
     ~IDSelectorBatch() override {}
 };
 
-/// selects all entries (mainly useful for benchmarking)
+/** One bit per element. Constructed with a bitmap, size ceil(n / 8).
+ */
+struct IDSelectorBitmap : IDSelector {
+    size_t n;
+    const uint8_t* bitmap;
+
+    /** Construct with a binary mask
+     *
+     * @param n size of the bitmap array
+     * @param bitmap id will be selected iff id / 8 < n and bit number
+     *               (i%8) of bitmap[floor(i / 8)] is 1.
+     */
+    IDSelectorBitmap(size_t n, const uint8_t* bitmap);
+    bool is_member(idx_t id) const final;
+    ~IDSelectorBitmap() override {}
+};
+
+/** reverts the membership test of another selector */
+struct IDSelectorNot : IDSelector {
+    const IDSelector* sel;
+    IDSelectorNot(const IDSelector* sel) : sel(sel) {}
+    bool is_member(idx_t id) const final {
+        return !sel->is_member(id);
+    }
+    virtual ~IDSelectorNot() {}
+};
+
+/// selects all entries (useful for benchmarking)
 struct IDSelectorAll : IDSelector {
-    bool is_member(idx_t id) const override {
+    bool is_member(idx_t id) const final {
         return true;
     }
     virtual ~IDSelectorAll() {}

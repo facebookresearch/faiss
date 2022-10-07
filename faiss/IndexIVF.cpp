@@ -414,6 +414,18 @@ void IndexIVF::search_preassigned(
 
     idx_t max_codes = params ? params->max_codes : this->max_codes;
     IDSelector* sel = params ? params->sel : nullptr;
+    const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
+    if (selr) {
+        if (selr->assume_sorted) {
+            sel = nullptr; // use special IDSelectorRange processing
+        } else {
+            selr = nullptr; // use generic processing
+        }
+    }
+
+    FAISS_THROW_IF_NOT_MSG(
+            !(sel && store_pairs),
+            "selector and store_pairs cannot be combined");
 
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
@@ -507,6 +519,7 @@ void IndexIVF::search_preassigned(
 
             try {
                 InvertedLists::ScopedCodes scodes(invlists, key);
+                const uint8_t* codes = scodes.get();
 
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
                 const Index::idx_t* ids = nullptr;
@@ -516,8 +529,20 @@ void IndexIVF::search_preassigned(
                     ids = sids->get();
                 }
 
+                if (selr) { // IDSelectorRange
+                    // restrict search to a section of the inverted list
+                    size_t jmin, jmax;
+                    selr->find_sorted_ids_bounds(list_size, ids, &jmin, &jmax);
+                    list_size = jmax - jmin;
+                    if (list_size == 0) {
+                        return (size_t)0;
+                    }
+                    codes += jmin * code_size;
+                    ids += jmin;
+                }
+
                 nheap += scanner->scan_codes(
-                        list_size, scodes.get(), ids, simi, idxi, k);
+                        list_size, codes, ids, simi, idxi, k);
 
             } catch (const std::exception& e) {
                 std::lock_guard<std::mutex> lock(exception_mutex);
@@ -871,6 +896,22 @@ void IndexIVF::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
             reconstruct_from_offset(list_no, offset, reconstructed);
         }
     }
+}
+
+
+bool IndexIVF::check_ids_sorted() const {
+    size_t nflip = 0;
+
+    for (size_t i = 0; i < nlist; i++) {
+        size_t list_size = invlists->list_size(i);
+        InvertedLists::ScopedIds ids(invlists, i);
+        for (size_t j = 0; j + 1 < list_size; j++) {
+            if (ids[j + 1] < ids[j]) {
+                nflip++;
+            }
+        }
+    }
+    return nflip == 0;
 }
 
 /* standalone codec interface */

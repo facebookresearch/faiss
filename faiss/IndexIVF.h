@@ -336,6 +336,9 @@ struct IndexIVF : Index, Level1Quantizer {
         return invlists->list_size(list_no);
     }
 
+    /// are the ids sorted?
+    bool check_ids_sorted() const;
+
     /** intialize a direct map
      *
      * @param new_maintain_direct_map    if true, create a direct map,
