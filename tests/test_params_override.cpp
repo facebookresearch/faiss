@@ -18,6 +18,9 @@
 #include <faiss/IVFlib.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/clone_index.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/index_factory.h>
 
 using namespace faiss;
@@ -50,6 +53,8 @@ std::unique_ptr<Index> make_index(
         const char* index_type,
         MetricType metric,
         const std::vector<float>& x) {
+    assert(x.size() % d == 0);
+    idx_t nb = x.size() / d;
     std::unique_ptr<Index> index(index_factory(d, index_type, metric));
     index->train(nb, x.data());
     index->add(nb, x.data());
@@ -109,6 +114,50 @@ int test_params_override(const char* index_key, MetricType metric) {
     return 0;
 }
 
+/*************************************************************
+ * Test subsets
+ *************************************************************/
+
+int test_selector(const char* index_key) {
+    std::vector<float> xb = make_data(nb); // database vectors
+    std::vector<float> xq = make_data(nq);
+    ParameterSpace ps;
+
+    std::vector<float> sub_xb;
+    std::vector<idx_t> kept;
+    for (idx_t i = 0; i < nb; i++) {
+        if (i % 10 == 2) {
+            kept.push_back(i);
+            sub_xb.insert(
+                    sub_xb.end(), xb.begin() + i * d, xb.begin() + (i + 1) * d);
+        }
+    }
+
+    // full index
+    auto index = make_index(index_key, METRIC_L2, xb);
+    ps.set_index_parameter(index.get(), "nprobe", 3);
+
+    // restricted index
+    std::unique_ptr<Index> sub_index(clone_index(index.get()));
+    sub_index->reset();
+    sub_index->add_with_ids(kept.size(), sub_xb.data(), kept.data());
+
+    auto ref_result = search_index(sub_index.get(), xq.data());
+
+    IVFSearchParameters params;
+    params.max_codes = 0;
+    params.nprobe = 3;
+    IDSelectorBatch sel(kept.size(), kept.data());
+    params.sel = &sel;
+    auto new_result = search_index_with_params(index.get(), xq.data(), &params);
+
+    if (ref_result != new_result) {
+        return 1;
+    }
+
+    return 0;
+}
+
 } // namespace
 
 /*************************************************************
@@ -141,6 +190,21 @@ TEST(TPO, IVFFlatPP) {
     EXPECT_EQ(err1, 0);
     int err2 = test_params_override("PCA16,IVF32,SQ8", METRIC_INNER_PRODUCT);
     EXPECT_EQ(err2, 0);
+}
+
+TEST(TSEL, IVFFlat) {
+    int err = test_selector("PCA16,IVF32,Flat");
+    EXPECT_EQ(err, 0);
+}
+
+TEST(TSEL, IVFFPQ) {
+    int err = test_selector("PCA16,IVF32,PQ4x8np");
+    EXPECT_EQ(err, 0);
+}
+
+TEST(TSEL, IVFFSQ) {
+    int err = test_selector("PCA16,IVF32,SQ8");
+    EXPECT_EQ(err, 0);
 }
 
 /*************************************************************

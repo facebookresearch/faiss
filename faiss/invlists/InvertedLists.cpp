@@ -28,7 +28,10 @@ InvertedLists::~InvertedLists() {}
 InvertedLists::idx_t InvertedLists::get_single_id(size_t list_no, size_t offset)
         const {
     assert(offset < list_size(list_no));
-    return get_ids(list_no)[offset];
+    const idx_t* ids = get_ids(list_no);
+    idx_t id = ids[offset];
+    release_ids(list_no, ids);
+    return id;
 }
 
 void InvertedLists::release_codes(size_t, const uint8_t*) const {}

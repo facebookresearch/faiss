@@ -72,7 +72,7 @@ void IndexFastScan::add(idx_t n, const float* x) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(n, i0 + bs);
             if (verbose) {
-                printf("IndexFastScan::add %zd/%zd", size_t(i1), size_t(n));
+                printf("IndexFastScan::add %zd/%zd\n", size_t(i1), size_t(n));
             }
             add(i1 - i0, x + i0 * d);
         }
@@ -176,7 +176,10 @@ void IndexFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     DummyScaler scaler;

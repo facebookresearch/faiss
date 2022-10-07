@@ -13,6 +13,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/IDSelector.h>
 
 namespace faiss {
 
@@ -502,9 +503,19 @@ void HNSW::add_with_locks(
     }
 }
 
+/**************************************************************
+ * Searching
+ **************************************************************/
+
+namespace {
+
+using idx_t = HNSW::idx_t;
+using MinimaxHeap = HNSW::MinimaxHeap;
+using Node = HNSW::Node;
 /** Do a BFS on the candidates list */
 
-int HNSW::search_from_candidates(
+int search_from_candidates(
+        const HNSW& hnsw,
         DistanceComputer& qdis,
         int k,
         idx_t* I,
@@ -513,22 +524,31 @@ int HNSW::search_from_candidates(
         VisitedTable& vt,
         HNSWStats& stats,
         int level,
-        int nres_in) const {
+        int nres_in = 0,
+        const SearchParametersHNSW* params = nullptr) {
     int nres = nres_in;
     int ndis = 0;
+
+    // can be overridden by search params
+    bool do_dis_check = params ? params->check_relative_distance
+                               : hnsw.check_relative_distance;
+    int efSearch = params ? params->efSearch : hnsw.efSearch;
+    const IDSelector* sel = params ? params->sel : nullptr;
+
     for (int i = 0; i < candidates.size(); i++) {
         idx_t v1 = candidates.ids[i];
         float d = candidates.dis[i];
         FAISS_ASSERT(v1 >= 0);
-        if (nres < k) {
-            faiss::maxheap_push(++nres, D, I, d, v1);
-        } else if (d < D[0]) {
-            faiss::maxheap_replace_top(nres, D, I, d, v1);
+        if (!sel || sel->is_member(v1)) {
+            if (nres < k) {
+                faiss::maxheap_push(++nres, D, I, d, v1);
+            } else if (d < D[0]) {
+                faiss::maxheap_replace_top(nres, D, I, d, v1);
+            }
         }
         vt.set(v1);
     }
 
-    bool do_dis_check = check_relative_distance;
     int nstep = 0;
 
     while (candidates.size() > 0) {
@@ -547,10 +567,10 @@ int HNSW::search_from_candidates(
         }
 
         size_t begin, end;
-        neighbor_range(v0, level, &begin, &end);
+        hnsw.neighbor_range(v0, level, &begin, &end);
 
         for (size_t j = begin; j < end; j++) {
-            int v1 = neighbors[j];
+            int v1 = hnsw.neighbors[j];
             if (v1 < 0)
                 break;
             if (vt.get(v1)) {
@@ -559,10 +579,12 @@ int HNSW::search_from_candidates(
             vt.set(v1);
             ndis++;
             float d = qdis(v1);
-            if (nres < k) {
-                faiss::maxheap_push(++nres, D, I, d, v1);
-            } else if (d < D[0]) {
-                faiss::maxheap_replace_top(nres, D, I, d, v1);
+            if (!sel || sel->is_member(v1)) {
+                if (nres < k) {
+                    faiss::maxheap_push(++nres, D, I, d, v1);
+                } else if (d < D[0]) {
+                    faiss::maxheap_replace_top(nres, D, I, d, v1);
+                }
             }
             candidates.push(v1, d);
         }
@@ -584,16 +606,13 @@ int HNSW::search_from_candidates(
     return nres;
 }
 
-/**************************************************************
- * Searching
- **************************************************************/
-
-std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
+std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
+        const HNSW& hnsw,
         const Node& node,
         DistanceComputer& qdis,
         int ef,
         VisitedTable* vt,
-        HNSWStats& stats) const {
+        HNSWStats& stats) {
     int ndis = 0;
     std::priority_queue<Node> top_candidates;
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
@@ -615,10 +634,10 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
         candidates.pop();
 
         size_t begin, end;
-        neighbor_range(v0, 0, &begin, &end);
+        hnsw.neighbor_range(v0, 0, &begin, &end);
 
         for (size_t j = begin; j < end; ++j) {
-            int v1 = neighbors[j];
+            int v1 = hnsw.neighbors[j];
 
             if (v1 < 0) {
                 break;
@@ -652,14 +671,19 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
     return top_candidates;
 }
 
+} // anonymous namespace
+
 HNSWStats HNSW::search(
         DistanceComputer& qdis,
         int k,
         idx_t* I,
         float* D,
-        VisitedTable& vt) const {
+        VisitedTable& vt,
+        const SearchParametersHNSW* params) const {
     HNSWStats stats;
-
+    if (entry_point == -1) {
+        return stats;
+    }
     if (upper_beam == 1) {
         //  greedy search on upper levels
         storage_idx_t nearest = entry_point;
@@ -670,16 +694,22 @@ HNSWStats HNSW::search(
         }
 
         int ef = std::max(efSearch, k);
-        if (search_bounded_queue) {
+        if (search_bounded_queue) { // this is the most common branch
             MinimaxHeap candidates(ef);
 
             candidates.push(nearest, d_nearest);
 
-            search_from_candidates(qdis, k, I, D, candidates, vt, stats, 0);
+            search_from_candidates(
+                    *this, qdis, k, I, D, candidates, vt, stats, 0, 0, params);
         } else {
             std::priority_queue<Node> top_candidates =
                     search_from_candidate_unbounded(
-                            Node(d_nearest, nearest), qdis, ef, &vt, stats);
+                            *this,
+                            Node(d_nearest, nearest),
+                            qdis,
+                            ef,
+                            &vt,
+                            stats);
 
             while (top_candidates.size() > k) {
                 top_candidates.pop();
@@ -719,9 +749,10 @@ HNSWStats HNSW::search(
 
             if (level == 0) {
                 nres = search_from_candidates(
-                        qdis, k, I, D, candidates, vt, stats, 0);
+                        *this, qdis, k, I, D, candidates, vt, stats, 0);
             } else {
                 nres = search_from_candidates(
+                        *this,
                         qdis,
                         candidates_size,
                         I_to_next.data(),
@@ -737,6 +768,70 @@ HNSWStats HNSW::search(
 
     return stats;
 }
+
+void HNSW::search_level_0(
+        DistanceComputer& qdis,
+        int k,
+        idx_t* idxi,
+        float* simi,
+        idx_t nprobe,
+        const storage_idx_t* nearest_i,
+        const float* nearest_d,
+        int search_type,
+        HNSWStats& search_stats,
+        VisitedTable& vt) const {
+    const HNSW& hnsw = *this;
+
+    if (search_type == 1) {
+        int nres = 0;
+
+        for (int j = 0; j < nprobe; j++) {
+            storage_idx_t cj = nearest_i[j];
+
+            if (cj < 0)
+                break;
+
+            if (vt.get(cj))
+                continue;
+
+            int candidates_size = std::max(hnsw.efSearch, int(k));
+            MinimaxHeap candidates(candidates_size);
+
+            candidates.push(cj, nearest_d[j]);
+
+            nres = search_from_candidates(
+                    hnsw,
+                    qdis,
+                    k,
+                    idxi,
+                    simi,
+                    candidates,
+                    vt,
+                    search_stats,
+                    0,
+                    nres);
+        }
+    } else if (search_type == 2) {
+        int candidates_size = std::max(hnsw.efSearch, int(k));
+        candidates_size = std::max(candidates_size, int(nprobe));
+
+        MinimaxHeap candidates(candidates_size);
+        for (int j = 0; j < nprobe; j++) {
+            storage_idx_t cj = nearest_i[j];
+
+            if (cj < 0)
+                break;
+            candidates.push(cj, nearest_d[j]);
+        }
+
+        search_from_candidates(
+                hnsw, qdis, k, idxi, simi, candidates, vt, search_stats, 0);
+    }
+}
+
+/**************************************************************
+ * MinimaxHeap
+ **************************************************************/
 
 void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
     if (k == n) {

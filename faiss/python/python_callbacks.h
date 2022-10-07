@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/io.h>
 #include <faiss/invlists/InvertedLists.h>
 #include "Python.h"
@@ -42,4 +43,18 @@ struct PyCallbackIOReader : faiss::IOReader {
     size_t operator()(void* ptrv, size_t size, size_t nitems) override;
 
     ~PyCallbackIOReader() override;
+};
+
+/***********************************************************
+ * Callbacks for IDSelector
+ ***********************************************************/
+
+struct PyCallbackIDSelector : faiss::IDSelector {
+    PyObject* callback;
+
+    explicit PyCallbackIDSelector(PyObject* callback);
+
+    bool is_member(idx_t id) const override;
+
+    ~PyCallbackIDSelector() override;
 };

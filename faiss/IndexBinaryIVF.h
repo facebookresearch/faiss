@@ -123,13 +123,15 @@ struct IndexBinaryIVF : IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
             const uint8_t* x,
             int radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search_preassigned(
             idx_t n,
@@ -167,7 +169,8 @@ struct IndexBinaryIVF : IndexBinary {
             idx_t k,
             int32_t* distances,
             idx_t* labels,
-            uint8_t* recons) const override;
+            uint8_t* recons,
+            const SearchParameters* params = nullptr) const override;
 
     /** Reconstruct a vector given the location in terms of (inv list index +
      * inv list offset) instead of the id.

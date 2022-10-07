@@ -81,7 +81,8 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     // prepare look-up tables
 

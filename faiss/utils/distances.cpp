@@ -23,6 +23,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 
 #ifndef FINTEGER
@@ -100,16 +101,19 @@ void fvec_renorm_L2(size_t d, size_t nx, float* __restrict x) {
 namespace {
 
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
-template <class ResultHandler>
+template <class ResultHandler, bool use_sel = false>
 void exhaustive_inner_product_seq(
         const float* x,
         const float* y,
         size_t d,
         size_t nx,
         size_t ny,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const IDSelector* sel = nullptr) {
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
     int nt = std::min(int(nx), omp_get_max_threads());
+
+    FAISS_ASSERT(use_sel == (sel != nullptr));
 
 #pragma omp parallel num_threads(nt)
     {
@@ -121,26 +125,31 @@ void exhaustive_inner_product_seq(
 
             resi.begin(i);
 
-            for (size_t j = 0; j < ny; j++) {
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                if (use_sel && !sel->is_member(j)) {
+                    continue;
+                }
                 float ip = fvec_inner_product(x_i, y_j, d);
                 resi.add_result(ip, j);
-                y_j += d;
             }
             resi.end();
         }
     }
 }
 
-template <class ResultHandler>
+template <class ResultHandler, bool use_sel = false>
 void exhaustive_L2sqr_seq(
         const float* x,
         const float* y,
         size_t d,
         size_t nx,
         size_t ny,
-        ResultHandler& res) {
+        ResultHandler& res,
+        const IDSelector* sel = nullptr) {
     using SingleResultHandler = typename ResultHandler::SingleResultHandler;
     int nt = std::min(int(nx), omp_get_max_threads());
+
+    FAISS_ASSERT(use_sel == (sel != nullptr));
 
 #pragma omp parallel num_threads(nt)
     {
@@ -150,10 +159,12 @@ void exhaustive_L2sqr_seq(
             const float* x_i = x + i * d;
             const float* y_j = y;
             resi.begin(i);
-            for (size_t j = 0; j < ny; j++) {
+            for (size_t j = 0; j < ny; j++, y_j += d) {
+                if (use_sel && !sel->is_member(j)) {
+                    continue;
+                }
                 float disij = fvec_L2sqr(x_i, y_j, d);
                 resi.add_result(disij, j);
-                y_j += d;
             }
             resi.end();
         }
@@ -507,6 +518,25 @@ void exhaustive_L2sqr_blas<SingleBestResultHandler<CMax<float, int64_t>>>(
 }
 #endif
 
+template <class ResultHandler>
+void knn_L2sqr_select(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        ResultHandler& res,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    if (sel) {
+        exhaustive_L2sqr_seq<ResultHandler, true>(x, y, d, nx, ny, res, sel);
+    } else if (nx < distance_compute_blas_threshold) {
+        exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
+    } else {
+        exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
+    }
+}
+
 } // anonymous namespace
 
 /*******************************************************
@@ -524,22 +554,49 @@ void knn_inner_product(
         size_t d,
         size_t nx,
         size_t ny,
-        float_minheap_array_t* ha) {
-    if (ha->k < distance_compute_min_k_reservoir) {
-        HeapResultHandler<CMin<float, int64_t>> res(
-                ha->nh, ha->val, ha->ids, ha->k);
-        if (nx < distance_compute_blas_threshold) {
+        size_t k,
+        float* val,
+        int64_t* ids,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_inner_products_by_idx(
+                x, y, sela->ids, d, nx, sela->n, k, val, ids, 0);
+        return;
+    }
+    if (k < distance_compute_min_k_reservoir) {
+        using RH = HeapResultHandler<CMin<float, int64_t>>;
+        RH res(nx, val, ids, k);
+        if (sel) {
+            exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, res, sel);
+        } else if (nx < distance_compute_blas_threshold) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
         }
     } else {
-        ReservoirResultHandler<CMin<float, int64_t>> res(
-                ha->nh, ha->val, ha->ids, ha->k);
-        if (nx < distance_compute_blas_threshold) {
-            exhaustive_inner_product_seq(x, y, d, nx, ny, res);
+        using RH = ReservoirResultHandler<CMin<float, int64_t>>;
+        RH res(nx, val, ids, k);
+        if (sel) {
+            exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, res, sel);
+        } else if (nx < distance_compute_blas_threshold) {
+            exhaustive_inner_product_seq(x, y, d, nx, ny, res, nullptr);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
+        }
+    }
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
         }
     }
 }
@@ -550,11 +607,10 @@ void knn_inner_product(
         size_t d,
         size_t nx,
         size_t ny,
-        size_t k,
-        float* distances,
-        int64_t* indexes) {
-    float_minheap_array_t heaps = {nx, k, indexes, distances};
-    knn_inner_product(x, y, d, nx, ny, &heaps);
+        float_minheap_array_t* res,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(nx == res->nh);
+    knn_inner_product(x, y, d, nx, ny, res->k, res->val, res->ids, sel);
 }
 
 void knn_L2sqr(
@@ -563,33 +619,38 @@ void knn_L2sqr(
         size_t d,
         size_t nx,
         size_t ny,
-        float_maxheap_array_t* ha,
-        const float* y_norm2) {
-    if (ha->k == 1) {
-        SingleBestResultHandler<CMax<float, int64_t>> res(
-                ha->nh, ha->val, ha->ids);
-
-        if (nx < distance_compute_blas_threshold) {
-            exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
-        } else {
-            exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
-        }
-    } else if (ha->k < distance_compute_min_k_reservoir) {
-        HeapResultHandler<CMax<float, int64_t>> res(
-                ha->nh, ha->val, ha->ids, ha->k);
-
-        if (nx < distance_compute_blas_threshold) {
-            exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
-        } else {
-            exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
-        }
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    int64_t imin = 0;
+    if (auto selr = dynamic_cast<const IDSelectorRange*>(sel)) {
+        imin = std::max(selr->imin, int64_t(0));
+        int64_t imax = std::min(selr->imax, int64_t(ny));
+        ny = imax - imin;
+        y += d * imin;
+        sel = nullptr;
+    }
+    if (auto sela = dynamic_cast<const IDSelectorArray*>(sel)) {
+        knn_L2sqr_by_idx(x, y, sela->ids, d, nx, sela->n, k, vals, ids, 0);
+        return;
+    }
+    if (k == 1) {
+        SingleBestResultHandler<CMax<float, int64_t>> res(nx, vals, ids);
+        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
+    } else if (k < distance_compute_min_k_reservoir) {
+        HeapResultHandler<CMax<float, int64_t>> res(nx, vals, ids, k);
+        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
     } else {
-        ReservoirResultHandler<CMax<float, int64_t>> res(
-                ha->nh, ha->val, ha->ids, ha->k);
-        if (nx < distance_compute_blas_threshold) {
-            exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
-        } else {
-            exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
+        ReservoirResultHandler<CMax<float, int64_t>> res(nx, vals, ids, k);
+        knn_L2sqr_select(x, y, d, nx, ny, res, y_norm2, sel);
+    }
+    if (imin != 0) {
+        for (size_t i = 0; i < nx * k; i++) {
+            if (ids[i] >= 0) {
+                ids[i] += imin;
+            }
         }
     }
 }
@@ -600,12 +661,11 @@ void knn_L2sqr(
         size_t d,
         size_t nx,
         size_t ny,
-        size_t k,
-        float* distances,
-        int64_t* indexes,
-        const float* y_norm2) {
-    float_maxheap_array_t heaps = {nx, k, indexes, distances};
-    knn_L2sqr(x, y, d, nx, ny, &heaps, y_norm2);
+        float_maxheap_array_t* res,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    FAISS_THROW_IF_NOT(res->nh == nx);
+    knn_L2sqr(x, y, d, nx, ny, res->k, res->val, res->ids, y_norm2, sel);
 }
 
 /***************************************************************************
@@ -619,10 +679,14 @@ void range_search_L2sqr(
         size_t nx,
         size_t ny,
         float radius,
-        RangeSearchResult* res) {
-    RangeSearchResultHandler<CMax<float, int64_t>> resh(res, radius);
-    if (nx < distance_compute_blas_threshold) {
-        exhaustive_L2sqr_seq(x, y, d, nx, ny, resh);
+        RangeSearchResult* res,
+        const IDSelector* sel) {
+    using RH = RangeSearchResultHandler<CMax<float, int64_t>>;
+    RH resh(res, radius);
+    if (sel) {
+        exhaustive_L2sqr_seq<RH, true>(x, y, d, nx, ny, resh, sel);
+    } else if (nx < distance_compute_blas_threshold) {
+        exhaustive_L2sqr_seq(x, y, d, nx, ny, resh, sel);
     } else {
         exhaustive_L2sqr_blas(x, y, d, nx, ny, resh);
     }
@@ -635,9 +699,13 @@ void range_search_inner_product(
         size_t nx,
         size_t ny,
         float radius,
-        RangeSearchResult* res) {
-    RangeSearchResultHandler<CMin<float, int64_t>> resh(res, radius);
-    if (nx < distance_compute_blas_threshold) {
+        RangeSearchResult* res,
+        const IDSelector* sel) {
+    using RH = RangeSearchResultHandler<CMin<float, int64_t>>;
+    RH resh(res, radius);
+    if (sel) {
+        exhaustive_inner_product_seq<RH, true>(x, y, d, nx, ny, resh, sel);
+    } else if (nx < distance_compute_blas_threshold) {
         exhaustive_inner_product_seq(x, y, d, nx, ny, resh);
     } else {
         exhaustive_inner_product_blas(x, y, d, nx, ny, resh);
@@ -735,16 +803,21 @@ void knn_inner_products_by_idx(
         size_t d,
         size_t nx,
         size_t ny,
-        float_minheap_array_t* res) {
-    size_t k = res->k;
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
 
-#pragma omp parallel for
+#pragma omp parallel for if (nx > 100)
     for (int64_t i = 0; i < nx; i++) {
         const float* x_ = x + i * d;
-        const int64_t* idsi = ids + i * ny;
+        const int64_t* idsi = ids + i * ld_ids;
         size_t j;
-        float* __restrict simi = res->get_val(i);
-        int64_t* __restrict idxi = res->get_ids(i);
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
         minheap_heapify(k, simi, idxi);
 
         for (j = 0; j < ny; j++) {
@@ -767,16 +840,20 @@ void knn_L2sqr_by_idx(
         size_t d,
         size_t nx,
         size_t ny,
-        float_maxheap_array_t* res) {
-    size_t k = res->k;
-
-#pragma omp parallel for
+        size_t k,
+        float* res_vals,
+        int64_t* res_ids,
+        int64_t ld_ids) {
+    if (ld_ids < 0) {
+        ld_ids = ny;
+    }
+#pragma omp parallel for if (nx > 100)
     for (int64_t i = 0; i < nx; i++) {
         const float* x_ = x + i * d;
-        const int64_t* __restrict idsi = ids + i * ny;
-        float* __restrict simi = res->get_val(i);
-        int64_t* __restrict idxi = res->get_ids(i);
-        maxheap_heapify(res->k, simi, idxi);
+        const int64_t* __restrict idsi = ids + i * ld_ids;
+        float* __restrict simi = res_vals + i * k;
+        int64_t* __restrict idxi = res_ids + i * k;
+        maxheap_heapify(k, simi, idxi);
         for (size_t j = 0; j < ny; j++) {
             float disij = fvec_L2sqr(x_, y + d * idsi[j], d);
 
@@ -784,7 +861,7 @@ void knn_L2sqr_by_idx(
                 maxheap_replace_top(k, simi, idxi, disij, idsi[j]);
             }
         }
-        maxheap_reorder(res->k, simi, idxi);
+        maxheap_reorder(k, simi, idxi);
     }
 }
 

@@ -39,11 +39,13 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -402,6 +404,21 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     }
 }
 
+static void read_NNDescent(NNDescent* nnd, IOReader* f) {
+    READ1(nnd->ntotal);
+    READ1(nnd->d);
+    READ1(nnd->K);
+    READ1(nnd->S);
+    READ1(nnd->R);
+    READ1(nnd->L);
+    READ1(nnd->iter);
+    READ1(nnd->search_L);
+    READ1(nnd->random_seed);
+    READ1(nnd->has_built);
+
+    READVECTOR(nnd->final_graph);
+}
+
 ProductQuantizer* read_ProductQuantizer(const char* fname) {
     FileIOReader reader(fname);
     return read_ProductQuantizer(&reader);
@@ -485,10 +502,14 @@ static IndexIVFPQ* read_ivfpq(IOReader* f, uint32_t h, int io_flags) {
     }
 
     if (ivpq->is_trained) {
-        // precomputed table not stored. It is cheaper to recompute it
+        // precomputed table not stored. It is cheaper to recompute it.
+        // precompute_table() may be disabled with a flag.
         ivpq->use_precomputed_table = 0;
-        if (ivpq->by_residual)
-            ivpq->precompute_table();
+        if (ivpq->by_residual) {
+            if ((io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) == 0) {
+                ivpq->precompute_table();
+            }
+        }
         if (ivfpqr) {
             read_ProductQuantizer(&ivfpqr->refine_pq, f);
             READVECTOR(ivfpqr->refine_codes);
@@ -937,6 +958,13 @@ Index* read_index(IOReader* f, int io_flags) {
         idxnsg->storage = read_index(f, io_flags);
         idxnsg->own_fields = true;
         idx = idxnsg;
+    } else if (h == fourcc("INNf")) {
+        IndexNNDescent* idxnnd = new IndexNNDescentFlat();
+        read_index_header(idxnnd, f);
+        read_NNDescent(&idxnnd->nndescent, f);
+        idxnnd->storage = read_index(f, io_flags);
+        idxnnd->own_fields = true;
+        idx = idxnnd;
     } else if (h == fourcc("IPfs")) {
         IndexPQFastScan* idxpqfs = new IndexPQFastScan();
         read_index_header(idxpqfs, f);
@@ -976,6 +1004,22 @@ Index* read_index(IOReader* f, int io_flags) {
         ivpq->code_size = pq.code_size;
 
         idx = ivpq;
+    } else if (h == fourcc("IRMf")) {
+        IndexRowwiseMinMax* imm = new IndexRowwiseMinMax();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
+    } else if (h == fourcc("IRMh")) {
+        IndexRowwiseMinMaxFP16* imm = new IndexRowwiseMinMaxFP16();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

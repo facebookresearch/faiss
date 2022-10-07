@@ -352,6 +352,7 @@ void search_with_parameters(
     index_ivf->search_preassigned(
             n, x, k, Iq.data(), Dq.data(), distances, labels, false, params);
     double t3 = getmillisecs();
+
     if (ms_per_stage) {
         ms_per_stage[0] = t1 - t0;
         ms_per_stage[1] = t2 - t1;

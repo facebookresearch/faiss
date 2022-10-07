@@ -150,12 +150,14 @@ void GpuIndexBinaryFlat::search(
         const uint8_t* x,
         faiss::IndexBinary::idx_t k,
         int32_t* distances,
-        faiss::IndexBinary::idx_t* labels) const {
+        faiss::IndexBinary::idx_t* labels,
+        const SearchParameters* params) const {
     if (n == 0) {
         return;
     }
 
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
 
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(

@@ -204,7 +204,7 @@ def handle_torch_Index(the_class):
     def torch_replacement_search(self, x, k, D=None, I=None):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
-            return self.search_numpy(x, k, D, I)
+            return self.search_numpy(x, k, D=D, I=I)
 
         assert type(x) is torch.Tensor
         n, d = x.shape
@@ -240,7 +240,7 @@ def handle_torch_Index(the_class):
     def torch_replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
         if type(x) is np.ndarray:
             # Forward to faiss __init__.py base method
-            return self.search_and_reconstruct_numpy(x, k, D, I, R)
+            return self.search_and_reconstruct_numpy(x, k, D=D, I=I, R=R)
 
         assert type(x) is torch.Tensor
         n, d = x.shape

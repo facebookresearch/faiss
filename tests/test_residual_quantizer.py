@@ -643,6 +643,17 @@ class TestIVFResidualCoarseQuantizer(unittest.TestCase):
         np.testing.assert_array_almost_equal(CDref, CDnew, decimal=5)
         np.testing.assert_array_equal(CIref, CInew)
 
+    def test_norms_oom(self):
+        "check if allocating too large norms tables raises an exception"
+        index = faiss.index_factory(32, "RQ20x8")
+        try:
+            index.train(np.zeros((100, 32), dtype="float32"))
+        except RuntimeError:
+            pass # ok
+        else:
+            self.assertFalse()
+
+
 ###########################################################
 # Test search with LUTs
 ###########################################################

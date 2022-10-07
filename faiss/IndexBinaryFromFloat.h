@@ -43,7 +43,8 @@ struct IndexBinaryFromFloat : IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void train(idx_t n, const uint8_t* x) override;
 };

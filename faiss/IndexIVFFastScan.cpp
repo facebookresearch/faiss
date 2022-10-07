@@ -26,7 +26,6 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
-#include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -100,7 +99,7 @@ void IndexIVFFastScan::add_with_ids(
                 }
                 size_t mem = get_mem_usage_kb() / (1 << 10);
 
-                printf("IndexIVFFastScan::add_with_ids %zd/%zd, time %.2f/%.2f, RSS %zdMB",
+                printf("IndexIVFFastScan::add_with_ids %zd/%zd, time %.2f/%.2f, RSS %zdMB\n",
                        size_t(i1),
                        size_t(n),
                        elapsed_time,
@@ -303,7 +302,10 @@ void IndexIVFFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     DummyScaler scaler;
