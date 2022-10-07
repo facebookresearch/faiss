@@ -103,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../structlist.html">Struct list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structPyCallbackIDSelector.html">Struct PyCallbackIDSelector</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOReader.html">Struct PyCallbackIOReader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structPyCallbackIOWriter.html">Struct PyCallbackIOWriter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1AdditiveCoarseQuantizer.html">Struct faiss::AdditiveCoarseQuantizer</a></li>
@@ -261,6 +262,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1ResidualCoarseQuantizer.html">Struct faiss::ResidualCoarseQuantizer</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::SearchParameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html">Struct faiss::SearchParametersIVF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPQ.html">Struct faiss::SearchParametersPQ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html">Struct faiss::SearchParametersPreTransform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
@@ -379,7 +381,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParametersE">
 <span id="_CPPv3N5faiss16SearchParametersE"></span><span id="_CPPv2N5faiss16SearchParametersE"></span><span id="faiss::SearchParameters"></span><span class="target" id="structfaiss_1_1SearchParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParameters</span></span></span><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a></p>
+<dd><p>Parent class for the optional search paramenters.</p>
+<p>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="structfaiss_1_1SearchParametersPQ.html#structfaiss_1_1SearchParametersPQ"><span class="std std-ref">faiss::SearchParametersPQ</span></a>, <a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
