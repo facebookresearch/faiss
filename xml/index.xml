@@ -2236,6 +2236,7 @@
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ade600c4def9726b51f08d4e66263b688" kind="function"><name>~IndexIVF</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2311,6 +2312,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2407,6 +2409,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2491,6 +2494,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2537,6 +2541,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2623,6 +2628,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2693,6 +2699,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2788,6 +2795,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2869,6 +2877,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -2961,6 +2970,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3044,6 +3054,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a5a097e5b50f8b220db61b52c6fdaf1f9" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3122,6 +3133,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3217,6 +3229,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3288,6 +3301,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3383,6 +3397,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3455,6 +3470,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3550,6 +3566,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3618,6 +3635,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -3698,6 +3716,7 @@
     <member refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kind="function"><name>copy_subset_to</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" kind="function"><name>get_list_size</name></member>
+    <member refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kind="function"><name>check_ids_sorted</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1c11ce77f459e2ab3e5d9a4c2263ad89" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" kind="function"><name>set_direct_map_type</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a4eb943aeb7df30d44ad9b665452bfcf7" kind="function"><name>replace_invlists</name></member>
@@ -4226,7 +4245,7 @@
     <member refid="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f" kind="function"><name>sa_encode</name></member>
     <member refid="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e" kind="function"><name>sa_decode</name></member>
     <member refid="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013" kind="function"><name>get_FlatCodesDistanceComputer</name></member>
-    <member refid="structfaiss_1_1IndexPQ_1a4d8792ee8942cd4897530f68169cea04" kind="function"><name>search_core_polysemous</name></member>
+    <member refid="structfaiss_1_1IndexPQ_1a17b53fc0ce348af3344a0291ae89304a" kind="function"><name>search_core_polysemous</name></member>
     <member refid="structfaiss_1_1IndexPQ_1a0560fe2b1bd291d868822e7b2754ecf0" kind="function"><name>hamming_distance_histogram</name></member>
     <member refid="structfaiss_1_1IndexPQ_1ac1c78cf420aada3a54e00bc65ba3eae6" kind="function"><name>hamming_distance_table</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" kind="function"><name>add</name></member>
@@ -5568,6 +5587,12 @@
     <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a5be0d2fc467c0792f1980658e10f2945" kind="function"><name>~ProgressiveDimIndexFactory</name></member>
   </compound>
+  <compound refid="structPyCallbackIDSelector" kind="struct"><name>PyCallbackIDSelector</name>
+    <member refid="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" kind="variable"><name>callback</name></member>
+    <member refid="structPyCallbackIDSelector_1a2e8bf7cfb11308fe714cbf79ca39de9f" kind="function"><name>PyCallbackIDSelector</name></member>
+    <member refid="structPyCallbackIDSelector_1af8db48e0684915c67f189a3533bbf4c4" kind="function"><name>is_member</name></member>
+    <member refid="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" kind="function"><name>~PyCallbackIDSelector</name></member>
+  </compound>
   <compound refid="structPyCallbackIOReader" kind="struct"><name>PyCallbackIOReader</name>
     <member refid="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" kind="variable"><name>callback</name></member>
     <member refid="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11" kind="variable"><name>bs</name></member>
@@ -5747,6 +5772,11 @@
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1a069aa5d2af914304fc9302d88fc363fe" kind="function"><name>SearchParametersIVF</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df" kind="function"><name>~SearchParametersIVF</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1SearchParametersPQ" kind="struct"><name>faiss::SearchParametersPQ</name>
+    <member refid="structfaiss_1_1SearchParametersPQ_1a8e25e7f19298b57d0f68065ec8901c81" kind="variable"><name>search_type</name></member>
+    <member refid="structfaiss_1_1SearchParametersPQ_1a7ba60c49fd2d92eb8cb40da1c3769983" kind="variable"><name>polysemous_ht</name></member>
+    <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
   </compound>
   <compound refid="structfaiss_1_1SearchParametersPreTransform" kind="struct"><name>faiss::SearchParametersPreTransform</name>
     <member refid="structfaiss_1_1SearchParametersPreTransform_1ad702994db562c5d3b2def8ce3ed1c0fc" kind="variable"><name>index_params</name></member>
@@ -6419,14 +6449,14 @@
     <member refid="namespacefaiss_1a470eea056c32c67ac13bb4791394b0b8" kind="function"><name>fvec_L2sqr_by_idx</name></member>
     <member refid="namespacefaiss_1afbe3e1fcb434cea1ee9ff8ed6ec1d609" kind="function"><name>pairwise_indexed_L2sqr</name></member>
     <member refid="namespacefaiss_1a687edf56ab386203fcd992572c539f99" kind="function"><name>pairwise_indexed_inner_product</name></member>
-    <member refid="namespacefaiss_1a880c7318971f866267a86945aaa61b17" kind="function"><name>knn_inner_product</name></member>
-    <member refid="namespacefaiss_1ae395f219a37e88f9c19175c3b47c64ed" kind="function"><name>knn_inner_product</name></member>
-    <member refid="namespacefaiss_1a7931bf425c5825f2634c20952bbdb4b7" kind="function"><name>knn_L2sqr</name></member>
-    <member refid="namespacefaiss_1a107e244564bff9a8af26bb8fea23bf68" kind="function"><name>knn_L2sqr</name></member>
-    <member refid="namespacefaiss_1adaadf5c986701e97103b476018c6d488" kind="function"><name>knn_inner_products_by_idx</name></member>
-    <member refid="namespacefaiss_1ad3d348596de734e44b4dd89fdc19cc32" kind="function"><name>knn_L2sqr_by_idx</name></member>
-    <member refid="namespacefaiss_1a139f6e538b65f47b826794620af7d491" kind="function"><name>range_search_L2sqr</name></member>
-    <member refid="namespacefaiss_1ab29d725b808df6f142b80f21aa45e507" kind="function"><name>range_search_inner_product</name></member>
+    <member refid="namespacefaiss_1ab3280d783bfac7f7d96696bb219ed6e6" kind="function"><name>knn_inner_product</name></member>
+    <member refid="namespacefaiss_1ac28d81570f1e19a951fde542fb505663" kind="function"><name>knn_inner_product</name></member>
+    <member refid="namespacefaiss_1a9ff85c4951798ff50ca6728f582d0e18" kind="function"><name>knn_L2sqr</name></member>
+    <member refid="namespacefaiss_1abd3b922992d654af67f0fe866f8bf46c" kind="function"><name>knn_L2sqr</name></member>
+    <member refid="namespacefaiss_1a23318c515f89eba3b85fae15eefd4625" kind="function"><name>knn_inner_products_by_idx</name></member>
+    <member refid="namespacefaiss_1ad9f8bfff061aef572422312b0de793fd" kind="function"><name>knn_L2sqr_by_idx</name></member>
+    <member refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" kind="function"><name>range_search_L2sqr</name></member>
+    <member refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kind="function"><name>range_search_inner_product</name></member>
     <member refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kind="function"><name>compute_PQ_dis_tables_dsub2</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" kind="function"><name>knn_extra_metrics</name></member>

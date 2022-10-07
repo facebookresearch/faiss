@@ -1,0 +1,4 @@
+Struct PyCallbackIDSelector
+===========================
+
+.. doxygenstruct:: PyCallbackIDSelector

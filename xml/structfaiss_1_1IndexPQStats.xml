@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="116" column="12" bodyfile="faiss/IndexPQ.h" bodystart="116" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="124" column="12" bodyfile="faiss/IndexPQ.h" bodystart="124" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQStats_1ae40dc36c4942b567cc258957cc3c5dfd" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="117" column="12" bodyfile="faiss/IndexPQ.h" bodystart="117" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="125" column="12" bodyfile="faiss/IndexPQ.h" bodystart="125" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexPQStats_1aa73b0ed2ddb178432ca5219262683aab" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="119" column="12" bodyfile="faiss/IndexPQ.h" bodystart="119" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="127" column="12" bodyfile="faiss/IndexPQ.h" bodystart="127" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="121" column="5" bodyfile="faiss/IndexPQ.h" bodystart="121" bodyend="123"/>
+        <location file="faiss/IndexPQ.h" line="129" column="5" bodyfile="faiss/IndexPQ.h" bodystart="129" bodyend="131"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQStats_1a06a463f2381c1f7edf526e916b679fe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="124" column="10"/>
+        <location file="faiss/IndexPQ.h" line="132" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -77,7 +77,7 @@
     <detaileddescription>
 <para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexPQ_1a838c9186a476abd7321afc95d5412ab8" kindref="member">IndexPQ::search</ref> is called by multiple threads </para>
     </detaileddescription>
-    <location file="faiss/IndexPQ.h" line="115" column="19" bodyfile="faiss/IndexPQ.h" bodystart="115" bodyend="125"/>
+    <location file="faiss/IndexPQ.h" line="123" column="19" bodyfile="faiss/IndexPQ.h" bodystart="123" bodyend="133"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPQStats_1af0e230009735f3edf2f47ddc23fef643" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>IndexPQStats</name></member>
       <member refid="structfaiss_1_1IndexPQStats_1aa73b0ed2ddb178432ca5219262683aab" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>n_hamming_pass</name></member>

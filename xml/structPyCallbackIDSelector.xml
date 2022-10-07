@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structPyCallbackIDSelector" kind="struct" language="C++" prot="public">
+    <compoundname>PyCallbackIDSelector</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">IDSelector</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" static="no" mutable="no">
+        <type>PyObject *</type>
+        <definition>PyObject* PyCallbackIDSelector::callback</definition>
+        <argsstring></argsstring>
+        <name>callback</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="55" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structPyCallbackIDSelector_1a2e8bf7cfb11308fe714cbf79ca39de9f" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackIDSelector::PyCallbackIDSelector</definition>
+        <argsstring>(PyObject *callback)</argsstring>
+        <name>PyCallbackIDSelector</name>
+        <param>
+          <type>PyObject *</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="57" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackIDSelector_1af8db48e0684915c67f189a3533bbf4c4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool PyCallbackIDSelector::is_member</definition>
+        <argsstring>(idx_t id) const override</argsstring>
+        <name>is_member</name>
+        <param>
+          <type>idx_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="59" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PyCallbackIDSelector::~PyCallbackIDSelector</definition>
+        <argsstring>() override</argsstring>
+        <name>~PyCallbackIDSelector</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/python/python_callbacks.h" line="61" column="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>PyCallbackIDSelector</label>
+        <link refid="structPyCallbackIDSelector"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>PyCallbackIDSelector</label>
+        <link refid="structPyCallbackIDSelector"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/python/python_callbacks.h" line="52" column="45" bodyfile="faiss/python/python_callbacks.h" bodystart="52" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>callback</name></member>
+      <member refid="structPyCallbackIDSelector_1af8db48e0684915c67f189a3533bbf4c4" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>is_member</name></member>
+      <member refid="structPyCallbackIDSelector_1a2e8bf7cfb11308fe714cbf79ca39de9f" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>PyCallbackIDSelector</name></member>
+      <member refid="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>~PyCallbackIDSelector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

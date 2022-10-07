@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structfaiss_1_1SearchParametersPQ" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SearchParametersPQ</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+    <includes refid="IndexPQ_8h" local="no">IndexPQ.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersPQ_1a8e25e7f19298b57d0f68065ec8901c81" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IndexPQ_1a4fa05430935a02b62b7c15c9840c42fe" kindref="member">IndexPQ::Search_type_t</ref></type>
+        <definition>IndexPQ::Search_type_t faiss::SearchParametersPQ::search_type</definition>
+        <argsstring></argsstring>
+        <name>search_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPQ.h" line="117" column="28" bodyfile="faiss/IndexPQ.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersPQ_1a7ba60c49fd2d92eb8cb40da1c3769983" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SearchParametersPQ::polysemous_ht</definition>
+        <argsstring></argsstring>
+        <name>polysemous_ht</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPQ.h" line="118" column="9" bodyfile="faiss/IndexPQ.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type>IDSelector *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="54" column="16" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>override search parameters from the class </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::SearchParametersPQ</label>
+        <link refid="structfaiss_1_1SearchParametersPQ"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::SearchParametersPQ</label>
+        <link refid="structfaiss_1_1SearchParametersPQ"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexPQ.h" line="116" column="42" bodyfile="faiss/IndexPQ.h" bodystart="116" bodyend="119"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SearchParametersPQ_1a7ba60c49fd2d92eb8cb40da1c3769983" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPQ</scope><name>polysemous_ht</name></member>
+      <member refid="structfaiss_1_1SearchParametersPQ_1a8e25e7f19298b57d0f68065ec8901c81" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPQ</scope><name>search_type</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPQ</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParametersPQ</scope><name>~SearchParameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
