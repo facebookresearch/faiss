@@ -8,6 +8,7 @@
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
 
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/BinaryFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
@@ -45,6 +46,7 @@ GpuIndexBinaryFlat::GpuIndexBinaryFlat(
         : IndexBinary(dims),
           resources_(provider->getResources()),
           binaryFlatConfig_(std::move(config)) {
+    DeviceScope scope(binaryFlatConfig_.device);
     FAISS_THROW_IF_NOT_FMT(
             this->d % 8 == 0,
             "vector dimension (number of bits) "
@@ -55,7 +57,6 @@ GpuIndexBinaryFlat::GpuIndexBinaryFlat(
     this->is_trained = true;
 
     // Construct index
-    DeviceScope scope(binaryFlatConfig_.device);
     data_.reset(new BinaryFlatIndex(
             resources_.get(), this->d, binaryFlatConfig_.memorySpace));
 }
@@ -119,6 +120,8 @@ void GpuIndexBinaryFlat::copyTo(faiss::IndexBinaryFlat* index) const {
 void GpuIndexBinaryFlat::add(faiss::IndexBinary::idx_t n, const uint8_t* x) {
     DeviceScope scope(binaryFlatConfig_.device);
 
+    validateNumVectors(n);
+
     // To avoid multiple re-allocations, ensure we have enough storage
     // available
     data_->reserve(n, resources_->getDefaultStream(binaryFlatConfig_.device));
@@ -152,26 +155,17 @@ void GpuIndexBinaryFlat::search(
         int32_t* distances,
         faiss::IndexBinary::idx_t* labels,
         const SearchParameters* params) const {
+    DeviceScope scope(binaryFlatConfig_.device);
+    auto stream = resources_->getDefaultStream(binaryFlatConfig_.device);
+
     if (n == 0) {
         return;
     }
 
-    FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %zu indices",
-            (size_t)std::numeric_limits<int>::max());
-    FAISS_THROW_IF_NOT_FMT(
-            k <= (Index::idx_t)getMaxKSelection(),
-            "GPU only supports k <= %d (requested %d)",
-            getMaxKSelection(),
-            (int)k); // select limitation
-
-    DeviceScope scope(binaryFlatConfig_.device);
-    auto stream = resources_->getDefaultStream(binaryFlatConfig_.device);
+    validateNumVectors(n);
+    validateKSelect(k);
 
     // The input vectors may be too large for the GPU, but we still
     // assume that the output distances and labels are not.

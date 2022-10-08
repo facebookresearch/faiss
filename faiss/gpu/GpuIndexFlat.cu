@@ -8,6 +8,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
@@ -60,16 +61,16 @@ GpuIndexFlat::GpuIndexFlat(
         GpuIndexFlatConfig config)
         : GpuIndex(provider->getResources(), dims, metric, 0, config),
           flatConfig_(config) {
+    DeviceScope scope(config_.device);
+
     // Flat index doesn't need training
     this->is_trained = true;
 
     // Construct index
-    DeviceScope scope(config_.device);
     data_.reset(new FlatIndex(
             resources_.get(),
             dims,
             flatConfig_.useFloat16,
-            flatConfig_.storeTransposed,
             config_.memorySpace));
 }
 
@@ -79,16 +80,16 @@ GpuIndexFlat::GpuIndexFlat(
         faiss::MetricType metric,
         GpuIndexFlatConfig config)
         : GpuIndex(resources, dims, metric, 0, config), flatConfig_(config) {
+    DeviceScope scope(config_.device);
+
     // Flat index doesn't need training
     this->is_trained = true;
 
     // Construct index
-    DeviceScope scope(config_.device);
     data_.reset(new FlatIndex(
             resources_.get(),
             dims,
             flatConfig_.useFloat16,
-            flatConfig_.storeTransposed,
             config_.memorySpace));
 }
 
@@ -112,7 +113,6 @@ void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
             resources_.get(),
             this->d,
             flatConfig_.useFloat16,
-            flatConfig_.storeTransposed,
             config_.memorySpace));
 
     // The index could be empty
@@ -137,12 +137,7 @@ void GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
     auto stream = resources_->getDefaultStream(config_.device);
 
     if (this->ntotal > 0) {
-        if (flatConfig_.useFloat16) {
-            auto vecFloat32 = data_->getVectorsFloat32Copy(stream);
-            fromDevice(vecFloat32, index->get_xb(), stream);
-        } else {
-            fromDevice(data_->getVectorsFloat32Ref(), index->get_xb(), stream);
-        }
+        fromDevice(data_->getVectorsFloat32Ref(), index->get_xb(), stream);
     }
 }
 
@@ -163,20 +158,15 @@ void GpuIndexFlat::train(Index::idx_t n, const float* x) {
 }
 
 void GpuIndexFlat::add(Index::idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
+    DeviceScope scope(config_.device);
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
+    FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
+    validateNumVectors(n);
 
     if (n == 0) {
         // nothing to add
         return;
     }
-
-    DeviceScope scope(config_.device);
 
     // To avoid multiple re-allocations, ensure we have enough storage
     // available
@@ -197,6 +187,8 @@ bool GpuIndexFlat::addImplRequiresIDs_() const {
 }
 
 void GpuIndexFlat::addImpl_(int n, const float* x, const Index::idx_t* ids) {
+    // current device already set
+    // n already validated
     FAISS_ASSERT(data_);
     FAISS_ASSERT(n > 0);
 
@@ -219,7 +211,10 @@ void GpuIndexFlat::searchImpl_(
         const float* x,
         int k,
         float* distances,
-        Index::idx_t* labels) const {
+        Index::idx_t* labels,
+        const SearchParameters* params) const {
+    // current device already set
+    // n/k already validated
     auto stream = resources_->getDefaultStream(config_.device);
 
     // Input and output data are already resident on the GPU
@@ -247,35 +242,67 @@ void GpuIndexFlat::searchImpl_(
 void GpuIndexFlat::reconstruct(Index::idx_t key, float* out) const {
     DeviceScope scope(config_.device);
 
-    FAISS_THROW_IF_NOT_MSG(key < this->ntotal, "index out of bounds");
+    FAISS_THROW_IF_NOT_FMT(
+            key < this->ntotal,
+            "index %zu out of bounds (ntotal %zu)",
+            key,
+            this->ntotal);
     auto stream = resources_->getDefaultStream(config_.device);
 
-    if (flatConfig_.useFloat16) {
-        // FIXME jhj: kernel for copy
-        auto vec = data_->getVectorsFloat32Copy(key, 1, stream);
-        fromDevice(vec.data(), out, this->d, stream);
-    } else {
-        auto vec = data_->getVectorsFloat32Ref()[key];
-        fromDevice(vec.data(), out, this->d, stream);
-    }
+    auto vec = data_->getVectorsFloat32Ref()[key];
+    fromDevice(vec.data(), out, this->d, stream);
 }
 
-void GpuIndexFlat::reconstruct_n(Index::idx_t i0, Index::idx_t num, float* out)
+void GpuIndexFlat::reconstruct_n(Index::idx_t i0, Index::idx_t n, float* out)
         const {
     DeviceScope scope(config_.device);
 
-    FAISS_THROW_IF_NOT_MSG(i0 < this->ntotal, "index out of bounds");
-    FAISS_THROW_IF_NOT_MSG(i0 + num - 1 < this->ntotal, "num out of bounds");
+    validateNumVectors(n);
+
+    FAISS_THROW_IF_NOT_FMT(
+            i0 < this->ntotal,
+            "start index (%zu) out of bounds (ntotal %zu)",
+            i0,
+            this->ntotal);
+    FAISS_THROW_IF_NOT_FMT(
+            i0 + n - 1 < this->ntotal,
+            "max index requested (%zu) out of bounds (ntotal %zu)",
+            i0 + n - 1,
+            this->ntotal);
     auto stream = resources_->getDefaultStream(config_.device);
 
-    if (flatConfig_.useFloat16) {
-        // FIXME jhj: kernel for copy
-        auto vec = data_->getVectorsFloat32Copy(i0, num, stream);
-        fromDevice(vec.data(), out, num * this->d, stream);
-    } else {
-        auto vec = data_->getVectorsFloat32Ref()[i0];
-        fromDevice(vec.data(), out, this->d * num, stream);
-    }
+    auto vec = data_->getVectorsFloat32Ref()[i0];
+    fromDevice(vec.data(), out, this->d * n, stream);
+}
+
+void GpuIndexFlat::reconstruct_batch(
+        Index::idx_t n,
+        const Index::idx_t* keys,
+        float* out) const {
+    DeviceScope scope(config_.device);
+    auto stream = resources_->getDefaultStream(config_.device);
+
+    validateNumVectors(n);
+
+    auto keysDevice = toDeviceTemporary<faiss::Index::idx_t, 1>(
+            resources_.get(),
+            config_.device,
+            const_cast<Index::idx_t*>(keys),
+            stream,
+            {(int)n});
+
+    auto outDevice = toDeviceTemporary<float, 2>(
+            resources_.get(),
+            config_.device,
+            out,
+            stream,
+            {(int)n, (int)this->d});
+
+    FAISS_ASSERT(data_);
+    data_->reconstruct(keysDevice, outDevice);
+
+    // If the output is on the host, copy back if needed
+    fromDevice<float, 2>(outDevice, out, stream);
 }
 
 void GpuIndexFlat::compute_residual(
@@ -290,14 +317,10 @@ void GpuIndexFlat::compute_residual_n(
         const float* xs,
         float* residuals,
         const Index::idx_t* keys) const {
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %zu indices",
-            (size_t)std::numeric_limits<int>::max());
-
+    DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
 
-    DeviceScope scope(config_.device);
+    validateNumVectors(n);
 
     auto vecsDevice = toDeviceTemporary<float, 2>(
             resources_.get(),
@@ -311,7 +334,6 @@ void GpuIndexFlat::compute_residual_n(
             const_cast<Index::idx_t*>(keys),
             stream,
             {(int)n});
-
     auto residualDevice = toDeviceTemporary<float, 2>(
             resources_.get(),
             config_.device,
@@ -319,13 +341,10 @@ void GpuIndexFlat::compute_residual_n(
             stream,
             {(int)n, (int)this->d});
 
-    // Convert idx_t to int
-    auto keysInt = convertTensorTemporary<Index::idx_t, int, 1>(
-            resources_.get(), stream, idsDevice);
-
     FAISS_ASSERT(data_);
-    data_->computeResidual(vecsDevice, keysInt, residualDevice);
+    data_->computeResidual(vecsDevice, idsDevice, residualDevice);
 
+    // If the output is on the host, copy back if needed
     fromDevice<float, 2>(residualDevice, residuals, stream);
 }
 

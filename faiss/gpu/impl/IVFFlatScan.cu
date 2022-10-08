@@ -137,7 +137,7 @@ __global__ void ivfFlatScan(
         Tensor<float, 2, true> queries,
         bool useResidual,
         Tensor<float, 3, true> residualBase,
-        Tensor<int, 2, true> listIds,
+        Tensor<Index::idx_t, 2, true> listIds,
         void** allListData,
         int* listLengths,
         Codec codec,
@@ -153,7 +153,7 @@ __global__ void ivfFlatScan(
     // We ensure that before the array (at offset -1), there is a 0 value
     int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
 
-    auto listId = listIds[queryId][probeId];
+    Index::idx_t listId = listIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -185,7 +185,7 @@ __global__ void ivfFlatScan(
 void runIVFFlatScanTile(
         GpuResources* res,
         Tensor<float, 2, true>& queries,
-        Tensor<int, 2, true>& listIds,
+        Tensor<Index::idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -341,7 +341,7 @@ void runIVFFlatScanTile(
 
 void runIVFFlatScan(
         Tensor<float, 2, true>& queries,
-        Tensor<int, 2, true>& listIds,
+        Tensor<Index::idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,

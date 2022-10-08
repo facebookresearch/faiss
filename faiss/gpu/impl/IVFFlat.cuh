@@ -15,10 +15,9 @@ namespace gpu {
 
 class IVFFlat : public IVFBase {
    public:
-    /// Construct from a quantizer that has elemen
     IVFFlat(GpuResources* resources,
-            /// We do not own this reference
-            FlatIndex* quantizer,
+            int dim,
+            int nlist,
             faiss::MetricType metric,
             float metricArg,
             bool useResidual,
@@ -32,12 +31,25 @@ class IVFFlat : public IVFBase {
 
     /// Find the approximate k nearest neigbors for `queries` against
     /// our database
-    void query(
+    void search(
+            Index* coarseQuantizer,
             Tensor<float, 2, true>& queries,
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices);
+            Tensor<Index::idx_t, 2, true>& outIndices) override;
+
+    /// Performs search when we are already given the IVF cells to look at
+    /// (GpuIndexIVF::search_preassigned implementation)
+    void searchPreassigned(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfDistances,
+            Tensor<Index::idx_t, 2, true>& ivfAssignments,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices,
+            bool storePairs) override;
 
    protected:
     /// Returns the number of bytes in which an IVF list containing numVecs
@@ -60,19 +72,29 @@ class IVFFlat : public IVFBase {
     /// Encode the vectors that we're adding and append to our IVF lists
     void appendVectors_(
             Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfCentroidResiduals,
             Tensor<Index::idx_t, 1, true>& indices,
-            Tensor<int, 1, true>& uniqueLists,
+            Tensor<Index::idx_t, 1, true>& uniqueLists,
             Tensor<int, 1, true>& vectorsByUniqueList,
             Tensor<int, 1, true>& uniqueListVectorStart,
             Tensor<int, 1, true>& uniqueListStartOffset,
-            Tensor<int, 1, true>& listIds,
+            Tensor<Index::idx_t, 1, true>& listIds,
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) override;
 
-   protected:
-    /// Do we encode the residual from a coarse quantizer or not?
-    bool useResidual_;
+    /// Shared IVF search implementation, used by both search and
+    /// searchPreassigned
+    void searchImpl_(
+            Tensor<float, 2, true>& queries,
+            Tensor<float, 2, true>& coarseDistances,
+            Tensor<Index::idx_t, 2, true>& coarseIndices,
+            Tensor<float, 3, true>& ivfCentroids,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices,
+            bool storePairs);
 
+   protected:
     /// Scalar quantizer for encoded vectors, if any
     std::unique_ptr<GpuScalarQuantizer> scalarQ_;
 };
