@@ -286,18 +286,24 @@ void IndexHNSW::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const
-
-{
+        idx_t* labels,
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
+    const SearchParametersHNSW* params = nullptr;
+
+    int efSearch = hnsw.efSearch;
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "params type invalid");
+        efSearch = params->efSearch;
+    }
     size_t n1 = 0, n2 = 0, n3 = 0, ndis = 0, nreorder = 0;
 
-    idx_t check_period = InterruptCallback::get_period_hint(
-            hnsw.max_level * d * hnsw.efSearch);
+    idx_t check_period =
+            InterruptCallback::get_period_hint(hnsw.max_level * d * efSearch);
 
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
@@ -316,7 +322,7 @@ void IndexHNSW::search(
                 dis->set_query(x + i * d);
 
                 maxheap_heapify(k, simi, idxi);
-                HNSWStats stats = hnsw.search(*dis, k, idxi, simi, vt);
+                HNSWStats stats = hnsw.search(*dis, k, idxi, simi, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 n3 += stats.n3;
@@ -425,16 +431,15 @@ void IndexHNSW::search_level_0(
     FAISS_THROW_IF_NOT(nprobe > 0);
 
     storage_idx_t ntotal = hnsw.levels.size();
-    size_t n1 = 0, n2 = 0, n3 = 0, ndis = 0, nreorder = 0;
 
 #pragma omp parallel
     {
-        DistanceComputer* qdis = storage_distance_computer(storage);
-        ScopeDeleter1<DistanceComputer> del(qdis);
-
+        std::unique_ptr<DistanceComputer> qdis(
+                storage_distance_computer(storage));
+        HNSWStats search_stats;
         VisitedTable vt(ntotal);
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder)
+#pragma omp for
         for (idx_t i = 0; i < n; i++) {
             idx_t* idxi = labels + i * k;
             float* simi = distances + i * k;
@@ -442,69 +447,24 @@ void IndexHNSW::search_level_0(
             qdis->set_query(x + i * d);
             maxheap_heapify(k, simi, idxi);
 
-            if (search_type == 1) {
-                int nres = 0;
+            hnsw.search_level_0(
+                    *qdis.get(),
+                    k,
+                    idxi,
+                    simi,
+                    nprobe,
+                    nearest + i * nprobe,
+                    nearest_d + i * nprobe,
+                    search_type,
+                    search_stats,
+                    vt);
 
-                for (int j = 0; j < nprobe; j++) {
-                    storage_idx_t cj = nearest[i * nprobe + j];
-
-                    if (cj < 0)
-                        break;
-
-                    if (vt.get(cj))
-                        continue;
-
-                    int candidates_size = std::max(hnsw.efSearch, int(k));
-                    MinimaxHeap candidates(candidates_size);
-
-                    candidates.push(cj, nearest_d[i * nprobe + j]);
-
-                    HNSWStats search_stats;
-                    nres = hnsw.search_from_candidates(
-                            *qdis,
-                            k,
-                            idxi,
-                            simi,
-                            candidates,
-                            vt,
-                            search_stats,
-                            0,
-                            nres);
-                    n1 += search_stats.n1;
-                    n2 += search_stats.n2;
-                    n3 += search_stats.n3;
-                    ndis += search_stats.ndis;
-                    nreorder += search_stats.nreorder;
-                }
-            } else if (search_type == 2) {
-                int candidates_size = std::max(hnsw.efSearch, int(k));
-                candidates_size = std::max(candidates_size, nprobe);
-
-                MinimaxHeap candidates(candidates_size);
-                for (int j = 0; j < nprobe; j++) {
-                    storage_idx_t cj = nearest[i * nprobe + j];
-
-                    if (cj < 0)
-                        break;
-                    candidates.push(cj, nearest_d[i * nprobe + j]);
-                }
-
-                HNSWStats search_stats;
-                hnsw.search_from_candidates(
-                        *qdis, k, idxi, simi, candidates, vt, search_stats, 0);
-                n1 += search_stats.n1;
-                n2 += search_stats.n2;
-                n3 += search_stats.n3;
-                ndis += search_stats.ndis;
-                nreorder += search_stats.nreorder;
-            }
             vt.advance();
-
             maxheap_reorder(k, simi, idxi);
         }
+#pragma omp critical
+        { hnsw_stats.combine(search_stats); }
     }
-
-    hnsw_stats.combine({n1, n2, n3, ndis, nreorder});
 }
 
 void IndexHNSW::init_level_0_from_knngraph(
@@ -1037,8 +997,11 @@ void IndexHNSW2Level::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
 
     if (dynamic_cast<const Index2Layer*>(storage)) {
         IndexHNSW::search(n, x, k, distances, labels);
@@ -1097,73 +1060,36 @@ void IndexHNSW2Level::search(
                 }
 
                 candidates.clear();
-                // copy the upper_beam elements to candidates list
 
-                int search_policy = 2;
-
-                if (search_policy == 1) {
-                    for (int j = 0; j < hnsw.upper_beam && j < k; j++) {
-                        if (idxi[j] < 0)
-                            break;
-                        candidates.push(idxi[j], simi[j]);
-                        // search_from_candidates adds them back
-                        idxi[j] = -1;
-                        simi[j] = HUGE_VAL;
-                    }
-
-                    // reorder from sorted to heap
-                    maxheap_heapify(k, simi, idxi, simi, idxi, k);
-
-                    HNSWStats search_stats;
-                    hnsw.search_from_candidates(
-                            *dis,
-                            k,
-                            idxi,
-                            simi,
-                            candidates,
-                            vt,
-                            search_stats,
-                            0,
-                            k);
-                    n1 += search_stats.n1;
-                    n2 += search_stats.n2;
-                    n3 += search_stats.n3;
-                    ndis += search_stats.ndis;
-                    nreorder += search_stats.nreorder;
-
-                    vt.advance();
-
-                } else if (search_policy == 2) {
-                    for (int j = 0; j < hnsw.upper_beam && j < k; j++) {
-                        if (idxi[j] < 0)
-                            break;
-                        candidates.push(idxi[j], simi[j]);
-                    }
-
-                    // reorder from sorted to heap
-                    maxheap_heapify(k, simi, idxi, simi, idxi, k);
-
-                    HNSWStats search_stats;
-                    search_from_candidates_2(
-                            hnsw,
-                            *dis,
-                            k,
-                            idxi,
-                            simi,
-                            candidates,
-                            vt,
-                            search_stats,
-                            0,
-                            k);
-                    n1 += search_stats.n1;
-                    n2 += search_stats.n2;
-                    n3 += search_stats.n3;
-                    ndis += search_stats.ndis;
-                    nreorder += search_stats.nreorder;
-
-                    vt.advance();
-                    vt.advance();
+                for (int j = 0; j < hnsw.upper_beam && j < k; j++) {
+                    if (idxi[j] < 0)
+                        break;
+                    candidates.push(idxi[j], simi[j]);
                 }
+
+                // reorder from sorted to heap
+                maxheap_heapify(k, simi, idxi, simi, idxi, k);
+
+                HNSWStats search_stats;
+                search_from_candidates_2(
+                        hnsw,
+                        *dis,
+                        k,
+                        idxi,
+                        simi,
+                        candidates,
+                        vt,
+                        search_stats,
+                        0,
+                        k);
+                n1 += search_stats.n1;
+                n2 += search_stats.n2;
+                n3 += search_stats.n3;
+                ndis += search_stats.ndis;
+                nreorder += search_stats.nreorder;
+
+                vt.advance();
+                vt.advance();
 
                 maxheap_reorder(k, simi, idxi);
             }

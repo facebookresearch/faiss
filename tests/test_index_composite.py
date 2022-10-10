@@ -97,6 +97,26 @@ class TestRemove(unittest.TestCase):
         else:
             assert False, 'should have raised an exception'
 
+    def test_factory_idmap2_suffix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "Flat,IDMap2")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(104)[0] == 1004
+        index.remove_ids(np.array([103], dtype='int64'))
+        assert index.reconstruct(104)[0] == 1004
+
+    def test_factory_idmap2_prefix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "IDMap2,Flat")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(109)[0] == 1009
+        index.remove_ids(np.array([100], dtype='int64'))
+        assert index.reconstruct(109)[0] == 1009
+
     def test_remove_id_map_2(self):
         # from https://github.com/facebookresearch/faiss/issues/255
         rs = np.random.RandomState(1234)

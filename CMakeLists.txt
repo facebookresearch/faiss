@@ -19,10 +19,10 @@ rapids_cuda_init_architectures(faiss)
 
 
 project(faiss
-        VERSION 1.6.4
-        DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
-        HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
-        LANGUAGES CXX)
+  VERSION 1.7.2
+  DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
+  HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
+  LANGUAGES CXX)
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -61,6 +61,7 @@ if(FAISS_ENABLE_C_API)
 endif()
 
 add_subdirectory(demos)
+add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
 
 # CTest must be included in the top level to enable `make test` target.

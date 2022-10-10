@@ -100,7 +100,8 @@ struct IndexIVFFastScan : IndexIVF {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     // internal search funcs
 
@@ -155,6 +156,17 @@ struct IndexIVFFastScan : IndexIVF {
             int impl,
             size_t* ndis_out,
             size_t* nlist_out,
+            const Scaler& scaler) const;
+
+    // implem 14 is mukltithreaded internally across nprobes and queries
+    template <class C, class Scaler>
+    void search_implem_14(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            int impl,
             const Scaler& scaler) const;
 
     // reconstruct vectors from packed invlists

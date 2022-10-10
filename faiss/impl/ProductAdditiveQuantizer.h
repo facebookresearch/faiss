@@ -58,11 +58,6 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
     ///< Train the product additive quantizer
     void train(size_t n, const float* x) override;
 
-    void compute_codes(const float* x, uint8_t* codes, size_t n)
-            const override {
-        compute_codes_add_centroids(x, codes, n);
-    }
-
     /** Encode a set of vectors
      *
      * @param x      vectors to encode, size n * d
@@ -74,6 +69,12 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
             uint8_t* codes,
             size_t n,
             const float* centroids = nullptr) const override;
+
+    void compute_unpacked_codes(
+            const float* x,
+            int32_t* codes,
+            size_t n,
+            const float* centroids = nullptr) const;
 
     /** Decode a set of vectors in non-packed format
      *

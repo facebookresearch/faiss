@@ -15,6 +15,7 @@
 
 #include <faiss/IndexFlatCodes.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
+#include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/platform_macros.h>
 
@@ -28,8 +29,8 @@ struct IndexAdditiveQuantizer : IndexFlatCodes {
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
     explicit IndexAdditiveQuantizer(
-            idx_t d = 0,
-            AdditiveQuantizer* aq = nullptr,
+            idx_t d,
+            AdditiveQuantizer* aq,
             MetricType metric = METRIC_L2);
 
     void search(
@@ -37,7 +38,8 @@ struct IndexAdditiveQuantizer : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /* The standalone codec interface */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
@@ -100,6 +102,58 @@ struct IndexLocalSearchQuantizer : IndexAdditiveQuantizer {
     void train(idx_t n, const float* x) override;
 };
 
+/** Index based on a product residual quantizer.
+ */
+struct IndexProductResidualQuantizer : IndexAdditiveQuantizer {
+    /// The product residual quantizer used to encode the vectors
+    ProductResidualQuantizer prq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of residual quantizers
+     * @param Msub      number of subquantizers per RQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexProductResidualQuantizer(
+            int d,          ///< dimensionality of the input vectors
+            size_t nsplits, ///< number of residual quantizers
+            size_t Msub,    ///< number of subquantizers per RQ
+            size_t nbits,   ///< number of bit per subvector index
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexProductResidualQuantizer();
+
+    void train(idx_t n, const float* x) override;
+};
+
+/** Index based on a product local search quantizer.
+ */
+struct IndexProductLocalSearchQuantizer : IndexAdditiveQuantizer {
+    /// The product local search quantizer used to encode the vectors
+    ProductLocalSearchQuantizer plsq;
+
+    /** Constructor.
+     *
+     * @param d      dimensionality of the input vectors
+     * @param nsplits  number of local search quantizers
+     * @param Msub     number of subquantizers per LSQ
+     * @param nbits  number of bit per subvector index
+     */
+    IndexProductLocalSearchQuantizer(
+            int d,          ///< dimensionality of the input vectors
+            size_t nsplits, ///< number of local search quantizers
+            size_t Msub,    ///< number of subquantizers per LSQ
+            size_t nbits,   ///< number of bit per subvector index
+            MetricType metric = METRIC_L2,
+            Search_type_t search_type = AdditiveQuantizer::ST_decompress);
+
+    IndexProductLocalSearchQuantizer();
+
+    void train(idx_t n, const float* x) override;
+};
+
 /** A "virtual" index where the elements are the residual quantizer centroids.
  *
  * Intended for use as a coarse quantizer in an IndexIVF.
@@ -123,7 +177,8 @@ struct AdditiveCoarseQuantizer : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
     void train(idx_t n, const float* x) override;
@@ -168,7 +223,8 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     ResidualCoarseQuantizer();
 };

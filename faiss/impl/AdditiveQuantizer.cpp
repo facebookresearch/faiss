@@ -56,6 +56,7 @@ AdditiveQuantizer::AdditiveQuantizer(
           nbits(nbits),
           verbose(false),
           is_trained(false),
+          max_mem_distances(5 * (size_t(1) << 30)), // 5 GiB
           search_type(search_type) {
     norm_max = norm_min = NAN;
     tot_bits = 0;
@@ -200,7 +201,9 @@ float AdditiveQuantizer::decode_qcint(uint32_t c) const {
 uint64_t AdditiveQuantizer::encode_norm(float norm) const {
     switch (search_type) {
         case ST_norm_float:
-            return *(uint32_t*)&norm;
+            uint32_t inorm;
+            memcpy(&inorm, &norm, 4);
+            return inorm;
         case ST_norm_qint8:
             return encode_qint8(norm, norm_min, norm_max);
         case ST_norm_qint4:
@@ -513,7 +516,8 @@ float AdditiveQuantizer::
     BitstringReader bs(codes, code_size);
     float accu = accumulate_IPs(*this, bs, codes, LUT);
     uint32_t norm_i = bs.read(32);
-    float norm2 = *(float*)&norm_i;
+    float norm2;
+    memcpy(&norm2, &norm_i, 4);
     return norm2 - 2 * accu;
 }
 
