@@ -6,6 +6,12 @@
 
 cmake_minimum_required(VERSION 3.23.1 FATAL_ERROR)
 
+set(FAISS_LANGUAGES CXX)
+
+if(FAISS_ENABLE_GPU)
+  list(APPEND FAISS_LANGUAGES CUDA)
+endif()
+
 if(FAISS_ENABLE_RAFT)
 include(cmake/thirdparty/fetch_rapids.cmake)
 include(rapids-cmake)
@@ -21,7 +27,7 @@ project(faiss
   VERSION 1.7.2
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
-  LANGUAGES CXX)
+  LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)

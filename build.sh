@@ -1,11 +1,16 @@
 #!/bin/bash
 
 BUILD_TYPE=Release
+BUILD_DIR=build/
 
-RAFT_REPO_REL="/share/workspace/rapids_projects/raft"
-RAFT_REPO_PATH="`readlink -f \"${RAFT_REPO_REL}\"`"
-
+RAFT_REPO_REL=""
+EXTRA_CMAKE_ARGS=""
 set -e
+
+if [[ ${RAFT_REPO_REL} != "" ]]; then
+  RAFT_REPO_PATH="`readlink -f \"${RAFT_REPO_REL}\"`"
+  EXTRA_CMAKE_ARGS="${EXTRA_CMAKE_ARGS} -DCPM_raft_SOURCE=${RAFT_REPO_PATH}"
+fi
 
 if [ "$1" == "clean" ]; then
   rm -rf build
@@ -22,14 +27,15 @@ if [ "$1" == "test-raft" ]; then
   exit 0
 fi
 
-mkdir -p build/ && cd build/
+mkdir -p $BUILD_DIR
+cd $BUILD_DIR
+
 cmake \
  -DFAISS_ENABLE_GPU=ON \
+ -DFAISS_ENABLE_RAFT=ON \
  -DFAISS_ENABLE_PYTHON=OFF \
  -DBUILD_TESTING=ON \
  -DBUILD_SHARED_LIBS=OFF \
- -DCPM_raft_SOURCE=${RAFT_REPO_REL} \
- -DFAISS_ENABLE_RAFT=ON \
  -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
  -DFAISS_OPT_LEVEL=avx2 \
  -DRAFT_NVTX=OFF \
@@ -38,6 +44,7 @@ cmake \
  -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache \
  -DCMAKE_C_COMPILER_LAUNCHER=ccache \
  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+ ${EXTRA_CMAKE_ARGS} \
  ../
 
 cmake  --build . -j12
