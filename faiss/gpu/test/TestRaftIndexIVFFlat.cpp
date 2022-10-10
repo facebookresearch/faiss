@@ -138,6 +138,7 @@ void queryTest(
 
         std::cout << "numTrain: " << opt.numTrain << "numCentroids: " << opt.numCentroids << std::endl;
 
+        printf("Creating rmm resources\n");
         faiss::gpu::RmmGpuResources res;
         res.noTempMemory();
 
@@ -151,13 +152,20 @@ void queryTest(
         // and the RAFT indexes. We will probably want to perform a bfknn as
         // ground truth and then compare the recall for both the RAFT and FAISS
         // indices.
-        raft::handle_t raft_handle;
 
+        printf("Building raft index\n");
         faiss::gpu::RaftIndexIVFFlat raftIndex(
                 &res, opt.dim, opt.numCentroids, metricType, config);
 
-//        faiss::gpu::GpuIndexIVFFlat gpuIndex(
-//                &res, opt.dim, opt.numCentroids, metricType, config);
+        printf("Done.\n");
+
+        faiss::gpu::GpuIndexIVFFlat gpuIndex(
+                &res, opt.dim, opt.numCentroids, metricType, config);
+
+
+        printf("Creating raft handle\n");
+        raft::handle_t raft_handle;
+        printf("Done\n");
 
         std::cout << "Training raft index" << std::endl;
         uint32_t r_train_start = raft::curTimeMillis();
@@ -166,22 +174,22 @@ void queryTest(
         uint32_t r_train_stop = raft::curTimeMillis();
         std::cout << "Raft train time " << r_train_start << " " << r_train_stop << " " << (r_train_stop - r_train_start) << std::endl;
 
-//        std::cout << "Training gpu index" << std::endl;
-//        uint32_t g_train_start = raft::curTimeMillis();
-//        train_index(raft_handle, opt, gpuIndex, trainVecs, addVecs);
-//        raft_handle.sync_stream();
-//        uint32_t g_train_stop = raft::curTimeMillis();
-//        std::cout << "FAISS train time " << g_train_start << " " << g_train_stop << " " << (g_train_stop - g_train_start) << std::endl;
+        std::cout << "Training gpu index" << std::endl;
+        uint32_t g_train_start = raft::curTimeMillis();
+        train_index(raft_handle, opt, gpuIndex, trainVecs, addVecs);
+        raft_handle.sync_stream();
+        uint32_t g_train_stop = raft::curTimeMillis();
+        std::cout << "FAISS train time " << g_train_start << " " << g_train_stop << " " << (g_train_stop - g_train_start) << std::endl;
 
-//        std::cout << "Computing ground truth" << std::endl;
-//        rmm::device_uvector<faiss::Index::idx_t> ref_inds(opt.numQuery * opt.k, raft_handle.get_stream());
-//        rmm::device_uvector<float> ref_dists(opt.numQuery * opt.k, raft_handle.get_stream());
-//
-//        invoke_bfknn(raft_handle, opt, ref_dists.data(), ref_inds.data(), metricType, addVecs, queryVecs);
-//
-//        std::cout << "Done." << std::endl;
-//        raft::print_device_vector("ref_dists", ref_dists.data(), opt.k, std::cout);
-//        raft::print_device_vector("ref_inds", ref_inds.data(), opt.k, std::cout);
+        std::cout << "Computing ground truth" << std::endl;
+        rmm::device_uvector<faiss::Index::idx_t> ref_inds(opt.numQuery * opt.k, raft_handle.get_stream());
+        rmm::device_uvector<float> ref_dists(opt.numQuery * opt.k, raft_handle.get_stream());
+
+        invoke_bfknn(raft_handle, opt, ref_dists.data(), ref_inds.data(), metricType, addVecs, queryVecs);
+
+        std::cout << "Done." << std::endl;
+        raft::print_device_vector("ref_dists", ref_dists.data(), opt.k, std::cout);
+        raft::print_device_vector("ref_inds", ref_inds.data(), opt.k, std::cout);
 
         rmm::device_uvector<faiss::Index::idx_t> raft_inds(opt.numQuery * opt.k, raft_handle.get_stream());
         rmm::device_uvector<float> raft_dists(opt.numQuery * opt.k, raft_handle.get_stream());
@@ -201,18 +209,18 @@ void queryTest(
         rmm::device_uvector<faiss::Index::idx_t> gpu_inds(opt.numQuery * opt.k, raft_handle.get_stream());
         rmm::device_uvector<float> gpu_dists(opt.numQuery * opt.k, raft_handle.get_stream());
 
-//        uint32_t gstart = raft::curTimeMillis();
-//        gpuIndex.search(
-//                opt.numQuery,
-//                queryVecs.data(),
-//                opt.k,
-//                gpu_dists.data(),
-//                gpu_inds.data());
-//
-//        raft_handle.sync_stream();
-//        uint32_t gstop = raft::curTimeMillis();
-//
-//        std::cout << "FAISS query time " << gstart << " " << gstop << " " << (gstop - gstart) << std::endl;
+        uint32_t gstart = raft::curTimeMillis();
+        gpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                gpu_dists.data(),
+                gpu_inds.data());
+
+        raft_handle.sync_stream();
+        uint32_t gstop = raft::curTimeMillis();
+
+        std::cout << "FAISS query time " << gstart << " " << gstop << " " << (gstop - gstart) << std::endl;
 
         // TODO: Compare recall, perhaps by adding the indices/distances to a hashmap.
 

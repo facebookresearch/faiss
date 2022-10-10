@@ -16,8 +16,8 @@
 
 
 set(RAFT_VERSION "22.10")
-set(RAFT_FORK "achirkin")
-set(RAFT_PINNED_TAG "enh-knn-kmeans-more-gpu")
+set(RAFT_FORK "rapidsai")
+set(RAFT_PINNED_TAG "branch-22.10")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)

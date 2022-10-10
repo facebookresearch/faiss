@@ -14,6 +14,11 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
+#ifdef FAISS_ENABLE_RAFT
+// TODO: Expose fused_l2_knn
+#include <raft/spatial/knn/brute_force_knn.cuh>
+#endif
+
 namespace faiss {
 namespace gpu {
 
@@ -103,7 +108,7 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         // Since we've guaranteed that all arguments are on device, call the
         // implementation
 
-#if defined FAISS_ENABLE_RAFT
+#ifdef FAISS_ENABLE_RAFT
         // TODO: When k <= 64, invoke bfknn from RAFT
         if (args.k <= 64) {
 

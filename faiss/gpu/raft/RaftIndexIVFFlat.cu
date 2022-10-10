@@ -40,7 +40,10 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
         faiss::MetricType metric,
         GpuIndexIVFFlatConfig config)
         : GpuIndexIVFFlat(provider, dims, nlist, metric, config),
-          raft_handle(resources_->getDefaultStream(config_.device)) {}
+          raft_handle(resources_->getDefaultStream(config_.device)) {
+
+    std::cout << "In raft index constructor" << std::endl;
+}
 
 RaftIndexIVFFlat::~RaftIndexIVFFlat() {
     RaftIndexIVFFlat::reset();
