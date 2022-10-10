@@ -898,7 +898,6 @@ void IndexIVF::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
     }
 }
 
-
 bool IndexIVF::check_ids_sorted() const {
     size_t nflip = 0;
 

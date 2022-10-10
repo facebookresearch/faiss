@@ -112,7 +112,6 @@ PyCallbackIOReader::~PyCallbackIOReader() {
  * Callbacks for IDSelector
  ***********************************************************/
 
-
 PyCallbackIDSelector::PyCallbackIDSelector(PyObject* callback)
         : callback(callback) {
     PyThreadLock gil;
