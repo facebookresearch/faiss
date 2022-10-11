@@ -25,7 +25,7 @@ def supported_instruction_sets():
     {"NEON", "ASIMD", ...}
     """
     import numpy
-    if version.Version(numpy.__version__) >= "1.19":
+    if version.Version(numpy.__version__) >= version.Version("1.19"):
         # use private API as next-best thing until numpy/numpy#18058 is solved
         from numpy.core._multiarray_umath import __cpu_features__
         # __cpu_features__ is a dictionary with CPU features
