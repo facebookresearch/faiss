@@ -389,7 +389,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;IndexFastScan.h&gt;</em></div>
 <p>Fast scan version of <a class="reference internal" href="../struct/structfaiss_1_1IndexPQ.html#structfaiss_1_1IndexPQ"><span class="std std-ref">IndexPQ</span></a> and IndexAQ. Works for 4-bit PQ and AQ for now.</p>
-<p>The codes are not stored sequentially but grouped in blocks of size bbs. This makes it possible to compute distances quickly with SIMD instructions.</p>
+<p>The codes are not stored sequentially but grouped in blocks of size bbs. This makes it possible to compute distances quickly with SIMD instructions. The trailing codes (padding codes that are added to complete the last code) are garbage.</p>
 <p>Implementations: 12: blocked loop with internal loop on Q with qbs 13: same with reservoir accumulator to store results 14: no qbs with heap accumulator 15: no qbs with reservoir accumulator </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexAdditiveQuantizerFastScan.html#structfaiss_1_1IndexAdditiveQuantizerFastScan"><span class="std std-ref">faiss::IndexAdditiveQuantizerFastScan</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexPQFastScan.html#structfaiss_1_1IndexPQFastScan"><span class="std std-ref">faiss::IndexPQFastScan</span></a></p>
 <div class="breathe-sectiondef docutils container">
@@ -486,6 +486,24 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexFastScan10remove_idsERK10IDSelector">
+<span id="_CPPv3N5faiss13IndexFastScan10remove_idsERK10IDSelector"></span><span id="_CPPv2N5faiss13IndexFastScan10remove_idsERK10IDSelector"></span><span id="faiss::IndexFastScan::remove_ids__IDSelectorCR"></span><span class="target" id="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">remove_ids</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sel</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexFastScan10remove_idsERK10IDSelector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>removes IDs from the index. Not supported by all indexes. Returns the number of elements removed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexFastScan10merge_fromER5Index5idx_t">
+<span id="_CPPv3N5faiss13IndexFastScan10merge_fromER5Index5idx_t"></span><span id="_CPPv2N5faiss13IndexFastScan10merge_fromER5Index5idx_t"></span><span id="faiss::IndexFastScan::merge_from__IndexR.idx_t"></span><span class="target" id="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span>, <a class="reference internal" href="../namespace/namespacefaiss.html#_CPPv4N5faiss13IndexFastScan5idx_tE" title="faiss::IndexFastScan::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexFastScan10merge_fromER5Index5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13IndexFastScan26check_compatible_for_mergeERK5Index">
+<span id="_CPPv3NK5faiss13IndexFastScan26check_compatible_for_mergeERK5Index"></span><span id="_CPPv2NK5faiss13IndexFastScan26check_compatible_for_mergeERK5Index"></span><span id="faiss::IndexFastScan::check_compatible_for_merge__IndexCRC"></span><span class="target" id="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss13IndexFastScan26check_compatible_for_mergeERK5Index" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
 </div>
