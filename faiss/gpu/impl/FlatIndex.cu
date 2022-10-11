@@ -21,15 +21,20 @@ FlatIndex::FlatIndex(
         GpuResources* res,
         int dim,
         bool useFloat16,
-        bool storeTransposed,
         MemorySpace space)
         : resources_(res),
           dim_(dim),
           useFloat16_(useFloat16),
-          storeTransposed_(storeTransposed),
           space_(space),
           num_(0),
-          rawData_(
+          rawData32_(
+                  res,
+                  AllocInfo(
+                          AllocType::FlatData,
+                          getCurrentDevice(),
+                          space,
+                          res->getDefaultStreamCurrentDevice())),
+          rawData16_(
                   res,
                   AllocInfo(
                           AllocType::FlatData,
@@ -59,31 +64,14 @@ int FlatIndex::getDim() const {
 }
 
 void FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+    rawData32_.reserve(numVecs * dim_ * sizeof(float), stream);
+
     if (useFloat16_) {
-        rawData_.reserve(numVecs * dim_ * sizeof(half), stream);
-    } else {
-        rawData_.reserve(numVecs * dim_ * sizeof(float), stream);
+        rawData16_.reserve(numVecs * dim_ * sizeof(half), stream);
     }
 }
 
-template <>
-Tensor<float, 2, true>& FlatIndex::getVectorsRef<float>() {
-    // Should not call this unless we are in float32 mode
-    FAISS_ASSERT(!useFloat16_);
-    return getVectorsFloat32Ref();
-}
-
-template <>
-Tensor<half, 2, true>& FlatIndex::getVectorsRef<half>() {
-    // Should not call this unless we are in float16 mode
-    FAISS_ASSERT(useFloat16_);
-    return getVectorsFloat16Ref();
-}
-
 Tensor<float, 2, true>& FlatIndex::getVectorsFloat32Ref() {
-    // Should not call this unless we are in float32 mode
-    FAISS_ASSERT(!useFloat16_);
-
     return vectors_;
 }
 
@@ -92,28 +80,6 @@ Tensor<half, 2, true>& FlatIndex::getVectorsFloat16Ref() {
     FAISS_ASSERT(useFloat16_);
 
     return vectorsHalf_;
-}
-
-DeviceTensor<float, 2, true> FlatIndex::getVectorsFloat32Copy(
-        cudaStream_t stream) {
-    return getVectorsFloat32Copy(0, num_, stream);
-}
-
-DeviceTensor<float, 2, true> FlatIndex::getVectorsFloat32Copy(
-        int from,
-        int num,
-        cudaStream_t stream) {
-    DeviceTensor<float, 2, true> vecFloat32(
-            resources_, makeDevAlloc(AllocType::Other, stream), {num, dim_});
-
-    if (useFloat16_) {
-        auto halfNarrow = vectorsHalf_.narrowOutermost(from, num);
-        convertTensor<half, float, 2>(stream, halfNarrow, vecFloat32);
-    } else {
-        vectors_.copyTo(vecFloat32, stream);
-    }
-
-    return vecFloat32;
 }
 
 void FlatIndex::query(
@@ -143,8 +109,8 @@ void FlatIndex::query(
                 resources_,
                 getCurrentDevice(),
                 stream,
-                storeTransposed_ ? vectorsTransposed_ : vectors_,
-                !storeTransposed_, // is vectors row major?
+                vectors_,
+                true, // is vectors row major?
                 &norms_,
                 input,
                 true, // input is row major
@@ -171,8 +137,8 @@ void FlatIndex::query(
             resources_,
             getCurrentDevice(),
             resources_->getDefaultStreamCurrentDevice(),
-            storeTransposed_ ? vectorsHalfTransposed_ : vectorsHalf_,
-            !storeTransposed_, // is vectors row major?
+            vectorsHalf_,
+            true, // is vectors row major?
             &norms_,
             input,
             true, // input is row major
@@ -186,50 +152,41 @@ void FlatIndex::query(
 
 void FlatIndex::computeResidual(
         Tensor<float, 2, true>& vecs,
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& ids,
         Tensor<float, 2, true>& residuals) {
     if (useFloat16_) {
         runCalcResidual(
                 vecs,
                 getVectorsFloat16Ref(),
-                listIds,
+                ids,
                 residuals,
                 resources_->getDefaultStreamCurrentDevice());
     } else {
         runCalcResidual(
                 vecs,
                 getVectorsFloat32Ref(),
-                listIds,
+                ids,
                 residuals,
                 resources_->getDefaultStreamCurrentDevice());
     }
 }
 
 void FlatIndex::reconstruct(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& ids,
         Tensor<float, 2, true>& vecs) {
     if (useFloat16_) {
         runReconstruct(
-                listIds,
+                ids,
                 getVectorsFloat16Ref(),
                 vecs,
                 resources_->getDefaultStreamCurrentDevice());
     } else {
         runReconstruct(
-                listIds,
+                ids,
                 getVectorsFloat32Ref(),
                 vecs,
                 resources_->getDefaultStreamCurrentDevice());
     }
-}
-
-void FlatIndex::reconstruct(
-        Tensor<int, 2, true>& listIds,
-        Tensor<float, 3, true>& vecs) {
-    auto listIds1 = listIds.downcastOuter<1>();
-    auto vecs2 = vecs.downcastOuter<2>();
-
-    reconstruct(listIds1, vecs2);
 }
 
 void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
@@ -237,6 +194,14 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
         return;
     }
 
+    // add to float32 data
+    rawData32_.append(
+            (char*)data,
+            (size_t)dim_ * numVecs * sizeof(float),
+            stream,
+            true /* reserve exactly */);
+
+    // convert and add to float16 data if needed
     if (useFloat16_) {
         // Make sure that `data` is on our device; we'll run the
         // conversion on our device
@@ -250,45 +215,23 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
         auto devDataHalf = convertTensorTemporary<float, half, 2>(
                 resources_, stream, devData);
 
-        rawData_.append(
+        rawData16_.append(
                 (char*)devDataHalf.data(),
                 devDataHalf.getSizeInBytes(),
-                stream,
-                true /* reserve exactly */);
-    } else {
-        rawData_.append(
-                (char*)data,
-                (size_t)dim_ * numVecs * sizeof(float),
                 stream,
                 true /* reserve exactly */);
     }
 
     num_ += numVecs;
 
-    if (useFloat16_) {
-        DeviceTensor<half, 2, true> vectorsHalf(
-                (half*)rawData_.data(), {(int)num_, dim_});
-        vectorsHalf_ = std::move(vectorsHalf);
-    } else {
-        DeviceTensor<float, 2, true> vectors(
-                (float*)rawData_.data(), {(int)num_, dim_});
-        vectors_ = std::move(vectors);
-    }
+    DeviceTensor<float, 2, true> vectors32(
+            (float*)rawData32_.data(), {(int)num_, dim_});
+    vectors_ = std::move(vectors32);
 
-    if (storeTransposed_) {
-        if (useFloat16_) {
-            vectorsHalfTransposed_ = DeviceTensor<half, 2, true>(
-                    resources_,
-                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
-                    {dim_, (int)num_});
-            runTransposeAny(vectorsHalf_, 0, 1, vectorsHalfTransposed_, stream);
-        } else {
-            vectorsTransposed_ = DeviceTensor<float, 2, true>(
-                    resources_,
-                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
-                    {dim_, (int)num_});
-            runTransposeAny(vectors_, 0, 1, vectorsTransposed_, stream);
-        }
+    if (useFloat16_) {
+        DeviceTensor<half, 2, true> vectors16(
+                (half*)rawData16_.data(), {(int)num_, dim_});
+        vectorsHalf_ = std::move(vectors16);
     }
 
     // Precompute L2 norms of our database
@@ -310,11 +253,10 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
 }
 
 void FlatIndex::reset() {
-    rawData_.clear();
+    rawData32_.clear();
+    rawData16_.clear();
     vectors_ = DeviceTensor<float, 2, true>();
-    vectorsTransposed_ = DeviceTensor<float, 2, true>();
     vectorsHalf_ = DeviceTensor<half, 2, true>();
-    vectorsHalfTransposed_ = DeviceTensor<half, 2, true>();
     norms_ = DeviceTensor<float, 1, true>();
     num_ = 0;
 }

@@ -15,7 +15,7 @@
                                                         \
     void ivfInterleavedScanImpl_##WARP_Q##_(            \
             Tensor<float, 2, true>& queries,            \
-            Tensor<int, 2, true>& listIds,              \
+            Tensor<Index::idx_t, 2, true>& listIds,     \
             DeviceVector<void*>& listData,              \
             DeviceVector<void*>& listIndices,           \
             IndicesOptions indicesOptions,              \
@@ -39,7 +39,7 @@
                                                        \
     void ivfInterleavedScanImpl_##WARP_Q##_(           \
             Tensor<float, 2, true>& queries,           \
-            Tensor<int, 2, true>& listIds,             \
+            Tensor<Index::idx_t, 2, true>& listIds,    \
             DeviceVector<void*>& listData,             \
             DeviceVector<void*>& listIndices,          \
             IndicesOptions indicesOptions,             \

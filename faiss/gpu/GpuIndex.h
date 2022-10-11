@@ -77,6 +77,17 @@ class GpuIndex : public faiss::Index {
             Index::idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /// `x`, `distances` and `labels` and `recons` can be resident on the CPU or
+    /// any GPU; copies are performed as needed
+    void search_and_reconstruct(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            float* recons,
+            const SearchParameters* params = nullptr) const override;
+
     /// Overridden to force GPU indices to provide their own GPU-friendly
     /// implementation
     void compute_residual(const float* x, float* residual, Index::idx_t key)
@@ -112,7 +123,8 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels) const = 0;
+            Index::idx_t* labels,
+            const SearchParameters* params) const = 0;
 
    private:
     /// Handles paged adds if the add set is too large, passes to
@@ -128,7 +140,8 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* outDistancesData,
-            Index::idx_t* outIndicesData) const;
+            Index::idx_t* outIndicesData,
+            const SearchParameters* params) const;
 
     /// Calls searchImpl_ for a single page of GPU-resident data,
     /// handling paging of the data and copies from the CPU
@@ -137,7 +150,8 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* outDistancesData,
-            Index::idx_t* outIndicesData) const;
+            Index::idx_t* outIndicesData,
+            const SearchParameters* params) const;
 
    protected:
     /// Manages streams, cuBLAS handles and scratch memory for devices
@@ -149,6 +163,15 @@ class GpuIndex : public faiss::Index {
     /// Size above which we page copies from the CPU to GPU
     size_t minPagedSize_;
 };
+
+/// If the given index is a GPU index, this returns the index instance
+GpuIndex* tryCastGpuIndex(faiss::Index* index);
+
+/// Is the given index instance a GPU index?
+bool isGpuIndex(faiss::Index* index);
+
+/// Does the given CPU index instance have a corresponding GPU implementation?
+bool isGpuIndexImplemented(faiss::Index* index);
 
 } // namespace gpu
 } // namespace faiss

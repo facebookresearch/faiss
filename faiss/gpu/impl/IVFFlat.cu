@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/impl/InterleavedCodes.h>
 #include <faiss/gpu/impl/RemapIndices.h>
@@ -29,7 +30,8 @@ namespace gpu {
 
 IVFFlat::IVFFlat(
         GpuResources* res,
-        FlatIndex* quantizer,
+        int dim,
+        int nlist,
         faiss::MetricType metric,
         float metricArg,
         bool useResidual,
@@ -38,13 +40,14 @@ IVFFlat::IVFFlat(
         IndicesOptions indicesOptions,
         MemorySpace space)
         : IVFBase(res,
+                  dim,
+                  nlist,
                   metric,
                   metricArg,
-                  quantizer,
+                  useResidual,
                   interleavedLayout,
                   indicesOptions,
                   space),
-          useResidual_(useResidual),
           scalarQ_(scalarQ ? new GpuScalarQuantizer(res, *scalarQ) : nullptr) {}
 
 IVFFlat::~IVFFlat() {}
@@ -111,27 +114,18 @@ std::vector<uint8_t> IVFFlat::translateCodesFromGpu_(
 
 void IVFFlat::appendVectors_(
         Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& ivfCentroidResiduals,
         Tensor<Index::idx_t, 1, true>& indices,
-        Tensor<int, 1, true>& uniqueLists,
+        Tensor<Index::idx_t, 1, true>& uniqueLists,
         Tensor<int, 1, true>& vectorsByUniqueList,
         Tensor<int, 1, true>& uniqueListVectorStart,
         Tensor<int, 1, true>& uniqueListStartOffset,
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         cudaStream_t stream) {
     //
     // Append the new encodings
     //
-
-    // Calculate residuals for these vectors, if needed
-    DeviceTensor<float, 2, true> residuals(
-            resources_,
-            makeTempAlloc(AllocType::Other, stream),
-            {vecs.getSize(0), dim_});
-
-    if (useResidual_) {
-        quantizer_->computeResidual(vecs, listIds, residuals);
-    }
 
     // Append indices to the IVF lists
     runIVFIndicesAppend(
@@ -151,7 +145,7 @@ void IVFFlat::appendVectors_(
                 vectorsByUniqueList,
                 uniqueListVectorStart,
                 uniqueListStartOffset,
-                useResidual_ ? residuals : vecs,
+                useResidual_ ? ivfCentroidResiduals : vecs,
                 scalarQ_.get(),
                 deviceListDataPointers_,
                 resources_,
@@ -160,14 +154,15 @@ void IVFFlat::appendVectors_(
         runIVFFlatAppend(
                 listIds,
                 listOffset,
-                useResidual_ ? residuals : vecs,
+                useResidual_ ? ivfCentroidResiduals : vecs,
                 scalarQ_.get(),
                 deviceListDataPointers_,
                 stream);
     }
 }
 
-void IVFFlat::query(
+void IVFFlat::search(
+        Index* coarseQuantizer,
         Tensor<float, 2, true>& queries,
         int nprobe,
         int k,
@@ -178,7 +173,7 @@ void IVFFlat::query(
     // These are caught at a higher level
     FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
-    nprobe = std::min(nprobe, quantizer_->getSize());
+    nprobe = std::min(nprobe, (int)getNumLists());
 
     FAISS_ASSERT(queries.getSize(1) == dim_);
 
@@ -190,31 +185,116 @@ void IVFFlat::query(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
-    DeviceTensor<int, 2, true> coarseIndices(
+    DeviceTensor<Index::idx_t, 2, true> coarseIndices(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
-
-    // Find the `nprobe` closest lists; we can use int indices both
-    // internally and externally
-    quantizer_->query(
-            queries,
-            nprobe,
-            metric_,
-            metricArg_,
-            coarseDistances,
-            coarseIndices,
-            false);
-
+    // in case we also want/need residuals, we need the original centroids as
+    // well
+    // FIXME: why centroids instead of calculating residuals in one go?
     DeviceTensor<float, 3, true> residualBase(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe, dim_});
 
-    if (useResidual_) {
-        // Reconstruct vectors from the quantizer
-        quantizer_->reconstruct(coarseIndices, residualBase);
+    searchCoarseQuantizer_(
+            coarseQuantizer,
+            nprobe,
+            queries,
+            coarseDistances,
+            coarseIndices,
+            nullptr,
+            // we need the IVF centroids to which vectors were assigned if
+            // vectors are encoded using the residual
+            useResidual_ ? &residualBase : nullptr);
+
+    searchImpl_(
+            queries,
+            coarseDistances,
+            coarseIndices,
+            residualBase,
+            k,
+            outDistances,
+            outIndices,
+            false);
+}
+
+void IVFFlat::searchPreassigned(
+        Index* coarseQuantizer,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& ivfDistances,
+        Tensor<Index::idx_t, 2, true>& ivfAssignments,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<Index::idx_t, 2, true>& outIndices,
+        bool storePairs) {
+    FAISS_ASSERT(ivfDistances.getSize(0) == vecs.getSize(0));
+    FAISS_ASSERT(ivfAssignments.getSize(0) == vecs.getSize(0));
+    FAISS_ASSERT(outDistances.getSize(0) == vecs.getSize(0));
+    FAISS_ASSERT(outIndices.getSize(0) == vecs.getSize(0));
+    FAISS_ASSERT(vecs.getSize(1) == dim_);
+
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+    auto nprobe = ivfAssignments.getSize(1);
+    FAISS_ASSERT(nprobe <= numLists_);
+
+    // Based on the IVF assignments, we need the IVF centroids to which vectors
+    // were assigned
+    // FIXME: IVFPQ doesn't need this information as it has direct reference to
+    // all IVF centroids and within the various kernels can look it up by index
+    // as needed. Can we convert IVFFlat to do the same thing?
+    DeviceTensor<float, 3, true> ivfCentroids(
+            resources_,
+            makeTempAlloc(AllocType::Other, stream),
+            {vecs.getSize(0), nprobe, dim_});
+
+    auto gpuQuantizer = tryCastGpuIndex(coarseQuantizer);
+    if (gpuQuantizer) {
+        // We can pass device pointers directly
+        gpuQuantizer->reconstruct_batch(
+                vecs.getSize(0) * nprobe,
+                ivfAssignments.data(),
+                ivfCentroids.data());
+    } else {
+        // CPU coarse quantizer
+        auto cpuIVFCentroids =
+                std::vector<float>(vecs.getSize(0) * nprobe * dim_);
+
+        // We need to copy `ivfAssignments` to the CPU, in order to pass to a
+        // CPU index
+        auto cpuIVFAssignments = ivfAssignments.copyToVector(stream);
+
+        coarseQuantizer->reconstruct_batch(
+                vecs.getSize(0) * nprobe,
+                cpuIVFAssignments.data(),
+                cpuIVFCentroids.data());
+
+        ivfCentroids.copyFrom(cpuIVFCentroids, stream);
     }
+
+    searchImpl_(
+            vecs,
+            ivfDistances,
+            ivfAssignments,
+            ivfCentroids,
+            k,
+            outDistances,
+            outIndices,
+            storePairs);
+}
+
+void IVFFlat::searchImpl_(
+        Tensor<float, 2, true>& queries,
+        Tensor<float, 2, true>& coarseDistances,
+        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<float, 3, true>& ivfCentroids,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<Index::idx_t, 2, true>& outIndices,
+        bool storePairs) {
+    FAISS_ASSERT(storePairs == false);
+
+    auto stream = resources_->getDefaultStreamCurrentDevice();
 
     if (interleavedLayout_) {
         runIVFInterleavedScan(
@@ -227,7 +307,7 @@ void IVFFlat::query(
                 k,
                 metric_,
                 useResidual_,
-                residualBase,
+                ivfCentroids,
                 scalarQ_.get(),
                 outDistances,
                 outIndices,
@@ -244,7 +324,7 @@ void IVFFlat::query(
                 k,
                 metric_,
                 useResidual_,
-                residualBase,
+                ivfCentroids,
                 scalarQ_.get(),
                 outDistances,
                 outIndices,

@@ -16,6 +16,8 @@ namespace faiss {
  *
  * The codes are not stored sequentially but grouped in blocks of size bbs.
  * This makes it possible to compute distances quickly with SIMD instructions.
+ * The trailing codes (padding codes that are added to complete the last code)
+ * are garbage.
  *
  * Implementations:
  * 12: blocked loop with internal loop on Q with qbs
@@ -123,6 +125,9 @@ struct IndexFastScan : Index {
             const Scaler& scaler) const;
 
     void reconstruct(idx_t key, float* recons) const override;
+    size_t remove_ids(const IDSelector& sel) override;
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+    void check_compatible_for_merge(const Index& otherIndex) const override;
 };
 
 struct FastScanStats {

@@ -14,6 +14,7 @@
 #include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
@@ -95,6 +96,61 @@ void IndexFastScan::add(idx_t n, const float* x) {
             tmp_codes.get(), M, ntotal, ntotal + n, bbs, M2, codes.get());
 
     ntotal += n;
+}
+
+size_t IndexFastScan::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                for (int sq = 0; sq < M; sq++) {
+                    uint8_t code =
+                            pq4_get_packed_element(codes.data(), bbs, M, i, sq);
+                    pq4_set_packed_element(codes.data(), code, bbs, M, j, sq);
+                }
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        ntotal2 = roundup(ntotal, bbs);
+        size_t new_size = ntotal2 * M2 / 2;
+        codes.resize(new_size);
+    }
+    return nremove;
+}
+
+void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
+    const IndexFastScan* other =
+            dynamic_cast<const IndexFastScan*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->M == M);
+    FAISS_THROW_IF_NOT(other->bbs == bbs);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
+    FAISS_THROW_IF_NOT_MSG(
+            typeid(*this) == typeid(*other),
+            "can only merge indexes of the same type");
+}
+
+void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
+    ntotal2 = roundup(ntotal + other->ntotal, bbs);
+    codes.resize(ntotal2 * M2 / 2);
+    for (int i = 0; i < other->ntotal; i++) {
+        for (int sq = 0; sq < M; sq++) {
+            uint8_t code =
+                    pq4_get_packed_element(other->codes.data(), bbs, M, i, sq);
+            pq4_set_packed_element(codes.data(), code, bbs, M, ntotal + i, sq);
+        }
+    }
+    ntotal += other->ntotal;
+    other->reset();
 }
 
 namespace {

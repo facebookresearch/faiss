@@ -19,10 +19,10 @@ namespace gpu {
 class IVFPQ : public IVFBase {
    public:
     IVFPQ(GpuResources* resources,
+          int dim,
+          int nlist,
           faiss::MetricType metric,
           float metricArg,
-          /// We do not own this reference
-          FlatIndex* quantizer,
           int numSubQuantizers,
           int bitsPerSubQuantizer,
           bool useFloat16LookupTables,
@@ -37,21 +37,35 @@ class IVFPQ : public IVFBase {
 
     ~IVFPQ() override;
 
-    /// Enable or disable pre-computed codes
-    void setPrecomputedCodes(bool enable);
-
-    /// Find the approximate k nearest neigbors for `queries` against
-    /// our database
-    void query(
-            Tensor<float, 2, true>& queries,
-            int nprobe,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices);
+    /// Enable or disable pre-computed codes. The quantizer is needed to gather
+    /// the IVF centroids for use
+    void setPrecomputedCodes(Index* coarseQuantizer, bool enable);
 
     /// Returns our set of sub-quantizers of the form
     /// (sub q)(code id)(sub dim)
     Tensor<float, 3, true> getPQCentroids();
+
+    /// Find the approximate k nearest neigbors for `queries` against
+    /// our database
+    void search(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& queries,
+            int nprobe,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices) override;
+
+    /// Performs search when we are already given the IVF cells to look at
+    /// (GpuIndexIVF::search_preassigned implementation)
+    void searchPreassigned(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfDistances,
+            Tensor<Index::idx_t, 2, true>& ivfAssignments,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices,
+            bool storePairs) override;
 
    protected:
     /// Returns the encoding size for a PQ-encoded IVF list
@@ -71,14 +85,26 @@ class IVFPQ : public IVFBase {
     /// Encode the vectors that we're adding and append to our IVF lists
     void appendVectors_(
             Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfCentroidResiduals,
             Tensor<Index::idx_t, 1, true>& indices,
-            Tensor<int, 1, true>& uniqueLists,
+            Tensor<Index::idx_t, 1, true>& uniqueLists,
             Tensor<int, 1, true>& vectorsByUniqueList,
             Tensor<int, 1, true>& uniqueListVectorStart,
             Tensor<int, 1, true>& uniqueListStartOffset,
-            Tensor<int, 1, true>& listIds,
+            Tensor<Index::idx_t, 1, true>& listIds,
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) override;
+
+    /// Shared IVF search implementation, used by both search and
+    /// searchPreassigned
+    void searchImpl_(
+            Tensor<float, 2, true>& queries,
+            Tensor<float, 2, true>& coarseDistances,
+            Tensor<Index::idx_t, 2, true>& coarseIndices,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices,
+            bool storePairs);
 
     /// Sets the current product quantizer centroids; the data can be
     /// resident on either the host or the device. It will be transposed
@@ -88,18 +114,13 @@ class IVFPQ : public IVFBase {
     void setPQCentroids_(float* data);
 
     /// Calculate precomputed residual distance information
-    void precomputeCodes_();
-
-    /// Calculate precomputed residual distance information (for different
-    /// coarse centroid type)
-    template <typename CentroidT>
-    void precomputeCodesT_();
+    void precomputeCodes_(Index* quantizer);
 
     /// Runs kernels for scanning inverted lists with precomputed codes
     void runPQPrecomputedCodes_(
             Tensor<float, 2, true>& queries,
-            DeviceTensor<float, 2, true>& coarseDistances,
-            DeviceTensor<int, 2, true>& coarseIndices,
+            Tensor<float, 2, true>& coarseDistances,
+            Tensor<Index::idx_t, 2, true>& coarseIndices,
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<Index::idx_t, 2, true>& outIndices);
@@ -107,19 +128,8 @@ class IVFPQ : public IVFBase {
     /// Runs kernels for scanning inverted lists without precomputed codes
     void runPQNoPrecomputedCodes_(
             Tensor<float, 2, true>& queries,
-            DeviceTensor<float, 2, true>& coarseDistances,
-            DeviceTensor<int, 2, true>& coarseIndices,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices);
-
-    /// Runs kernels for scanning inverted lists without precomputed codes (for
-    /// different coarse centroid type)
-    template <typename CentroidT>
-    void runPQNoPrecomputedCodesT_(
-            Tensor<float, 2, true>& queries,
-            DeviceTensor<float, 2, true>& coarseDistances,
-            DeviceTensor<int, 2, true>& coarseIndices,
+            Tensor<float, 2, true>& coarseDistances,
+            Tensor<Index::idx_t, 2, true>& coarseIndices,
             int k,
             Tensor<float, 2, true>& outDistances,
             Tensor<Index::idx_t, 2, true>& outIndices);

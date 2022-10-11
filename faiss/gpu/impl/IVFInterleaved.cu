@@ -19,7 +19,7 @@ template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ>
 __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
         Tensor<int, 3, true> indicesIn,
-        Tensor<int, 2, true> listIds,
+        Tensor<Index::idx_t, 2, true> listIds,
         int k,
         void** listIndices,
         IndicesOptions opt,
@@ -66,7 +66,7 @@ __global__ void ivfInterleavedScan2(
         uint32_t curK = i % k;
         uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        int listId = listIds[queryId][curProbe];
+        Index::idx_t listId = listIds[queryId][curProbe];
         if (listId != -1) {
             // Adjust the value we are selecting based on the sorting order
             heap.addThreadQ(distanceBase[i] * adj, index);
@@ -81,7 +81,7 @@ __global__ void ivfInterleavedScan2(
         uint32_t curK = i % k;
         uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        int listId = listIds[queryId][curProbe];
+        Index::idx_t listId = listIds[queryId][curProbe];
         if (listId != -1) {
             heap.addThreadQ(distanceBase[i] * adj, index);
         }
@@ -104,7 +104,7 @@ __global__ void ivfInterleavedScan2(
             uint32_t curProbe = packedIndex >> 16;
             uint32_t curK = packedIndex & 0xffff;
 
-            int listId = listIds[queryId][curProbe];
+            Index::idx_t listId = listIds[queryId][curProbe];
             int listOffset = indicesIn[queryId][curProbe][curK];
 
             if (opt == INDICES_32_BIT) {
@@ -112,7 +112,7 @@ __global__ void ivfInterleavedScan2(
             } else if (opt == INDICES_64_BIT) {
                 index = ((Index::idx_t*)listIndices[listId])[listOffset];
             } else {
-                index = ((Index::idx_t)listId << 32 | (Index::idx_t)listOffset);
+                index = (listId << 32 | (Index::idx_t)listOffset);
             }
         }
 
@@ -123,7 +123,7 @@ __global__ void ivfInterleavedScan2(
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<int, 3, true>& indicesIn,
-        Tensor<int, 2, true>& listIds,
+        Tensor<Index::idx_t, 2, true>& listIds,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -168,7 +168,7 @@ void runIVFInterleavedScan2(
 
 void runIVFInterleavedScan(
         Tensor<float, 2, true>& queries,
-        Tensor<int, 2, true>& listIds,
+        Tensor<Index::idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,

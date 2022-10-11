@@ -5,8 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
@@ -104,13 +109,10 @@ void GpuIndex::add_with_ids(
         Index::idx_t n,
         const float* x,
         const Index::idx_t* ids) {
+    DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
+    validateNumVectors(n);
 
     if (n == 0) {
         // nothing to add
@@ -128,7 +130,6 @@ void GpuIndex::add_with_ids(
         }
     }
 
-    DeviceScope scope(config_.device);
     addPaged_((int)n, x, ids ? ids : generatedIds.data());
 }
 
@@ -195,22 +196,12 @@ void GpuIndex::assign(
         const float* x,
         Index::idx_t* labels,
         Index::idx_t k) const {
+    DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
+    validateNumVectors(n);
+    validateKSelect(k);
 
-    // Maximum k-selection supported is based on the CUDA SDK
-    FAISS_THROW_IF_NOT_FMT(
-            k <= (Index::idx_t)getMaxKSelection(),
-            "GPU index only supports k <= %d (requested %d)",
-            getMaxKSelection(),
-            (int)k); // select limitation
-
-    DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
 
     // We need to create a throw-away buffer for distances, which we don't use
@@ -231,29 +222,17 @@ void GpuIndex::search(
         float* distances,
         Index::idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
+    DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
-    // Maximum k-selection supported is based on the CUDA SDK
-    FAISS_THROW_IF_NOT_FMT(
-            k <= (Index::idx_t)getMaxKSelection(),
-            "GPU index only supports k <= %d (requested %d)",
-            getMaxKSelection(),
-            (int)k); // select limitation
+    validateNumVectors(n);
+    validateKSelect(k);
 
     if (n == 0 || k == 0) {
         // nothing to search
         return;
     }
 
-    DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
 
     // We guarantee that the searchImpl_ will be called with device-resident
@@ -287,13 +266,14 @@ void GpuIndex::search(
         size_t dataSize = (size_t)n * this->d * sizeof(float);
 
         if (dataSize >= minPagedSize_) {
-            searchFromCpuPaged_(n, x, k, outDistances.data(), outLabels.data());
+            searchFromCpuPaged_(
+                    n, x, k, outDistances.data(), outLabels.data(), params);
             usePaged = true;
         }
     }
 
     if (!usePaged) {
-        searchNonPaged_(n, x, k, outDistances.data(), outLabels.data());
+        searchNonPaged_(n, x, k, outDistances.data(), outLabels.data(), params);
     }
 
     // Copy back if necessary
@@ -301,12 +281,25 @@ void GpuIndex::search(
     fromDevice<Index::idx_t, 2>(outLabels, labels, stream);
 }
 
+void GpuIndex::search_and_reconstruct(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        float* recons,
+        const SearchParameters* params) const {
+    search(n, x, k, distances, labels, params);
+    reconstruct_batch(n, labels, recons);
+}
+
 void GpuIndex::searchNonPaged_(
         int n,
         const float* x,
         int k,
         float* outDistancesData,
-        Index::idx_t* outIndicesData) const {
+        Index::idx_t* outIndicesData,
+        const SearchParameters* params) const {
     auto stream = resources_->getDefaultStream(config_.device);
 
     // Make sure arguments are on the device we desire; use temporary
@@ -318,7 +311,7 @@ void GpuIndex::searchNonPaged_(
             stream,
             {n, (int)this->d});
 
-    searchImpl_(n, vecs.data(), k, outDistancesData, outIndicesData);
+    searchImpl_(n, vecs.data(), k, outDistancesData, outIndicesData, params);
 }
 
 void GpuIndex::searchFromCpuPaged_(
@@ -326,7 +319,8 @@ void GpuIndex::searchFromCpuPaged_(
         const float* x,
         int k,
         float* outDistancesData,
-        Index::idx_t* outIndicesData) const {
+        Index::idx_t* outIndicesData,
+        const SearchParameters* params) const {
     Tensor<float, 2, true> outDistances(outDistancesData, {n, k});
     Tensor<Index::idx_t, 2, true> outIndices(outIndicesData, {n, k});
 
@@ -351,7 +345,8 @@ void GpuIndex::searchFromCpuPaged_(
                     x + (size_t)cur * this->d,
                     k,
                     outDistancesSlice.data(),
-                    outIndicesSlice.data());
+                    outIndicesSlice.data(),
+                    params);
         }
 
         return;
@@ -466,7 +461,8 @@ void GpuIndex::searchFromCpuPaged_(
                     bufGpus[cur3BufIndex]->data(),
                     k,
                     outDistancesSlice.data(),
-                    outIndicesSlice.data());
+                    outIndicesSlice.data(),
+                    params);
 
             // Create completion event
             eventGpuExecuteDone[cur3BufIndex].reset(
@@ -517,6 +513,31 @@ void GpuIndex::compute_residual_n(
 
 std::shared_ptr<GpuResources> GpuIndex::getResources() {
     return resources_;
+}
+
+GpuIndex* tryCastGpuIndex(faiss::Index* index) {
+    return dynamic_cast<GpuIndex*>(index);
+}
+
+bool isGpuIndex(faiss::Index* index) {
+    return tryCastGpuIndex(index) != nullptr;
+}
+
+bool isGpuIndexImplemented(faiss::Index* index) {
+#define CHECK_INDEX(TYPE)                 \
+    do {                                  \
+        if (dynamic_cast<TYPE*>(index)) { \
+            return true;                  \
+        }                                 \
+    } while (false)
+
+    CHECK_INDEX(faiss::IndexFlat);
+    // FIXME: do we want recursive checking of the IVF quantizer?
+    CHECK_INDEX(faiss::IndexIVFFlat);
+    CHECK_INDEX(faiss::IndexIVFPQ);
+    CHECK_INDEX(faiss::IndexIVFScalarQuantizer);
+
+    return false;
 }
 
 } // namespace gpu

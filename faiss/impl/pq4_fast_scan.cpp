@@ -122,30 +122,70 @@ void pq4_pack_codes_range(
     }
 }
 
+namespace {
+
+// get the specific address of the vector inside a block
+// shift is used for determine the if the saved in bits 0..3 (false) or
+// bits 4..7 (true)
+uint8_t get_vector_specific_address(
+        size_t bbs,
+        size_t vector_id,
+        size_t sq,
+        bool& shift) {
+    // get the vector_id inside the block
+    vector_id = vector_id % bbs;
+    shift = vector_id > 15;
+    vector_id = vector_id & 15;
+
+    // get the address of the vector in sq
+    size_t address;
+    if (vector_id < 8) {
+        address = vector_id << 1;
+    } else {
+        address = ((vector_id - 8) << 1) + 1;
+    }
+    if (sq & 1) {
+        address += 16;
+    }
+    return (sq >> 1) * bbs + address;
+}
+
+} // anonymous namespace
+
 uint8_t pq4_get_packed_element(
         const uint8_t* data,
         size_t bbs,
         size_t nsq,
-        size_t i,
+        size_t vector_id,
         size_t sq) {
     // move to correct bbs-sized block
-    data += (i / bbs * (nsq / 2) + sq / 2) * bbs;
-    sq = sq & 1;
-    i = i % bbs;
-
-    // another step
-    data += (i / 32) * 32;
-    i = i % 32;
-
-    if (sq == 1) {
-        data += 16;
-    }
-    const uint8_t iperm0[16] = {
-            0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15};
-    if (i < 16) {
-        return data[iperm0[i]] & 15;
+    // number of blocks * block size
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_vector_specific_address(bbs, vector_id, sq, shift);
+    if (shift) {
+        return data[address] >> 4;
     } else {
-        return data[iperm0[i - 16]] >> 4;
+        return data[address] & 15;
+    }
+}
+
+void pq4_set_packed_element(
+        uint8_t* data,
+        uint8_t code,
+        size_t bbs,
+        size_t nsq,
+        size_t vector_id,
+        size_t sq) {
+    // move to correct bbs-sized block
+    // number of blocks * block size
+    data += (vector_id / bbs) * (((nsq + 1) / 2) * bbs);
+    bool shift;
+    size_t address = get_vector_specific_address(bbs, vector_id, sq, shift);
+    if (shift) {
+        data[address] = (code << 4) | (data[address] & 15);
+    } else {
+        data[address] = code | (data[address] & ~15);
     }
 }
 

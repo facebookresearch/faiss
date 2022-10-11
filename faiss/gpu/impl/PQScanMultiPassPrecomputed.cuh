@@ -23,7 +23,7 @@ void runPQScanMultiPassPrecomputed(
         Tensor<float, 2, true>& precompTerm1,
         NoTypeTensor<3, true>& precompTerm2,
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
