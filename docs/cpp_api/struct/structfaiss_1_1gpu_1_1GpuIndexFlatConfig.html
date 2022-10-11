@@ -400,7 +400,7 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu18GpuIndexFlatConfig15storeTransposedE">
 <span id="_CPPv3N5faiss3gpu18GpuIndexFlatConfig15storeTransposedE"></span><span id="_CPPv2N5faiss3gpu18GpuIndexFlatConfig15storeTransposedE"></span><span id="faiss::gpu::GpuIndexFlatConfig::storeTransposed__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">storeTransposed</span></span></span><br /></dt>
-<dd><p>Whether or not data is stored (transparently) in a transposed layout, enabling use of the NN GEMM call, which is ~10% faster. This will improve the speed of the flat index, but will substantially slow down any add() calls made, as all data must be transposed, and will increase storage requirements (we store data in both transposed and non-transposed layouts). </p>
+<dd><p>Deprecated: no longer used Previously used to indicate whether internal storage of vectors is transposed </p>
 </dd></dl>
 
 <dl class="cpp var">

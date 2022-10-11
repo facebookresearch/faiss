@@ -46,7 +46,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Class faiss::gpu::KernelTimer" href="classfaiss_1_1gpu_1_1KernelTimer.html" />
+    <link rel="next" title="Class faiss::gpu::GpuResourcesProviderFromInstance" href="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance.html" />
     <link rel="prev" title="Class faiss::gpu::GpuResources" href="classfaiss_1_1gpu_1_1GpuResources.html" /> 
 </head>
 
@@ -118,6 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer.html">Class faiss::gpu::GpuIndexIVFScalarQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResources.html">Class faiss::gpu::GpuResources</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Class faiss::gpu::GpuResourcesProvider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance.html">Class faiss::gpu::GpuResourcesProviderFromInstance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1KernelTimer.html">Class faiss::gpu::KernelTimer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StackDeviceMemory.html">Class faiss::gpu::StackDeviceMemory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classfaiss_1_1gpu_1_1StandardGpuResources.html">Class faiss::gpu::StandardGpuResources</a></li>
@@ -201,8 +202,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu20GpuResourcesProviderE">
 <span id="_CPPv3N5faiss3gpu20GpuResourcesProviderE"></span><span id="_CPPv2N5faiss3gpu20GpuResourcesProviderE"></span><span id="faiss::gpu::GpuResourcesProvider"></span><span class="target" id="classfaiss_1_1gpu_1_1GpuResourcesProvider"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuResourcesProvider</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu20GpuResourcesProviderE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Interface for a provider of a shared resources object. </p>
-<p>Subclassed by <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1StandardGpuResources"><span class="std std-ref">faiss::gpu::StandardGpuResources</span></a></p>
+<dd><p>Interface for a provider of a shared resources object. This is to avoid interfacing std::shared_ptr to Python </p>
+<p>Subclassed by <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance"><span class="std std-ref">faiss::gpu::GpuResourcesProviderFromInstance</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1StandardGpuResources"><span class="std std-ref">faiss::gpu::StandardGpuResources</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -227,7 +228,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="classfaiss_1_1gpu_1_1KernelTimer.html" class="btn btn-neutral float-right" title="Class faiss::gpu::KernelTimer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance.html" class="btn btn-neutral float-right" title="Class faiss::gpu::GpuResourcesProviderFromInstance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="classfaiss_1_1gpu_1_1GpuResources.html" class="btn btn-neutral float-left" title="Class faiss::gpu::GpuResources" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
