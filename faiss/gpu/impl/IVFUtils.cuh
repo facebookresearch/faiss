@@ -23,7 +23,7 @@ class GpuResources;
 /// intermediate results for all (query, probe) pair
 void runCalcListOffsets(
         GpuResources* res,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true>& ivfListIds,
         DeviceVector<int>& listLengths,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,
@@ -48,7 +48,7 @@ void runPass2SelectLists(
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         Tensor<int, 2, true>& prefixSumOffsets,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true>& ivfListIds,
         int k,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,

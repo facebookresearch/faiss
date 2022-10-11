@@ -55,7 +55,7 @@ __global__ void pass2SelectLists(
         Tensor<int, 2, true> heapIndices,
         void** listIndices,
         Tensor<int, 2, true> prefixSumOffsets,
-        Tensor<int, 2, true> topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true> ivfListIds,
         int k,
         IndicesOptions opt,
         Tensor<float, 2, true> outDistances,
@@ -127,7 +127,7 @@ __global__ void pass2SelectLists(
 
             // This is then the probe for the query; we can find the actual
             // list ID from this
-            int listId = topQueryToCentroid[queryId][probe];
+            Index::idx_t listId = ivfListIds[queryId][probe];
 
             // Now, we need to know the offset within the list
             // We ensure that before the array (at offset -1), there is a 0
@@ -141,7 +141,7 @@ __global__ void pass2SelectLists(
             } else if (opt == INDICES_64_BIT) {
                 index = ((Index::idx_t*)listIndices[listId])[listOffset];
             } else {
-                index = ((Index::idx_t)listId << 32 | (Index::idx_t)listOffset);
+                index = (listId << 32 | (Index::idx_t)listOffset);
             }
         }
 
@@ -155,13 +155,13 @@ void runPass2SelectLists(
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         Tensor<int, 2, true>& prefixSumOffsets,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true>& ivfListIds,
         int k,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,
         Tensor<Index::idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
-    auto grid = dim3(topQueryToCentroid.getSize(0));
+    auto grid = dim3(ivfListIds.getSize(0));
 
 #define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
     do {                                                       \
@@ -171,7 +171,7 @@ void runPass2SelectLists(
                         heapIndices,                           \
                         listIndices.data(),                    \
                         prefixSumOffsets,                      \
-                        topQueryToCentroid,                    \
+                        ivfListIds,                            \
                         k,                                     \
                         indicesOptions,                        \
                         outDistances,                          \

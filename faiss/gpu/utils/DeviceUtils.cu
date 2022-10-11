@@ -149,12 +149,6 @@ bool getTensorCoreSupportCurrentDevice() {
     return getTensorCoreSupport(getCurrentDevice());
 }
 
-int getMaxKSelection() {
-    // Don't use the device at the moment, just base this based on the CUDA SDK
-    // that we were compiled with
-    return GPU_MAX_SELECTION_K;
-}
-
 DeviceScope::DeviceScope(int device) {
     if (device >= 0) {
         int curDevice = getCurrentDevice();

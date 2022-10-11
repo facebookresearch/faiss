@@ -184,5 +184,19 @@ size_t GpuResources::getTempMemoryAvailableCurrentDevice() const {
 
 GpuResourcesProvider::~GpuResourcesProvider() {}
 
+//
+// GpuResourcesProviderFromResourceInstance
+//
+
+GpuResourcesProviderFromInstance::GpuResourcesProviderFromInstance(
+        std::shared_ptr<GpuResources> p)
+        : res_(p) {}
+
+GpuResourcesProviderFromInstance::~GpuResourcesProviderFromInstance() {}
+
+std::shared_ptr<GpuResources> GpuResourcesProviderFromInstance::getResources() {
+    return res_;
+}
+
 } // namespace gpu
 } // namespace faiss

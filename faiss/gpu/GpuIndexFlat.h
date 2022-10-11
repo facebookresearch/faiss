@@ -24,17 +24,14 @@ namespace gpu {
 class FlatIndex;
 
 struct GpuIndexFlatConfig : public GpuIndexConfig {
-    inline GpuIndexFlatConfig() : useFloat16(false), storeTransposed(false) {}
+    inline GpuIndexFlatConfig() : useFloat16(false) {}
 
     /// Whether or not data is stored as float16
     bool useFloat16;
 
-    /// Whether or not data is stored (transparently) in a transposed
-    /// layout, enabling use of the NN GEMM call, which is ~10% faster.
-    /// This will improve the speed of the flat index, but will
-    /// substantially slow down any add() calls made, as all data must
-    /// be transposed, and will increase storage requirements (we store
-    /// data in both transposed and non-transposed layouts).
+    /// Deprecated: no longer used
+    /// Previously used to indicate whether internal storage of vectors is
+    /// transposed
     bool storeTransposed;
 };
 
@@ -98,6 +95,10 @@ class GpuIndexFlat : public GpuIndex {
     void reconstruct_n(Index::idx_t i0, Index::idx_t num, float* out)
             const override;
 
+    /// Batch reconstruction method
+    void reconstruct_batch(Index::idx_t n, const Index::idx_t* keys, float* out)
+            const override;
+
     /// Compute residual
     void compute_residual(const float* x, float* residual, Index::idx_t key)
             const override;
@@ -128,7 +129,8 @@ class GpuIndexFlat : public GpuIndex {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels) const override;
+            Index::idx_t* labels,
+            const SearchParameters* params) const override;
 
    protected:
     /// Our configuration options
