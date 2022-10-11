@@ -34,6 +34,7 @@
     <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResources" prot="public">faiss::gpu::GpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public">faiss::gpu::GpuResourcesProvider</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public">faiss::gpu::GpuResourcesProviderFromInstance</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1IndexWrapper" prot="public">faiss::gpu::IndexWrapper</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
@@ -423,6 +424,60 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/GpuDistance.h" line="132" column="6" declfile="faiss/gpu/GpuDistance.h" declline="132" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
+        <definition>GpuIndex* faiss::gpu::tryCastGpuIndex</definition>
+        <argsstring>(faiss::Index *index)</argsstring>
+        <name>tryCastGpuIndex</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>If the given index is a GPU index, this returns the index instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="168" column="10" declfile="faiss/gpu/GpuIndex.h" declline="168" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::isGpuIndex</definition>
+        <argsstring>(faiss::Index *index)</argsstring>
+        <name>isGpuIndex</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Is the given index instance a GPU index? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="171" column="6" declfile="faiss/gpu/GpuIndex.h" declline="171" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="GpuIndex_8h_1a9a5eeb989c1d853a58aa65a8af310372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::isGpuIndexImplemented</definition>
+        <argsstring>(faiss::Index *index)</argsstring>
+        <name>isGpuIndexImplemented</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Does the given CPU index instance have a corresponding GPU implementation? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="174" column="6" declfile="faiss/gpu/GpuIndex.h" declline="174" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -1162,20 +1217,6 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="71" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="DeviceUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int</type>
-        <definition>int faiss::gpu::getMaxKSelection</definition>
-        <argsstring>()</argsstring>
-        <name>getMaxKSelection</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Returns the maximum k-selection value supported based on the CUDA SDK that we were compiled with. .cu files can use <ref refid="DeviceDefs_8cuh_source" kindref="compound">DeviceDefs.cuh</ref>, but this is for non-CUDA files </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="76" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="76" declcolumn="5"/>
-      </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -1204,7 +1245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="157" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="157" bodyend="177"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="152" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="152" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1231,7 +1272,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="182" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="182" bodyend="184"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="177" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="177" bodyend="179"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1257,7 +1298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="187" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="187" bodyend="189"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="182" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="182" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1278,7 +1319,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="191" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="191" bodyend="195"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="186" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="186" bodyend="190"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

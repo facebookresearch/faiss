@@ -26,11 +26,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Whether or not data is stored (transparently) in a transposed layout, enabling use of the NN GEMM call, which is ~10% faster. This will improve the speed of the flat index, but will substantially slow down any add() calls made, as all data must be transposed, and will increase storage requirements (we store data in both transposed and non-transposed layouts). </para>
+<para>Deprecated: no longer used Previously used to indicate whether internal storage of vectors is transposed </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="38" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="35" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -104,7 +104,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexFlat.h" line="26" column="47" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="26" bodyend="39"/>
+    <location file="faiss/gpu/GpuIndexFlat.h" line="26" column="47" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="26" bodyend="36"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>GpuIndexConfig</name></member>

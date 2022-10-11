@@ -131,6 +131,7 @@
     <innerclass refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" prot="public">faiss::gpu::GpuMemoryReservation</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResources" prot="public">faiss::gpu::GpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public">faiss::gpu::GpuResourcesProvider</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public">faiss::gpu::GpuResourcesProviderFromInstance</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
     <briefdescription>
@@ -390,17 +391,31 @@
 <codeline lineno="250"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>cudaStream_t<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources_1aefb90d15fade57cdfcff03ec800183d4" kindref="member">getAsyncCopyStreamCurrentDevice</ref>();</highlight></codeline>
 <codeline lineno="251"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="252"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="253"><highlight class="comment">///<sp/>Interface<sp/>for<sp/>a<sp/>provider<sp/>of<sp/>a<sp/>shared<sp/>resources<sp/>object</highlight></codeline>
-<codeline lineno="254" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
-<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>();</highlight></codeline>
-<codeline lineno="257"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="258"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>shared<sp/>resources<sp/>object</highlight></codeline>
-<codeline lineno="259"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" kindref="member">getResources</ref>()<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="260"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"></highlight></codeline>
-<codeline lineno="262"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="263"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="comment">///<sp/>Interface<sp/>for<sp/>a<sp/>provider<sp/>of<sp/>a<sp/>shared<sp/>resources<sp/>object.<sp/>This<sp/>is<sp/>to<sp/>avoid</highlight></codeline>
+<codeline lineno="254"><highlight class="comment">///<sp/>interfacing<sp/>std::shared_ptr<sp/>to<sp/>Python</highlight></codeline>
+<codeline lineno="255" refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref>();</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="259"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>shared<sp/>resources<sp/>object</highlight></codeline>
+<codeline lineno="260"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" kindref="member">getResources</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="261"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="263"><highlight class="comment">///<sp/>A<sp/>simple<sp/>wrapper<sp/>for<sp/>a<sp/>GpuResources<sp/>object<sp/>to<sp/>make<sp/>a<sp/>GpuResourcesProvider</highlight></codeline>
+<codeline lineno="264"><highlight class="comment">///<sp/>out<sp/>of<sp/>it<sp/>again</highlight></codeline>
+<codeline lineno="265" refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref><sp/>{</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>(std::shared_ptr&lt;GpuResources&gt;<sp/>p);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" kindref="compound">GpuResourcesProviderFromInstance</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c" kindref="member">getResources</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/>res_;</highlight></codeline>
+<codeline lineno="274"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/GpuResources.h"/>
   </compounddef>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="109" column="28" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="103" column="28" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a2586cb94bd25692ad730180a34630824" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="112" column="10" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="112" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="106" column="10" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a520803e209b44c904b876d6b8dad23c9" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref></type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="92" column="26" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="147" column="26" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7d06649d5ae58b7a637a8b348d6f16b3" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -59,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="95" column="9" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="150" column="9" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a83cdbddf42124d7f6c0d9ef232e0c558" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -73,21 +73,35 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="98" column="9" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="153" column="9" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="153" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ac741fa8825e3ef533cbe9a45aa22a8fe" prot="public" static="no" mutable="no">
-        <type><ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> *</type>
-        <definition>GpuIndexFlat* faiss::gpu::GpuIndexIVF::quantizer</definition>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1abc666566268f843213f9cc4d375b61be" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::gpu::GpuIndexIVF::quantizer</definition>
         <argsstring></argsstring>
         <name>quantizer</name>
         <briefdescription>
-<para>Exposeing this like the CPU version for query. </para>
+<para>A user-pluggable coarse quantizer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="101" column="18" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="101" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="156" column="11" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a1e48aa4cb4ff69a23d1085dc623ea577" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuIndexIVF::own_fields</definition>
+        <argsstring></argsstring>
+        <name>own_fields</name>
+        <briefdescription>
+<para>Whether or not we own the coarse quantizer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="159" column="10" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="159" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -187,7 +201,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="116" column="44" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="116" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="110" column="44" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="110" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8476560fd366356b996fb249108982ad" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -201,11 +215,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="119" column="12" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="119" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="113" column="12" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="113" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac858f594d34b793fdd72043c2df8cf53" prot="protected" static="no" mutable="no">
-        <type>std::unique_ptr&lt; IVFFlat &gt;</type>
-        <definition>std::unique_ptr&lt;IVFFlat&gt; faiss::gpu::GpuIndexIVFScalarQuantizer::index_</definition>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac1309bc4a1fac1a5aaabe077f4f24f5a" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; IVFFlat &gt;</type>
+        <definition>std::shared_ptr&lt;IVFFlat&gt; faiss::gpu::GpuIndexIVFScalarQuantizer::index_</definition>
         <argsstring></argsstring>
         <name>index_</name>
         <briefdescription>
@@ -215,7 +229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="122" column="21" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="122" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="116" column="21" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="116" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" kindref="compound">GpuIndexIVFConfig</ref></type>
@@ -229,7 +243,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="105" column="29" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="163" column="29" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae4703ba976dbdd01678a5fc51d14f855" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; IVFBase &gt;</type>
+        <definition>std::shared_ptr&lt;IVFBase&gt; faiss::gpu::GpuIndexIVF::baseIndex_</definition>
+        <argsstring></argsstring>
+        <name>baseIndex_</name>
+        <briefdescription>
+<para>For a trained/initialized index, this is a reference to the base class. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="166" column="21" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="166" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1a5f6bffd99291b2198ef601ef7e5c5a30" prot="protected" static="no" mutable="no">
         <type>std::shared_ptr&lt; <ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> &gt;</type>
@@ -243,7 +271,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="144" column="21" bodyfile="faiss/gpu/GpuIndex.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="158" column="21" bodyfile="faiss/gpu/GpuIndex.h" bodystart="158" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" prot="protected" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kindref="compound">GpuIndexConfig</ref></type>
@@ -257,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="147" column="26" bodyfile="faiss/gpu/GpuIndex.h" bodystart="147" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="161" column="26" bodyfile="faiss/gpu/GpuIndex.h" bodystart="161" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -271,7 +299,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="150" column="12" bodyfile="faiss/gpu/GpuIndex.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="164" column="12" bodyfile="faiss/gpu/GpuIndex.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -341,11 +369,60 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Constructs a new instance with an empty flat quantizer; the user provides the number of lists desired. </para>
+<para>Constructs a new instance with an empty flat quantizer; the user provides the number of IVF lists desired. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="42" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a7d721f9e5d4027981e7d67ad6f42b5c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer</definition>
+        <argsstring>(GpuResourcesProvider *provider, Index *coarseQuantizer, int dims, int nlist, faiss::ScalarQuantizer::QuantizerType qtype, faiss::MetricType metric=MetricType::METRIC_L2, bool encodeResidual=true, GpuIndexIVFScalarQuantizerConfig config=GpuIndexIVFScalarQuantizerConfig())</argsstring>
+        <name>GpuIndexIVFScalarQuantizer</name>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
+          <declname>provider</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>coarseQuantizer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>faiss::ScalarQuantizer::QuantizerType</type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+          <declname>metric</declname>
+          <defval>MetricType::METRIC_L2</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>encodeResidual</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" kindref="compound">GpuIndexIVFScalarQuantizerConfig</ref></type>
+          <declname>config</declname>
+          <defval><ref refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" kindref="compound">GpuIndexIVFScalarQuantizerConfig</ref>()</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructs a new instance with a provided CPU or GPU coarse quantizer; the user provides the number of IVF lists desired. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="54" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a65975284c6a485e26b415b36798e4785" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -358,7 +435,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="52" column="5"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="65" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a442f3139eef5b90b53e3523294c9d30f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -376,7 +453,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="55" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="68" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a9d739a970bac43f2b906f7a88b638fe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -394,7 +471,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="59" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="72" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a280bad274d429845f94c552b26531e64" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -412,7 +489,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="63" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="76" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a5611542c6d1e26dc94d677d33e30a8fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -426,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="67" column="12"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="80" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6e25bd642bf3ae6fe84c9c315e0edf25" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -441,7 +518,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="71" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="84" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ad08878a7072b1f1e6698cde483a8b5f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::updateQuantizer</definition>
+        <argsstring>() override</argsstring>
+        <name>updateQuantizer</name>
+        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a5dd1337334747db6655d55627a13c561">updateQuantizer</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Should be called if the user ever changes the state of the IVF coarse quantizer manually (e.g., substitutes a new instance or changes vectors in the coarse quantizer outside the scope of training) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="89" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a11c52bf069e04520b000cf888c06cb05" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -464,69 +556,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="74" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ae2a57707bf9631d4f4ca5866dba07208" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>int</type>
-        <definition>int faiss::gpu::GpuIndexIVFScalarQuantizer::getListLength</definition>
-        <argsstring>(int listId) const override</argsstring>
-        <name>getListLength</name>
-        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1abc6ffec2d09200c8f5cd88ccedc5aeed">getListLength</reimplements>
-        <param>
-          <type>int</type>
-          <declname>listId</declname>
-        </param>
-        <briefdescription>
-<para>Returns the number of vectors present in a particular inverted list. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="77" column="9"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8fd6f67fc3978b1742473d789b783612" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>std::vector&lt; uint8_t &gt;</type>
-        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::GpuIndexIVFScalarQuantizer::getListVectorData</definition>
-        <argsstring>(int listId, bool gpuFormat=false) const override</argsstring>
-        <name>getListVectorData</name>
-        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad8ae56a9c75e3ebce52aceb6b180ce66">getListVectorData</reimplements>
-        <param>
-          <type>int</type>
-          <declname>listId</declname>
-        </param>
-        <param>
-          <type>bool</type>
-          <declname>gpuFormat</declname>
-          <defval>false</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Return the encoded vector data contained in a particular inverted list, for debugging purposes. If gpuFormat is true, the data is returned as it is encoded in the GPU-side representation. Otherwise, it is converted to the CPU format. compliant format, while the native GPU format may differ. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="85" column="17"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6755bb048958c117db7dd4d898f8a4d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>std::vector&lt; <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref> &gt;</type>
-        <definition>std::vector&lt;Index::idx_t&gt; faiss::gpu::GpuIndexIVFScalarQuantizer::getListIndices</definition>
-        <argsstring>(int listId) const override</argsstring>
-        <name>getListIndices</name>
-        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aca66be4b2e7c467ea145195a99902aed">getListIndices</reimplements>
-        <param>
-          <type>int</type>
-          <declname>listId</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Return the vector indices contained in a particular inverted list, for debugging purposes. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="90" column="17"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="92" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -544,7 +574,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="52" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="67" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a9153ac747b50b454d85416edcf484bd3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -562,7 +592,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="55" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="70" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a008b31e78482337f8ca9ae72d9815be0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -576,21 +606,66 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="58" column="9"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="78" column="9"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae8ede11bab8c6f2296aa797986006511" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref> *</type>
-        <definition>GpuIndexFlat* faiss::gpu::GpuIndexIVF::getQuantizer</definition>
-        <argsstring>()</argsstring>
-        <name>getQuantizer</name>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1aa7629c8088c4515e1c3f15286d9922fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuIndexIVF::getListLength</definition>
+        <argsstring>(int listId) const</argsstring>
+        <name>getListLength</name>
+        <param>
+          <type>int</type>
+          <declname>listId</declname>
+        </param>
         <briefdescription>
-<para>Return the quantizer we&apos;re using. </para>
+<para>Returns the number of vectors present in a particular inverted list. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="78" column="18"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="81" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a2f2ef4272892db384d69bf2eb7c1d694" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::GpuIndexIVF::getListVectorData</definition>
+        <argsstring>(int listId, bool gpuFormat=false) const</argsstring>
+        <name>getListVectorData</name>
+        <param>
+          <type>int</type>
+          <declname>listId</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>gpuFormat</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the encoded vector data contained in a particular inverted list, for debugging purposes. If gpuFormat is true, the data is returned as it is encoded in the GPU-side representation. Otherwise, it is converted to the CPU format. compliant format, while the native GPU format may differ. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="89" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a3078870c5d00af6392609b6ad4c0cc2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref> &gt;</type>
+        <definition>std::vector&lt;Index::idx_t&gt; faiss::gpu::GpuIndexIVF::getListIndices</definition>
+        <argsstring>(int listId) const</argsstring>
+        <name>getListIndices</name>
+        <param>
+          <type>int</type>
+          <declname>listId</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the vector indices contained in a particular inverted list, for debugging purposes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="94" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a1efac4b9801d57fa6d0085d6aed9c1f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -608,7 +683,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="81" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="97" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1aa231de06057f6f024679291fed7d8c3a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -622,7 +697,123 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="84" column="9"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="100" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a08d0e8397c0c2144819bc3e9c22bef46" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVF::search_preassigned</definition>
+        <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const SearchParametersIVF *params=nullptr) const</argsstring>
+        <name>search_preassigned</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref> *</type>
+          <declname>assign</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid_dis</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">SearchParametersIVF</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Same interface as <ref refid="structfaiss_1_1IndexIVF" kindref="compound">faiss::IndexIVF</ref>, in order to search a set of vectors pre-quantized by the IVF quantizer. Does not include <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref> as that can only be obtained on the host via a GPU d2h copy. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>nb of vectors to query </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>query vectors, size nx * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>assign</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>coarse quantization indices, size nx * nprobe </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centroid_dis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>distances to coarse centroids, size nx * nprobe </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output distances, size n * k </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels, size n * k </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>store_pairs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>store inv list index + inv list offset instead in upper/lower 32 bit of result, instead of ids (used for reranking). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>used to override the object&apos;s search parameters </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="117" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -806,6 +997,50 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="72" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndex::search_and_reconstruct</definition>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, float *recons, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>search_and_reconstruct</name>
+        <reimplements refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6">search_and_reconstruct</reimplements>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>recons</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>x</computeroutput>, <computeroutput>distances</computeroutput> and <computeroutput>labels</computeroutput> and <computeroutput>recons</computeroutput> can be resident on the CPU or any GPU; copies are performed as needed </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="82" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a1c68659822d9e330a7737c8a6aaacae2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::gpu::GpuIndex::compute_residual</definition>
@@ -832,7 +1067,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="82" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="93" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1aac69097d303830c3d48c4016c1e6a955" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -864,7 +1099,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="87" column="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="98" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1012,6 +1247,7 @@
         <definition>virtual void faiss::Index::reconstruct_batch</definition>
         <argsstring>(idx_t n, const idx_t *keys, float *recons) const</argsstring>
         <name>reconstruct_batch</name>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad66c65d715165ae13f54215537743ab3">reconstruct_batch</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1098,62 +1334,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/Index.h" line="190" column="18"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::search_and_reconstruct</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, float *recons, const SearchParameters *params=nullptr) const</argsstring>
-        <name>search_and_reconstruct</name>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a6082f6ca04afc943d5e1c729f24de283">search_and_reconstruct</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1ae370aa40139ca15359b1cbdf88c9b3d8">search_and_reconstruct</reimplementedby>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
-          <declname>k</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>distances</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref> *</type>
-          <declname>labels</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>recons</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Similar to search, but also reconstructs the stored vectors (or an approximation in the case of lossy coding) for the search results.</para>
-<para>If there are not enough results for a query, the resulting arrays is padded with -1s.</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>recons</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>reconstructed vectors size (n, k, d) </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="200" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>DistanceComputer *</type>
@@ -1377,9 +1557,130 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1acb0acce275150539ea2e6180052787f3" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ad1bfe04d4dcc7cdb49648c4678ebecf5" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::addImpl_</definition>
+        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::verifySQSettings_</definition>
+        <argsstring>() const</argsstring>
+        <name>verifySQSettings_</name>
+        <briefdescription>
+<para>Validates index SQ parameters. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="96" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8b1656df14f1e8c9aef6f19c0ca87982" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::trainResiduals_</definition>
+        <argsstring>(Index::idx_t n, const float *x)</argsstring>
+        <name>trainResiduals_</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Called from train to handle SQ residual training. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="99" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndex::copyFrom</definition>
+        <argsstring>(const faiss::Index *index)</argsstring>
+        <name>copyFrom</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Copy what we need from the CPU equivalent. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="106" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndex::copyTo</definition>
+        <argsstring>(faiss::Index *index) const</argsstring>
+        <name>copyTo</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Copy what we have to the CPU equivalent. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="109" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6688235f8b4dd478e2f5091023f253b3" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVF::verifyIVFSettings_</definition>
+        <argsstring>() const</argsstring>
+        <name>verifyIVFSettings_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="129" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuIndexIVF::addImplRequiresIDs_</definition>
+        <argsstring>() const override</argsstring>
+        <name>addImplRequiresIDs_</name>
+        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndex_1a358cad8f80a9c4b3aff45f3f7c131d03">addImplRequiresIDs_</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="130" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8f64aaab0221591c82825c1594432c72" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVF::trainQuantizer_</definition>
+        <argsstring>(Index::idx_t n, const float *x)</argsstring>
+        <name>trainQuantizer_</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="131" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1ac8a38dd6495812604b0d00c64a77906d" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::GpuIndexIVF::addImpl_</definition>
         <argsstring>(int n, const float *x, const Index::idx_t *ids) override</argsstring>
         <name>addImpl_</name>
         <reimplements refid="classfaiss_1_1gpu_1_1GpuIndex_1ae8479445214c5ef37adf154c138ce973">addImpl_</reimplements>
@@ -1402,14 +1703,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="94" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="134" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6b69eff925245a3e0d39e00564e7a988" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1af67711f25638de861f1e74aa4ce95ff6" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::searchImpl_</definition>
-        <argsstring>(int n, const float *x, int k, float *distances, Index::idx_t *labels) const override</argsstring>
+        <definition>void faiss::gpu::GpuIndexIVF::searchImpl_</definition>
+        <argsstring>(int n, const float *x, int k, float *distances, Index::idx_t *labels, const SearchParameters *params) const override</argsstring>
         <name>searchImpl_</name>
-        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndex_1a184c443785b715fd692b2b67aa71d687">searchImpl_</reimplements>
+        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndex_1a586e4e3bce85432486a5db5b1962d3fc">searchImpl_</reimplements>
         <param>
           <type>int</type>
           <declname>n</declname>
@@ -1430,6 +1731,10 @@
           <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref> *</type>
           <declname>labels</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+        </param>
         <briefdescription>
 <para>Called from <ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> for search. </para>
         </briefdescription>
@@ -1437,101 +1742,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="97" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8b1656df14f1e8c9aef6f19c0ca87982" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::gpu::GpuIndexIVFScalarQuantizer::trainResiduals_</definition>
-        <argsstring>(Index::idx_t n, const float *x)</argsstring>
-        <name>trainResiduals_</name>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-<para>Called from train to handle SQ residual training. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="105" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::copyFrom</definition>
-        <argsstring>(const faiss::Index *index)</argsstring>
-        <name>copyFrom</name>
-        <param>
-          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
-          <declname>index</declname>
-        </param>
-        <briefdescription>
-<para>Copy what we need from the CPU equivalent. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="95" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::copyTo</definition>
-        <argsstring>(faiss::Index *index) const</argsstring>
-        <name>copyTo</name>
-        <param>
-          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
-          <declname>index</declname>
-        </param>
-        <briefdescription>
-<para>Copy what we have to the CPU equivalent. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="98" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>bool</type>
-        <definition>bool faiss::gpu::GpuIndexIVF::addImplRequiresIDs_</definition>
-        <argsstring>() const override</argsstring>
-        <name>addImplRequiresIDs_</name>
-        <reimplements refid="classfaiss_1_1gpu_1_1GpuIndex_1a358cad8f80a9c4b3aff45f3f7c131d03">addImplRequiresIDs_</reimplements>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Does addImpl_ require IDs? If so, and no IDs are provided, we will generate them sequentially based on the order in which the IDs are added </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="87" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8f64aaab0221591c82825c1594432c72" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::gpu::GpuIndexIVF::trainQuantizer_</definition>
-        <argsstring>(Index::idx_t n, const float *x)</argsstring>
-        <name>trainQuantizer_</name>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="88" column="10"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="137" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
@@ -1611,7 +1822,7 @@
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="10" relation="usage">
+        <childnode refid="9" relation="usage">
           <edgelabel>ivfSQConfig_</edgelabel>
         </childnode>
       </node>
@@ -1628,20 +1839,11 @@
         <label>faiss::gpu::GpuIndexConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexConfig"/>
       </node>
-      <node id="7">
-        <label>faiss::gpu::GpuIndexFlat</label>
-        <link refid="classfaiss_1_1gpu_1_1GpuIndexFlat"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-        <childnode refid="8" relation="usage">
-          <edgelabel>flatConfig_</edgelabel>
-        </childnode>
-      </node>
       <node id="6">
         <label>faiss::ClusteringParameters</label>
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
-      <node id="9">
+      <node id="7">
         <label>faiss::gpu::GpuIndexIVFConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig"/>
         <childnode refid="5" relation="public-inheritance">
@@ -1655,13 +1857,13 @@
         <link refid="classfaiss_1_1gpu_1_1GpuIndexIVF"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>quantizer</edgelabel>
+        </childnode>
         <childnode refid="6" relation="usage">
           <edgelabel>cp</edgelabel>
         </childnode>
         <childnode refid="7" relation="usage">
-          <edgelabel>quantizer</edgelabel>
-        </childnode>
-        <childnode refid="9" relation="usage">
           <edgelabel>ivfConfig_</edgelabel>
         </childnode>
       </node>
@@ -1675,20 +1877,21 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="9">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="30" column="52" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="30" bodyend="123"/>
+    <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="30" column="52" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="30" bodyend="117"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ac6ac307f55a1b44dbf185e22c83b0a10" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>add</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a47f6969fe60d82b8e3407557ba9eec88" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>add_with_ids</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1acb0acce275150539ea2e6180052787f3" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>addImpl_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ac8a38dd6495812604b0d00c64a77906d" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>addImpl_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>addImplRequiresIDs_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ac108456e9c7cde162d77f64cc9c0dcdb" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>assign</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae4703ba976dbdd01678a5fc51d14f855" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>baseIndex_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a2586cb94bd25692ad730180a34630824" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>by_residual</name></member>
       <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>component_t</name></member>
@@ -1706,21 +1909,22 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>get_distance_computer</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af4f02c713f639bd70e09af8afebd0f51" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getDevice</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6755bb048958c117db7dd4d898f8a4d6" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListIndices</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ae2a57707bf9631d4f4ca5866dba07208" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListLength</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8fd6f67fc3978b1742473d789b783612" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListVectorData</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a3078870c5d00af6392609b6ad4c0cc2b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListIndices</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aa7629c8088c4515e1c3f15286d9922fb" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListLength</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a2f2ef4272892db384d69bf2eb7c1d694" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getListVectorData</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6402d93925d2a403dc187dc1a7aab1e3" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getMinPagingSize</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a008b31e78482337f8ca9ae72d9815be0" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getNumLists</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aa231de06057f6f024679291fed7d8c3a" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getNumProbes</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae8ede11bab8c6f2296aa797986006511" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getQuantizer</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a2eb235a51b0a70bdbc2c814a48a0917d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9711f1d478ac1e3b672811226823978d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndex</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8fa90aab480c74879c8ae9f7d2916bc4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVF</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8b47ce49f6f30c0d61fd05f71fe4f3da" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVF</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a20f55135edbd34cd7e11eda616a6c4a4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1acebcb18d4b9a6ed77dee46f355d4a493" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a7d721f9e5d4027981e7d67ad6f42b5c9" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
       <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>idx_t</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>Index</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac858f594d34b793fdd72043c2df8cf53" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>index_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac1309bc4a1fac1a5aaabe077f4f24f5a" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>index_</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>is_trained</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>ivfConfig_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac11e7fc14a0fcd2e4bac244b47ac1238" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>ivfSQConfig_</name></member>
@@ -1731,7 +1935,8 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7d06649d5ae58b7a637a8b348d6f16b3" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>nlist</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a83cdbddf42124d7f6c0d9ef232e0c558" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>nprobe</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>ntotal</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ac741fa8825e3ef533cbe9a45aa22a8fe" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>quantizer</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a1e48aa4cb4ff69a23d1085dc623ea577" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>own_fields</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1abc666566268f843213f9cc4d375b61be" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>quantizer</name></member>
       <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>range_search</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a5611542c6d1e26dc94d677d33e30a8fd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>reclaimMemory</name></member>
       <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>reconstruct</name></member>
@@ -1746,15 +1951,19 @@
       <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>sa_decode</name></member>
       <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>sa_encode</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a33870ed7655f75cd7910375c30064939" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>search</name></member>
-      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>search_and_reconstruct</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a6b69eff925245a3e0d39e00564e7a988" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>searchImpl_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>search_and_reconstruct</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a08d0e8397c0c2144819bc3e9c22bef46" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>search_preassigned</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1af67711f25638de861f1e74aa4ce95ff6" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>searchImpl_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>setMinPagingSize</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a1efac4b9801d57fa6d0085d6aed9c1f2" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>setNumProbes</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1aa692a5a002bf93908018535d6a1cdf26" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>sq</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a11c52bf069e04520b000cf888c06cb05" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>train</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a8f64aaab0221591c82825c1594432c72" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>trainQuantizer_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a8b1656df14f1e8c9aef6f19c0ca87982" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>trainResiduals_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ad08878a7072b1f1e6698cde483a8b5f6" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>updateQuantizer</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>verbose</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a6688235f8b4dd478e2f5091023f253b3" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>verifyIVFSettings_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ad1bfe04d4dcc7cdb49648c4678ebecf5" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>verifySQSettings_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ad3829b7e97f1642f85721f95956da8f4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>~GpuIndexIVF</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a65975284c6a485e26b415b36798e4785" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>~GpuIndexIVFScalarQuantizer</name></member>
       <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>~Index</name></member>

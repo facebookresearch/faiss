@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="20" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="27" column="20" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kindref="compound">GpuIndexFlatConfig</ref></type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="31" column="24" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="30" column="24" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
