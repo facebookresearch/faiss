@@ -134,8 +134,6 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
     updateQuantizer();
 
-    raft::print_device_vector("faiss centers", quantizer->getGpuData()->vectors(), 50, std::cout);
-
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
 }

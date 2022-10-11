@@ -46,6 +46,18 @@ class RaftIndexIVFPQ : public GpuIndexIVFPQ {
             faiss::MetricType metric,
             GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
+
+    /// Construct an empty index
+    RaftIndexIVFPQ(
+            GpuResourcesProvider* provider,
+            Index *coarse_quantizer,
+            int dims,
+            int nlist,
+            int subQuantizers,
+            int bitsPerCode,
+            faiss::MetricType metric,
+            GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
+
     ~RaftIndexIVFPQ() override;
 
     /// Reserve space on the GPU for the inverted lists for `num`
@@ -119,7 +131,8 @@ class RaftIndexIVFPQ : public GpuIndexIVFPQ {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels) const override;
+            Index::idx_t* labels,
+            const SearchParameters *params) const override;
 
     /// Throws errors if configuration settings are improper
     void verifySettings_() const;

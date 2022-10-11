@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexIVF.h> // for SearchParametersIVF
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -45,6 +46,21 @@ RaftIndexIVFFlat::RaftIndexIVFFlat(
     std::cout << "In raft index constructor" << std::endl;
 }
 
+
+RaftIndexIVFFlat::RaftIndexIVFFlat(
+        GpuResourcesProvider* provider,
+        Index *coarse_quantizer,
+        int dims,
+        int nlist,
+        faiss::MetricType metric,
+        GpuIndexIVFFlatConfig config)
+        : GpuIndexIVFFlat(provider, coarse_quantizer, dims, nlist, metric, config),
+          raft_handle(resources_->getDefaultStream(config_.device)) {
+
+    std::cout << "In raft index constructor" << std::endl;
+}
+
+
 RaftIndexIVFFlat::~RaftIndexIVFFlat() {
     RaftIndexIVFFlat::reset();
 }
@@ -53,15 +69,15 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     DeviceScope scope(config_.device);
     GpuIndex::copyFrom(index);
     FAISS_ASSERT(index->nlist > 0);
-    FAISS_THROW_IF_NOT_FMT(
-            index->nlist <= (Index::idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports %zu inverted lists",
-            (size_t)std::numeric_limits<int>::max());
-    FAISS_THROW_IF_NOT_FMT(
-            index->nprobe > 0 && index->nprobe <= getMaxKSelection(),
-            "GPU index only supports nprobe <= %zu; passed %zu",
-            (size_t)getMaxKSelection(),
-            index->nprobe);
+//    FAISS_THROW_IF_NOT_FMT(
+//            index->nlist <= (Index::idx_t)std::numeric_limits<int>::max(),
+//            "GPU index only supports %zu inverted lists",
+//            (size_t)std::numeric_limits<int>::max());
+//    FAISS_THROW_IF_NOT_FMT(
+//            index->nprobe > 0 && index->nprobe <= getMaxKSelection(),
+//            "GPU index only supports nprobe <= %zu; passed %zu",
+//            (size_t)getMaxKSelection(),
+//            index->nprobe);
 
     /**
      * TODO: Copy centers and center norms from quantizer
@@ -305,7 +321,8 @@ void RaftIndexIVFFlat::searchImpl_(
         const float* x,
         int k,
         float* distances,
-        Index::idx_t* labels) const {
+        Index::idx_t* labels,
+        const SearchParameters *params) const {
 
     raft::common::nvtx::range<raft::common::nvtx::domain::raft> fun_scope(
             "RaftIndexIVFFlat::searchImpl_ (%ld)", n);

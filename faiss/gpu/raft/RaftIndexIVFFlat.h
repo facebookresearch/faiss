@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/IndexIVF.h> // for SearchParametersIVF
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 
@@ -33,6 +34,7 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             const faiss::IndexIVFFlat* index,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
+
     /// Constructs a new instance with an empty flat quantizer; the user
     /// provides the number of lists desired.
     RaftIndexIVFFlat(
@@ -40,6 +42,16 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             int dims,
             int nlist,
             faiss::MetricType metric,
+            GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
+
+    /// Constructs a new instance with a provided CPU or GPU coarse quantizer;
+    /// the user provides the number of IVF lists desired.
+    RaftIndexIVFFlat(
+            GpuResourcesProvider* provider,
+            Index* coarseQuantizer,
+            int dims,
+            int nlist,
+            faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
     ~RaftIndexIVFFlat() override;
@@ -87,7 +99,8 @@ class RaftIndexIVFFlat : public GpuIndexIVFFlat {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels) const override;
+            Index::idx_t* labels,
+            const SearchParameters *params) const override;
 
     void rebuildRaftIndex(const float* x, Index::idx_t n_rows);
 

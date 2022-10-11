@@ -70,6 +70,28 @@ RaftIndexIVFPQ::RaftIndexIVFPQ(
     this->is_trained = false;
 }
 
+RaftIndexIVFPQ::RaftIndexIVFPQ(
+        GpuResourcesProvider* provider,
+        Index *coarse_quantizer,
+        int dims,
+        int nlist,
+        int subQuantizers,
+        int bitsPerCode,
+        faiss::MetricType metric,
+        GpuIndexIVFPQConfig config)
+        : GpuIndexIVFPQ(provider, coarse_quantizer, dims, nlist, subQuantizers, bitsPerCode,  metric, config),
+          pq(dims, subQuantizers, bitsPerCode),
+          ivfpqConfig_(config),
+          usePrecomputedTables_(config.usePrecomputedTables),
+          subQuantizers_(subQuantizers),
+          bitsPerCode_(bitsPerCode),
+          reserveMemoryVecs_(0) {
+    verifySettings_();
+
+    // We haven't trained ourselves, so don't construct the PQ index yet
+    this->is_trained = false;
+}
+
 RaftIndexIVFPQ::~RaftIndexIVFPQ() {}
 
 void RaftIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
@@ -186,7 +208,7 @@ void RaftIndexIVFPQ::setPrecomputedCodes(bool enable) {
     usePrecomputedTables_ = enable;
     if (index_) {
         DeviceScope scope(config_.device);
-        index_->setPrecomputedCodes(enable);
+        index_->setPrecomputedCodes(quantizer, enable);
     }
 
     verifySettings_();
@@ -277,7 +299,8 @@ void RaftIndexIVFPQ::searchImpl_(
         const float* x,
         int k,
         float* distances,
-        Index::idx_t* labels) const {
+        Index::idx_t* labels,
+        const SearchParameters *params) const {
     // Device is already set in GpuIndex::search
     FAISS_ASSERT(index_);
     FAISS_ASSERT(n > 0);

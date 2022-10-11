@@ -75,10 +75,10 @@ class GpuIndexIVF : public GpuIndex {
     virtual void updateQuantizer() = 0;
 
     /// Returns the number of inverted lists we're managing
-    int getNumLists() const;
+    virtual int getNumLists() const;
 
     /// Returns the number of vectors present in a particular inverted list
-    int getListLength(int listId) const;
+    virtual int getListLength(int listId) const;
 
     /// Return the encoded vector data contained in a particular inverted list,
     /// for debugging purposes.
@@ -86,12 +86,12 @@ class GpuIndexIVF : public GpuIndex {
     /// GPU-side representation.
     /// Otherwise, it is converted to the CPU format.
     /// compliant format, while the native GPU format may differ.
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
+    virtual std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
             const;
 
     /// Return the vector indices contained in a particular inverted list, for
     /// debugging purposes.
-    std::vector<Index::idx_t> getListIndices(int listId) const;
+    virtual std::vector<Index::idx_t> getListIndices(int listId) const;
 
     /// Sets the number of list probes per query
     void setNumProbes(int nprobe);
