@@ -66,16 +66,19 @@ outputs:
       host:
         - python {{ python }}
         - numpy =1.11
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
         - numpy >=1.11,<2
+        - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
         - numpy
         - scipy
         - pytorch
+        - packaging
       commands:
         - python -m unittest discover tests/
         - cp tests/common_faiss_tests.py faiss/gpu/test
