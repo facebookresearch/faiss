@@ -6703,6 +6703,7 @@
     <member refid="TestUtils_8h_1ab667286f1786526a19d5186f2df348a4" kind="function"><name>randSelect</name></member>
     <member refid="TestUtils_8h_1ae9641002715e79d0aa4c594bbc3daa01" kind="function"><name>randVecs</name></member>
     <member refid="TestUtils_8h_1a237b6df9cf96b9ab805c46aef32a37b8" kind="function"><name>randBinaryVecs</name></member>
+    <member refid="TestUtils_8h_1a9a3c3ce871cb0ea52f9263e86022acb0" kind="function"><name>roundToHalf</name></member>
     <member refid="TestUtils_8h_1af10d6d642f9c390100d2b8a31203918f" kind="function"><name>compareIndices</name></member>
     <member refid="TestUtils_8h_1aea8cc0513413b621ba2bcc3c5de02663" kind="function"><name>compareIndices</name></member>
     <member refid="TestUtils_8h_1a4b17f759af26a756aab5035ddf5b53c6" kind="function"><name>compareLists</name></member>
