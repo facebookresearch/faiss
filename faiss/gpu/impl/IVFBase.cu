@@ -471,13 +471,30 @@ void IVFBase::updateQuantizer(Index* quantizer) {
     auto gpuQ = dynamic_cast<GpuIndexFlat*>(quantizer);
     if (gpuQ) {
         auto gpuData = gpuQ->getGpuData();
-        auto ref32 = gpuData->getVectorsFloat32Ref();
 
-        // Create a DeviceTensor that merely references, doesn't own the data
-        auto refOnly = DeviceTensor<float, 2, true>(
-                ref32.data(), {ref32.getSize(0), ref32.getSize(1)});
+        if (gpuData->getUseFloat16()) {
+            // The FlatIndex keeps its data in float16; we need to reconstruct
+            // as float32 and store locally
+            DeviceTensor<float, 2, true> centroids(
+                    resources_,
+                    makeSpaceAlloc(AllocType::FlatData, space_, stream),
+                    {(int)getNumLists(), (int)getDim()});
 
-        ivfCentroids_ = std::move(refOnly);
+            gpuData->reconstruct(0, gpuData->getSize(), centroids);
+
+            ivfCentroids_ = std::move(centroids);
+        } else {
+            // The FlatIndex keeps its data in float32, so we can merely
+            // reference it
+            auto ref32 = gpuData->getVectorsFloat32Ref();
+
+            // Create a DeviceTensor that merely references, doesn't own the
+            // data
+            auto refOnly = DeviceTensor<float, 2, true>(
+                    ref32.data(), {ref32.getSize(0), ref32.getSize(1)});
+
+            ivfCentroids_ = std::move(refOnly);
+        }
     } else {
         // Otherwise, we need to reconstruct all vectors from the index and copy
         // them to the GPU, in order to have access as needed for residual

@@ -73,6 +73,12 @@ class FlatIndex {
             Tensor<Index::idx_t, 1, true>& ids,
             Tensor<float, 2, true>& vecs);
 
+    /// Gather vectors given a range of IDs
+    void reconstruct(
+            Index::idx_t start,
+            Index::idx_t num,
+            Tensor<float, 2, true>& vecs);
+
     /// Add vectors to ourselves; the pointer passed can be on the host
     /// or the device
     void add(const float* data, int numVecs, cudaStream_t stream);

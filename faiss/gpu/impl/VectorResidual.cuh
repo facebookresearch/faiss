@@ -41,5 +41,19 @@ void runReconstruct(
         Tensor<float, 2, true>& out,
         cudaStream_t stream);
 
+void runReconstruct(
+        Index::idx_t start,
+        Index::idx_t num,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream);
+
+void runReconstruct(
+        Index::idx_t start,
+        Index::idx_t num,
+        Tensor<half, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream);
+
 } // namespace gpu
 } // namespace faiss

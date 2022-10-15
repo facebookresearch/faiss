@@ -56,22 +56,21 @@ int FlatIndex::getSize() const {
 }
 
 int FlatIndex::getDim() const {
-    if (useFloat16_) {
-        return vectorsHalf_.getSize(1);
-    } else {
-        return vectors_.getSize(1);
-    }
+    return dim_;
 }
 
 void FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
-    rawData32_.reserve(numVecs * dim_ * sizeof(float), stream);
-
     if (useFloat16_) {
         rawData16_.reserve(numVecs * dim_ * sizeof(half), stream);
+    } else {
+        rawData32_.reserve(numVecs * dim_ * sizeof(float), stream);
     }
 }
 
 Tensor<float, 2, true>& FlatIndex::getVectorsFloat32Ref() {
+    // Should not call this unless we are in float32 mode
+    FAISS_ASSERT(!useFloat16_);
+
     return vectors_;
 }
 
@@ -172,20 +171,33 @@ void FlatIndex::computeResidual(
 }
 
 void FlatIndex::reconstruct(
+        Index::idx_t start,
+        Index::idx_t num,
+        Tensor<float, 2, true>& vecs) {
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
+    FAISS_ASSERT(vecs.getSize(0) == num);
+    FAISS_ASSERT(vecs.getSize(1) == dim_);
+
+    if (useFloat16_) {
+        runReconstruct(start, num, getVectorsFloat16Ref(), vecs, stream);
+    } else {
+        runReconstruct(start, num, getVectorsFloat32Ref(), vecs, stream);
+    }
+}
+
+void FlatIndex::reconstruct(
         Tensor<Index::idx_t, 1, true>& ids,
         Tensor<float, 2, true>& vecs) {
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+
+    FAISS_ASSERT(vecs.getSize(0) == ids.getSize(0));
+    FAISS_ASSERT(vecs.getSize(1) == dim_);
+
     if (useFloat16_) {
-        runReconstruct(
-                ids,
-                getVectorsFloat16Ref(),
-                vecs,
-                resources_->getDefaultStreamCurrentDevice());
+        runReconstruct(ids, getVectorsFloat16Ref(), vecs, stream);
     } else {
-        runReconstruct(
-                ids,
-                getVectorsFloat32Ref(),
-                vecs,
-                resources_->getDefaultStreamCurrentDevice());
+        runReconstruct(ids, getVectorsFloat32Ref(), vecs, stream);
     }
 }
 
@@ -193,13 +205,6 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
     if (numVecs == 0) {
         return;
     }
-
-    // add to float32 data
-    rawData32_.append(
-            (char*)data,
-            (size_t)dim_ * numVecs * sizeof(float),
-            stream,
-            true /* reserve exactly */);
 
     // convert and add to float16 data if needed
     if (useFloat16_) {
@@ -220,18 +225,25 @@ void FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
                 devDataHalf.getSizeInBytes(),
                 stream,
                 true /* reserve exactly */);
+    } else {
+        // add to float32 data
+        rawData32_.append(
+                (char*)data,
+                (size_t)dim_ * numVecs * sizeof(float),
+                stream,
+                true /* reserve exactly */);
     }
 
     num_ += numVecs;
-
-    DeviceTensor<float, 2, true> vectors32(
-            (float*)rawData32_.data(), {(int)num_, dim_});
-    vectors_ = std::move(vectors32);
 
     if (useFloat16_) {
         DeviceTensor<half, 2, true> vectors16(
                 (half*)rawData16_.data(), {(int)num_, dim_});
         vectorsHalf_ = std::move(vectors16);
+    } else {
+        DeviceTensor<float, 2, true> vectors32(
+                (float*)rawData32_.data(), {(int)num_, dim_});
+        vectors_ = std::move(vectors32);
     }
 
     // Precompute L2 norms of our database

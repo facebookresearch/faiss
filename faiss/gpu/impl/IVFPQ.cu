@@ -376,22 +376,15 @@ void IVFPQ::precomputeCodes_(Index* quantizer) {
     //         => (sub q) x {(centroid id)(code id)}
     //         => (sub q)(centroid id)(code id)
 
-    // First, gather all of the IVF centroids from our quantizer via
-    // reconstruction.
-    DeviceTensor<float, 2, true> ivfCentroids(
-            resources_,
-            makeTempAlloc(AllocType::QuantizerPrecomputedCodes, stream),
-            {(int)getNumLists(), getDim()});
-
-    auto gpuQuantizer = tryCastGpuIndex(quantizer);
-    if (gpuQuantizer) {
-        gpuQuantizer->reconstruct_n(0, getNumLists(), ivfCentroids.data());
-    } else {
-        auto ivfCentroidsHost = std::vector<float>(getNumLists() * getDim());
-
-        quantizer->reconstruct_n(0, getNumLists(), ivfCentroidsHost.data());
-        ivfCentroids.copyFrom(ivfCentroidsHost, stream);
-    }
+    // Whether or not there is a CPU or GPU coarse quantizer, updateQuantizer()
+    // should have been called to reconstruct as float32 the IVF centroids to
+    // have the data available on the GPU
+    FAISS_THROW_IF_NOT_MSG(
+            ivfCentroids_.getSize(0) == getNumLists() &&
+                    ivfCentroids_.getSize(1) == getDim(),
+            "IVFPQ::precomputeCodes: coarse quantizer data "
+            "not synchronized on GPU; must call updateQuantizer() "
+            "before continuing");
 
     // View (centroid id)(dim) as
     //      (centroid id)(sub q)(dim)

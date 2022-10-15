@@ -134,10 +134,10 @@ void GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
     FAISS_ASSERT(data_->getSize() == this->ntotal);
     index->codes.resize(this->ntotal * index->code_size);
 
-    auto stream = resources_->getDefaultStream(config_.device);
-
     if (this->ntotal > 0) {
-        fromDevice(data_->getVectorsFloat32Ref(), index->get_xb(), stream);
+        // FIXME: there is an extra GPU allocation here and copy if the flat
+        // index is already float32
+        reconstruct_n(0, this->ntotal, index->get_xb());
     }
 }
 
@@ -249,13 +249,27 @@ void GpuIndexFlat::reconstruct(Index::idx_t key, float* out) const {
             this->ntotal);
     auto stream = resources_->getDefaultStream(config_.device);
 
-    auto vec = data_->getVectorsFloat32Ref()[key];
+    // FIXME: `out` may already be on the device, in which case this is an
+    // unneeded allocation
+    DeviceTensor<float, 2, true> vec(
+            resources_.get(),
+            makeTempAlloc(AllocType::Other, stream),
+            {1, this->d});
+
+    FAISS_ASSERT(data_);
+    data_->reconstruct(key, 1, vec);
+
     fromDevice(vec.data(), out, this->d, stream);
 }
 
 void GpuIndexFlat::reconstruct_n(Index::idx_t i0, Index::idx_t n, float* out)
         const {
     DeviceScope scope(config_.device);
+
+    if (n == 0) {
+        // nothing to do
+        return;
+    }
 
     validateNumVectors(n);
 
@@ -269,10 +283,24 @@ void GpuIndexFlat::reconstruct_n(Index::idx_t i0, Index::idx_t n, float* out)
             "max index requested (%zu) out of bounds (ntotal %zu)",
             i0 + n - 1,
             this->ntotal);
+    FAISS_THROW_IF_NOT_FMT(
+            n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            "number of vectors requested (%zu) must be less than %zu",
+            n,
+            (Index::idx_t)std::numeric_limits<int>::max());
     auto stream = resources_->getDefaultStream(config_.device);
 
-    auto vec = data_->getVectorsFloat32Ref()[i0];
-    fromDevice(vec.data(), out, this->d * n, stream);
+    auto outDevice = toDeviceTemporary<float, 2>(
+            resources_.get(),
+            config_.device,
+            out,
+            stream,
+            {(int)n, (int)this->d});
+
+    FAISS_ASSERT(data_);
+    data_->reconstruct(i0, n, outDevice);
+
+    fromDevice<float, 2>(outDevice, out, stream);
 }
 
 void GpuIndexFlat::reconstruct_batch(
@@ -281,6 +309,11 @@ void GpuIndexFlat::reconstruct_batch(
         float* out) const {
     DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
+
+    if (n == 0) {
+        // nothing to do
+        return;
+    }
 
     validateNumVectors(n);
 
@@ -319,6 +352,11 @@ void GpuIndexFlat::compute_residual_n(
         const Index::idx_t* keys) const {
     DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
+
+    if (n == 0) {
+        // nothing to do
+        return;
+    }
 
     validateNumVectors(n);
 

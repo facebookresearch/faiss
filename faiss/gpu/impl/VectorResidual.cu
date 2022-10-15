@@ -104,23 +104,50 @@ void runCalcResidual(
 }
 
 template <typename IndexT, typename T>
-__global__ void gatherReconstruct(
+__global__ void gatherReconstructByIds(
         Tensor<IndexT, 1, true> ids,
         Tensor<T, 2, true> vecs,
         Tensor<float, 2, true> out) {
     IndexT id = ids[blockIdx.x];
-    auto vec = vecs[id];
-    auto outVec = out[blockIdx.x];
+
+    // FIXME: will update all GPU code shortly to use int64 indexing types, but
+    // this is a minimal change to allow for >= 2^31 elements in a matrix
+    // auto vec = vecs[id];
+    // auto outVec = out[blockIdx.x];
+    auto vec = vecs.data() + id * vecs.getSize(1);
+    auto outVec = out.data() + blockIdx.x * out.getSize(1);
 
     Convert<T, float> conv;
 
-    for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+    for (IndexT i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
         outVec[i] = id == IndexT(-1) ? 0.0f : conv(vec[i]);
     }
 }
 
 template <typename IndexT, typename T>
-void gatherReconstruct(
+__global__ void gatherReconstructByRange(
+        IndexT start,
+        IndexT num,
+        Tensor<T, 2, true> vecs,
+        Tensor<float, 2, true> out) {
+    IndexT id = start + blockIdx.x;
+
+    // FIXME: will update all GPU code shortly to use int64 indexing types, but
+    // this is a minimal change to allow for >= 2^31 elements in a matrix
+    // auto vec = vecs[id];
+    // auto outVec = out[blockIdx.x];
+    auto vec = vecs.data() + id * vecs.getSize(1);
+    auto outVec = out.data() + blockIdx.x * out.getSize(1);
+
+    Convert<T, float> conv;
+
+    for (IndexT i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        outVec[i] = id == IndexT(-1) ? 0.0f : conv(vec[i]);
+    }
+}
+
+template <typename IndexT, typename T>
+void gatherReconstructByIds(
         Tensor<IndexT, 1, true>& ids,
         Tensor<T, 2, true>& vecs,
         Tensor<float, 2, true>& out,
@@ -133,7 +160,31 @@ void gatherReconstruct(
     int maxThreads = getMaxThreadsCurrentDevice();
     dim3 block(std::min(vecs.getSize(1), maxThreads));
 
-    gatherReconstruct<IndexT, T><<<grid, block, 0, stream>>>(ids, vecs, out);
+    gatherReconstructByIds<IndexT, T>
+            <<<grid, block, 0, stream>>>(ids, vecs, out);
+
+    CUDA_TEST_ERROR();
+}
+
+template <typename IndexT, typename T>
+void gatherReconstructByRange(
+        IndexT start,
+        IndexT num,
+        Tensor<T, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    FAISS_ASSERT(num > 0);
+    FAISS_ASSERT(num == out.getSize(0));
+    FAISS_ASSERT(vecs.getSize(1) == out.getSize(1));
+    FAISS_ASSERT(start + num <= vecs.getSize(0));
+
+    dim3 grid(num);
+
+    int maxThreads = getMaxThreadsCurrentDevice();
+    dim3 block(std::min(vecs.getSize(1), maxThreads));
+
+    gatherReconstructByRange<IndexT, T>
+            <<<grid, block, 0, stream>>>(start, num, vecs, out);
 
     CUDA_TEST_ERROR();
 }
@@ -143,7 +194,7 @@ void runReconstruct(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstruct<Index::idx_t, float>(ids, vecs, out, stream);
+    gatherReconstructByIds<Index::idx_t, float>(ids, vecs, out, stream);
 }
 
 void runReconstruct(
@@ -151,7 +202,26 @@ void runReconstruct(
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstruct<Index::idx_t, half>(ids, vecs, out, stream);
+    gatherReconstructByIds<Index::idx_t, half>(ids, vecs, out, stream);
+}
+
+void runReconstruct(
+        Index::idx_t start,
+        Index::idx_t num,
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    gatherReconstructByRange<Index::idx_t, float>(
+            start, num, vecs, out, stream);
+}
+
+void runReconstruct(
+        Index::idx_t start,
+        Index::idx_t num,
+        Tensor<half, 2, true>& vecs,
+        Tensor<float, 2, true>& out,
+        cudaStream_t stream) {
+    gatherReconstructByRange<Index::idx_t, half>(start, num, vecs, out, stream);
 }
 
 } // namespace gpu

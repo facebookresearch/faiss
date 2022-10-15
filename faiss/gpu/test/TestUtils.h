@@ -60,6 +60,9 @@ std::vector<float> randVecs(size_t num, size_t dim);
 /// Generates a collection of random bit vectors
 std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim);
 
+// returns to_fp32(to_fp16(v)); useful in comparing fp16 results on CPU
+std::vector<float> roundToHalf(const std::vector<float>& v);
+
 /// Compare two indices via query for similarity, with a user-specified set of
 /// query vectors
 void compareIndices(
