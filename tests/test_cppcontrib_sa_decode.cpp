@@ -1103,6 +1103,13 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D64_IVF256_PQ8) {
     testIndex2LevelDecoder<T>(NSAMPLES, 64, "IVF256,PQ4np");
 }
 
+#if defined(__AVX2__)
+TEST(TEST_CPPCONTRIB_SA_DECODE, D40_IVF256_PQ20) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<40, 40, 2>;
+    testIndex2LevelDecoder<T>(NSAMPLES, 40, "IVF256,PQ20np");
+}
+#endif
+
 //
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x8_PQ16) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16>;
@@ -1181,6 +1188,13 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8>;
     testIndexPQDecoder<T>(NSAMPLES, 160, "PQ20np");
 }
+
+#if defined(__AVX2__)
+TEST(TEST_CPPCONTRIB_SA_DECODE, D40_PQ20) {
+    using T = faiss::cppcontrib::IndexPQDecoder<40, 2>;
+    testIndexPQDecoder<T>(NSAMPLES, 40, "PQ20np");
+}
+#endif
 
 // test IndexRowwiseMinMaxFP16
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16) {
