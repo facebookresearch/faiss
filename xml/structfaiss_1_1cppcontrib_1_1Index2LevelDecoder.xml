@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1377" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1377" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1871" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1871" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aa2d15439ad8d9db007e34c5d0fde6c0a" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1378" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1378" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1872" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1872" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a2f76231cb246817f9efa065153e249bf" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1379" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1379" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1873" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1873" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a572d7d4eca017ddbfe0373c896150a8a" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1380" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1380" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1874" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1874" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5670b07e2e4ea47538ce78094baa5d87" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1381" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1381" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1875" column="31" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1875" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a07fd20a739aba8c9d09f4bdeca52e503" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr intptr_t</type>
@@ -175,7 +175,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1384" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1384" bodyend="1397"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1878" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1878" bodyend="1891"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -208,7 +208,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1401" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1401" bodyend="1419"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1895" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1895" bodyend="1913"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -257,7 +257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1427" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1427" bodyend="1453"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1921" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1921" bodyend="1947"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a5b6fdcdbacf5264a1404d1c19cb615e4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -298,7 +298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1461" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1461" bodyend="1483"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1955" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1955" bodyend="1977"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1afdde05380d694a2cad899861501bffa8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -363,7 +363,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1491" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1491" bodyend="1525"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1985" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1985" bodyend="2019"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1ad632bafbb0c924d0e193cf5bab73ab3e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -412,7 +412,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1533" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1533" bodyend="1559"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="2027" column="17" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="2027" bodyend="2053"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1aefda40c1c11715543c8f835c7900291e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -952,7 +952,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1369" column="25" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1369" bodyend="1560"/>
+    <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1863" column="25" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1863" bodyend="2054"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
