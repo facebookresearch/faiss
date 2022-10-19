@@ -7,8 +7,8 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
-#include <faiss/gpu/raft/RaftIndexIVFFlat.h>
-#include <faiss/gpu/raft/RmmGpuResources.hpp>
+#include <faiss/gpu/impl/raft/RaftIndexIVFFlat.h>
+#include <faiss/gpu/impl/raft/RmmGpuResources.hpp>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 
