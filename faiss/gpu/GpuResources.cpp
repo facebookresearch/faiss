@@ -153,6 +153,10 @@ cudaStream_t GpuResources::getDefaultStreamCurrentDevice() {
     return getDefaultStream(getCurrentDevice());
 }
 
+raft::handle_t &GpuResources::getRaftHandleCurrentDevice() const {
+    return getRaftHandle(getCurrentDevice());
+}
+
 std::vector<cudaStream_t> GpuResources::getAlternateStreamsCurrentDevice() {
     return getAlternateStreams(getCurrentDevice());
 }

@@ -6,6 +6,7 @@
  */
 
 #include <raft/core/cudart_utils.hpp>
+#include <faiss/gpu/impl/raft/RaftIVFFlat.cuh>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -70,11 +71,10 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
           reserveMemoryVecs_(0) {
     // We could have been passed an already trained coarse quantizer. There is
     // no other quantizer that we need to train, so this is sufficient
+
     if (this->is_trained) {
         FAISS_ASSERT(this->quantizer);
-
-        index_.reset(new IVFFlat(
-                resources_.get(),
+        set_index_(resources_.get(),
                 this->d,
                 this->nlist,
                 this->metric_type,
@@ -83,13 +83,39 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
                 nullptr, // no scalar quantizer
                 ivfFlatConfig_.interleavedLayout,
                 ivfFlatConfig_.indicesOptions,
-                config_.memorySpace));
+                config_.memorySpace);
         baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
         updateQuantizer();
     }
 }
 
 GpuIndexIVFFlat::~GpuIndexIVFFlat() {}
+
+void GpuIndexIVFFlat::set_index_(GpuResources* resources,
+                                int dim,
+                                int nlist,
+                                faiss::MetricType metric,
+                                float metricArg,
+                                bool useResidual,
+                                /// Optional ScalarQuantizer
+                                faiss::ScalarQuantizer* scalarQ,
+                                bool interleavedLayout,
+                                IndicesOptions indicesOptions,
+                                MemorySpace space) {
+    if(config_.use_raft) {
+        index_.reset(new RaftIVFFlat(
+                resources, dim, nlist, metric, metricArg, useResidual,
+                scalarQ, interleavedLayout, indicesOptions, space));
+    } else {
+        index_.reset(new IVFFlat(
+                resources, dim, nlist, metric, metricArg, useResidual,
+                scalarQ, interleavedLayout, indicesOptions, space));
+    }
+
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
+    updateQuantizer();
+
+}
 
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
     DeviceScope scope(config_.device);
@@ -120,8 +146,7 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     FAISS_ASSERT(this->is_trained);
 
     // Copy our lists as well
-    index_.reset(new IVFFlat(
-            resources_.get(),
+    set_index_(resources_.get(),
             this->d,
             this->nlist,
             index->metric_type,
@@ -130,9 +155,8 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             nullptr, // no scalar quantizer
             ivfFlatConfig_.interleavedLayout,
             ivfFlatConfig_.indicesOptions,
-            config_.memorySpace));
-    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-    updateQuantizer();
+            config_.memorySpace);
+
 
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
@@ -210,8 +234,7 @@ void GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
     FAISS_ASSERT(!index_);
 
     // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on
-    // the CPU, as we depend upon parts of the CPU code
+    // First, make sure that the data is resident on the CPU, if it is not on the CPU, as we depend upon parts of the CPU code
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
@@ -220,21 +243,18 @@ void GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
     trainQuantizer_(n, hostData.data());
 
     // The quantizer is now trained; construct the IVF index
-    index_.reset(new IVFFlat(
-            resources_.get(),
-            this->d,
-            this->nlist,
-            this->metric_type,
-            this->metric_arg,
-            false,   // no residual
-            nullptr, // no scalar quantizer
-            ivfFlatConfig_.interleavedLayout,
-            ivfFlatConfig_.indicesOptions,
-            config_.memorySpace));
-    baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
-    updateQuantizer();
+    set_index_(resources_.get(),
+              this->d,
+              this->nlist,
+              this->metric_type,
+              this->metric_arg,
+              false,   // no residual
+              nullptr, // no scalar quantizer
+              ivfFlatConfig_.interleavedLayout,
+              ivfFlatConfig_.indicesOptions,
+              config_.memorySpace);
 
-    if (reserveMemoryVecs_) {
+     if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
 

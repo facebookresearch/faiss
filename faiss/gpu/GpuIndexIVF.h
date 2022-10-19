@@ -128,7 +128,7 @@ class GpuIndexIVF : public GpuIndex {
    protected:
     void verifyIVFSettings_() const;
     bool addImplRequiresIDs_() const override;
-    void trainQuantizer_(Index::idx_t n, const float* x);
+    virtual void trainQuantizer_(Index::idx_t n, const float* x);
 
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(int n, const float* x, const Index::idx_t* ids) override;

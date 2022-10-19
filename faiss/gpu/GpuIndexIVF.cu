@@ -459,15 +459,28 @@ void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
         printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
     }
 
-    // leverage the CPU-side k-means code, which works for the GPU
-    // flat index as well
-    quantizer->reset();
-    Clustering clus(this->d, nlist, this->cp);
-    clus.verbose = verbose;
-    clus.train(n, x, *quantizer);
-    quantizer->is_trained = true;
+    if(config_.use_raft) {
+        /**
+         * TODO: Plug in clustering logic here.
+         *
+         * Essentially what we need here is to use `x` as the training data set
+         * to train the k-means centroids and add them to the quantizer
+         * implementation.
+         */
 
 
+
+
+
+    } else {
+        // leverage the CPU-side k-means code, which works for the GPU
+        // flat index as well
+        quantizer->reset();
+        Clustering clus(this->d, nlist, this->cp);
+        clus.verbose = verbose;
+        clus.train(n, x, *quantizer);
+        quantizer->is_trained = true;
+    }
 
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }

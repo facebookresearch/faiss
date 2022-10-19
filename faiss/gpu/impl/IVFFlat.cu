@@ -112,6 +112,7 @@ std::vector<uint8_t> IVFFlat::translateCodesFromGpu_(
     return packNonInterleaved(std::move(up), numVecs, dim_, bitsPerCode);
 }
 
+
 void IVFFlat::appendVectors_(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfCentroidResiduals,
@@ -126,7 +127,6 @@ void IVFFlat::appendVectors_(
     //
     // Append the new encodings
     //
-
     // Append indices to the IVF lists
     runIVFIndicesAppend(
             listIds,
@@ -196,6 +196,7 @@ void IVFFlat::search(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe, dim_});
+
 
     searchCoarseQuantizer_(
             coarseQuantizer,

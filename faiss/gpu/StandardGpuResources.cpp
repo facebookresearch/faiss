@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FAISS_ENABLE_RAFT
+#include <raft/core/handle.hpp>
+#endif
+
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
@@ -313,6 +317,11 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
+#ifdef FAISS_ENABLE_RAFT
+    raft::handle_t handle(defaultStream);
+    raftHandles_[device] = handle;
+#endif
+
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
             cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
@@ -374,6 +383,22 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     // Otherwise, our base default stream
     return defaultStreams_[device];
 }
+
+#ifdef FAISS_ENABLE_RAFT
+raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) const {
+    initializeForDevice(device);
+
+    auto it = raftHandles_.find(device);
+    if (it != raftHandles_.end()) {
+        // There is a user override stream set
+        return it->second;
+    }
+
+    // Otherwise, our base default stream
+    return raftHandles_[device];
+
+}
+#endif
 
 std::vector<cudaStream_t> StandardGpuResourcesImpl::getAlternateStreams(
         int device) {
@@ -599,6 +624,12 @@ StandardGpuResources::getMemoryInfo() const {
 cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
+
+#ifdef FAISS_ENABLE_RAFT
+ raft::handle_t &StandardGpuResources::getRaftHandle(int device) const {
+    return res_->getRaftHandle(device);
+}
+#endif
 
 size_t StandardGpuResources::getTempMemoryAvailable(int device) const {
     return res_->getTempMemoryAvailable(device);

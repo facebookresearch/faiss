@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <memory>
 
@@ -88,6 +89,19 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     void train(Index::idx_t n, const float* x) override;
 
    protected:
+
+    void set_index_(GpuResources* resources,
+                   int dim,
+                   int nlist,
+                   faiss::MetricType metric,
+                   float metricArg,
+                   bool useResidual,
+                    /// Optional ScalarQuantizer
+                   faiss::ScalarQuantizer* scalarQ,
+                   bool interleavedLayout,
+                   IndicesOptions indicesOptions,
+                   MemorySpace space);
+
     /// Our configuration options
     const GpuIndexIVFFlatConfig ivfFlatConfig_;
 

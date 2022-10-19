@@ -29,6 +29,7 @@ in this file : https://github.com/facebookresearch/faiss/issues/2097
 #include <unordered_map>
 #include <vector>
 
+#include <raft/core/handle.hpp>
 #include <rmm/mr/device/cuda_memory_resource.hpp>
 #include <rmm/mr/device/managed_memory_resource.hpp>
 #include <rmm/mr/host/pinned_memory_resource.hpp>
@@ -221,6 +222,10 @@ class RmmGpuResourcesImpl : public GpuResources {
         }
 
         userDefaultStreams_[device] = stream;
+
+#ifdef FAISS_ENABLE_RAFT
+        raftHandles_[device] = raft::handle_t(stream);
+#endif
     };
 
     /// Revert the default stream to the original stream managed by this resources
@@ -242,6 +247,9 @@ class RmmGpuResourcesImpl : public GpuResources {
         }
 
         userDefaultStreams_.erase(device);
+#ifdef FAISS_ENABLE_RAFT
+    raftHandles_.erase(device);
+#endif
     };
 
     /// Returns the stream for the given device on which all Faiss GPU work is
@@ -326,6 +334,8 @@ class RmmGpuResourcesImpl : public GpuResources {
         alternateStreams_[device] = std::move(deviceStreams);
 
         // Create cuBLAS handle
+
+        // TODO: We need to be able to use this cublas handle within the raft handle
         cublasHandle_t blasHandle = 0;
         auto blasStatus           = cublasCreate(&blasHandle);
         FAISS_ASSERT(blasStatus == CUBLAS_STATUS_SUCCESS);
@@ -492,6 +502,12 @@ class RmmGpuResourcesImpl : public GpuResources {
         return defaultStreams_.count(device) != 0;
     };
 
+    std::unique_ptr<raft::handle_t> getRaftHandle(int device) const {
+        auto it = raftHandles_.find(device);
+        FAISS_ASSERT(it != raftHandles_.end());
+        return it->second;
+    }
+
     /// Adjust the default temporary memory allocation based on the total GPU
     /// memory size
     static size_t getDefaultTempMemForGPU(int device, size_t requested)
@@ -562,6 +578,10 @@ class RmmGpuResourcesImpl : public GpuResources {
 
     // pinned_memory_resource
     std::unique_ptr<rmm::mr::host_memory_resource> pmr;
+
+    /// Our raft handle that maintains additional library resources, one per each device
+    std::unordered_map<int, std::unique_ptr<raft::handle_t>> raftHandles_;
+
 };
 
 /// Default implementation of GpuResources that allocates a cuBLAS

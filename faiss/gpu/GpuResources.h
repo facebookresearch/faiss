@@ -10,6 +10,8 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <faiss/impl/FaissAssert.h>
+
+#include <raft/core/handle.hpp>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -189,6 +191,12 @@ class GpuResources {
     /// Returns the stream that we order all computation on for the
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
+
+    /// Returns the raft handle for the given device which can be used to
+    /// make calls to other raft primitives.
+    virtual raft::handle_t &getRaftHandle(int device) const;
+
+    raft::handle_t &getRaftHandleCurrentDevice() const;
 
     /// Overrides the default stream for a device to the user-supplied stream.
     /// The resources object does not own this stream (i.e., it will not destroy
