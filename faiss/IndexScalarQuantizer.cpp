@@ -16,6 +16,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/utils.h>
 
@@ -48,9 +49,11 @@ void IndexScalarQuantizer::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
-    FAISS_THROW_IF_NOT(k > 0);
+        idx_t* labels,
+        const SearchParameters* params) const {
+    const IDSelector* sel = params ? params->sel : nullptr;
 
+    FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(
             metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT);
@@ -58,7 +61,8 @@ void IndexScalarQuantizer::search(
 #pragma omp parallel
     {
         InvertedListScanner* scanner =
-                sq.select_InvertedListScanner(metric_type, nullptr, true);
+                sq.select_InvertedListScanner(metric_type, nullptr, true, sel);
+
         ScopeDeleter1<InvertedListScanner> del(scanner);
         scanner->list_no = 0; // directly the list number
 
@@ -242,9 +246,10 @@ void IndexIVFScalarQuantizer::add_core(
 }
 
 InvertedListScanner* IndexIVFScalarQuantizer::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
     return sq.select_InvertedListScanner(
-            metric_type, quantizer, store_pairs, by_residual);
+            metric_type, quantizer, store_pairs, sel, by_residual);
 }
 
 void IndexIVFScalarQuantizer::reconstruct_from_offset(

@@ -8,6 +8,7 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/utils/utils.h>

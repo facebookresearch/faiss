@@ -16,6 +16,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/WorkerThread.h>
 
@@ -78,7 +79,10 @@ void IndexIDMapTemplate<IndexT>::search(
         const typename IndexT::component_t* x,
         idx_t k,
         typename IndexT::distance_t* distances,
-        typename IndexT::idx_t* labels) const {
+        typename IndexT::idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     index->search(n, x, k, distances, labels);
     idx_t* li = labels;
 #pragma omp parallel for
@@ -92,7 +96,10 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::idx_t n,
         const typename IndexT::component_t* x,
         typename IndexT::distance_t radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     index->range_search(n, x, radius, result);
 #pragma omp parallel for
     for (idx_t i = 0; i < result->lims[result->nq]; i++) {
@@ -235,7 +242,10 @@ void IndexSplitVectors::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(k == 1, "search implemented only for k=1");
     FAISS_THROW_IF_NOT_MSG(
             sum_d == d, "not enough indexes compared to # dimensions");

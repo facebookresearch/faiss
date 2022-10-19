@@ -38,9 +38,22 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
                     GpuIndexIVFScalarQuantizerConfig());
 
     /// Constructs a new instance with an empty flat quantizer; the user
-    /// provides the number of lists desired.
+    /// provides the number of IVF lists desired.
     GpuIndexIVFScalarQuantizer(
             GpuResourcesProvider* provider,
+            int dims,
+            int nlist,
+            faiss::ScalarQuantizer::QuantizerType qtype,
+            faiss::MetricType metric = MetricType::METRIC_L2,
+            bool encodeResidual = true,
+            GpuIndexIVFScalarQuantizerConfig config =
+                    GpuIndexIVFScalarQuantizerConfig());
+
+    /// Constructs a new instance with a provided CPU or GPU coarse quantizer;
+    /// the user provides the number of IVF lists desired.
+    GpuIndexIVFScalarQuantizer(
+            GpuResourcesProvider* provider,
+            Index* coarseQuantizer,
             int dims,
             int nlist,
             faiss::ScalarQuantizer::QuantizerType qtype,
@@ -70,36 +83,17 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
     /// quantizer information
     void reset() override;
 
+    /// Should be called if the user ever changes the state of the IVF coarse
+    /// quantizer manually (e.g., substitutes a new instance or changes vectors
+    /// in the coarse quantizer outside the scope of training)
+    void updateQuantizer() override;
+
     /// Trains the coarse and scalar quantizer based on the given vector data
     void train(Index::idx_t n, const float* x) override;
 
-    /// Returns the number of vectors present in a particular inverted list
-    int getListLength(int listId) const override;
-
-    /// Return the encoded vector data contained in a particular inverted list,
-    /// for debugging purposes.
-    /// If gpuFormat is true, the data is returned as it is encoded in the
-    /// GPU-side representation.
-    /// Otherwise, it is converted to the CPU format.
-    /// compliant format, while the native GPU format may differ.
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
-            const override;
-
-    /// Return the vector indices contained in a particular inverted list, for
-    /// debugging purposes.
-    std::vector<Index::idx_t> getListIndices(int listId) const override;
-
    protected:
-    /// Called from GpuIndex for add/add_with_ids
-    void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
-
-    /// Called from GpuIndex for search
-    void searchImpl_(
-            int n,
-            const float* x,
-            int k,
-            float* distances,
-            Index::idx_t* labels) const override;
+    /// Validates index SQ parameters
+    void verifySQSettings_() const;
 
     /// Called from train to handle SQ residual training
     void trainResiduals_(Index::idx_t n, const float* x);
@@ -119,7 +113,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
     size_t reserveMemoryVecs_;
 
     /// Instance that we own; contains the inverted list
-    std::unique_ptr<IVFFlat> index_;
+    std::shared_ptr<IVFFlat> index_;
 };
 
 } // namespace gpu

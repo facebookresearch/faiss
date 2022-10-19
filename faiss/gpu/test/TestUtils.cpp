@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cuda_fp16.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
@@ -72,6 +73,15 @@ std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim) {
     ++s_seed;
 
     return v;
+}
+
+std::vector<float> roundToHalf(const std::vector<float>& v) {
+    auto out = std::vector<float>(v.size());
+    for (int i = 0; i < v.size(); ++i) {
+        out[i] = __half2float(__float2half(v[i]));
+    }
+
+    return out;
 }
 
 void compareIndices(

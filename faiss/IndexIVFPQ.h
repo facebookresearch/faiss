@@ -134,7 +134,8 @@ struct IndexIVFPQ : IndexIVF {
             float* x) const;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     /// build precomputed table
     void precompute_table();

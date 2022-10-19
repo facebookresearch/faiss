@@ -24,7 +24,7 @@ void runPQScanMultiPassNoPrecomputed(
         Tensor<CentroidT, 2, true>& centroids,
         Tensor<float, 3, true>& pqCentroidsInnermostCode,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<int, 2, true>& coarseIndices,
+        Tensor<Index::idx_t, 2, true>& coarseIndices,
         bool useFloat16Lookup,
         bool useMMCodeDistance,
         bool interleavedCodeLayout,

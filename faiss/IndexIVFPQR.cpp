@@ -201,11 +201,11 @@ void IndexIVFPQR::reconstruct_from_offset(
     }
 }
 
-void IndexIVFPQR::merge_from(IndexIVF& other_in, idx_t add_id) {
-    IndexIVFPQR* other = dynamic_cast<IndexIVFPQR*>(&other_in);
+void IndexIVFPQR::merge_from(Index& otherIndex, idx_t add_id) {
+    IndexIVFPQR* other = dynamic_cast<IndexIVFPQR*>(&otherIndex);
     FAISS_THROW_IF_NOT(other);
 
-    IndexIVF::merge_from(other_in, add_id);
+    IndexIVF::merge_from(otherIndex, add_id);
 
     refine_codes.insert(
             refine_codes.end(),

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
@@ -17,7 +18,7 @@ namespace gpu {
 
 /// Append user indices to IVF lists
 void runIVFIndicesAppend(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         Tensor<Index::idx_t, 1, true>& indices,
         IndicesOptions opt,
@@ -26,7 +27,7 @@ void runIVFIndicesAppend(
 
 /// Update device-side list pointers in a batch
 void runUpdateListPointers(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& newListLength,
         Tensor<void*, 1, true>& newCodePointers,
         Tensor<void*, 1, true>& newIndexPointers,
@@ -37,7 +38,7 @@ void runUpdateListPointers(
 
 /// Append PQ codes to IVF lists (non-interleaved format)
 void runIVFPQAppend(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         Tensor<uint8_t, 2, true>& encodings,
         DeviceVector<void*>& listCodes,
@@ -45,9 +46,9 @@ void runIVFPQAppend(
 
 /// Append PQ codes to IVF lists (interleaved format)
 void runIVFPQInterleavedAppend(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
-        Tensor<int, 1, true>& uniqueLists,
+        Tensor<Index::idx_t, 1, true>& uniqueLists,
         Tensor<int, 1, true>& vectorsByUniqueList,
         Tensor<int, 1, true>& uniqueListVectorStart,
         Tensor<int, 1, true>& uniqueListStartOffset,
@@ -58,7 +59,7 @@ void runIVFPQInterleavedAppend(
 
 /// Append SQ codes to IVF lists (non-interleaved, old format)
 void runIVFFlatAppend(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         Tensor<float, 2, true>& vecs,
         GpuScalarQuantizer* scalarQ,
@@ -67,9 +68,9 @@ void runIVFFlatAppend(
 
 /// Append SQ codes to IVF lists (interleaved)
 void runIVFFlatInterleavedAppend(
-        Tensor<int, 1, true>& listIds,
+        Tensor<Index::idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
-        Tensor<int, 1, true>& uniqueLists,
+        Tensor<Index::idx_t, 1, true>& uniqueLists,
         Tensor<int, 1, true>& vectorsByUniqueList,
         Tensor<int, 1, true>& uniqueListVectorStart,
         Tensor<int, 1, true>& uniqueListStartOffset,

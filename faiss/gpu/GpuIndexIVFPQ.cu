@@ -55,10 +55,39 @@ GpuIndexIVFPQ::GpuIndexIVFPQ(
           subQuantizers_(subQuantizers),
           bitsPerCode_(bitsPerCode),
           reserveMemoryVecs_(0) {
-    verifySettings_();
+    verifyPQSettings_();
+}
 
-    // We haven't trained ourselves, so don't construct the PQ index yet
+GpuIndexIVFPQ::GpuIndexIVFPQ(
+        GpuResourcesProvider* provider,
+        Index* coarseQuantizer,
+        int dims,
+        int nlist,
+        int subQuantizers,
+        int bitsPerCode,
+        faiss::MetricType metric,
+        GpuIndexIVFPQConfig config)
+        : GpuIndexIVF(
+                  provider,
+                  coarseQuantizer,
+                  dims,
+                  metric,
+                  0,
+                  nlist,
+                  config),
+          pq(dims, subQuantizers, bitsPerCode),
+          ivfpqConfig_(config),
+          usePrecomputedTables_(config.usePrecomputedTables),
+          subQuantizers_(subQuantizers),
+          bitsPerCode_(bitsPerCode),
+          reserveMemoryVecs_(0) {
+    // While we were passed an existing coarse quantizer instance (possibly
+    // trained or not), we have not yet trained our product quantizer, so we are
+    // not ourselves fully trained and we can not yet construct our index_
+    // instance
     this->is_trained = false;
+
+    verifyPQSettings_();
 }
 
 GpuIndexIVFPQ::~GpuIndexIVFPQ() {}
@@ -66,10 +95,12 @@ GpuIndexIVFPQ::~GpuIndexIVFPQ() {}
 void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     DeviceScope scope(config_.device);
 
+    // This will copy GpuIndexIVF data such as the coarse quantizer
     GpuIndexIVF::copyFrom(index);
 
     // Clear out our old data
     index_.reset();
+    baseIndex_.reset();
 
     pq = index->pq;
     subQuantizers_ = index->pq.M;
@@ -84,7 +115,7 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     FAISS_THROW_IF_NOT_MSG(
             index->polysemous_ht == 0, "GPU: polysemous codes not supported");
 
-    verifySettings_();
+    verifyPQSettings_();
 
     // The other index might not be trained
     if (!index->is_trained) {
@@ -98,9 +129,10 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
     FAISS_ASSERT(index->pq.centroids.size() > 0);
     index_.reset(new IVFPQ(
             resources_.get(),
+            this->d,
+            this->nlist,
             index->metric_type,
             index->metric_arg,
-            quantizer->getGpuData(),
             subQuantizers_,
             bitsPerCode_,
             ivfpqConfig_.useFloat16LookupTables,
@@ -109,8 +141,13 @@ void GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
             (float*)index->pq.centroids.data(),
             ivfpqConfig_.indicesOptions,
             config_.memorySpace));
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+
     // Doesn't make sense to reserve memory here
-    index_->setPrecomputedCodes(usePrecomputedTables_);
+    FAISS_ASSERT(quantizer);
+    updateQuantizer();
+
+    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 
     // Copy all of the IVF data
     index_->copyInvertedListsFrom(index->invlists);
@@ -166,21 +203,24 @@ void GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 }
 
 void GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
+    DeviceScope scope(config_.device);
+
     reserveMemoryVecs_ = numVecs;
     if (index_) {
-        DeviceScope scope(config_.device);
         index_->reserveMemory(numVecs);
     }
 }
 
 void GpuIndexIVFPQ::setPrecomputedCodes(bool enable) {
+    DeviceScope scope(config_.device);
+
     usePrecomputedTables_ = enable;
     if (index_) {
-        DeviceScope scope(config_.device);
-        index_->setPrecomputedCodes(enable);
+        FAISS_ASSERT(quantizer);
+        index_->setPrecomputedCodes(quantizer, enable);
     }
 
-    verifySettings_();
+    verifyPQSettings_();
 }
 
 bool GpuIndexIVFPQ::getPrecomputedCodes() const {
@@ -200,8 +240,9 @@ int GpuIndexIVFPQ::getCentroidsPerSubQuantizer() const {
 }
 
 size_t GpuIndexIVFPQ::reclaimMemory() {
+    DeviceScope scope(config_.device);
+
     if (index_) {
-        DeviceScope scope(config_.device);
         return index_->reclaimMemory();
     }
 
@@ -209,13 +250,23 @@ size_t GpuIndexIVFPQ::reclaimMemory() {
 }
 
 void GpuIndexIVFPQ::reset() {
-    if (index_) {
-        DeviceScope scope(config_.device);
+    DeviceScope scope(config_.device);
 
+    if (index_) {
         index_->reset();
         this->ntotal = 0;
     } else {
         FAISS_ASSERT(this->ntotal == 0);
+    }
+}
+
+void GpuIndexIVFPQ::updateQuantizer() {
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer, "Calling updateQuantizer without a quantizer instance");
+
+    // Only need to do something if we are already initialized
+    if (index_) {
+        index_->updateQuantizer(quantizer);
     }
 }
 
@@ -241,11 +292,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
     quantizer->assign(n, x, assign.data());
 
     std::vector<float> residuals(n * d);
-
-    // FIXME jhj convert to _n version
-    for (idx_t i = 0; i < n; i++) {
-        quantizer->compute_residual(x + i * d, &residuals[i * d], assign[i]);
-    }
+    quantizer->compute_residual_n(n, x, residuals.data(), assign.data());
 
     if (this->verbose) {
         printf("training %d x %d product quantizer on %ld vectors in %dD\n",
@@ -278,9 +325,10 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
 
     index_.reset(new IVFPQ(
             resources_.get(),
+            this->d,
+            this->nlist,
             metric_type,
             metric_arg,
-            quantizer->getGpuData(),
             subQuantizers_,
             bitsPerCode_,
             ivfpqConfig_.useFloat16LookupTables,
@@ -289,25 +337,30 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
             pq.centroids.data(),
             ivfpqConfig_.indicesOptions,
             config_.memorySpace));
+    baseIndex_ = std::static_pointer_cast<IVFBase, IVFPQ>(index_);
+    updateQuantizer();
+
     if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
 
-    index_->setPrecomputedCodes(usePrecomputedTables_);
+    index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 }
 
 void GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
+    DeviceScope scope(config_.device);
+
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(
             n <= (Index::idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %d indices",
             std::numeric_limits<int>::max());
 
-    DeviceScope scope(config_.device);
+    // just in case someone changed us
+    verifyPQSettings_();
+    verifyIVFSettings_();
 
     if (this->is_trained) {
-        FAISS_ASSERT(quantizer->is_trained);
-        FAISS_ASSERT(quantizer->ntotal == nlist);
         FAISS_ASSERT(index_);
         return;
     }
@@ -330,67 +383,7 @@ void GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
     this->is_trained = true;
 }
 
-void GpuIndexIVFPQ::addImpl_(int n, const float* x, const Index::idx_t* xids) {
-    // Device is already set in GpuIndex::add
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
-
-    // Not all vectors may be able to be added (some may contain NaNs etc)
-    index_->addVectors(data, labels);
-
-    // but keep the ntotal based on the total number of vectors that we
-    // attempted to add
-    ntotal += n;
-}
-
-void GpuIndexIVFPQ::searchImpl_(
-        int n,
-        const float* x,
-        int k,
-        float* distances,
-        Index::idx_t* labels) const {
-    // Device is already set in GpuIndex::search
-    FAISS_ASSERT(index_);
-    FAISS_ASSERT(n > 0);
-    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
-
-    // Data is already resident on the GPU
-    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<float, 2, true> outDistances(distances, {n, k});
-    Tensor<Index::idx_t, 2, true> outLabels(
-            const_cast<Index::idx_t*>(labels), {n, k});
-
-    index_->query(queries, nprobe, k, outDistances, outLabels);
-}
-
-int GpuIndexIVFPQ::getListLength(int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListLength(listId);
-}
-
-std::vector<uint8_t> GpuIndexIVFPQ::getListVectorData(
-        int listId,
-        bool gpuFormat) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListVectorData(listId, gpuFormat);
-}
-
-std::vector<Index::idx_t> GpuIndexIVFPQ::getListIndices(int listId) const {
-    FAISS_ASSERT(index_);
-    DeviceScope scope(config_.device);
-
-    return index_->getListIndices(listId);
-}
-
-void GpuIndexIVFPQ::verifySettings_() const {
+void GpuIndexIVFPQ::verifyPQSettings_() const {
     // Our implementation has these restrictions:
 
     // Must have some number of lists

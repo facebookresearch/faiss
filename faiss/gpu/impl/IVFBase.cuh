@@ -29,11 +29,12 @@ class FlatIndex;
 class IVFBase {
    public:
     IVFBase(GpuResources* resources,
+            int dim,
+            int nlist,
             faiss::MetricType metric,
             float metricArg,
-            /// We do not own this reference
-            FlatIndex* quantizer,
             bool interleavedLayout,
+            bool useResidual,
             IndicesOptions indicesOptions,
             MemorySpace space);
 
@@ -72,13 +73,40 @@ class IVFBase {
     /// Copy all inverted lists from ourselves to a CPU representation
     void copyInvertedListsTo(InvertedLists* ivf);
 
+    /// Update our coarse quantizer with this quantizer instance; may be a CPU
+    /// or GPU quantizer
+    void updateQuantizer(Index* quantizer);
+
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.
     /// Returns the number of vectors successfully added. Vectors may
     /// not be able to be added because they contain NaNs.
     int addVectors(
+            Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<Index::idx_t, 1, true>& indices);
+
+    /// Find the approximate k nearest neigbors for `queries` against
+    /// our database
+    virtual void search(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& queries,
+            int nprobe,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices) = 0;
+
+    /// Performs search when we are already given the IVF cells to look at
+    /// (GpuIndexIVF::search_preassigned implementation)
+    virtual void searchPreassigned(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfDistances,
+            Tensor<Index::idx_t, 2, true>& ivfAssignments,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices,
+            bool storePairs) = 0;
 
    protected:
     /// Adds a set of codes and indices to a list, with the representation
@@ -90,6 +118,29 @@ class IVFBase {
             // resident on the host
             const Index::idx_t* indices,
             size_t numVecs);
+
+    /// Performs search in a CPU or GPU coarse quantizer for IVF cells,
+    /// returning residuals as well if necessary
+    void searchCoarseQuantizer_(
+            Index* coarseQuantizer,
+            int nprobe,
+            // guaranteed resident on device
+            Tensor<float, 2, true>& vecs,
+            // Output: the distances to the closest nprobe IVF cell centroids
+            // for the query vectors
+            // size (#vecs, nprobe)
+            Tensor<float, 2, true>& distances,
+            // Output: the closest nprobe IVF cells the query vectors lie in
+            // size (#vecs, nprobe)
+            Tensor<Index::idx_t, 2, true>& indices,
+            // optionally compute the residual relative to the IVF cell centroid
+            // if passed
+            // size (#vecs, nprobe, dim)
+            Tensor<float, 3, true>* residuals,
+            // optionally return the IVF cell centroids to which the input
+            // vectors were assigned
+            // size (#vecs, nprobe, dim)
+            Tensor<float, 3, true>* centroids);
 
     /// Returns the number of bytes in which an IVF list containing numVecs
     /// vectors is encoded on the device. Note that due to padding this is not
@@ -111,12 +162,13 @@ class IVFBase {
     /// Append vectors to our on-device lists
     virtual void appendVectors_(
             Tensor<float, 2, true>& vecs,
+            Tensor<float, 2, true>& ivfCentroidResiduals,
             Tensor<Index::idx_t, 1, true>& indices,
-            Tensor<int, 1, true>& uniqueLists,
+            Tensor<Index::idx_t, 1, true>& uniqueLists,
             Tensor<int, 1, true>& vectorsByUniqueList,
             Tensor<int, 1, true>& uniqueListVectorStart,
             Tensor<int, 1, true>& uniqueListStartOffset,
-            Tensor<int, 1, true>& listIds,
+            Tensor<Index::idx_t, 1, true>& listIds,
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) = 0;
 
@@ -130,7 +182,7 @@ class IVFBase {
     /// For a set of list IDs, update device-side list pointer and size
     /// information
     void updateDeviceListInfo_(
-            const std::vector<int>& listIds,
+            const std::vector<Index::idx_t>& listIds,
             cudaStream_t stream);
 
     /// Shared function to copy indices from CPU to GPU
@@ -149,14 +201,17 @@ class IVFBase {
     /// Metric arg
     float metricArg_;
 
-    /// Quantizer object
-    FlatIndex* quantizer_;
-
     /// Expected dimensionality of the vectors
     const int dim_;
 
     /// Number of inverted lists we maintain
     const int numLists_;
+
+    /// Do we need to also compute residuals when processing vectors?
+    bool useResidual_;
+
+    /// Coarse quantizer centroids available on GPU
+    DeviceTensor<float, 2, true> ivfCentroids_;
 
     /// Whether or not our index uses an interleaved by 32 layout:
     /// The default memory layout is [vector][PQ/SQ component]:

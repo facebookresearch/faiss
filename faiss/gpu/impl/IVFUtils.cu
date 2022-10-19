@@ -21,7 +21,7 @@ namespace gpu {
 // Calculates the total number of intermediate distances to consider
 // for all queries
 __global__ void getResultLengths(
-        Tensor<int, 2, true> topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true> ivfListIds,
         int* listLengths,
         int totalSize,
         Tensor<int, 2, true> length) {
@@ -30,11 +30,11 @@ __global__ void getResultLengths(
         return;
     }
 
-    int nprobe = topQueryToCentroid.getSize(1);
+    int nprobe = ivfListIds.getSize(1);
     int queryId = linearThreadId / nprobe;
     int listId = linearThreadId % nprobe;
 
-    int centroidId = topQueryToCentroid[queryId][listId];
+    Index::idx_t centroidId = ivfListIds[queryId][listId];
 
     // Safety guard in case NaNs in input cause no list ID to be generated
     length[queryId][listId] = (centroidId != -1) ? listLengths[centroidId] : 0;
@@ -42,15 +42,15 @@ __global__ void getResultLengths(
 
 void runCalcListOffsets(
         GpuResources* res,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<Index::idx_t, 2, true>& ivfListIds,
         DeviceVector<int>& listLengths,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,
         cudaStream_t stream) {
-    FAISS_ASSERT(topQueryToCentroid.getSize(0) == prefixSumOffsets.getSize(0));
-    FAISS_ASSERT(topQueryToCentroid.getSize(1) == prefixSumOffsets.getSize(1));
+    FAISS_ASSERT(ivfListIds.getSize(0) == prefixSumOffsets.getSize(0));
+    FAISS_ASSERT(ivfListIds.getSize(1) == prefixSumOffsets.getSize(1));
 
-    int totalSize = topQueryToCentroid.numElements();
+    int totalSize = ivfListIds.numElements();
 
     int numThreads = std::min(totalSize, getMaxThreadsCurrentDevice());
     int numBlocks = utils::divUp(totalSize, numThreads);
@@ -59,10 +59,7 @@ void runCalcListOffsets(
     auto block = dim3(numThreads);
 
     getResultLengths<<<grid, block, 0, stream>>>(
-            topQueryToCentroid,
-            listLengths.data(),
-            totalSize,
-            prefixSumOffsets);
+            ivfListIds, listLengths.data(), totalSize, prefixSumOffsets);
     CUDA_TEST_ERROR();
 
     // Prefix sum of the indices, so we know where the intermediate

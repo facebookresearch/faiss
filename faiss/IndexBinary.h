@@ -97,7 +97,8 @@ struct IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const = 0;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const = 0;
 
     /** Query n vectors of dimension d to the index.
      *
@@ -117,7 +118,8 @@ struct IndexBinary {
             idx_t n,
             const uint8_t* x,
             int radius,
-            RangeSearchResult* result) const;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const;
 
     /** Return the indexes of the k vectors closest to the query x.
      *
@@ -164,7 +166,8 @@ struct IndexBinary {
             idx_t k,
             int32_t* distances,
             idx_t* labels,
-            uint8_t* recons) const;
+            uint8_t* recons,
+            const SearchParameters* params = nullptr) const;
 
     /** Display the actual class name and some more info. */
     void display() const;

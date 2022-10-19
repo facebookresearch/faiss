@@ -87,7 +87,8 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
             const component_t* x,
             idx_t k,
             distance_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void train(idx_t n, const component_t* x) override;
 

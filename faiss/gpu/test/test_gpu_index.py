@@ -11,6 +11,8 @@ import unittest
 import numpy as np
 import faiss
 from faiss.contrib import datasets
+from faiss.contrib import ivf_tools
+from faiss.contrib.evaluation import knn_intersection_measure
 
 class EvalIVFPQAccuracy(unittest.TestCase):
 
@@ -171,6 +173,237 @@ class TestShardedFlat(unittest.TestCase):
             assert False, "this call should fail!"
 
 
+class TestIVFSearchPreassigned(unittest.TestCase):
+    def test_ivfflat_search_preassigned(self):
+        res = faiss.StandardGpuResources()
+        d = 50
+        nb = 50000
+        nq = 100
+        nlist = 128
+        nprobe = 10
+        k = 50
+
+        idx_gpu = faiss.GpuIndexIVFFlat(res, d, nlist)
+        idx_gpu.nprobe = nprobe
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        idx_gpu.train(xb)
+        idx_gpu.add(xb)
+
+        # Search separately using the same quantizer
+        q_d, q_i = idx_gpu.quantizer.search(xq, nprobe)
+
+        preassigned_d, preassigned_i = ivf_tools.search_preassigned(
+            idx_gpu, xq, k, q_i, q_d)
+
+        # Search using the standard API
+        d, i = idx_gpu.search(xq, k)
+
+        # The two results should be exactly the same
+        self.assertEqual((d == preassigned_d).sum(), d.size)
+        self.assertEqual((i == preassigned_i).sum(), i.size)
+
+    def test_ivfpq_search_preassigned(self):
+        res = faiss.StandardGpuResources()
+        d = 64
+        nb = 50000
+        nq = 100
+        nlist = 128
+        nprobe = 5
+        k = 50
+
+        idx_gpu = faiss.GpuIndexIVFPQ(res, d, nlist, 4, 8)
+        idx_gpu.nprobe = nprobe
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        idx_gpu.train(xb)
+        idx_gpu.add(xb)
+
+        # Search separately using the same quantizer
+        q_d, q_i = idx_gpu.quantizer.search(xq, nprobe)
+
+        preassigned_d, preassigned_i = ivf_tools.search_preassigned(
+            idx_gpu, xq, k, q_i, q_d)
+
+        # Search using the standard API
+        d, i = idx_gpu.search(xq, k)
+
+        # The two results should be exactly the same
+        self.assertEqual((d == preassigned_d).sum(), d.size)
+        self.assertEqual((i == preassigned_i).sum(), i.size)
+
+    def test_ivfsq_search_preassigned(self):
+        res = faiss.StandardGpuResources()
+        d = 64
+        nb = 50000
+        nq = 100
+        nlist = 128
+        nprobe = 5
+        k = 50
+
+        idx_gpu = faiss.GpuIndexIVFScalarQuantizer(
+            res, d, nlist,
+            faiss.ScalarQuantizer.QT_6bit,
+            faiss.METRIC_INNER_PRODUCT)
+        idx_gpu.nprobe = nprobe
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        idx_gpu.train(xb)
+        idx_gpu.add(xb)
+
+        # Search separately using the same quantizer
+        q_d, q_i = idx_gpu.quantizer.search(xq, nprobe)
+
+        preassigned_d, preassigned_i = ivf_tools.search_preassigned(
+            idx_gpu, xq, k, q_i, q_d)
+
+        # Search using the standard API
+        d, i = idx_gpu.search(xq, k)
+
+        # The two results should be exactly the same
+        self.assertEqual((d == preassigned_d).sum(), d.size)
+        self.assertEqual((i == preassigned_i).sum(), i.size)
+
+
+class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
+    def test_ivfflat_cpu_coarse(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nq = 100
+        nlist = 10
+        nprobe = 3
+
+        q = faiss.IndexFlatL2(d)
+        idx_cpu = faiss.IndexIVFFlat(q, d, nlist)
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        idx_cpu.train(xb)
+        idx_cpu.add(xb)
+
+        # construct a GPU index using the same trained coarse quantizer
+        # from the CPU index
+        idx_gpu = faiss.GpuIndexIVFFlat(res, q, d, nlist, faiss.METRIC_L2)
+        assert(idx_gpu.is_trained)
+        idx_gpu.add(xb)
+
+        k = 20
+
+        idx_cpu.nprobe = nprobe
+        idx_gpu.nprobe = nprobe
+
+        d_g, i_g = idx_gpu.search(xq, k)
+        d_c, i_c = idx_cpu.search(xq, k)
+        self.assertGreaterEqual((i_g == i_c).sum(), i_g.size * 0.9)
+        self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+
+    def test_ivfsq_cpu_coarse(self):
+        res = faiss.StandardGpuResources()
+        d = 128
+        nb = 5000
+        nq = 100
+        nlist = 10
+        nprobe = 3
+        use_residual = True
+        qtype = faiss.ScalarQuantizer.QT_8bit
+
+        q = faiss.IndexFlatL2(d)
+        idx_cpu = faiss.IndexIVFScalarQuantizer(
+            q, d, nlist, qtype, faiss.METRIC_L2, use_residual)
+
+        rs = np.random.RandomState(567)
+        xb = rs.rand(nb, d).astype('float32')
+        xq = rs.rand(nq, d).astype('float32')
+
+        idx_cpu.train(xb)
+        idx_cpu.add(xb)
+
+        # construct a GPU index using the same trained coarse quantizer
+        # from the CPU index
+        idx_gpu = faiss.GpuIndexIVFScalarQuantizer(
+            res, q, d, nlist, qtype, faiss.METRIC_L2, use_residual)
+        assert(not idx_gpu.is_trained)
+        idx_gpu.train(xb)
+        idx_gpu.add(xb)
+
+        k = 20
+
+        idx_cpu.nprobe = nprobe
+        idx_gpu.nprobe = nprobe
+
+        d_g, i_g = idx_gpu.search(xq, k)
+        d_c, i_c = idx_cpu.search(xq, k)
+
+        self.assertGreaterEqual(knn_intersection_measure(i_c, i_g), 0.9)
+
+        self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+
+    def test_ivfpq_cpu_coarse(self):
+        res = faiss.StandardGpuResources()
+        d = 32
+        nb = 50000
+        nq = 20
+        nlist_lvl_1 = 10
+        nlist_lvl_2 = 1000
+        nprobe_lvl_1 = 3
+        nprobe_lvl_2 = 10
+
+        rs = np.random.RandomState(567)
+        coarse_centroids = rs.rand(nlist_lvl_2, d).astype('float32')
+
+        # Construct an IVFFlat index for usage as a coarse quantizer
+        idx_coarse_cpu = faiss.IndexIVFFlat(
+            faiss.IndexFlatL2(d), d, nlist_lvl_1)
+        idx_coarse_cpu.set_direct_map_type(faiss.DirectMap.Hashtable)
+        idx_coarse_cpu.nprobe = nprobe_lvl_1
+
+        idx_coarse_cpu.train(coarse_centroids)
+        idx_coarse_cpu.add(coarse_centroids)
+        idx_coarse_cpu.make_direct_map()
+
+        assert(idx_coarse_cpu.ntotal == nlist_lvl_2)
+
+        idx_cpu = faiss.IndexIVFPQ(
+            idx_coarse_cpu, d, nlist_lvl_2, 4, 8)
+
+        xb = rs.rand(nb, d).astype('float32')
+        idx_cpu.train(xb)
+        idx_cpu.add(xb)
+        idx_cpu.nprobe = nprobe_lvl_2
+
+        # construct a GPU index using the same trained coarse quantizer
+        # from the CPU index
+        idx_gpu = faiss.GpuIndexIVFPQ(
+            res, idx_coarse_cpu, d, nlist_lvl_2, 4, 8)
+        assert(not idx_gpu.is_trained)
+
+        idx_gpu.train(xb)
+        idx_gpu.add(xb)
+        idx_gpu.nprobe = nprobe_lvl_2
+
+        k = 10
+
+        # precomputed codes also utilize the coarse quantizer
+        for use_precomputed in [False, True]:
+            idx_gpu.setPrecomputedCodes(use_precomputed)
+
+            xq = rs.rand(nq, d).astype('float32')
+            d_g, i_g = idx_gpu.search(xq, k)
+            d_c, i_c = idx_cpu.search(xq, k)
+
+            self.assertGreaterEqual(knn_intersection_measure(i_c, i_g), 0.9)
 
 
 class TestInterleavedIVFPQLayout(unittest.TestCase):

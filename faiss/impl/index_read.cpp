@@ -39,11 +39,13 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -311,6 +313,37 @@ static void read_LocalSearchQuantizer(LocalSearchQuantizer* lsq, IOReader* f) {
     READ1(lsq->update_codebooks_with_double);
 }
 
+static void read_ProductAdditiveQuantizer(
+        ProductAdditiveQuantizer* paq,
+        IOReader* f) {
+    read_AdditiveQuantizer(paq, f);
+    READ1(paq->nsplits);
+}
+
+static void read_ProductResidualQuantizer(
+        ProductResidualQuantizer* prq,
+        IOReader* f) {
+    read_ProductAdditiveQuantizer(prq, f);
+
+    for (size_t i = 0; i < prq->nsplits; i++) {
+        auto rq = new ResidualQuantizer();
+        read_ResidualQuantizer(rq, f);
+        prq->quantizers.push_back(rq);
+    }
+}
+
+static void read_ProductLocalSearchQuantizer(
+        ProductLocalSearchQuantizer* plsq,
+        IOReader* f) {
+    read_ProductAdditiveQuantizer(plsq, f);
+
+    for (size_t i = 0; i < plsq->nsplits; i++) {
+        auto lsq = new LocalSearchQuantizer();
+        read_LocalSearchQuantizer(lsq, f);
+        plsq->quantizers.push_back(lsq);
+    }
+}
+
 static void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->qtype);
     READ1(ivsc->rangestat);
@@ -369,6 +402,21 @@ static void read_NSG(NSG* nsg, IOReader* f) {
             }
         }
     }
+}
+
+static void read_NNDescent(NNDescent* nnd, IOReader* f) {
+    READ1(nnd->ntotal);
+    READ1(nnd->d);
+    READ1(nnd->K);
+    READ1(nnd->S);
+    READ1(nnd->R);
+    READ1(nnd->L);
+    READ1(nnd->iter);
+    READ1(nnd->search_L);
+    READ1(nnd->random_seed);
+    READ1(nnd->has_built);
+
+    READVECTOR(nnd->final_graph);
 }
 
 ProductQuantizer* read_ProductQuantizer(const char* fname) {
@@ -454,10 +502,14 @@ static IndexIVFPQ* read_ivfpq(IOReader* f, uint32_t h, int io_flags) {
     }
 
     if (ivpq->is_trained) {
-        // precomputed table not stored. It is cheaper to recompute it
+        // precomputed table not stored. It is cheaper to recompute it.
+        // precompute_table() may be disabled with a flag.
         ivpq->use_precomputed_table = 0;
-        if (ivpq->by_residual)
-            ivpq->precompute_table();
+        if (ivpq->by_residual) {
+            if ((io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) == 0) {
+                ivpq->precompute_table();
+            }
+        }
         if (ivfpqr) {
             read_ProductQuantizer(&ivfpqr->refine_pq, f);
             READVECTOR(ivfpqr->refine_codes);
@@ -559,6 +611,20 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->code_size);
         READVECTOR(idxr->codes);
         idx = idxr;
+    } else if (h == fourcc("IxPR")) {
+        auto idxpr = new IndexProductResidualQuantizer();
+        read_index_header(idxpr, f);
+        read_ProductResidualQuantizer(&idxpr->prq, f);
+        READ1(idxpr->code_size);
+        READVECTOR(idxpr->codes);
+        idx = idxpr;
+    } else if (h == fourcc("IxPL")) {
+        auto idxpl = new IndexProductLocalSearchQuantizer();
+        read_index_header(idxpl, f);
+        read_ProductLocalSearchQuantizer(&idxpl->plsq, f);
+        READ1(idxpl->code_size);
+        READVECTOR(idxpl->codes);
+        idx = idxpl;
     } else if (h == fourcc("ImRQ")) {
         ResidualCoarseQuantizer* idxr = new ResidualCoarseQuantizer();
         read_index_header(idxr, f);
@@ -566,20 +632,35 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(idxr->beam_factor);
         idxr->set_beam_factor(idxr->beam_factor);
         idx = idxr;
-    } else if (h == fourcc("ILfs") || h == fourcc("IRfs")) {
+    } else if (
+            h == fourcc("ILfs") || h == fourcc("IRfs") || h == fourcc("IPRf") ||
+            h == fourcc("IPLf")) {
         bool is_LSQ = h == fourcc("ILfs");
+        bool is_RQ = h == fourcc("IRfs");
+        bool is_PLSQ = h == fourcc("IPLf");
+
         IndexAdditiveQuantizerFastScan* idxaqfs;
         if (is_LSQ) {
             idxaqfs = new IndexLocalSearchQuantizerFastScan();
-        } else {
+        } else if (is_RQ) {
             idxaqfs = new IndexResidualQuantizerFastScan();
+        } else if (is_PLSQ) {
+            idxaqfs = new IndexProductLocalSearchQuantizerFastScan();
+        } else {
+            idxaqfs = new IndexProductResidualQuantizerFastScan();
         }
         read_index_header(idxaqfs, f);
 
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)idxaqfs->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer(
+                    (ProductLocalSearchQuantizer*)idxaqfs->aq, f);
+        } else {
+            read_ProductResidualQuantizer(
+                    (ProductResidualQuantizer*)idxaqfs->aq, f);
         }
 
         READ1(idxaqfs->implem);
@@ -599,20 +680,35 @@ Index* read_index(IOReader* f, int io_flags) {
 
         READVECTOR(idxaqfs->codes);
         idx = idxaqfs;
-    } else if (h == fourcc("IVLf") || h == fourcc("IVRf")) {
+    } else if (
+            h == fourcc("IVLf") || h == fourcc("IVRf") || h == fourcc("NPLf") ||
+            h == fourcc("NPRf")) {
         bool is_LSQ = h == fourcc("IVLf");
+        bool is_RQ = h == fourcc("IVRf");
+        bool is_PLSQ = h == fourcc("NPLf");
+
         IndexIVFAdditiveQuantizerFastScan* ivaqfs;
         if (is_LSQ) {
             ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
-        } else {
+        } else if (is_RQ) {
             ivaqfs = new IndexIVFResidualQuantizerFastScan();
+        } else if (is_PLSQ) {
+            ivaqfs = new IndexIVFProductLocalSearchQuantizerFastScan();
+        } else {
+            ivaqfs = new IndexIVFProductResidualQuantizerFastScan();
         }
         read_ivf_header(ivaqfs, f);
 
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer(
+                    (ProductLocalSearchQuantizer*)ivaqfs->aq, f);
+        } else {
+            read_ProductResidualQuantizer(
+                    (ProductResidualQuantizer*)ivaqfs->aq, f);
         }
 
         READ1(ivaqfs->by_residual);
@@ -712,20 +808,34 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_InvertedLists(ivsc, f, io_flags);
         idx = ivsc;
-    } else if (h == fourcc("IwLS") || h == fourcc("IwRQ")) {
+    } else if (
+            h == fourcc("IwLS") || h == fourcc("IwRQ") || h == fourcc("IwPL") ||
+            h == fourcc("IwPR")) {
         bool is_LSQ = h == fourcc("IwLS");
+        bool is_RQ = h == fourcc("IwRQ");
+        bool is_PLSQ = h == fourcc("IwPL");
         IndexIVFAdditiveQuantizer* iva;
         if (is_LSQ) {
             iva = new IndexIVFLocalSearchQuantizer();
-        } else {
+        } else if (is_RQ) {
             iva = new IndexIVFResidualQuantizer();
+        } else if (is_PLSQ) {
+            iva = new IndexIVFProductLocalSearchQuantizer();
+        } else {
+            iva = new IndexIVFProductResidualQuantizer();
         }
         read_ivf_header(iva, f);
         READ1(iva->code_size);
         if (is_LSQ) {
             read_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
-        } else {
+        } else if (is_RQ) {
             read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f);
+        } else if (is_PLSQ) {
+            read_ProductLocalSearchQuantizer(
+                    (ProductLocalSearchQuantizer*)iva->aq, f);
+        } else {
+            read_ProductResidualQuantizer(
+                    (ProductResidualQuantizer*)iva->aq, f);
         }
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);
@@ -848,6 +958,13 @@ Index* read_index(IOReader* f, int io_flags) {
         idxnsg->storage = read_index(f, io_flags);
         idxnsg->own_fields = true;
         idx = idxnsg;
+    } else if (h == fourcc("INNf")) {
+        IndexNNDescent* idxnnd = new IndexNNDescentFlat();
+        read_index_header(idxnnd, f);
+        read_NNDescent(&idxnnd->nndescent, f);
+        idxnnd->storage = read_index(f, io_flags);
+        idxnnd->own_fields = true;
+        idx = idxnnd;
     } else if (h == fourcc("IPfs")) {
         IndexPQFastScan* idxpqfs = new IndexPQFastScan();
         read_index_header(idxpqfs, f);
@@ -887,6 +1004,22 @@ Index* read_index(IOReader* f, int io_flags) {
         ivpq->code_size = pq.code_size;
 
         idx = ivpq;
+    } else if (h == fourcc("IRMf")) {
+        IndexRowwiseMinMax* imm = new IndexRowwiseMinMax();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
+    } else if (h == fourcc("IRMh")) {
+        IndexRowwiseMinMaxFP16* imm = new IndexRowwiseMinMaxFP16();
+        read_index_header(imm, f);
+
+        imm->index = read_index(f, io_flags);
+        imm->own_fields = true;
+
+        idx = imm;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

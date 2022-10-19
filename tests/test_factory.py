@@ -6,6 +6,7 @@
 
 import numpy as np
 import unittest
+import gc
 import faiss
 
 from faiss.contrib import factory_tools
@@ -226,6 +227,16 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.index_factory(123, "Flat,IDMap")
         self.assertEqual(index.__class__, faiss.IndexIDMap)
 
+    def test_idmap2_suffix(self):
+        index = faiss.index_factory(123, "Flat,IDMap2")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
+    def test_idmap2_prefix(self):
+        index = faiss.index_factory(123, "IDMap2,Flat")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
     def test_ivf_hnsw(self):
         index = faiss.index_factory(123, "IVF100_HNSW,Flat")
         quantizer = faiss.downcast_index(index.quantizer)
@@ -286,3 +297,17 @@ class TestQuantizerClone(unittest.TestCase):
 
         codes2 = quant2.compute_codes(ds.get_database())
         np.testing.assert_array_equal(codes, codes2)
+
+
+class TestIVFSpectralHashOwnerhsip(unittest.TestCase):
+
+    def test_constructor(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        gc.collect()
+        index.quantizer.ntotal   # this should not crash
+
+    def test_replace_vt(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        index.replace_vt(faiss.ITQTransform(10, 10))
+        gc.collect()
+        index.vt.d_out # this should not crash

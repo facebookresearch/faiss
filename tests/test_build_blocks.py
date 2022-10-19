@@ -573,3 +573,27 @@ class TestResultHeap(unittest.TestCase):
 
         np.testing.assert_equal(all_rh[1].D, all_rh[3].D)
         np.testing.assert_equal(all_rh[1].I, all_rh[3].I)
+
+
+class TestReconstructBatch(unittest.TestCase):
+
+    def test_indexflat(self):
+        index = faiss.IndexFlatL2(32)
+        x = faiss.randn((100, 32), 1234)
+        index.add(x)
+
+        subset = [4, 7, 45]
+        np.testing.assert_equal(x[subset], index.reconstruct_batch(subset))
+
+    def test_exception(self):
+        index = faiss.index_factory(32, "IVF2,Flat")
+        x = faiss.randn((100, 32), 1234)
+        index.train(x)
+        index.add(x)
+
+        # make sure it raises an exception even if it enters the openmp for
+        subset = np.zeros(1200, dtype=int)
+        self.assertRaises(
+            RuntimeError,
+            lambda : index.reconstruct_batch(subset),
+        )

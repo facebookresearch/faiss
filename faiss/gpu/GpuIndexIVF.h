@@ -8,18 +8,17 @@
 #pragma once
 
 #include <faiss/Clustering.h>
+#include <faiss/IndexIVF.h> // for SearchParametersIVF
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
-
-namespace faiss {
-struct IndexIVF;
-}
+#include <memory>
 
 namespace faiss {
 namespace gpu {
 
 class GpuIndexFlat;
+class IVFBase;
 
 struct GpuIndexIVFConfig : public GpuIndexConfig {
     inline GpuIndexIVFConfig() : indicesOptions(INDICES_64_BIT) {}
@@ -31,10 +30,26 @@ struct GpuIndexIVFConfig : public GpuIndexConfig {
     GpuIndexFlatConfig flatConfig;
 };
 
+/// Base class of all GPU IVF index types. This (for now) deliberately does not
+/// inherit from IndexIVF, as many of the public data members and functionality
+/// in IndexIVF is not supported in the same manner on the GPU.
 class GpuIndexIVF : public GpuIndex {
    public:
+    /// Version that auto-constructs a flat coarse quantizer based on the
+    /// desired metric
     GpuIndexIVF(
             GpuResourcesProvider* provider,
+            int dims,
+            faiss::MetricType metric,
+            float metricArg,
+            int nlist,
+            GpuIndexIVFConfig config = GpuIndexIVFConfig());
+
+    /// Version that takes a coarse quantizer instance. The GpuIndexIVF does not
+    /// own the coarseQuantizer instance by default (functions like IndexIVF).
+    GpuIndexIVF(
+            GpuResourcesProvider* provider,
+            Index* coarseQuantizer,
             int dims,
             faiss::MetricType metric,
             float metricArg,
@@ -54,11 +69,16 @@ class GpuIndexIVF : public GpuIndex {
     /// Copy what we have to the CPU equivalent
     void copyTo(faiss::IndexIVF* index) const;
 
+    /// Should be called if the user ever changes the state of the IVF coarse
+    /// quantizer manually (e.g., substitutes a new instance or changes vectors
+    /// in the coarse quantizer outside the scope of training)
+    virtual void updateQuantizer() = 0;
+
     /// Returns the number of inverted lists we're managing
     int getNumLists() const;
 
     /// Returns the number of vectors present in a particular inverted list
-    virtual int getListLength(int listId) const = 0;
+    int getListLength(int listId) const;
 
     /// Return the encoded vector data contained in a particular inverted list,
     /// for debugging purposes.
@@ -66,16 +86,12 @@ class GpuIndexIVF : public GpuIndex {
     /// GPU-side representation.
     /// Otherwise, it is converted to the CPU format.
     /// compliant format, while the native GPU format may differ.
-    virtual std::vector<uint8_t> getListVectorData(
-            int listId,
-            bool gpuFormat = false) const = 0;
+    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
+            const;
 
     /// Return the vector indices contained in a particular inverted list, for
     /// debugging purposes.
-    virtual std::vector<Index::idx_t> getListIndices(int listId) const = 0;
-
-    /// Return the quantizer we're using
-    GpuIndexFlat* getQuantizer();
+    std::vector<Index::idx_t> getListIndices(int listId) const;
 
     /// Sets the number of list probes per query
     void setNumProbes(int nprobe);
@@ -83,9 +99,48 @@ class GpuIndexIVF : public GpuIndex {
     /// Returns our current number of list probes per query
     int getNumProbes() const;
 
+    /// Same interface as faiss::IndexIVF, in order to search a set of vectors
+    /// pre-quantized by the IVF quantizer. Does not include IndexIVFStats as
+    /// that can only be obtained on the host via a GPU d2h copy.
+    /// @param n      nb of vectors to query
+    /// @param x      query vectors, size nx * d
+    /// @param assign coarse quantization indices, size nx * nprobe
+    /// @param centroid_dis
+    ///             distances to coarse centroids, size nx * nprobe
+    /// @param distance
+    ///             output distances, size n * k
+    /// @param labels output labels, size n * k
+    /// @param store_pairs store inv list index + inv list offset
+    ///                   instead in upper/lower 32 bit of result,
+    ///                   instead of ids (used for reranking).
+    /// @param params used to override the object's search parameters
+    void search_preassigned(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            bool store_pairs,
+            const SearchParametersIVF* params = nullptr) const;
+
    protected:
+    void verifyIVFSettings_() const;
     bool addImplRequiresIDs_() const override;
     void trainQuantizer_(Index::idx_t n, const float* x);
+
+    /// Called from GpuIndex for add/add_with_ids
+    void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
+
+    /// Called from GpuIndex for search
+    void searchImpl_(
+            int n,
+            const float* x,
+            int k,
+            float* distances,
+            Index::idx_t* labels,
+            const SearchParameters* params) const override;
 
    public:
     /// Exposing this like the CPU version for manipulation
@@ -97,12 +152,18 @@ class GpuIndexIVF : public GpuIndex {
     /// Exposing this like the CPU version for manipulation
     int nprobe;
 
-    /// Exposeing this like the CPU version for query
-    GpuIndexFlat* quantizer;
+    /// A user-pluggable coarse quantizer
+    Index* quantizer;
+
+    /// Whether or not we own the coarse quantizer
+    bool own_fields;
 
    protected:
     /// Our configuration options
     const GpuIndexIVFConfig ivfConfig_;
+
+    /// For a trained/initialized index, this is a reference to the base class
+    std::shared_ptr<IVFBase> baseIndex_;
 };
 
 } // namespace gpu

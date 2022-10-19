@@ -50,6 +50,10 @@ struct IndexFlatCodes : Index {
     DistanceComputer* get_distance_computer() const override {
         return get_FlatCodesDistanceComputer();
     }
+
+    void check_compatible_for_merge(const Index& otherIndex) const override;
+
+    virtual void merge_from(Index& otherIndex, idx_t add_id = 0) override;
 };
 
 } // namespace faiss

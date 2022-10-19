@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cublas_v2.h>
+#include <faiss/Index.h>
 #include <faiss/gpu/utils/NoTypeTensor.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
 
@@ -27,7 +28,7 @@ void runPQCodeDistances(
         Tensor<float, 2, true>& queries,
         Tensor<CentroidT, 2, true>& coarseCentroids,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<int, 2, true>& coarseIndices,
+        Tensor<Index::idx_t, 2, true>& coarseIndices,
         NoTypeTensor<4, true>& outCodeDistances,
         bool useMMImplementation,
         bool l2Distance,
