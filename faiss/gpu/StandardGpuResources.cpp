@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef FAISS_ENABLE_RAFT
 #include <raft/core/handle.hpp>
-#endif
 
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -317,10 +315,8 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
-#ifdef FAISS_ENABLE_RAFT
     raft::handle_t handle(defaultStream);
     raftHandles_[device] = handle;
-#endif
 
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
@@ -384,7 +380,6 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     return defaultStreams_[device];
 }
 
-#ifdef FAISS_ENABLE_RAFT
 raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) const {
     initializeForDevice(device);
 
@@ -398,7 +393,6 @@ raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) const {
     return raftHandles_[device];
 
 }
-#endif
 
 std::vector<cudaStream_t> StandardGpuResourcesImpl::getAlternateStreams(
         int device) {
@@ -625,11 +619,9 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
 
-#ifdef FAISS_ENABLE_RAFT
  raft::handle_t &StandardGpuResources::getRaftHandle(int device) const {
     return res_->getRaftHandle(device);
 }
-#endif
 
 size_t StandardGpuResources::getTempMemoryAvailable(int device) const {
     return res_->getTempMemoryAvailable(device);

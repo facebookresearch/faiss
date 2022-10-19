@@ -222,10 +222,6 @@ class RmmGpuResourcesImpl : public GpuResources {
         }
 
         userDefaultStreams_[device] = stream;
-
-#ifdef FAISS_ENABLE_RAFT
-        raftHandles_[device] = raft::handle_t(stream);
-#endif
     };
 
     /// Revert the default stream to the original stream managed by this resources
@@ -247,9 +243,6 @@ class RmmGpuResourcesImpl : public GpuResources {
         }
 
         userDefaultStreams_.erase(device);
-#ifdef FAISS_ENABLE_RAFT
-    raftHandles_.erase(device);
-#endif
     };
 
     /// Returns the stream for the given device on which all Faiss GPU work is

@@ -60,11 +60,9 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// this stream upon exit from an index or other Faiss GPU call.
     cudaStream_t getDefaultStream(int device) override;
 
-#ifdef FAISS_ENABLE_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
     raft::handle_t &getRaftHandle(int device) const override;
-#endif
 
     /// Called to change the work ordering streams to the null stream
     /// for all devices
@@ -132,10 +130,8 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// cuBLAS handle for each device
     std::unordered_map<int, cublasHandle_t> blasHandles_;
 
-#ifdef FAISS_ENABLE_RAFT
     /// raft handle for each device
     std::unordered_map<int, raft::handle_t> raftHandles_;
-#endif
 
     /// Pinned memory allocation for use with this GPU
     void* pinnedMemAlloc_;
@@ -199,11 +195,9 @@ class StandardGpuResources : public GpuResourcesProvider {
     /// Returns the current default stream
     cudaStream_t getDefaultStream(int device);
 
-#ifdef FAISS_ENABLE_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    raft::handle_t &getRaftHandle(int device) const override;
-#endif
+    raft::handle_t &getRaftHandle(int device) const;
 
     /// Returns the current amount of temp memory available
     size_t getTempMemoryAvailable(int device) const;
