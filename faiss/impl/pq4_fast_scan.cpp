@@ -88,7 +88,7 @@ void pq4_pack_codes_range(
         size_t i0,
         size_t i1,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks) {
     const uint8_t perm0[16] = {
             0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
@@ -98,9 +98,9 @@ void pq4_pack_codes_range(
     size_t block1 = ((i1 - 1) / bbs) + 1;
 
     for (size_t b = block0; b < block1; b++) {
-        uint8_t* codes2 = blocks + b * bbs * M2 / 2;
+        uint8_t* codes2 = blocks + b * bbs * nsq / 2;
         int64_t i_base = b * bbs - i0;
-        for (int sq = 0; sq < M2; sq += 2) {
+        for (int sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
