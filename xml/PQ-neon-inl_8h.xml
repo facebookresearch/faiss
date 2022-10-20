@@ -44,8 +44,8 @@
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.<sp/>Confidential<sp/>and<sp/>proprietary.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>PQ_NEON_INL_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PQ_NEON_INL_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;arm_neon.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
@@ -1494,6 +1494,7 @@
 <codeline lineno="1449"><highlight class="normal"></highlight></codeline>
 <codeline lineno="1450"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>cppcontrib</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1451"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1452"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>PQ_NEON_INL_H</highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h"/>
   </compounddef>

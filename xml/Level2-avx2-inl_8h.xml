@@ -44,8 +44,8 @@
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="comment">//<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.<sp/>Confidential<sp/>and<sp/>proprietary.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>LEVEL2_AVX2_INL_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LEVEL2_AVX2_INL_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;immintrin.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
@@ -2100,6 +2100,7 @@
 <codeline lineno="2055"><highlight class="normal"></highlight></codeline>
 <codeline lineno="2056"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>cppcontrib</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2057"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2058"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>LEVEL2_AVX2_INL_H</highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h"/>
   </compounddef>
