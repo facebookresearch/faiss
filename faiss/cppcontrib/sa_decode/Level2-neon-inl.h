@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-#pragma once
+#ifndef LEVEL2_NEON_INL_H
+#define LEVEL2_NEON_INL_H
 
 #include <arm_neon.h>
 
@@ -2144,3 +2144,4 @@ struct Index2LevelDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // LEVEL2_NEON_INL_H

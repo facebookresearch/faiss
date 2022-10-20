@@ -1,6 +1,7 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#pragma once
+#ifndef PQ_AVX2_INL_H
+#define PQ_AVX2_INL_H
 
 #include <immintrin.h>
 
@@ -1614,3 +1615,4 @@ struct IndexPQDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // PQ_AVX2_INL_H

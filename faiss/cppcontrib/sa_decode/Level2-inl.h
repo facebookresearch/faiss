@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-#pragma once
+#ifndef LEVEL2_INL_H
+#define LEVEL2_INL_H
 
 #include <cstddef>
 #include <cstdint>
@@ -405,3 +405,4 @@ struct Index2LevelDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // LEVEL2_INL_H

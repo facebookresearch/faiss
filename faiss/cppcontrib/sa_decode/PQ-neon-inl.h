@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-#pragma once
+#ifndef PQ_NEON_INL_H
+#define PQ_NEON_INL_H
 
 #include <arm_neon.h>
 
@@ -1449,3 +1449,4 @@ struct IndexPQDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // PQ_NEON_INL_H

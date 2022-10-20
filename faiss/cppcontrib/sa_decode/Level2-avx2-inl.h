@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-#pragma once
+#ifndef LEVEL2_AVX2_INL_H
+#define LEVEL2_AVX2_INL_H
 
 #include <immintrin.h>
 
@@ -2055,3 +2055,4 @@ struct Index2LevelDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // LEVEL2_AVX2_INL_H
