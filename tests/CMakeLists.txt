@@ -39,7 +39,7 @@ endif()
 
 include(FetchContent)
 FetchContent_Declare(googletest
-  URL "https://github.com/google/googletest/archive/release-1.10.0.tar.gz")
+  URL "https://github.com/google/googletest/archive/release-1.12.1.tar.gz")
 set(BUILD_GMOCK CACHE BOOL OFF)
 set(INSTALL_GTEST CACHE BOOL OFF)
 FetchContent_MakeAvailable(googletest)
