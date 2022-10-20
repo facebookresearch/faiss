@@ -62,7 +62,7 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    raft::handle_t &getRaftHandle(int device) const override;
+    raft::handle_t &getRaftHandle(int device) override;
 
     /// Called to change the work ordering streams to the null stream
     /// for all devices
@@ -197,7 +197,7 @@ class StandardGpuResources : public GpuResourcesProvider {
 
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    raft::handle_t &getRaftHandle(int device) const;
+    raft::handle_t &getRaftHandle(int device);
 
     /// Returns the current amount of temp memory available
     size_t getTempMemoryAvailable(int device) const;

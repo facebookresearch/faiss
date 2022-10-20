@@ -495,10 +495,17 @@ class RmmGpuResourcesImpl : public GpuResources {
         return defaultStreams_.count(device) != 0;
     };
 
-    std::unique_ptr<raft::handle_t> getRaftHandle(int device) const {
+    raft::handle_t &getRaftHandle(int device) {
+        initializeForDevice(device);
+
         auto it = raftHandles_.find(device);
-        FAISS_ASSERT(it != raftHandles_.end());
-        return it->second;
+        if (it != raftHandles_.end()) {
+            // There is a user override handle set
+            return it->second;
+        }
+
+        // Otherwise, our base default handle
+        return raftHandles_[device];
     }
 
     /// Adjust the default temporary memory allocation based on the total GPU
@@ -573,7 +580,7 @@ class RmmGpuResourcesImpl : public GpuResources {
     std::unique_ptr<rmm::mr::host_memory_resource> pmr;
 
     /// Our raft handle that maintains additional library resources, one per each device
-    std::unordered_map<int, std::unique_ptr<raft::handle_t>> raftHandles_;
+    std::unordered_map<int, raft::handle_t> raftHandles_;
 
 };
 

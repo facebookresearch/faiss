@@ -315,8 +315,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
-    raft::handle_t handle(defaultStream);
-    raftHandles_[device] = handle;
+    raftHandles_.emplace(std::make_pair(device, defaultStream));
 
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
@@ -380,16 +379,16 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     return defaultStreams_[device];
 }
 
-raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) const {
+raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
 
     auto it = raftHandles_.find(device);
     if (it != raftHandles_.end()) {
-        // There is a user override stream set
+        // There is a user override handle set
         return it->second;
     }
 
-    // Otherwise, our base default stream
+    // Otherwise, our base default handle
     return raftHandles_[device];
 
 }
@@ -619,7 +618,7 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
 
- raft::handle_t &StandardGpuResources::getRaftHandle(int device) const {
+ raft::handle_t &StandardGpuResources::getRaftHandle(int device) {
     return res_->getRaftHandle(device);
 }
 

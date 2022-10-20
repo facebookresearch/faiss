@@ -151,6 +151,26 @@ void RaftIVFFlat::searchImpl_(
 
     // TODO: Fill in this logic here.
 
+//    // Device is already set in GpuIndex::search
+//    FAISS_ASSERT(raft_knn_index.has_value());
+//    FAISS_ASSERT(n > 0);
+//    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
+//
+//    raft::spatial::knn::ivf_flat::search_params pams;
+//    pams.n_probes = nprobe;
+//    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
+//            raft_handle,
+//            pams,
+//            *raft_knn_index,
+//            const_cast<float*>(x),
+//            static_cast<std::uint32_t>(n),
+//            static_cast<std::uint32_t>(k),
+//            labels,
+//            distances);
+//
+//    raft_handle.sync_stream();
+
+
     // If the GPU isn't storing indices (they are on the CPU side), we
     // need to perform the re-mapping here
     // FIXME: we might ultimately be calling this function with inputs
