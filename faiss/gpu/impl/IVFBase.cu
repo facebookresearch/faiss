@@ -582,6 +582,7 @@ void IVFBase::searchCoarseQuantizer_(
     }
 }
 
+// TODO: Is it best to plug in here?
 int IVFBase::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,

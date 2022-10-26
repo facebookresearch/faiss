@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <raft/core/handle.hpp>
+#include <raft/distance/distance_types.hpp>
+#include <raft/neighbors/ivf_flat_types.hpp>
+#include <raft/neighbors/ivf_flat.cuh>
+
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/gpu/GpuCloner.h>
@@ -460,17 +465,24 @@ void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
     }
 
     if(config_.use_raft) {
-        /**
-         * TODO: Plug in clustering logic here.
-         *
-         * Essentially what we need here is to use `x` as the training data set
-         * to train the k-means centroids and add them to the quantizer
-         * implementation.
-         */
 
+        const raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
 
+        raft::neighbors::ivf_flat::index_params raft_idx_params;
+        raft_idx_params.n_lists = nlist;
+        raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
+        raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_n_iters = 100;
 
+        auto raft_index = raft::neighbors::ivf_flat::build(
+            raft_handle, raft_idx_params, x, n, (Index::idx_t)d);
 
+        raft_handle.sync_stream();
+
+        // TODO: Validate this is all we need to do
+        quantizer->reset();
+        quantizer->train(nlist, raft_index.centers().data_handle());
+        quantizer->add(nlist, raft_index.centers().data_handle());
 
     } else {
         // leverage the CPU-side k-means code, which works for the GPU
@@ -479,9 +491,9 @@ void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
         Clustering clus(this->d, nlist, this->cp);
         clus.verbose = verbose;
         clus.train(n, x, *quantizer);
-        quantizer->is_trained = true;
     }
 
+    quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);
 }
 

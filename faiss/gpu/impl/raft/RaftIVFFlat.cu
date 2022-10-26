@@ -84,8 +84,6 @@ void RaftIVFFlat::search(
     raft::spatial::knn::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
 
-    // TODO: 
-
     auto queries_view = raft::make_device_matrix_view<const float>(queries.data(), n, cols);
     auto out_inds_view = raft::make_device_matrix_view<Index::idx_t>(outIndices.data(), n, k_);
     auto out_dists_view = raft::make_device_matrix_view<float>(outDistances.data(), n, k_);
@@ -96,140 +94,28 @@ void RaftIVFFlat::search(
     raft_handle.sync_stream();
 }
 
-
-size_t RaftIVFFlat::getGpuVectorsEncodingSize_(int numVecs) const {
-    if (interleavedLayout_) {
-        // bits per scalar code
-        int bits = scalarQ_ ? scalarQ_->bits : 32 /* float */;
-
-        // bytes to encode a block of 32 vectors (single dimension)
-        int bytesPerDimBlock = bits * 32 / 8;
-
-        // bytes to fully encode 32 vectors
-        int bytesPerBlock = bytesPerDimBlock * dim_;
-
-        // number of blocks of 32 vectors we have
-        int numBlocks = utils::divUp(numVecs, 32);
-
-        // total size to encode numVecs
-        return bytesPerBlock * numBlocks;
-    } else {
-        size_t sizePerVector =
-                (scalarQ_ ? scalarQ_->code_size : sizeof(float) * dim_);
-
-        return (size_t)numVecs * sizePerVector;
-    }
-}
-
-size_t RaftIVFFlat::getCpuVectorsEncodingSize_(int numVecs) const {
-    size_t sizePerVector =
-            (scalarQ_ ? scalarQ_->code_size : sizeof(float) * dim_);
-
-    return (size_t)numVecs * sizePerVector;
-}
-
-std::vector<uint8_t> RaftIVFFlat::translateCodesToGpu_(
-        std::vector<uint8_t> codes,
-        size_t numVecs) const {
-    if (!interleavedLayout_) {
-        // same format
-        return codes;
-    }
-
-    int bitsPerCode = scalarQ_ ? scalarQ_->bits : 32;
-
-    auto up =
-            unpackNonInterleaved(std::move(codes), numVecs, dim_, bitsPerCode);
-    return packInterleaved(std::move(up), numVecs, dim_, bitsPerCode);
-}
-
-std::vector<uint8_t> RaftIVFFlat::translateCodesFromGpu_(
-        std::vector<uint8_t> codes,
-        size_t numVecs) const {
-    if (!interleavedLayout_) {
-        // same format
-        return codes;
-    }
-
-    int bitsPerCode = scalarQ_ ? scalarQ_->bits : 32;
-
-    auto up = unpackInterleaved(std::move(codes), numVecs, dim_, bitsPerCode);
-    return packNonInterleaved(std::move(up), numVecs, dim_, bitsPerCode);
-}
-
-
-void RaftIVFFlat::appendVectors_(
+/// Classify and encode/add vectors to our IVF lists.
+/// The input data must be on our current device.
+/// Returns the number of vectors successfully added. Vectors may
+/// not be able to be added because they contain NaNs.
+int RaftIVFFlat::addVectors(
+        Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
-        Tensor<float, 2, true>& ivfCentroidResiduals,
-        Tensor<Index::idx_t, 1, true>& indices,
-        Tensor<Index::idx_t, 1, true>& uniqueLists,
-        Tensor<int, 1, true>& vectorsByUniqueList,
-        Tensor<int, 1, true>& uniqueListVectorStart,
-        Tensor<int, 1, true>& uniqueListStartOffset,
-        Tensor<Index::idx_t, 1, true>& listIds,
-        Tensor<int, 1, true>& listOffset,
-        cudaStream_t stream) {
-    //
-    // Append the new encodings
-    //
+        Tensor<Index::idx_t, 1, true>& indices) {
 
-    // TODO: Fill in this logic here
+    auto vecs_view = raft::make_device_matrix_view<const float, Index::idx_t>(vecs.data(), vecs.getSize(0), dim_);
+    auto inds_view = raft::make_device_vector_view<const Index::idx_t, Index::idx_t>(indices.data(), (Index::idx_t )indices.getSize(0));
+
+    const raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
+
+    // TODO: We probably don't want to ignore the coarse quantizer here
+    raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
+            raft_handle,
+            raft_knn_index.value(),
+            vecs_view,
+            std::make_optional<raft::device_vector_view<const Index::idx_t, Index::idx_t>>(inds_view)));
 }
 
-//void RaftIVFFlat::searchImpl_(
-//        Tensor<float, 2, true>& queries,
-//        Tensor<float, 2, true>& coarseDistances,
-//        Tensor<Index::idx_t, 2, true>& coarseIndices,
-//        Tensor<float, 3, true>& ivfCentroids,
-//        int k,
-//        Tensor<float, 2, true>& outDistances,
-//        Tensor<Index::idx_t, 2, true>& outIndices,
-//        bool storePairs) {
-//    FAISS_ASSERT(storePairs == false);
-//
-//    auto stream = resources_->getDefaultStreamCurrentDevice();
-//
-//    // TODO: Fill in this logic here.
-//
-////    // Device is already set in GpuIndex::search
-////    FAISS_ASSERT(raft_knn_index.has_value());
-////    FAISS_ASSERT(n > 0);
-////    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
-////
-//    raft::spatial::knn::ivf_flat::search_params pams;
-//    pams.n_probes = nprobe;
-//    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
-//            raft_handle,
-//            pams,
-//            *raft_knn_index,
-//            const_cast<float*>(x),
-//            static_cast<std::uint32_t>(n),
-//            static_cast<std::uint32_t>(k),
-//            labels,
-//            distances);
-//
-//    raft_handle.sync_stream();
-//
-//
-//    // If the GPU isn't storing indices (they are on the CPU side), we
-//    // need to perform the re-mapping here
-//    // FIXME: we might ultimately be calling this function with inputs
-//    // from the CPU, these are unnecessary copies
-//    if (indicesOptions_ == INDICES_CPU) {
-//        HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
-//
-//        ivfOffsetToUserIndex(
-//                hostOutIndices.data(),
-//                numLists_,
-//                hostOutIndices.getSize(0),
-//                hostOutIndices.getSize(1),
-//                listOffsetToUserIndex_);
-//
-//        // Copy back to GPU, since the input to this function is on the
-//        // GPU
-//        outIndices.copyFrom(hostOutIndices, stream);
-//    }
-//}
 
 } // namespace gpu
 } // namespace faiss
