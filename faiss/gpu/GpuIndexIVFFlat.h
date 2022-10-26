@@ -9,6 +9,7 @@
 
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/gpu/GpuIndexIVF.h>
+
 #include <memory>
 
 namespace faiss {

@@ -286,8 +286,16 @@ void IVFFlat::searchPreassigned(
 
 void IVFFlat::searchImpl_(
         Tensor<float, 2, true>& queries,
+
+        /**
+         *
+         */
         Tensor<float, 2, true>& coarseDistances,
         Tensor<Index::idx_t, 2, true>& coarseIndices,
+
+        /**
+         * This is raft::neighbors::ivf_flat::index::centers_
+         */
         Tensor<float, 3, true>& ivfCentroids,
         int k,
         Tensor<float, 2, true>& outDistances,

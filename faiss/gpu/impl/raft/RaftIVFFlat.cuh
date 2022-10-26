@@ -34,6 +34,18 @@ class RaftIVFFlat : public IVFFlat {
 
     ~RaftIVFFlat() override;
 
+
+    /// Find the approximate k nearest neigbors for `queries` against
+    /// our database
+    void search(
+            Index* coarseQuantizer,
+            Tensor<float, 2, true>& queries,
+            int nprobe,
+            int k,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<Index::idx_t, 2, true>& outIndices) override;
+
+
    protected:
     /// Returns the number of bytes in which an IVF list containing numVecs
     /// vectors is encoded on the device. Note that due to padding this is not
@@ -65,17 +77,17 @@ class RaftIVFFlat : public IVFFlat {
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) override;
 
-    /// Shared IVF search implementation, used by both search and
-    /// searchPreassigned
-    void searchImpl_(
-            Tensor<float, 2, true>& queries,
-            Tensor<float, 2, true>& coarseDistances,
-            Tensor<Index::idx_t, 2, true>& coarseIndices,
-            Tensor<float, 3, true>& ivfCentroids,
-            int k,
-            Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices,
-            bool storePairs);
+//    /// Shared IVF search implementation, used by both search and
+//    /// searchPreassigned
+//    void searchImpl_(
+//            Tensor<float, 2, true>& queries,
+//            Tensor<float, 2, true>& coarseDistances,
+//            Tensor<Index::idx_t, 2, true>& coarseIndices,
+//            Tensor<float, 3, true>& ivfCentroids,
+//            int k,
+//            Tensor<float, 2, true>& outDistances,
+//            Tensor<Index::idx_t, 2, true>& outIndices,
+//            bool storePairs);
 
    protected:
     std::optional<raft::spatial::knn::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};

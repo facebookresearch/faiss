@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
+#include <cstdint>
 #include <raft/core/handle.hpp>
+#include <raft/core/device_mdspan.hpp>
 #include <raft/spatial/knn/ivf_flat.cuh>
 
 #include <faiss/gpu/GpuIndex.h>
@@ -56,6 +57,45 @@ RaftIVFFlat::RaftIVFFlat(
                   space){}
 
 RaftIVFFlat::~RaftIVFFlat() {}
+
+
+/// Find the approximate k nearest neigbors for `queries` against
+/// our database
+void RaftIVFFlat::search(
+        Index* coarseQuantizer,
+        Tensor<float, 2, true>& queries,
+        int nprobe,
+        int k,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<Index::idx_t, 2, true>& outIndices) {
+
+    // TODO: We probably don't want to ignore the coarse quantizer here...
+
+    std::uint32_t n = queries.getSize(0);
+    std::uint32_t cols = queries.getSize(1);
+    std::uint32_t k_ = k;
+
+    // Device is already set in GpuIndex::search
+    FAISS_ASSERT(raft_knn_index.has_value());
+    FAISS_ASSERT(n > 0);
+    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
+
+    const raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
+    raft::spatial::knn::ivf_flat::search_params pams;
+    pams.n_probes = nprobe;
+
+    // TODO: 
+
+    auto queries_view = raft::make_device_matrix_view<const float>(queries.data(), n, cols);
+    auto out_inds_view = raft::make_device_matrix_view<Index::idx_t>(outIndices.data(), n, k_);
+    auto out_dists_view = raft::make_device_matrix_view<float>(outDistances.data(), n, k_);
+    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
+            raft_handle, *raft_knn_index, queries_view,
+            out_inds_view, out_dists_view, pams, k_);
+
+    raft_handle.sync_stream();
+}
+
 
 size_t RaftIVFFlat::getGpuVectorsEncodingSize_(int numVecs) const {
     if (interleavedLayout_) {
@@ -136,26 +176,26 @@ void RaftIVFFlat::appendVectors_(
     // TODO: Fill in this logic here
 }
 
-void RaftIVFFlat::searchImpl_(
-        Tensor<float, 2, true>& queries,
-        Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
-        Tensor<float, 3, true>& ivfCentroids,
-        int k,
-        Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
-        bool storePairs) {
-    FAISS_ASSERT(storePairs == false);
-
-    auto stream = resources_->getDefaultStreamCurrentDevice();
-
-    // TODO: Fill in this logic here.
-
-//    // Device is already set in GpuIndex::search
-//    FAISS_ASSERT(raft_knn_index.has_value());
-//    FAISS_ASSERT(n > 0);
-//    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
+//void RaftIVFFlat::searchImpl_(
+//        Tensor<float, 2, true>& queries,
+//        Tensor<float, 2, true>& coarseDistances,
+//        Tensor<Index::idx_t, 2, true>& coarseIndices,
+//        Tensor<float, 3, true>& ivfCentroids,
+//        int k,
+//        Tensor<float, 2, true>& outDistances,
+//        Tensor<Index::idx_t, 2, true>& outIndices,
+//        bool storePairs) {
+//    FAISS_ASSERT(storePairs == false);
 //
+//    auto stream = resources_->getDefaultStreamCurrentDevice();
+//
+//    // TODO: Fill in this logic here.
+//
+////    // Device is already set in GpuIndex::search
+////    FAISS_ASSERT(raft_knn_index.has_value());
+////    FAISS_ASSERT(n > 0);
+////    FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= nlist);
+////
 //    raft::spatial::knn::ivf_flat::search_params pams;
 //    pams.n_probes = nprobe;
 //    raft::spatial::knn::ivf_flat::search<float, faiss::Index::idx_t>(
@@ -169,27 +209,27 @@ void RaftIVFFlat::searchImpl_(
 //            distances);
 //
 //    raft_handle.sync_stream();
-
-
-    // If the GPU isn't storing indices (they are on the CPU side), we
-    // need to perform the re-mapping here
-    // FIXME: we might ultimately be calling this function with inputs
-    // from the CPU, these are unnecessary copies
-    if (indicesOptions_ == INDICES_CPU) {
-        HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
-
-        ivfOffsetToUserIndex(
-                hostOutIndices.data(),
-                numLists_,
-                hostOutIndices.getSize(0),
-                hostOutIndices.getSize(1),
-                listOffsetToUserIndex_);
-
-        // Copy back to GPU, since the input to this function is on the
-        // GPU
-        outIndices.copyFrom(hostOutIndices, stream);
-    }
-}
+//
+//
+//    // If the GPU isn't storing indices (they are on the CPU side), we
+//    // need to perform the re-mapping here
+//    // FIXME: we might ultimately be calling this function with inputs
+//    // from the CPU, these are unnecessary copies
+//    if (indicesOptions_ == INDICES_CPU) {
+//        HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
+//
+//        ivfOffsetToUserIndex(
+//                hostOutIndices.data(),
+//                numLists_,
+//                hostOutIndices.getSize(0),
+//                hostOutIndices.getSize(1),
+//                listOffsetToUserIndex_);
+//
+//        // Copy back to GPU, since the input to this function is on the
+//        // GPU
+//        outIndices.copyFrom(hostOutIndices, stream);
+//    }
+//}
 
 } // namespace gpu
 } // namespace faiss
