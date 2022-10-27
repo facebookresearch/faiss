@@ -98,7 +98,7 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     cudaStream_t getAsyncCopyStream(int device) override;
 
-   private:
+   protected:
     /// Have GPU resources been initialized for this device yet?
     bool isInitialized(int device) const;
 
@@ -106,7 +106,7 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// memory size
     static size_t getDefaultTempMemForGPU(int device, size_t requested);
 
-   private:
+   protected:
     /// Set of currently outstanding memory allocations per device
     /// device -> (alloc request, allocated ptr)
     std::unordered_map<int, std::unordered_map<void*, AllocRequest>> allocs_;

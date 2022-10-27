@@ -143,6 +143,7 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
         config.device = opt.device;
         config.indicesOptions = opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
+        config.use_raft = true;
 
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);

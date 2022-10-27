@@ -6,7 +6,7 @@
  */
 
 #include <raft/core/cudart_utils.hpp>
-#include <faiss/gpu/impl/raft/RaftIVFFlat.cuh>
+#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>

@@ -7,8 +7,8 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
-#include <faiss/gpu/impl/raft/RaftIndexIVFFlat.h>
-#include <faiss/gpu/impl/raft/RmmGpuResources.hpp>
+#include <faiss/gpu/impl/RaftIndexIVFFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 
@@ -91,7 +91,7 @@ void invoke_bfknn(const raft::handle_t &raft_handle, Options &opt, float *dists,
 
 
 
-    faiss::gpu::RmmGpuResources gpu_res;
+    faiss::gpu::StandardGpuResources gpu_res;
     gpu_res.setDefaultStream(opt.device, raft_handle.get_stream());
 
     rmm::device_uvector<float> addVecsDev(addVecs.size(), raft_handle.get_stream());
@@ -139,7 +139,7 @@ void queryTest(
         std::cout << "numTrain: " << opt.numTrain << "numCentroids: " << opt.numCentroids << std::endl;
 
         printf("Creating rmm resources\n");
-        faiss::gpu::RmmGpuResources res;
+        faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -267,7 +267,7 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
         cpuIndex.train(opt.numTrain, trainVecs.data());
         cpuIndex.nprobe = opt.nprobe;
 
-        faiss::gpu::RmmGpuResources res;
+        faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -302,7 +302,7 @@ void copyToTest(bool useFloat16CoarseQuantizer) {
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
     std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
-    faiss::gpu::RmmGpuResources res;
+    faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -361,7 +361,7 @@ void copyFromTest(bool useFloat16CoarseQuantizer) {
     cpuIndex.add(opt.numAdd, addVecs.data());
 
     // use garbage values to see if we overwrite then
-    faiss::gpu::RmmGpuResources res;
+    faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -508,7 +508,7 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2_128) {
 //    cpuIndex.add(opt.numAdd, addVecs.data());
 //    cpuIndex.nprobe = opt.nprobe;
 //
-//    faiss::gpu::RmmGpuResources res;
+//    faiss::gpu::StandardGpuResources res;
 //    res.noTempMemory();
 //
 //    faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -557,7 +557,7 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2_128) {
 //     opt.dim); std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd,
 //     opt.dim);
 
-//     faiss::gpu::RmmGpuResources res;
+//     faiss::gpu::StandardGpuResources res;
 //     res.noTempMemory();
 
 //     faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -596,7 +596,7 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2_128) {
 // TEST(TestRaftIndexIVFFlat, AddNaN) {
 //     Options opt;
 
-//     faiss::gpu::RmmGpuResources res;
+//     faiss::gpu::StandardGpuResources res;
 //     res.noTempMemory();
 
 //     faiss::gpu::GpuIndexIVFFlatConfig config;
@@ -670,7 +670,7 @@ TEST(TestRaftIndexIVFFlat, Float32_Query_L2_128) {
 //    cpuIndex.add(numAdd, addVecs.data());
 //    cpuIndex.nprobe = nprobe;
 //
-//    faiss::gpu::RmmGpuResources res;
+//    faiss::gpu::StandardGpuResources res;
 //    res.noTempMemory();
 //
 //    faiss::gpu::GpuIndexIVFFlatConfig config;

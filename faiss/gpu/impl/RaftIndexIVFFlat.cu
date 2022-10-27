@@ -12,7 +12,7 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/GpuResources.h>
-#include <faiss/gpu/impl/raft/RaftIndexIVFFlat.h>
+#include <faiss/gpu/impl/RaftIndexIVFFlat.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>

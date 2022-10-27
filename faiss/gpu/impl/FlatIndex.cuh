@@ -80,7 +80,7 @@ class FlatIndex {
     /// Free all storage
     void reset();
 
-   private:
+   protected:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 

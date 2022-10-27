@@ -45,7 +45,7 @@ class IVFBase {
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
-    void reset();
+    virtual void reset();
 
     /// Return the number of dimensions we are indexing
     int getDim() const;
@@ -59,19 +59,19 @@ class IVFBase {
 
     /// For debugging purposes, return the list length of a particular
     /// list
-    int getListLength(int listId) const;
+    virtual int getListLength(int listId) const;
 
     /// Return the list indices of a particular list back to the CPU
-    std::vector<Index::idx_t> getListIndices(int listId) const;
+    virtual std::vector<Index::idx_t> getListIndices(int listId) const;
 
     /// Return the encoded vectors of a particular list back to the CPU
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const;
+    virtual std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const;
 
     /// Copy all inverted lists from a CPU representation to ourselves
-    void copyInvertedListsFrom(const InvertedLists* ivf);
+    virtual void copyInvertedListsFrom(const InvertedLists* ivf);
 
     /// Copy all inverted lists from ourselves to a CPU representation
-    void copyInvertedListsTo(InvertedLists* ivf);
+    virtual void copyInvertedListsTo(InvertedLists* ivf);
 
     /// Update our coarse quantizer with this quantizer instance; may be a CPU
     /// or GPU quantizer
@@ -81,7 +81,7 @@ class IVFBase {
     /// The input data must be on our current device.
     /// Returns the number of vectors successfully added. Vectors may
     /// not be able to be added because they contain NaNs.
-    int addVectors(
+    virtual int addVectors(
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<Index::idx_t, 1, true>& indices);

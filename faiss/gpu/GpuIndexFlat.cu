@@ -12,6 +12,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
@@ -67,11 +68,7 @@ GpuIndexFlat::GpuIndexFlat(
     this->is_trained = true;
 
     // Construct index
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            dims,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(dims);
 }
 
 GpuIndexFlat::GpuIndexFlat(
@@ -86,14 +83,29 @@ GpuIndexFlat::GpuIndexFlat(
     this->is_trained = true;
 
     // Construct index
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            dims,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(dims);
 }
 
 GpuIndexFlat::~GpuIndexFlat() {}
+
+void GpuIndexFlat::resetIndex_(int dims) {
+
+    if(config_.use_raft) {
+        data_.reset(new RaftFlatIndex(
+                resources_.get(),
+                dims,
+                flatConfig_.useFloat16,
+                config_.memorySpace));
+
+    } else {
+        data_.reset(new FlatIndex(
+                resources_.get(),
+                dims,
+                flatConfig_.useFloat16,
+                config_.memorySpace));
+    }
+}
+
 
 void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
     DeviceScope scope(config_.device);
@@ -109,11 +121,7 @@ void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
             (size_t)index->ntotal);
 
     data_.reset();
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            this->d,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(this->d);
 
     // The index could be empty
     if (index->ntotal > 0) {
