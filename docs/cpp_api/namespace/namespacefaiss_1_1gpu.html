@@ -597,6 +597,18 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu13getFreeMemoryEi">
+<span id="_CPPv3N5faiss3gpu13getFreeMemoryEi"></span><span id="_CPPv2N5faiss3gpu13getFreeMemoryEi"></span><span id="faiss::gpu::getFreeMemory__i"></span><span class="target" id="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFreeMemory</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Returns the amount of currently available memory on the given device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu26getFreeMemoryCurrentDeviceEv">
+<span id="_CPPv3N5faiss3gpu26getFreeMemoryCurrentDeviceEv"></span><span id="_CPPv2N5faiss3gpu26getFreeMemoryCurrentDeviceEv"></span><span id="faiss::gpu::getFreeMemoryCurrentDevice"></span><span class="target" id="DeviceUtils_8h_1a5a1d0d4863e18f7c0c154089d57dd61a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFreeMemoryCurrentDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Equivalent to getFreeMemory(getCurrentDevice()) </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2">
 <span id="_CPPv3I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span id="_CPPv2I00EN5faiss3gpu14streamWaitBaseERK2L1RK2L2"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L1</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L2</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWaitBase</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L1"><span class="n"><span class="pre">L1</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">listWaiting</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/DeviceUtils_8h.html#_CPPv4I00EN5faiss3gpu14streamWaitBaseEvRK2L1RK2L2" title="faiss::gpu::streamWaitBase::L2"><span class="n"><span class="pre">L2</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">listWaitOn</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Call for a collection of streams to wait on. </p>
