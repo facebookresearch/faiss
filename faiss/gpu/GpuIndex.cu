@@ -290,7 +290,7 @@ void GpuIndex::search_and_reconstruct(
         float* recons,
         const SearchParameters* params) const {
     search(n, x, k, distances, labels, params);
-    reconstruct_batch(n, labels, recons);
+    reconstruct_batch(n * k, labels, recons);
 }
 
 void GpuIndex::searchNonPaged_(

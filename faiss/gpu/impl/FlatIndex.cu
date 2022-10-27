@@ -65,6 +65,18 @@ void FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
     } else {
         rawData32_.reserve(numVecs * dim_ * sizeof(float), stream);
     }
+
+    // The above may have caused a reallocation, we need to update the vector
+    // types
+    if (useFloat16_) {
+        DeviceTensor<half, 2, true> vectors16(
+                (half*)rawData16_.data(), {num_, dim_});
+        vectorsHalf_ = std::move(vectors16);
+    } else {
+        DeviceTensor<float, 2, true> vectors32(
+                (float*)rawData32_.data(), {num_, dim_});
+        vectors_ = std::move(vectors32);
+    }
 }
 
 Tensor<float, 2, true>& FlatIndex::getVectorsFloat32Ref() {

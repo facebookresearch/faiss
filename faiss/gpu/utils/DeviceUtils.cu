@@ -149,6 +149,26 @@ bool getTensorCoreSupportCurrentDevice() {
     return getTensorCoreSupport(getCurrentDevice());
 }
 
+size_t getFreeMemory(int device) {
+    DeviceScope scope(device);
+
+    size_t free = 0;
+    size_t total = 0;
+
+    CUDA_VERIFY(cudaMemGetInfo(&free, &total));
+
+    return free;
+}
+
+size_t getFreeMemoryCurrentDevice() {
+    size_t free = 0;
+    size_t total = 0;
+
+    CUDA_VERIFY(cudaMemGetInfo(&free, &total));
+
+    return free;
+}
+
 DeviceScope::DeviceScope(int device) {
     if (device >= 0) {
         int curDevice = getCurrentDevice();
