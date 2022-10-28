@@ -44,6 +44,8 @@ outputs:
         - mkl >=2018  # [not win]
         - mkl >=2018,<2021  # [win]
     test:
+      requires:
+        - conda-build
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [not win]

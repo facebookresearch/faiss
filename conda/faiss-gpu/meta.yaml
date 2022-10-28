@@ -47,6 +47,8 @@ outputs:
         - mkl >=2018,<2021  # [win]
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
+      requires:
+        - conda-build
       commands:
         - test -f $PREFIX/lib/libfaiss.so              # [linux]
         - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
