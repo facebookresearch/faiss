@@ -44,7 +44,7 @@ class FlatIndex {
     /// Returns a reference to our vectors currently in use (if useFloat16 mode)
     Tensor<half, 2, true>& getVectorsFloat16Ref();
 
-    void query(
+    virtual void query(
             Tensor<float, 2, true>& vecs,
             int k,
             faiss::MetricType metric,

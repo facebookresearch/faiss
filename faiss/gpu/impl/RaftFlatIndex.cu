@@ -48,6 +48,7 @@ void RaftFlatIndex::query(
 
 //        raft::neighbors::brute_force::knn(raft_handle, index, search, inds, dists, k, distance);
 
+        printf("Using RAFT for FLAT!!!!\n");
         // TODO: Expose the fused L2KNN through RAFT's public APIs
         raft::spatial::knn::detail::fusedL2Knn(dim_,
                    inds.data_handle(),
@@ -63,6 +64,8 @@ void RaftFlatIndex::query(
                    distance);
 
         } else {
+
+            printf("Dispathing to FAISS for FLAT!!!!\n");
         FlatIndex::query(input, k, metric, metricArg, outDistances, outIndices, exactDistance);
     }
 }

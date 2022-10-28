@@ -71,6 +71,7 @@ void testFlat(const TestFlatOptions& opt) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = true;
     config.useFloat16 = opt.useFloat16;
 
     faiss::gpu::GpuIndexFlat gpuIndex(&res, dim, opt.metric, config);
@@ -207,6 +208,7 @@ TEST(TestGpuIndexFlat, QueryEmpty) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = 0;
+    config.use_raft = true;
     config.useFloat16 = false;
 
     int dim = 128;
@@ -249,6 +251,7 @@ TEST(TestGpuIndexFlat, CopyFrom) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = true;
     config.useFloat16 = false;
 
     faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, 2000, config);
@@ -282,6 +285,7 @@ TEST(TestGpuIndexFlat, CopyTo) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = true;
     config.useFloat16 = false;
 
     faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
@@ -335,6 +339,7 @@ TEST(TestGpuIndexFlat, UnifiedMemory) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = true;
     config.memorySpace = faiss::gpu::MemorySpace::Unified;
 
     faiss::gpu::GpuIndexFlatL2 gpuIndexL2(&res, dim, config);
@@ -376,6 +381,7 @@ TEST(TestGpuIndexFlat, Residual) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = true;
 
     int dim = 32;
     faiss::IndexFlat cpuIndex(dim, faiss::MetricType::METRIC_L2);

@@ -91,6 +91,7 @@ GpuIndexFlat::~GpuIndexFlat() {}
 void GpuIndexFlat::resetIndex_(int dims) {
 
     if(config_.use_raft) {
+        printf("Should use raft!\n");
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
                 dims,
@@ -98,6 +99,7 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 config_.memorySpace));
 
     } else {
+        printf("Not using raft :-(\n");
         data_.reset(new FlatIndex(
                 resources_.get(),
                 dims,

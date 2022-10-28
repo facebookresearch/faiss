@@ -34,7 +34,7 @@ class RaftFlatIndex : public FlatIndex {
             float metricArg,
             Tensor<float, 2, true>& outDistances,
             Tensor<int, 2, true>& outIndices,
-            bool exactDistance);
+            bool exactDistance) override;
 
 };
 
