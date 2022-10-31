@@ -103,6 +103,14 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /// will just fail
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
     // internal search funcs
 
     template <bool is_max, class Scaler>

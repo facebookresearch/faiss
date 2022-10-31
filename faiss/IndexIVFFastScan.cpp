@@ -316,6 +316,15 @@ void IndexIVFFastScan::search(
     }
 }
 
+void IndexIVFFastScan::range_search(
+        idx_t,
+        const float*,
+        float,
+        RangeSearchResult*,
+        const SearchParameters*) const {
+    FAISS_THROW_MSG("not implemented");
+}
+
 template <bool is_max, class Scaler>
 void IndexIVFFastScan::search_dispatch_implem(
         idx_t n,
