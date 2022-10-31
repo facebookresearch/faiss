@@ -252,6 +252,58 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
+        <definition>using faiss::IndexIDMap = typedef IndexIDMapTemplate&lt;Index&gt;</definition>
+        <argsstring></argsstring>
+        <name>IndexIDMap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIDMap.h" line="70" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
+        <definition>using faiss::IndexBinaryIDMap = typedef IndexIDMapTemplate&lt;IndexBinary&gt;</definition>
+        <argsstring></argsstring>
+        <name>IndexBinaryIDMap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIDMap.h" line="71" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
+        <definition>using faiss::IndexIDMap2 = typedef IndexIDMap2Template&lt;Index&gt;</definition>
+        <argsstring></argsstring>
+        <name>IndexIDMap2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIDMap.h" line="104" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
+        <definition>using faiss::IndexBinaryIDMap2 = typedef IndexIDMap2Template&lt;IndexBinary&gt;</definition>
+        <argsstring></argsstring>
+        <name>IndexBinaryIDMap2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIDMap.h" line="105" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a0423615e86d00dda03ae73c199c705af" prot="public" static="no">
         <type><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">SearchParametersIVF</ref></type>
         <definition>using faiss::IVFSearchParameters = typedef SearchParametersIVF</definition>
@@ -329,58 +381,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/invlists/InvertedLists.h" line="269" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="269" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
-        <definition>using faiss::IndexIDMap = typedef IndexIDMapTemplate&lt;Index&gt;</definition>
-        <argsstring></argsstring>
-        <name>IndexIDMap</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="70" column="1" bodyfile="faiss/MetaIndexes.h" bodystart="70" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
-        <definition>using faiss::IndexBinaryIDMap = typedef IndexIDMapTemplate&lt;IndexBinary&gt;</definition>
-        <argsstring></argsstring>
-        <name>IndexBinaryIDMap</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="71" column="1" bodyfile="faiss/MetaIndexes.h" bodystart="71" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
-        <definition>using faiss::IndexIDMap2 = typedef IndexIDMap2Template&lt;Index&gt;</definition>
-        <argsstring></argsstring>
-        <name>IndexIDMap2</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="99" column="1" bodyfile="faiss/MetaIndexes.h" bodystart="99" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
-        <definition>using faiss::IndexBinaryIDMap2 = typedef IndexIDMap2Template&lt;IndexBinary&gt;</definition>
-        <argsstring></argsstring>
-        <name>IndexBinaryIDMap2</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="100" column="1" bodyfile="faiss/MetaIndexes.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -559,6 +559,19 @@
         </inbodydescription>
         <location file="faiss/IndexFastScan.h" line="143" column="32" declfile="faiss/IndexFastScan.h" declline="143" declcolumn="32"/>
       </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" mutable="no">
+        <type>FAISS_API bool</type>
+        <definition>FAISS_API bool faiss::check_compatible_for_merge_expensive_check</definition>
+        <argsstring></argsstring>
+        <name>check_compatible_for_merge_expensive_check</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="431" column="23" declfile="faiss/IndexIVF.h" declline="431" declcolumn="23"/>
+      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
         <definition>FAISS_API IndexIVFStats faiss::indexIVF_stats</definition>
@@ -570,7 +583,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="446" column="32" declfile="faiss/IndexIVF.h" declline="446" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="449" column="32" declfile="faiss/IndexIVF.h" declline="449" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>

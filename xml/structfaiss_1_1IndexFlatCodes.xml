@@ -391,6 +391,7 @@
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a19a6d0136b34d904d147f16922a64b93">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a300647e9cdac9acd160f2c55c610056b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1ae8846519e0f1b9fedd5eed195df3776f">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1a01f569a16a812aa3945b8a0b64eaff06">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a48cbf519590313f1c6a3dc89c8d0678c">train</reimplementedby>
@@ -403,7 +404,6 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLocalSearchQuantizer_1aa63fc9328d0f202707f9fc947cc423f4">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexProductResidualQuantizer_1a726a1a837bea21c65e9974499e838fd6">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a6fa1d1a295eb2d4377b8de5096ab3ef4">train</reimplementedby>
@@ -500,6 +500,7 @@
         <name>search</name>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1a621e6f3b5d8c857f3fc9958900acc438">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a67f0c721609606b5addccdf51c4232ad">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a09aa261dce984fd45a2385a50cfa9a15">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1a3e058732a4f1c613319568d8f11bac4e">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a838c9186a476abd7321afc95d5412ab8">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a9fa695e20cc4665dbdd5f6adde0b7ee7">search</reimplementedby>
@@ -517,7 +518,6 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1abafcab9d359f7c511f6e1e9d053a4409">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1adc489649c579772c998db8c8e495d9bc">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a09aa261dce984fd45a2385a50cfa9a15">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a4a2572ad6f26343d40081c98faf18840">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a1b86a90e7516af393d14255c71c8d804">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW2Level_1a0702820667ab98a90da866ec311f39aa">search</reimplementedby>

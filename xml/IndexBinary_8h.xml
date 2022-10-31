@@ -15,6 +15,7 @@
     <includedby refid="IndexBinaryFromFloat_8h" local="no">faiss/IndexBinaryFromFloat.h</includedby>
     <includedby refid="IndexBinaryHash_8h" local="no">faiss/IndexBinaryHash.h</includedby>
     <includedby refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includedby>
+    <includedby refid="IndexIDMap_8h" local="no">faiss/IndexIDMap.h</includedby>
     <includedby refid="IndexShards_8h" local="no">faiss/IndexShards.h</includedby>
     <incdepgraph>
       <node id="4">
@@ -68,7 +69,7 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="14">
+      <node id="15">
         <label>faiss/IndexShards.h</label>
         <link refid="IndexShards_8h_source"/>
         <childnode refid="10" relation="include">
@@ -77,6 +78,12 @@
       <node id="7">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
+      </node>
+      <node id="14">
+        <label>faiss/IndexIDMap.h</label>
+        <link refid="IndexIDMap_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="10">
         <label>faiss/MetaIndexes.h</label>
@@ -126,6 +133,8 @@
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -335,11 +344,23 @@
 <codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="172"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Display<sp/>the<sp/>actual<sp/>class<sp/>name<sp/>and<sp/>some<sp/>more<sp/>info.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kindref="member">display</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="174"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>FAISS_INDEX_BINARY_H</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="175"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>moves<sp/>the<sp/>entries<sp/>from<sp/>another<sp/>dataset<sp/>to<sp/>self.</highlight></codeline>
+<codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>On<sp/>output,<sp/>other<sp/>is<sp/>empty.</highlight></codeline>
+<codeline lineno="177"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>add_id<sp/>is<sp/>added<sp/>to<sp/>all<sp/>moved<sp/>ids</highlight></codeline>
+<codeline lineno="178"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>(for<sp/>sequential<sp/>ids,<sp/>this<sp/>would<sp/>be<sp/>this-&gt;ntotal)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kindref="member">merge_from</ref>(<ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref>&amp;<sp/>otherIndex,<sp/><ref refid="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c" kindref="member">idx_t</ref><sp/>add_id<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="181"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>check<sp/>that<sp/>the<sp/>two<sp/>indexes<sp/>are<sp/>compatible<sp/>(ie,<sp/>they<sp/>are</highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>trained<sp/>in<sp/>the<sp/>same<sp/>way<sp/>and<sp/>have<sp/>the<sp/>same</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>parameters).<sp/>Otherwise<sp/>throw.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kindref="member">check_compatible_for_merge</ref>(</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref>&amp;<sp/>otherIndex)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>FAISS_INDEX_BINARY_H</highlight></codeline>
     </programlisting>
     <location file="faiss/IndexBinary.h"/>
   </compounddef>

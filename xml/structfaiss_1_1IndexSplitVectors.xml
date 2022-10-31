@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="106" column="10" bodyfile="faiss/MetaIndexes.h" bodystart="106" bodyend="-1"/>
+        <location file="faiss/MetaIndexes.h" line="25" column="10" bodyfile="faiss/MetaIndexes.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSplitVectors_1a183d3392990a6ab2bbec857d953006fd" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="107" column="10" bodyfile="faiss/MetaIndexes.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/MetaIndexes.h" line="26" column="10" bodyfile="faiss/MetaIndexes.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSplitVectors_1a9733b28f29118fa9fc68c48ef7e47a48" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> * &gt;</type>
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="108" column="17" bodyfile="faiss/MetaIndexes.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/MetaIndexes.h" line="27" column="17" bodyfile="faiss/MetaIndexes.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexSplitVectors_1a0c59dcaaa253f83ead8c73d9466dccca" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="109" column="11" bodyfile="faiss/MetaIndexes.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/MetaIndexes.h" line="28" column="11" bodyfile="faiss/MetaIndexes.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -164,7 +164,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="111" column="14"/>
+        <location file="faiss/MetaIndexes.h" line="30" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1ab5df37b8924530820940bcde5fc19f7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="113" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="32" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1ad5a6c736f835d22349fa6c335ce49169" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -193,7 +193,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="114" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="33" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1af2ef88dc72b4a94f1190ecc8cb25881b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -226,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="116" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="35" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1a09aa261dce984fd45a2385a50cfa9a15" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -293,7 +293,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="118" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="37" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -334,7 +334,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="126" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="45" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1a8047981cb8d10c54107664c4955df402" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -349,7 +349,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="128" column="10"/>
+        <location file="faiss/MetaIndexes.h" line="47" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexSplitVectors_1a8ce34786a19cd67d49a8fbca38645500" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -362,7 +362,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetaIndexes.h" line="130" column="5"/>
+        <location file="faiss/MetaIndexes.h" line="49" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1054,6 +1054,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a9bca412954ab2ead5bc4f71ee8743e1e">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca">merge_from</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8">merge_from</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
@@ -1079,6 +1080,7 @@
         <argsstring>(const Index &amp;otherIndex) const</argsstring>
         <name>check_compatible_for_merge</name>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a">check_compatible_for_merge</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536">check_compatible_for_merge</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf">check_compatible_for_merge</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a5a097e5b50f8b220db61b52c6fdaf1f9">check_compatible_for_merge</reimplementedby>
         <param>
@@ -1166,7 +1168,7 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/MetaIndexes.h" line="105" column="30" bodyfile="faiss/MetaIndexes.h" bodystart="105" bodyend="131"/>
+    <location file="faiss/MetaIndexes.h" line="24" column="30" bodyfile="faiss/MetaIndexes.h" bodystart="24" bodyend="50"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexSplitVectors_1af2ef88dc72b4a94f1190ecc8cb25881b" prot="public" virt="virtual"><scope>faiss::IndexSplitVectors</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexSplitVectors_1ab5df37b8924530820940bcde5fc19f7c" prot="public" virt="non-virtual"><scope>faiss::IndexSplitVectors</scope><name>add_sub_index</name></member>

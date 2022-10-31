@@ -380,6 +380,7 @@
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a19a6d0136b34d904d147f16922a64b93">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a300647e9cdac9acd160f2c55c610056b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1ae8846519e0f1b9fedd5eed195df3776f">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1a01f569a16a812aa3945b8a0b64eaff06">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1Index2Layer_1a48cbf519590313f1c6a3dc89c8d0678c">train</reimplementedby>
@@ -392,7 +393,6 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLocalSearchQuantizer_1aa63fc9328d0f202707f9fc947cc423f4">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1aafa4c780e325855fe247052453967845">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexProductResidualQuantizer_1a726a1a837bea21c65e9974499e838fd6">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a6fa1d1a295eb2d4377b8de5096ab3ef4">train</reimplementedby>
@@ -515,6 +515,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1ae0e979a014a9defe2254e9543657b075">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ae1ecff1b7b2d5d61a65492a5c5cf863b">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a8047981cb8d10c54107664c4955df402">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxBase_1ae2ae0c124b00ce684b6f2195061102f5">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a5282d7f60eecbd5f552f184944a36b06">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1ad2111361ac164b69f4658be446845f88">reset</reimplementedby>
@@ -526,7 +527,6 @@
         <reimplementedby refid="structfaiss_1_1IndexFlat1D_1aa205c4ffa6cbd50f49ef9cb6cc050000">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396">reset</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a3a43a70461e09ef87bdb7b48ec420dd2">reset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a8047981cb8d10c54107664c4955df402">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MultiIndexQuantizer_1a4808ce22fcc95c7af902b97969f2a90d">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1AdditiveCoarseQuantizer_1a2ec358ccc474cc183f861f350ebbcb8f">reset</reimplementedby>
@@ -890,6 +890,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a9bca412954ab2ead5bc4f71ee8743e1e">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca">merge_from</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7">merge_from</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8">merge_from</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
@@ -915,6 +916,7 @@
         <argsstring>(const Index &amp;otherIndex) const</argsstring>
         <name>check_compatible_for_merge</name>
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a">check_compatible_for_merge</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536">check_compatible_for_merge</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf">check_compatible_for_merge</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a5a097e5b50f8b220db61b52c6fdaf1f9">check_compatible_for_merge</reimplementedby>
         <param>

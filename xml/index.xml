@@ -209,6 +209,7 @@
     <member refid="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5" kind="function"><name>reverse_transform</name></member>
+    <member refid="structfaiss_1_1CenteringTransform_1a31952d08f3041c30fd537934dad3368d" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
   </compound>
@@ -525,6 +526,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a24a12945934042c0117e108ee3f82d66" kind="function"><name>searchFromCpuPaged_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a9f569b1b69e696a8bc2ef298309be8f2" kind="function"><name>searchNonPaged_</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c" kind="typedef"><name>idx_t</name></member>
@@ -1502,6 +1505,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryFlat" kind="struct"><name>faiss::IndexBinaryFlat</name>
     <member refid="structfaiss_1_1IndexBinaryFlat_1afc0b5b076b35a1a1889b0012848c795c" kind="variable"><name>xb</name></member>
@@ -1527,6 +1532,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c" kind="typedef"><name>idx_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
@@ -1555,6 +1562,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a01749bbdbd3b7ec6bb9390257ab16c5c" kind="typedef"><name>idx_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
@@ -1588,6 +1597,8 @@
     <member refid="structfaiss_1_1IndexBinary_1ad4938acd1d31afd49c81fbb5211121c3" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryHashStats" kind="struct"><name>faiss::IndexBinaryHashStats</name>
     <member refid="structfaiss_1_1IndexBinaryHashStats_1a344248f9d3633f1cc860cecea9f61e46" kind="variable"><name>nq</name></member>
@@ -1628,6 +1639,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryIVF" kind="struct"><name>faiss::IndexBinaryIVF</name>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a094ef9572645ff86a76ff4df967bf65a" kind="variable"><name>invlists</name></member>
@@ -1665,7 +1678,8 @@
     <member refid="structfaiss_1_1IndexBinaryIVF_1a198ca7067fd9a08583f257f00b741b39" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1abd9ffe1e326ab9d9784ad51e5e17dfea" kind="function"><name>reconstruct_from_offset</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1ad05e4e6f3ce7bb54f88ece7fe645447b" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexBinaryIVF_1a75ec2648c28627b66ebf85f85d115b8b" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinaryIVF_1ad80e8243ce1a800b7e22088b0fb2800d" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinaryIVF_1a6a65e485671efc395161c12ee6fe3fc5" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a290f056430225f11ea4c31615a61886b" kind="function"><name>get_list_size</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a280d0a3958664c3eb4164fcb62496b00" kind="function"><name>make_direct_map</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a75f1c3083cfa725de7c9a7ad712c7d3a" kind="function"><name>set_direct_map_type</name></member>
@@ -1709,6 +1723,8 @@
     <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexFastScan" kind="struct"><name>faiss::IndexFastScan</name>
     <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" kind="variable"><name>implem</name></member>
@@ -2191,6 +2207,8 @@
     <member refid="structfaiss_1_1IndexIDMap2Template_1a751cb1ab67ffa1de83260e7bc72f61fe" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a8bd3808ffe012654687a584f5e553d50" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a2c3380bb909224c37d536316134d348a" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexIDMap2Template_1a35a2f9d4b5ff5c13ba4da8bd4385d14a" kind="function"><name>check_consistency</name></member>
+    <member refid="structfaiss_1_1IndexIDMap2Template_1a9b8bc981ff9a8f33b0d332a006667640" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1ab1c1d72f24c58dc8b8cafe03c0a9e7a9" kind="function"><name>~IndexIDMap2Template</name></member>
     <member refid="structfaiss_1_1IndexIDMap2Template_1a99adaac68f041b2c149bdae6d57c805a" kind="function"><name>IndexIDMap2Template</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a79498bca09342333e351bb6a4da8984d" kind="function"><name>add</name></member>
@@ -2198,6 +2216,7 @@
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a6b9a5e978a69c99d93b6b8b2a3324f34" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a31821431b6a6b960ecb18b8c2ac46372" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1ac5c72a7cfa93433325e3e5f1584146f3" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexIDMapTemplate_1a4f8a46a711b5f2d4f921c717b4ebba37" kind="function"><name>check_compatible_for_merge</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIDMapTemplate" kind="struct"><name>faiss::IndexIDMapTemplate</name>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a17ec8eb583d40b4e312054ff01861aba" kind="typedef"><name>idx_t</name></member>
@@ -2214,6 +2233,8 @@
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a31821431b6a6b960ecb18b8c2ac46372" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1afd6b245850e0d0d8019772e6a3eda069" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1ac5c72a7cfa93433325e3e5f1584146f3" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexIDMapTemplate_1abcd720ba4d27d79166e55d8b1e7b6b76" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexIDMapTemplate_1a4f8a46a711b5f2d4f921c717b4ebba37" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1a07bd2e93b6d9ad135f2c60acc38e3341" kind="function"><name>~IndexIDMapTemplate</name></member>
     <member refid="structfaiss_1_1IndexIDMapTemplate_1adcc8e05b7bd4061f05a4fdde86a4c136" kind="function"><name>IndexIDMapTemplate</name></member>
   </compound>
@@ -4408,13 +4429,13 @@
     <member refid="structfaiss_1_1IndexPreTransform_1ad803358238737eda7f185b486e6081fe" kind="function"><name>sa_code_size</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a5fc4aff1479e447435e1f08b2a88d1d6" kind="function"><name>sa_encode</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexPreTransform_1abba7af253f0dc2566923586e2ede0f7b" kind="function"><name>~IndexPreTransform</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
     <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
     <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
-    <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
-    <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kind="typedef"><name>idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -5120,6 +5141,7 @@
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kind="function"><name>set_is_orthonormal</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" kind="function"><name>print_if_verbose</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
   </compound>
@@ -5135,6 +5157,7 @@
     <member refid="structfaiss_1_1ITQTransform_1a7174b9210a98a0d9ef2dea1e85f23f2c" kind="function"><name>ITQTransform</name></member>
     <member refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a" kind="function"><name>apply_noalloc</name></member>
+    <member refid="structfaiss_1_1ITQTransform_1a84b7defd5ebf855ac2e4038bdbd1fdd6" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
@@ -5203,6 +5226,7 @@
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kind="function"><name>set_is_orthonormal</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" kind="function"><name>print_if_verbose</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a87a85f77d0b49d85f8d2d181b7835a04" kind="function"><name>~LinearTransform</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
@@ -5366,6 +5390,7 @@
     <member refid="structfaiss_1_1NormalizationTransform_1a0b81cf1bcc8fd322b54c25b8e1d67a37" kind="function"><name>NormalizationTransform</name></member>
     <member refid="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1" kind="function"><name>reverse_transform</name></member>
+    <member refid="structfaiss_1_1NormalizationTransform_1afeac1f2cd1f51640424180bd27833b24" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
@@ -5491,6 +5516,7 @@
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kind="function"><name>set_is_orthonormal</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" kind="function"><name>print_if_verbose</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
   </compound>
@@ -5551,6 +5577,7 @@
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kind="function"><name>set_is_orthonormal</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" kind="function"><name>print_if_verbose</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
   </compound>
@@ -5653,6 +5680,7 @@
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" kind="function"><name>set_is_orthonormal</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" kind="function"><name>print_if_verbose</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a322401ba80cb96ac1e7846401f2bef24" kind="variable"><name>have_bias</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a8a67a0178eab513cf87545f5d12d9569" kind="variable"><name>is_orthonormal</name></member>
@@ -5727,6 +5755,7 @@
     <member refid="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1a7b23aeea127c7be06165b3da983f6a85" kind="function"><name>RemapDimensionsTransform</name></member>
+    <member refid="structfaiss_1_1RemapDimensionsTransform_1ae8f62cc0239c222b35ee3406ad8e7815" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" kind="typedef"><name>idx_t</name></member>
@@ -6329,6 +6358,7 @@
     <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kind="function"><name>reverse_transform</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1ab6ac3b3be9e794a5eaa6b122709b4f99" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" kind="function"><name>~VectorTransform</name></member>
   </compound>
   <compound refid="structfaiss_1_1VStackInvertedLists" kind="struct"><name>faiss::VStackInvertedLists</name>
@@ -6385,16 +6415,16 @@
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a" kind="enumvalue"><name>METRIC_Canberra</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752caeaa8e44a2c8ecdc7a84a9d052da8b9ea" kind="enumvalue"><name>METRIC_BrayCurtis</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca0ed6b1105d1f075fb996657320bed012" kind="enumvalue"><name>METRIC_JensenShannon</name></member>
+    <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
+    <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
+    <member refid="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" kind="typedef"><name>IndexIDMap2</name></member>
+    <member refid="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" kind="typedef"><name>IndexBinaryIDMap2</name></member>
     <member refid="namespacefaiss_1a0423615e86d00dda03ae73c199c705af" kind="typedef"><name>IVFSearchParameters</name></member>
     <member refid="namespacefaiss_1af3735e1903da947aaa2d79389d4ddfd0" kind="typedef"><name>IndexReplicas</name></member>
     <member refid="namespacefaiss_1a08035b3de4260d681099add5203fc045" kind="typedef"><name>IndexBinaryReplicas</name></member>
     <member refid="namespacefaiss_1aa4027ffe4b83be8ed0ad09c287853d17" kind="typedef"><name>IndexShards</name></member>
     <member refid="namespacefaiss_1a1e3dccddbd9b1cbe722804bbb9b2fa99" kind="typedef"><name>IndexBinaryShards</name></member>
     <member refid="namespacefaiss_1a6e5511ff3f78bfcab1530a6f215846c6" kind="typedef"><name>ConcatenatedInvertedLists</name></member>
-    <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
-    <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
-    <member refid="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" kind="typedef"><name>IndexIDMap2</name></member>
-    <member refid="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" kind="typedef"><name>IndexBinaryIDMap2</name></member>
     <member refid="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" kind="typedef"><name>float_minheap_array_t</name></member>
     <member refid="namespacefaiss_1a17c03ceef680b86f30abf40c359f0b6c" kind="typedef"><name>int_minheap_array_t</name></member>
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
@@ -6408,6 +6438,7 @@
     <member refid="namespacefaiss_1aff97660fb0994bea32b9c4714e324fa0" kind="variable"><name>IO_FLAG_MMAP</name></member>
     <member refid="namespacefaiss_1a308343dfd91ddc2dad5d62c9fa79a65e" kind="variable"><name>indexBinaryHash_stats</name></member>
     <member refid="namespacefaiss_1a740c0ca147e528a2d7913acad0fc9bc3" kind="variable"><name>FastScan_stats</name></member>
+    <member refid="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" kind="variable"><name>check_compatible_for_merge_expensive_check</name></member>
     <member refid="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" kind="variable"><name>indexIVF_stats</name></member>
     <member refid="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" kind="variable"><name>IVFFastScan_stats</name></member>
     <member refid="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" kind="variable"><name>precomputed_table_max_bytes</name></member>
@@ -6607,9 +6638,9 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d101" kind="namespace"><name>faiss::@101</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d89" kind="namespace"><name>faiss::@89</name>
+  <compound refid="namespacefaiss_1_1_0d102" kind="namespace"><name>faiss::@102</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d99" kind="namespace"><name>faiss::@99</name>
+  <compound refid="namespacefaiss_1_1_0d90" kind="namespace"><name>faiss::@90</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -6950,6 +6981,8 @@
   <compound refid="IndexFlatCodes_8h" kind="file"><name>IndexFlatCodes.h</name>
   </compound>
   <compound refid="IndexHNSW_8h" kind="file"><name>IndexHNSW.h</name>
+  </compound>
+  <compound refid="IndexIDMap_8h" kind="file"><name>IndexIDMap.h</name>
   </compound>
   <compound refid="IndexIVF_8h" kind="file"><name>IndexIVF.h</name>
   </compound>

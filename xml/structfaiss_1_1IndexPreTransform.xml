@@ -796,6 +796,49 @@
         </inbodydescription>
         <location file="faiss/IndexPreTransform.h" line="94" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexPreTransform::merge_from</definition>
+        <argsstring>(Index &amp;otherIndex, idx_t add_id=0) override</argsstring>
+        <name>merge_from</name>
+        <reimplements refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415">merge_from</reimplements>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>otherIndex</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
+          <declname>add_id</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPreTransform.h" line="96" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexPreTransform::check_compatible_for_merge</definition>
+        <argsstring>(const Index &amp;otherIndex) const override</argsstring>
+        <name>check_compatible_for_merge</name>
+        <reimplements refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e">check_compatible_for_merge</reimplements>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>otherIndex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPreTransform.h" line="97" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPreTransform_1abba7af253f0dc2566923586e2ede0f7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexPreTransform::~IndexPreTransform</definition>
@@ -807,7 +850,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPreTransform.h" line="96" column="5"/>
+        <location file="faiss/IndexPreTransform.h" line="99" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1034,54 +1077,6 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="236" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::merge_from</definition>
-        <argsstring>(Index &amp;otherIndex, idx_t add_id=0)</argsstring>
-        <name>merge_from</name>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a9bca412954ab2ead5bc4f71ee8743e1e">merge_from</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a058974c6ac51dbe788fcc1fe004add7e">merge_from</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca">merge_from</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8">merge_from</reimplementedby>
-        <param>
-          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
-          <declname>otherIndex</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">idx_t</ref></type>
-          <declname>add_id</declname>
-          <defval>0</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="275" column="18"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::check_compatible_for_merge</definition>
-        <argsstring>(const Index &amp;otherIndex) const</argsstring>
-        <name>check_compatible_for_merge</name>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a">check_compatible_for_merge</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf">check_compatible_for_merge</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a5a097e5b50f8b220db61b52c6fdaf1f9">check_compatible_for_merge</reimplementedby>
-        <param>
-          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
-          <declname>otherIndex</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="280" column="18"/>
-      </memberdef>
       </sectiondef>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" static="no">
@@ -1157,14 +1152,14 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPreTransform.h" line="25" column="30" bodyfile="faiss/IndexPreTransform.h" bodystart="25" bodyend="97"/>
+    <location file="faiss/IndexPreTransform.h" line="25" column="30" bodyfile="faiss/IndexPreTransform.h" bodystart="25" bodyend="100"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPreTransform_1ada11e582b389ec392a51c99a4825108b" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1aa37b7428e0ac315db5e52b1cb1e42605" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>add_with_ids</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a05ac80aa3bdc94c5eba057cd8744a6c2" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>apply_chain</name></member>
       <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>assign</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a3bd3d13fc346d1a42d5607c0b34ab79e" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>chain</name></member>
-      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>check_compatible_for_merge</name></member>
+      <member refid="structfaiss_1_1IndexPreTransform_1a882647c37d7b8eb55a5d494538283536" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>component_t</name></member>
       <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>compute_residual</name></member>
       <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>compute_residual_n</name></member>
@@ -1172,13 +1167,13 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a3ce8b52cbad596e5880aaac81e774b1e" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>idx_t</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1aee3cbbe7915ec9ed13d59ca9276bdefc" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>index</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1accea7be947426aa5a9f197236b6fb276" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>IndexPreTransform</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a9cc20ff2339697220c590d235fd909e3" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>IndexPreTransform</name></member>
       <member refid="structfaiss_1_1IndexPreTransform_1a78aff6770a778c2fd507fcb144adc021" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>IndexPreTransform</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>merge_from</name></member>
+      <member refid="structfaiss_1_1IndexPreTransform_1ae3af026662cdce35dbce0b73acf09ab7" prot="public" virt="virtual"><scope>faiss::IndexPreTransform</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexPreTransform</scope><name>ntotal</name></member>

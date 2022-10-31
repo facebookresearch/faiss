@@ -264,6 +264,28 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="62" column="18"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1ab6ac3b3be9e794a5eaa6b122709b4f99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::VectorTransform::check_identical</definition>
+        <argsstring>(const VectorTransform &amp;other) const =0</argsstring>
+        <name>check_identical</name>
+        <reimplementedby refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506">check_identical</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ITQTransform_1a84b7defd5ebf855ac2e4038bdbd1fdd6">check_identical</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ae8f62cc0239c222b35ee3406ad8e7815">check_identical</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1NormalizationTransform_1afeac1f2cd1f51640424180bd27833b24">check_identical</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CenteringTransform_1a31952d08f3041c30fd537934dad3368d">check_identical</reimplementedby>
+        <param>
+          <type>const <ref refid="structfaiss_1_1VectorTransform" kindref="compound">VectorTransform</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/VectorTransform.h" line="65" column="18"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual faiss::VectorTransform::~VectorTransform</definition>
@@ -275,7 +297,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="64" column="13" bodyfile="faiss/VectorTransform.h" bodystart="64" bodyend="64"/>
+        <location file="faiss/VectorTransform.h" line="67" column="13" bodyfile="faiss/VectorTransform.h" bodystart="67" bodyend="67"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -343,10 +365,11 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/VectorTransform.h" line="25" column="22" bodyfile="faiss/VectorTransform.h" bodystart="25" bodyend="65"/>
+    <location file="faiss/VectorTransform.h" line="25" column="22" bodyfile="faiss/VectorTransform.h" bodystart="25" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" prot="public" virt="pure-virtual"><scope>faiss::VectorTransform</scope><name>apply_noalloc</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1ab6ac3b3be9e794a5eaa6b122709b4f99" prot="public" virt="pure-virtual"><scope>faiss::VectorTransform</scope><name>check_identical</name></member>
       <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>d_in</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>d_out</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a410516b4efdae041546d87f6bef2e422" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>idx_t</name></member>
