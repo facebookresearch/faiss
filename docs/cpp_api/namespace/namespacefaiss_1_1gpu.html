@@ -105,8 +105,8 @@
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d100.html">Namespace faiss::&#64;100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d101.html">Namespace faiss::&#64;101</a></li>
-<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d89.html">Namespace faiss::&#64;89</a></li>
-<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d99.html">Namespace faiss::&#64;99</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d102.html">Namespace faiss::&#64;102</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d90.html">Namespace faiss::&#64;90</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib.html">Namespace faiss::cppcontrib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d10.html">Namespace faiss::cppcontrib::&#64;10</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d12.html">Namespace faiss::cppcontrib::&#64;12</a></li>
@@ -1735,6 +1735,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat7displayEv">
 <span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat7displayEv"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat7displayEv"></span><span id="faiss::gpu::GpuIndexBinaryFlat::displayC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">display</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Display the actual class name and some more info. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu18GpuIndexBinaryFlat10merge_fromER11IndexBinary5idx_t">
+<span id="_CPPv3N5faiss3gpu18GpuIndexBinaryFlat10merge_fromER11IndexBinary5idx_t"></span><span id="_CPPv2N5faiss3gpu18GpuIndexBinaryFlat10merge_fromER11IndexBinary5idx_t"></span><span id="faiss::gpu::GpuIndexBinaryFlat::merge_from__IndexBinaryR.idx_t"></span><span class="target" id="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span>, <a class="reference internal" href="../class/classfaiss_1_1gpu_1_1GpuIndexBinaryFlat.html#_CPPv4N5faiss3gpu18GpuIndexBinaryFlat5idx_tE" title="faiss::gpu::GpuIndexBinaryFlat::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary">
+<span id="_CPPv3NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary"></span><span id="_CPPv2NK5faiss3gpu18GpuIndexBinaryFlat26check_compatible_for_mergeERK11IndexBinary"></span><span id="faiss::gpu::GpuIndexBinaryFlat::check_compatible_for_merge__IndexBinaryCRC"></span><span class="target" id="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexBinary_8h.html#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
 </div>

@@ -150,6 +150,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexFlatCodes_8h.html">File IndexFlatCodes.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexFlat_8h.html">File IndexFlat.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexHNSW_8h.html">File IndexHNSW.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexIDMap_8h.html">File IndexIDMap.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizerFastScan_8h.html">File IndexIVFAdditiveQuantizerFastScan.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFAdditiveQuantizer_8h.html">File IndexIVFAdditiveQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexIVFFastScan_8h.html">File IndexIVFFastScan.h</a></li>
@@ -514,6 +515,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexBinary7displayEv">
 <span id="_CPPv3NK5faiss11IndexBinary7displayEv"></span><span id="_CPPv2NK5faiss11IndexBinary7displayEv"></span><span id="faiss::IndexBinary::displayC"></span><span class="target" id="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">display</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexBinary7displayEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Display the actual class name and some more info. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexBinary10merge_fromER11IndexBinary5idx_t">
+<span id="_CPPv3N5faiss11IndexBinary10merge_fromER11IndexBinary5idx_t"></span><span id="_CPPv2N5faiss11IndexBinary10merge_fromER11IndexBinary5idx_t"></span><span id="faiss::IndexBinary::merge_from__IndexBinaryR.idx_t"></span><span class="target" id="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">merge_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span>, <a class="reference internal" href="#_CPPv4N5faiss11IndexBinary5idx_tE" title="faiss::IndexBinary::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">add_id</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexBinary10merge_fromER11IndexBinary5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>moves the entries from another dataset to self. On output, other is empty. add_id is added to all moved ids (for sequential ids, this would be this-&gt;ntotal) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexBinary26check_compatible_for_mergeERK11IndexBinary">
+<span id="_CPPv3NK5faiss11IndexBinary26check_compatible_for_mergeERK11IndexBinary"></span><span id="_CPPv2NK5faiss11IndexBinary26check_compatible_for_mergeERK11IndexBinary"></span><span id="faiss::IndexBinary::check_compatible_for_merge__IndexBinaryCRC"></span><span class="target" id="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">check_compatible_for_merge</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss11IndexBinaryE" title="faiss::IndexBinary"><span class="n"><span class="pre">IndexBinary</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexBinary26check_compatible_for_mergeERK11IndexBinary" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>check that the two indexes are compatible (ie, they are trained in the same way and have the same parameters). Otherwise throw. </p>
 </dd></dl>
 
 </div>
