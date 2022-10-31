@@ -93,6 +93,9 @@ struct IndexPreTransform : Index {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+    void check_compatible_for_merge(const Index& otherIndex) const override;
+
     ~IndexPreTransform() override;
 };
 

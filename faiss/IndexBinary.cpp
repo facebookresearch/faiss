@@ -87,4 +87,15 @@ void IndexBinary::display() const {
            ntotal);
 }
 
+void IndexBinary::merge_from(
+        IndexBinary& /* otherIndex */,
+        idx_t /* add_id */) {
+    FAISS_THROW_MSG("merge_from() not implemented");
+}
+
+void IndexBinary::check_compatible_for_merge(
+        const IndexBinary& /* otherIndex */) const {
+    FAISS_THROW_MSG("check_compatible_for_merge() not implemented");
+}
+
 } // namespace faiss

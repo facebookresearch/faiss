@@ -427,6 +427,9 @@ struct InvertedListScanner {
     virtual ~InvertedListScanner() {}
 };
 
+// whether to check that coarse quantizers are the same
+FAISS_API extern bool check_compatible_for_merge_expensive_check;
+
 struct IndexIVFStats {
     size_t nq;                // nb of queries run
     size_t nlist;             // nb of inverted lists scanned

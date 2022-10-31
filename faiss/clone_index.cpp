@@ -122,7 +122,9 @@ Index* Cloner::clone_Index(const Index* index) {
         return res;
     } else if (
             const IndexIDMap* idmap = dynamic_cast<const IndexIDMap*>(index)) {
-        IndexIDMap* res = new IndexIDMap(*idmap);
+        const IndexIDMap2* idmap2 = dynamic_cast<const IndexIDMap2*>(index);
+        IndexIDMap* res =
+                idmap2 ? new IndexIDMap2(*idmap2) : new IndexIDMap(*idmap);
         res->own_fields = true;
         res->index = clone_Index(idmap->index);
         return res;

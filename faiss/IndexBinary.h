@@ -171,6 +171,18 @@ struct IndexBinary {
 
     /** Display the actual class name and some more info. */
     void display() const;
+
+    /** moves the entries from another dataset to self.
+     * On output, other is empty.
+     * add_id is added to all moved ids
+     * (for sequential ids, this would be this->ntotal) */
+    virtual void merge_from(IndexBinary& otherIndex, idx_t add_id = 0);
+
+    /** check that the two indexes are compatible (ie, they are
+     * trained in the same way and have the same
+     * parameters). Otherwise throw. */
+    virtual void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const;
 };
 
 } // namespace faiss

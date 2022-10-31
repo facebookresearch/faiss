@@ -1049,12 +1049,15 @@ void IndexIVF::train_residual(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
+bool check_compatible_for_merge_expensive_check = true;
+
 void IndexIVF::check_compatible_for_merge(const Index& otherIndex) const {
     // minimal sanity checks
     const IndexIVF* other = dynamic_cast<const IndexIVF*>(&otherIndex);
     FAISS_THROW_IF_NOT(other);
     FAISS_THROW_IF_NOT(other->d == d);
     FAISS_THROW_IF_NOT(other->nlist == nlist);
+    FAISS_THROW_IF_NOT(quantizer->ntotal == other->quantizer->ntotal);
     FAISS_THROW_IF_NOT(other->code_size == code_size);
     FAISS_THROW_IF_NOT_MSG(
             typeid(*this) == typeid(*other),
@@ -1062,6 +1065,16 @@ void IndexIVF::check_compatible_for_merge(const Index& otherIndex) const {
     FAISS_THROW_IF_NOT_MSG(
             this->direct_map.no() && other->direct_map.no(),
             "merge direct_map not implemented");
+
+    if (check_compatible_for_merge_expensive_check) {
+        std::vector<float> v(d), v2(d);
+        for (size_t i = 0; i < nlist; i++) {
+            quantizer->reconstruct(i, v.data());
+            other->quantizer->reconstruct(i, v2.data());
+            FAISS_THROW_IF_NOT_MSG(
+                    v == v2, "coarse quantizers should be the same");
+        }
+    }
 }
 
 void IndexIVF::merge_from(Index& otherIndex, idx_t add_id) {
