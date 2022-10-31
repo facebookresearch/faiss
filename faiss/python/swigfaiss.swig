@@ -103,6 +103,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexNSG.h>
 
 #include <faiss/MetaIndexes.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexRefine.h>
 
 #include <faiss/IndexRowwiseMinMax.h>
@@ -482,6 +483,7 @@ void gpu_sync_all_devices()
 %template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
 
 %include  <faiss/MetaIndexes.h>
+%include  <faiss/IndexIDMap.h>
 %template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
 %template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;

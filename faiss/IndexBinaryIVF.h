@@ -187,10 +187,10 @@ struct IndexBinaryIVF : IndexBinary {
     /// Dataset manipulation functions
     size_t remove_ids(const IDSelector& sel) override;
 
-    /** moves the entries from another dataset to self. On output,
-     * other is empty. add_id is added to all moved ids (for
-     * sequential ids, this would be this->ntotal */
-    virtual void merge_from(IndexBinaryIVF& other, idx_t add_id);
+    void merge_from(IndexBinary& other, idx_t add_id) override;
+
+    void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const override;
 
     size_t get_list_size(size_t list_no) const {
         return invlists->list_size(list_no);

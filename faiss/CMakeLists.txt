@@ -20,6 +20,7 @@ set(FAISS_SRC
   IndexFlat.cpp
   IndexFlatCodes.cpp
   IndexHNSW.cpp
+  IndexIDMap.cpp
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
@@ -103,6 +104,7 @@ set(FAISS_HEADERS
   IndexFlat.h
   IndexFlatCodes.h
   IndexHNSW.h
+  IndexIDMap.h
   IndexIVF.h
   IndexIVFAdditiveQuantizer.h
   IndexIVFFlat.h

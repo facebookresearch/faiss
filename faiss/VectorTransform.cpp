@@ -149,6 +149,10 @@ void VectorTransform::reverse_transform(idx_t, const float*, float*) const {
     FAISS_THROW_MSG("reverse transform not implemented");
 }
 
+void VectorTransform::check_identical(const VectorTransform& other) const {
+    FAISS_THROW_IF_NOT(other.d_in == d_in && other.d_in == d_in);
+}
+
 /*********************************************
  * LinearTransform
  *********************************************/
@@ -306,6 +310,13 @@ void LinearTransform::print_if_verbose(
         printf("\n");
     }
     printf("]\n");
+}
+
+void LinearTransform::check_identical(const VectorTransform& other_in) const {
+    VectorTransform::check_identical(other_in);
+    auto other = dynamic_cast<const LinearTransform*>(&other_in);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->A == A && other->b == b);
 }
 
 /*********************************************
@@ -966,6 +977,14 @@ void ITQTransform::apply_noalloc(Index::idx_t n, const float* x, float* xt)
     pca_then_itq.apply_noalloc(n, x_norm.get(), xt);
 }
 
+void ITQTransform::check_identical(const VectorTransform& other_in) const {
+    VectorTransform::check_identical(other_in);
+    auto other = dynamic_cast<const ITQTransform*>(&other_in);
+    FAISS_THROW_IF_NOT(other);
+    pca_then_itq.check_identical(other->pca_then_itq);
+    FAISS_THROW_IF_NOT(other->mean == mean);
+}
+
 /*********************************************
  * OPQMatrix
  *********************************************/
@@ -1226,6 +1245,14 @@ void NormalizationTransform::reverse_transform(
     memcpy(x, xt, sizeof(xt[0]) * n * d_in);
 }
 
+void NormalizationTransform::check_identical(
+        const VectorTransform& other_in) const {
+    VectorTransform::check_identical(other_in);
+    auto other = dynamic_cast<const NormalizationTransform*>(&other_in);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->norm == norm);
+}
+
 /*********************************************
  * CenteringTransform
  *********************************************/
@@ -1269,6 +1296,14 @@ void CenteringTransform::reverse_transform(idx_t n, const float* xt, float* x)
             *x++ = *xt++ + mean[j];
         }
     }
+}
+
+void CenteringTransform::check_identical(
+        const VectorTransform& other_in) const {
+    VectorTransform::check_identical(other_in);
+    auto other = dynamic_cast<const CenteringTransform*>(&other_in);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->mean == mean);
 }
 
 /*********************************************
@@ -1334,4 +1369,12 @@ void RemapDimensionsTransform::reverse_transform(
         x += d_in;
         xt += d_out;
     }
+}
+
+void RemapDimensionsTransform::check_identical(
+        const VectorTransform& other_in) const {
+    VectorTransform::check_identical(other_in);
+    auto other = dynamic_cast<const RemapDimensionsTransform*>(&other_in);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->map == map);
 }
