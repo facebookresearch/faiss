@@ -79,7 +79,8 @@
 //   this version provides the following functions (please note that
 //   pqCoarseCentroids params are not available for IndexPQDecoder,
 //   but the functionality is the same as for Index2LevelDecoder):
-// * ::store, which is similar to sa_decode(1, input, output),
+//
+// * ::store(), which is similar to sa_decode(1, input, output),
 //   The method signature is the following:
 //   {
 //     void store(
@@ -88,17 +89,19 @@
 //       const uint8_t* const __restrict code,
 //       float* const __restrict outputStore);
 //   }
-// * ::accum, which is used to create a linear combination
+//
+// * ::accum(), which is used to create a linear combination
 //   of decoded vectors:
 //   {
-//     faiss::Index* index;
+//     const faiss::Index* const index;
+//     const uint8_t* const input;
 //     float weight;
 //
 //     std::vector<float> buffer(d, 0);
 //
 //     index->sa_decode(1, input, buffer.data());
 //     for (size_t iDim = 0; iDim < d; iDim++)
-//       output[iDim] += weight * input[iDim];
+//       output[iDim] += weight * buffer[iDim];
 //   }
 //   The method signature is the following:
 //   {
@@ -109,11 +112,27 @@
 //      const float weight,
 //      float* const __restrict outputAccum);
 //   }
-// * There is an additional overload for ::accum that decodes two vectors
+//
+// * There is an additional overload for ::accum() that decodes two vectors
 //   per call. This provides an additional speedup because of a CPU
-//   superscalar architecture. Doing more vectors per call is less attractive
-//   because of the possible lack of available CPU registers, but it is still
-//   doable.
+//   superscalar architecture:
+//   {
+//     const faiss::Index* const index;
+//     const uint8_t* const input0;
+//     float weight0;
+//     const uint8_t* const input1;
+//     float weight1;
+//
+//     std::vector<float> buffer(d, 0);
+//
+//     index->sa_decode(1, input0, buffer.data());
+//     for (size_t iDim = 0; iDim < d; iDim++)
+//       output[iDim] += weight0 * buffer[iDim];
+//
+//     index->sa_decode(1, input1, buffer.data());
+//     for (size_t iDim = 0; iDim < d; iDim++)
+//       output[iDim] += weight1 * buffer[iDim];
+//   }
 //   If each code uses its own coarse quantizer centroids table and its own fine
 //   quantizer centroids table, then the following overload can be used:
 //   {
@@ -141,8 +160,33 @@
 //      const float weight1,
 //      float* const __restrict outputAccum);
 //   }
-// * And one more overload for ::accum that decodes and accumulates
-//   three vectors per call. Sometimes, it makes sense, at least for AVX2.
+//
+// * And one more overload for ::accum() that decodes and accumulates
+//   three vectors per call.
+//   {
+//     const faiss::Index* const index;
+//     const uint8_t* const input0;
+//     float weight0;
+//     const uint8_t* const input1;
+//     float weight1;
+//     const uint8_t* const input2;
+//     float weight2;
+//
+//     std::vector<float> buffer(d, 0);
+//
+//     index->sa_decode(1, input0, buffer.data());
+//     for (size_t iDim = 0; iDim < d; iDim++)
+//       output[iDim] += weight0 * buffer[iDim];
+//
+//     index->sa_decode(1, input1, buffer.data());
+//     for (size_t iDim = 0; iDim < d; iDim++)
+//       output[iDim] += weight1 * buffer[iDim];
+//
+//     index->sa_decode(1, input2, buffer.data());
+//     for (size_t iDim = 0; iDim < d; iDim++)
+//       output[iDim] += weight2 * buffer[iDim];
+//   }
+//
 //   If each code uses its own coarse quantizer centroids table and its own fine
 //   quantizer centroids table, then the following overload can be used:
 //   {
@@ -182,6 +226,64 @@
 // Currently, an AVX2+FMA implementation is available. AVX512 version is also
 //   doable, but it was found to be slower than AVX2 for real world applications
 //   that I needed.
+//
+////////////////////////////////////////////////////////////////////////////////////
+//
+// It is possible to use an additional index wrapper on top of IVFPQ /
+// Residual+PQ, known as IndexRowwiseMinMax / IndexRowwiseMinMaxFP16. Index
+// wrapper that performs rowwise normalization to [0,1], preserving the
+// coefficients. This is a vector codec index only.
+// For more details please refer to the description in
+// faiss/IndexRowwiseMinMax.h file.
+//
+// If such a wrapper is used, then the quantizer will look like, say,
+//    MinMaxFP16,IVF256,PQ32np
+//  or
+//    MinMax,PQ16np
+// In this case, please use the following contruction for the decoding,
+// basically, wrapping a kernel in a kernel:
+//   {
+//      using SubT = faiss::cppcontrib::Index2LevelDecoder<128, 128, 2>;
+//      using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
+//      // do T::store(...) or T::accum(...)
+//   }
+//
+// T::accum(...) contains an additional function variable which is
+// used for accumulating scaling. Thus, the code pattern is the following:
+//   {
+//     const float* const __restrict pqCoarseCentroidsQ;
+//     const float* const __restrict pqFineCentroidsQ;
+//     const uint8_t* const __restrict input;
+//     const float* const __restrict weights;
+//     float* const __restrict output;
+//     float outputAccumMin = 0;
+//
+//     for (size_t i = 0; i < n; i++) {
+//         T::accum(
+//                 pqCoarseCentroidsQ,
+//                 pqFineCentroidsQ,
+//                 input + i * code_size,
+//                 weights[i],
+//                 output,
+//                 outputAccumMin);
+//     }
+//     for (size_t j = 0; j < d; j++)
+//         output[j] += outputAccumMin;
+//   }
+// This is similar to the following regular pseudo-code:
+//   {
+//     const faiss::Index* const index;
+//     const uint8_t* const __restrict input;
+//     const float* const __restrict weights;
+//     float* const __restrict output;
+//
+//     for (size_t i = 0; i < n; i++) {
+//       std::vector<float> buffer(d, 0);
+//
+//       index->sa_decode(1, input + i * code_size, buffer.data());
+//       for (size_t j = 0; j < d; j++)
+//         output[j] += weights[i] * buffer[j];
+//     }
 
 #include <faiss/cppcontrib/sa_decode/MinMax-inl.h>
 #include <faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h>
