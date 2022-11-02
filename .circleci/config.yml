@@ -289,7 +289,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> --no-anaconda-upload
+            conda build faiss --user pytorch --label <<parameters.label>> --no-anaconda-upload -c pytorch
 
   deploy_windows:
     parameters:
