@@ -118,7 +118,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.8 -c pytorch
+            conda build faiss --python 3.7 -c pytorch
 
   build_windows:
     executor:
