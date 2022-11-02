@@ -98,7 +98,7 @@ jobs:
 
   build_osx:
     macos:
-      xcode: 14.0.1  # https://circleci.com/docs/using-macos#supported-xcode-versions
+      xcode: 13.0.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
     environment:
       OMP_NUM_THREADS: 10
     steps:
@@ -264,7 +264,7 @@ jobs:
         type: string
         default: main
     macos:
-      xcode: 14.0.1  # https://circleci.com/docs/using-macos#supported-xcode-versions
+      xcode: 13.0.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
     steps:
       - checkout
       - run:
