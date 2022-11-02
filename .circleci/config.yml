@@ -268,7 +268,7 @@ jobs:
         type: string
         default: main
     macos:
-      xcode: 12.4.0
+      xcode: 14.0.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
     steps:
       - checkout
       - run:
@@ -289,7 +289,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>>
+            conda build faiss --user pytorch --label <<parameters.label>> --no-anaconda-upload
 
   deploy_windows:
     parameters:
@@ -319,95 +319,11 @@ workflows:
   version: 2
   build:
     jobs:
-      - format:
-          name: Format
-      - build_linux:
-          name: Linux
-      - build_linux:
-          name: Linux (AVX2)
-          opt_level: "avx2"
-          resource_class: "medium+"
-      - build_linux_conda:
-          name: Linux (conda)
-      - build_linux_gpu:
-          name: Linux GPU
-          requires:
-            - Linux
       - build_osx:
           name: OSX
-      - build_windows:
-          name: Windows
-      - build_arm:
-          name: ARM64
-      - deploy_linux:
-          name: Linux packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 10.2)
-          cuda: "10.2"
-          cuda_archs: "35;52;60;61;70;72;75"
-          compiler_version: "8.4"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.3)
-          cuda: "11.3"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_windows:
-          name: Windows packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_osx:
-          name: OSX packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
 
   nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
     jobs:
-      - deploy_linux:
-          name: Linux nightlies
-          label: nightly
-      - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 10.2)
-          cuda: "10.2"
-          cuda_archs: "35;52;60;61;70;72;75"
-          compiler_version: "8.4"
-          label: nightly
-      - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.3)
-          cuda: "11.3"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
-          label: nightly
-      - deploy_windows:
-          name: Windows nightlies
-          label: nightly
       - deploy_osx:
           name: OSX nightlies
           label: nightly

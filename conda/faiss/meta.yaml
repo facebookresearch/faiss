@@ -78,7 +78,7 @@ outputs:
         - pytorch  # [not osx]
         - pytorch <1.12.0  # [osx]
       commands:
-        - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
+        # - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux]
       files:
