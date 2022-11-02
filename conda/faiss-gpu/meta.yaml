@@ -67,7 +67,7 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy =1.11
+        - numpy =1.16
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
