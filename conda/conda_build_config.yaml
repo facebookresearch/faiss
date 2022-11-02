@@ -1,5 +1,5 @@
 CONDA_BUILD_SYSROOT:
-  - /Applications/Xcode.app/Contents/Developer       # [osx]
+  - /Applications/Xcode-13.0.app/Contents/Developer       # [osx]
 python:
   - 3.6
   - 3.7
