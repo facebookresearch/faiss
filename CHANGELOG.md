@@ -10,6 +10,8 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
 
+## [1.7.3] - 2022-11-3
+### Added
 - Added sparse k-means routines and moved the generic kmeans to contrib
 - Added FlatDistanceComputer for all FlatCodes indexes
 - Support for fast accumulation of 4-bit LSQ and RQ
@@ -213,6 +215,7 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - Extended tutorial to GPU indices.
 
 [Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[1.7.3]: https://github.com/facebookresearch/faiss/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/facebookresearch/faiss/compare/v1.6.5...v1.7.0
