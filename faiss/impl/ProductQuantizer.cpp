@@ -237,12 +237,26 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
     for (size_t m = 0; m < pq.M; m++) {
         const float* xsub = x + m * pq.dsub;
 
-        uint64_t idxm = fvec_L2sqr_ny_nearest(
-                distances.data(),
-                xsub,
-                pq.get_centroids(m, 0),
-                pq.dsub,
-                pq.ksub);
+        uint64_t idxm = 0;
+        if (pq.transposed_centroids.empty()) {
+            // the regular version
+            idxm = fvec_L2sqr_ny_nearest(
+                    distances.data(),
+                    xsub,
+                    pq.get_centroids(m, 0),
+                    pq.dsub,
+                    pq.ksub);
+        } else {
+            // transposed centroids are available, use'em
+            idxm = fvec_L2sqr_ny_nearest_y_transposed(
+                    distances.data(),
+                    xsub,
+                    pq.transposed_centroids.data() + m * pq.ksub,
+                    pq.centroids_sq_lengths.data() + m * pq.ksub,
+                    pq.dsub,
+                    pq.M * pq.ksub,
+                    pq.ksub);
+        }
 
         encoder.encode(idxm);
     }
@@ -817,6 +831,34 @@ void ProductQuantizer::search_sdc(
         if (init_finalize_heap)
             maxheap_reorder(k, heap_dis, heap_ids);
     }
+}
+
+void ProductQuantizer::sync_transposed_centroids() {
+    transposed_centroids.resize(d * ksub);
+    centroids_sq_lengths.resize(ksub * M);
+
+    for (size_t mi = 0; mi < M; mi++) {
+        for (size_t ki = 0; ki < ksub; ki++) {
+            float sqlen = 0;
+
+            for (size_t di = 0; di < dsub; di++) {
+                const float q = centroids[(mi * ksub + ki) * dsub + di];
+
+                transposed_centroids[(di * M + mi) * ksub + ki] = q;
+                sqlen += q * q;
+            }
+
+            centroids_sq_lengths[mi * ksub + ki] = sqlen;
+        }
+    }
+}
+
+void ProductQuantizer::clear_transposed_centroids() {
+    transposed_centroids.clear();
+    transposed_centroids.shrink_to_fit();
+
+    centroids_sq_lengths.clear();
+    centroids_sq_lengths.shrink_to_fit();
 }
 
 } // namespace faiss

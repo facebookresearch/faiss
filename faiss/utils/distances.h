@@ -83,6 +83,19 @@ size_t fvec_L2sqr_ny_nearest(
         size_t d,
         size_t ny);
 
+/* compute ny square L2 distance between x and a set of transposed contiguous
+   y vectors and return the index of the nearest vector.
+   squared lengths of y should be provided as well
+   return 0 if ny == 0. */
+size_t fvec_L2sqr_ny_nearest_y_transposed(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny);
+
 /** squared norm of a vector */
 float fvec_norm_L2sqr(const float* x, size_t d);
 
