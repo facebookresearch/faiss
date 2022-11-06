@@ -6495,6 +6495,7 @@
     <member refid="namespacefaiss_1a1f0c0270de04cc395edd3d2823d0128d" kind="function"><name>fvec_inner_products_ny</name></member>
     <member refid="namespacefaiss_1a4ca22849311a991b72676be10315e2af" kind="function"><name>fvec_L2sqr_ny</name></member>
     <member refid="namespacefaiss_1a8fb5a079795e3aa9e1afa3674de43da5" kind="function"><name>fvec_L2sqr_ny_nearest</name></member>
+    <member refid="namespacefaiss_1a1bc40dd030e214216a985c696771cfc0" kind="function"><name>fvec_L2sqr_ny_nearest_y_transposed</name></member>
     <member refid="namespacefaiss_1a7a49180ebf10e643217bbce5862c7f84" kind="function"><name>fvec_norm_L2sqr</name></member>
     <member refid="namespacefaiss_1a043de43abbfd0d169e609fffbdf8886b" kind="function"><name>fvec_norms_L2</name></member>
     <member refid="namespacefaiss_1aa3efb3d72f4cca424c19ac96c1b34754" kind="function"><name>fvec_norms_L2sqr</name></member>
