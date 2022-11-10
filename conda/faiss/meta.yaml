@@ -66,7 +66,8 @@ outputs:
       host:
         - python {{ python }}
         - numpy =1.16  # [not win]
-        - numpy =1.11  # [win]
+        - numpy =1.16  # [win and py>=3.9]
+        - numpy =1.11  # [win and py<3.9]
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
