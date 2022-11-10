@@ -152,6 +152,57 @@ TEST(TestGpuIndexIVFPQ, Query_L2) {
     }
 }
 
+// Large batch sizes (>= 65536) should also work
+TEST(TestGpuIndexIVFPQ, LargeBatch) {
+    for (bool usePrecomputed : {false, true}) {
+        Options opt;
+
+        // override for large sizes
+        opt.dim = 4;
+        opt.numQuery = 100000;
+        opt.codes = 2;
+
+        std::vector<float> trainVecs =
+                faiss::gpu::randVecs(opt.numTrain, opt.dim);
+        std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+        faiss::IndexFlatL2 coarseQuantizer(opt.dim);
+        faiss::IndexIVFPQ cpuIndex(
+                &coarseQuantizer,
+                opt.dim,
+                opt.numCentroids,
+                opt.codes,
+                opt.bitsPerCode);
+        cpuIndex.nprobe = opt.nprobe;
+        cpuIndex.train(opt.numTrain, trainVecs.data());
+        cpuIndex.add(opt.numAdd, addVecs.data());
+
+        // Use the default temporary memory management to test the memory
+        // manager
+        faiss::gpu::StandardGpuResources res;
+
+        faiss::gpu::GpuIndexIVFPQConfig config;
+        config.device = opt.device;
+        config.usePrecomputedTables = usePrecomputed;
+        config.indicesOptions = opt.indicesOpt;
+        config.useFloat16LookupTables = false;
+
+        faiss::gpu::GpuIndexIVFPQ gpuIndex(&res, &cpuIndex, config);
+        gpuIndex.setNumProbes(opt.nprobe);
+
+        faiss::gpu::compareIndices(
+                cpuIndex,
+                gpuIndex,
+                opt.numQuery,
+                opt.dim,
+                opt.k,
+                opt.toString(),
+                opt.getCompareEpsilon(),
+                opt.getPctMaxDiff1(),
+                opt.getPctMaxDiffN());
+    }
+}
+
 void testMMCodeDistance(faiss::MetricType mt) {
     // Explicitly test the code distance via batch matrix multiplication route
     // (even for dimension sizes that would otherwise be handled by the

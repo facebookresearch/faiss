@@ -327,6 +327,7 @@ void runPQResidualVector(
         Tensor<float, 4, true>& residual,
         bool l2Residual,
         cudaStream_t stream) {
+    // blockDim.y is limited by nprobe
     auto grid = dim3(coarseIndices.getSize(0), coarseIndices.getSize(1));
     auto block =
             dim3(std::min(queries.getSize(1), getMaxThreadsCurrentDevice()));
@@ -380,6 +381,7 @@ void runPQDistanceIPCorrection(
         Tensor<T, 4, true>& codeDistances,
         Tensor<T, 2, true>& coarseDistances,
         cudaStream_t stream) {
+    // blockDim.y is limited by nprobe
     auto grid = dim3(coarseDistances.getSize(1), coarseDistances.getSize(0));
     auto block = 512;
 

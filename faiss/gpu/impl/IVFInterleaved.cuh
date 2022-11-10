@@ -53,158 +53,161 @@ __global__ void ivfInterleavedScan(
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    int queryId = blockIdx.y;
-    int probeId = blockIdx.x;
-    Index::idx_t listId = listIds[queryId][probeId];
+    for (int queryId = blockIdx.y; queryId < queries.getSize(0);
+         queryId += gridDim.y) {
+        int probeId = blockIdx.x;
+        Index::idx_t listId = listIds[queryId][probeId];
 
-    // Safety guard in case NaNs in input cause no list ID to be generated, or
-    // we have more nprobe than nlist
-    if (listId == -1) {
-        return;
-    }
+        // Safety guard in case NaNs in input cause no list ID to be generated,
+        // or we have more nprobe than nlist
+        if (listId == -1) {
+            return;
+        }
 
-    int dim = queries.getSize(1);
+        int dim = queries.getSize(1);
 
-    // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
-    int laneId = threadIdx.x % kWarpSize;
-    int warpId = threadIdx.x / kWarpSize;
+        // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
+        int laneId = threadIdx.x % kWarpSize;
+        int warpId = threadIdx.x / kWarpSize;
 
-    using EncodeT = typename Codec::EncodeT;
+        using EncodeT = typename Codec::EncodeT;
 
-    auto query = queries[queryId].data();
-    auto vecsBase = (EncodeT*)allListData[listId];
-    int numVecs = listLengths[listId];
-    auto residualBaseSlice = residualBase[queryId][probeId].data();
+        auto query = queries[queryId].data();
+        auto vecsBase = (EncodeT*)allListData[listId];
+        int numVecs = listLengths[listId];
+        auto residualBaseSlice = residualBase[queryId][probeId].data();
 
-    constexpr auto kInit = Metric::kDirection ? kFloatMin : kFloatMax;
+        constexpr auto kInit = Metric::kDirection ? kFloatMin : kFloatMax;
 
-    __shared__ float smemK[kNumWarps * NumWarpQ];
-    __shared__ int smemV[kNumWarps * NumWarpQ];
+        __shared__ float smemK[kNumWarps * NumWarpQ];
+        __shared__ int smemV[kNumWarps * NumWarpQ];
 
-    BlockSelect<
-            float,
-            int,
-            Metric::kDirection,
-            Comparator<float>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(kInit, -1, smemK, smemV, k);
+        BlockSelect<
+                float,
+                int,
+                Metric::kDirection,
+                Comparator<float>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(kInit, -1, smemK, smemV, k);
 
-    // The codec might be dependent upon data that we need to reference or store
-    // in shared memory
-    codec.initKernel(smem, dim);
-    __syncthreads();
+        // The codec might be dependent upon data that we need to reference or
+        // store in shared memory
+        codec.initKernel(smem, dim);
+        __syncthreads();
 
-    // How many vector blocks of 32 are in this list?
-    int numBlocks = utils::divUp(numVecs, 32);
+        // How many vector blocks of 32 are in this list?
+        int numBlocks = utils::divUp(numVecs, 32);
 
-    // Number of EncodeT words per each dimension of block of 32 vecs
-    constexpr int bytesPerVectorBlockDim = Codec::kEncodeBits * 32 / 8;
-    constexpr int wordsPerVectorBlockDim =
-            bytesPerVectorBlockDim / sizeof(EncodeT);
-    int wordsPerVectorBlock = wordsPerVectorBlockDim * dim;
+        // Number of EncodeT words per each dimension of block of 32 vecs
+        constexpr int bytesPerVectorBlockDim = Codec::kEncodeBits * 32 / 8;
+        constexpr int wordsPerVectorBlockDim =
+                bytesPerVectorBlockDim / sizeof(EncodeT);
+        int wordsPerVectorBlock = wordsPerVectorBlockDim * dim;
 
-    int dimBlocks = utils::roundDown(dim, kWarpSize);
+        int dimBlocks = utils::roundDown(dim, kWarpSize);
 
-    for (int block = warpId; block < numBlocks; block += kNumWarps) {
-        // We're handling a new vector
-        Metric dist = metric.zero();
+        for (int block = warpId; block < numBlocks; block += kNumWarps) {
+            // We're handling a new vector
+            Metric dist = metric.zero();
 
-        // This is the vector a given lane/thread handles
-        int vec = block * kWarpSize + laneId;
-        bool valid = vec < numVecs;
+            // This is the vector a given lane/thread handles
+            int vec = block * kWarpSize + laneId;
+            bool valid = vec < numVecs;
 
-        // This is where this warp begins reading data
-        EncodeT* data = vecsBase + block * wordsPerVectorBlock;
+            // This is where this warp begins reading data
+            EncodeT* data = vecsBase + block * wordsPerVectorBlock;
 
-        // whole blocks
-        for (int dBase = 0; dBase < dimBlocks; dBase += kWarpSize) {
-            int loadDim = dBase + laneId;
-            float queryReg = query[loadDim];
-            float residualReg = Residual ? residualBaseSlice[loadDim] : 0;
+            // whole blocks
+            for (int dBase = 0; dBase < dimBlocks; dBase += kWarpSize) {
+                int loadDim = dBase + laneId;
+                float queryReg = query[loadDim];
+                float residualReg = Residual ? residualBaseSlice[loadDim] : 0;
 
-            constexpr int kUnroll = 4;
-
-#pragma unroll
-            for (int i = 0; i < kWarpSize / kUnroll;
-                 ++i, data += kUnroll * wordsPerVectorBlockDim) {
-                EncodeT encV[kUnroll];
-#pragma unroll
-                for (int j = 0; j < kUnroll; ++j) {
-                    encV[j] = WarpPackedBits<EncodeT, Codec::kEncodeBits>::read(
-                            laneId, data + j * wordsPerVectorBlockDim);
-                }
+                constexpr int kUnroll = 4;
 
 #pragma unroll
-                for (int j = 0; j < kUnroll; ++j) {
-                    encV[j] = WarpPackedBits<EncodeT, Codec::kEncodeBits>::
-                            postRead(laneId, encV[j]);
-                }
-
-                float decV[kUnroll];
+                for (int i = 0; i < kWarpSize / kUnroll;
+                     ++i, data += kUnroll * wordsPerVectorBlockDim) {
+                    EncodeT encV[kUnroll];
 #pragma unroll
-                for (int j = 0; j < kUnroll; ++j) {
-                    int d = i * kUnroll + j;
-                    decV[j] = codec.decodeNew(dBase + d, encV[j]);
-                }
+                    for (int j = 0; j < kUnroll; ++j) {
+                        encV[j] = WarpPackedBits<EncodeT, Codec::kEncodeBits>::
+                                read(laneId, data + j * wordsPerVectorBlockDim);
+                    }
 
-                if (Residual) {
+#pragma unroll
+                    for (int j = 0; j < kUnroll; ++j) {
+                        encV[j] = WarpPackedBits<EncodeT, Codec::kEncodeBits>::
+                                postRead(laneId, encV[j]);
+                    }
+
+                    float decV[kUnroll];
 #pragma unroll
                     for (int j = 0; j < kUnroll; ++j) {
                         int d = i * kUnroll + j;
-                        decV[j] += SHFL_SYNC(residualReg, d, kWarpSize);
+                        decV[j] = codec.decodeNew(dBase + d, encV[j]);
                     }
-                }
+
+                    if (Residual) {
+#pragma unroll
+                        for (int j = 0; j < kUnroll; ++j) {
+                            int d = i * kUnroll + j;
+                            decV[j] += SHFL_SYNC(residualReg, d, kWarpSize);
+                        }
+                    }
 
 #pragma unroll
-                for (int j = 0; j < kUnroll; ++j) {
-                    int d = i * kUnroll + j;
-                    float q = SHFL_SYNC(queryReg, d, kWarpSize);
-                    dist.handle(q, decV[j]);
+                    for (int j = 0; j < kUnroll; ++j) {
+                        int d = i * kUnroll + j;
+                        float q = SHFL_SYNC(queryReg, d, kWarpSize);
+                        dist.handle(q, decV[j]);
+                    }
                 }
             }
-        }
 
-        // remainder
-        int loadDim = dimBlocks + laneId;
-        bool loadDimInBounds = loadDim < dim;
+            // remainder
+            int loadDim = dimBlocks + laneId;
+            bool loadDimInBounds = loadDim < dim;
 
-        float queryReg = loadDimInBounds ? query[loadDim] : 0;
-        float residualReg =
-                Residual && loadDimInBounds ? residualBaseSlice[loadDim] : 0;
+            float queryReg = loadDimInBounds ? query[loadDim] : 0;
+            float residualReg = Residual && loadDimInBounds
+                    ? residualBaseSlice[loadDim]
+                    : 0;
 
-        for (int d = 0; d < dim - dimBlocks;
-             ++d, data += wordsPerVectorBlockDim) {
-            float q = SHFL_SYNC(queryReg, d, kWarpSize);
+            for (int d = 0; d < dim - dimBlocks;
+                 ++d, data += wordsPerVectorBlockDim) {
+                float q = SHFL_SYNC(queryReg, d, kWarpSize);
 
-            EncodeT enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::read(
-                    laneId, data);
-            enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::postRead(
-                    laneId, enc);
-            float dec = codec.decodeNew(dimBlocks + d, enc);
-            if (Residual) {
-                dec += SHFL_SYNC(residualReg, d, kWarpSize);
+                EncodeT enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::read(
+                        laneId, data);
+                enc = WarpPackedBits<EncodeT, Codec::kEncodeBits>::postRead(
+                        laneId, enc);
+                float dec = codec.decodeNew(dimBlocks + d, enc);
+                if (Residual) {
+                    dec += SHFL_SYNC(residualReg, d, kWarpSize);
+                }
+
+                dist.handle(q, dec);
             }
 
-            dist.handle(q, dec);
+            if (valid) {
+                heap.addThreadQ(dist.reduce(), vec);
+            }
+
+            heap.checkThreadQ();
         }
 
-        if (valid) {
-            heap.addThreadQ(dist.reduce(), vec);
+        heap.reduce();
+
+        auto distanceOutBase = distanceOut[queryId][probeId].data();
+        auto indicesOutBase = indicesOut[queryId][probeId].data();
+
+        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            distanceOutBase[i] = smemK[i];
+            indicesOutBase[i] = smemV[i];
         }
-
-        heap.checkThreadQ();
-    }
-
-    heap.reduce();
-
-    auto distanceOutBase = distanceOut[queryId][probeId].data();
-    auto indicesOutBase = indicesOut[queryId][probeId].data();
-
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        distanceOutBase[i] = smemK[i];
-        indicesOutBase[i] = smemV[i];
     }
 }
 
@@ -215,7 +218,7 @@ __global__ void ivfInterleavedScan(
 
 #define IVFINT_RUN(CODEC_TYPE, METRIC_TYPE, THREADS, NUM_WARP_Q, NUM_THREAD_Q) \
     do {                                                                       \
-        dim3 grid(nprobe, nq);                                                 \
+        dim3 grid(nprobe, std::min(nq, (int)getMaxGridCurrentDevice().y));     \
         if (useResidual) {                                                     \
             ivfInterleavedScan<                                                \
                     CODEC_TYPE,                                                \

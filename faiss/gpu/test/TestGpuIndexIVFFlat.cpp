@@ -64,13 +64,10 @@ struct Options {
 };
 
 void queryTest(
+        Options opt,
         faiss::MetricType metricType,
-        bool useFloat16CoarseQuantizer,
-        int dimOverride = -1) {
+        bool useFloat16CoarseQuantizer) {
     for (int tries = 0; tries < 2; ++tries) {
-        Options opt;
-        opt.dim = dimOverride != -1 ? dimOverride : opt.dim;
-
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
@@ -288,21 +285,28 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Add_IP) {
 //
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_L2) {
-    queryTest(faiss::METRIC_L2, false);
+    queryTest(Options(), faiss::METRIC_L2, false);
 }
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false);
+    queryTest(Options(), faiss::METRIC_INNER_PRODUCT, false);
+}
+
+TEST(TestGpuIndexIVFFlat, LargeBatch) {
+    Options opt;
+    opt.dim = 3;
+    opt.numQuery = 100000;
+    queryTest(opt, faiss::METRIC_L2, false);
 }
 
 // float16 coarse quantizer
 
 TEST(TestGpuIndexIVFFlat, Float16_32_Query_L2) {
-    queryTest(faiss::METRIC_L2, true);
+    queryTest(Options(), faiss::METRIC_L2, true);
 }
 
 TEST(TestGpuIndexIVFFlat, Float16_32_Query_IP) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, true);
+    queryTest(Options(), faiss::METRIC_INNER_PRODUCT, true);
 }
 
 //
@@ -311,19 +315,27 @@ TEST(TestGpuIndexIVFFlat, Float16_32_Query_IP) {
 //
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_L2_64) {
-    queryTest(faiss::METRIC_L2, false, 64);
+    Options opt;
+    opt.dim = 64;
+    queryTest(opt, faiss::METRIC_L2, false);
 }
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_IP_64) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false, 64);
+    Options opt;
+    opt.dim = 64;
+    queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 }
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_L2_128) {
-    queryTest(faiss::METRIC_L2, false, 128);
+    Options opt;
+    opt.dim = 128;
+    queryTest(opt, faiss::METRIC_L2, false);
 }
 
 TEST(TestGpuIndexIVFFlat, Float32_Query_IP_128) {
-    queryTest(faiss::METRIC_INNER_PRODUCT, false, 128);
+    Options opt;
+    opt.dim = 128;
+    queryTest(opt, faiss::METRIC_INNER_PRODUCT, false);
 }
 
 //
