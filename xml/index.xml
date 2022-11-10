@@ -6750,6 +6750,8 @@
     <member refid="DeviceUtils_8h_1af758bcee021c4fd616724dbf287e292a" kind="function"><name>getCurrentDeviceProperties</name></member>
     <member refid="DeviceUtils_8h_1aec530c2ba3468b1edd6e9eceb864e797" kind="function"><name>getMaxThreads</name></member>
     <member refid="DeviceUtils_8h_1a7aa4505c9349ef84ae046e7973107366" kind="function"><name>getMaxThreadsCurrentDevice</name></member>
+    <member refid="DeviceUtils_8h_1a69e6e5488bcbf6d837070397ccf0edfb" kind="function"><name>getMaxGrid</name></member>
+    <member refid="DeviceUtils_8h_1a736811b64cc68bb4d0ca5429640dd6b4" kind="function"><name>getMaxGridCurrentDevice</name></member>
     <member refid="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163" kind="function"><name>getMaxSharedMemPerBlock</name></member>
     <member refid="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3" kind="function"><name>getMaxSharedMemPerBlockCurrentDevice</name></member>
     <member refid="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b" kind="function"><name>getDeviceForAddress</name></member>

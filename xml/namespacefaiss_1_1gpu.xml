@@ -1120,6 +1120,38 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/DeviceUtils.h" line="48" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="48" declcolumn="5"/>
       </memberdef>
+      <memberdef kind="function" id="DeviceUtils_8h_1a69e6e5488bcbf6d837070397ccf0edfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dim3</type>
+        <definition>dim3 faiss::gpu::getMaxGrid</definition>
+        <argsstring>(int device)</argsstring>
+        <name>getMaxGrid</name>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+<para>Returns the maximum grid size for the given GPU device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="51" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="51" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="DeviceUtils_8h_1a736811b64cc68bb4d0ca5429640dd6b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dim3</type>
+        <definition>dim3 faiss::gpu::getMaxGridCurrentDevice</definition>
+        <argsstring>()</argsstring>
+        <name>getMaxGridCurrentDevice</name>
+        <briefdescription>
+<para>Equivalent to getMaxGrid(getCurrentDevice()) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="54" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="54" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1ab671a87a6284fc4d2fec44400ca5d163" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::gpu::getMaxSharedMemPerBlock</definition>
@@ -1136,7 +1168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="51" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="51" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="57" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="57" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1accf2b1c27fb6cbd2b384266d42f8c9a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1150,7 +1182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="54" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="54" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="60" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="60" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a90940c17958ddf1b0f5a7f86b556788b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1168,7 +1200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="58" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="58" declcolumn="5"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="64" column="5" declfile="faiss/gpu/utils/DeviceUtils.h" declline="64" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1ae57d0b0e0c7d5529d4aee4cbd432a474" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1186,7 +1218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="62" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="62" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="68" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="68" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5b39c8414f2bdc2fbe1ab6f5f21473f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1200,7 +1232,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="65" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="65" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="71" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5de148f49baef8d80b3dd4a1509bec37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1218,7 +1250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="68" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="68" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="74" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="74" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1abf99b9aa3d1433ad0a69e7cccd949817" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1232,7 +1264,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="71" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="71" declcolumn="6"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="77" column="6" declfile="faiss/gpu/utils/DeviceUtils.h" declline="77" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a202fab8f3a469474cb41064f0f5c8732" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1250,7 +1282,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="74" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="74" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="80" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="80" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a5a1d0d4863e18f7c0c154089d57dd61a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1264,7 +1296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="77" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="77" declcolumn="8"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="83" column="8" declfile="faiss/gpu/utils/DeviceUtils.h" declline="83" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a4e6905505fb0c0d1525037408ee0a389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1294,7 +1326,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="158" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="158" bodyend="178"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="164" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="164" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a64ae6cf687076b6b0f6a956e42d009c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1321,7 +1353,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="183" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="183" bodyend="185"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="189" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="189" bodyend="191"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a26377a820f76459a3451aa2664b6326f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1347,7 +1379,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="188" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="188" bodyend="190"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="194" column="6" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="194" bodyend="196"/>
       </memberdef>
       <memberdef kind="function" id="DeviceUtils_8h_1a0ef5a2acf5c02c590e5029c061f463d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1368,7 +1400,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/DeviceUtils.h" line="192" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="192" bodyend="196"/>
+        <location file="faiss/gpu/utils/DeviceUtils.h" line="198" column="13" bodyfile="faiss/gpu/utils/DeviceUtils.h" bodystart="198" bodyend="202"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
