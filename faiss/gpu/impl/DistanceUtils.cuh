@@ -273,8 +273,10 @@ __global__ void incrementIndex(
         Tensor<T, 2, true> indices,
         int k,
         int increment) {
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        indices[blockIdx.y][blockIdx.x * k + i] += blockIdx.x * increment;
+    for (int i = blockIdx.y; i < indices.getSize(0); i += gridDim.y) {
+        for (int j = threadIdx.x; j < k; j += blockDim.x) {
+            indices[i][blockIdx.x * k + j] += blockIdx.x * increment;
+        }
     }
 }
 

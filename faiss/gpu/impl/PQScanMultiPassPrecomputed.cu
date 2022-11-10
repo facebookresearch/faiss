@@ -558,7 +558,7 @@ void runPQScanMultiPassPrecomputed(
         Tensor<Index::idx_t, 2, true>& outIndices,
         GpuResources* res) {
     constexpr int kMinQueryTileSize = 8;
-    constexpr int kMaxQueryTileSize = 128;
+    constexpr int kMaxQueryTileSize = 65536; // typical max gridDim.y
     constexpr int kThrustMemSize = 16384;
 
     int nprobe = ivfListIds.getSize(1);

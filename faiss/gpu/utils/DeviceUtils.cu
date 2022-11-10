@@ -86,6 +86,16 @@ int getMaxThreadsCurrentDevice() {
     return getMaxThreads(getCurrentDevice());
 }
 
+dim3 getMaxGrid(int device) {
+    auto& prop = getDeviceProperties(device);
+
+    return dim3(prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]);
+}
+
+dim3 getMaxGridCurrentDevice() {
+    return getMaxGrid(getCurrentDevice());
+}
+
 size_t getMaxSharedMemPerBlock(int device) {
     return getDeviceProperties(device).sharedMemPerBlock;
 }

@@ -244,6 +244,7 @@ void runGeneralDistanceKernel(
     dim3 grid(
             utils::divUp(vecs.getSize(0), kWarpSize),
             utils::divUp(query.getSize(0), kWarpSize));
+    FAISS_ASSERT(grid.y <= getMaxGridCurrentDevice().y);
     dim3 block(kWarpSize, kWarpSize);
 
     generalDistance<<<grid, block, 0, stream>>>(query, vecs, op, out);

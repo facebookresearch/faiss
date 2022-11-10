@@ -358,7 +358,7 @@ void runIVFFlatScan(
         Tensor<Index::idx_t, 2, true>& outIndices,
         GpuResources* res) {
     constexpr int kMinQueryTileSize = 8;
-    constexpr int kMaxQueryTileSize = 128;
+    constexpr int kMaxQueryTileSize = 65536; // used as blockIdx.y dimension
     constexpr int kThrustMemSize = 16384;
 
     int nprobe = listIds.getSize(1);

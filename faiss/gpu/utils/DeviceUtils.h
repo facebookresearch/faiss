@@ -47,6 +47,12 @@ int getMaxThreads(int device);
 /// Equivalent to getMaxThreads(getCurrentDevice())
 int getMaxThreadsCurrentDevice();
 
+/// Returns the maximum grid size for the given GPU device
+dim3 getMaxGrid(int device);
+
+/// Equivalent to getMaxGrid(getCurrentDevice())
+dim3 getMaxGridCurrentDevice();
+
 /// Returns the maximum smem available for the given GPU device
 size_t getMaxSharedMemPerBlock(int device);
 
