@@ -86,6 +86,9 @@ set(FAISS_SRC
   utils/quantize_lut.cpp
   utils/random.cpp
   utils/utils.cpp
+  utils/distances_fused/avx512.cpp
+  utils/distances_fused/distances_fused.cpp
+  utils/distances_fused/simdlib_based.cpp
 )
 
 set(FAISS_HEADERS
@@ -187,6 +190,9 @@ set(FAISS_HEADERS
   utils/simdlib_emulated.h
   utils/simdlib_neon.h
   utils/utils.h
+  utils/distances_fused/avx512.h
+  utils/distances_fused/distances_fused.h
+  utils/distances_fused/simdlib_based.h
 )
 
 if(NOT WIN32)
