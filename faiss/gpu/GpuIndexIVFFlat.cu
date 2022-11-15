@@ -160,8 +160,33 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             config_.memorySpace);
 
 
-    // Copy all of the IVF data
-    index_->copyInvertedListsFrom(index->invlists);
+    if(config_.use_raft) {
+
+        if(index->quantizer->ntotal > 0) {
+            auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
+            auto total_elems = size_t(index->quantizer->ntotal) * size_t(index->quantizer->d);
+
+//        raft_knn_index.emplace(raft_handle, pams.metric, (uint32_t)this->nlist, (uint32_t)this->d);
+
+            // Copy (reconstructed) centroids over, rather than re-training
+            std::vector<float> buf_host(total_elems);
+            rmm::device_uvector<float> buf_device(total_elems, stream);
+            index->quantizer->reconstruct_n(0, index->quantizer->ntotal, buf_host.data());
+            raft::copy(buf_device.data(), buf_host.data(), total_elems, stream);
+
+            printf("Calling train!\n");
+            train(total_elems, buf_device.data());
+        }
+
+        if(index->ntotal > 0) {
+            std::vector<float> buf_host(index->ntotal);
+            index->reconstruct_n(0, index->ntotal, buf_host.data());
+            printf("Done reconstructing... %d\n", index->ntotal);
+        }
+    } else {
+        // Copy all of the IVF data
+        index_->copyInvertedListsFrom(index->invlists);
+    }
 }
 
 void GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {

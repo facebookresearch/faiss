@@ -80,23 +80,26 @@ class RaftIVFFlat : public IVFFlat {
     /// Return the encoded vectors of a particular list back to the CPU
     std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const override;
 
-    /// Copy all inverted lists from a CPU representation to ourselves
-    void copyInvertedListsFrom(const InvertedLists* ivf) override;
+    void updateQuantizer(Index* quantizer) override;
 
-    /// Copy all inverted lists from ourselves to a CPU representation
-    void copyInvertedListsTo(InvertedLists* ivf) override;
+//
+//    /// Copy all inverted lists from a CPU representation to ourselves
+//    void copyInvertedListsFrom(const InvertedLists* ivf) override;
+//
+//    /// Copy all inverted lists from ourselves to a CPU representation
+//    void copyInvertedListsTo(InvertedLists* ivf) override;
 
    protected:
 
-    /// Adds a set of codes and indices to a list, with the representation
-    /// coming from the CPU equivalent
-    void addEncodedVectorsToList_(
-            int listId,
-            // resident on the host
-            const void* codes,
-            // resident on the host
-            const Index::idx_t* indices,
-            size_t numVecs) override;
+//    /// Adds a set of codes and indices to a list, with the representation
+//    /// coming from the CPU equivalent
+//    void addEncodedVectorsToList_(
+//            int listId,
+//            // resident on the host
+//            const void* codes,
+//            // resident on the host
+//            const Index::idx_t* indices,
+//            size_t numVecs) override;
 
 
     std::optional<raft::neighbors::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};

@@ -75,7 +75,7 @@ class IVFBase {
 
     /// Update our coarse quantizer with this quantizer instance; may be a CPU
     /// or GPU quantizer
-    void updateQuantizer(Index* quantizer);
+    virtual void updateQuantizer(Index* quantizer);
 
     /// Classify and encode/add vectors to our IVF lists.
     /// The input data must be on our current device.

@@ -110,12 +110,20 @@ int RaftIVFFlat::addVectors(
 
     const raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
 
+    printf("About to call extend on index\n");
     // TODO: We probably don't want to ignore the coarse quantizer here
-    raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
-            raft_handle,
-            raft_knn_index.value(),
-            vecs_view,
-            std::make_optional<raft::device_vector_view<const Index::idx_t, Index::idx_t>>(inds_view)));
+
+    if(raft_knn_index.has_value()) {
+        raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
+                raft_handle,
+                raft_knn_index.value(),
+                vecs_view,
+                std::make_optional<raft::device_vector_view<const Index::idx_t, Index::idx_t>>(inds_view)));
+
+    } else {
+        printf("Index has not been trained!\n");
+    }
+    printf("Done.\n");
     return vecs.getSize(0);
 }
 
@@ -210,114 +218,149 @@ void RaftIVFFlat::searchPreassigned(
     // TODO: Fill this in!
 }
 
+void RaftIVFFlat::updateQuantizer(Index* quantizer) {
+    Index::idx_t quantizer_ntotal = quantizer->ntotal;
 
+    std::cout << "Calling updateQuantizer with trained index with "  << quantizer_ntotal << " items" << std::endl;
+    auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
 
-void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
-    size_t nlist = ivf ? ivf->nlist : 0;
-    size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
+    auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
 
-    printf("Inside RAFT copyInvertedListsFrom\n");
-    raft::handle_t &handle = resources_->getRaftHandleCurrentDevice();
-    // We need to allocate the IVF
-    printf("nlist=%ld, ntotal=%ld\n", nlist, ntotal);
+    raft::spatial::knn::ivf_flat::index_params pams;
 
-    std::vector<std::uint32_t> list_sizes_(nlist);
-    std::vector<Index::idx_t> list_offsets_(nlist+1);
-    std::vector<Index::idx_t> indices_(ntotal);
-
-    raft::neighbors::ivf_flat::index_params raft_idx_params;
-    raft_idx_params.n_lists = nlist;
-    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-    raft_idx_params.add_data_on_build = false;
-    raft_idx_params.kmeans_n_iters = 100;
-
-    raft_knn_index.emplace(handle, raft_idx_params, dim_);
-    raft_knn_index.value().allocate(handle, ntotal, true);
-
-    for (size_t i = 0; i < nlist; ++i) {
-        size_t listSize = ivf->list_size(i);
-
-        // GPU index can only support max int entries per list
-        FAISS_THROW_IF_NOT_FMT(
-                listSize <= (size_t)std::numeric_limits<int>::max(),
-                "GPU inverted list can only support "
-                "%zu entries; %zu found",
-                (size_t)std::numeric_limits<int>::max(),
-                listSize);
-
-        addEncodedVectorsToList_(
-                i, ivf->get_codes(i), ivf->get_ids(i), listSize);
+    switch (this->metric_) {
+        case faiss::METRIC_L2:
+            pams.metric = raft::distance::DistanceType::L2Expanded;
+            break;
+        case faiss::METRIC_INNER_PRODUCT:
+            pams.metric = raft::distance::DistanceType::InnerProduct;
+            break;
+        default:
+            FAISS_THROW_MSG("Metric is not supported.");
     }
 
-    raft::update_device(raft_knn_index.value().list_sizes().data_handle(), list_sizes_.data(), nlist, handle.get_stream());
-    raft::update_device(raft_knn_index.value().list_offsets().data_handle(), list_offsets_.data(), nlist+1, handle.get_stream());
+    raft_knn_index.emplace(resources_->getRaftHandleCurrentDevice(), pams.metric, (uint32_t)this->numLists_, (uint32_t)this->dim_);
 
-}
-
-void RaftIVFFlat::addEncodedVectorsToList_(
-        int listId,
-        const void* codes,
-        const Index::idx_t* indices,
-        size_t numVecs) {
-    auto stream = resources_->getDefaultStreamCurrentDevice();
-
-    // This list must already exist
-//    FAISS_ASSERT(listId < deviceListData_.size());
-
-    // This list must currently be empty
-//    auto& listCodes = deviceListData_[listId];
-//    FAISS_ASSERT(listCodes->data.size() == 0);
-//    FAISS_ASSERT(listCodes->numVecs == 0);
-
-    // If there's nothing to add, then there's nothing we have to do
-    if (numVecs == 0) {
-        return;
+    // Copy (reconstructed) centroids over, rather than re-training
+    rmm::device_uvector<float> buf_dev(total_elems, stream);
+    {
+        std::vector<float> buf_host(total_elems);
+        quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
+        raft::copy(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
     }
 
-    // The GPU might have a different layout of the memory
-    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
-    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(numVecs);
-
-    // We only have int32 length representations on the GPU per each
-    // list; the length is in sizeof(char)
-    FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
-
-    // Translate the codes as needed to our preferred form
-    std::vector<uint8_t> codesV(cpuListSizeInBytes);
-    std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
-    auto translatedCodes = translateCodesToGpu_(std::move(codesV), numVecs);
-
-    std::cout << "numVecs=" << numVecs << "gpuListSizeInBytes=" << gpuListSizeInBytes << std::endl;
-
-//    RAFT_CUDA_TRY(cudaMemcpyAsync(raft_knn_index.value().data().data_handle()+(), translatedCodes.data(), ))
-
-//    listCodes->data.append(
-//            translatedCodes.data(),
-//            gpuListSizeInBytes,
-//            stream,
-//            true /* exact reserved size */);
-//    listCodes->numVecs = numVecs;
-//
-//    // Handle the indices as well
-//    addIndicesFromCpu_(listId, indices, numVecs);
-//
-
-      // We should problay consider using this...
-//    deviceListDataPointers_.setAt(
-//            listId, (void*)listCodes->data.data(), stream);
-//    deviceListLengths_.setAt(listId, (int)numVecs, stream);
-//
-//    // We update this as well, since the multi-pass algorithm uses it
-//    maxListLength_ = std::max(maxListLength_, (int)numVecs);
+    raft::print_device_vector("raft centers", raft_knn_index.value().centers().data_handle(), total_elems, std::cout);
 }
 
 
-/// Copy all inverted lists from ourselves to a CPU representation
-void RaftIVFFlat::copyInvertedListsTo(InvertedLists* ivf) {
-    printf("Inside RaftIVFFlat copyInvertedListsTo\n");
+//
+//
+//void RaftIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
+//    size_t nlist = ivf ? ivf->nlist : 0;
+//    size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
+//
+//    printf("Inside RAFT copyInvertedListsFrom\n");
+//    raft::handle_t &handle = resources_->getRaftHandleCurrentDevice();
+//    // We need to allocate the IVF
+//    printf("nlist=%ld, ntotal=%ld\n", nlist, ntotal);
+//
+//    std::vector<std::uint32_t> list_sizes_(nlist);
+//    std::vector<Index::idx_t> list_offsets_(nlist+1);
+//    std::vector<Index::idx_t> indices_(ntotal);
+//
+//    raft::neighbors::ivf_flat::index_params raft_idx_params;
+//    raft_idx_params.n_lists = nlist;
+//    raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
+//    raft_idx_params.add_data_on_build = false;
+//    raft_idx_params.kmeans_n_iters = 100;
+//
+//    raft_knn_index.emplace(handle, raft_idx_params, dim_);
+//    raft_knn_index.value().allocate(handle, ntotal, true);
+//
+//    for (size_t i = 0; i < nlist; ++i) {
+//        size_t listSize = ivf->list_size(i);
+//
+//        // GPU index can only support max int entries per list
+//        FAISS_THROW_IF_NOT_FMT(
+//                listSize <= (size_t)std::numeric_limits<int>::max(),
+//                "GPU inverted list can only support "
+//                "%zu entries; %zu found",
+//                (size_t)std::numeric_limits<int>::max(),
+//                listSize);
+//
+//        addEncodedVectorsToList_(
+//                i, ivf->get_codes(i), ivf->get_ids(i), listSize);
+//    }
+//
+//    raft::update_device(raft_knn_index.value().list_sizes().data_handle(), list_sizes_.data(), nlist, handle.get_stream());
+//    raft::update_device(raft_knn_index.value().list_offsets().data_handle(), list_offsets_.data(), nlist+1, handle.get_stream());
+//
+//}
 
-    // TODO: Need to replicate copyInvertedListsTo() in IVFBase.cu
-}
+//void RaftIVFFlat::addEncodedVectorsToList_(
+//        int listId,
+//        const void* codes,
+//        const Index::idx_t* indices,
+//        size_t numVecs) {
+//    auto stream = resources_->getDefaultStreamCurrentDevice();
+//
+//    // This list must already exist
+////    FAISS_ASSERT(listId < deviceListData_.size());
+//
+//    // This list must currently be empty
+////    auto& listCodes = deviceListData_[listId];
+////    FAISS_ASSERT(listCodes->data.size() == 0);
+////    FAISS_ASSERT(listCodes->numVecs == 0);
+//
+//    // If there's nothing to add, then there's nothing we have to do
+//    if (numVecs == 0) {
+//        return;
+//    }
+//
+//    // The GPU might have a different layout of the memory
+//    auto gpuListSizeInBytes = getGpuVectorsEncodingSize_(numVecs);
+//    auto cpuListSizeInBytes = getCpuVectorsEncodingSize_(numVecs);
+//
+//    // We only have int32 length representations on the GPU per each
+//    // list; the length is in sizeof(char)
+//    FAISS_ASSERT(gpuListSizeInBytes <= (size_t)std::numeric_limits<int>::max());
+//
+//    // Translate the codes as needed to our preferred form
+//    std::vector<uint8_t> codesV(cpuListSizeInBytes);
+//    std::memcpy(codesV.data(), codes, cpuListSizeInBytes);
+//    auto translatedCodes = translateCodesToGpu_(std::move(codesV), numVecs);
+//
+//    std::cout << "numVecs=" << numVecs << "gpuListSizeInBytes=" << gpuListSizeInBytes << std::endl;
+//
+////    RAFT_CUDA_TRY(cudaMemcpyAsync(raft_knn_index.value().data().data_handle()+(), translatedCodes.data(), ))
+//
+////    listCodes->data.append(
+////            translatedCodes.data(),
+////            gpuListSizeInBytes,
+////            stream,
+////            true /* exact reserved size */);
+////    listCodes->numVecs = numVecs;
+////
+////    // Handle the indices as well
+////    addIndicesFromCpu_(listId, indices, numVecs);
+////
+//
+//      // We should problay consider using this...
+////    deviceListDataPointers_.setAt(
+////            listId, (void*)listCodes->data.data(), stream);
+////    deviceListLengths_.setAt(listId, (int)numVecs, stream);
+////
+////    // We update this as well, since the multi-pass algorithm uses it
+////    maxListLength_ = std::max(maxListLength_, (int)numVecs);
+//}
+
+
+///// Copy all inverted lists from ourselves to a CPU representation
+//void RaftIVFFlat::copyInvertedListsTo(InvertedLists* ivf) {
+//    printf("Inside RaftIVFFlat copyInvertedListsTo\n");
+//
+//    // TODO: Need to replicate copyInvertedListsTo() in IVFBase.cu
+//}
 
 
 } // namespace gpu
