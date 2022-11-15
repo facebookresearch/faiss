@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_8024a5c5304a6089dbde2bf6560405dc" kind="dir">
+    <compoundname>faiss/utils/distances_fused</compoundname>
+    <innerfile refid="avx512_8h">avx512.h</innerfile>
+    <innerfile refid="distances__fused_8h">distances_fused.h</innerfile>
+    <innerfile refid="simdlib__based_8h">simdlib_based.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/distances_fused/"/>
+  </compounddef>
+</doxygen>

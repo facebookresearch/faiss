@@ -7,6 +7,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simdlib_neon.h" line="23" column="16"/>
+    <location file="faiss/utils/simdlib_neon.h" line="25" column="16"/>
   </compounddef>
 </doxygen>

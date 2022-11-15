@@ -6056,24 +6056,31 @@
     <member refid="structfaiss_1_1simd8float32_1adf206c50f1615d4b30f2971daa4fbb42" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1aee4b896ae49c702e76cfd96736640aea" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a6e375f0accbc236eea629e5965ad178e" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a6e406fc027dece9bdc77e488185cc6be" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1adf26fba0ccce9854456863aaa8719a11" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1af5643dcc476bcc526fdeb6e46893d49f" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a5d16bd606c76d37851e35eeb0ce85cba" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
     <member refid="structfaiss_1_1simd8float32_1a13a05c69be6321dfa2778291ca5be638" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1ad3268b06fc47d6b36d729c8fa5415df7" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1aee4b896ae49c702e76cfd96736640aea" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a6e375f0accbc236eea629e5965ad178e" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1ab494e970b746d06952e7997c5068ca92" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a6e406fc027dece9bdc77e488185cc6be" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1ad262436ce2ae29c78e8e25b6c559e2fa" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
     <member refid="structfaiss_1_1simd8float32_1a0d95a77258c4fb7770d87dd20616b618" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1aee4b896ae49c702e76cfd96736640aea" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a3f1e8da257ffd2da62e870f27d1aea35" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a033d162035528e258ed4e1f908ea7daf" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a6e375f0accbc236eea629e5965ad178e" kind="function"><name>simd8float32</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a6e406fc027dece9bdc77e488185cc6be" kind="function"><name>simd8float32</name></member>
     <member refid="structfaiss_1_1simd8float32_1a8f773f2162ea15dc4507f5d90236f6b8" kind="function"><name>clear</name></member>
     <member refid="structfaiss_1_1simd8float32_1a732cf1710939845927604931a88a1d1c" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd8float32_1a89dd9608ee88051ba0f7f666a5862a31" kind="function"><name>loadu</name></member>
@@ -6083,6 +6090,8 @@
     <member refid="structfaiss_1_1simd8float32_1ad262436ce2ae29c78e8e25b6c559e2fa" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
@@ -6104,6 +6113,11 @@
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a869e7afbc9c6551de07262f06a3a4d6c" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1abad7a46ee1136b0a655dbb3b6bd6d9b6" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a4756233503cf4b2836ae01b6660fb791" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1afb84e4e97f2a310e2d3da4aa95a8afa9" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1af2e3b1671b5bccbe8a97f6b93b939166" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a9c44b96149faa651a584c643ebb68c38" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a6bd39771259f83652ead2bd46591d20c" kind="function"><name>elements_to_string</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
@@ -6112,6 +6126,11 @@
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9583099d313bf8ecdbfcc7c6486cc002" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1aad9c42ae0f659b87d99ec395e925bf23" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1abad7a46ee1136b0a655dbb3b6bd6d9b6" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a4756233503cf4b2836ae01b6660fb791" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1afb84e4e97f2a310e2d3da4aa95a8afa9" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1af2e3b1671b5bccbe8a97f6b93b939166" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a9c44b96149faa651a584c643ebb68c38" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a6bd39771259f83652ead2bd46591d20c" kind="function"><name>elements_to_string</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
@@ -6121,6 +6140,11 @@
     <member refid="structfaiss_1_1simd8uint32_1a4afdab340dd761c338ae8ba062eea447" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1ad3a20f7237b6cbd6539335f864ff604b" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1abad7a46ee1136b0a655dbb3b6bd6d9b6" kind="function"><name>simd8uint32</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a4756233503cf4b2836ae01b6660fb791" kind="function"><name>operator+</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1afb84e4e97f2a310e2d3da4aa95a8afa9" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1af2e3b1671b5bccbe8a97f6b93b939166" kind="function"><name>operator==</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a9c44b96149faa651a584c643ebb68c38" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8uint32_1ac7c7f6d24de40a0775ec4eabf105a87f" kind="function"><name>clear</name></member>
     <member refid="structfaiss_1_1simd8uint32_1ad9640b0b2bf719d75099690cac845f39" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a522eb3e5f8f2b08a4fa60d0a166a7b66" kind="function"><name>loadu</name></member>
@@ -6517,6 +6541,7 @@
     <member refid="namespacefaiss_1aca81a25a7d9100966a28f5f907d385c6" kind="function"><name>range_search_L2sqr</name></member>
     <member refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kind="function"><name>range_search_inner_product</name></member>
     <member refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kind="function"><name>compute_PQ_dis_tables_dsub2</name></member>
+    <member refid="namespacefaiss_1a8a1d1234d7f3f6fbcf277c2f6316760f" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kind="function"><name>get_extra_distance_computer</name></member>
@@ -6599,6 +6624,7 @@
     <member refid="namespacefaiss_1adfeefc42906233e7666584a566533021" kind="function"><name>unpacklo</name></member>
     <member refid="namespacefaiss_1a6d471fb67aa075837cc9411f22fac9c3" kind="function"><name>unpackhi</name></member>
     <member refid="namespacefaiss_1aafdd3366a94e78d8ef74c58c55ea4bbd" kind="function"><name>fmadd</name></member>
+    <member refid="namespacefaiss_1ad293a4ccdd167b4b91087a5705d36c3d" kind="function"><name>cmplt_and_blend_inplace</name></member>
     <member refid="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" kind="function"><name>min</name></member>
     <member refid="namespacefaiss_1a94593d5bf8da8904666020693959166c" kind="function"><name>max</name></member>
     <member refid="namespacefaiss_1af86b965844d92f2549c492d6831d0796" kind="function"><name>combine2x2</name></member>
@@ -6635,13 +6661,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d100" kind="namespace"><name>faiss::@100</name>
+  <compound refid="namespacefaiss_1_1_0d103" kind="namespace"><name>faiss::@103</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d101" kind="namespace"><name>faiss::@101</name>
+  <compound refid="namespacefaiss_1_1_0d104" kind="namespace"><name>faiss::@104</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d102" kind="namespace"><name>faiss::@102</name>
+  <compound refid="namespacefaiss_1_1_0d105" kind="namespace"><name>faiss::@105</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d90" kind="namespace"><name>faiss::@90</name>
+  <compound refid="namespacefaiss_1_1_0d93" kind="namespace"><name>faiss::@93</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -7053,6 +7079,12 @@
   </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>
+  <compound refid="avx512_8h" kind="file"><name>avx512.h</name>
+  </compound>
+  <compound refid="distances__fused_8h" kind="file"><name>distances_fused.h</name>
+  </compound>
+  <compound refid="simdlib__based_8h" kind="file"><name>simdlib_based.h</name>
+  </compound>
   <compound refid="extra__distances-inl_8h" kind="file"><name>extra_distances-inl.h</name>
   </compound>
   <compound refid="extra__distances_8h" kind="file"><name>extra_distances.h</name>
@@ -7099,6 +7131,8 @@
   </compound>
   <compound refid="dir_8b616007acf4b97b5964ac00bedb17ee" kind="dir"><name>faiss/cppcontrib/detail</name>
   </compound>
+  <compound refid="dir_8024a5c5304a6089dbde2bf6560405dc" kind="dir"><name>faiss/utils/distances_fused</name>
+  </compound>
   <compound refid="dir_283b6f110a5e88358299b04e4fc2c7ec" kind="dir"><name>faiss</name>
   </compound>
   <compound refid="dir_8904d4d25cfd37481067280c4d4c9f97" kind="dir"><name>faiss/gpu</name>
@@ -7113,9 +7147,9 @@
   </compound>
   <compound refid="dir_221463c854b1b8cd5e47ba008a62b54d" kind="dir"><name>faiss/gpu/test</name>
   </compound>
-  <compound refid="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir"><name>faiss/utils</name>
-  </compound>
   <compound refid="dir_42f4926097fe2768058790a30a036468" kind="dir"><name>faiss/gpu/utils</name>
+  </compound>
+  <compound refid="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir"><name>faiss/utils</name>
   </compound>
   <compound refid="dir_ad53beca454033ad93eaf26a4bdf359c" kind="dir"><name>faiss/gpu/utils/warpselect</name>
   </compound>
