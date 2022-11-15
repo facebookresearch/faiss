@@ -126,7 +126,7 @@ void RaftIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
                 FAISS_THROW_MSG("Metric is not supported.");
         }
 
-        raft_knn_index.emplace(raft_handle, pams.metric, (uint32_t)this->nlist, (uint32_t)this->d);
+        raft_knn_index.emplace(raft_handle, pams.metric, false, (uint32_t)this->nlist, (uint32_t)this->d);
 
         // Copy (reconstructed) centroids over, rather than re-training
         rmm::device_uvector<float> buf_dev(total_elems, stream);

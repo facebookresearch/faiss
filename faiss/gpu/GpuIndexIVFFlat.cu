@@ -161,25 +161,11 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
     if(config_.use_raft) {
 
-//        if(index->quantizer->ntotal > 0) {
-//            auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
-//            auto total_elems = size_t(index->quantizer->ntotal) * size_t(index->quantizer->d);
-//
-//            // Copy (reconstructed) centroids over, rather than re-training
-//            std::vector<float> buf_host(total_elems);
-//            rmm::device_uvector<float> buf_device(total_elems, stream);
-//            index->quantizer->reconstruct_n(0, index->quantizer->ntotal, buf_host.data());
-//            raft::copy(buf_device.data(), buf_host.data(), total_elems, stream);
-//
-//            printf("Calling train!\n");
-//            train(total_elems, buf_device.data());
-//        }
-
+        // Quantizer should already have been updated above. Add reconstructed vectors to raft index
         if(index->ntotal > 0) {
             printf("Reconstructing %d original vectors and adding to GPU index\n", index->ntotal);
             std::vector<float> buf_host(index->ntotal * index->d);
             index->reconstruct_n(0, index->ntotal, buf_host.data());
-            printf("Done reconstructing... %d\n", index->ntotal);
             add(index->ntotal, buf_host.data());
         }
     } else {

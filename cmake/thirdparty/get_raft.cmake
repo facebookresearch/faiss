@@ -16,8 +16,8 @@
 
 
 set(RAFT_VERSION "${RAPIDS_VERSION}")
-set(RAFT_FORK "cjnolet")
-set(RAFT_PINNED_TAG "bug-2212-ivf_flat_apis")
+set(RAFT_FORK "achirkin")
+set(RAFT_PINNED_TAG "fea-ivf-flat-optional-adaptive-centers")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)
