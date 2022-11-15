@@ -440,6 +440,55 @@ struct simd8uint32 : simd256bit {
 
     explicit simd8uint32(const uint32_t* x) : simd256bit((const void*)x) {}
 
+    explicit simd8uint32(
+            uint32_t u0,
+            uint32_t u1,
+            uint32_t u2,
+            uint32_t u3,
+            uint32_t u4,
+            uint32_t u5,
+            uint32_t u6,
+            uint32_t u7) {
+        u32[0] = u0;
+        u32[1] = u1;
+        u32[2] = u2;
+        u32[3] = u3;
+        u32[4] = u4;
+        u32[5] = u5;
+        u32[6] = u6;
+        u32[7] = u7;
+    }
+
+    simd8uint32 operator+(simd8uint32 other) const {
+        simd8uint32 result;
+        for (int i = 0; i < 8; i++) {
+            result.u32[i] = u32[i] + other.u32[i];
+        }
+        return result;
+    }
+
+    simd8uint32 operator-(simd8uint32 other) const {
+        simd8uint32 result;
+        for (int i = 0; i < 8; i++) {
+            result.u32[i] = u32[i] - other.u32[i];
+        }
+        return result;
+    }
+
+    bool operator==(simd8uint32 other) const {
+        for (size_t i = 0; i < 8; i++) {
+            if (u32[i] != other.u32[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(simd8uint32 other) const {
+        return !(*this == other);
+    }
+
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
         for (int i = 0; i < 8; i++) {
@@ -484,6 +533,25 @@ struct simd8float32 : simd256bit {
         }
     }
 
+    explicit simd8float32(
+            float f0,
+            float f1,
+            float f2,
+            float f3,
+            float f4,
+            float f5,
+            float f6,
+            float f7) {
+        f32[0] = f0;
+        f32[1] = f1;
+        f32[2] = f2;
+        f32[3] = f3;
+        f32[4] = f4;
+        f32[5] = f5;
+        f32[6] = f6;
+        f32[7] = f7;
+    }
+
     template <typename F>
     static simd8float32 binary_func(
             const simd8float32& a,
@@ -509,6 +577,20 @@ struct simd8float32 : simd256bit {
     simd8float32 operator-(const simd8float32& other) const {
         return binary_func(
                 *this, other, [](float a, float b) { return a - b; });
+    }
+
+    bool operator==(simd8float32 other) const {
+        for (size_t i = 0; i < 8; i++) {
+            if (f32[i] != other.f32[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(simd8float32 other) const {
+        return !(*this == other);
     }
 
     std::string tostring() const {
@@ -648,6 +730,51 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
     c.f32[7] = b.f32[7];
 
     return c;
+}
+
+// The following primitive is a vectorized version of the following code
+// snippet:
+//   float lowestValue = HUGE_VAL;
+//   uint lowestIndex = 0;
+//   for (size_t i = 0; i < n; i++) {
+//     if (values[i] < lowestValue) {
+//       lowestValue = values[i];
+//       lowestIndex = i;
+//     }
+//   }
+// Vectorized version can be implemented via two operations: cmp and blend
+// with something like this:
+//   lowestValues = [HUGE_VAL; 8];
+//   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
+//   for (size_t i = 0; i < n; i += 8) {
+//     auto comparison = cmp(values + i, lowestValues);
+//     lowestValues = blend(
+//         comparison,
+//         values + i,
+//         lowestValues);
+//     lowestIndices = blend(
+//         comparison,
+//         i + {0, 1, 2, 3, 4, 5, 6, 7},
+//         lowestIndices);
+//     lowestIndices += {8, 8, 8, 8, 8, 8, 8, 8};
+//   }
+// The problem is that blend primitive needs very different instruction
+// order for AVX and ARM.
+// So, let's introduce a combination of these two in order to avoid
+// confusion for ppl who write in low-level SIMD instructions. Additionally,
+// these two ops (cmp and blend) are very often used together.
+inline void cmplt_and_blend_inplace(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        simd8float32& lowestValues,
+        simd8uint32& lowestIndices) {
+    for (size_t j = 0; j < 8; j++) {
+        bool comparison = (candidateValues.f32[j] < lowestValues.f32[j]);
+        if (comparison) {
+            lowestValues.f32[j] = candidateValues.f32[j];
+            lowestIndices.u32[j] = candidateIndices.u32[j];
+        }
+    }
 }
 
 } // namespace

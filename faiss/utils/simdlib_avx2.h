@@ -359,6 +359,35 @@ struct simd8uint32 : simd256bit {
 
     explicit simd8uint32(const uint8_t* x) : simd256bit((const void*)x) {}
 
+    explicit simd8uint32(
+            uint32_t u0,
+            uint32_t u1,
+            uint32_t u2,
+            uint32_t u3,
+            uint32_t u4,
+            uint32_t u5,
+            uint32_t u6,
+            uint32_t u7)
+            : simd256bit(_mm256_setr_epi32(u0, u1, u2, u3, u4, u5, u6, u7)) {}
+
+    simd8uint32 operator+(simd8uint32 other) const {
+        return simd8uint32(_mm256_add_epi32(i, other.i));
+    }
+
+    simd8uint32 operator-(simd8uint32 other) const {
+        return simd8uint32(_mm256_sub_epi32(i, other.i));
+    }
+
+    bool operator==(simd8uint32 other) const {
+        const __m256i pcmp = _mm256_cmpeq_epi32(i, other.i);
+        unsigned bitmask = _mm256_movemask_epi8(pcmp);
+        return (bitmask == 0xffffffffU);
+    }
+
+    bool operator!=(simd8uint32 other) const {
+        return !(*this == other);
+    }
+
     std::string elements_to_string(const char* fmt) const {
         uint32_t bytes[8];
         storeu((void*)bytes);
@@ -394,7 +423,18 @@ struct simd8float32 : simd256bit {
 
     explicit simd8float32(float x) : simd256bit(_mm256_set1_ps(x)) {}
 
-    explicit simd8float32(const float* x) : simd256bit(_mm256_load_ps(x)) {}
+    explicit simd8float32(const float* x) : simd256bit(_mm256_loadu_ps(x)) {}
+
+    explicit simd8float32(
+            float f0,
+            float f1,
+            float f2,
+            float f3,
+            float f4,
+            float f5,
+            float f6,
+            float f7)
+            : simd256bit(_mm256_setr_ps(f0, f1, f2, f3, f4, f5, f6, f7)) {}
 
     simd8float32 operator*(simd8float32 other) const {
         return simd8float32(_mm256_mul_ps(f, other.f));
@@ -406,6 +446,17 @@ struct simd8float32 : simd256bit {
 
     simd8float32 operator-(simd8float32 other) const {
         return simd8float32(_mm256_sub_ps(f, other.f));
+    }
+
+    bool operator==(simd8float32 other) const {
+        const __m256i pcmp =
+                _mm256_castps_si256(_mm256_cmp_ps(f, other.f, _CMP_EQ_OQ));
+        unsigned bitmask = _mm256_movemask_epi8(pcmp);
+        return (bitmask == 0xffffffffU);
+    }
+
+    bool operator!=(simd8float32 other) const {
+        return !(*this == other);
     }
 
     std::string tostring() const {
@@ -437,6 +488,52 @@ inline simd8float32 unpackhi(simd8float32 a, simd8float32 b) {
 // compute a * b + c
 inline simd8float32 fmadd(simd8float32 a, simd8float32 b, simd8float32 c) {
     return simd8float32(_mm256_fmadd_ps(a.f, b.f, c.f));
+}
+
+// The following primitive is a vectorized version of the following code
+// snippet:
+//   float lowestValue = HUGE_VAL;
+//   uint lowestIndex = 0;
+//   for (size_t i = 0; i < n; i++) {
+//     if (values[i] < lowestValue) {
+//       lowestValue = values[i];
+//       lowestIndex = i;
+//     }
+//   }
+// Vectorized version can be implemented via two operations: cmp and blend
+// with something like this:
+//   lowestValues = [HUGE_VAL; 8];
+//   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
+//   for (size_t i = 0; i < n; i += 8) {
+//     auto comparison = cmp(values + i, lowestValues);
+//     lowestValues = blend(
+//         comparison,
+//         values + i,
+//         lowestValues);
+//     lowestIndices = blend(
+//         comparison,
+//         i + {0, 1, 2, 3, 4, 5, 6, 7},
+//         lowestIndices);
+//     lowestIndices += {8, 8, 8, 8, 8, 8, 8, 8};
+//   }
+// The problem is that blend primitive needs very different instruction
+// order for AVX and ARM.
+// So, let's introduce a combination of these two in order to avoid
+// confusion for ppl who write in low-level SIMD instructions. Additionally,
+// these two ops (cmp and blend) are very often used together.
+inline void cmplt_and_blend_inplace(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        simd8float32& lowestValues,
+        simd8uint32& lowestIndices) {
+    auto comparison =
+            _mm256_cmp_ps(lowestValues.f, candidateValues.f, _CMP_LE_OS);
+    lowestValues.f =
+            _mm256_blendv_ps(candidateValues.f, lowestValues.f, comparison);
+    lowestIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
+            _mm256_castsi256_ps(candidateIndices.i),
+            _mm256_castsi256_ps(lowestIndices.i),
+            comparison));
 }
 
 namespace {

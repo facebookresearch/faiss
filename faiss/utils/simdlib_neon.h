@@ -18,6 +18,8 @@
 
 #include <arm_neon.h>
 
+#include <faiss/impl/FaissAssert.h>
+
 namespace faiss {
 
 namespace detail {
@@ -671,6 +673,47 @@ struct simd8uint32 {
 
     explicit simd8uint32(const uint8_t* x) : simd8uint32(simd32uint8(x)) {}
 
+    explicit simd8uint32(
+            uint32_t u0,
+            uint32_t u1,
+            uint32_t u2,
+            uint32_t u3,
+            uint32_t u4,
+            uint32_t u5,
+            uint32_t u6,
+            uint32_t u7) {
+        uint32_t temp[8] = {u0, u1, u2, u3, u4, u5, u6, u7};
+        data.val[0] = vld1q_u32(temp);
+        data.val[1] = vld1q_u32(temp + 4);
+    }
+
+    simd8uint32 operator+(simd8uint32 other) const {
+        return simd8uint32{uint32x4x2_t{
+                vaddq_u32(data.val[0], other.data.val[0]),
+                vaddq_u32(data.val[1], other.data.val[1])}};
+    }
+
+    simd8uint32 operator-(simd8uint32 other) const {
+        return simd8uint32{uint32x4x2_t{
+                vsubq_u32(data.val[0], other.data.val[0]),
+                vsubq_u32(data.val[1], other.data.val[1])}};
+    }
+
+    bool operator==(simd8uint32 other) const {
+        const bool equal0 =
+                (vminvq_u32(vceqq_u32(data.val[0], other.data.val[0])) ==
+                 0xffffffff);
+        const bool equal1 =
+                (vminvq_u32(vceqq_u32(data.val[1], other.data.val[1])) ==
+                 0xffffffff);
+
+        return equal0 && equal1;
+    }
+
+    bool operator!=(simd8uint32 other) const {
+        return !(*this == other);
+    }
+
     void clear() {
         detail::simdlib::set1(data, &vdupq_n_u32, static_cast<uint32_t>(0));
     }
@@ -734,6 +777,20 @@ struct simd8float32 {
     explicit simd8float32(const float* x)
             : data{vld1q_f32(x), vld1q_f32(x + 4)} {}
 
+    explicit simd8float32(
+            float f0,
+            float f1,
+            float f2,
+            float f3,
+            float f4,
+            float f5,
+            float f6,
+            float f7) {
+        float temp[8] = {f0, f1, f2, f3, f4, f5, f6, f7};
+        data.val[0] = vld1q_f32(temp);
+        data.val[1] = vld1q_f32(temp + 4);
+    }
+
     void clear() {
         detail::simdlib::set1(data, &vdupq_n_f32, 0.f);
     }
@@ -775,6 +832,21 @@ struct simd8float32 {
                 detail::simdlib::binary_func(data, other.data, &vsubq_f32)};
     }
 
+    bool operator==(simd8float32 other) const {
+        const bool equal0 =
+                (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==
+                 0xffffffff);
+        const bool equal1 =
+                (vminvq_u32(vceqq_f32(data.val[1], other.data.val[1])) ==
+                 0xffffffff);
+
+        return equal0 && equal1;
+    }
+
+    bool operator!=(simd8float32 other) const {
+        return !(*this == other);
+    }
+
     std::string tostring() const {
         return detail::simdlib::elements_to_string<float, 8u>("%g,", *this);
     }
@@ -804,6 +876,66 @@ inline simd8float32 fmadd(
     return simd8float32{float32x4x2_t{
             vfmaq_f32(c.data.val[0], a.data.val[0], b.data.val[0]),
             vfmaq_f32(c.data.val[1], a.data.val[1], b.data.val[1])}};
+}
+
+// The following primitive is a vectorized version of the following code
+// snippet:
+//   float lowestValue = HUGE_VAL;
+//   uint lowestIndex = 0;
+//   for (size_t i = 0; i < n; i++) {
+//     if (values[i] < lowestValue) {
+//       lowestValue = values[i];
+//       lowestIndex = i;
+//     }
+//   }
+// Vectorized version can be implemented via two operations: cmp and blend
+// with something like this:
+//   lowestValues = [HUGE_VAL; 8];
+//   lowestIndices = {0, 1, 2, 3, 4, 5, 6, 7};
+//   for (size_t i = 0; i < n; i += 8) {
+//     auto comparison = cmp(values + i, lowestValues);
+//     lowestValues = blend(
+//         comparison,
+//         values + i,
+//         lowestValues);
+//     lowestIndices = blend(
+//         comparison,
+//         i + {0, 1, 2, 3, 4, 5, 6, 7},
+//         lowestIndices);
+//     lowestIndices += {8, 8, 8, 8, 8, 8, 8, 8};
+//   }
+// The problem is that blend primitive needs very different instruction
+// order for AVX and ARM.
+// So, let's introduce a combination of these two in order to avoid
+// confusion for ppl who write in low-level SIMD instructions. Additionally,
+// these two ops (cmp and blend) are very often used together.
+inline void cmplt_and_blend_inplace(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        simd8float32& lowestValues,
+        simd8uint32& lowestIndices) {
+    uint32x4x2_t comparison = uint32x4x2_t{
+            vcltq_f32(candidateValues.data.val[0], lowestValues.data.val[0]),
+            vcltq_f32(candidateValues.data.val[1], lowestValues.data.val[1])};
+
+    lowestValues.data = float32x4x2_t{
+            vbslq_f32(
+                    comparison.val[0],
+                    candidateValues.data.val[0],
+                    lowestValues.data.val[0]),
+            vbslq_f32(
+                    comparison.val[1],
+                    candidateValues.data.val[1],
+                    lowestValues.data.val[1])};
+    lowestIndices.data = uint32x4x2_t{
+            vbslq_u32(
+                    comparison.val[0],
+                    candidateIndices.data.val[0],
+                    lowestIndices.data.val[0]),
+            vbslq_u32(
+                    comparison.val[1],
+                    candidateIndices.data.val[1],
+                    lowestIndices.data.val[1])};
 }
 
 namespace {
