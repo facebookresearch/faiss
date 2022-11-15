@@ -243,13 +243,11 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     // Copy (reconstructed) centroids over, rather than re-training
     rmm::device_uvector<float> buf_dev(total_elems, stream);
-    {
-        std::vector<float> buf_host(total_elems);
-        quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
-        raft::copy(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
-    }
+    std::vector<float> buf_host(total_elems);
+    quantizer->reconstruct_n(0, quantizer_ntotal, buf_host.data());
+    raft::copy(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
 
-    raft::print_device_vector("raft centers", raft_knn_index.value().centers().data_handle(), total_elems, std::cout);
+    raft::print_device_vector("raft centers", raft_knn_index.value().centers().data_handle(), this->dim_, std::cout);
 }
 
 

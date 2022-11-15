@@ -114,7 +114,6 @@ void GpuIndexIVFFlat::set_index_(GpuResources* resources,
 
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
     updateQuantizer();
-
 }
 
 void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
@@ -162,26 +161,26 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
 
     if(config_.use_raft) {
 
-        if(index->quantizer->ntotal > 0) {
-            auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
-            auto total_elems = size_t(index->quantizer->ntotal) * size_t(index->quantizer->d);
-
-//        raft_knn_index.emplace(raft_handle, pams.metric, (uint32_t)this->nlist, (uint32_t)this->d);
-
-            // Copy (reconstructed) centroids over, rather than re-training
-            std::vector<float> buf_host(total_elems);
-            rmm::device_uvector<float> buf_device(total_elems, stream);
-            index->quantizer->reconstruct_n(0, index->quantizer->ntotal, buf_host.data());
-            raft::copy(buf_device.data(), buf_host.data(), total_elems, stream);
-
-            printf("Calling train!\n");
-            train(total_elems, buf_device.data());
-        }
+//        if(index->quantizer->ntotal > 0) {
+//            auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
+//            auto total_elems = size_t(index->quantizer->ntotal) * size_t(index->quantizer->d);
+//
+//            // Copy (reconstructed) centroids over, rather than re-training
+//            std::vector<float> buf_host(total_elems);
+//            rmm::device_uvector<float> buf_device(total_elems, stream);
+//            index->quantizer->reconstruct_n(0, index->quantizer->ntotal, buf_host.data());
+//            raft::copy(buf_device.data(), buf_host.data(), total_elems, stream);
+//
+//            printf("Calling train!\n");
+//            train(total_elems, buf_device.data());
+//        }
 
         if(index->ntotal > 0) {
-            std::vector<float> buf_host(index->ntotal);
+            printf("Reconstructing %d original vectors and adding to GPU index\n", index->ntotal);
+            std::vector<float> buf_host(index->ntotal * index->d);
             index->reconstruct_n(0, index->ntotal, buf_host.data());
             printf("Done reconstructing... %d\n", index->ntotal);
+            add(index->ntotal, buf_host.data());
         }
     } else {
         // Copy all of the IVF data
