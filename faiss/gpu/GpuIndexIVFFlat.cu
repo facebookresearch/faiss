@@ -127,6 +127,8 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 }
 
 void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
+
+    printf("Inside copyFrom\n");
     DeviceScope scope(config_.device);
 
     // This will copy GpuIndexIVF data such as the coarse quantizer

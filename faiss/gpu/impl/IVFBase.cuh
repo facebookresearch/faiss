@@ -111,7 +111,7 @@ class IVFBase {
    protected:
     /// Adds a set of codes and indices to a list, with the representation
     /// coming from the CPU equivalent
-    void addEncodedVectorsToList_(
+    virtual void addEncodedVectorsToList_(
             int listId,
             // resident on the host
             const void* codes,

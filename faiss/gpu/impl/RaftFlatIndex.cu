@@ -34,8 +34,7 @@ void RaftFlatIndex::query(
         bool exactDistance) {
 
     // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
-    if(k <= 64 && metric == MetricType::METRIC_L2 &&
-        input.getStride(0) == 0 && vectors_.getStride(0) == 0) {
+    if(k <= 64 && metric == MetricType::METRIC_L2 && vectors_.getSize(0) > 0) {
         raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
 
         auto distance = exactDistance ? raft::distance::DistanceType::L2Unexpanded :
@@ -48,7 +47,6 @@ void RaftFlatIndex::query(
 
 //        raft::neighbors::brute_force::knn(raft_handle, index, search, inds, dists, k, distance);
 
-        printf("Using RAFT for FLAT!!!!\n");
         // TODO: Expose the fused L2KNN through RAFT's public APIs
         raft::spatial::knn::detail::fusedL2Knn(dim_,
                    inds.data_handle(),
@@ -65,7 +63,6 @@ void RaftFlatIndex::query(
 
         } else {
 
-            printf("Dispathing to FAISS for FLAT!!!!\n");
         FlatIndex::query(input, k, metric, metricArg, outDistances, outIndices, exactDistance);
     }
 }

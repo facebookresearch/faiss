@@ -87,6 +87,18 @@ class RaftIVFFlat : public IVFFlat {
     void copyInvertedListsTo(InvertedLists* ivf) override;
 
    protected:
+
+    /// Adds a set of codes and indices to a list, with the representation
+    /// coming from the CPU equivalent
+    void addEncodedVectorsToList_(
+            int listId,
+            // resident on the host
+            const void* codes,
+            // resident on the host
+            const Index::idx_t* indices,
+            size_t numVecs) override;
+
+
     std::optional<raft::neighbors::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};
 
 };

@@ -58,7 +58,7 @@ size_t IVFFlat::getGpuVectorsEncodingSize_(int numVecs) const {
         int bits = scalarQ_ ? scalarQ_->bits : 32 /* float */;
 
         // bytes to encode a block of 32 vectors (single dimension)
-        int bytesPerDimBlock = bits * 32 / 8;
+        int bytesPerDimBlock = bits * 32 / 8;  // = 128 if bits == 32
 
         // bytes to fully encode 32 vectors
         int bytesPerBlock = bytesPerDimBlock * dim_;
@@ -91,7 +91,9 @@ std::vector<uint8_t> IVFFlat::translateCodesToGpu_(
         return codes;
     }
 
+    bool sc = scalarQ_ ? true : false;
     int bitsPerCode = scalarQ_ ? scalarQ_->bits : 32;
+    std::cout << "dim_=" << dim_ << ", scalarQ_=" <<  sc << ", bitsPerCode=" << bitsPerCode << ", interleavedLayout_=" << interleavedLayout_ << std::endl;
 
     auto up =
             unpackNonInterleaved(std::move(codes), numVecs, dim_, bitsPerCode);
