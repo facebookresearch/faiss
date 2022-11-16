@@ -14,11 +14,6 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
-#ifdef FAISS_ENABLE_RAFT
-// TODO: Expose fused_l2_knn
-#include <raft/spatial/knn/brute_force_knn.cuh>
-#endif
-
 namespace faiss {
 namespace gpu {
 
@@ -107,31 +102,21 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
         // Since we've guaranteed that all arguments are on device, call the
         // implementation
-
-#ifdef FAISS_ENABLE_RAFT
-        // TODO: When k <= 64, invoke bfknn from RAFT
-        if (args.k <= 64) {
-
-        } else
-#endif
-
-        {
-            bfKnnOnDevice<T>(
-                    res,
-                    device,
-                    stream,
-                    tVectors,
-                    args.vectorsRowMajor,
-                    args.vectorNorms ? &tVectorNorms : nullptr,
-                    tQueries,
-                    args.queriesRowMajor,
-                    args.k,
-                    args.metric,
-                    args.metricArg,
-                    tOutDistances,
-                    tOutIntIndices,
-                    args.ignoreOutDistances);
-        }
+        bfKnnOnDevice<T>(
+                res,
+                device,
+                stream,
+                tVectors,
+                args.vectorsRowMajor,
+                args.vectorNorms ? &tVectorNorms : nullptr,
+                tQueries,
+                args.queriesRowMajor,
+                args.k,
+                args.metric,
+                args.metricArg,
+                tOutDistances,
+                tOutIntIndices,
+                args.ignoreOutDistances);
         // Convert and copy int indices out
         auto tOutIndices = toDeviceTemporary<Index::idx_t, 2>(
                 res,
@@ -160,29 +145,23 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 stream,
                 {args.numQueries, args.k});
 
-#if defined FAISS_ENABLE_RAFT
-        if (args.k <= 64) {
-        } else
-#endif
-        {
-            // Since we've guaranteed that all arguments are on device, call the
-            // implementation
-            bfKnnOnDevice<T>(
-                    res,
-                    device,
-                    stream,
-                    tVectors,
-                    args.vectorsRowMajor,
-                    args.vectorNorms ? &tVectorNorms : nullptr,
-                    tQueries,
-                    args.queriesRowMajor,
-                    args.k,
-                    args.metric,
-                    args.metricArg,
-                    tOutDistances,
-                    tOutIntIndices,
-                    args.ignoreOutDistances);
-        }
+        // Since we've guaranteed that all arguments are on device, call the
+        // implementation
+        bfKnnOnDevice<T>(
+                res,
+                device,
+                stream,
+                tVectors,
+                args.vectorsRowMajor,
+                args.vectorNorms ? &tVectorNorms : nullptr,
+                tQueries,
+                args.queriesRowMajor,
+                args.k,
+                args.metric,
+                args.metricArg,
+                tOutDistances,
+                tOutIntIndices,
+                args.ignoreOutDistances);
 
         // Copy back if necessary
         fromDevice<int, 2>(tOutIntIndices, (int*)args.outIndices, stream);

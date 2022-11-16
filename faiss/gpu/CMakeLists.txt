@@ -166,11 +166,9 @@ set(FAISS_GPU_HEADERS
 
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
-          impl/RaftIndexIVFFlat.h
           impl/RaftFlatIndex.cuh
           impl/RaftIVFFlat.cuh)
   list(APPEND FAISS_GPU_SRC
-          impl/RaftIndexIVFFlat.cu
           impl/RaftFlatIndex.cu
           impl/RaftIVFFlat.cu)
 endif()
