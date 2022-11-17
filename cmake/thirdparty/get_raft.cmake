@@ -16,8 +16,8 @@
 
 
 set(RAFT_VERSION "${RAPIDS_VERSION}")
-set(RAFT_FORK "achirkin")
-set(RAFT_PINNED_TAG "fea-ivf-flat-optional-adaptive-centers")
+set(RAFT_FORK "rapidsai")
+set(RAFT_PINNED_TAG "branch-${RAPIDS_VERSION}")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)
