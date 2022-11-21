@@ -52,7 +52,7 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
 # allows numpy ndarray usage with bfKnn
 
 
-def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
+def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2, device=-1):
     """
     Compute the k nearest neighbors of a vector on one GPU without constructing an index
 
@@ -72,8 +72,14 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
         Output array for distances of the nearest neighbors, shape (nq, k)
     I : array_like, optional
         Output array for the nearest neighbors, shape (nq, k)
-    distance_type : MetricType, optional
-        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+    metric : MetricType, optional
+        Distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+    device: int, optional
+        Which CUDA device in the system to run the search on. -1 indicates that
+        the current thread-local device state (via cudaGetDevice) should be used
+        (can also be set via torch.cuda.set_device in PyTorch)
+        Otherwise, an integer 0 <= device < numDevices indicates the GPU on which
+        the computation should be run
 
     Returns
     -------
@@ -159,6 +165,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
     args.outDistances = D_ptr
     args.outIndices = I_ptr
     args.outIndicesType = I_type
+    args.device = device
 
     # no stream synchronization needed, inputs and outputs are guaranteed to
     # be on the CPU (numpy arrays)
@@ -169,7 +176,7 @@ def knn_gpu(res, xq, xb, k, D=None, I=None, metric=METRIC_L2):
 # allows numpy ndarray usage with bfKnn for all pairwise distances
 
 
-def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2):
+def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2, device=-1):
     """
     Compute all pairwise distances between xq and xb on one GPU without constructing an index
 
@@ -185,8 +192,14 @@ def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2):
         `dtype` must be float32.
     D : array_like, optional
         Output array for all pairwise distances, shape (nq, nb)
-    distance_type : MetricType, optional
-        distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+    metric : MetricType, optional
+        Distance measure to use (either METRIC_L2 or METRIC_INNER_PRODUCT)
+    device: int, optional
+        Which CUDA device in the system to run the search on. -1 indicates that
+        the current thread-local device state (via cudaGetDevice) should be used
+        (can also be set via torch.cuda.set_device in PyTorch)
+        Otherwise, an integer 0 <= device < numDevices indicates the GPU on which
+        the computation should be run
 
     Returns
     -------
@@ -255,6 +268,7 @@ def pairwise_distance_gpu(res, xq, xb, D=None, metric=METRIC_L2):
     args.queryType = xq_type
     args.numQueries = nq
     args.outDistances = D_ptr
+    args.device = device
 
     # no stream synchronization needed, inputs and outputs are guaranteed to
     # be on the CPU (numpy arrays)

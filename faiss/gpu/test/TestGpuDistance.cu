@@ -112,6 +112,7 @@ void testTransposition(
     args.numQueries = numQuery;
     args.outDistances = gpuDistance.data();
     args.outIndices = gpuIndices.data();
+    args.device = device;
 
     bfKnn(&res, args);
 

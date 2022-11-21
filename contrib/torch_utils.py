@@ -490,10 +490,10 @@ for symbol in dir(faiss_module):
             handle_torch_Index(the_class)
 
 # allows torch tensor usage with bfKnn
-def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2):
+def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
-        return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric)
+        return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric, device)
 
     nb, d = xb.size()
     if xb.is_contiguous():
@@ -570,6 +570,7 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     args.outDistances = D_ptr
     args.outIndices = I_ptr
     args.outIndicesType = I_type
+    args.device = device
 
     with using_stream(res):
         faiss.bfKnn(res, args)
@@ -579,7 +580,7 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
 torch_replace_method(faiss_module, 'knn_gpu', torch_replacement_knn_gpu, True, True)
 
 # allows torch tensor usage with bfKnn for all pairwise distances
-def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.METRIC_L2):
+def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.METRIC_L2, device=-1):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
         return faiss.pairwise_distance_gpu_numpy(res, xq, xb, D, metric)
@@ -643,6 +644,7 @@ def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.ME
     args.queryType = xq_type
     args.numQueries = nq
     args.outDistances = D_ptr
+    args.device = device
 
     with using_stream(res):
         faiss.bfKnn(res, args)

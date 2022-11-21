@@ -40,10 +40,28 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             args.outIndices || args.k == -1,
             "bfKnn: outIndices must be provided (passed null)");
 
+    // If the user specified a device, then ensure that it is currently set
+    int device = -1;
+    if (args.device == -1) {
+        // Original behavior if no device is specified, use the current CUDA
+        // thread local device
+        device = getCurrentDevice();
+    } else {
+        // Otherwise, use the device specified in `args`
+        device = args.device;
+
+        FAISS_THROW_IF_NOT_FMT(
+                device >= 0 && device < getNumDevices(),
+                "bfKnn: device specified must be -1 (current CUDA thread local device) "
+                "or within the range [0, %d)",
+                getNumDevices());
+    }
+
+    DeviceScope scope(device);
+
     // Don't let the resources go out of scope
     auto resImpl = prov->getResources();
     auto res = resImpl.get();
-    auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
 
     auto tVectors = toDeviceTemporary<T, 2>(

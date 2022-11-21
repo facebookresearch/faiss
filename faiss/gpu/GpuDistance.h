@@ -45,7 +45,8 @@ struct GpuDistanceParams {
               outDistances(nullptr),
               ignoreOutDistances(false),
               outIndicesType(IndicesDataType::I64),
-              outIndices(nullptr) {}
+              outIndices(nullptr),
+              device(-1) {}
 
     //
     // Search parameters
@@ -112,6 +113,17 @@ struct GpuDistanceParams {
     /// innermost (row major). Not used if k == -1 (all pairwise distances)
     IndicesDataType outIndicesType;
     void* outIndices;
+
+    //
+    // Execution information
+    //
+
+    /// On which GPU device should the search run?
+    /// -1 indicates that the current CUDA thread-local device
+    /// (via cudaGetDevice/cudaSetDevice) is used
+    /// Otherwise, an integer 0 <= device < numDevices indicates the device for
+    /// execution
+    int device;
 };
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest
