@@ -665,19 +665,19 @@ std::unique_ptr<Index> index_factory_sub(
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
         std::unique_ptr<Index> filter_index =
                 index_factory_sub(d, sm[1].str(), metric);
-        std::unique_ptr<Index> refine_index;
 
+        IndexRefine* index_rf = nullptr;
         if (sm.size() == 3) { // Refine
-            refine_index = index_factory_sub(d, sm[2].str(), metric);
+            std::unique_ptr<Index> refine_index =
+                    index_factory_sub(d, sm[2].str(), metric);
+            index_rf = new IndexRefine(
+                    filter_index.release(), refine_index.release());
+            index_rf->own_refine_index = true;
         } else { // RFlat
-            refine_index.reset(new IndexFlat(d, metric));
+            index_rf = new IndexRefineFlat(filter_index.release(), nullptr);
         }
-        IndexRefine* index_rf =
-                new IndexRefine(filter_index.get(), refine_index.get());
+        FAISS_ASSERT(index_rf != nullptr);
         index_rf->own_fields = true;
-        filter_index.release();
-        refine_index.release();
-        index_rf->own_refine_index = true;
         return std::unique_ptr<Index>(index_rf);
     }
 
