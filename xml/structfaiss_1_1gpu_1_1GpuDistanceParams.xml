@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="55" column="23" bodyfile="faiss/gpu/GpuDistance.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="56" column="23" bodyfile="faiss/gpu/GpuDistance.h" bodystart="56" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a72acefaf5f4d3b7e410a6eff97ec375d" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="59" column="11" bodyfile="faiss/gpu/GpuDistance.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="60" column="11" bodyfile="faiss/gpu/GpuDistance.h" bodystart="60" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9f46ba6c76c2cbeb2f35c3ebe2acfcd4" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="64" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="64" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="65" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="65" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="67" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="67" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="68" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="68" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a056e77528c9b0f5f914b5a2cff27cafa" prot="public" static="no" mutable="no">
         <type>const void *</type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="76" column="16" bodyfile="faiss/gpu/GpuDistance.h" bodystart="76" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="77" column="16" bodyfile="faiss/gpu/GpuDistance.h" bodystart="77" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a38675c80c01de518a2d960d0a16d2bd8" prot="public" static="no" mutable="no">
         <type>DistanceDataType</type>
@@ -85,7 +85,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="77" column="22" bodyfile="faiss/gpu/GpuDistance.h" bodystart="77" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="78" column="22" bodyfile="faiss/gpu/GpuDistance.h" bodystart="78" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a784111949c261dcd9c1e0f174ece623b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="78" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="78" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="79" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a3a30590cd98103929ca605e21e7d0561" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -111,7 +111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="79" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="79" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="80" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aef4df8038d668bcad75787a123aef689" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -125,7 +125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="83" column="17" bodyfile="faiss/gpu/GpuDistance.h" bodystart="83" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="84" column="17" bodyfile="faiss/gpu/GpuDistance.h" bodystart="84" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9bdef6601a49e2fa0ed704ebd8c37800" prot="public" static="no" mutable="no">
         <type>const void *</type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="93" column="16" bodyfile="faiss/gpu/GpuDistance.h" bodystart="93" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="94" column="16" bodyfile="faiss/gpu/GpuDistance.h" bodystart="94" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1ac3e25631561ebfdb2df21e69b402061b" prot="public" static="no" mutable="no">
         <type>DistanceDataType</type>
@@ -152,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="94" column="22" bodyfile="faiss/gpu/GpuDistance.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="95" column="22" bodyfile="faiss/gpu/GpuDistance.h" bodystart="95" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a27221aaa9e83abf2875ae0e5b76f5f9b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="95" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="96" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a482b948a09cfcc97c8033cb2901b2d40" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="96" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="97" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a9ad96367054d61e361107f5c1e7e0535" prot="public" static="no" mutable="no">
         <type>float *</type>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="105" column="11" bodyfile="faiss/gpu/GpuDistance.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="106" column="11" bodyfile="faiss/gpu/GpuDistance.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -206,7 +206,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="109" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="110" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="110" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" prot="public" static="no" mutable="no">
         <type>IndicesDataType</type>
@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="113" column="21" bodyfile="faiss/gpu/GpuDistance.h" bodystart="113" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="114" column="21" bodyfile="faiss/gpu/GpuDistance.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" prot="public" static="no" mutable="no">
         <type>void *</type>
@@ -233,7 +233,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="114" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="114" bodyend="-1"/>
+        <location file="faiss/gpu/GpuDistance.h" line="115" column="10" bodyfile="faiss/gpu/GpuDistance.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::gpu::GpuDistanceParams::device</definition>
+        <argsstring></argsstring>
+        <name>device</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>On which GPU device should the search run? -1 indicates that the current CUDA thread-local device (via cudaGetDevice/cudaSetDevice) is used Otherwise, an integer 0 &lt;= device &lt; numDevices indicates the device for execution </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="126" column="9" bodyfile="faiss/gpu/GpuDistance.h" bodystart="126" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -248,7 +262,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="31" column="5" bodyfile="faiss/gpu/GpuDistance.h" bodystart="31" bodyend="48"/>
+        <location file="faiss/gpu/GpuDistance.h" line="31" column="5" bodyfile="faiss/gpu/GpuDistance.h" bodystart="31" bodyend="49"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -256,8 +270,9 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuDistance.h" line="30" column="24" bodyfile="faiss/gpu/GpuDistance.h" bodystart="30" bodyend="115"/>
+    <location file="faiss/gpu/GpuDistance.h" line="30" column="24" bodyfile="faiss/gpu/GpuDistance.h" bodystart="30" bodyend="127"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa0ed4c6020552f15dfec2b8058e2cc26" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>dims</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>GpuDistanceParams</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuDistanceParams</scope><name>ignoreOutDistances</name></member>

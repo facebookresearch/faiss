@@ -438,6 +438,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a6c2c87890ef21e22f38059cb6bf614be" kind="variable"><name>ignoreOutDistances</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" kind="variable"><name>outIndicesType</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" kind="variable"><name>outIndices</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" kind="function"><name>GpuDistanceParams</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kind="class"><name>faiss::gpu::GpuIcmEncoder</name>

@@ -361,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="129" column="6" declfile="faiss/gpu/GpuDistance.h" declline="129" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="141" column="6" declfile="faiss/gpu/GpuDistance.h" declline="141" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -423,7 +423,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="132" column="6" declfile="faiss/gpu/GpuDistance.h" declline="132" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="144" column="6" declfile="faiss/gpu/GpuDistance.h" declline="144" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
