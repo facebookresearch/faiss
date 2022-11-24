@@ -39,9 +39,10 @@ outputs:
         - cmake >=3.17
         - make  # [not win]
       host:
-        - mkl =2019
+        - mkl =2018  # [not win]
+        - mkl =2019  # [win]
       run:
-        - mkl >=2019  # [not win]
+        - mkl >=2018  # [not win]
         - mkl >=2019,<2021  # [win]
     test:
       requires:
