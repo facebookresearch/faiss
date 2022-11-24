@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@4.1.1
+  win: circleci/windows@5.0.0
 
 jobs:
   format:
@@ -94,7 +94,7 @@ jobs:
           command: |
             conda install -y -q conda-build
             cd conda
-            conda build faiss --python 3.7 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_osx:
     macos:
@@ -118,7 +118,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.8 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_windows:
     executor:
@@ -132,7 +132,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.8 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_arm:
     machine:
