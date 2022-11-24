@@ -131,7 +131,7 @@ size_t Level1Quantizer::coarse_code_size() const {
     return nbyte;
 }
 
-void Level1Quantizer::encode_listno(Index::idx_t list_no, uint8_t* code) const {
+void Level1Quantizer::encode_listno(idx_t list_no, uint8_t* code) const {
     // little endian
     size_t nl = nlist - 1;
     while (nl > 0) {
@@ -141,7 +141,7 @@ void Level1Quantizer::encode_listno(Index::idx_t list_no, uint8_t* code) const {
     }
 }
 
-Index::idx_t Level1Quantizer::decode_listno(const uint8_t* code) const {
+idx_t Level1Quantizer::decode_listno(const uint8_t* code) const {
     size_t nl = nlist - 1;
     int64_t list_no = 0;
     int nbit = 0;
@@ -522,7 +522,7 @@ void IndexIVF::search_preassigned(
                 const uint8_t* codes = scodes.get();
 
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const Index::idx_t* ids = nullptr;
+                const idx_t* ids = nullptr;
 
                 if (!store_pairs) {
                     sids.reset(new InvertedLists::ScopedIds(invlists, key));

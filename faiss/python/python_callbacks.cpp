@@ -118,7 +118,7 @@ PyCallbackIDSelector::PyCallbackIDSelector(PyObject* callback)
     Py_INCREF(callback);
 }
 
-bool PyCallbackIDSelector::is_member(idx_t id) const {
+bool PyCallbackIDSelector::is_member(faiss::idx_t id) const {
     FAISS_THROW_IF_NOT((id >> 32) == 0);
     PyThreadLock gil;
     PyObject* result = PyObject_CallFunction(callback, "(n)", int(id));

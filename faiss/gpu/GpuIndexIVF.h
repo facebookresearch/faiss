@@ -91,7 +91,7 @@ class GpuIndexIVF : public GpuIndex {
 
     /// Return the vector indices contained in a particular inverted list, for
     /// debugging purposes.
-    std::vector<Index::idx_t> getListIndices(int listId) const;
+    std::vector<idx_t> getListIndices(int listId) const;
 
     /// Sets the number of list probes per query
     void setNumProbes(int nprobe);
@@ -128,10 +128,10 @@ class GpuIndexIVF : public GpuIndex {
    protected:
     void verifyIVFSettings_() const;
     bool addImplRequiresIDs_() const override;
-    void trainQuantizer_(Index::idx_t n, const float* x);
+    void trainQuantizer_(idx_t n, const float* x);
 
     /// Called from GpuIndex for add/add_with_ids
-    void addImpl_(int n, const float* x, const Index::idx_t* ids) override;
+    void addImpl_(int n, const float* x, const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -139,7 +139,7 @@ class GpuIndexIVF : public GpuIndex {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels,
+            idx_t* labels,
             const SearchParameters* params) const override;
 
    public:

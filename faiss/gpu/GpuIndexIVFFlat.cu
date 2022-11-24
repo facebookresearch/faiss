@@ -188,12 +188,12 @@ void GpuIndexIVFFlat::updateQuantizer() {
     }
 }
 
-void GpuIndexIVFFlat::train(Index::idx_t n, const float* x) {
+void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            n <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %d indices",
             std::numeric_limits<int>::max());
 

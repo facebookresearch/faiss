@@ -48,7 +48,7 @@ struct Tempfilename {
 
 pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
 
-typedef faiss::Index::idx_t idx_t;
+typedef faiss::idx_t idx_t;
 
 // parameters to use for the test
 int d = 64;

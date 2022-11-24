@@ -98,10 +98,7 @@ DistanceComputer* storage_distance_computer(const Index* storage);
 
 struct NSG {
     /// internal storage of vectors (32 bits: this is expensive)
-    using storage_idx_t = int;
-
-    /// Faiss results are 64-bit
-    using idx_t = Index::idx_t;
+    using storage_idx_t = int32_t;
 
     int ntotal; ///< nb of nodes
 

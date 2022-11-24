@@ -35,7 +35,7 @@ __global__ void pqScanPrecomputedInterleaved(
         Tensor<CodeDistanceT, 3, true> precompTerm2,
         // (query id)(sub q)(code id)
         Tensor<CodeDistanceT, 3, true> precompTerm3,
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         void** listCodes,
         int* listLengths,
         Tensor<int, 2, true> prefixSumOffsets,
@@ -44,7 +44,7 @@ __global__ void pqScanPrecomputedInterleaved(
     auto queryId = blockIdx.y;
     auto probeId = blockIdx.x;
 
-    Index::idx_t listId = ivfListIds[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -206,7 +206,7 @@ __global__ void pqScanPrecomputedMultiPass(
         Tensor<float, 2, true> precompTerm1,
         Tensor<LookupT, 3, true> precompTerm2,
         Tensor<LookupT, 3, true> precompTerm3,
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         void** listCodes,
         int* listLengths,
         Tensor<int, 2, true> prefixSumOffsets,
@@ -227,7 +227,7 @@ __global__ void pqScanPrecomputedMultiPass(
     int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
     float* distanceOut = distance[outBase].data();
 
-    Index::idx_t listId = ivfListIds[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -310,7 +310,7 @@ void runMultiPassTile(
         Tensor<float, 2, true>& precompTerm1,
         NoTypeTensor<3, true>& precompTerm2,
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<Index::idx_t, 2, true>& ivfListIds,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
@@ -327,7 +327,7 @@ void runMultiPassTile(
         Tensor<int, 3, true>& heapIndices,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
     // Calculate offset lengths, so we know where to write out
     // intermediate results
@@ -540,7 +540,7 @@ void runPQScanMultiPassPrecomputed(
         NoTypeTensor<3, true>& precompTerm2,
         // (query id)(sub q)(code id)
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<Index::idx_t, 2, true>& ivfListIds,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
@@ -555,7 +555,7 @@ void runPQScanMultiPassPrecomputed(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res) {
     constexpr int kMinQueryTileSize = 8;
     constexpr int kMaxQueryTileSize = 65536; // typical max gridDim.y

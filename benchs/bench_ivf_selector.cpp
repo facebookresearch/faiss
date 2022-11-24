@@ -25,7 +25,7 @@
  */
 
 int main() {
-    using idx_t = faiss::Index::idx_t;
+    using idx_t = faiss::idx_t;
     int d = 64;
     size_t nb = 1024 * 1024;
     size_t nq = 512 * 16;

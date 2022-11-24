@@ -15,7 +15,7 @@
                                                         \
     void ivfInterleavedScanImpl_##WARP_Q##_(            \
             Tensor<float, 2, true>& queries,            \
-            Tensor<Index::idx_t, 2, true>& listIds,     \
+            Tensor<idx_t, 2, true>& listIds,     \
             DeviceVector<void*>& listData,              \
             DeviceVector<void*>& listIndices,           \
             IndicesOptions indicesOptions,              \
@@ -26,7 +26,7 @@
             Tensor<float, 3, true>& residualBase,       \
             GpuScalarQuantizer* scalarQ,                \
             Tensor<float, 2, true>& outDistances,       \
-            Tensor<Index::idx_t, 2, true>& outIndices,  \
+            Tensor<idx_t, 2, true>& outIndices,  \
             GpuResources* res) {                        \
         FAISS_ASSERT(k <= WARP_Q);                      \
                                                         \
@@ -39,7 +39,7 @@
                                                        \
     void ivfInterleavedScanImpl_##WARP_Q##_(           \
             Tensor<float, 2, true>& queries,           \
-            Tensor<Index::idx_t, 2, true>& listIds,    \
+            Tensor<idx_t, 2, true>& listIds,    \
             DeviceVector<void*>& listData,             \
             DeviceVector<void*>& listIndices,          \
             IndicesOptions indicesOptions,             \
@@ -50,7 +50,7 @@
             Tensor<float, 3, true>& residualBase,      \
             GpuScalarQuantizer* scalarQ,               \
             Tensor<float, 2, true>& outDistances,      \
-            Tensor<Index::idx_t, 2, true>& outIndices, \
+            Tensor<idx_t, 2, true>& outIndices, \
             GpuResources* res)
 
 #define IVF_INTERLEAVED_CALL(WARP_Q)    \

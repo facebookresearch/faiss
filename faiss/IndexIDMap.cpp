@@ -64,7 +64,7 @@ template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::add_with_ids(
         idx_t n,
         const typename IndexT::component_t* x,
-        const typename IndexT::idx_t* xids) {
+        const idx_t* xids) {
     index->add(n, x);
     for (idx_t i = 0; i < n; i++)
         id_map.push_back(xids[i]);
@@ -77,7 +77,7 @@ void IndexIDMapTemplate<IndexT>::search(
         const typename IndexT::component_t* x,
         idx_t k,
         typename IndexT::distance_t* distances,
-        typename IndexT::idx_t* labels,
+        idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT_MSG(
             !params, "search params not supported for this index");
@@ -91,7 +91,7 @@ void IndexIDMapTemplate<IndexT>::search(
 
 template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::range_search(
-        typename IndexT::idx_t n,
+        idx_t n,
         const typename IndexT::component_t* x,
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
@@ -182,7 +182,7 @@ template <typename IndexT>
 void IndexIDMap2Template<IndexT>::add_with_ids(
         idx_t n,
         const typename IndexT::component_t* x,
-        const typename IndexT::idx_t* xids) {
+        const idx_t* xids) {
     size_t prev_ntotal = this->ntotal;
     IndexIDMapTemplate<IndexT>::add_with_ids(n, x, xids);
     for (size_t i = prev_ntotal; i < this->ntotal; i++) {

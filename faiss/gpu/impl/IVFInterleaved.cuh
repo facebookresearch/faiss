@@ -40,7 +40,7 @@ template <
 __global__ void ivfInterleavedScan(
         Tensor<float, 2, true> queries,
         Tensor<float, 3, true> residualBase,
-        Tensor<Index::idx_t, 2, true> listIds,
+        Tensor<idx_t, 2, true> listIds,
         void** allListData,
         int* listLengths,
         Codec codec,
@@ -56,7 +56,7 @@ __global__ void ivfInterleavedScan(
     for (int queryId = blockIdx.y; queryId < queries.getSize(0);
          queryId += gridDim.y) {
         int probeId = blockIdx.x;
-        Index::idx_t listId = listIds[queryId][probeId];
+        idx_t listId = listIds[queryId][probeId];
 
         // Safety guard in case NaNs in input cause no list ID to be generated,
         // or we have more nprobe than nlist
@@ -412,7 +412,7 @@ __global__ void ivfInterleavedScan(
 // with all implementations
 void runIVFInterleavedScan(
         Tensor<float, 2, true>& queries,
-        Tensor<Index::idx_t, 2, true>& listIds,
+        Tensor<idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -425,7 +425,7 @@ void runIVFInterleavedScan(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res);
 
 // Second pass of IVF list scanning to perform final k-selection and look up the
@@ -433,13 +433,13 @@ void runIVFInterleavedScan(
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<int, 3, true>& indicesIn,
-        Tensor<Index::idx_t, 2, true>& listIds,
+        Tensor<idx_t, 2, true>& listIds,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
         Tensor<float, 2, true>& distanceOut,
-        Tensor<Index::idx_t, 2, true>& indicesOut,
+        Tensor<idx_t, 2, true>& indicesOut,
         cudaStream_t stream);
 
 } // namespace gpu

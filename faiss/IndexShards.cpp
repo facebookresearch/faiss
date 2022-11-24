@@ -22,7 +22,7 @@ namespace faiss {
 // subroutines
 namespace {
 
-typedef Index::idx_t idx_t;
+
 
 // add translation to all valid labels
 void translate_labels(long n, idx_t* labels, long translation) {

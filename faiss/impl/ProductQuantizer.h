@@ -23,7 +23,7 @@ namespace faiss {
 
 /** Product Quantizer. Implemented only for METRIC_L2 */
 struct ProductQuantizer : Quantizer {
-    using idx_t = Index::idx_t;
+    
 
     size_t M;     ///< number of subquantizers
     size_t nbits; ///< number of bits per quantization index

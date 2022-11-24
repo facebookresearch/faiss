@@ -108,7 +108,7 @@ struct FlipEnumerator {
     }
 };
 
-using idx_t = Index::idx_t;
+
 
 struct RangeSearchResults {
     int radius;
@@ -353,7 +353,7 @@ template <class HammingComputer, class SearchResults>
 static void verify_shortlist(
         const IndexBinaryFlat& index,
         const uint8_t* q,
-        const std::unordered_set<Index::idx_t>& shortlist,
+        const std::unordered_set<idx_t>& shortlist,
         SearchResults& res) {
     size_t code_size = index.code_size;
     size_t nlist = 0, ndis = 0, n0 = 0;

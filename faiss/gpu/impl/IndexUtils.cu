@@ -22,25 +22,25 @@ int getMaxKSelection() {
     return GPU_MAX_SELECTION_K;
 }
 
-void validateKSelect(Index::idx_t k) {
+void validateKSelect(idx_t k) {
     FAISS_THROW_IF_NOT_FMT(
-            k > 0 && k < (Index::idx_t)getMaxKSelection(),
+            k > 0 && k < (idx_t)getMaxKSelection(),
             "GPU index only supports min/max-K selection up to %d (requested %zu)",
             getMaxKSelection(),
             k);
 }
 
-void validateNProbe(Index::idx_t nprobe) {
+void validateNProbe(idx_t nprobe) {
     FAISS_THROW_IF_NOT_FMT(
-            nprobe > 0 && nprobe < (Index::idx_t)getMaxKSelection(),
+            nprobe > 0 && nprobe < (idx_t)getMaxKSelection(),
             "GPU IVF index only supports nprobe selection up to %d (requested %zu)",
             getMaxKSelection(),
             nprobe);
 }
 
-void validateNumVectors(Index::idx_t n) {
+void validateNumVectors(idx_t n) {
     FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            n <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %d indices (requested %zu)",
             std::numeric_limits<int>::max(),
             n);

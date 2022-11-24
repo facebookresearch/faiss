@@ -11,7 +11,7 @@ namespace faiss {
 
 namespace {
 
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 struct StorageMinMaxFP16 {
     uint16_t scaler;

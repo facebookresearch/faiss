@@ -62,7 +62,6 @@ struct SearchParameters {
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 
@@ -278,6 +277,7 @@ struct Index {
      * trained in the same way and have the same
      * parameters). Otherwise throw. */
     virtual void check_compatible_for_merge(const Index& otherIndex) const;
+
 };
 
 } // namespace faiss

@@ -51,7 +51,7 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
     ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<Index::idx_t> idx(n);
+        std::vector<idx_t> idx(n);
         quantizer->assign(n, x, idx.data());
 
         std::vector<float> residuals(n * d);

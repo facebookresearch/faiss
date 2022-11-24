@@ -18,7 +18,6 @@ namespace faiss {
  */
 template <typename IndexT>
 struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
-    using idx_t = typename IndexT::idx_t;
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 

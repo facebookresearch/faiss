@@ -7,6 +7,10 @@
 
 #pragma once
 
+// basic int types and size_t
+#include <cstdint>
+#include <cstdio>
+
 #ifdef _MSC_VER
 
 /*******************************************************
@@ -87,3 +91,9 @@ inline int __builtin_clzll(uint64_t x) {
 #define ALIGNED(x) __attribute__((aligned(x)))
 
 #endif // _MSC_VER
+
+#if defined(__GNUC__) || defined(__clang__)
+#define FAISS_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#else
+#define FAISS_DEPRECATED(msg)
+#endif // GCC or Clang

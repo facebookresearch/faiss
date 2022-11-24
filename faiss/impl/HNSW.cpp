@@ -509,7 +509,6 @@ void HNSW::add_with_locks(
 
 namespace {
 
-using idx_t = HNSW::idx_t;
 using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 /** Do a BFS on the candidates list */

@@ -18,7 +18,6 @@ namespace faiss {
 /** Index that translates search results to ids */
 template <typename IndexT>
 struct IndexIDMapTemplate : IndexT {
-    using idx_t = typename IndexT::idx_t;
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 
@@ -74,7 +73,6 @@ using IndexBinaryIDMap = IndexIDMapTemplate<IndexBinary>;
  *  implementation via a 2-way index */
 template <typename IndexT>
 struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
-    using idx_t = typename IndexT::idx_t;
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 

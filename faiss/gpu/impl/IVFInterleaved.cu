@@ -19,13 +19,13 @@ template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ>
 __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
         Tensor<int, 3, true> indicesIn,
-        Tensor<Index::idx_t, 2, true> listIds,
+        Tensor<idx_t, 2, true> listIds,
         int k,
         void** listIndices,
         IndicesOptions opt,
         bool dir,
         Tensor<float, 2, true> distanceOut,
-        Tensor<Index::idx_t, 2, true> indicesOut) {
+        Tensor<idx_t, 2, true> indicesOut) {
     int queryId = blockIdx.x;
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
@@ -66,7 +66,7 @@ __global__ void ivfInterleavedScan2(
         uint32_t curK = i % k;
         uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        Index::idx_t listId = listIds[queryId][curProbe];
+        idx_t listId = listIds[queryId][curProbe];
         if (listId != -1) {
             // Adjust the value we are selecting based on the sorting order
             heap.addThreadQ(distanceBase[i] * adj, index);
@@ -81,7 +81,7 @@ __global__ void ivfInterleavedScan2(
         uint32_t curK = i % k;
         uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        Index::idx_t listId = listIds[queryId][curProbe];
+        idx_t listId = listIds[queryId][curProbe];
         if (listId != -1) {
             heap.addThreadQ(distanceBase[i] * adj, index);
         }
@@ -96,7 +96,7 @@ __global__ void ivfInterleavedScan2(
         auto packedIndex = smemV[i];
 
         // We need to remap to the user-provided indices
-        Index::idx_t index = -1;
+        idx_t index = -1;
 
         // We may not have at least k values to return; in this function, max
         // uint32 is our sentinel value
@@ -104,15 +104,15 @@ __global__ void ivfInterleavedScan2(
             uint32_t curProbe = packedIndex >> 16;
             uint32_t curK = packedIndex & 0xffff;
 
-            Index::idx_t listId = listIds[queryId][curProbe];
+            idx_t listId = listIds[queryId][curProbe];
             int listOffset = indicesIn[queryId][curProbe][curK];
 
             if (opt == INDICES_32_BIT) {
-                index = (Index::idx_t)((int*)listIndices[listId])[listOffset];
+                index = (idx_t)((int*)listIndices[listId])[listOffset];
             } else if (opt == INDICES_64_BIT) {
-                index = ((Index::idx_t*)listIndices[listId])[listOffset];
+                index = ((idx_t*)listIndices[listId])[listOffset];
             } else {
-                index = (listId << 32 | (Index::idx_t)listOffset);
+                index = (listId << 32 | (idx_t)listOffset);
             }
         }
 
@@ -123,13 +123,13 @@ __global__ void ivfInterleavedScan2(
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<int, 3, true>& indicesIn,
-        Tensor<Index::idx_t, 2, true>& listIds,
+        Tensor<idx_t, 2, true>& listIds,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
         Tensor<float, 2, true>& distanceOut,
-        Tensor<Index::idx_t, 2, true>& indicesOut,
+        Tensor<idx_t, 2, true>& indicesOut,
         cudaStream_t stream) {
 #define IVF_SCAN_2(THREADS, NUM_WARP_Q, NUM_THREAD_Q)        \
     ivfInterleavedScan2<THREADS, NUM_WARP_Q, NUM_THREAD_Q>   \
@@ -168,7 +168,7 @@ void runIVFInterleavedScan2(
 
 void runIVFInterleavedScan(
         Tensor<float, 2, true>& queries,
-        Tensor<Index::idx_t, 2, true>& listIds,
+        Tensor<idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -181,7 +181,7 @@ void runIVFInterleavedScan(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res) {
     // caught for exceptions at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);

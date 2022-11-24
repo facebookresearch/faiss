@@ -20,7 +20,6 @@ namespace faiss {
 template <typename IndexT>
 class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
    public:
-    using idx_t = typename IndexT::idx_t;
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 

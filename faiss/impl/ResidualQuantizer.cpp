@@ -143,7 +143,7 @@ void beam_search_encode_step(
     // we have to fill in the whole output matrix
     FAISS_THROW_IF_NOT(new_beam_size <= beam_size * K);
 
-    using idx_t = Index::idx_t;
+    
 
     std::vector<float> cent_distances;
     std::vector<idx_t> cent_ids;
@@ -545,7 +545,7 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
     mem = beam_size * d * 2 * sizeof(float); // size for 2 beams at a time
     mem += beam_size * beam_size *
             (sizeof(float) +
-             sizeof(Index::idx_t)); // size for 1 beam search result
+             sizeof(idx_t)); // size for 1 beam search result
     return mem;
 }
 

@@ -441,7 +441,7 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
             numQuery * opt.dim, std::numeric_limits<float>::quiet_NaN());
 
     std::vector<float> distances(numQuery * opt.k, 0);
-    std::vector<faiss::Index::idx_t> indices(numQuery * opt.k, 0);
+    std::vector<faiss::idx_t> indices(numQuery * opt.k, 0);
 
     gpuIndex.search(
             numQuery, nans.data(), opt.k, distances.data(), indices.data());
@@ -490,7 +490,7 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
 
     std::vector<float> queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
     std::vector<float> distance(opt.numQuery * opt.k, 0);
-    std::vector<faiss::Index::idx_t> indices(opt.numQuery * opt.k, 0);
+    std::vector<faiss::idx_t> indices(opt.numQuery * opt.k, 0);
 
     // should not crash
     gpuIndex.search(

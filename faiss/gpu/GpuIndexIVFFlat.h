@@ -85,7 +85,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     void updateQuantizer() override;
 
     /// Trains the coarse quantizer based on the given vector data
-    void train(Index::idx_t n, const float* x) override;
+    void train(idx_t n, const float* x) override;
 
    protected:
     /// Our configuration options

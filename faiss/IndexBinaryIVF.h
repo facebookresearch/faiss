@@ -209,7 +209,7 @@ struct IndexBinaryIVF : IndexBinary {
 };
 
 struct BinaryInvertedListScanner {
-    using idx_t = Index::idx_t;
+    
 
     /// from now on we handle this query.
     virtual void set_query(const uint8_t* query_vector) = 0;

@@ -32,7 +32,7 @@ __global__ void __launch_bounds__(288, 3) pqCodeDistances(
         int queriesPerBlock,
         Tensor<CentroidT, 2, true> coarseCentroids,
         Tensor<float, 3, true> pqCentroids,
-        Tensor<Index::idx_t, 2, true> coarseIndices,
+        Tensor<idx_t, 2, true> coarseIndices,
         // (query id)(coarse)(subquantizer)(code) -> dist
         Tensor<OutCodeT, 4, true> outCodeDistances) {
     const auto numSubQuantizers = pqCentroids.getSize(0);
@@ -96,7 +96,7 @@ __global__ void __launch_bounds__(288, 3) pqCodeDistances(
         // Load list of coarse centroids found
         for (int i = threadIdx.x; i < coarseIndices.getSize(1);
              i += blockDim.x) {
-            // FIXME: coarseIndices is now Index::idx_t but the smem allocation
+            // FIXME: coarseIndices is now idx_t but the smem allocation
             // of coarseIds is still int. In practical limitation, everything
             // should still fit into int32
             coarseIds[i] = (int)coarseIndices[queryId][i];
@@ -284,7 +284,7 @@ template <typename CentroidT, bool L2Residual>
 __global__ void pqResidualVector(
         Tensor<float, 2, true> queries,
         Tensor<CentroidT, 2, true> coarseCentroids,
-        Tensor<Index::idx_t, 2, true> coarseIndices,
+        Tensor<idx_t, 2, true> coarseIndices,
         int numSubDim,
         // output is transposed:
         // (sub q)(query id)(centroid id)(sub dim)
@@ -292,7 +292,7 @@ __global__ void pqResidualVector(
     auto queryId = blockIdx.x;
     auto centroidId = blockIdx.y;
 
-    Index::idx_t realCentroidId = coarseIndices[queryId][centroidId];
+    idx_t realCentroidId = coarseIndices[queryId][centroidId];
 
     for (int dim = threadIdx.x; dim < queries.getSize(1); dim += blockDim.x) {
         float q = queries[queryId][dim];
@@ -323,7 +323,7 @@ void runPQResidualVector(
         Tensor<float, 3, true>& pqCentroids,
         Tensor<float, 2, true>& queries,
         Tensor<CentroidT, 2, true>& coarseCentroids,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         Tensor<float, 4, true>& residual,
         bool l2Residual,
         cudaStream_t stream) {
@@ -401,7 +401,7 @@ void runPQCodeDistancesMM(
         Tensor<float, 2, true>& queries,
         Tensor<CentroidT, 2, true>& coarseCentroids,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         // Output is (query)(centroid)(sub q)(code)
         NoTypeTensor<4, true>& outCodeDistances,
         bool l2Distance,
@@ -590,7 +590,7 @@ void runPQCodeDistances(
         Tensor<float, 2, true>& queries,
         Tensor<CentroidT, 2, true>& coarseCentroids,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         NoTypeTensor<4, true>& outCodeDistances,
         bool useMMImplementation,
         bool l2Distance,
