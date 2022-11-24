@@ -41,7 +41,8 @@ outputs:
       host:
         - mkl =2019
       run:
-        - mkl >=2019
+        - mkl >=2019  # [not win]
+        - mkl >=2019,<2021  # [win]
     test:
       requires:
         - conda-build
