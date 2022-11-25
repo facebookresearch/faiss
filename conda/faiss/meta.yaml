@@ -38,6 +38,7 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.17
         - make  # [not win]
+        - mkl-devel =2020
       host:
         - mkl =2020
       run:

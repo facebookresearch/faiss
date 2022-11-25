@@ -39,6 +39,7 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.18
         - make  # [not win]
+        - mkl-devel =2020
       host:
         - mkl =2020
         - cudatoolkit {{ cudatoolkit }}
