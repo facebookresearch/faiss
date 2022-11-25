@@ -321,5 +321,24 @@ workflows:
   version: 2
   build:
     jobs:
+      - format:
+          name: Format
+      - build_linux:
+          name: Linux
+      - build_linux:
+          name: Linux (AVX2)
+          opt_level: "avx2"
+          resource_class: "medium+"
+      - build_linux_conda:
+          name: Linux (conda)
+      - build_linux_gpu:
+          name: Linux GPU
+          requires:
+            - Linux
+      - build_osx:
+          name: OSX
       - build_windows:
           name: Windows
+      - build_arm:
+          name: ARM64
+

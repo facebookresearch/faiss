@@ -39,9 +39,9 @@ outputs:
         - cmake >=3.17
         - make  # [not win]
       host:
-        - mkl =2019
+        - mkl =2022
       run:
-        - mkl >=2019
+        - mkl >=2022
     test:
       requires:
         - conda-build
