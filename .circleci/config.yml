@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@5.0.0
+  win: circleci/windows@4.1.1
 
 jobs:
   format:
@@ -94,7 +94,7 @@ jobs:
           command: |
             conda install -y -q conda-build
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.9 -c pytorch -c intel
 
   build_osx:
     macos:
@@ -118,7 +118,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.9 -c pytorch -c intel
 
   build_windows:
     executor:
@@ -134,7 +134,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.9 -c pytorch -c intel
 
   build_arm:
     machine:
@@ -158,7 +158,7 @@ jobs:
             bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
             pip3 install cmake
             $CONDA_HOME/bin/conda install -y numpy scipy
-            $CONDA_HOME/bin/conda install -y pytorch cpuonly -c pytorch
+            $CONDA_HOME/bin/conda install -y pytorch cpuonly -c pytorch -c intel
             $CONDA_HOME/bin/pip install pytest
       - run:
           name: Build faiss library
@@ -232,7 +232,7 @@ jobs:
             PACKAGE_TYPE: <<parameters.label>>
           command: |
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch -c intel
 
   deploy_linux_gpu:
     parameters:
@@ -261,7 +261,7 @@ jobs:
               -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
               faiss \
               conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch
+                --user pytorch --label <<parameters.label>> -c pytorch -c intel
           no_output_timeout: 60m
 
   deploy_osx:
@@ -291,7 +291,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch -c intel
 
   deploy_windows:
     parameters:
@@ -315,7 +315,7 @@ jobs:
             PACKAGE_TYPE: <<parameters.label>>
           command: |
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch -c intel
 
 workflows:
   version: 2
