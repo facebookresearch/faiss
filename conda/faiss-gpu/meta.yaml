@@ -40,10 +40,10 @@ outputs:
         - cmake >=3.18
         - make  # [not win]
       host:
-        - mkl
+        - mkl =2020
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl
+        - mkl >=2020
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       requires:
