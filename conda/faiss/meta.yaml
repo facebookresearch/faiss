@@ -38,12 +38,11 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.17
         - make  # [not win]
-        - mkl-devel =2020
+        - mkl-devel =2021
       host:
-        - mkl =2020
+        - mkl =2021
       run:
-        - mkl >=2020  # [not win]
-        - mkl >=2020,<2021  # [win]
+        - mkl >=2021
     test:
       requires:
         - conda-build

@@ -39,13 +39,12 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.18
         - make  # [not win]
-        - mkl-devel =2020
+        - mkl-devel =2021
       host:
-        - mkl =2020
+        - mkl =2021
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl >=2020  # [not win]
-        - mkl >=2020,<2021  # [win]
+        - mkl >=2021
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       requires:
