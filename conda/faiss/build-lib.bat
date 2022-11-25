@@ -7,7 +7,7 @@
 cmake -B _build ^
       -T v141 ^
       -A x64 ^
-      -G "Visual Studio 17 2022" ^
+      -G "Visual Studio 16 2019" ^
       -DBUILD_SHARED_LIBS=ON ^
       -DBUILD_TESTING=OFF ^
       -DFAISS_ENABLE_GPU=OFF ^
