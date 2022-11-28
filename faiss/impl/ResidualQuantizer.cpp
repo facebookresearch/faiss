@@ -549,6 +549,181 @@ size_t ResidualQuantizer::memory_per_point(int beam_size) const {
     return mem;
 }
 
+// a namespace full of preallocated buffers
+namespace {
+
+// Preallocated memory chunk for refine_beam_mp() call
+struct RefineBeamMemoryPool {
+    std::vector<int32_t> new_codes;
+    std::vector<float> new_residuals;
+
+    std::vector<float> residuals;
+    std::vector<int32_t> codes;
+    std::vector<float> distances;
+};
+
+// Preallocated memory chunk for refine_beam_LUT_mp() call
+struct RefineBeamLUTMemoryPool {
+    std::vector<int32_t> new_codes;
+    std::vector<float> new_distances;
+
+    std::vector<int32_t> codes;
+    std::vector<float> distances;
+};
+
+// this is for use_beam_LUT == 0 in compute_codes_add_centroids_mp_lut0() call
+struct ComputeCodesAddCentroidsLUT0MemoryPool {
+    std::vector<int32_t> codes;
+    std::vector<float> norms;
+    std::vector<float> distances;
+    std::vector<float> residuals;
+    RefineBeamMemoryPool refine_beam_pool;
+};
+
+// this is for use_beam_LUT == 1 in compute_codes_add_centroids_mp_lut1() call
+struct ComputeCodesAddCentroidsLUT1MemoryPool {
+    std::vector<int32_t> codes;
+    std::vector<float> distances;
+    std::vector<float> query_norms;
+    std::vector<float> query_cp;
+    std::vector<float> residuals;
+    RefineBeamLUTMemoryPool refine_beam_lut_pool;
+};
+
+} // namespace
+
+// forward declaration
+void refine_beam_mp(
+        const ResidualQuantizer& rq,
+        size_t n,
+        size_t beam_size,
+        const float* x,
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_residuals,
+        float* out_distances,
+        RefineBeamMemoryPool& pool);
+
+// forward declaration
+void refine_beam_LUT_mp(
+        const ResidualQuantizer& rq,
+        size_t n,
+        const float* query_norms, // size n
+        const float* query_cp,    //
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_distances,
+        RefineBeamLUTMemoryPool& pool);
+
+// this is for use_beam_LUT == 0
+void compute_codes_add_centroids_mp_lut0(
+        const ResidualQuantizer& rq,
+        const float* x,
+        uint8_t* codes_out,
+        size_t n,
+        const float* centroids,
+        ComputeCodesAddCentroidsLUT0MemoryPool& pool) {
+    pool.codes.resize(rq.max_beam_size * rq.M * n);
+    pool.distances.resize(rq.max_beam_size * n);
+
+    pool.residuals.resize(rq.max_beam_size * n * rq.d);
+
+    refine_beam_mp(
+            rq,
+            n,
+            1,
+            x,
+            rq.max_beam_size,
+            pool.codes.data(),
+            pool.residuals.data(),
+            pool.distances.data(),
+            pool.refine_beam_pool);
+
+    if (rq.search_type == ResidualQuantizer::ST_norm_float ||
+        rq.search_type == ResidualQuantizer::ST_norm_qint8 ||
+        rq.search_type == ResidualQuantizer::ST_norm_qint4) {
+        pool.norms.resize(n);
+        // recover the norms of reconstruction as
+        // || original_vector - residual ||^2
+        for (size_t i = 0; i < n; i++) {
+            pool.norms[i] = fvec_L2sqr(
+                    x + i * rq.d,
+                    pool.residuals.data() + i * rq.max_beam_size * rq.d,
+                    rq.d);
+        }
+    }
+
+    // pack only the first code of the beam
+    //   (hence the ld_codes=M * max_beam_size)
+    rq.pack_codes(
+            n,
+            pool.codes.data(),
+            codes_out,
+            rq.M * rq.max_beam_size,
+            (pool.norms.size() > 0) ? pool.norms.data() : nullptr,
+            centroids);
+}
+
+// use_beam_LUT == 1
+void compute_codes_add_centroids_mp_lut1(
+        const ResidualQuantizer& rq,
+        const float* x,
+        uint8_t* codes_out,
+        size_t n,
+        const float* centroids,
+        ComputeCodesAddCentroidsLUT1MemoryPool& pool) {
+    //
+    pool.codes.resize(rq.max_beam_size * rq.M * n);
+    pool.distances.resize(rq.max_beam_size * n);
+
+    FAISS_THROW_IF_NOT_MSG(
+            rq.codebook_cross_products.size() ==
+                    rq.total_codebook_size * rq.total_codebook_size,
+            "call compute_codebook_tables first");
+
+    pool.query_norms.resize(n);
+    fvec_norms_L2sqr(pool.query_norms.data(), x, rq.d, n);
+
+    pool.query_cp.resize(n * rq.total_codebook_size);
+    {
+        FINTEGER ti = rq.total_codebook_size, di = rq.d, ni = n;
+        float zero = 0, one = 1;
+        sgemm_("Transposed",
+               "Not transposed",
+               &ti,
+               &ni,
+               &di,
+               &one,
+               rq.codebooks.data(),
+               &di,
+               x,
+               &di,
+               &zero,
+               pool.query_cp.data(),
+               &ti);
+    }
+
+    refine_beam_LUT_mp(
+            rq,
+            n,
+            pool.query_norms.data(),
+            pool.query_cp.data(),
+            rq.max_beam_size,
+            pool.codes.data(),
+            pool.distances.data(),
+            pool.refine_beam_lut_pool);
+
+    // pack only the first code of the beam
+    //   (hence the ld_codes=M * max_beam_size)
+    rq.pack_codes(
+            n,
+            pool.codes.data(),
+            codes_out,
+            rq.M * rq.max_beam_size,
+            nullptr,
+            centroids);
+}
+
 void ResidualQuantizer::compute_codes_add_centroids(
         const float* x,
         uint8_t* codes_out,
@@ -556,96 +731,188 @@ void ResidualQuantizer::compute_codes_add_centroids(
         const float* centroids) const {
     FAISS_THROW_IF_NOT_MSG(is_trained, "RQ is not trained yet.");
 
+    //
     size_t mem = memory_per_point();
-    if (n > 1 && mem * n > max_mem_distances) {
-        // then split queries to reduce temp memory
-        size_t bs = max_mem_distances / mem;
-        if (bs == 0) {
-            bs = 1; // otherwise we can't do much
-        }
-        for (size_t i0 = 0; i0 < n; i0 += bs) {
-            size_t i1 = std::min(n, i0 + bs);
-            const float* cent = nullptr;
-            if (centroids != nullptr) {
-                cent = centroids + i0 * d;
-            }
-            compute_codes_add_centroids(
-                    x + i0 * d, codes_out + i0 * code_size, i1 - i0, cent);
-        }
-        return;
+
+    size_t bs = max_mem_distances / mem;
+    if (bs == 0) {
+        bs = 1; // otherwise we can't do much
     }
 
-    std::vector<int32_t> codes(max_beam_size * M * n);
-    std::vector<float> norms;
-    std::vector<float> distances(max_beam_size * n);
+    // prepare memory pools
+    ComputeCodesAddCentroidsLUT0MemoryPool pool0;
+    ComputeCodesAddCentroidsLUT1MemoryPool pool1;
 
-    if (use_beam_LUT == 0) {
-        std::vector<float> residuals(max_beam_size * n * d);
+    for (size_t i0 = 0; i0 < n; i0 += bs) {
+        size_t i1 = std::min(n, i0 + bs);
+        const float* cent = nullptr;
+        if (centroids != nullptr) {
+            cent = centroids + i0 * d;
+        }
 
-        refine_beam(
-                n,
-                1,
-                x,
-                max_beam_size,
-                codes.data(),
-                residuals.data(),
-                distances.data());
+        // compute_codes_add_centroids(
+        //   x + i0 * d,
+        //   codes_out + i0 * code_size,
+        //   i1 - i0,
+        //   cent);
+        if (use_beam_LUT == 0) {
+            compute_codes_add_centroids_mp_lut0(
+                    *this,
+                    x + i0 * d,
+                    codes_out + i0 * code_size,
+                    i1 - i0,
+                    cent,
+                    pool0);
+        } else if (use_beam_LUT == 1) {
+            compute_codes_add_centroids_mp_lut1(
+                    *this,
+                    x + i0 * d,
+                    codes_out + i0 * code_size,
+                    i1 - i0,
+                    cent,
+                    pool1);
+        }
+    }
+}
 
-        if (search_type == ST_norm_float || search_type == ST_norm_qint8 ||
-            search_type == ST_norm_qint4) {
-            norms.resize(n);
-            // recover the norms of reconstruction as
-            // || original_vector - residual ||^2
-            for (size_t i = 0; i < n; i++) {
-                norms[i] = fvec_L2sqr(
-                        x + i * d, residuals.data() + i * max_beam_size * d, d);
+void refine_beam_mp(
+        const ResidualQuantizer& rq,
+        size_t n,
+        size_t beam_size,
+        const float* x,
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_residuals,
+        float* out_distances,
+        RefineBeamMemoryPool& pool) {
+    int cur_beam_size = beam_size;
+
+    double t0 = getmillisecs();
+
+    // find the max_beam_size
+    int max_beam_size = 0;
+    {
+        int tmp_beam_size = cur_beam_size;
+        for (int m = 0; m < rq.M; m++) {
+            int K = 1 << rq.nbits[m];
+            int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
+            tmp_beam_size = new_beam_size;
+
+            if (max_beam_size < new_beam_size) {
+                max_beam_size = new_beam_size;
             }
         }
-    } else if (use_beam_LUT == 1) {
-        FAISS_THROW_IF_NOT_MSG(
-                codebook_cross_products.size() ==
-                        total_codebook_size * total_codebook_size,
-                "call compute_codebook_tables first");
-
-        std::vector<float> query_norms(n);
-        fvec_norms_L2sqr(query_norms.data(), x, d, n);
-
-        std::vector<float> query_cp(n * total_codebook_size);
-        {
-            FINTEGER ti = total_codebook_size, di = d, ni = n;
-            float zero = 0, one = 1;
-            sgemm_("Transposed",
-                   "Not transposed",
-                   &ti,
-                   &ni,
-                   &di,
-                   &one,
-                   codebooks.data(),
-                   &di,
-                   x,
-                   &di,
-                   &zero,
-                   query_cp.data(),
-                   &ti);
-        }
-
-        refine_beam_LUT(
-                n,
-                query_norms.data(),
-                query_cp.data(),
-                max_beam_size,
-                codes.data(),
-                distances.data());
     }
-    // pack only the first code of the beam (hence the ld_codes=M *
-    // max_beam_size)
-    pack_codes(
-            n,
-            codes.data(),
-            codes_out,
-            M * max_beam_size,
-            norms.size() > 0 ? norms.data() : nullptr,
-            centroids);
+
+    // preallocate buffers
+    pool.new_codes.resize(n * max_beam_size * (rq.M + 1));
+    pool.new_residuals.resize(n * max_beam_size * rq.d);
+
+    pool.codes.resize(n * max_beam_size * (rq.M + 1));
+    pool.distances.resize(n * max_beam_size);
+    pool.residuals.resize(n * rq.d * max_beam_size);
+
+    for (size_t i = 0; i < n * rq.d * beam_size; i++) {
+        pool.residuals[i] = x[i];
+    }
+
+    // set up pointers to buffers
+    int32_t* __restrict codes_ptr = pool.codes.data();
+    float* __restrict residuals_ptr = pool.residuals.data();
+
+    int32_t* __restrict new_codes_ptr = pool.new_codes.data();
+    float* __restrict new_residuals_ptr = pool.new_residuals.data();
+
+    // index
+    std::unique_ptr<Index> assign_index;
+    if (rq.assign_index_factory) {
+        assign_index.reset((*rq.assign_index_factory)(rq.d));
+    } else {
+        assign_index.reset(new IndexFlatL2(rq.d));
+    }
+
+    // main loop
+    size_t codes_size = 0;
+    size_t distances_size = 0;
+    size_t residuals_size = 0;
+
+    for (int m = 0; m < rq.M; m++) {
+        int K = 1 << rq.nbits[m];
+
+        const float* __restrict codebooks_m =
+                rq.codebooks.data() + rq.codebook_offsets[m] * rq.d;
+
+        const int new_beam_size = std::min(cur_beam_size * K, out_beam_size);
+
+        codes_size = n * new_beam_size * (m + 1);
+        residuals_size = n * new_beam_size * rq.d;
+        distances_size = n * new_beam_size;
+
+        beam_search_encode_step(
+                rq.d,
+                K,
+                codebooks_m,
+                n,
+                cur_beam_size,
+                // residuals.data(),
+                residuals_ptr,
+                m,
+                // codes.data(),
+                codes_ptr,
+                new_beam_size,
+                // new_codes.data(),
+                new_codes_ptr,
+                // new_residuals.data(),
+                new_residuals_ptr,
+                pool.distances.data(),
+                assign_index.get());
+
+        assign_index->reset();
+
+        std::swap(codes_ptr, new_codes_ptr);
+        std::swap(residuals_ptr, new_residuals_ptr);
+
+        cur_beam_size = new_beam_size;
+
+        if (rq.verbose) {
+            float sum_distances = 0;
+            // for (int j = 0; j < distances.size(); j++) {
+            //     sum_distances += distances[j];
+            // }
+            for (int j = 0; j < distances_size; j++) {
+                sum_distances += pool.distances[j];
+            }
+
+            printf("[%.3f s] encode stage %d, %d bits, "
+                   "total error %g, beam_size %d\n",
+                   (getmillisecs() - t0) / 1000,
+                   m,
+                   int(rq.nbits[m]),
+                   sum_distances,
+                   cur_beam_size);
+        }
+    }
+
+    if (out_codes) {
+        // memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
+        memcpy(out_codes, codes_ptr, codes_size * sizeof(*codes_ptr));
+    }
+    if (out_residuals) {
+        // memcpy(out_residuals,
+        //        residuals.data(),
+        //        residuals.size() * sizeof(residuals[0]));
+        memcpy(out_residuals,
+               residuals_ptr,
+               residuals_size * sizeof(*residuals_ptr));
+    }
+    if (out_distances) {
+        // memcpy(out_distances,
+        //        distances.data(),
+        //        distances.size() * sizeof(distances[0]));
+        memcpy(out_distances,
+               pool.distances.data(),
+               distances_size * sizeof(pool.distances[0]));
+    }
 }
 
 void ResidualQuantizer::refine_beam(
@@ -656,82 +923,17 @@ void ResidualQuantizer::refine_beam(
         int32_t* out_codes,
         float* out_residuals,
         float* out_distances) const {
-    int cur_beam_size = beam_size;
-
-    std::vector<float> residuals(x, x + n * d * beam_size);
-    std::vector<int32_t> codes;
-    std::vector<float> distances;
-    double t0 = getmillisecs();
-
-    std::unique_ptr<Index> assign_index;
-    if (assign_index_factory) {
-        assign_index.reset((*assign_index_factory)(d));
-    } else {
-        assign_index.reset(new IndexFlatL2(d));
-    }
-
-    for (int m = 0; m < M; m++) {
-        int K = 1 << nbits[m];
-
-        const float* codebooks_m =
-                this->codebooks.data() + codebook_offsets[m] * d;
-
-        int new_beam_size = std::min(cur_beam_size * K, out_beam_size);
-
-        std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
-        std::vector<float> new_residuals(n * new_beam_size * d);
-        distances.resize(n * new_beam_size);
-
-        beam_search_encode_step(
-                d,
-                K,
-                codebooks_m,
-                n,
-                cur_beam_size,
-                residuals.data(),
-                m,
-                codes.data(),
-                new_beam_size,
-                new_codes.data(),
-                new_residuals.data(),
-                distances.data(),
-                assign_index.get());
-
-        assign_index->reset();
-
-        codes.swap(new_codes);
-        residuals.swap(new_residuals);
-
-        cur_beam_size = new_beam_size;
-
-        if (verbose) {
-            float sum_distances = 0;
-            for (int j = 0; j < distances.size(); j++) {
-                sum_distances += distances[j];
-            }
-            printf("[%.3f s] encode stage %d, %d bits, "
-                   "total error %g, beam_size %d\n",
-                   (getmillisecs() - t0) / 1000,
-                   m,
-                   int(nbits[m]),
-                   sum_distances,
-                   cur_beam_size);
-        }
-    }
-
-    if (out_codes) {
-        memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
-    }
-    if (out_residuals) {
-        memcpy(out_residuals,
-               residuals.data(),
-               residuals.size() * sizeof(residuals[0]));
-    }
-    if (out_distances) {
-        memcpy(out_distances,
-               distances.data(),
-               distances.size() * sizeof(distances[0]));
-    }
+    RefineBeamMemoryPool pool;
+    refine_beam_mp(
+            *this,
+            n,
+            beam_size,
+            x,
+            out_beam_size,
+            out_codes,
+            out_residuals,
+            out_distances,
+            pool);
 }
 
 /*******************************************************************
@@ -784,7 +986,7 @@ void beam_search_encode_step_tab(
 {
     FAISS_THROW_IF_NOT(ldc >= K);
 
-#pragma omp parallel for if (n > 100)
+#pragma omp parallel for if (n > 100) schedule(dynamic)
     for (int64_t i = 0; i < n; i++) {
         std::vector<float> cent_distances(beam_size * K);
         std::vector<float> cd_common(K);
@@ -845,6 +1047,128 @@ void beam_search_encode_step_tab(
     }
 }
 
+//
+void refine_beam_LUT_mp(
+        const ResidualQuantizer& rq,
+        size_t n,
+        const float* query_norms, // size n
+        const float* query_cp,    //
+        int out_beam_size,
+        int32_t* out_codes,
+        float* out_distances,
+        RefineBeamLUTMemoryPool& pool) {
+    int beam_size = 1;
+
+    double t0 = getmillisecs();
+
+    // find the max_beam_size
+    int max_beam_size = 0;
+    {
+        int tmp_beam_size = beam_size;
+        for (int m = 0; m < rq.M; m++) {
+            int K = 1 << rq.nbits[m];
+            int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
+            tmp_beam_size = new_beam_size;
+
+            if (max_beam_size < new_beam_size) {
+                max_beam_size = new_beam_size;
+            }
+        }
+    }
+
+    // preallocate buffers
+    pool.new_codes.resize(n * max_beam_size * (rq.M + 1));
+    pool.new_distances.resize(n * max_beam_size);
+
+    pool.codes.resize(n * max_beam_size * (rq.M + 1));
+    pool.distances.resize(n * max_beam_size);
+
+    for (size_t i = 0; i < n; i++) {
+        pool.distances[i] = query_norms[i];
+    }
+
+    // set up pointers to buffers
+    int32_t* __restrict new_codes_ptr = pool.new_codes.data();
+    float* __restrict new_distances_ptr = pool.new_distances.data();
+
+    int32_t* __restrict codes_ptr = pool.codes.data();
+    float* __restrict distances_ptr = pool.distances.data();
+
+    // main loop
+    size_t codes_size = 0;
+    size_t distances_size = 0;
+    for (int m = 0; m < rq.M; m++) {
+        int K = 1 << rq.nbits[m];
+
+        // it is guaranteed that (new_beam_size <= than max_beam_size) == true
+        int new_beam_size = std::min(beam_size * K, out_beam_size);
+
+        // std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
+        // std::vector<float> new_distances(n * new_beam_size);
+
+        codes_size = n * new_beam_size * (m + 1);
+        distances_size = n * new_beam_size;
+
+        beam_search_encode_step_tab(
+                K,
+                n,
+                beam_size,
+                rq.codebook_cross_products.data() + rq.codebook_offsets[m],
+                rq.total_codebook_size,
+                rq.codebook_offsets.data(),
+                query_cp + rq.codebook_offsets[m],
+                rq.total_codebook_size,
+                rq.cent_norms.data() + rq.codebook_offsets[m],
+                m,
+                // codes.data(),
+                codes_ptr,
+                // distances.data(),
+                distances_ptr,
+                new_beam_size,
+                // new_codes.data(),
+                new_codes_ptr,
+                // new_distances.data()
+                new_distances_ptr);
+
+        // codes.swap(new_codes);
+        std::swap(codes_ptr, new_codes_ptr);
+        // distances.swap(new_distances);
+        std::swap(distances_ptr, new_distances_ptr);
+
+        beam_size = new_beam_size;
+
+        if (rq.verbose) {
+            float sum_distances = 0;
+            // for (int j = 0; j < distances.size(); j++) {
+            //     sum_distances += distances[j];
+            // }
+            for (int j = 0; j < distances_size; j++) {
+                sum_distances += distances_ptr[j];
+            }
+            printf("[%.3f s] encode stage %d, %d bits, "
+                   "total error %g, beam_size %d\n",
+                   (getmillisecs() - t0) / 1000,
+                   m,
+                   int(rq.nbits[m]),
+                   sum_distances,
+                   beam_size);
+        }
+    }
+
+    if (out_codes) {
+        // memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
+        memcpy(out_codes, codes_ptr, codes_size * sizeof(*codes_ptr));
+    }
+    if (out_distances) {
+        // memcpy(out_distances,
+        //        distances.data(),
+        //        distances.size() * sizeof(distances[0]));
+        memcpy(out_distances,
+               distances_ptr,
+               distances_size * sizeof(*distances_ptr));
+    }
+}
+
 void ResidualQuantizer::refine_beam_LUT(
         size_t n,
         const float* query_norms, // size n
@@ -852,63 +1176,16 @@ void ResidualQuantizer::refine_beam_LUT(
         int out_beam_size,
         int32_t* out_codes,
         float* out_distances) const {
-    int beam_size = 1;
-
-    std::vector<int32_t> codes;
-    std::vector<float> distances(query_norms, query_norms + n);
-    double t0 = getmillisecs();
-
-    for (int m = 0; m < M; m++) {
-        int K = 1 << nbits[m];
-
-        int new_beam_size = std::min(beam_size * K, out_beam_size);
-        std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
-        std::vector<float> new_distances(n * new_beam_size);
-
-        beam_search_encode_step_tab(
-                K,
-                n,
-                beam_size,
-                codebook_cross_products.data() + codebook_offsets[m],
-                total_codebook_size,
-                codebook_offsets.data(),
-                query_cp + codebook_offsets[m],
-                total_codebook_size,
-                cent_norms.data() + codebook_offsets[m],
-                m,
-                codes.data(),
-                distances.data(),
-                new_beam_size,
-                new_codes.data(),
-                new_distances.data());
-
-        codes.swap(new_codes);
-        distances.swap(new_distances);
-        beam_size = new_beam_size;
-
-        if (verbose) {
-            float sum_distances = 0;
-            for (int j = 0; j < distances.size(); j++) {
-                sum_distances += distances[j];
-            }
-            printf("[%.3f s] encode stage %d, %d bits, "
-                   "total error %g, beam_size %d\n",
-                   (getmillisecs() - t0) / 1000,
-                   m,
-                   int(nbits[m]),
-                   sum_distances,
-                   beam_size);
-        }
-    }
-
-    if (out_codes) {
-        memcpy(out_codes, codes.data(), codes.size() * sizeof(codes[0]));
-    }
-    if (out_distances) {
-        memcpy(out_distances,
-               distances.data(),
-               distances.size() * sizeof(distances[0]));
-    }
+    RefineBeamLUTMemoryPool pool;
+    refine_beam_LUT_mp(
+            *this,
+            n,
+            query_norms,
+            query_cp,
+            out_beam_size,
+            out_codes,
+            out_distances,
+            pool);
 }
 
 } // namespace faiss
