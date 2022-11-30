@@ -145,8 +145,7 @@ int RaftIVFFlat::getListLength(int listId) const {
     return int(size);
 }
 
-/// Return the list indices of a par
-/// ticular list back to the CPU
+/// Return the list indices of a particular list back to the CPU
 std::vector<Index::idx_t> RaftIVFFlat::getListIndices(int listId) const {
 
     printf("Inside RaftIVFFlat getListIndices\n");
@@ -221,8 +220,9 @@ void RaftIVFFlat::searchPreassigned(
 void RaftIVFFlat::updateQuantizer(Index* quantizer) {
     Index::idx_t quantizer_ntotal = quantizer->ntotal;
 
-    std::cout << "Calling updateQuantizer with trained index with "  << quantizer_ntotal << " items" << std::endl;
-    auto stream = resources_->getRaftHandleCurrentDevice().get_stream();
+    std::cout << "Calling RAFT updateQuantizer with trained index with "  << quantizer_ntotal << " items" << std::endl;
+    const raft::handle_t &handle = resources->getRaftHandleCurrentDevice();
+    auto stream = handle.get_stream();
 
     auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
 
@@ -230,16 +230,18 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     switch (this->metric_) {
         case faiss::METRIC_L2:
+            printf("Using L2!\n");
             pams.metric = raft::distance::DistanceType::L2Expanded;
             break;
         case faiss::METRIC_INNER_PRODUCT:
+            printf("Using Inner product!\n");
             pams.metric = raft::distance::DistanceType::InnerProduct;
             break;
         default:
             FAISS_THROW_MSG("Metric is not supported.");
     }
 
-    raft_knn_index.emplace(resources_->getRaftHandleCurrentDevice(), pams.metric, (uint32_t)this->numLists_, false, (uint32_t)this->dim_);
+    raft_knn_index.emplace(handle, pams.metric, (uint32_t)this->numLists_, false, (uint32_t)this->dim_);
 
     printf("Reconstructing\n");
     // Copy (reconstructed) centroids over, rather than re-training
@@ -249,9 +251,11 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     printf("Copying...\n");
 
-    raft::update_device(raft_knn_index.value().centers().data_handle(), buf_host.data(), total_elems, stream);
+    auto knn_index = raft_knn_index.value();
 
-    raft::print_device_vector("raft centers", raft_knn_index.value().centers().data_handle(), this->dim_, std::cout);
+    raft::update_device(knn_index.centers().data_handle(), buf_host.data(), total_elems, stream);
+
+    raft::print_device_vector("raft centers", knn_index.centers().data_handle(), this->dim_, std::cout);
 }
 
 
