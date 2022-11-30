@@ -248,7 +248,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="20" column="16" bodyfile="faiss/MetricType.h" bodystart="20" bodyend="32"/>
+        <location file="faiss/MetricType.h" line="22" column="16" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="34"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
@@ -263,7 +263,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="70" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="69" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="69" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -276,7 +276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="71" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="71" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="70" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -289,7 +289,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="104" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="102" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="105" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="103" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a0423615e86d00dda03ae73c199c705af" prot="public" static="no">
         <type><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">SearchParametersIVF</ref></type>
@@ -328,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="86" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="86" bodyend="-1"/>
+        <location file="faiss/IndexReplicas.h" line="85" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="85" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a08035b3de4260d681099add5203fc045" prot="public" static="no">
         <type><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -341,7 +341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexReplicas.h" line="87" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="87" bodyend="-1"/>
+        <location file="faiss/IndexReplicas.h" line="86" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="86" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1aa4027ffe4b83be8ed0ad09c287853d17" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -354,7 +354,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="109" column="1" bodyfile="faiss/IndexShards.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="108" column="1" bodyfile="faiss/IndexShards.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a1e3dccddbd9b1cbe722804bbb9b2fa99" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexShardsTemplate" kindref="compound">IndexShardsTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -367,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="110" column="1" bodyfile="faiss/IndexShards.h" bodystart="110" bodyend="-1"/>
+        <location file="faiss/IndexShards.h" line="109" column="1" bodyfile="faiss/IndexShards.h" bodystart="109" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a6e5511ff3f78bfcab1530a6f215846c6" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HStackInvertedLists" kindref="compound">HStackInvertedLists</ref></type>
@@ -380,7 +380,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="269" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="269" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="267" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
+        <type>int64_t</type>
+        <definition>using faiss::idx_t = typedef int64_t</definition>
+        <argsstring></argsstring>
+        <name>idx_t</name>
+        <briefdescription>
+<para>all vector indices are this type </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MetricType.h" line="37" column="1" bodyfile="faiss/MetricType.h" bodystart="37" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -570,7 +584,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="431" column="23" declfile="faiss/IndexIVF.h" declline="431" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="429" column="23" declfile="faiss/IndexIVF.h" declline="429" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -583,7 +597,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="449" column="32" declfile="faiss/IndexIVF.h" declline="449" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="447" column="32" declfile="faiss/IndexIVF.h" declline="447" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -892,7 +906,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="187" column="7" declfile="faiss/Clustering.h" declline="187" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="185" column="7" declfile="faiss/Clustering.h" declline="185" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aca8ad1aa3df4582ddb46b41db8285b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -1466,7 +1480,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="21" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="21" bodyend="23"/>
+        <location file="faiss/invlists/DirectMap.h" line="23" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="23" bodyend="25"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1afe521d71f2a4dd6a99b0a5d9fbe19787" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -1483,7 +1497,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="25" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="25" bodyend="27"/>
+        <location file="faiss/invlists/DirectMap.h" line="27" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="27" bodyend="29"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a31e62b2521dd1eeb8632005add40ecbd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -1500,7 +1514,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="29" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="29" bodyend="31"/>
+        <location file="faiss/invlists/DirectMap.h" line="31" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="31" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

@@ -15,7 +15,7 @@
       <node id="24">
         <label>limits</label>
       </node>
-      <node id="16">
+      <node id="12">
         <label>faiss/impl/platform_macros.h</label>
       </node>
       <node id="9">
@@ -44,9 +44,9 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -58,7 +58,7 @@
       <node id="18">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -69,7 +69,7 @@
       <node id="23">
         <label>cassert</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>string</label>
       </node>
       <node id="1">
@@ -88,19 +88,19 @@
         <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/impl/IDSelector.h</label>
       </node>
       <node id="3">
         <label>typeinfo</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>cstdio</label>
       </node>
       <node id="4">
         <label>vector</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>sstream</label>
       </node>
       <node id="19">
@@ -116,7 +116,7 @@
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
@@ -147,11 +147,11 @@
         <link refid="Index_8h_source"/>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -159,6 +159,8 @@
       <node id="11">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="17">
         <label>faiss/invlists/DirectMap.h</label>
@@ -171,9 +173,9 @@
       <node id="26">
         <label>faiss/index_io.h</label>
         <link refid="index__io_8h_source"/>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -187,7 +189,7 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -291,19 +293,19 @@
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a19b264dfe5a541c1427d3b635ad887f5" kindref="member">list_size</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a0fd755d5a0a55e9b9bf36f4ad32b2290" kindref="member">get_codes</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a6849bca243f4b90d04bd3ee089b3a73e" kindref="member">get_ids</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a6849bca243f4b90d04bd3ee089b3a73e" kindref="member">get_ids</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>add_entries(</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_entry,</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>ids,</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>ids,</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update_entries(</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_entry,</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>ids,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>ids,</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>resize(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>list_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>new_size)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
@@ -321,7 +323,7 @@
 <codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>restrict<sp/>the<sp/>inverted<sp/>lists<sp/>to<sp/>l0:l1<sp/>without<sp/>touching<sp/>the<sp/>mmapped<sp/>region</highlight></codeline>
 <codeline lineno="113"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a0dbb919e454c26aaa1b907bdf35d3b55" kindref="member">crop_invlists</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l0,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>l1);</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" kindref="member">prefetch_lists</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>idx_t*<sp/>list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" kindref="member">prefetch_lists</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>list_nos,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kindref="member">nlist</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1OnDiskInvertedLists" kindref="compound">OnDiskInvertedLists</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"></highlight></codeline>

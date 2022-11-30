@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="138" column="19"/>
+        <location file="faiss/Clustering.h" line="137" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimIndexFactory_1a5be0d2fc467c0792f1980658e10f2945" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="140" column="13" bodyfile="faiss/Clustering.h" bodystart="140" bodyend="140"/>
+        <location file="faiss/Clustering.h" line="139" column="13" bodyfile="faiss/Clustering.h" bodystart="139" bodyend="139"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -55,7 +55,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/Clustering.h" line="136" column="33" bodyfile="faiss/Clustering.h" bodystart="136" bodyend="141"/>
+    <location file="faiss/Clustering.h" line="135" column="33" bodyfile="faiss/Clustering.h" bodystart="135" bodyend="140"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a752e3bac146204ee7a4bec7e77ad7fff" prot="public" virt="virtual"><scope>faiss::ProgressiveDimIndexFactory</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1ProgressiveDimIndexFactory_1a5be0d2fc467c0792f1980658e10f2945" prot="public" virt="virtual"><scope>faiss::ProgressiveDimIndexFactory</scope><name>~ProgressiveDimIndexFactory</name></member>

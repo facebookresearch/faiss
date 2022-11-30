@@ -39,19 +39,6 @@
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="39" column="14" bodyfile="faiss/invlists/DirectMap.h" bodystart="39" bodyend="43"/>
       </memberdef>
-      <memberdef kind="typedef" id="structfaiss_1_1DirectMap_1a501137926cd0eed359b945346ef055e9" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
-        <definition>typedef Index::idx_t faiss::DirectMap::idx_t</definition>
-        <argsstring></argsstring>
-        <name>idx_t</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="37" column="26" bodyfile="faiss/invlists/DirectMap.h" bodystart="37" bodyend="-1"/>
-      </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" prot="public" static="no" mutable="no">
@@ -68,7 +55,7 @@
         <location file="faiss/invlists/DirectMap.h" line="44" column="10" bodyfile="faiss/invlists/DirectMap.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" prot="public" static="no" mutable="no">
-        <type>std::vector&lt; idx_t &gt;</type>
+        <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
         <definition>std::vector&lt;idx_t&gt; faiss::DirectMap::array</definition>
         <argsstring></argsstring>
         <name>array</name>
@@ -82,7 +69,7 @@
         <location file="faiss/invlists/DirectMap.h" line="47" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f" prot="public" static="no" mutable="no">
-        <type>std::unordered_map&lt; idx_t, idx_t &gt;</type>
+        <type>std::unordered_map&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>, <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
         <definition>std::unordered_map&lt;idx_t, idx_t&gt; faiss::DirectMap::hashtable</definition>
         <argsstring></argsstring>
         <name>hashtable</name>
@@ -136,12 +123,12 @@
         <location file="faiss/invlists/DirectMap.h" line="53" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>idx_t</type>
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
         <definition>idx_t faiss::DirectMap::get</definition>
         <argsstring>(idx_t id) const</argsstring>
         <name>get</name>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
         </param>
         <briefdescription>
@@ -173,7 +160,7 @@
         <argsstring>(const idx_t *ids)</argsstring>
         <name>check_can_add</name>
         <param>
-          <type>const idx_t *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>ids</declname>
         </param>
         <briefdescription>
@@ -192,11 +179,11 @@
         <argsstring>(idx_t id, idx_t list_no, size_t offset)</argsstring>
         <name>add_single_id</name>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>id</declname>
         </param>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>list_no</declname>
         </param>
         <param>
@@ -263,11 +250,11 @@
           <declname>n</declname>
         </param>
         <param>
-          <type>const idx_t *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>ids</declname>
         </param>
         <param>
-          <type>const idx_t *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>list_nos</declname>
         </param>
         <param>
@@ -289,7 +276,7 @@
     <detaileddescription>
 <para>Direct map: a way to map back from ids to inverted lists </para>
     </detaileddescription>
-    <location file="faiss/invlists/DirectMap.h" line="36" column="16" bodyfile="faiss/invlists/DirectMap.h" bodystart="36" bodyend="90"/>
+    <location file="faiss/invlists/DirectMap.h" line="38" column="16" bodyfile="faiss/invlists/DirectMap.h" bodystart="38" bodyend="90"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>add_single_id</name></member>
       <member refid="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>array</name></member>
@@ -300,13 +287,12 @@
       <member refid="structfaiss_1_1DirectMap_1a032a4c2fbc9cfa556a84f8d8c1288ac7" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>get</name></member>
       <member refid="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>hashtable</name></member>
       <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eafd50054291023bc688cd56d37eabfdc4" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>Hashtable</name></member>
-      <member refid="structfaiss_1_1DirectMap_1a501137926cd0eed359b945346ef055e9" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>idx_t</name></member>
       <member refid="structfaiss_1_1DirectMap_1a27e7208053589c02cdc9002bbfb857d3" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>no</name></member>
       <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>NoMap</name></member>
       <member refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>set_type</name></member>
-      <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>Type</name></member>
       <member refid="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>type</name></member>
+      <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>Type</name></member>
       <member refid="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>update_codes</name></member>
     </listofallmembers>
   </compounddef>

@@ -3,21 +3,6 @@
   <compounddef id="namespacefaiss_1_1ivflib" kind="namespace" language="C++">
     <compoundname>faiss::ivflib</compoundname>
     <innerclass refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow" prot="public">faiss::ivflib::SlidingIndexWindow</innerclass>
-      <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="IVFlib_8h_1acd451517360bac28c698949597459167" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref></type>
-        <definition>typedef Index::idx_t faiss::ivflib::idx_t</definition>
-        <argsstring></argsstring>
-        <name>idx_t</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IVFlib.h" line="51" column="22" bodyfile="faiss/IVFlib.h" bodystart="51" bodyend="-1"/>
-      </memberdef>
-      </sectiondef>
       <sectiondef kind="func">
       <memberdef kind="function" id="IVFlib_8h_1aeb9efc826d09730a24d5f3b179222033" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -166,7 +151,7 @@
           <declname>n</declname>
         </param>
         <param>
-          <type>idx_t *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>centroid_ids</declname>
         </param>
         <briefdescription>
@@ -175,7 +160,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="62" column="6" declfile="faiss/IVFlib.h" declline="62" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="60" column="6" declfile="faiss/IVFlib.h" declline="60" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a739f3822af902e9b9fb8104415dc0ef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -203,15 +188,15 @@
           <declname>distances</declname>
         </param>
         <param>
-          <type>idx_t *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>labels</declname>
         </param>
         <param>
-          <type>idx_t *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>query_centroid_ids</declname>
         </param>
         <param>
-          <type>idx_t *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>result_centroid_ids</declname>
         </param>
         <briefdescription>
@@ -220,7 +205,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="74" column="6" declfile="faiss/IVFlib.h" declline="74" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="72" column="6" declfile="faiss/IVFlib.h" declline="72" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aaa9a8f346bd0ff551667de679f231bf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -246,7 +231,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="114" column="20" declfile="faiss/IVFlib.h" declline="114" declcolumn="20"/>
+        <location file="faiss/IVFlib.h" line="112" column="20" declfile="faiss/IVFlib.h" declline="112" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a01332806047c09400a8c73f1fd400699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -276,7 +261,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="117" column="6" declfile="faiss/IVFlib.h" declline="117" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="115" column="6" declfile="faiss/IVFlib.h" declline="115" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a113970d7b83b793fe22b2cf2bb73a78b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -288,7 +273,7 @@
           <declname>index</declname>
         </param>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
         </param>
         <param>
@@ -296,7 +281,7 @@
           <declname>x</declname>
         </param>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>k</declname>
         </param>
         <param>
@@ -304,7 +289,7 @@
           <declname>distances</declname>
         </param>
         <param>
-          <type>idx_t *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>labels</declname>
         </param>
         <param>
@@ -333,7 +318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="129" column="6" declfile="faiss/IVFlib.h" declline="129" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="127" column="6" declfile="faiss/IVFlib.h" declline="127" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1aa30ade5c6f5c5e11f70828dc2ca8359a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -345,7 +330,7 @@
           <declname>index</declname>
         </param>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
         </param>
         <param>
@@ -381,7 +366,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="141" column="6" declfile="faiss/IVFlib.h" declline="141" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="139" column="6" declfile="faiss/IVFlib.h" declline="139" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a610ba9a58aa5861814109df57fb0aef7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref> *</type>
@@ -402,7 +387,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="154" column="27" declfile="faiss/IVFlib.h" declline="154" declcolumn="27"/>
+        <location file="faiss/IVFlib.h" line="152" column="27" declfile="faiss/IVFlib.h" declline="152" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="IVFlib_8h_1a981899051705c18c6cae85d1f81b8e68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -459,7 +444,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="166" column="6" declfile="faiss/IVFlib.h" declline="166" declcolumn="6"/>
+        <location file="faiss/IVFlib.h" line="164" column="6" declfile="faiss/IVFlib.h" declline="164" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

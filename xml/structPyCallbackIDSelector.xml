@@ -36,13 +36,13 @@
         </inbodydescription>
         <location file="faiss/python/python_callbacks.h" line="57" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structPyCallbackIDSelector_1af8db48e0684915c67f189a3533bbf4c4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
         <definition>bool PyCallbackIDSelector::is_member</definition>
-        <argsstring>(idx_t id) const override</argsstring>
+        <argsstring>(faiss::idx_t id) const override</argsstring>
         <name>is_member</name>
         <param>
-          <type>idx_t</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref></type>
           <declname>id</declname>
         </param>
         <briefdescription>
@@ -96,7 +96,7 @@
     <location file="faiss/python/python_callbacks.h" line="52" column="45" bodyfile="faiss/python/python_callbacks.h" bodystart="52" bodyend="60"/>
     <listofallmembers>
       <member refid="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>callback</name></member>
-      <member refid="structPyCallbackIDSelector_1af8db48e0684915c67f189a3533bbf4c4" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>is_member</name></member>
+      <member refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>is_member</name></member>
       <member refid="structPyCallbackIDSelector_1a2e8bf7cfb11308fe714cbf79ca39de9f" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>PyCallbackIDSelector</name></member>
       <member refid="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>~PyCallbackIDSelector</name></member>
     </listofallmembers>

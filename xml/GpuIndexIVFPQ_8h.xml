@@ -12,7 +12,7 @@
         <link refid="GpuIndexIVF_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
@@ -20,13 +20,13 @@
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="24">
         <label>limits</label>
       </node>
-      <node id="16">
+      <node id="6">
         <label>faiss/impl/platform_macros.h</label>
       </node>
       <node id="28">
@@ -37,30 +37,30 @@
         <link refid="Clustering_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>stdint.h</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>faiss/IndexIVF.h</label>
         <link refid="IndexIVF_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -72,9 +72,9 @@
       <node id="18">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="29">
@@ -85,7 +85,7 @@
         <link refid="GpuIndexFlat_8h_source"/>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="21">
@@ -94,13 +94,13 @@
       <node id="23">
         <label>cassert</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>string</label>
       </node>
       <node id="30">
         <label>faiss/impl/FaissAssert.h</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/impl/IDSelector.h</label>
       </node>
       <node id="27">
@@ -112,30 +112,30 @@
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>typeinfo</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>cstdio</label>
       </node>
       <node id="33">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
-      <node id="10">
+      <node id="11">
         <label>vector</label>
       </node>
       <node id="31">
         <label>utility</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>sstream</label>
       </node>
       <node id="19">
@@ -147,11 +147,11 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
@@ -175,15 +175,15 @@
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="34">
         <label>faiss/impl/ProductQuantizer.h</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>unordered_map</label>
       </node>
       <node id="20">
@@ -194,18 +194,20 @@
         <link refid="Index_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="5">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
       <node id="26">
         <label>faiss/gpu/GpuIndex.h</label>
@@ -220,13 +222,13 @@
         <link refid="DirectMap_8h_source"/>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="22">
         <label>cstring</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>memory</label>
       </node>
     </incdepgraph>
@@ -372,7 +374,7 @@
 <codeline lineno="131"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9a3a79c3758938846c09206676dd594b" kindref="member">updateQuantizer</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="133"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Trains<sp/>the<sp/>coarse<sp/>and<sp/>product<sp/>quantizer<sp/>based<sp/>on<sp/>the<sp/>given<sp/>vector<sp/>data</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ac4814acafa4bc340a4c4bdcafd469b56" kindref="member">train</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324" kindref="member">train</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"></highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Like<sp/>the<sp/>CPU<sp/>version,<sp/>we<sp/>expose<sp/>a<sp/>publically-visible<sp/>ProductQuantizer</highlight></codeline>
@@ -384,7 +386,7 @@
 <codeline lineno="143"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aa2ffc3990536d39f4ced8201d4438793" kindref="member">verifyPQSettings_</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Trains<sp/>the<sp/>PQ<sp/>quantizer<sp/>based<sp/>on<sp/>the<sp/>given<sp/>vector<sp/>data</highlight></codeline>
-<codeline lineno="146"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9252f1f86146658759fa0d0077b67dce" kindref="member">trainResidualQuantizer_</ref>(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a5c71f0186ba65d1408cd9ef5cfc12960" kindref="member">trainResidualQuantizer_</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x);</highlight></codeline>
 <codeline lineno="147"><highlight class="normal"></highlight></codeline>
 <codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Our<sp/>configuration<sp/>options<sp/>that<sp/>we<sp/>were<sp/>initialized<sp/>with</highlight></codeline>

@@ -12,16 +12,17 @@
     <includes local="no">string</includes>
     <includes local="no">vector</includes>
     <incdepgraph>
+      <node id="4">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
       <node id="1">
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -29,38 +30,40 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-      </node>
-      <node id="9">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>string</label>
-      </node>
-      <node id="8">
-        <label>faiss/impl/FaissAssert.h</label>
-      </node>
-      <node id="7">
-        <label>typeinfo</label>
-      </node>
-      <node id="4">
-        <label>cstdio</label>
       </node>
       <node id="10">
-        <label>vector</label>
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
-      <node id="11">
-        <label>gtest/gtest.h</label>
+      <node id="7">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="8">
+        <label>typeinfo</label>
       </node>
       <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="11">
+        <label>vector</label>
+      </node>
+      <node id="12">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="6">
         <label>sstream</label>
       </node>
       <node id="2">
@@ -68,26 +71,28 @@
         <link refid="Index_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-      </node>
-      <node id="12">
-        <label>cstring</label>
-      </node>
-      <node id="14">
-        <label>memory</label>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="13">
+        <label>cstring</label>
+      </node>
+      <node id="15">
+        <label>memory</label>
+      </node>
+      <node id="14">
         <label>initializer_list</label>
       </node>
     </incdepgraph>
@@ -193,9 +198,9 @@
 <codeline lineno="93"><highlight class="comment">///<sp/>Display<sp/>specific<sp/>differences<sp/>in<sp/>the<sp/>two<sp/>(distance,<sp/>index)<sp/>lists</highlight></codeline>
 <codeline lineno="94"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compareLists(</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>refDist,</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">faiss::Index::idx_t</ref>*<sp/>refInd,</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref>*<sp/>refInd,</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>testDist,</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">faiss::Index::idx_t</ref>*<sp/>testInd,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref>*<sp/>testInd,</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim1,</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim2,</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>configMsg,</highlight></codeline>
@@ -230,13 +235,13 @@
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(cpuCodes,<sp/>gpuCodes);</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"></highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Index<sp/>equality</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Index::idx_t&gt;<sp/>cpuIndices(cpuLists-&gt;list_size(i));</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;idx_t&gt;<sp/>cpuIndices(cpuLists-&gt;list_size(i));</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"></highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>si<sp/>=<sp/><ref refid="structfaiss_1_1InvertedLists_1_1ScopedIds" kindref="compound">faiss::InvertedLists::ScopedIds</ref>(cpuLists,<sp/>i);</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::memcpy(</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cpuIndices.data(),</highlight></codeline>
 <codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>si.get(),</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cpuLists-&gt;list_size(i)<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">faiss::Index::idx_t</ref>));</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cpuLists-&gt;list_size(i)<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref>));</highlight></codeline>
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(cpuIndices,<sp/>gpuIndex.getListIndices(i));</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="142"><highlight class="normal">}</highlight></codeline>

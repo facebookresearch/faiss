@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="89" column="11" bodyfile="faiss/IVFlib.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="87" column="11" bodyfile="faiss/IVFlib.h" bodystart="87" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> *</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="92" column="24" bodyfile="faiss/IVFlib.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="90" column="24" bodyfile="faiss/IVFlib.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a8defa5121e371e64071c0eb956ad20d1" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="95" column="9" bodyfile="faiss/IVFlib.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="93" column="9" bodyfile="faiss/IVFlib.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1ac124372fd2b67bb901f0c71235165216" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="98" column="12" bodyfile="faiss/IVFlib.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="96" column="12" bodyfile="faiss/IVFlib.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6dfc430601d194c428c2a25e3afa4492" prot="public" static="no" mutable="no">
         <type>std::vector&lt; std::vector&lt; size_t &gt; &gt;</type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="101" column="17" bodyfile="faiss/IVFlib.h" bodystart="101" bodyend="-1"/>
+        <location file="faiss/IVFlib.h" line="99" column="17" bodyfile="faiss/IVFlib.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="104" column="5"/>
+        <location file="faiss/IVFlib.h" line="102" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -132,7 +132,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="110" column="10"/>
+        <location file="faiss/IVFlib.h" line="108" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -166,7 +166,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IVFlib.h" line="87" column="25" bodyfile="faiss/IVFlib.h" bodystart="87" bodyend="111"/>
+    <location file="faiss/IVFlib.h" line="85" column="25" bodyfile="faiss/IVFlib.h" bodystart="85" bodyend="109"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a10d876a9c750bc95986a22a57cf4fdc7" prot="public" virt="non-virtual"><scope>faiss::ivflib::SlidingIndexWindow</scope><name>ils</name></member>
       <member refid="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a2aae96a9373173e22686951e85b31aa1" prot="public" virt="non-virtual"><scope>faiss::ivflib::SlidingIndexWindow</scope><name>index</name></member>

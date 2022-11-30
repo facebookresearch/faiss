@@ -363,10 +363,10 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuDistance.h" line="141" column="6" declfile="faiss/gpu/GpuDistance.h" declline="141" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="GpuDistance_8h_1a36de9d33475f2c592eaf24a0f82f43b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="GpuDistance_8h_1abd095c626e56bee489f785dbd0ac3121" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::bruteForceKnn</definition>
-        <argsstring>(GpuResourcesProvider *resources, faiss::MetricType metric, const float *vectors, bool vectorsRowMajor, int numVectors, const float *queries, bool queriesRowMajor, int numQueries, int dims, int k, float *outDistances, Index::idx_t *outIndices)</argsstring>
+        <argsstring>(GpuResourcesProvider *resources, faiss::MetricType metric, const float *vectors, bool vectorsRowMajor, int numVectors, const float *queries, bool queriesRowMajor, int numQueries, int dims, int k, float *outDistances, idx_t *outIndices)</argsstring>
         <name>bruteForceKnn</name>
         <param>
           <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
@@ -413,7 +413,7 @@
           <declname>outDistances</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">Index::idx_t</ref> *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>outIndices</declname>
         </param>
         <briefdescription>
@@ -441,7 +441,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="168" column="10" declfile="faiss/gpu/GpuIndex.h" declline="168" declcolumn="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="164" column="10" declfile="faiss/gpu/GpuIndex.h" declline="164" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -459,7 +459,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="171" column="6" declfile="faiss/gpu/GpuIndex.h" declline="171" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="167" column="6" declfile="faiss/gpu/GpuIndex.h" declline="167" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a9a5eeb989c1d853a58aa65a8af310372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -477,7 +477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="174" column="6" declfile="faiss/gpu/GpuIndex.h" declline="174" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="170" column="6" declfile="faiss/gpu/GpuIndex.h" declline="170" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -869,17 +869,17 @@
         </inbodydescription>
         <location file="faiss/gpu/test/TestUtils.h" line="82" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="82" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="TestUtils_8h_1a4b17f759af26a756aab5035ddf5b53c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="TestUtils_8h_1a44bd51d4a1b6c300dbb9ac2192dce14b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::compareLists</definition>
-        <argsstring>(const float *refDist, const faiss::Index::idx_t *refInd, const float *testDist, const faiss::Index::idx_t *testInd, int dim1, int dim2, const std::string &amp;configMsg, bool printBasicStats, bool printDiffs, bool assertOnErr, float maxRelativeError=6e-5f, float pctMaxDiff1=0.1f, float pctMaxDiffN=0.005f)</argsstring>
+        <argsstring>(const float *refDist, const faiss::idx_t *refInd, const float *testDist, const faiss::idx_t *testInd, int dim1, int dim2, const std::string &amp;configMsg, bool printBasicStats, bool printDiffs, bool assertOnErr, float maxRelativeError=6e-5f, float pctMaxDiff1=0.1f, float pctMaxDiffN=0.005f)</argsstring>
         <name>compareLists</name>
         <param>
           <type>const float *</type>
           <declname>refDist</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">faiss::Index::idx_t</ref> *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref> *</type>
           <declname>refInd</declname>
         </param>
         <param>
@@ -887,7 +887,7 @@
           <declname>testDist</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1Index_1ab64b96e821336c5b363d023386781d1d" kindref="member">faiss::Index::idx_t</ref> *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref> *</type>
           <declname>testInd</declname>
         </param>
         <param>
