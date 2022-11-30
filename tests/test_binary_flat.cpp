@@ -42,7 +42,7 @@ TEST(BinaryFlat, accuracy) {
         }
 
         int k = 5;
-        std::vector<faiss::IndexBinary::idx_t> nns(k * nq);
+        std::vector<faiss::idx_t> nns(k * nq);
         std::vector<int> dis(k * nq);
 
         index.search(nq, queries.data(), k, dis.data(), nns.data());

@@ -23,8 +23,6 @@ namespace faiss {
 
 /** Any transformation applied on a set of vectors */
 struct VectorTransform {
-    typedef Index::idx_t idx_t;
-
     int d_in;  ///! input dimension
     int d_out; ///! output dimension
 

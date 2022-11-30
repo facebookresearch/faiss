@@ -62,7 +62,6 @@ struct SearchParameters {
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 

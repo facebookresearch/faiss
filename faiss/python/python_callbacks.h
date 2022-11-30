@@ -54,7 +54,7 @@ struct PyCallbackIDSelector : faiss::IDSelector {
 
     explicit PyCallbackIDSelector(PyObject* callback);
 
-    bool is_member(idx_t id) const override;
+    bool is_member(faiss::idx_t id) const override;
 
     ~PyCallbackIDSelector() override;
 };

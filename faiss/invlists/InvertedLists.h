@@ -15,7 +15,7 @@
  * the interface.
  */
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <vector>
 
 namespace faiss {
@@ -28,8 +28,6 @@ namespace faiss {
  *   are allowed
  */
 struct InvertedLists {
-    typedef Index::idx_t idx_t;
-
     size_t nlist;     ///< number of possible key values
     size_t code_size; ///< code size per vector in bytes
 

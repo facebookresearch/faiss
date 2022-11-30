@@ -86,20 +86,20 @@ void calcResidual(
 void runCalcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& centroids,
-        Tensor<Index::idx_t, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
-    calcResidual<Index::idx_t, float>(
+    calcResidual<idx_t, float>(
             vecs, centroids, vecToCentroid, residuals, stream);
 }
 
 void runCalcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<half, 2, true>& centroids,
-        Tensor<Index::idx_t, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
-    calcResidual<Index::idx_t, half>(
+    calcResidual<idx_t, half>(
             vecs, centroids, vecToCentroid, residuals, stream);
 }
 
@@ -190,38 +190,37 @@ void gatherReconstructByRange(
 }
 
 void runReconstruct(
-        Tensor<Index::idx_t, 1, true>& ids,
+        Tensor<idx_t, 1, true>& ids,
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByIds<Index::idx_t, float>(ids, vecs, out, stream);
+    gatherReconstructByIds<idx_t, float>(ids, vecs, out, stream);
 }
 
 void runReconstruct(
-        Tensor<Index::idx_t, 1, true>& ids,
+        Tensor<idx_t, 1, true>& ids,
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByIds<Index::idx_t, half>(ids, vecs, out, stream);
+    gatherReconstructByIds<idx_t, half>(ids, vecs, out, stream);
 }
 
 void runReconstruct(
-        Index::idx_t start,
-        Index::idx_t num,
+        idx_t start,
+        idx_t num,
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByRange<Index::idx_t, float>(
-            start, num, vecs, out, stream);
+    gatherReconstructByRange<idx_t, float>(start, num, vecs, out, stream);
 }
 
 void runReconstruct(
-        Index::idx_t start,
-        Index::idx_t num,
+        idx_t start,
+        idx_t num,
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByRange<Index::idx_t, half>(start, num, vecs, out, stream);
+    gatherReconstructByRange<idx_t, half>(start, num, vecs, out, stream);
 }
 
 } // namespace gpu

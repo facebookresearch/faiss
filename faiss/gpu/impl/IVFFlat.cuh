@@ -37,7 +37,7 @@ class IVFFlat : public IVFBase {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices) override;
+            Tensor<idx_t, 2, true>& outIndices) override;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)
@@ -45,10 +45,10 @@ class IVFFlat : public IVFBase {
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<float, 2, true>& ivfDistances,
-            Tensor<Index::idx_t, 2, true>& ivfAssignments,
+            Tensor<idx_t, 2, true>& ivfAssignments,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) override;
 
    protected:
@@ -73,12 +73,12 @@ class IVFFlat : public IVFBase {
     void appendVectors_(
             Tensor<float, 2, true>& vecs,
             Tensor<float, 2, true>& ivfCentroidResiduals,
-            Tensor<Index::idx_t, 1, true>& indices,
-            Tensor<Index::idx_t, 1, true>& uniqueLists,
+            Tensor<idx_t, 1, true>& indices,
+            Tensor<idx_t, 1, true>& uniqueLists,
             Tensor<int, 1, true>& vectorsByUniqueList,
             Tensor<int, 1, true>& uniqueListVectorStart,
             Tensor<int, 1, true>& uniqueListStartOffset,
-            Tensor<Index::idx_t, 1, true>& listIds,
+            Tensor<idx_t, 1, true>& listIds,
             Tensor<int, 1, true>& listOffset,
             cudaStream_t stream) override;
 
@@ -87,11 +87,11 @@ class IVFFlat : public IVFBase {
     void searchImpl_(
             Tensor<float, 2, true>& queries,
             Tensor<float, 2, true>& coarseDistances,
-            Tensor<Index::idx_t, 2, true>& coarseIndices,
+            Tensor<idx_t, 2, true>& coarseIndices,
             Tensor<float, 3, true>& ivfCentroids,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool storePairs);
 
    protected:

@@ -61,7 +61,7 @@ const uint8_t* BlockInvertedLists::get_codes(size_t list_no) const {
     return codes[list_no].get();
 }
 
-const InvertedLists::idx_t* BlockInvertedLists::get_ids(size_t list_no) const {
+const idx_t* BlockInvertedLists::get_ids(size_t list_no) const {
     assert(list_no < nlist);
     return ids[list_no].data();
 }

@@ -65,19 +65,14 @@ class FlatIndex {
     /// Compute residual for set of vectors
     void computeResidual(
             Tensor<float, 2, true>& vecs,
-            Tensor<Index::idx_t, 1, true>& ids,
+            Tensor<idx_t, 1, true>& ids,
             Tensor<float, 2, true>& residuals);
 
     /// Gather vectors given the set of IDs
-    void reconstruct(
-            Tensor<Index::idx_t, 1, true>& ids,
-            Tensor<float, 2, true>& vecs);
+    void reconstruct(Tensor<idx_t, 1, true>& ids, Tensor<float, 2, true>& vecs);
 
     /// Gather vectors given a range of IDs
-    void reconstruct(
-            Index::idx_t start,
-            Index::idx_t num,
-            Tensor<float, 2, true>& vecs);
+    void reconstruct(idx_t start, idx_t num, Tensor<float, 2, true>& vecs);
 
     /// Add vectors to ourselves; the pointer passed can be on the host
     /// or the device

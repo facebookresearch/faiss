@@ -54,8 +54,8 @@ struct Level1Quantizer {
 
     /// compute the number of bytes required to store list ids
     size_t coarse_code_size() const;
-    void encode_listno(Index::idx_t list_no, uint8_t* code) const;
-    Index::idx_t decode_listno(const uint8_t* code) const;
+    void encode_listno(idx_t list_no, uint8_t* code) const;
+    idx_t decode_listno(const uint8_t* code) const;
 
     Level1Quantizer(Index* quantizer, size_t nlist);
 
@@ -366,8 +366,6 @@ struct RangeQueryResult;
  * distance_to_code and scan_codes can be called in multiple
  * threads */
 struct InvertedListScanner {
-    using idx_t = Index::idx_t;
-
     idx_t list_no = -1;    ///< remember current list
     bool keep_max = false; ///< keep maximum instead of minimum
     /// store positions in invlists rather than labels

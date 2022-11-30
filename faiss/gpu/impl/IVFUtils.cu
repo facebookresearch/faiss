@@ -21,7 +21,7 @@ namespace gpu {
 // Calculates the total number of intermediate distances to consider
 // for all queries
 __global__ void getResultLengths(
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         int* listLengths,
         int totalSize,
         Tensor<int, 2, true> length) {
@@ -34,7 +34,7 @@ __global__ void getResultLengths(
     int queryId = linearThreadId / nprobe;
     int listId = linearThreadId % nprobe;
 
-    Index::idx_t centroidId = ivfListIds[queryId][listId];
+    idx_t centroidId = ivfListIds[queryId][listId];
 
     // Safety guard in case NaNs in input cause no list ID to be generated
     length[queryId][listId] = (centroidId != -1) ? listLengths[centroidId] : 0;
@@ -42,7 +42,7 @@ __global__ void getResultLengths(
 
 void runCalcListOffsets(
         GpuResources* res,
-        Tensor<Index::idx_t, 2, true>& ivfListIds,
+        Tensor<idx_t, 2, true>& ivfListIds,
         DeviceVector<int>& listLengths,
         Tensor<int, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,

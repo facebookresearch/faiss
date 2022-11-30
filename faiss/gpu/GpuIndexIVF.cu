@@ -160,7 +160,7 @@ void GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
 
     FAISS_ASSERT(index->nlist > 0);
     FAISS_THROW_IF_NOT_FMT(
-            index->nlist <= (Index::idx_t)std::numeric_limits<int>::max(),
+            index->nlist <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports %zu inverted lists",
             (size_t)std::numeric_limits<int>::max());
     nlist = index->nlist;
@@ -281,21 +281,21 @@ std::vector<uint8_t> GpuIndexIVF::getListVectorData(int listId, bool gpuFormat)
     return baseIndex_->getListVectorData(listId, gpuFormat);
 }
 
-std::vector<Index::idx_t> GpuIndexIVF::getListIndices(int listId) const {
+std::vector<idx_t> GpuIndexIVF::getListIndices(int listId) const {
     DeviceScope scope(config_.device);
     FAISS_ASSERT(baseIndex_);
 
     return baseIndex_->getListIndices(listId);
 }
 
-void GpuIndexIVF::addImpl_(int n, const float* x, const Index::idx_t* xids) {
+void GpuIndexIVF::addImpl_(int n, const float* x, const idx_t* xids) {
     // Device is already set in GpuIndex::add
     FAISS_ASSERT(baseIndex_);
     FAISS_ASSERT(n > 0);
 
     // Data is already resident on the GPU
     Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int)this->d});
-    Tensor<Index::idx_t, 1, true> labels(const_cast<Index::idx_t*>(xids), {n});
+    Tensor<idx_t, 1, true> labels(const_cast<idx_t*>(xids), {n});
 
     // Not all vectors may be able to be added (some may contain NaNs etc)
     baseIndex_->addVectors(quantizer, data, labels);
@@ -310,10 +310,10 @@ void GpuIndexIVF::searchImpl_(
         const float* x,
         int k,
         float* distances,
-        Index::idx_t* labels,
+        idx_t* labels,
         const SearchParameters* params) const {
     // Device was already set in GpuIndex::search
-    Index::idx_t use_nprobe = nprobe;
+    idx_t use_nprobe = nprobe;
     if (params) {
         auto ivfParams = dynamic_cast<const SearchParametersIVF*>(params);
         if (ivfParams) {
@@ -341,8 +341,7 @@ void GpuIndexIVF::searchImpl_(
     // Data is already resident on the GPU
     Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
     Tensor<float, 2, true> outDistances(distances, {n, k});
-    Tensor<Index::idx_t, 2, true> outLabels(
-            const_cast<Index::idx_t*>(labels), {n, k});
+    Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
     baseIndex_->search(
             quantizer, queries, use_nprobe, k, outDistances, outLabels);
@@ -402,10 +401,10 @@ void GpuIndexIVF::search_preassigned(
             stream,
             {(int)n, (int)use_nprobe});
 
-    auto assignDevice = toDeviceTemporary<Index::idx_t, 2>(
+    auto assignDevice = toDeviceTemporary<idx_t, 2>(
             resources_.get(),
             config_.device,
-            const_cast<Index::idx_t*>(assign),
+            const_cast<idx_t*>(assign),
             stream,
             {(int)n, (int)use_nprobe});
 
@@ -416,7 +415,7 @@ void GpuIndexIVF::search_preassigned(
             stream,
             {(int)n, (int)k});
 
-    auto outIndicesDevice = toDeviceTemporary<Index::idx_t, 2>(
+    auto outIndicesDevice = toDeviceTemporary<idx_t, 2>(
             resources_.get(), config_.device, labels, stream, {(int)n, (int)k});
 
     baseIndex_->searchPreassigned(
@@ -431,7 +430,7 @@ void GpuIndexIVF::search_preassigned(
 
     // If the output was not already on the GPU, copy it back
     fromDevice<float, 2>(outDistancesDevice, distances, stream);
-    fromDevice<Index::idx_t, 2>(outIndicesDevice, labels, stream);
+    fromDevice<idx_t, 2>(outIndicesDevice, labels, stream);
 }
 
 bool GpuIndexIVF::addImplRequiresIDs_() const {
@@ -439,7 +438,7 @@ bool GpuIndexIVF::addImplRequiresIDs_() const {
     return true;
 }
 
-void GpuIndexIVF::trainQuantizer_(Index::idx_t n, const float* x) {
+void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
     if (n == 0) {

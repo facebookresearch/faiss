@@ -58,7 +58,6 @@ int sgemm_(
 
 namespace faiss {
 
-using idx_t = Index::idx_t;
 using MinimaxHeap = HNSW::MinimaxHeap;
 using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;

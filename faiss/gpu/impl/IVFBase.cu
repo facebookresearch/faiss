@@ -93,7 +93,7 @@ void IVFBase::reserveMemory(size_t numVecs) {
         // Reserve for index lists as well
         size_t bytesPerIndexList = vecsPerList *
                 (indicesOptions_ == INDICES_32_BIT ? sizeof(int)
-                                                   : sizeof(Index::idx_t));
+                                                   : sizeof(idx_t));
 
         for (auto& list : deviceListIndices_) {
             list->data.reserve(bytesPerIndexList, stream);
@@ -125,7 +125,7 @@ void IVFBase::reset() {
         deviceListIndices_.emplace_back(std::unique_ptr<DeviceIVFList>(
                 new DeviceIVFList(resources_, info)));
 
-        listOffsetToUserIndex_.emplace_back(std::vector<Index::idx_t>());
+        listOffsetToUserIndex_.emplace_back(std::vector<idx_t>());
     }
 
     deviceListDataPointers_.resize(numLists_, stream);
@@ -176,7 +176,7 @@ size_t IVFBase::reclaimMemory_(bool exact) {
 }
 
 void IVFBase::updateDeviceListInfo_(cudaStream_t stream) {
-    std::vector<Index::idx_t> listIds(deviceListData_.size());
+    std::vector<idx_t> listIds(deviceListData_.size());
     for (int i = 0; i < deviceListData_.size(); ++i) {
         listIds[i] = i;
     }
@@ -185,9 +185,9 @@ void IVFBase::updateDeviceListInfo_(cudaStream_t stream) {
 }
 
 void IVFBase::updateDeviceListInfo_(
-        const std::vector<Index::idx_t>& listIds,
+        const std::vector<idx_t>& listIds,
         cudaStream_t stream) {
-    HostTensor<Index::idx_t, 1, true> hostListsToUpdate({(int)listIds.size()});
+    HostTensor<idx_t, 1, true> hostListsToUpdate({(int)listIds.size()});
     HostTensor<int, 1, true> hostNewListLength({(int)listIds.size()});
     HostTensor<void*, 1, true> hostNewDataPointers({(int)listIds.size()});
     HostTensor<void*, 1, true> hostNewIndexPointers({(int)listIds.size()});
@@ -204,7 +204,7 @@ void IVFBase::updateDeviceListInfo_(
     }
 
     // Copy the above update sets to the GPU
-    DeviceTensor<Index::idx_t, 1, true> listsToUpdate(
+    DeviceTensor<idx_t, 1, true> listsToUpdate(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             hostListsToUpdate);
@@ -250,7 +250,7 @@ int IVFBase::getListLength(int listId) const {
     return deviceListData_[listId]->numVecs;
 }
 
-std::vector<Index::idx_t> IVFBase::getListIndices(int listId) const {
+std::vector<idx_t> IVFBase::getListIndices(int listId) const {
     FAISS_THROW_IF_NOT_FMT(
             listId < numLists_,
             "IVF list %d is out of bounds (%d lists total)",
@@ -267,9 +267,9 @@ std::vector<Index::idx_t> IVFBase::getListIndices(int listId) const {
 
         auto intInd = deviceListIndices_[listId]->data.copyToHost<int>(stream);
 
-        std::vector<Index::idx_t> out(intInd.size());
+        std::vector<idx_t> out(intInd.size());
         for (size_t i = 0; i < intInd.size(); ++i) {
-            out[i] = (Index::idx_t)intInd[i];
+            out[i] = (idx_t)intInd[i];
         }
 
         return out;
@@ -277,8 +277,7 @@ std::vector<Index::idx_t> IVFBase::getListIndices(int listId) const {
         // The data is stored as int64 on the GPU
         FAISS_ASSERT(listId < deviceListIndices_.size());
 
-        return deviceListIndices_[listId]->data.copyToHost<Index::idx_t>(
-                stream);
+        return deviceListIndices_[listId]->data.copyToHost<idx_t>(stream);
     } else if (indicesOptions_ == INDICES_CPU) {
         // The data is not stored on the GPU
         FAISS_ASSERT(listId < listOffsetToUserIndex_.size());
@@ -294,7 +293,7 @@ std::vector<Index::idx_t> IVFBase::getListIndices(int listId) const {
     } else {
         // unhandled indices type (includes INDICES_IVF)
         FAISS_ASSERT(false);
-        return std::vector<Index::idx_t>();
+        return std::vector<idx_t>();
     }
 }
 
@@ -353,7 +352,7 @@ void IVFBase::copyInvertedListsTo(InvertedLists* ivf) {
 void IVFBase::addEncodedVectorsToList_(
         int listId,
         const void* codes,
-        const Index::idx_t* indices,
+        const idx_t* indices,
         size_t numVecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
@@ -403,7 +402,7 @@ void IVFBase::addEncodedVectorsToList_(
 
 void IVFBase::addIndicesFromCpu_(
         int listId,
-        const Index::idx_t* indices,
+        const idx_t* indices,
         size_t numVecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
@@ -417,7 +416,7 @@ void IVFBase::addIndicesFromCpu_(
         std::vector<int> indices32(numVecs);
         for (size_t i = 0; i < numVecs; ++i) {
             auto ind = indices[i];
-            FAISS_ASSERT(ind <= (Index::idx_t)std::numeric_limits<int>::max());
+            FAISS_ASSERT(ind <= (idx_t)std::numeric_limits<int>::max());
             indices32[i] = (int)ind;
         }
 
@@ -435,7 +434,7 @@ void IVFBase::addIndicesFromCpu_(
     } else if (indicesOptions_ == INDICES_64_BIT) {
         listIndices->data.append(
                 (uint8_t*)indices,
-                numVecs * sizeof(Index::idx_t),
+                numVecs * sizeof(idx_t),
                 stream,
                 true /* exact reserved size */);
 
@@ -519,7 +518,7 @@ void IVFBase::searchCoarseQuantizer_(
         // Guaranteed to be on device
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& distances,
-        Tensor<Index::idx_t, 2, true>& indices,
+        Tensor<idx_t, 2, true>& indices,
         Tensor<float, 3, true>* residuals,
         Tensor<float, 3, true>* centroids) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
@@ -556,7 +555,7 @@ void IVFBase::searchCoarseQuantizer_(
         auto cpuVecs = toHost<float, 2>(
                 vecs.data(), stream, {vecs.getSize(0), vecs.getSize(1)});
         auto cpuDistances = std::vector<float>(vecs.getSize(0) * nprobe);
-        auto cpuIndices = std::vector<Index::idx_t>(vecs.getSize(0) * nprobe);
+        auto cpuIndices = std::vector<idx_t>(vecs.getSize(0) * nprobe);
 
         coarseQuantizer->search(
                 vecs.getSize(0),
@@ -602,7 +601,7 @@ void IVFBase::searchCoarseQuantizer_(
 int IVFBase::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
-        Tensor<Index::idx_t, 1, true>& indices) {
+        Tensor<idx_t, 1, true>& indices) {
     FAISS_ASSERT(vecs.getSize(0) == indices.getSize(0));
     FAISS_ASSERT(vecs.getSize(1) == dim_);
 
@@ -617,7 +616,7 @@ int IVFBase::addVectors(
             {vecs.getSize(0), 1});
 
     // We do need the closest IVF cell IDs though
-    DeviceTensor<Index::idx_t, 2, true> ivfIndices(
+    DeviceTensor<idx_t, 2, true> ivfIndices(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {vecs.getSize(0), 1});
@@ -648,10 +647,10 @@ int IVFBase::addVectors(
     // encoded vectors and indices
 
     // list id -> vectors being added
-    std::unordered_map<Index::idx_t, std::vector<int>> listToVectorIds;
+    std::unordered_map<idx_t, std::vector<int>> listToVectorIds;
 
     // vector id -> which list it is being appended to
-    std::vector<Index::idx_t> vectorIdToList(vecs.getSize(0));
+    std::vector<idx_t> vectorIdToList(vecs.getSize(0));
 
     // vector id -> offset in list
     // (we already have vector id -> list id in listIds)
@@ -694,7 +693,7 @@ int IVFBase::addVectors(
     }
 
     // unique lists being added to
-    std::vector<Index::idx_t> uniqueLists;
+    std::vector<idx_t> uniqueLists;
 
     for (auto& vecs : listToVectorIds) {
         uniqueLists.push_back(vecs.first);
@@ -759,7 +758,7 @@ int IVFBase::addVectors(
                 (indicesOptions_ == INDICES_64_BIT)) {
                 size_t indexSize = (indicesOptions_ == INDICES_32_BIT)
                         ? sizeof(int)
-                        : sizeof(Index::idx_t);
+                        : sizeof(idx_t);
 
                 indices->data.resize(
                         indices->data.size() + numVecsToAdd * indexSize,
@@ -792,10 +791,10 @@ int IVFBase::addVectors(
     // map. We already resized our map above.
     if (indicesOptions_ == INDICES_CPU) {
         // We need to maintain the indices on the CPU side
-        HostTensor<Index::idx_t, 1, true> hostIndices(indices, stream);
+        HostTensor<idx_t, 1, true> hostIndices(indices, stream);
 
         for (int i = 0; i < hostIndices.getSize(0); ++i) {
-            Index::idx_t listId = ivfIndicesHost[i];
+            idx_t listId = ivfIndicesHost[i];
 
             // Add vector could be invalid (contains NaNs etc)
             if (listId < 0) {

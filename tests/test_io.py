@@ -11,7 +11,7 @@ import os
 import io
 import sys
 import pickle
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 
 
 class TestIOVariants(unittest.TestCase):

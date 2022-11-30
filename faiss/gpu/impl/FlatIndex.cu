@@ -163,7 +163,7 @@ void FlatIndex::query(
 
 void FlatIndex::computeResidual(
         Tensor<float, 2, true>& vecs,
-        Tensor<Index::idx_t, 1, true>& ids,
+        Tensor<idx_t, 1, true>& ids,
         Tensor<float, 2, true>& residuals) {
     if (useFloat16_) {
         runCalcResidual(
@@ -183,8 +183,8 @@ void FlatIndex::computeResidual(
 }
 
 void FlatIndex::reconstruct(
-        Index::idx_t start,
-        Index::idx_t num,
+        idx_t start,
+        idx_t num,
         Tensor<float, 2, true>& vecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
@@ -199,7 +199,7 @@ void FlatIndex::reconstruct(
 }
 
 void FlatIndex::reconstruct(
-        Tensor<Index::idx_t, 1, true>& ids,
+        Tensor<idx_t, 1, true>& ids,
         Tensor<float, 2, true>& vecs) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 

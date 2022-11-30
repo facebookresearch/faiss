@@ -55,11 +55,11 @@ __global__ void pass2SelectLists(
         Tensor<int, 2, true> heapIndices,
         void** listIndices,
         Tensor<int, 2, true> prefixSumOffsets,
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         int k,
         IndicesOptions opt,
         Tensor<float, 2, true> outDistances,
-        Tensor<Index::idx_t, 2, true> outIndices) {
+        Tensor<idx_t, 2, true> outIndices) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
@@ -110,7 +110,7 @@ __global__ void pass2SelectLists(
         // is the very last step and it is happening a small number of
         // times (#queries x k).
         int v = smemV[i];
-        Index::idx_t index = -1;
+        idx_t index = -1;
 
         if (v != -1) {
             // `offset` is the offset of the intermediate result, as
@@ -127,7 +127,7 @@ __global__ void pass2SelectLists(
 
             // This is then the probe for the query; we can find the actual
             // list ID from this
-            Index::idx_t listId = ivfListIds[queryId][probe];
+            idx_t listId = ivfListIds[queryId][probe];
 
             // Now, we need to know the offset within the list
             // We ensure that before the array (at offset -1), there is a 0
@@ -137,11 +137,11 @@ __global__ void pass2SelectLists(
 
             // This gives us our final index
             if (opt == INDICES_32_BIT) {
-                index = (Index::idx_t)((int*)listIndices[listId])[listOffset];
+                index = (idx_t)((int*)listIndices[listId])[listOffset];
             } else if (opt == INDICES_64_BIT) {
-                index = ((Index::idx_t*)listIndices[listId])[listOffset];
+                index = ((idx_t*)listIndices[listId])[listOffset];
             } else {
-                index = (listId << 32 | (Index::idx_t)listOffset);
+                index = (listId << 32 | (idx_t)listOffset);
             }
         }
 
@@ -155,11 +155,11 @@ void runPass2SelectLists(
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         Tensor<int, 2, true>& prefixSumOffsets,
-        Tensor<Index::idx_t, 2, true>& ivfListIds,
+        Tensor<idx_t, 2, true>& ivfListIds,
         int k,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
     auto grid = dim3(ivfListIds.getSize(0));
 

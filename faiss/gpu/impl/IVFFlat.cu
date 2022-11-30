@@ -115,12 +115,12 @@ std::vector<uint8_t> IVFFlat::translateCodesFromGpu_(
 void IVFFlat::appendVectors_(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfCentroidResiduals,
-        Tensor<Index::idx_t, 1, true>& indices,
-        Tensor<Index::idx_t, 1, true>& uniqueLists,
+        Tensor<idx_t, 1, true>& indices,
+        Tensor<idx_t, 1, true>& uniqueLists,
         Tensor<int, 1, true>& vectorsByUniqueList,
         Tensor<int, 1, true>& uniqueListVectorStart,
         Tensor<int, 1, true>& uniqueListStartOffset,
-        Tensor<Index::idx_t, 1, true>& listIds,
+        Tensor<idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         cudaStream_t stream) {
     //
@@ -167,7 +167,7 @@ void IVFFlat::search(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     // These are caught at a higher level
@@ -185,7 +185,7 @@ void IVFFlat::search(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
-    DeviceTensor<Index::idx_t, 2, true> coarseIndices(
+    DeviceTensor<idx_t, 2, true> coarseIndices(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
@@ -223,10 +223,10 @@ void IVFFlat::searchPreassigned(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfDistances,
-        Tensor<Index::idx_t, 2, true>& ivfAssignments,
+        Tensor<idx_t, 2, true>& ivfAssignments,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     FAISS_ASSERT(ivfDistances.getSize(0) == vecs.getSize(0));
     FAISS_ASSERT(ivfAssignments.getSize(0) == vecs.getSize(0));
@@ -286,11 +286,11 @@ void IVFFlat::searchPreassigned(
 void IVFFlat::searchImpl_(
         Tensor<float, 2, true>& queries,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         Tensor<float, 3, true>& ivfCentroids,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     FAISS_ASSERT(storePairs == false);
 
@@ -336,7 +336,7 @@ void IVFFlat::searchImpl_(
     // FIXME: we might ultimately be calling this function with inputs
     // from the CPU, these are unnecessary copies
     if (indicesOptions_ == INDICES_CPU) {
-        HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
+        HostTensor<idx_t, 2, true> hostOutIndices(outIndices, stream);
 
         ivfOffsetToUserIndex(
                 hostOutIndices.data(),

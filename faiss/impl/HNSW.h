@@ -52,10 +52,7 @@ struct SearchParametersHNSW : SearchParameters {
 
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
-    typedef int storage_idx_t;
-
-    /// Faiss results are 64-bit
-    typedef Index::idx_t idx_t;
+    using storage_idx_t = int32_t;
 
     typedef std::pair<float, storage_idx_t> Node;
 

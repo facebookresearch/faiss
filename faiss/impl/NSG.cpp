@@ -29,8 +29,6 @@ constexpr int EMPTY_ID = -1;
    distances. This makes supporting INNER_PRODUCE search easier */
 
 struct NegativeDistanceComputer : DistanceComputer {
-    using idx_t = Index::idx_t;
-
     /// owned by this
     DistanceComputer* basedis;
 

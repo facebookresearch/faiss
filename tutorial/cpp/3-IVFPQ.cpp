@@ -12,7 +12,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
 
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 int main() {
     int d = 64;      // dimension

@@ -40,7 +40,7 @@ TEST(MEM_LEAK, ivfflat) {
         double t0 = getmillisecs();
 
         for (int i = 0; i < N2; i++) {
-            std::vector<Index::idx_t> I(10 * bs);
+            std::vector<idx_t> I(10 * bs);
             std::vector<float> D(10 * bs);
 
             tfidf_faiss_index.search(

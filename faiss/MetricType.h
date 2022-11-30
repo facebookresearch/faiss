@@ -10,6 +10,8 @@
 #ifndef FAISS_METRIC_TYPE_H
 #define FAISS_METRIC_TYPE_H
 
+#include <faiss/impl/platform_macros.h>
+
 namespace faiss {
 
 /// The metric space for vector comparison for Faiss indices and algorithms.
@@ -30,6 +32,9 @@ enum MetricType {
     METRIC_BrayCurtis,
     METRIC_JensenShannon,
 };
+
+/// all vector indices are this type
+using idx_t = int64_t;
 
 } // namespace faiss
 

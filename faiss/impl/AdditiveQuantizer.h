@@ -157,7 +157,6 @@ struct AdditiveQuantizer : Quantizer {
      * Support for exhaustive distance computations with all the centroids.
      * Hence, the number of these centroids should not be too large.
      ****************************************************************************/
-    using idx_t = Index::idx_t;
 
     /// decoding function for a code in a 64-bit word
     void decode_64bit(idx_t n, float* x) const;

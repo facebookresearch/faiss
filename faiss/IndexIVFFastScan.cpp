@@ -229,7 +229,6 @@ void estimators_from_tables_generic(
     }
 }
 
-using idx_t = Index::idx_t;
 using namespace quantize_lut;
 
 } // anonymous namespace

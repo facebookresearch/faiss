@@ -608,7 +608,7 @@ void ParameterSpace::explore(
     if (n_experiments == 0) {
         for (size_t cno = 0; cno < n_comb; cno++) {
             set_index_parameters(index, cno);
-            std::vector<Index::idx_t> I(nq * crit.nnn);
+            std::vector<idx_t> I(nq * crit.nnn);
             std::vector<float> D(nq * crit.nnn);
 
             double t0 = getmillisecs();
@@ -677,7 +677,7 @@ void ParameterSpace::explore(
         }
 
         set_index_parameters(index, cno);
-        std::vector<Index::idx_t> I(nq * crit.nnn);
+        std::vector<idx_t> I(nq * crit.nnn);
         std::vector<float> D(nq * crit.nnn);
 
         double t0 = getmillisecs();
@@ -688,7 +688,7 @@ void ParameterSpace::explore(
         do {
             if (thread_over_batches) {
 #pragma omp parallel for
-                for (Index::idx_t q0 = 0; q0 < nq; q0 += batchsize) {
+                for (idx_t q0 = 0; q0 < nq; q0 += batchsize) {
                     size_t q1 = q0 + batchsize;
                     if (q1 > nq)
                         q1 = nq;

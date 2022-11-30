@@ -28,7 +28,7 @@ template <typename EncodeT, int EncodeBits, typename CodeDistanceT>
 __global__ void pqScanInterleaved(
         Tensor<float, 2, true> queries,
         Tensor<float, 3, true> pqCentroids,
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         Tensor<CodeDistanceT, 4, true> codeDistances,
         void** listCodes,
         int* listLengths,
@@ -38,7 +38,7 @@ __global__ void pqScanInterleaved(
     auto queryId = blockIdx.y;
     auto probeId = blockIdx.x;
 
-    Index::idx_t listId = ivfListIds[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -174,7 +174,7 @@ template <int NumSubQuantizers, typename LookupT, typename LookupVecT>
 __global__ void pqScanNoPrecomputedMultiPass(
         Tensor<float, 2, true> queries,
         Tensor<float, 3, true> pqCentroids,
-        Tensor<Index::idx_t, 2, true> ivfListIds,
+        Tensor<idx_t, 2, true> ivfListIds,
         Tensor<LookupT, 4, true> codeDistances,
         void** listCodes,
         int* listLengths,
@@ -195,7 +195,7 @@ __global__ void pqScanNoPrecomputedMultiPass(
     int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
     float* distanceOut = distance[outBase].data();
 
-    Index::idx_t listId = ivfListIds[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -277,7 +277,7 @@ void runMultiPassTile(
         Tensor<float, 3, true>& pqCentroidsInnermostCode,
         NoTypeTensor<4, true>& codeDistances,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         bool useFloat16Lookup,
         bool useMMCodeDistance,
         bool interleavedCodeLayout,
@@ -296,7 +296,7 @@ void runMultiPassTile(
         int k,
         faiss::MetricType metric,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
     // We only support two metrics at the moment
     FAISS_ASSERT(
@@ -526,7 +526,7 @@ void runPQScanMultiPassNoPrecomputed(
         Tensor<CentroidT, 2, true>& centroids,
         Tensor<float, 3, true>& pqCentroidsInnermostCode,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         bool useFloat16Lookup,
         bool useMMCodeDistance,
         bool interleavedCodeLayout,
@@ -543,7 +543,7 @@ void runPQScanMultiPassNoPrecomputed(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res) {
     constexpr int kMinQueryTileSize = 8;
     constexpr int kMaxQueryTileSize = 65536; // typical max gridDim.y

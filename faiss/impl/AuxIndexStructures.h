@@ -18,7 +18,7 @@
 #include <mutex>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 
 namespace faiss {
@@ -30,8 +30,6 @@ namespace faiss {
 struct RangeSearchResult {
     size_t nq;    ///< nb of queries
     size_t* lims; ///< size (nq + 1)
-
-    typedef Index::idx_t idx_t;
 
     idx_t* labels;    ///< result for query i is labels[lims[i]:lims[i+1]]
     float* distances; ///< corresponding distances (not sorted)
@@ -62,8 +60,6 @@ struct RangeSearchResult {
 /** List of temporary buffers used to store results before they are
  *  copied to the RangeSearchResult object. */
 struct BufferList {
-    typedef Index::idx_t idx_t;
-
     // buffer sizes in # entries
     size_t buffer_size;
 
@@ -94,7 +90,6 @@ struct RangeSearchPartialResult;
 
 /// result structure for a single query
 struct RangeQueryResult {
-    using idx_t = Index::idx_t;
     idx_t qno;   //< id of the query
     size_t nres; //< nb of results for this query
     RangeSearchPartialResult* pres;

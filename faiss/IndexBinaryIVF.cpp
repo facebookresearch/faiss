@@ -158,7 +158,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
 
     for (idx_t list_no = 0; list_no < nlist; list_no++) {
         size_t list_size = invlists->list_size(list_no);
-        const Index::idx_t* idlist = invlists->get_ids(list_no);
+        const idx_t* idlist = invlists->get_ids(list_no);
 
         for (idx_t offset = 0; offset < list_size; offset++) {
             idx_t id = idlist[offset];
@@ -320,8 +320,6 @@ void IndexBinaryIVF::replace_invlists(InvertedLists* il, bool own) {
 
 namespace {
 
-using idx_t = Index::idx_t;
-
 template <class HammingComputer>
 struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
     HammingComputer hc;
@@ -448,7 +446,7 @@ void search_knn_hamming_heap(
                 size_t list_size = ivf.invlists->list_size(key);
                 InvertedLists::ScopedCodes scodes(ivf.invlists, key);
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const Index::idx_t* ids = nullptr;
+                const idx_t* ids = nullptr;
 
                 if (!store_pairs) {
                     sids.reset(new InvertedLists::ScopedIds(ivf.invlists, key));
@@ -533,7 +531,7 @@ void search_knn_hamming_count(
             size_t list_size = ivf.invlists->list_size(key);
             InvertedLists::ScopedCodes scodes(ivf.invlists, key);
             const uint8_t* list_vecs = scodes.get();
-            const Index::idx_t* ids =
+            const idx_t* ids =
                     store_pairs ? nullptr : ivf.invlists->get_ids(key);
 
             for (size_t j = 0; j < list_size; j++) {

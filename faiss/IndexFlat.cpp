@@ -90,7 +90,7 @@ namespace {
 
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
-    Index::idx_t nb;
+    idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;
@@ -121,7 +121,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 
 struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
-    Index::idx_t nb;
+    idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;

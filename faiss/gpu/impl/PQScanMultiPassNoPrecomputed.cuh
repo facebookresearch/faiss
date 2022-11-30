@@ -24,7 +24,7 @@ void runPQScanMultiPassNoPrecomputed(
         Tensor<CentroidT, 2, true>& centroids,
         Tensor<float, 3, true>& pqCentroidsInnermostCode,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         bool useFloat16Lookup,
         bool useMMCodeDistance,
         bool interleavedCodeLayout,
@@ -41,7 +41,7 @@ void runPQScanMultiPassNoPrecomputed(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res);
 
 } // namespace gpu

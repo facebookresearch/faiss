@@ -22,8 +22,6 @@
 
 using namespace faiss;
 
-typedef Index::idx_t idx_t;
-
 // dimension of the vectors to index
 int d = 32;
 
@@ -81,7 +79,7 @@ void make_index_slices(
         Index* index = sub_indexes.back().get();
 
         auto xb = make_data(nb * d);
-        std::vector<faiss::Index::idx_t> ids(nb);
+        std::vector<faiss::idx_t> ids(nb);
         std::mt19937 rng;
         std::uniform_int_distribution<> distrib;
         for (int j = 0; j < nb; j++) {

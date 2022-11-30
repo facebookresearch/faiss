@@ -155,7 +155,7 @@ int main(int argc, char** argv) {
                 faiss::IndexFlatL2 cent_index(d);
                 cent_index.add(nc, centroids.data());
                 std::vector<float> dis(n);
-                std::vector<faiss::Index::idx_t> idx(n);
+                std::vector<faiss::idx_t> idx(n);
 
                 cent_index.search(
                         nc * 2, ccent.data(), 1, dis.data(), idx.data());

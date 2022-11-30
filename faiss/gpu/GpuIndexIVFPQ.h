@@ -131,7 +131,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     void updateQuantizer() override;
 
     /// Trains the coarse and product quantizer based on the given vector data
-    void train(Index::idx_t n, const float* x) override;
+    void train(idx_t n, const float* x) override;
 
    public:
     /// Like the CPU version, we expose a publically-visible ProductQuantizer
@@ -143,7 +143,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     void verifyPQSettings_() const;
 
     /// Trains the PQ quantizer based on the given vector data
-    void trainResidualQuantizer_(Index::idx_t n, const float* x);
+    void trainResidualQuantizer_(idx_t n, const float* x);
 
    protected:
     /// Our configuration options that we were initialized with

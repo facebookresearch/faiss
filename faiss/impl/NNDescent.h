@@ -90,7 +90,6 @@ struct Nhood {
 
 struct NNDescent {
     using storage_idx_t = int;
-    using idx_t = Index::idx_t;
 
     using KNNGraph = std::vector<nndescent::Nhood>;
 

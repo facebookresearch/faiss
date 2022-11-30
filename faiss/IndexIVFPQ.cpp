@@ -197,9 +197,9 @@ void IndexIVFPQ::add_core(
 
 static float* compute_residuals(
         const Index* quantizer,
-        Index::idx_t n,
+        idx_t n,
         const float* x,
-        const Index::idx_t* list_nos) {
+        const idx_t* list_nos) {
     size_t d = quantizer->d;
     float* residuals = new float[n * d];
     // TODO: parallelize?
@@ -520,8 +520,6 @@ void IndexIVFPQ::precompute_table() {
 
 namespace {
 
-using idx_t = Index::idx_t;
-
 #define TIC t0 = get_cycles()
 #define TOC get_cycles() - t0
 
@@ -622,7 +620,7 @@ struct QueryTables {
      *****************************************************/
 
     // fields specific to list
-    Index::idx_t key;
+    idx_t key;
     float coarse_dis;
     std::vector<uint8_t> q_code;
 
@@ -1170,7 +1168,7 @@ struct IVFPQScannerT : QueryTables {
  * use_sel: store or ignore the IDSelector
  */
 template <MetricType METRIC_TYPE, class C, class PQDecoder, bool use_sel>
-struct IVFPQScanner : IVFPQScannerT<Index::idx_t, METRIC_TYPE, PQDecoder>,
+struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
                       InvertedListScanner {
     int precompute_mode;
     const IDSelector* sel;
@@ -1180,9 +1178,7 @@ struct IVFPQScanner : IVFPQScannerT<Index::idx_t, METRIC_TYPE, PQDecoder>,
             bool store_pairs,
             int precompute_mode,
             const IDSelector* sel)
-            : IVFPQScannerT<Index::idx_t, METRIC_TYPE, PQDecoder>(
-                      ivfpq,
-                      nullptr),
+            : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>(ivfpq, nullptr),
               precompute_mode(precompute_mode),
               sel(sel) {
         this->store_pairs = store_pairs;

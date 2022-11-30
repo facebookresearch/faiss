@@ -22,7 +22,6 @@ namespace faiss {
 struct IndexHNSW;
 
 struct ReconstructFromNeighbors {
-    typedef Index::idx_t idx_t;
     typedef HNSW::storage_idx_t storage_idx_t;
 
     const IndexHNSW& index;

@@ -51,30 +51,26 @@ class GpuIndex : public faiss::Index {
     /// `x` can be resident on the CPU or any GPU; copies are performed
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
-    void add(Index::idx_t, const float* x) override;
+    void add(idx_t, const float* x) override;
 
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
-    void add_with_ids(Index::idx_t n, const float* x, const Index::idx_t* ids)
-            override;
+    void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
-    void assign(
-            Index::idx_t n,
-            const float* x,
-            Index::idx_t* labels,
-            Index::idx_t k = 1) const override;
+    void assign(idx_t n, const float* x, idx_t* labels, idx_t k = 1)
+            const override;
 
     /// `x`, `distances` and `labels` can be resident on the CPU or any
     /// GPU; copies are performed as needed
     void search(
-            Index::idx_t n,
+            idx_t n,
             const float* x,
-            Index::idx_t k,
+            idx_t k,
             float* distances,
-            Index::idx_t* labels,
+            idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
     /// `x`, `distances` and `labels` and `recons` can be resident on the CPU or
@@ -90,16 +86,16 @@ class GpuIndex : public faiss::Index {
 
     /// Overridden to force GPU indices to provide their own GPU-friendly
     /// implementation
-    void compute_residual(const float* x, float* residual, Index::idx_t key)
+    void compute_residual(const float* x, float* residual, idx_t key)
             const override;
 
     /// Overridden to force GPU indices to provide their own GPU-friendly
     /// implementation
     void compute_residual_n(
-            Index::idx_t n,
+            idx_t n,
             const float* xs,
             float* residuals,
-            const Index::idx_t* keys) const override;
+            const idx_t* keys) const override;
 
    protected:
     /// Copy what we need from the CPU equivalent
@@ -114,7 +110,7 @@ class GpuIndex : public faiss::Index {
 
     /// Overridden to actually perform the add
     /// All data is guaranteed to be resident on our device
-    virtual void addImpl_(int n, const float* x, const Index::idx_t* ids) = 0;
+    virtual void addImpl_(int n, const float* x, const idx_t* ids) = 0;
 
     /// Overridden to actually perform the search
     /// All data is guaranteed to be resident on our device
@@ -123,16 +119,16 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* distances,
-            Index::idx_t* labels,
+            idx_t* labels,
             const SearchParameters* params) const = 0;
 
    private:
     /// Handles paged adds if the add set is too large, passes to
     /// addImpl_ to actually perform the add for the current page
-    void addPaged_(int n, const float* x, const Index::idx_t* ids);
+    void addPaged_(int n, const float* x, const idx_t* ids);
 
     /// Calls addImpl_ for a single page of GPU-resident data
-    void addPage_(int n, const float* x, const Index::idx_t* ids);
+    void addPage_(int n, const float* x, const idx_t* ids);
 
     /// Calls searchImpl_ for a single page of GPU-resident data
     void searchNonPaged_(
@@ -140,7 +136,7 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* outDistancesData,
-            Index::idx_t* outIndicesData,
+            idx_t* outIndicesData,
             const SearchParameters* params) const;
 
     /// Calls searchImpl_ for a single page of GPU-resident data,
@@ -150,7 +146,7 @@ class GpuIndex : public faiss::Index {
             const float* x,
             int k,
             float* outDistancesData,
-            Index::idx_t* outIndicesData,
+            idx_t* outIndicesData,
             const SearchParameters* params) const;
 
    protected:

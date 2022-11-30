@@ -24,7 +24,7 @@ int main() {
     /******************************************
      * Generate a test dataset
      ******************************************/
-    using idx_t = faiss::Index::idx_t;
+    using idx_t = faiss::idx_t;
     size_t d = 128;
     size_t nt = 10000;
     size_t nb = 10000;

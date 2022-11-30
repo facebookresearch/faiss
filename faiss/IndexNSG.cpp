@@ -23,7 +23,6 @@
 
 namespace faiss {
 
-using idx_t = Index::idx_t;
 using namespace nsg;
 
 /**************************************************************

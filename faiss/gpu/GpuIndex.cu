@@ -100,15 +100,12 @@ size_t GpuIndex::getMinPagingSize() const {
     return minPagedSize_;
 }
 
-void GpuIndex::add(Index::idx_t n, const float* x) {
+void GpuIndex::add(idx_t n, const float* x) {
     // Pass to add_with_ids
     add_with_ids(n, x, nullptr);
 }
 
-void GpuIndex::add_with_ids(
-        Index::idx_t n,
-        const float* x,
-        const Index::idx_t* ids) {
+void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
@@ -119,13 +116,13 @@ void GpuIndex::add_with_ids(
         return;
     }
 
-    std::vector<Index::idx_t> generatedIds;
+    std::vector<idx_t> generatedIds;
 
     // Generate IDs if we need them
     if (!ids && addImplRequiresIDs_()) {
-        generatedIds = std::vector<Index::idx_t>(n);
+        generatedIds = std::vector<idx_t>(n);
 
-        for (Index::idx_t i = 0; i < n; ++i) {
+        for (idx_t i = 0; i < n; ++i) {
             generatedIds[i] = this->ntotal + i;
         }
     }
@@ -133,7 +130,7 @@ void GpuIndex::add_with_ids(
     addPaged_((int)n, x, ids ? ids : generatedIds.data());
 }
 
-void GpuIndex::addPaged_(int n, const float* x, const Index::idx_t* ids) {
+void GpuIndex::addPaged_(int n, const float* x, const idx_t* ids) {
     if (n > 0) {
         size_t totalSize = (size_t)n * this->d * sizeof(float);
 
@@ -162,7 +159,7 @@ void GpuIndex::addPaged_(int n, const float* x, const Index::idx_t* ids) {
     }
 }
 
-void GpuIndex::addPage_(int n, const float* x, const Index::idx_t* ids) {
+void GpuIndex::addPage_(int n, const float* x, const idx_t* ids) {
     // At this point, `x` can be resident on CPU or GPU, and `ids` may be
     // resident on CPU, GPU or may be null.
     //
@@ -178,10 +175,10 @@ void GpuIndex::addPage_(int n, const float* x, const Index::idx_t* ids) {
             {n, this->d});
 
     if (ids) {
-        auto indices = toDeviceTemporary<Index::idx_t, 1>(
+        auto indices = toDeviceTemporary<idx_t, 1>(
                 resources_.get(),
                 config_.device,
-                const_cast<Index::idx_t*>(ids),
+                const_cast<idx_t*>(ids),
                 stream,
                 {n});
 
@@ -191,11 +188,7 @@ void GpuIndex::addPage_(int n, const float* x, const Index::idx_t* ids) {
     }
 }
 
-void GpuIndex::assign(
-        Index::idx_t n,
-        const float* x,
-        Index::idx_t* labels,
-        Index::idx_t k) const {
+void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
@@ -216,11 +209,11 @@ void GpuIndex::assign(
 }
 
 void GpuIndex::search(
-        Index::idx_t n,
+        idx_t n,
         const float* x,
-        Index::idx_t k,
+        idx_t k,
         float* distances,
-        Index::idx_t* labels,
+        idx_t* labels,
         const SearchParameters* params) const {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
@@ -251,7 +244,7 @@ void GpuIndex::search(
             stream,
             {(int)n, (int)k});
 
-    auto outLabels = toDeviceTemporary<Index::idx_t, 2>(
+    auto outLabels = toDeviceTemporary<idx_t, 2>(
             resources_.get(), config_.device, labels, stream, {(int)n, (int)k});
 
     bool usePaged = false;
@@ -278,7 +271,7 @@ void GpuIndex::search(
 
     // Copy back if necessary
     fromDevice<float, 2>(outDistances, distances, stream);
-    fromDevice<Index::idx_t, 2>(outLabels, labels, stream);
+    fromDevice<idx_t, 2>(outLabels, labels, stream);
 }
 
 void GpuIndex::search_and_reconstruct(
@@ -298,7 +291,7 @@ void GpuIndex::searchNonPaged_(
         const float* x,
         int k,
         float* outDistancesData,
-        Index::idx_t* outIndicesData,
+        idx_t* outIndicesData,
         const SearchParameters* params) const {
     auto stream = resources_->getDefaultStream(config_.device);
 
@@ -319,10 +312,10 @@ void GpuIndex::searchFromCpuPaged_(
         const float* x,
         int k,
         float* outDistancesData,
-        Index::idx_t* outIndicesData,
+        idx_t* outIndicesData,
         const SearchParameters* params) const {
     Tensor<float, 2, true> outDistances(outDistancesData, {n, k});
-    Tensor<Index::idx_t, 2, true> outIndices(outIndicesData, {n, k});
+    Tensor<idx_t, 2, true> outIndices(outIndicesData, {n, k});
 
     // Is pinned memory available?
     auto pinnedAlloc = resources_->getPinnedMemory();
@@ -495,18 +488,16 @@ void GpuIndex::searchFromCpuPaged_(
     }
 }
 
-void GpuIndex::compute_residual(
-        const float* x,
-        float* residual,
-        Index::idx_t key) const {
+void GpuIndex::compute_residual(const float* x, float* residual, idx_t key)
+        const {
     FAISS_THROW_MSG("compute_residual not implemented for this type of index");
 }
 
 void GpuIndex::compute_residual_n(
-        Index::idx_t n,
+        idx_t n,
         const float* xs,
         float* residuals,
-        const Index::idx_t* keys) const {
+        const idx_t* keys) const {
     FAISS_THROW_MSG(
             "compute_residual_n not implemented for this type of index");
 }

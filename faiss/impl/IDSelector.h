@@ -19,7 +19,6 @@ namespace faiss {
 
 /** Encapsulates a set of ids to handle. */
 struct IDSelector {
-    using idx_t = Index::idx_t;
     virtual bool is_member(idx_t id) const = 0;
     virtual ~IDSelector() {}
 };

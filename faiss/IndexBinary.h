@@ -32,7 +32,6 @@ struct RangeSearchResult;
  * vectors.
  */
 struct IndexBinary {
-    using idx_t = Index::idx_t; ///< all indices are this type
     using component_t = uint8_t;
     using distance_t = int32_t;
 
