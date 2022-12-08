@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IVFFastScanStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IVFFastScanStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -187,7 +187,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexIVFFastScan.h" line="188" column="23" bodyfile="faiss/IndexIVFFastScan.h" bodystart="188" bodyend="209"/>
+    <location file="faiss/IndexIVFFastScan.h" line="188" column="1" bodyfile="faiss/IndexIVFFastScan.h" bodystart="188" bodyend="209"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IVFFastScanStats_1aceba128b4aa57aa577f85f023cd0f608" prot="public" virt="non-virtual"><scope>faiss::IVFFastScanStats</scope><name>IVFFastScanStats</name></member>
       <member refid="structfaiss_1_1IVFFastScanStats_1aa449244dbdd545cb866cd12d79d327bf" prot="public" virt="non-virtual"><scope>faiss::IVFFastScanStats</scope><name>Mcy_at</name></member>

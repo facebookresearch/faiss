@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HammingComputerDefault" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputerDefault</compoundname>
     <derivedcompoundref refid="structfaiss_1_1HammingComputer" prot="public" virt="non-virtual">faiss::HammingComputer&lt; CODE_SIZE &gt;</derivedcompoundref>
@@ -134,7 +134,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/utils/hamming-inl.h" line="273" column="29" bodyfile="faiss/utils/hamming-inl.h" bodystart="273" bodyend="350"/>
+    <location file="faiss/utils/hamming-inl.h" line="273" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="273" bodyend="350"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault</scope><name>a8</name></member>
       <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" prot="public" virt="non-virtual"><scope>faiss::HammingComputerDefault</scope><name>hamming</name></member>

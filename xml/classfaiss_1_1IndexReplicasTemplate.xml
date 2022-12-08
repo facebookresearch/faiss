@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classfaiss_1_1IndexReplicasTemplate" kind="class" language="C++" prot="public">
     <compoundname>faiss::IndexReplicasTemplate</compoundname>
     <basecompoundref prot="public" virt="non-virtual">ThreadedIndex&lt; IndexT &gt;</basecompoundref>
@@ -349,7 +349,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexReplicas.h" line="21" column="50" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="83"/>
+    <location file="faiss/IndexReplicas.h" line="21" column="1" bodyfile="faiss/IndexReplicas.h" bodystart="21" bodyend="83"/>
     <listofallmembers>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a6b110e7efab3d01be7ae7cb346d9fbf9" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add</name></member>
       <member refid="classfaiss_1_1IndexReplicasTemplate_1a34bf1c7e890c2e5a57307fd3ee5b980b" prot="public" virt="non-virtual"><scope>faiss::IndexReplicasTemplate</scope><name>add_replica</name></member>

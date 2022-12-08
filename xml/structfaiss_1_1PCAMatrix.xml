@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PCAMatrix" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PCAMatrix</compoundname>
     <basecompoundref refid="structfaiss_1_1LinearTransform" prot="public" virt="non-virtual">faiss::LinearTransform</basecompoundref>
@@ -542,7 +542,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="131" column="32" bodyfile="faiss/VectorTransform.h" bodystart="131" bodyend="177"/>
+    <location file="faiss/VectorTransform.h" line="131" column="1" bodyfile="faiss/VectorTransform.h" bodystart="131" bodyend="177"/>
     <listofallmembers>
       <member refid="structfaiss_1_1LinearTransform_1aa40e156ef57fe206cd5f3a58ec0660da" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>A</name></member>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>apply</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" kind="struct" language="C++" prot="public">
     <compoundname>faiss::cppcontrib::IndexPQDecoder</compoundname>
     <includes refid="PQ-inl_8h" local="no">PQ-inl.h</includes>
@@ -776,7 +776,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1493" column="21" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1493" bodyend="1614"/>
+    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="1493" column="1" bodyfile="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" bodystart="1493" bodyend="1614"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexPQDecoder</scope><name>accum</name></member>

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="GpuIndicesOptions_8h" kind="file" language="C++">
     <compoundname>GpuIndicesOptions.h</compoundname>
-    <includedby refid="GpuClonerOptions_8h" local="no">faiss/gpu/GpuClonerOptions.h</includedby>
     <includedby refid="GpuCloner_8h" local="no">faiss/gpu/GpuCloner.h</includedby>
+    <includedby refid="GpuClonerOptions_8h" local="no">faiss/gpu/GpuClonerOptions.h</includedby>
     <includedby refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includedby>
     <invincdepgraph>
       <node id="4">
@@ -16,10 +16,10 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="3">
         <label>faiss/gpu/GpuClonerOptions.h</label>
         <link refid="GpuClonerOptions_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -44,7 +44,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="3">
+      <node id="2">
         <label>faiss/gpu/GpuCloner.h</label>
         <link refid="GpuCloner_8h_source"/>
       </node>

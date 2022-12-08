@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ParameterRange" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ParameterRange</compoundname>
     <includes refid="AutoTune_8h" local="no">AutoTune.h</includes>
@@ -36,7 +36,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/AutoTune.h" line="125" column="21" bodyfile="faiss/AutoTune.h" bodystart="125" bodyend="128"/>
+    <location file="faiss/AutoTune.h" line="125" column="1" bodyfile="faiss/AutoTune.h" bodystart="125" bodyend="128"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ParameterRange_1a5db7cd6389a8303c7fb98d668b9a7625" prot="public" virt="non-virtual"><scope>faiss::ParameterRange</scope><name>name</name></member>
       <member refid="structfaiss_1_1ParameterRange_1a5e4f4836fe1f0c9be007c8009a068c7a" prot="public" virt="non-virtual"><scope>faiss::ParameterRange</scope><name>values</name></member>

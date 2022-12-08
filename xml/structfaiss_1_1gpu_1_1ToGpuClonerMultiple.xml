@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::ToGpuClonerMultiple</compoundname>
     <basecompoundref refid="structfaiss_1_1Cloner" prot="public" virt="non-virtual">faiss::Cloner</basecompoundref>
@@ -344,7 +344,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuCloner.h" line="43" column="66" bodyfile="faiss/gpu/GpuCloner.h" bodystart="43" bodyend="65"/>
+    <location file="faiss/gpu/GpuCloner.h" line="43" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="43" bodyend="65"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a6704701942e76bff3e2445c41d67deff" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1a71f1471f9d5e56bd73be48c575041a66" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuClonerMultiple</scope><name>clone_Index_to_shards</name></member>

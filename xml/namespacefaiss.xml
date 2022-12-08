@@ -1,94 +1,88 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacefaiss" kind="namespace" language="C++">
     <compoundname>faiss</compoundname>
-    <innerclass refid="structfaiss_1_1AdditiveCoarseQuantizer" prot="public">faiss::AdditiveCoarseQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1AlignedTable" prot="public">faiss::AlignedTable</innerclass>
-    <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
-    <innerclass refid="structfaiss_1_1ArrayInvertedLists" prot="public">faiss::ArrayInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1AutoTuneCriterion" prot="public">faiss::AutoTuneCriterion</innerclass>
-    <innerclass refid="structfaiss_1_1BinaryInvertedListScanner" prot="public">faiss::BinaryInvertedListScanner</innerclass>
-    <innerclass refid="structfaiss_1_1BitstringReader" prot="public">faiss::BitstringReader</innerclass>
-    <innerclass refid="structfaiss_1_1BitstringWriter" prot="public">faiss::BitstringWriter</innerclass>
-    <innerclass refid="structfaiss_1_1BlockInvertedLists" prot="public">faiss::BlockInvertedLists</innerclass>
-    <innerclass refid="structfaiss_1_1BlockInvertedListsIOHook" prot="public">faiss::BlockInvertedListsIOHook</innerclass>
-    <innerclass refid="structfaiss_1_1CenteringTransform" prot="public">faiss::CenteringTransform</innerclass>
+    <innerclass refid="structfaiss_1_1OneRecallAtRCriterion" prot="public">faiss::OneRecallAtRCriterion</innerclass>
+    <innerclass refid="structfaiss_1_1IntersectionCriterion" prot="public">faiss::IntersectionCriterion</innerclass>
+    <innerclass refid="structfaiss_1_1OperatingPoint" prot="public">faiss::OperatingPoint</innerclass>
+    <innerclass refid="structfaiss_1_1OperatingPoints" prot="public">faiss::OperatingPoints</innerclass>
+    <innerclass refid="structfaiss_1_1ParameterRange" prot="public">faiss::ParameterRange</innerclass>
+    <innerclass refid="structfaiss_1_1ParameterSpace" prot="public">faiss::ParameterSpace</innerclass>
     <innerclass refid="structfaiss_1_1Cloner" prot="public">faiss::Cloner</innerclass>
+    <innerclass refid="structfaiss_1_1ClusteringParameters" prot="public">faiss::ClusteringParameters</innerclass>
+    <innerclass refid="structfaiss_1_1ClusteringIterationStats" prot="public">faiss::ClusteringIterationStats</innerclass>
     <innerclass refid="structfaiss_1_1Clustering" prot="public">faiss::Clustering</innerclass>
     <innerclass refid="structfaiss_1_1Clustering1D" prot="public">faiss::Clustering1D</innerclass>
-    <innerclass refid="structfaiss_1_1ClusteringIterationStats" prot="public">faiss::ClusteringIterationStats</innerclass>
-    <innerclass refid="structfaiss_1_1ClusteringParameters" prot="public">faiss::ClusteringParameters</innerclass>
-    <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
-    <innerclass refid="structfaiss_1_1CMin" prot="public">faiss::CMin</innerclass>
-    <innerclass refid="structfaiss_1_1DirectMap" prot="public">faiss::DirectMap</innerclass>
-    <innerclass refid="structfaiss_1_1DirectMapAdd" prot="public">faiss::DirectMapAdd</innerclass>
-    <innerclass refid="structfaiss_1_1FastScanStats" prot="public">faiss::FastScanStats</innerclass>
-    <innerclass refid="structfaiss_1_1GenHammingComputer16" prot="public">faiss::GenHammingComputer16</innerclass>
-    <innerclass refid="structfaiss_1_1GenHammingComputer32" prot="public">faiss::GenHammingComputer32</innerclass>
-    <innerclass refid="structfaiss_1_1GenHammingComputer8" prot="public">faiss::GenHammingComputer8</innerclass>
-    <innerclass refid="structfaiss_1_1GenHammingComputerM8" prot="public">faiss::GenHammingComputerM8</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer16" prot="public">faiss::HammingComputer16</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer20" prot="public">faiss::HammingComputer20</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer32" prot="public">faiss::HammingComputer32</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer4" prot="public">faiss::HammingComputer4</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer64" prot="public">faiss::HammingComputer64</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputer8" prot="public">faiss::HammingComputer8</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputerDefault" prot="public">faiss::HammingComputerDefault</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputerM4" prot="public">faiss::HammingComputerM4</innerclass>
-    <innerclass refid="structfaiss_1_1HammingComputerM8" prot="public">faiss::HammingComputerM8</innerclass>
-    <innerclass refid="structfaiss_1_1HCounterState" prot="public">faiss::HCounterState</innerclass>
-    <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
-    <innerclass refid="structfaiss_1_1HStackInvertedLists" prot="public">faiss::HStackInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimClusteringParameters" prot="public">faiss::ProgressiveDimClusteringParameters</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimIndexFactory" prot="public">faiss::ProgressiveDimIndexFactory</innerclass>
+    <innerclass refid="structfaiss_1_1ProgressiveDimClustering" prot="public">faiss::ProgressiveDimClustering</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParameters" prot="public">faiss::SearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1Index" prot="public">faiss::Index</innerclass>
     <innerclass refid="structfaiss_1_1Index2Layer" prot="public">faiss::Index2Layer</innerclass>
     <innerclass refid="structfaiss_1_1IndexAdditiveQuantizer" prot="public">faiss::IndexAdditiveQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexResidualQuantizer" prot="public">faiss::IndexResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizer" prot="public">faiss::IndexLocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizer" prot="public">faiss::IndexProductResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizer" prot="public">faiss::IndexProductLocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1AdditiveCoarseQuantizer" prot="public">faiss::AdditiveCoarseQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1ResidualCoarseQuantizer" prot="public">faiss::ResidualCoarseQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1LocalSearchCoarseQuantizer" prot="public">faiss::LocalSearchCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" prot="public">faiss::IndexAdditiveQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexResidualQuantizerFastScan" prot="public">faiss::IndexResidualQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizerFastScan" prot="public">faiss::IndexLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" prot="public">faiss::IndexProductResidualQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexProductLocalSearchQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinary" prot="public">faiss::IndexBinary</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryFlat" prot="public">faiss::IndexBinaryFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryFromFloat" prot="public">faiss::IndexBinaryFromFloat</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryHash" prot="public">faiss::IndexBinaryHash</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryHashStats" prot="public">faiss::IndexBinaryHashStats</innerclass>
+    <innerclass refid="structfaiss_1_1IndexBinaryMultiHash" prot="public">faiss::IndexBinaryMultiHash</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryHNSW" prot="public">faiss::IndexBinaryHNSW</innerclass>
     <innerclass refid="structfaiss_1_1IndexBinaryIVF" prot="public">faiss::IndexBinaryIVF</innerclass>
-    <innerclass refid="structfaiss_1_1IndexBinaryMultiHash" prot="public">faiss::IndexBinaryMultiHash</innerclass>
+    <innerclass refid="structfaiss_1_1BinaryInvertedListScanner" prot="public">faiss::BinaryInvertedListScanner</innerclass>
     <innerclass refid="structfaiss_1_1IndexFastScan" prot="public">faiss::IndexFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1FastScanStats" prot="public">faiss::FastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlat" prot="public">faiss::IndexFlat</innerclass>
-    <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
-    <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatIP" prot="public">faiss::IndexFlatIP</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatL2" prot="public">faiss::IndexFlatL2</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
+    <innerclass refid="structfaiss_1_1ReconstructFromNeighbors" prot="public">faiss::ReconstructFromNeighbors</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW" prot="public">faiss::IndexHNSW</innerclass>
-    <innerclass refid="structfaiss_1_1IndexHNSW2Level" prot="public">faiss::IndexHNSW2Level</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWFlat" prot="public">faiss::IndexHNSWFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWPQ" prot="public">faiss::IndexHNSWPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWSQ" prot="public">faiss::IndexHNSWSQ</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
+    <innerclass refid="structfaiss_1_1IndexHNSW2Level" prot="public">faiss::IndexHNSW2Level</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMapTemplate" prot="public">faiss::IndexIDMapTemplate</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
+    <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParametersIVF" prot="public">faiss::SearchParametersIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVF" prot="public">faiss::IndexIVF</innerclass>
+    <innerclass refid="structfaiss_1_1InvertedListScanner" prot="public">faiss::InvertedListScanner</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFStats" prot="public">faiss::IndexIVFStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFAdditiveQuantizer" prot="public">faiss::IndexIVFAdditiveQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizer" prot="public">faiss::IndexIVFResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizer" prot="public">faiss::IndexIVFLocalSearchQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizer" prot="public">faiss::IndexIVFProductResidualQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizer" prot="public">faiss::IndexIVFProductLocalSearchQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan" prot="public">faiss::IndexIVFAdditiveQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public">faiss::IndexIVFResidualQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFProductLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan" prot="public">faiss::IndexIVFProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFastScan" prot="public">faiss::IndexIVFFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlat" prot="public">faiss::IndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlatDedup" prot="public">faiss::IndexIVFFlatDedup</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizer" prot="public">faiss::IndexIVFLocalSearchQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFLocalSearchQuantizerFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1IVFPQSearchParameters" prot="public">faiss::IVFPQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQ" prot="public">faiss::IndexIVFPQ</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFPQStats" prot="public">faiss::IndexIVFPQStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQFastScan" prot="public">faiss::IndexIVFPQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQR" prot="public">faiss::IndexIVFPQR</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFPQStats" prot="public">faiss::IndexIVFPQStats</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizer" prot="public">faiss::IndexIVFProductLocalSearchQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexIVFProductLocalSearchQuantizerFastScan</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizer" prot="public">faiss::IndexIVFProductResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFProductResidualQuantizerFastScan" prot="public">faiss::IndexIVFProductResidualQuantizerFastScan</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizer" prot="public">faiss::IndexIVFResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFResidualQuantizerFastScan" prot="public">faiss::IndexIVFResidualQuantizerFastScan</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFSpectralHash" prot="public">faiss::IndexIVFSpectralHash</innerclass>
-    <innerclass refid="structfaiss_1_1IndexIVFStats" prot="public">faiss::IndexIVFStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexLattice" prot="public">faiss::IndexLattice</innerclass>
-    <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizer" prot="public">faiss::IndexLocalSearchQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexLocalSearchQuantizerFastScan" prot="public">faiss::IndexLocalSearchQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexLSH" prot="public">faiss::IndexLSH</innerclass>
     <innerclass refid="structfaiss_1_1IndexNNDescent" prot="public">faiss::IndexNNDescent</innerclass>
     <innerclass refid="structfaiss_1_1IndexNNDescentFlat" prot="public">faiss::IndexNNDescentFlat</innerclass>
@@ -97,75 +91,81 @@
     <innerclass refid="structfaiss_1_1IndexNSGPQ" prot="public">faiss::IndexNSGPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexNSGSQ" prot="public">faiss::IndexNSGSQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQ" prot="public">faiss::IndexPQ</innerclass>
-    <innerclass refid="structfaiss_1_1IndexPQFastScan" prot="public">faiss::IndexPQFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParametersPQ" prot="public">faiss::SearchParametersPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexPQStats" prot="public">faiss::IndexPQStats</innerclass>
+    <innerclass refid="structfaiss_1_1MultiIndexQuantizer" prot="public">faiss::MultiIndexQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1MultiIndexQuantizer2" prot="public">faiss::MultiIndexQuantizer2</innerclass>
+    <innerclass refid="structfaiss_1_1IndexPQFastScan" prot="public">faiss::IndexPQFastScan</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
     <innerclass refid="structfaiss_1_1IndexPreTransform" prot="public">faiss::IndexPreTransform</innerclass>
-    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizer" prot="public">faiss::IndexProductLocalSearchQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" prot="public">faiss::IndexProductLocalSearchQuantizerFastScan</innerclass>
-    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizer" prot="public">faiss::IndexProductResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" prot="public">faiss::IndexProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>
-    <innerclass refid="structfaiss_1_1IndexResidualQuantizer" prot="public">faiss::IndexResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1IndexResidualQuantizerFastScan" prot="public">faiss::IndexResidualQuantizerFastScan</innerclass>
-    <innerclass refid="structfaiss_1_1IndexRowwiseMinMax" prot="public">faiss::IndexRowwiseMinMax</innerclass>
     <innerclass refid="structfaiss_1_1IndexRowwiseMinMaxBase" prot="public">faiss::IndexRowwiseMinMaxBase</innerclass>
     <innerclass refid="structfaiss_1_1IndexRowwiseMinMaxFP16" prot="public">faiss::IndexRowwiseMinMaxFP16</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRowwiseMinMax" prot="public">faiss::IndexRowwiseMinMax</innerclass>
     <innerclass refid="structfaiss_1_1IndexScalarQuantizer" prot="public">faiss::IndexScalarQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexShardsTemplate" prot="public">faiss::IndexShardsTemplate</innerclass>
-    <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
-    <innerclass refid="structfaiss_1_1IntersectionCriterion" prot="public">faiss::IntersectionCriterion</innerclass>
+    <innerclass refid="structfaiss_1_1BlockInvertedLists" prot="public">faiss::BlockInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1BlockInvertedListsIOHook" prot="public">faiss::BlockInvertedListsIOHook</innerclass>
+    <innerclass refid="structfaiss_1_1DirectMap" prot="public">faiss::DirectMap</innerclass>
+    <innerclass refid="structfaiss_1_1DirectMapAdd" prot="public">faiss::DirectMapAdd</innerclass>
     <innerclass refid="structfaiss_1_1InvertedLists" prot="public">faiss::InvertedLists</innerclass>
-    <innerclass refid="structfaiss_1_1InvertedListScanner" prot="public">faiss::InvertedListScanner</innerclass>
-    <innerclass refid="structfaiss_1_1InvertedListsIOHook" prot="public">faiss::InvertedListsIOHook</innerclass>
-    <innerclass refid="structfaiss_1_1ITQMatrix" prot="public">faiss::ITQMatrix</innerclass>
-    <innerclass refid="structfaiss_1_1ITQTransform" prot="public">faiss::ITQTransform</innerclass>
-    <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
-    <innerclass refid="structfaiss_1_1IVFPQSearchParameters" prot="public">faiss::IVFPQSearchParameters</innerclass>
-    <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
-    <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
-    <innerclass refid="structfaiss_1_1LocalSearchCoarseQuantizer" prot="public">faiss::LocalSearchCoarseQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1ArrayInvertedLists" prot="public">faiss::ArrayInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1ReadOnlyInvertedLists" prot="public">faiss::ReadOnlyInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1HStackInvertedLists" prot="public">faiss::HStackInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1SliceInvertedLists" prot="public">faiss::SliceInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1VStackInvertedLists" prot="public">faiss::VStackInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1MaskedInvertedLists" prot="public">faiss::MaskedInvertedLists</innerclass>
-    <innerclass refid="structfaiss_1_1MatrixStats" prot="public">faiss::MatrixStats</innerclass>
-    <innerclass refid="structfaiss_1_1MultiIndexQuantizer" prot="public">faiss::MultiIndexQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1MultiIndexQuantizer2" prot="public">faiss::MultiIndexQuantizer2</innerclass>
-    <innerclass refid="structfaiss_1_1NormalizationTransform" prot="public">faiss::NormalizationTransform</innerclass>
+    <innerclass refid="structfaiss_1_1StopWordsInvertedLists" prot="public">faiss::StopWordsInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1InvertedListsIOHook" prot="public">faiss::InvertedListsIOHook</innerclass>
+    <innerclass refid="structfaiss_1_1OnDiskOneList" prot="public">faiss::OnDiskOneList</innerclass>
     <innerclass refid="structfaiss_1_1OnDiskInvertedLists" prot="public">faiss::OnDiskInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1OnDiskInvertedListsIOHook" prot="public">faiss::OnDiskInvertedListsIOHook</innerclass>
-    <innerclass refid="structfaiss_1_1OnDiskOneList" prot="public">faiss::OnDiskOneList</innerclass>
-    <innerclass refid="structfaiss_1_1OneRecallAtRCriterion" prot="public">faiss::OneRecallAtRCriterion</innerclass>
-    <innerclass refid="structfaiss_1_1OperatingPoint" prot="public">faiss::OperatingPoint</innerclass>
-    <innerclass refid="structfaiss_1_1OperatingPoints" prot="public">faiss::OperatingPoints</innerclass>
-    <innerclass refid="structfaiss_1_1OPQMatrix" prot="public">faiss::OPQMatrix</innerclass>
-    <innerclass refid="structfaiss_1_1ParameterRange" prot="public">faiss::ParameterRange</innerclass>
-    <innerclass refid="structfaiss_1_1ParameterSpace" prot="public">faiss::ParameterSpace</innerclass>
-    <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
-    <innerclass refid="structfaiss_1_1PCAMatrix" prot="public">faiss::PCAMatrix</innerclass>
-    <innerclass refid="structfaiss_1_1ProgressiveDimClustering" prot="public">faiss::ProgressiveDimClustering</innerclass>
-    <innerclass refid="structfaiss_1_1ProgressiveDimClusteringParameters" prot="public">faiss::ProgressiveDimClusteringParameters</innerclass>
-    <innerclass refid="structfaiss_1_1ProgressiveDimIndexFactory" prot="public">faiss::ProgressiveDimIndexFactory</innerclass>
-    <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
-    <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
-    <innerclass refid="structfaiss_1_1ReadOnlyInvertedLists" prot="public">faiss::ReadOnlyInvertedLists</innerclass>
-    <innerclass refid="structfaiss_1_1ReconstructFromNeighbors" prot="public">faiss::ReconstructFromNeighbors</innerclass>
-    <innerclass refid="structfaiss_1_1RemapDimensionsTransform" prot="public">faiss::RemapDimensionsTransform</innerclass>
-    <innerclass refid="structfaiss_1_1ResidualCoarseQuantizer" prot="public">faiss::ResidualCoarseQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1SearchParameters" prot="public">faiss::SearchParameters</innerclass>
-    <innerclass refid="structfaiss_1_1SearchParametersIVF" prot="public">faiss::SearchParametersIVF</innerclass>
-    <innerclass refid="structfaiss_1_1SearchParametersPQ" prot="public">faiss::SearchParametersPQ</innerclass>
-    <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
-    <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
-    <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
-    <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>
-    <innerclass refid="structfaiss_1_1simd8float32" prot="public">faiss::simd8float32</innerclass>
-    <innerclass refid="structfaiss_1_1simd8uint32" prot="public">faiss::simd8uint32</innerclass>
-    <innerclass refid="structfaiss_1_1SliceInvertedLists" prot="public">faiss::SliceInvertedLists</innerclass>
-    <innerclass refid="structfaiss_1_1StopWordsInvertedLists" prot="public">faiss::StopWordsInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1MatrixStats" prot="public">faiss::MatrixStats</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
+    <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
+    <innerclass refid="structfaiss_1_1AlignedTable" prot="public">faiss::AlignedTable</innerclass>
     <innerclass refid="structfaiss_1_1VectorDistance" prot="public">faiss::VectorDistance</innerclass>
-    <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
-    <innerclass refid="structfaiss_1_1VStackInvertedLists" prot="public">faiss::VStackInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer4" prot="public">faiss::HammingComputer4</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer8" prot="public">faiss::HammingComputer8</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer16" prot="public">faiss::HammingComputer16</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer20" prot="public">faiss::HammingComputer20</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer32" prot="public">faiss::HammingComputer32</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer64" prot="public">faiss::HammingComputer64</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputerDefault" prot="public">faiss::HammingComputerDefault</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputerM8" prot="public">faiss::HammingComputerM8</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputerM4" prot="public">faiss::HammingComputerM4</innerclass>
+    <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
+    <innerclass refid="structfaiss_1_1GenHammingComputer8" prot="public">faiss::GenHammingComputer8</innerclass>
+    <innerclass refid="structfaiss_1_1GenHammingComputer16" prot="public">faiss::GenHammingComputer16</innerclass>
+    <innerclass refid="structfaiss_1_1GenHammingComputer32" prot="public">faiss::GenHammingComputer32</innerclass>
+    <innerclass refid="structfaiss_1_1GenHammingComputerM8" prot="public">faiss::GenHammingComputerM8</innerclass>
+    <innerclass refid="structfaiss_1_1HCounterState" prot="public">faiss::HCounterState</innerclass>
+    <innerclass refid="structfaiss_1_1BitstringWriter" prot="public">faiss::BitstringWriter</innerclass>
+    <innerclass refid="structfaiss_1_1BitstringReader" prot="public">faiss::BitstringReader</innerclass>
+    <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
+    <innerclass refid="structfaiss_1_1CMax" prot="public">faiss::CMax</innerclass>
+    <innerclass refid="structfaiss_1_1CMin" prot="public">faiss::CMin</innerclass>
+    <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
+    <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
+    <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
+    <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
+    <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>
+    <innerclass refid="structfaiss_1_1simd8uint32" prot="public">faiss::simd8uint32</innerclass>
+    <innerclass refid="structfaiss_1_1simd8float32" prot="public">faiss::simd8float32</innerclass>
     <innerclass refid="classfaiss_1_1WorkerThread" prot="public">faiss::WorkerThread</innerclass>
+    <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
+    <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
+    <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1PCAMatrix" prot="public">faiss::PCAMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1ITQMatrix" prot="public">faiss::ITQMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1ITQTransform" prot="public">faiss::ITQTransform</innerclass>
+    <innerclass refid="structfaiss_1_1OPQMatrix" prot="public">faiss::OPQMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1RemapDimensionsTransform" prot="public">faiss::RemapDimensionsTransform</innerclass>
+    <innerclass refid="structfaiss_1_1NormalizationTransform" prot="public">faiss::NormalizationTransform</innerclass>
+    <innerclass refid="structfaiss_1_1CenteringTransform" prot="public">faiss::CenteringTransform</innerclass>
     <innernamespace refid="namespacefaiss_1_1cppcontrib">faiss::cppcontrib</innernamespace>
     <innernamespace refid="namespacefaiss_1_1detail">faiss::detail</innernamespace>
     <innernamespace refid="namespacefaiss_1_1gpu">faiss::gpu</innernamespace>
@@ -248,7 +248,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="22" column="16" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="34"/>
+        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="34"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
@@ -380,7 +380,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="267" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="267" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="287" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="287" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>
@@ -584,7 +584,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="429" column="23" declfile="faiss/IndexIVF.h" declline="429" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="425" column="23" declfile="faiss/IndexIVF.h" declline="425" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -597,7 +597,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="447" column="32" declfile="faiss/IndexIVF.h" declline="447" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="443" column="32" declfile="faiss/IndexIVF.h" declline="443" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -6836,6 +6836,6 @@
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </para>
     </detaileddescription>
-    <location file="faiss/AutoTune.h" line="20" column="15"/>
+    <location file="faiss/AutoTune.h" line="20" column="1"/>
   </compounddef>
 </doxygen>

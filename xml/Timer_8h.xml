@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="Timer_8h" kind="file" language="C++">
     <compoundname>Timer.h</compoundname>
     <includes local="no">cuda_runtime.h</includes>
@@ -49,16 +49,16 @@
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="19"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Constructor<sp/>starts<sp/>the<sp/>timer<sp/>and<sp/>adds<sp/>an<sp/>event<sp/>into<sp/>the<sp/>current</highlight></codeline>
 <codeline lineno="20"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>device<sp/>stream</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" kindref="member">KernelTimer</ref>(cudaStream_t<sp/>stream<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="21" refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" kindref="member">KernelTimer</ref>(cudaStream_t<sp/>stream<sp/>=<sp/>0);</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Destructor<sp/>releases<sp/>event<sp/>resources</highlight></codeline>
-<codeline lineno="24"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" kindref="member">~KernelTimer</ref>();</highlight></codeline>
+<codeline lineno="24" refid="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1af9883350bf0732b2452f1ce4670266fa" kindref="member">~KernelTimer</ref>();</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Adds<sp/>a<sp/>stop<sp/>event<sp/>then<sp/>synchronizes<sp/>on<sp/>the<sp/>stop<sp/>event<sp/>to<sp/>get<sp/>the</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>actual<sp/>GPU-side<sp/>kernel<sp/>timings<sp/>for<sp/>any<sp/>kernels<sp/>launched<sp/>in<sp/>the</highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>current<sp/>stream.<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>milliseconds<sp/>elapsed.</highlight></codeline>
 <codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Can<sp/>only<sp/>be<sp/>called<sp/>once.</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
+<codeline lineno="30" refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaEvent_t<sp/>startEvent_;</highlight></codeline>
@@ -71,10 +71,10 @@
 <codeline lineno="40" refid="classfaiss_1_1gpu_1_1CpuTimer" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1gpu_1_1CpuTimer" kindref="compound">CpuTimer</ref><sp/>{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Creates<sp/>and<sp/>starts<sp/>a<sp/>new<sp/>timer</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kindref="member">CpuTimer</ref>();</highlight></codeline>
+<codeline lineno="43" refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kindref="member">CpuTimer</ref>();</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>elapsed<sp/>time<sp/>in<sp/>milliseconds</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
+<codeline lineno="46" refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1gpu_1_1CpuTimer_1a4a2795debf10bc7eb904d62356e41f0d" kindref="member">elapsedMilliseconds</ref>();</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>std::chrono::time_point&lt;std::chrono::steady_clock&gt;<sp/>start_;</highlight></codeline>

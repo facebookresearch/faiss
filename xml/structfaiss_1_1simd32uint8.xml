@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd32uint8" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd32uint8</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd32uint8_1a0a028edc495908ef1381853d560aa0d8" prot="public" static="no" mutable="no">
@@ -1068,6 +1069,8 @@
         <link refid="structfaiss_1_1simd32uint8"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::simd256bit</label>
@@ -1080,13 +1083,15 @@
         <link refid="structfaiss_1_1simd32uint8"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::simd256bit</label>
         <link refid="structfaiss_1_1simd256bit"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_avx2.h" line="259" column="29" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="259" bodyend="332"/>
+    <location file="faiss/utils/simdlib_avx2.h" line="259" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="259" bodyend="332"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd32uint8_1a9f7464bbf7c64bbf4dc98bc798f96eb3" prot="public" virt="non-virtual"><scope>faiss::simd32uint8</scope><name>bin</name></member>
       <member refid="structfaiss_1_1simd32uint8_1a17f5d20835c2db40bc629cbff8cd369f" prot="public" virt="non-virtual"><scope>faiss::simd32uint8</scope><name>bin</name></member>

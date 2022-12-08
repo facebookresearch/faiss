@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1AllocInfo" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::AllocInfo</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public" virt="non-virtual">faiss::gpu::AllocRequest</derivedcompoundref>
@@ -138,7 +138,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="84" column="16" bodyfile="faiss/gpu/GpuResources.h" bodystart="84" bodyend="115"/>
+    <location file="faiss/gpu/GpuResources.h" line="84" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="84" bodyend="115"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a9f0952aebd52122e8c9a304653a6c321" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>
       <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a37c06c3cfa2bd56b6f93a4e7d732ace5" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>

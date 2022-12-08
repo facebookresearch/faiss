@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1OnDiskInvertedLists_1_1Slot" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OnDiskInvertedLists::Slot</compoundname>
       <sectiondef kind="public-attrib">
@@ -70,7 +70,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/invlists/OnDiskInvertedLists.h" line="66" column="15" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="66" bodyend="71"/>
+    <location file="faiss/invlists/OnDiskInvertedLists.h" line="66" column="5" bodyfile="faiss/invlists/OnDiskInvertedLists.h" bodystart="66" bodyend="71"/>
     <listofallmembers>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1a951bfd38d5e79339607aae033e9646ac" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists::Slot</scope><name>capacity</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1_1Slot_1a9a8e27932a37a7b7a2a8bef7758bc837" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists::Slot</scope><name>offset</name></member>

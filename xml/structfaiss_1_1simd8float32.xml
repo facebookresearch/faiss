@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd8float32" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd8float32</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1simd8float32_1ab83d945254427a5965b2d063a9933689" prot="public" static="no" mutable="no">
@@ -997,6 +998,8 @@
         <link refid="structfaiss_1_1simd8float32"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
@@ -1009,9 +1012,11 @@
         <link refid="structfaiss_1_1simd8float32"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_avx2.h" line="417" column="30" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="417" bodyend="474"/>
+    <location file="faiss/utils/simdlib_avx2.h" line="417" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="417" bodyend="474"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd8float32_1a99a3ff736770cd8a9eb44d33c3222819" prot="public" virt="non-virtual"><scope>faiss::simd8float32</scope><name>bin</name></member>
       <member refid="structfaiss_1_1simd8float32_1a478115a4e114b9887a6c1ae1e10faae4" prot="public" virt="non-virtual"><scope>faiss::simd8float32</scope><name>bin</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder" kind="struct" language="C++" prot="public">
     <compoundname>faiss::cppcontrib::Index2LevelDecoder</compoundname>
     <includes refid="Level2-inl_8h" local="no">Level2-inl.h</includes>
@@ -952,7 +952,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1863" column="25" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1863" bodyend="2054"/>
+    <location file="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" line="1863" column="1" bodyfile="faiss/cppcontrib/sa_decode/Level2-avx2-inl.h" bodystart="1863" bodyend="2054"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a89c63e4403b8e07fb6be5635fd3d8fc5" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1Index2LevelDecoder_1a379bd14b5a8fa7ef3c72fe123b6643e0" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::Index2LevelDecoder</scope><name>accum</name></member>

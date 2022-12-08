@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="quantize__lut_8h" kind="file" language="C++">
     <compoundname>quantize_lut.h</compoundname>
     <includes local="no">cstdint</includes>
@@ -93,7 +93,7 @@
 <codeline lineno="64"><highlight class="comment"><sp/>*<sp/><sp/>-<sp/>a,<sp/>b:<sp/>scalars<sp/>to<sp/>approximate<sp/>the<sp/>true<sp/>distance</highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="66"><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" kindref="member">quantize_LUT_and_bias</ref>(</highlight></codeline>
+<codeline lineno="67" refid="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" kindref="member">quantize_LUT_and_bias</ref>(</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nprobe,</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ksub,</highlight></codeline>

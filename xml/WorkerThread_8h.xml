@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="WorkerThread_8h" kind="file" language="C++">
     <compoundname>WorkerThread.h</compoundname>
     <includes local="no">condition_variable</includes>
@@ -61,21 +61,21 @@
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="21"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Stops<sp/>and<sp/>waits<sp/>for<sp/>the<sp/>worker<sp/>thread<sp/>to<sp/>exit,<sp/>flushing<sp/>all</highlight></codeline>
 <codeline lineno="22"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>pending<sp/>lambdas</highlight></codeline>
-<codeline lineno="23"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1" kindref="member">~WorkerThread</ref>();</highlight></codeline>
+<codeline lineno="23" refid="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1WorkerThread_1abe8c60d6c08a7287013d82c7b77bc8b1" kindref="member">~WorkerThread</ref>();</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="25"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Request<sp/>that<sp/>the<sp/>worker<sp/>thread<sp/>stop<sp/>itself</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857" kindref="member">stop</ref>();</highlight></codeline>
+<codeline lineno="26" refid="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1WorkerThread_1a5230264fa557f6d77c5fed5601a8c857" kindref="member">stop</ref>();</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Blocking<sp/>waits<sp/>in<sp/>the<sp/>current<sp/>thread<sp/>for<sp/>the<sp/>worker<sp/>thread<sp/>to</highlight></codeline>
 <codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>stop</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc" kindref="member">waitForThreadExit</ref>();</highlight></codeline>
+<codeline lineno="30" refid="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1WorkerThread_1a29c8cfced812372adb93440545c05edc" kindref="member">waitForThreadExit</ref>();</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Adds<sp/>a<sp/>lambda<sp/>to<sp/>run<sp/>on<sp/>the<sp/>worker<sp/>thread;<sp/>returns<sp/>a<sp/>future<sp/>that</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>can<sp/>be<sp/>used<sp/>to<sp/>block<sp/>on<sp/>its<sp/>completion.</highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Future<sp/>status<sp/>is<sp/>`true`<sp/>if<sp/>the<sp/>lambda<sp/>was<sp/>run<sp/>in<sp/>the<sp/>worker</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>thread;<sp/>`false`<sp/>if<sp/>it<sp/>was<sp/>not<sp/>run,<sp/>because<sp/>the<sp/>worker<sp/>thread<sp/>is</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>exiting<sp/>or<sp/>has<sp/>exited.</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::future&lt;bool&gt;<sp/><ref refid="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" kindref="member">add</ref>(std::function&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">()&gt;<sp/>f);</highlight></codeline>
+<codeline lineno="37" refid="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::future&lt;bool&gt;<sp/><ref refid="classfaiss_1_1WorkerThread_1a498e03ba7e352e477d15d99d20724b50" kindref="member">add</ref>(std::function&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">()&gt;<sp/>f);</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>startThread();</highlight></codeline>

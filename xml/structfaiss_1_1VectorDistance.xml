@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorDistance" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VectorDistance</compoundname>
     <templateparamlist>
@@ -247,7 +247,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/extra_distances-inl.h" line="17" column="21" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="17" bodyend="28"/>
+    <location file="faiss/utils/extra_distances-inl.h" line="17" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="17" bodyend="28"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorDistance_1a85d19dd7d7c2e1d9039c172fd1490ea2" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>C</name></member>
       <member refid="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>d</name></member>

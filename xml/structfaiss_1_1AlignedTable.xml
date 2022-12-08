@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1AlignedTable" kind="struct" language="C++" prot="public">
     <compoundname>faiss::AlignedTable</compoundname>
     <templateparamlist>
@@ -265,7 +265,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/AlignedTable.h" line="113" column="19" bodyfile="faiss/utils/AlignedTable.h" bodystart="113" bodyend="174"/>
+    <location file="faiss/utils/AlignedTable.h" line="113" column="1" bodyfile="faiss/utils/AlignedTable.h" bodystart="113" bodyend="174"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AlignedTable_1a9df42e6d089361f2660ea055bea750af" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>AlignedTable</name></member>
       <member refid="structfaiss_1_1AlignedTable_1ab2d470841a876c31018c80de70f93032" prot="public" virt="non-virtual"><scope>faiss::AlignedTable</scope><name>AlignedTable</name></member>

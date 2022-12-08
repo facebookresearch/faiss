@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1BinaryInvertedListScanner" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::BinaryInvertedListScanner</compoundname>
       <sectiondef kind="public-func">
@@ -200,7 +200,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryIVF.h" line="211" column="32" bodyfile="faiss/IndexBinaryIVF.h" bodystart="211" bodyend="247"/>
+    <location file="faiss/IndexBinaryIVF.h" line="211" column="1" bodyfile="faiss/IndexBinaryIVF.h" bodystart="211" bodyend="247"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1ac33be0f074b682e9afc44bd7cf0741b2" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1BinaryInvertedListScanner_1a9ddb2bb0b513829b39528463c46f90f5" prot="public" virt="pure-virtual"><scope>faiss::BinaryInvertedListScanner</scope><name>scan_codes</name></member>

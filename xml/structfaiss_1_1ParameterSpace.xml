@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ParameterSpace" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ParameterSpace</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public" virt="non-virtual">faiss::gpu::GpuParameterSpace</derivedcompoundref>
@@ -408,7 +408,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/AutoTune.h" line="132" column="21" bodyfile="faiss/AutoTune.h" bodystart="132" bodyend="209"/>
+    <location file="faiss/AutoTune.h" line="132" column="1" bodyfile="faiss/AutoTune.h" bodystart="132" bodyend="209"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ParameterSpace_1a48fcb0d8a091c768dd59b4234c0733c1" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>add_range</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>batchsize</name></member>

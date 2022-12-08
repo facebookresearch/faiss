@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuProgressiveDimIndexFactory</compoundname>
     <basecompoundref refid="structfaiss_1_1ProgressiveDimIndexFactory" prot="public" virt="non-virtual">faiss::ProgressiveDimIndexFactory</basecompoundref>
@@ -151,7 +151,7 @@
         <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuCloner.h" line="85" column="63" bodyfile="faiss/gpu/GpuCloner.h" bodystart="85" bodyend="96"/>
+    <location file="faiss/gpu/GpuCloner.h" line="85" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="85" bodyend="96"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1ad88346e2195f1b0b9f55b267a889ef73" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>devices</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory_1a7dad261772a26571a1bb87dd90d1b709" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuProgressiveDimIndexFactory</scope><name>GpuProgressiveDimIndexFactory</name></member>

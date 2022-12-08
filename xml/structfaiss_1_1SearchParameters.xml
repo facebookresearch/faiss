@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1SearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::SearchParameters</compoundname>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</derivedcompoundref>
@@ -75,7 +75,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/Index.h" line="52" column="23" bodyfile="faiss/Index.h" bodystart="52" bodyend="57"/>
+    <location file="faiss/Index.h" line="52" column="1" bodyfile="faiss/Index.h" bodystart="52" bodyend="57"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParameters</scope><name>sel</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParameters</scope><name>~SearchParameters</name></member>

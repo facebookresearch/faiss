@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinary" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::IndexBinary</compoundname>
-    <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryFlat</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryFlat" prot="public" virt="non-virtual">faiss::IndexBinaryFlat</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryFromFloat" prot="public" virt="non-virtual">faiss::IndexBinaryFromFloat</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1IndexBinaryHash" prot="public" virt="non-virtual">faiss::IndexBinaryHash</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryHNSW" prot="public" virt="non-virtual">faiss::IndexBinaryHNSW</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexBinaryHash" prot="public" virt="non-virtual">faiss::IndexBinaryHash</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryIVF" prot="public" virt="non-virtual">faiss::IndexBinaryIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexBinaryMultiHash" prot="public" virt="non-virtual">faiss::IndexBinaryMultiHash</derivedcompoundref>
+    <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryFlat</derivedcompoundref>
     <includes refid="IndexBinary_8h" local="no">IndexBinary.h</includes>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" prot="public" static="no">
@@ -166,8 +166,8 @@
         <definition>virtual void faiss::IndexBinary::train</definition>
         <argsstring>(idx_t n, const uint8_t *x)</argsstring>
         <name>train</name>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a7de4bb8e82f0dae621c87b44cfb64404">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a4b4b1ba42e6af7c30ccbaf0fc0f38034">train</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -212,10 +212,10 @@
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a64b3ec0e12450654de038fd0abfbb367">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1ac4f01196a335a9b2433e5c16396c1fd7">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a2490dc0e115b19195372488d0b3163d0">add</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1aaa0eb1eca49892304ceaa11bd3a5ffa1">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryMultiHash_1a454cb87dd8ee1ce95f7aa02d9f7c0a21">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d">add</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1aaa0eb1eca49892304ceaa11bd3a5ffa1">add</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -290,9 +290,9 @@
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a1a840ece1387890382bb00bede19044c">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a7a7812438f41665abe536cf623680341">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a6c563fb3242d765abdc7974157e02bb6">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1ae8d7ab52b6ff6b3b43e6b2122f94424e">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a2edc9bfa055aa91e6674127335db8c44">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryMultiHash_1ad556aabde158ffd8c40644c005e87da0">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1ae8d7ab52b6ff6b3b43e6b2122f94424e">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a0e0b02bc84fa9d3980ee66bfe8a9089a">search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -475,13 +475,13 @@
         <definition>virtual void faiss::IndexBinary::reset</definition>
         <argsstring>()=0</argsstring>
         <name>reset</name>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1ac8f14dd3257963082fa638d24df244d6">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a487be675843e3146ee15bef3ee004a85">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a9032e8330c1a84e5c126acd73b0c0fe7">reset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9">reset</reimplementedby>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1ac8f14dd3257963082fa638d24df244d6">reset</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a9dfe26312102f0010940fd2fbdf87d85">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryMultiHash_1a00d897dd26ce53cdc826d116e97c8b7f">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1a9dfe26312102f0010940fd2fbdf87d85">reset</reimplementedby>
         <briefdescription>
 <para>Removes all elements from the database. </para>
         </briefdescription>
@@ -713,7 +713,7 @@
 <para>All queries are symmetric because there is no distinction between codes and vectors. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="6">
+      <node id="4">
         <label>faiss::IndexBinaryHNSW</label>
         <link refid="structfaiss_1_1IndexBinaryHNSW"/>
         <childnode refid="1" relation="public-inheritance">
@@ -725,31 +725,31 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
+      <node id="8">
         <label>faiss::gpu::GpuIndexBinaryFlat</label>
         <link refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="6">
         <label>faiss::IndexBinaryIVF</label>
         <link refid="structfaiss_1_1IndexBinaryIVF"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="7">
         <label>faiss::IndexBinaryMultiHash</label>
         <link refid="structfaiss_1_1IndexBinaryMultiHash"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="2">
         <label>faiss::IndexBinaryFlat</label>
         <link refid="structfaiss_1_1IndexBinaryFlat"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="3">
         <label>faiss::IndexBinaryFromFloat</label>
         <link refid="structfaiss_1_1IndexBinaryFromFloat"/>
         <childnode refid="1" relation="public-inheritance">
@@ -760,7 +760,7 @@
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/IndexBinary.h" line="34" column="18" bodyfile="faiss/IndexBinary.h" bodystart="34" bodyend="185"/>
+    <location file="faiss/IndexBinary.h" line="34" column="1" bodyfile="faiss/IndexBinary.h" bodystart="34" bodyend="185"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinary_1af04b1093cdebfea189e0e04da68794d7" prot="public" virt="pure-virtual"><scope>faiss::IndexBinary</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinary</scope><name>add_with_ids</name></member>

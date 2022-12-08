@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1Clustering" kind="struct" language="C++" prot="public">
     <compoundname>faiss::Clustering</compoundname>
     <basecompoundref refid="structfaiss_1_1ClusteringParameters" prot="public" virt="non-virtual">faiss::ClusteringParameters</basecompoundref>
@@ -431,7 +431,7 @@
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="63" column="38" bodyfile="faiss/Clustering.h" bodystart="63" bodyend="111"/>
+    <location file="faiss/Clustering.h" line="63" column="1" bodyfile="faiss/Clustering.h" bodystart="63" bodyend="111"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>centroids</name></member>
       <member refid="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>Clustering</name></member>

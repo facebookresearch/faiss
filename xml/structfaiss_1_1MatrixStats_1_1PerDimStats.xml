@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1MatrixStats_1_1PerDimStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats::PerDimStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -196,7 +196,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/MatrixStats.h" line="33" column="22" bodyfile="faiss/MatrixStats.h" bodystart="33" bodyend="45"/>
+    <location file="faiss/MatrixStats.h" line="33" column="5" bodyfile="faiss/MatrixStats.h" bodystart="33" bodyend="45"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1aa375fcebcf96dd460552e8a415d1d1b2" prot="public" virt="non-virtual"><scope>faiss::MatrixStats::PerDimStats</scope><name>add</name></member>
       <member refid="structfaiss_1_1MatrixStats_1_1PerDimStats_1ab2b27edb089cbe1d2faca98cc82d2aa0" prot="public" virt="non-virtual"><scope>faiss::MatrixStats::PerDimStats</scope><name>compute_mean_std</name></member>

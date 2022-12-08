@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1OperatingPoint" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OperatingPoint</compoundname>
     <includes refid="AutoTune_8h" local="no">AutoTune.h</includes>
@@ -67,7 +67,7 @@
 <para>Maintains a list of experimental results. Each operating point is a (perf, t, key) triplet, where higher perf and lower t is better. The key field is an arbitrary identifier for the operating point.</para>
 <para>Includes primitives to extract the Pareto-optimal operating points in the (perf, t) space. </para>
     </detaileddescription>
-    <location file="faiss/AutoTune.h" line="86" column="21" bodyfile="faiss/AutoTune.h" bodystart="86" bodyend="91"/>
+    <location file="faiss/AutoTune.h" line="86" column="1" bodyfile="faiss/AutoTune.h" bodystart="86" bodyend="91"/>
     <listofallmembers>
       <member refid="structfaiss_1_1OperatingPoint_1ac9f4b8e26b022e847e6cbbfc4aed22f1" prot="public" virt="non-virtual"><scope>faiss::OperatingPoint</scope><name>cno</name></member>
       <member refid="structfaiss_1_1OperatingPoint_1aa13782d6d26168531764cb64da941ced" prot="public" virt="non-virtual"><scope>faiss::OperatingPoint</scope><name>key</name></member>

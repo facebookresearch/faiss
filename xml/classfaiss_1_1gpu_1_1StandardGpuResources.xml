@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1StandardGpuResources" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::StandardGpuResources</compoundname>
     <basecompoundref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public" virt="non-virtual">faiss::gpu::GpuResourcesProvider</basecompoundref>
@@ -277,7 +277,7 @@
         <link refid="classfaiss_1_1gpu_1_1GpuResourcesProvider"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/StandardGpuResources.h" line="146" column="55" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="146" bodyend="202"/>
+    <location file="faiss/gpu/StandardGpuResources.h" line="146" column="1" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="146" bodyend="202"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a2d0caade01eb384bc82c2e8759a129a1" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getDefaultStream</name></member>
       <member refid="classfaiss_1_1gpu_1_1StandardGpuResources_1a9e0e2c7d7e9254c73546dc87d24ccbcf" prot="public" virt="non-virtual"><scope>faiss::gpu::StandardGpuResources</scope><name>getMemoryInfo</name></member>

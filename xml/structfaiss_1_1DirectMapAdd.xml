@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1DirectMapAdd" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DirectMapAdd</compoundname>
     <includes refid="DirectMap_8h" local="no">DirectMap.h</includes>
@@ -182,7 +182,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/invlists/DirectMap.h" line="93" column="19" bodyfile="faiss/invlists/DirectMap.h" bodystart="93" bodyend="110"/>
+    <location file="faiss/invlists/DirectMap.h" line="93" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="93" bodyend="110"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DirectMapAdd_1af80ac88a6ba7c8eb07c41e4c8cce70f6" prot="public" virt="non-virtual"><scope>faiss::DirectMapAdd</scope><name>add</name></member>
       <member refid="structfaiss_1_1DirectMapAdd_1a2e06dfbace35457f530a462f3efed280" prot="public" virt="non-virtual"><scope>faiss::DirectMapAdd</scope><name>all_ofs</name></member>

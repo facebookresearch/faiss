@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structPyCallbackIDSelector" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIDSelector</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">IDSelector</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="55" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="53" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="57" column="14"/>
+        <location file="faiss/python/python_callbacks.h" line="55" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="59" column="10"/>
+        <location file="faiss/python/python_callbacks.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIDSelector_1a959b614ccc4e5142a89ca2d0749de5d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="61" column="5"/>
+        <location file="faiss/python/python_callbacks.h" line="59" column="5"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -93,7 +93,7 @@
         <label>faiss::IDSelector</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/python/python_callbacks.h" line="52" column="45" bodyfile="faiss/python/python_callbacks.h" bodystart="52" bodyend="60"/>
+    <location file="faiss/python/python_callbacks.h" line="52" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="52" bodyend="60"/>
     <listofallmembers>
       <member refid="structPyCallbackIDSelector_1a6dec190dd2e853e4d4fade820db8f6e3" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>callback</name></member>
       <member refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74" prot="public" virt="non-virtual"><scope>PyCallbackIDSelector</scope><name>is_member</name></member>

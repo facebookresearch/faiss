@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinaryHash_1_1InvertedList" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryHash::InvertedList</compoundname>
       <sectiondef kind="public-attrib">
@@ -61,7 +61,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexBinaryHash.h" line="27" column="23" bodyfile="faiss/IndexBinaryHash.h" bodystart="27" bodyend="32"/>
+    <location file="faiss/IndexBinaryHash.h" line="27" column="5" bodyfile="faiss/IndexBinaryHash.h" bodystart="27" bodyend="32"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryHash_1_1InvertedList_1a8a2d55c9c12b9a5f4af4ba20d819b39a" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHash::InvertedList</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinaryHash_1_1InvertedList_1a8e8d2f8553144c139cbd1eb4ff4b0981" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHash::InvertedList</scope><name>ids</name></member>

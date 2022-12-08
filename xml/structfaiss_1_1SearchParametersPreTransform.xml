@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1SearchParametersPreTransform" kind="struct" language="C++" prot="public">
     <compoundname>faiss::SearchParametersPreTransform</compoundname>
     <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
@@ -65,7 +65,7 @@
         <link refid="structfaiss_1_1SearchParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPreTransform.h" line="17" column="52" bodyfile="faiss/IndexPreTransform.h" bodystart="17" bodyend="21"/>
+    <location file="faiss/IndexPreTransform.h" line="17" column="1" bodyfile="faiss/IndexPreTransform.h" bodystart="17" bodyend="21"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParametersPreTransform_1ad702994db562c5d3b2def8ce3ed1c0fc" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPreTransform</scope><name>index_params</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersPreTransform</scope><name>sel</name></member>

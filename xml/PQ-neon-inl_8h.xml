@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="PQ-neon-inl_8h" kind="file" language="C++">
     <compoundname>PQ-neon-inl.h</compoundname>
     <includes local="no">arm_neon.h</includes>
@@ -1494,7 +1494,7 @@
 <codeline lineno="1449"><highlight class="normal"></highlight></codeline>
 <codeline lineno="1450"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>cppcontrib</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1451"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="1452"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>PQ_NEON_INL_H</highlight></codeline>
+<codeline lineno="1452"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>PQ_NEON_INL_H</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/sa_decode/PQ-neon-inl.h"/>
   </compounddef>

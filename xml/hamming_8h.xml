@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="hamming_8h" kind="file" language="C++">
     <compoundname>hamming.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -162,7 +162,7 @@
 <codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="58"><highlight class="comment">/**<sp/>Shuffle<sp/>the<sp/>bits<sp/>from<sp/>b(i,<sp/>j)<sp/>:=<sp/>a(i,<sp/>order[j])</highlight></codeline>
 <codeline lineno="59"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" kindref="member">bitvec_shuffle</ref>(</highlight></codeline>
+<codeline lineno="60" refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" kindref="member">bitvec_shuffle</ref>(</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>da,</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>db,</highlight></codeline>
@@ -215,7 +215,7 @@
 <codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@param<sp/><sp/>nbytespercode<sp/>should<sp/>be<sp/>multiple<sp/>of<sp/>8</highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/>*<sp/>@param<sp/><sp/>dis<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>distances,<sp/>size<sp/>na<sp/>*<sp/>nb</highlight></codeline>
 <codeline lineno="112"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" kindref="member">hammings</ref>(</highlight></codeline>
+<codeline lineno="113" refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" kindref="member">hammings</ref>(</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>b,</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>na,</highlight></codeline>
@@ -231,8 +231,8 @@
 <codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>ncodes<sp/><sp/>size<sp/>of<sp/>the<sp/>binary<sp/>codes<sp/>(bytes)</highlight></codeline>
 <codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@param<sp/>ordered<sp/>if<sp/>!=<sp/>0:<sp/>order<sp/>the<sp/>results<sp/>by<sp/>decreasing<sp/>distance</highlight></codeline>
 <codeline lineno="128"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(may<sp/>be<sp/>bottleneck<sp/>for<sp/>k/n<sp/>&gt;<sp/>0.01)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477" kindref="member">hammings_knn_hc</ref>(</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int_maxheap_array_t*<sp/>ha,</highlight></codeline>
+<codeline lineno="129" refid="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477" kindref="member">hammings_knn_hc</ref>(</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>*<sp/>ha,</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>b,</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
@@ -241,7 +241,7 @@
 <codeline lineno="136"><highlight class="normal"></highlight></codeline>
 <codeline lineno="137"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Legacy<sp/>alias<sp/>to<sp/>hammings_knn_hc.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="138"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>hammings_knn(</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int_maxheap_array_t*<sp/>ha,</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>*<sp/>ha,</highlight></codeline>
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>b,</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
@@ -260,7 +260,7 @@
 <codeline lineno="155"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neighbors</highlight></codeline>
 <codeline lineno="156"><highlight class="comment"><sp/>*<sp/>@param<sp/>labels<sp/><sp/>output<sp/>ids<sp/>of<sp/>the<sp/>k<sp/>nearest<sp/>neighbors<sp/>to<sp/>each<sp/>query<sp/>vector</highlight></codeline>
 <codeline lineno="157"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca" kindref="member">hammings_knn_mc</ref>(</highlight></codeline>
+<codeline lineno="158" refid="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca" kindref="member">hammings_knn_mc</ref>(</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>b,</highlight></codeline>
 <codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>na,</highlight></codeline>
@@ -271,7 +271,7 @@
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>labels);</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="168"><highlight class="comment">/**<sp/>same<sp/>as<sp/>hammings_knn<sp/>except<sp/>we<sp/>are<sp/>doing<sp/>a<sp/>range<sp/>search<sp/>with<sp/>radius<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a1032890ca79ab7443c0af4fde09b121c" kindref="member">hamming_range_search</ref>(</highlight></codeline>
+<codeline lineno="169" refid="namespacefaiss_1a1032890ca79ab7443c0af4fde09b121c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a1032890ca79ab7443c0af4fde09b121c" kindref="member">hamming_range_search</ref>(</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>b,</highlight></codeline>
 <codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>na,</highlight></codeline>

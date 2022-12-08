@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1FastScanStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::FastScanStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -88,7 +88,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/IndexFastScan.h" line="133" column="20" bodyfile="faiss/IndexFastScan.h" bodystart="133" bodyend="141"/>
+    <location file="faiss/IndexFastScan.h" line="133" column="1" bodyfile="faiss/IndexFastScan.h" bodystart="133" bodyend="141"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FastScanStats_1ab303350e82dfae5997cf983a812ca047" prot="public" virt="non-virtual"><scope>faiss::FastScanStats</scope><name>FastScanStats</name></member>
       <member refid="structfaiss_1_1FastScanStats_1a315a2f1fa6e11eaf0d83d1ab2e120488" prot="public" virt="non-virtual"><scope>faiss::FastScanStats</scope><name>reset</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1HammingComputer64" kind="struct" language="C++" prot="public">
     <compoundname>faiss::HammingComputer64</compoundname>
       <sectiondef kind="public-attrib">
@@ -186,7 +186,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming-inl.h" line="242" column="24" bodyfile="faiss/utils/hamming-inl.h" bodystart="242" bodyend="271"/>
+    <location file="faiss/utils/hamming-inl.h" line="242" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="242" bodyend="271"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputer64_1ac6407c0d486b180692f14b99974e6c34" prot="public" virt="non-virtual"><scope>faiss::HammingComputer64</scope><name>a0</name></member>
       <member refid="structfaiss_1_1HammingComputer64_1a3baf0b039e9411cb5ca5ee419be9f9b0" prot="public" virt="non-virtual"><scope>faiss::HammingComputer64</scope><name>a1</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="random_8h" kind="file" language="C++">
     <compoundname>random.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -56,16 +56,16 @@
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>std::mt19937<sp/>mt;</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>random<sp/>positive<sp/>integer</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" kindref="member">rand_int</ref>();</highlight></codeline>
+<codeline lineno="30" refid="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" kindref="member">rand_int</ref>();</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>random<sp/>int64_t</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/><ref refid="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" kindref="member">rand_int64</ref>();</highlight></codeline>
+<codeline lineno="33" refid="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/><ref refid="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" kindref="member">rand_int64</ref>();</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>generate<sp/>random<sp/>integer<sp/>between<sp/>0<sp/>and<sp/>max-1</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1a583f124ecacdbe037ac96e23a44dd420" kindref="member">rand_int</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max);</highlight></codeline>
+<codeline lineno="36" refid="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6" kindref="member">rand_int</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max);</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>between<sp/>0<sp/>and<sp/>1</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" kindref="member">rand_float</ref>();</highlight></codeline>
+<codeline lineno="39" refid="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" kindref="member">rand_float</ref>();</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>rand_double();</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>

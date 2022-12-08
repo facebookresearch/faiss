@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IVFPQSearchParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IVFPQSearchParameters</compoundname>
     <basecompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</basecompoundref>
@@ -161,7 +161,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFPQ.h" line="22" column="48" bodyfile="faiss/IndexIVFPQ.h" bodystart="22" bodyend="27"/>
+    <location file="faiss/IndexIVFPQ.h" line="22" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="22" bodyend="27"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IVFPQSearchParameters_1abb58e8a6e58752abee118760b48e7d7e" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>IVFPQSearchParameters</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>max_codes</name></member>

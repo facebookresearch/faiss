@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuMultipleClonerOptions</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public" virt="non-virtual">faiss::gpu::GpuClonerOptions</basecompoundref>
@@ -181,7 +181,7 @@
         <link refid="structfaiss_1_1gpu_1_1GpuClonerOptions"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuClonerOptions.h" line="43" column="55" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="43" bodyend="52"/>
+    <location file="faiss/gpu/GpuClonerOptions.h" line="43" column="1" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="43" bodyend="52"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMultipleClonerOptions</scope><name>GpuClonerOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1abd3d51458ecb2161a27f118086d4cd15" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMultipleClonerOptions</scope><name>GpuMultipleClonerOptions</name></member>

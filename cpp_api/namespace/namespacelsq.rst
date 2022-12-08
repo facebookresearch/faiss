@@ -1,0 +1,4 @@
+Namespace lsq
+=============
+
+.. doxygennamespace:: lsq

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structPyCallbackIOWriter" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOWriter</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">IOWriter</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">faiss::IOWriter</basecompoundref>
     <includes refid="python__callbacks_8h" local="no">python_callbacks.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" static="no" mutable="no">
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="24" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="22" column="14" bodyfile="faiss/python/python_callbacks.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="25" column="12" bodyfile="faiss/python/python_callbacks.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/python/python_callbacks.h" line="23" column="12" bodyfile="faiss/python/python_callbacks.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="30" column="14"/>
+        <location file="faiss/python/python_callbacks.h" line="28" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIOWriter_1afedd487fd01d398bd80042de7f700644" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="32" column="12"/>
+        <location file="faiss/python/python_callbacks.h" line="30" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structPyCallbackIOWriter_1a5b06cab97f45af7d67371f8359928259" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/python/python_callbacks.h" line="34" column="5"/>
+        <location file="faiss/python/python_callbacks.h" line="32" column="5"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -123,7 +123,7 @@
         <label>faiss::IOWriter</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/python/python_callbacks.h" line="21" column="41" bodyfile="faiss/python/python_callbacks.h" bodystart="21" bodyend="33"/>
+    <location file="faiss/python/python_callbacks.h" line="21" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="21" bodyend="33"/>
     <listofallmembers>
       <member refid="structPyCallbackIOWriter_1a312d146753310ac87aed1627873ce814" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>bs</name></member>
       <member refid="structPyCallbackIOWriter_1a3808eb412223dd66bd460392d4a4c269" prot="public" virt="non-virtual"><scope>PyCallbackIOWriter</scope><name>callback</name></member>

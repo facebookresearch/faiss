@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1OperatingPoints" kind="struct" language="C++" prot="public">
     <compoundname>faiss::OperatingPoints</compoundname>
       <sectiondef kind="public-attrib">
@@ -190,7 +190,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/AutoTune.h" line="93" column="22" bodyfile="faiss/AutoTune.h" bodystart="93" bodyend="122"/>
+    <location file="faiss/AutoTune.h" line="93" column="1" bodyfile="faiss/AutoTune.h" bodystart="93" bodyend="122"/>
     <listofallmembers>
       <member refid="structfaiss_1_1OperatingPoints_1a7afabe0576800255eeec680486cb30df" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>add</name></member>
       <member refid="structfaiss_1_1OperatingPoints_1a48f457047b0511ecc531f250ef8b19c3" prot="public" virt="non-virtual"><scope>faiss::OperatingPoints</scope><name>all_pts</name></member>

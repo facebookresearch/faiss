@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="Level2-inl_8h" kind="file" language="C++">
     <compoundname>Level2-inl.h</compoundname>
     <includes local="no">cstddef</includes>
@@ -457,7 +457,7 @@
 <codeline lineno="405"><highlight class="normal"></highlight></codeline>
 <codeline lineno="406"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>cppcontrib</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="407"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="408"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>LEVEL2_INL_H</highlight></codeline>
+<codeline lineno="408"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>LEVEL2_INL_H</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/cppcontrib/sa_decode/Level2-inl.h"/>
   </compounddef>

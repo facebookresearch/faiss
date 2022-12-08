@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ProgressiveDimClusteringParameters" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ProgressiveDimClusteringParameters</compoundname>
     <basecompoundref refid="structfaiss_1_1ClusteringParameters" prot="public" virt="non-virtual">faiss::ClusteringParameters</basecompoundref>
@@ -236,7 +236,7 @@
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="127" column="62" bodyfile="faiss/Clustering.h" bodystart="127" bodyend="132"/>
+    <location file="faiss/Clustering.h" line="127" column="1" bodyfile="faiss/Clustering.h" bodystart="127" bodyend="132"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>apply_pca</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a86c8802261041f5d49b1a0d296da60be" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClusteringParameters</scope><name>ClusteringParameters</name></member>

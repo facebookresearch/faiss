@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd16uint16" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd16uint16</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <includes refid="simdlib__avx2_8h" local="no">simdlib_avx2.h</includes>
       <sectiondef kind="public-attrib">
@@ -1773,6 +1774,8 @@
         <link refid="structfaiss_1_1simd16uint16"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
@@ -1785,9 +1788,11 @@
         <link refid="structfaiss_1_1simd16uint16"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_avx2.h" line="76" column="30" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="76" bodyend="203"/>
+    <location file="faiss/utils/simdlib_avx2.h" line="76" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="76" bodyend="203"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd16uint16_1a54f21f3123c9a87e49da22c9105cfa31" prot="public" virt="non-virtual"><scope>faiss::simd16uint16</scope><name>accu_max</name></member>
       <member refid="structfaiss_1_1simd16uint16_1aa76f9e880b7d5226d4d61d07a5e341f7" prot="public" virt="non-virtual"><scope>faiss::simd16uint16</scope><name>accu_max</name></member>

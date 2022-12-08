@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinaryHNSW" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryHNSW</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexBinary" prot="public" virt="non-virtual">faiss::IndexBinary</basecompoundref>
@@ -762,7 +762,7 @@
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryHNSW.h" line="21" column="34" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="21" bodyend="56"/>
+    <location file="faiss/IndexBinaryHNSW.h" line="21" column="1" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="21" bodyend="56"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1aca2c449410d48edb72228016463aed5d" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSW</scope><name>add_with_ids</name></member>

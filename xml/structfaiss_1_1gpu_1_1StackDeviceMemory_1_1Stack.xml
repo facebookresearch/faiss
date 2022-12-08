@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack" kind="struct" language="C++" prot="protected">
     <compoundname>faiss::gpu::StackDeviceMemory::Stack</compoundname>
       <sectiondef kind="public-attrib">
@@ -263,7 +263,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="55" column="16" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="55" bodyend="102"/>
+    <location file="faiss/gpu/utils/StackDeviceMemory.h" line="55" column="5" bodyfile="faiss/gpu/utils/StackDeviceMemory.h" bodystart="55" bodyend="102"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ad856213491fe150e623daf1732da6909" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Stack</scope><name>alloc_</name></member>
       <member refid="structfaiss_1_1gpu_1_1StackDeviceMemory_1_1Stack_1ae85e9575618031342319550a9994b24c" prot="public" virt="non-virtual"><scope>faiss::gpu::StackDeviceMemory::Stack</scope><name>allocSize_</name></member>

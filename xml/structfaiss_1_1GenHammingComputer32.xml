@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1GenHammingComputer32" kind="struct" language="C++" prot="public">
     <compoundname>faiss::GenHammingComputer32</compoundname>
       <sectiondef kind="public-attrib">
@@ -100,7 +100,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming-inl.h" line="473" column="27" bodyfile="faiss/utils/hamming-inl.h" bodystart="473" bodyend="492"/>
+    <location file="faiss/utils/hamming-inl.h" line="473" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="473" bodyend="492"/>
     <listofallmembers>
       <member refid="structfaiss_1_1GenHammingComputer32_1a44491cd17453bcc3609ed0d1ea33697e" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer32</scope><name>a0</name></member>
       <member refid="structfaiss_1_1GenHammingComputer32_1afed23c54eb8f2a5058ff7bb5da04001d" prot="public" virt="non-virtual"><scope>faiss::GenHammingComputer32</scope><name>a1</name></member>

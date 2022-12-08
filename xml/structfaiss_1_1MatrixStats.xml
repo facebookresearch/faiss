@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1MatrixStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::MatrixStats</compoundname>
     <includes refid="MatrixStats_8h" local="no">MatrixStats.h</includes>
@@ -216,7 +216,7 @@
 <para>Reports some statistics on a dataset and comments on them.</para>
 <para>It is a class rather than a function so that all stats can also be accessed from code </para>
     </detaileddescription>
-    <location file="faiss/MatrixStats.h" line="24" column="18" bodyfile="faiss/MatrixStats.h" bodystart="24" bodyend="57"/>
+    <location file="faiss/MatrixStats.h" line="24" column="1" bodyfile="faiss/MatrixStats.h" bodystart="24" bodyend="57"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MatrixStats_1a29fd8accddea0e4ba5773c7a4353292b" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>buf</name></member>
       <member refid="structfaiss_1_1MatrixStats_1a4c8fa1b0c904e48d18ddc3a0a3c40dea" prot="public" virt="non-virtual"><scope>faiss::MatrixStats</scope><name>comments</name></member>

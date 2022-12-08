@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1CMax" kind="struct" language="C++" prot="public">
     <compoundname>faiss::CMax</compoundname>
-    <includes refid="ordered__key__value_8h" local="no">ordered_key_value.h</includes>
     <templateparamlist>
       <param>
         <type>typename T_</type>
@@ -154,10 +153,9 @@
     </briefdescription>
     <detaileddescription>
 <para>The C object gives the type T of the values of a key-value storage, the type of the keys, TI and the comparison that is done: <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref> for a decreasing series and <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref> for increasing series. In other words, for a given threshold threshold, an incoming value x is kept if <verbatim>C::cmp(threshold, x)
-</verbatim></para>
-<para>is true. </para>
+</verbatim> is true. </para>
     </detaileddescription>
-    <location file="faiss/utils/ordered_key_value.h" line="32" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="32" bodyend="-1"/>
+    <location file="faiss/utils/ordered_key_value.h" line="65" column="1" bodyfile="faiss/utils/ordered_key_value.h" bodystart="65" bodyend="84"/>
     <listofallmembers>
       <member refid="structfaiss_1_1CMax_1aaf234ed1f1829f1f7c4a4f7b03baa63e" prot="public" virt="non-virtual"><scope>faiss::CMax</scope><name>cmp</name></member>
       <member refid="structfaiss_1_1CMax_1a0cd233cff9c2c9522c806ec0f275636c" prot="public" virt="non-virtual"><scope>faiss::CMax</scope><name>cmp2</name></member>

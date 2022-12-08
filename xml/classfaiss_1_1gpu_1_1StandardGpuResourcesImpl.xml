@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::StandardGpuResourcesImpl</compoundname>
     <basecompoundref refid="classfaiss_1_1gpu_1_1GpuResources" prot="public" virt="non-virtual">faiss::gpu::GpuResources</basecompoundref>
@@ -704,7 +704,7 @@
         <link refid="classfaiss_1_1gpu_1_1GpuResources"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/StandardGpuResources.h" line="23" column="51" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="23" bodyend="140"/>
+    <location file="faiss/gpu/StandardGpuResources.h" line="23" column="1" bodyfile="faiss/gpu/StandardGpuResources.h" bodystart="23" bodyend="140"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1ad157e95342116754b0be81a8e5775343" prot="private" virt="non-virtual"><scope>faiss::gpu::StandardGpuResourcesImpl</scope><name>allocLogging_</name></member>
       <member refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1abfebafa768ef83db56488906fe57ed6c" prot="public" virt="virtual"><scope>faiss::gpu::StandardGpuResourcesImpl</scope><name>allocMemory</name></member>

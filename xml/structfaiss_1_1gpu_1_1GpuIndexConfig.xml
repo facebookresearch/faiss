@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuIndexConfig" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuIndexConfig</compoundname>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexBinaryFlatConfig</derivedcompoundref>
@@ -96,7 +96,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuIndex.h" line="16" column="21" bodyfile="faiss/gpu/GpuIndex.h" bodystart="16" bodyend="26"/>
+    <location file="faiss/gpu/GpuIndex.h" line="16" column="1" bodyfile="faiss/gpu/GpuIndex.h" bodystart="16" bodyend="26"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexConfig</scope><name>GpuIndexConfig</name></member>

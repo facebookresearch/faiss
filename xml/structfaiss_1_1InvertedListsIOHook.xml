@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1InvertedListsIOHook" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::InvertedListsIOHook</compoundname>
     <derivedcompoundref refid="structfaiss_1_1BlockInvertedListsIOHook" prot="public" virt="non-virtual">faiss::BlockInvertedListsIOHook</derivedcompoundref>
@@ -249,7 +249,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/invlists/InvertedListsIOHook.h" line="26" column="26" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="26" bodyend="60"/>
+    <location file="faiss/invlists/InvertedListsIOHook.h" line="26" column="1" bodyfile="faiss/invlists/InvertedListsIOHook.h" bodystart="26" bodyend="60"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InvertedListsIOHook_1a7852d13afc3e94745f6738c58858098c" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>add_callback</name></member>
       <member refid="structfaiss_1_1InvertedListsIOHook_1aaf9a95368179893d044d1670a29a7a71" prot="public" virt="non-virtual"><scope>faiss::InvertedListsIOHook</scope><name>classname</name></member>

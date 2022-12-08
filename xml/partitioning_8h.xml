@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="partitioning_8h" kind="file" language="C++">
     <compoundname>partitioning.h</compoundname>
     <includes local="no">stdint.h</includes>
@@ -55,7 +55,7 @@
 <codeline lineno="20"><highlight class="comment"><sp/>*<sp/>Returns<sp/>the<sp/>partition<sp/>threshold.<sp/>The<sp/>elements<sp/>q:n<sp/>are<sp/>destroyed<sp/>on<sp/>output.</highlight></codeline>
 <codeline lineno="21"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/><ref refid="namespacefaiss_1a9c403fd30f8012bde1e38ea9c2dcdab3" kindref="member">partition_fuzzy</ref>(</highlight></codeline>
+<codeline lineno="23" refid="namespacefaiss_1a9c403fd30f8012bde1e38ea9c2dcdab3" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/><ref refid="namespacefaiss_1a9c403fd30f8012bde1e38ea9c2dcdab3" kindref="member">partition_fuzzy</ref>(</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>vals,</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>ids,</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
@@ -78,7 +78,7 @@
 <codeline lineno="43"><highlight class="comment">/**<sp/>8-bin<sp/>histogram<sp/>of<sp/>(x<sp/>-<sp/>min)<sp/>&gt;&gt;<sp/>shift</highlight></codeline>
 <codeline lineno="44"><highlight class="comment"><sp/>*<sp/>values<sp/>outside<sp/>the<sp/>range<sp/>are<sp/>ignored.</highlight></codeline>
 <codeline lineno="45"><highlight class="comment"><sp/>*<sp/>the<sp/>data<sp/>table<sp/>should<sp/>be<sp/>aligned<sp/>on<sp/>32<sp/>bytes<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" kindref="member">simd_histogram_8</ref>(</highlight></codeline>
+<codeline lineno="46" refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" kindref="member">simd_histogram_8</ref>(</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>data,</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t<sp/>min,</highlight></codeline>
@@ -86,7 +86,7 @@
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>hist);</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="53"><highlight class="comment">/**<sp/>same<sp/>for<sp/>16-bin<sp/>histogram<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" kindref="member">simd_histogram_16</ref>(</highlight></codeline>
+<codeline lineno="54" refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" kindref="member">simd_histogram_16</ref>(</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>data,</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t<sp/>min,</highlight></codeline>

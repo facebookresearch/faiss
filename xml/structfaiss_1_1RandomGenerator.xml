@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1RandomGenerator" kind="struct" language="C++" prot="public">
     <compoundname>faiss::RandomGenerator</compoundname>
     <includes refid="random_8h" local="no">random.h</includes>
@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="29" column="18" bodyfile="faiss/utils/random.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/utils/random.h" line="27" column="18" bodyfile="faiss/utils/random.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="32" column="9"/>
+        <location file="faiss/utils/random.h" line="30" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a3c1d4f4e81baf1507961409af6219da3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int64_t</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="35" column="13"/>
+        <location file="faiss/utils/random.h" line="33" column="13"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1aa460b9bac2593cd1d71305e10ab51af6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="38" column="9"/>
+        <location file="faiss/utils/random.h" line="36" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1ac82a433d7bfa56d750907ba5cf74aed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="41" column="11"/>
+        <location file="faiss/utils/random.h" line="39" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="43" column="12"/>
+        <location file="faiss/utils/random.h" line="41" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/random.h" line="45" column="14"/>
+        <location file="faiss/utils/random.h" line="43" column="14"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -116,7 +116,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/random.h" line="26" column="22" bodyfile="faiss/utils/random.h" bodystart="26" bodyend="44"/>
+    <location file="faiss/utils/random.h" line="26" column="1" bodyfile="faiss/utils/random.h" bodystart="26" bodyend="44"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>mt</name></member>
       <member refid="structfaiss_1_1RandomGenerator_1abd824911e83a956b21d0168f8b4f2364" prot="public" virt="non-virtual"><scope>faiss::RandomGenerator</scope><name>rand_double</name></member>

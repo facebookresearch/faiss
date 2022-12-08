@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structPyCallbackIOReader" kind="struct" language="C++" prot="public">
     <compoundname>PyCallbackIOReader</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">IOReader</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">faiss::IOReader</basecompoundref>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" prot="public" static="no" mutable="no">
         <type>PyObject *</type>
@@ -120,7 +120,7 @@
         <label>faiss::IOReader</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/python/python_callbacks.h" line="35" column="41" bodyfile="faiss/python/python_callbacks.h" bodystart="35" bodyend="46"/>
+    <location file="faiss/python/python_callbacks.h" line="35" column="1" bodyfile="faiss/python/python_callbacks.h" bodystart="35" bodyend="46"/>
     <listofallmembers>
       <member refid="structPyCallbackIOReader_1ad632a8a6945adf7f30e1ca6ad6bbce11" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>bs</name></member>
       <member refid="structPyCallbackIOReader_1a35ac91eee581c708fc03af11b6f0f6f6" prot="public" virt="non-virtual"><scope>PyCallbackIOReader</scope><name>callback</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ITQTransform" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ITQTransform</compoundname>
     <basecompoundref refid="structfaiss_1_1VectorTransform" prot="public" virt="non-virtual">faiss::VectorTransform</basecompoundref>
@@ -372,7 +372,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="202" column="35" bodyfile="faiss/VectorTransform.h" bodystart="202" bodyend="220"/>
+    <location file="faiss/VectorTransform.h" line="202" column="1" bodyfile="faiss/VectorTransform.h" bodystart="202" bodyend="220"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1af7ea75906fb689ec667d2e685043c28a" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a" prot="public" virt="virtual"><scope>faiss::ITQTransform</scope><name>apply_noalloc</name></member>

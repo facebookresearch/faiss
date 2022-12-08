@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1DirectMap" kind="struct" language="C++" prot="public">
     <compoundname>faiss::DirectMap</compoundname>
     <includes refid="DirectMap_8h" local="no">DirectMap.h</includes>
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="39" column="14" bodyfile="faiss/invlists/DirectMap.h" bodystart="39" bodyend="43"/>
+        <location file="faiss/invlists/DirectMap.h" line="39" column="5" bodyfile="faiss/invlists/DirectMap.h" bodystart="39" bodyend="43"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-attrib">
@@ -276,7 +276,7 @@
     <detaileddescription>
 <para>Direct map: a way to map back from ids to inverted lists </para>
     </detaileddescription>
-    <location file="faiss/invlists/DirectMap.h" line="38" column="16" bodyfile="faiss/invlists/DirectMap.h" bodystart="38" bodyend="90"/>
+    <location file="faiss/invlists/DirectMap.h" line="38" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="38" bodyend="90"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DirectMap_1a2280a6a2b3b199988c052e6f918cd0e2" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>add_single_id</name></member>
       <member refid="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>array</name></member>
@@ -291,8 +291,8 @@
       <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>NoMap</name></member>
       <member refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>remove_ids</name></member>
       <member refid="structfaiss_1_1DirectMap_1a860f8dd0fb1d96532b43e492f201cb84" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>set_type</name></member>
-      <member refid="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>type</name></member>
       <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085e" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>Type</name></member>
+      <member refid="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>type</name></member>
       <member refid="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391" prot="public" virt="non-virtual"><scope>faiss::DirectMap</scope><name>update_codes</name></member>
     </listofallmembers>
   </compounddef>

@@ -1,48 +1,48 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1gpu" kind="namespace" language="C++">
     <compoundname>faiss::gpu</compoundname>
-    <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public">faiss::gpu::AllocRequest</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CpuTimer" prot="public">faiss::gpu::CpuTimer</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CublasHandleScope" prot="public">faiss::gpu::CublasHandleScope</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1DeviceScope" prot="public">faiss::gpu::DeviceScope</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuClonerOptions" prot="public">faiss::gpu::GpuClonerOptions</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public">faiss::gpu::GpuMultipleClonerOptions</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuDistanceParams" prot="public">faiss::gpu::GpuDistanceParams</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" prot="public">faiss::gpu::GpuIcmEncoder</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIcmEncoderFactory" prot="public">faiss::gpu::GpuIcmEncoderFactory</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndex" prot="public">faiss::gpu::GpuIndex</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public">faiss::gpu::GpuIndexBinaryFlat</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public">faiss::gpu::GpuIndexConfig</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlat" prot="public">faiss::gpu::GpuIndexFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndex" prot="public">faiss::gpu::GpuIndex</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" prot="public">faiss::gpu::GpuIndexBinaryFlatConfig</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat" prot="public">faiss::gpu::GpuIndexBinaryFlat</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" prot="public">faiss::gpu::GpuIndexFlatConfig</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP" prot="public">faiss::gpu::GpuIndexFlatIP</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlat" prot="public">faiss::gpu::GpuIndexFlat</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatL2" prot="public">faiss::gpu::GpuIndexFlatL2</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public">faiss::gpu::GpuIndexIVF</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP" prot="public">faiss::gpu::GpuIndexFlatIP</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig" prot="public">faiss::gpu::GpuIndexIVFConfig</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" prot="public">faiss::gpu::GpuIndexIVFFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVF" prot="public">faiss::gpu::GpuIndexIVF</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig" prot="public">faiss::gpu::GpuIndexIVFFlatConfig</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" prot="public">faiss::gpu::GpuIndexIVFPQ</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" prot="public">faiss::gpu::GpuIndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig" prot="public">faiss::gpu::GpuIndexIVFPQConfig</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizer</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" prot="public">faiss::gpu::GpuIndexIVFPQ</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizerConfig</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" prot="public">faiss::gpu::GpuIndexIVFScalarQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public">faiss::gpu::AllocRequest</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" prot="public">faiss::gpu::GpuMemoryReservation</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions" prot="public">faiss::gpu::GpuMultipleClonerOptions</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuParameterSpace" prot="public">faiss::gpu::GpuParameterSpace</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1GpuProgressiveDimIndexFactory" prot="public">faiss::gpu::GpuProgressiveDimIndexFactory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResources" prot="public">faiss::gpu::GpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" prot="public">faiss::gpu::GpuResourcesProvider</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public">faiss::gpu::GpuResourcesProviderFromInstance</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1IndexWrapper" prot="public">faiss::gpu::IndexWrapper</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
-    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
-    <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1DeviceScope" prot="public">faiss::gpu::DeviceScope</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CublasHandleScope" prot="public">faiss::gpu::CublasHandleScope</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1KernelTimer" prot="public">faiss::gpu::KernelTimer</innerclass>
+    <innerclass refid="classfaiss_1_1gpu_1_1CpuTimer" prot="public">faiss::gpu::CpuTimer</innerclass>
     <innernamespace refid="namespacefaiss_1_1gpu_1_1utils">faiss::gpu::utils</innernamespace>
       <sectiondef kind="enum">
       <memberdef kind="enum" id="GpuDistance_8h_1aa22865a7603feb994c5946c7c4d12268" prot="public" static="no" strong="yes">
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="18" column="28" bodyfile="faiss/gpu/GpuDistance.h" bodystart="18" bodyend="21"/>
+        <location file="faiss/gpu/GpuDistance.h" line="18" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="18" bodyend="21"/>
       </memberdef>
       <memberdef kind="enum" id="GpuDistance_8h_1a6b68daa1ef37853ef9cab2ae9007b480" prot="public" static="no" strong="yes">
         <type></type>
@@ -95,7 +95,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="24" column="27" bodyfile="faiss/gpu/GpuDistance.h" bodystart="24" bodyend="27"/>
+        <location file="faiss/gpu/GpuDistance.h" line="24" column="1" bodyfile="faiss/gpu/GpuDistance.h" bodystart="24" bodyend="27"/>
       </memberdef>
       <memberdef kind="enum" id="GpuIndicesOptions_8h_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no" strong="no">
         <type></type>
@@ -143,7 +143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndicesOptions.h" line="14" column="20" bodyfile="faiss/gpu/GpuIndicesOptions.h" bodystart="14" bodyend="28"/>
+        <location file="faiss/gpu/GpuIndicesOptions.h" line="14" column="1" bodyfile="faiss/gpu/GpuIndicesOptions.h" bodystart="14" bodyend="28"/>
       </memberdef>
       <memberdef kind="enum" id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437" prot="public" static="no" strong="no">
         <type></type>
@@ -217,7 +217,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="22" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="60"/>
+        <location file="faiss/gpu/GpuResources.h" line="22" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="60"/>
       </memberdef>
       <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
         <type></type>
@@ -256,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="66" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="66" bodyend="78"/>
+        <location file="faiss/gpu/GpuResources.h" line="66" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="66" bodyend="78"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -1407,6 +1407,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/GpuAutoTune.h" line="14" column="13"/>
+    <location file="faiss/gpu/GpuAutoTune.h" line="14" column="1"/>
   </compounddef>
 </doxygen>

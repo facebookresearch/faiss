@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1GpuMemoryReservation" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::GpuMemoryReservation</compoundname>
     <includes refid="GpuResources_8h" local="no">GpuResources.h</includes>
@@ -209,7 +209,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuResources.h" line="149" column="27" bodyfile="faiss/gpu/GpuResources.h" bodystart="149" bodyend="173"/>
+    <location file="faiss/gpu/GpuResources.h" line="149" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="149" bodyend="173"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1ae8b2f577d470cccf55e138708151cba1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>data</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a88f82c738e2527dfec47cf526237757c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuMemoryReservation</scope><name>device</name></member>

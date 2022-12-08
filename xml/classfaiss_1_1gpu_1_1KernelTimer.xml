@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1KernelTimer" kind="class" language="C++" prot="public">
     <compoundname>faiss::gpu::KernelTimer</compoundname>
     <includes refid="Timer_8h" local="no">Timer.h</includes>
@@ -111,7 +111,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/gpu/utils/Timer.h" line="17" column="18" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
+    <location file="faiss/gpu/utils/Timer.h" line="17" column="1" bodyfile="faiss/gpu/utils/Timer.h" bodystart="17" bodyend="37"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1ac79ab2b2ef60a3fb713f7c80380ad2b5" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>elapsedMilliseconds</name></member>
       <member refid="classfaiss_1_1gpu_1_1KernelTimer_1af533a5a8734243263032960c2445d233" prot="public" virt="non-virtual"><scope>faiss::gpu::KernelTimer</scope><name>KernelTimer</name></member>

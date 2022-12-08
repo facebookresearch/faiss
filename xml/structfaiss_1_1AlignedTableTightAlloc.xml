@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1AlignedTableTightAlloc" kind="struct" language="C++" prot="public">
     <compoundname>faiss::AlignedTableTightAlloc</compoundname>
     <templateparamlist>
@@ -279,7 +279,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/AlignedTable.h" line="30" column="29" bodyfile="faiss/utils/AlignedTable.h" bodystart="30" bodyend="109"/>
+    <location file="faiss/utils/AlignedTable.h" line="30" column="1" bodyfile="faiss/utils/AlignedTable.h" bodystart="30" bodyend="109"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1adfa5bdd33fd82107cabdd6c20f65c119" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>
       <member refid="structfaiss_1_1AlignedTableTightAlloc_1a33196314d0a8c11ab2bb0c010d9f1324" prot="public" virt="non-virtual"><scope>faiss::AlignedTableTightAlloc</scope><name>AlignedTableTightAlloc</name></member>

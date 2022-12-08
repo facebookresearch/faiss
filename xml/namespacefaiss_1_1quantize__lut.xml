@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1quantize__lut" kind="namespace" language="C++">
     <compoundname>faiss::quantize_lut</compoundname>
       <sectiondef kind="func">
@@ -243,9 +243,8 @@
     </briefdescription>
     <detaileddescription>
 <para>Functions to quantize PQ floating-point Look Up Tables (LUT) to uint8, and biases to uint16. The accumulation is supposed to take place in uint16. The quantization coefficients are float (a, b) such that <verbatim> original_value = quantized_value * a / b
-</verbatim></para>
-<para>The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </para>
+</verbatim> The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </para>
     </detaileddescription>
-    <location file="faiss/utils/quantize_lut.h" line="26" column="22"/>
+    <location file="faiss/utils/quantize_lut.h" line="26" column="1"/>
   </compounddef>
 </doxygen>

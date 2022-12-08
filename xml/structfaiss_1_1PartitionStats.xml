@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1PartitionStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PartitionStats</compoundname>
       <sectiondef kind="public-attrib">
@@ -62,7 +62,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/partitioning.h" line="61" column="21" bodyfile="faiss/utils/partitioning.h" bodystart="61" bodyend="69"/>
+    <location file="faiss/utils/partitioning.h" line="61" column="1" bodyfile="faiss/utils/partitioning.h" bodystart="61" bodyend="69"/>
     <listofallmembers>
       <member refid="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>bissect_cycles</name></member>
       <member refid="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>compress_cycles</name></member>

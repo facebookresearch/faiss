@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd8uint32" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd8uint32</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <basecompoundref refid="structfaiss_1_1simd256bit" prot="public" virt="non-virtual">faiss::simd256bit</basecompoundref>
     <includes refid="simdlib__avx2_8h" local="no">simdlib_avx2.h</includes>
       <sectiondef kind="public-attrib">
@@ -1036,6 +1037,8 @@
         <link refid="structfaiss_1_1simd8uint32"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::simd256bit</label>
@@ -1048,13 +1051,15 @@
         <link refid="structfaiss_1_1simd8uint32"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss::simd256bit</label>
         <link refid="structfaiss_1_1simd256bit"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_avx2.h" line="351" column="29" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="351" bodyend="415"/>
+    <location file="faiss/utils/simdlib_avx2.h" line="351" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="351" bodyend="415"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd8uint32_1a106f0835ce8804af4e71eb8f65b3860c" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>bin</name></member>
       <member refid="structfaiss_1_1simd8uint32_1aec657e75ce56fa6427d9b3971758e9d8" prot="public" virt="non-virtual"><scope>faiss::simd8uint32</scope><name>bin</name></member>

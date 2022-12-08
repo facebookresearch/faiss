@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1gpu_1_1ToGpuCloner" kind="struct" language="C++" prot="public">
     <compoundname>faiss::gpu::ToGpuCloner</compoundname>
     <basecompoundref refid="structfaiss_1_1Cloner" prot="public" virt="non-virtual">faiss::Cloner</basecompoundref>
@@ -256,7 +256,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuCloner.h" line="30" column="50" bodyfile="faiss/gpu/GpuCloner.h" bodystart="30" bodyend="40"/>
+    <location file="faiss/gpu/GpuCloner.h" line="30" column="1" bodyfile="faiss/gpu/GpuCloner.h" bodystart="30" bodyend="40"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_Index</name></member>
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_IndexIVF</name></member>

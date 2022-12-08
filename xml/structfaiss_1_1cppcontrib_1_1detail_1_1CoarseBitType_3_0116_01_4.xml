@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" kind="struct" language="C++" prot="public">
     <compoundname>faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</compoundname>
     <templateparamlist>
@@ -23,7 +23,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="18" column="21" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="18" bodyend="20"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="18" column="1" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="18" bodyend="20"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4_1accb579d60d9e43c601dd8a92cc249a61" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</scope><name>bit_type</name></member>
     </listofallmembers>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1AutoTuneCriterion" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::AutoTuneCriterion</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IntersectionCriterion" prot="public" virt="non-virtual">faiss::IntersectionCriterion</derivedcompoundref>
@@ -224,7 +224,7 @@
         <link refid="structfaiss_1_1AutoTuneCriterion"/>
       </node>
     </inheritancegraph>
-    <location file="faiss/AutoTune.h" line="26" column="24" bodyfile="faiss/AutoTune.h" bodystart="26" bodyend="55"/>
+    <location file="faiss/AutoTune.h" line="26" column="1" bodyfile="faiss/AutoTune.h" bodystart="26" bodyend="55"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AutoTuneCriterion_1abd85ee0d09e9f4958330c42e867e432b" prot="public" virt="non-virtual"><scope>faiss::AutoTuneCriterion</scope><name>AutoTuneCriterion</name></member>
       <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" prot="public" virt="pure-virtual"><scope>faiss::AutoTuneCriterion</scope><name>evaluate</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="structfaiss_1_1IndexBinaryFromFloat" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexBinaryFromFloat</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexBinary" prot="public" virt="non-virtual">faiss::IndexBinary</basecompoundref>
@@ -753,7 +753,7 @@
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryFromFloat.h" line="26" column="39" bodyfile="faiss/IndexBinaryFromFloat.h" bodystart="26" bodyend="50"/>
+    <location file="faiss/IndexBinaryFromFloat.h" line="26" column="1" bodyfile="faiss/IndexBinaryFromFloat.h" bodystart="26" bodyend="50"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryFromFloat_1ac4f01196a335a9b2433e5c16396c1fd7" prot="public" virt="virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>add_with_ids</name></member>

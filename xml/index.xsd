@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+
   <xsd:element name="doxygenindex" type="DoxygenType"/>
 
   <xsd:complexType name="DoxygenType">
@@ -7,6 +9,7 @@
       <xsd:element name="compound" type="CompoundType" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute ref="xml:lang" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="CompoundType">

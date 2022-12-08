@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="classfaiss_1_1gpu_1_1GpuResourcesProvider" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::gpu::GpuResourcesProvider</compoundname>
     <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance" prot="public" virt="non-virtual">faiss::gpu::GpuResourcesProviderFromInstance</derivedcompoundref>
@@ -24,8 +24,8 @@
         <definition>virtual std::shared_ptr&lt;GpuResources&gt; faiss::gpu::GpuResourcesProvider::getResources</definition>
         <argsstring>()=0</argsstring>
         <name>getResources</name>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4">getResources</reimplementedby>
         <reimplementedby refid="classfaiss_1_1gpu_1_1GpuResourcesProviderFromInstance_1a8e58d7a639fdca57b56a1286458ce94c">getResources</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1StandardGpuResources_1aed88267bce1b6657a06d160f0e62ffc4">getResources</reimplementedby>
         <briefdescription>
 <para>Returns the shared resources object. </para>
         </briefdescription>
@@ -59,7 +59,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="255" column="27" bodyfile="faiss/gpu/GpuResources.h" bodystart="255" bodyend="261"/>
+    <location file="faiss/gpu/GpuResources.h" line="255" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="255" bodyend="261"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a0b727386cf462ab0392ee1ccca8135b3" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuResourcesProvider_1a9de5bf47e6a9754f19e43b30dd61bfca" prot="public" virt="virtual"><scope>faiss::gpu::GpuResourcesProvider</scope><name>~GpuResourcesProvider</name></member>

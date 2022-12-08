@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1cppcontrib_1_1detail" kind="namespace" language="C++">
     <compoundname>faiss::cppcontrib::detail</compoundname>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType" prot="public">faiss::cppcontrib::detail::CoarseBitType</innerclass>
-    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_0116_01_4" prot="public">faiss::cppcontrib::detail::CoarseBitType&lt; 16 &gt;</innerclass>
       <sectiondef kind="typedef">
       <memberdef kind="typedef" id="UintReader_8h_1a7d4c5421a72ecb5ccaf38b8d13c639b8" prot="public" static="no">
         <templateparamlist>
@@ -76,6 +76,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="7" column="16"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="7" column="1"/>
   </compounddef>
 </doxygen>
