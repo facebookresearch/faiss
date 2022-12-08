@@ -47,7 +47,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Namespace list" href="../namespacelist.html" />
-    <link rel="prev" title="File simdlib_neon.h" href="simdlib__neon_8h.html" /> 
+    <link rel="prev" title="File sorting.h" href="sorting_8h.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -243,6 +243,7 @@
 <li class="toctree-l2"><a class="reference internal" href="simdlib__based_8h.html">File simdlib_based.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simdlib__neon_8h.html">File simdlib_neon.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sorting_8h.html">File sorting.h</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">File utils.h</a></li>
 </ul>
 </li>
@@ -450,16 +451,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss12fvec_argsortE6size_tPKfP6size_t">
-<span id="_CPPv3N5faiss12fvec_argsortE6size_tPKfP6size_t"></span><span id="_CPPv2N5faiss12fvec_argsortE6size_tPKfP6size_t"></span><span id="faiss::fvec_argsort__s.floatCP.sP"></span><span class="target" id="namespacefaiss_1a027b726c606d329c30840e51b539ddb4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_argsort</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vals</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12fvec_argsortE6size_tPKfP6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss21fvec_argsort_parallelE6size_tPKfP6size_t">
-<span id="_CPPv3N5faiss21fvec_argsort_parallelE6size_tPKfP6size_t"></span><span id="_CPPv2N5faiss21fvec_argsort_parallelE6size_tPKfP6size_t"></span><span id="faiss::fvec_argsort_parallel__s.floatCP.sP"></span><span class="target" id="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fvec_argsort_parallel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vals</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">perm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss21fvec_argsort_parallelE6size_tPKfP6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss9ivec_histE6size_tPKiiPi">
 <span id="_CPPv3N5faiss9ivec_histE6size_tPKiiPi"></span><span id="_CPPv2N5faiss9ivec_histE6size_tPKiiPi"></span><span id="faiss::ivec_hist__s.iCP.i.iP"></span><span class="target" id="namespacefaiss_1a7bea462108bee98d8d5859b51ec4db8e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivec_hist</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">v</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vmax</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hist</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9ivec_histE6size_tPKiiPi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>compute histogram on v </p>
@@ -480,8 +471,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13ivec_checksumE6size_tPKi">
-<span id="_CPPv3N5faiss13ivec_checksumE6size_tPKi"></span><span id="_CPPv2N5faiss13ivec_checksumE6size_tPKi"></span><span id="faiss::ivec_checksum__s.iCP"></span><span class="target" id="namespacefaiss_1a4369329c9dbdfe23e3f35d09ba7b5c6e"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivec_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13ivec_checksumE6size_tPKi" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13ivec_checksumE6size_tPK7int32_t">
+<span id="_CPPv3N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="_CPPv2N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="faiss::ivec_checksum__s.int32_tCP"></span><span class="target" id="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivec_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13ivec_checksumE6size_tPK7int32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>compute a checksum on a table. </p>
 </dd></dl>
 
@@ -559,7 +550,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="../namespacelist.html" class="btn btn-neutral float-right" title="Namespace list" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="simdlib__neon_8h.html" class="btn btn-neutral float-left" title="File simdlib_neon.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sorting_8h.html" class="btn btn-neutral float-left" title="File sorting.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

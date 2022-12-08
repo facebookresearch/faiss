@@ -243,6 +243,7 @@
 <li class="toctree-l2"><a class="reference internal" href="simdlib__based_8h.html">File simdlib_based.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simdlib__emulated_8h.html">File simdlib_emulated.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simdlib__neon_8h.html">File simdlib_neon.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sorting_8h.html">File sorting.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils_8h.html">File utils.h</a></li>
 </ul>
 </li>
@@ -532,6 +533,20 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id_in</strong> – ids of the elements to add, size ni * nj </p></li>
 <li><p><strong>id_stride</strong> – stride for id_in </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9HeapArray26addn_query_subset_with_idsE6size_tPK2TI6size_tPK1TPK2TI7int64_t">
+<span id="_CPPv3N5faiss9HeapArray26addn_query_subset_with_idsE6size_tPK2TI6size_tPK1TPK2TI7int64_t"></span><span id="_CPPv2N5faiss9HeapArray26addn_query_subset_with_idsE6size_tPK2TI6size_tPK1TPK2TI7int64_t"></span><span id="faiss::HeapArray::addn_query_subset_with_ids__s.TICP.s.TCP.TICP.int64_t"></span><span class="target" id="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addn_query_subset_with_ids</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nsubset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">subset</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nj</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss9HeapArray1TE" title="faiss::HeapArray::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vin</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss9HeapArray2TIE" title="faiss::HeapArray::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">id_in</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id_stride</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss9HeapArray26addn_query_subset_with_idsE6size_tPK2TI6size_tPK1TPK2TI7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>same as addn_with_ids, but for just a subset of queries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nsubset</strong> – number of query entries to update </p></li>
+<li><p><strong>subset</strong> – indexes of queries to update, in 0..nh-1, size nsubset </p></li>
 </ul>
 </dd>
 </dl>
