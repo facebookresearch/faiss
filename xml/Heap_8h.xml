@@ -709,88 +709,101 @@
 <codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/>0,</highlight></codeline>
 <codeline lineno="414"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>ni<sp/>=<sp/>-1);</highlight></codeline>
 <codeline lineno="415"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="416"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reorder<sp/>all<sp/>the<sp/>heaps</highlight></codeline>
-<codeline lineno="417" refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kindref="member">reorder</ref>();</highlight></codeline>
-<codeline lineno="418"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="419"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>this<sp/>is<sp/>not<sp/>really<sp/>a<sp/>heap<sp/>function.<sp/>It<sp/>just<sp/>finds<sp/>the<sp/>per-line</highlight></codeline>
-<codeline lineno="420"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/>extrema<sp/>of<sp/>each<sp/>line<sp/>of<sp/>array<sp/>D</highlight></codeline>
-<codeline lineno="421"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vals_out<sp/><sp/><sp/><sp/>extreme<sp/>value<sp/>of<sp/>each<sp/>line<sp/>(size<sp/>nh,<sp/>or<sp/>NULL)</highlight></codeline>
-<codeline lineno="422"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>idx_out<sp/><sp/><sp/><sp/><sp/>index<sp/>of<sp/>extreme<sp/>value<sp/>(size<sp/>nh<sp/>or<sp/>NULL)</highlight></codeline>
-<codeline lineno="423"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="424" refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kindref="member">per_line_extrema</ref>(T*<sp/>vals_out,<sp/>TI*<sp/>idx_out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="425"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="426"><highlight class="normal"></highlight></codeline>
-<codeline lineno="427"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Define<sp/>useful<sp/>heaps<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="428"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;float, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="429"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;int, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_minheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="430"><highlight class="normal"></highlight></codeline>
-<codeline lineno="431"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;float, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="432"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;int, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>;</highlight></codeline>
-<codeline lineno="433"><highlight class="normal"></highlight></codeline>
-<codeline lineno="434"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instanciated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="435"><highlight class="normal"></highlight></codeline>
-<codeline lineno="436"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
-<codeline lineno="437"><highlight class="comment"><sp/>*<sp/>Indirect<sp/>heaps:<sp/>instead<sp/>of<sp/>having</highlight></codeline>
-<codeline lineno="438"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="439"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[i]),</highlight></codeline>
-<codeline lineno="440"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="441"><highlight class="comment"><sp/>*<sp/>in<sp/>indirect<sp/>heaps,</highlight></codeline>
-<codeline lineno="442"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="443"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[bh_ids[i]]),</highlight></codeline>
-<codeline lineno="444"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="445"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="416"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>same<sp/>as<sp/>addn_with_ids,<sp/>but<sp/>for<sp/>just<sp/>a<sp/>subset<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="417"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="418"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>nsubset<sp/><sp/>number<sp/>of<sp/>query<sp/>entries<sp/>to<sp/>update</highlight></codeline>
+<codeline lineno="419"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>subset<sp/><sp/><sp/>indexes<sp/>of<sp/>queries<sp/>to<sp/>update,<sp/>in<sp/>0..nh-1,<sp/>size<sp/>nsubset</highlight></codeline>
+<codeline lineno="420"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="421" refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" kindref="member">addn_query_subset_with_ids</ref>(</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsubset,</highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI*<sp/>subset,</highlight></codeline>
+<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nj,</highlight></codeline>
+<codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/>vin,</highlight></codeline>
+<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TI*<sp/>id_in<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>id_stride<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="428"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="429"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reorder<sp/>all<sp/>the<sp/>heaps</highlight></codeline>
+<codeline lineno="430" refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kindref="member">reorder</ref>();</highlight></codeline>
+<codeline lineno="431"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="432"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>this<sp/>is<sp/>not<sp/>really<sp/>a<sp/>heap<sp/>function.<sp/>It<sp/>just<sp/>finds<sp/>the<sp/>per-line</highlight></codeline>
+<codeline lineno="433"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/>extrema<sp/>of<sp/>each<sp/>line<sp/>of<sp/>array<sp/>D</highlight></codeline>
+<codeline lineno="434"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>vals_out<sp/><sp/><sp/><sp/>extreme<sp/>value<sp/>of<sp/>each<sp/>line<sp/>(size<sp/>nh,<sp/>or<sp/>NULL)</highlight></codeline>
+<codeline lineno="435"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>idx_out<sp/><sp/><sp/><sp/><sp/>index<sp/>of<sp/>extreme<sp/>value<sp/>(size<sp/>nh<sp/>or<sp/>NULL)</highlight></codeline>
+<codeline lineno="436"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="437" refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kindref="member">per_line_extrema</ref>(T*<sp/>vals_out,<sp/>TI*<sp/>idx_out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="438"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="439"><highlight class="normal"></highlight></codeline>
+<codeline lineno="440"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Define<sp/>useful<sp/>heaps<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="441"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;float, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="442"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMin&lt;int, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_minheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="443"><highlight class="normal"></highlight></codeline>
+<codeline lineno="444"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;float, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>;</highlight></codeline>
+<codeline lineno="445"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;int, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>;</highlight></codeline>
 <codeline lineno="446"><highlight class="normal"></highlight></codeline>
-<codeline lineno="447"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="448"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_pop(</highlight></codeline>
-<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>bh_val,</highlight></codeline>
-<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>bh_ids)<sp/>{</highlight></codeline>
-<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[k]];</highlight></codeline>
-<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1;</highlight></codeline>
-<codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
-<codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
-<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i2<sp/>=<sp/>i1<sp/>+<sp/>1;</highlight></codeline>
-<codeline lineno="458"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i1<sp/>&gt;<sp/>k)</highlight></codeline>
-<codeline lineno="459"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>id1<sp/>=<sp/>bh_ids[i1],<sp/>id2<sp/>=<sp/>bh_ids[i2];</highlight></codeline>
-<codeline lineno="461"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i2<sp/>==<sp/>k<sp/>+<sp/>1<sp/>||<sp/>C::cmp(bh_val[id1],<sp/>bh_val[id2]))<sp/>{</highlight></codeline>
-<codeline lineno="462"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id1]))</highlight></codeline>
-<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id1;</highlight></codeline>
-<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i1;</highlight></codeline>
-<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id2]))</highlight></codeline>
-<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id2;</highlight></codeline>
-<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
-<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[k];</highlight></codeline>
-<codeline lineno="474"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="475"><highlight class="normal"></highlight></codeline>
-<codeline lineno="476"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="477"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_push(</highlight></codeline>
-<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
-<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>bh_val,</highlight></codeline>
-<codeline lineno="480"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>bh_ids,</highlight></codeline>
-<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
-<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[id];</highlight></codeline>
-<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>k;</highlight></codeline>
-<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(i<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
-<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i_father<sp/>=<sp/>i<sp/>&gt;&gt;<sp/>1;</highlight></codeline>
-<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!C::cmp(val,<sp/>bh_val[bh_ids[i_father]]))</highlight></codeline>
-<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i_father];</highlight></codeline>
-<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i_father;</highlight></codeline>
-<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
-<codeline lineno="493"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="494"><highlight class="normal"></highlight></codeline>
-<codeline lineno="495"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="496"><highlight class="normal"></highlight></codeline>
-<codeline lineno="497"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="447"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instanciated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="448"><highlight class="normal"></highlight></codeline>
+<codeline lineno="449"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="450"><highlight class="comment"><sp/>*<sp/>Indirect<sp/>heaps:<sp/>instead<sp/>of<sp/>having</highlight></codeline>
+<codeline lineno="451"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="452"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[i]),</highlight></codeline>
+<codeline lineno="453"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="454"><highlight class="comment"><sp/>*<sp/>in<sp/>indirect<sp/>heaps,</highlight></codeline>
+<codeline lineno="455"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="456"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>i<sp/>=<sp/>(bh_ids[i],<sp/>bh_val[bh_ids[i]]),</highlight></codeline>
+<codeline lineno="457"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="458"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="459"><highlight class="normal"></highlight></codeline>
+<codeline lineno="460"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_pop(</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>bh_val,</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>bh_ids)<sp/>{</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[bh_ids[k]];</highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(1)<sp/>{</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1<sp/>=<sp/>i<sp/>&lt;&lt;<sp/>1;</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i2<sp/>=<sp/>i1<sp/>+<sp/>1;</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i1<sp/>&gt;<sp/>k)</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>id1<sp/>=<sp/>bh_ids[i1],<sp/>id2<sp/>=<sp/>bh_ids[i2];</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(i2<sp/>==<sp/>k<sp/>+<sp/>1<sp/>||<sp/>C::cmp(bh_val[id1],<sp/>bh_val[id2]))<sp/>{</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id1]))</highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id1;</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i1;</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="480"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(C::cmp(val,<sp/>bh_val[id2]))</highlight></codeline>
+<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id2;</highlight></codeline>
+<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i2;</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[k];</highlight></codeline>
+<codeline lineno="487"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"></highlight></codeline>
+<codeline lineno="489"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>indirect_heap_push(</highlight></codeline>
+<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>bh_val,</highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>bh_ids,</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids--;<sp/></highlight><highlight class="comment">/*<sp/>Use<sp/>1-based<sp/>indexing<sp/>for<sp/>easier<sp/>node-&gt;child<sp/>translation<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/>val<sp/>=<sp/>bh_val[id];</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>k;</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(i<sp/>&gt;<sp/>1)<sp/>{</highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i_father<sp/>=<sp/>i<sp/>&gt;&gt;<sp/>1;</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!C::cmp(val,<sp/>bh_val[bh_ids[i_father]]))</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>bh_ids[i_father];</highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>=<sp/>i_father;</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
+<codeline lineno="506"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="507"><highlight class="normal"></highlight></codeline>
+<codeline lineno="508"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="509"><highlight class="normal"></highlight></codeline>
+<codeline lineno="510"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/Heap.h"/>
   </compounddef>

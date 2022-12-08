@@ -1232,6 +1232,7 @@
     <member refid="structfaiss_1_1HeapArray_1a48afc496c73e982b8e10fde786628292" kind="function"><name>heapify</name></member>
     <member refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" kind="function"><name>addn</name></member>
     <member refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" kind="function"><name>addn_with_ids</name></member>
+    <member refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" kind="function"><name>addn_query_subset_with_ids</name></member>
     <member refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kind="function"><name>reorder</name></member>
     <member refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kind="function"><name>per_line_extrema</name></member>
   </compound>
@@ -4562,6 +4563,39 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IndexRandom" kind="struct"><name>faiss::IndexRandom</name>
+    <member refid="structfaiss_1_1IndexRandom_1ae6f9b05c87a6701ca90d924beb288cce" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1a12c77cda909eda37564f47bca8f2706e" kind="function"><name>IndexRandom</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1ad4fb78337a4d1175ea17036de0ccd507" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1a2e782ae6183d6c3e67777f2ea3c06d54" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1aeb61a0418e111af3a3409905cd6b6483" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1a7862a60c9480cf6cdf9086d4ad55d6e9" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexRandom_1a63cc1e7305762d64ac4883055f4ab69b" kind="function"><name>~IndexRandom</name></member>
+    <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
+    <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
+    <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
+    <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>
+    <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IndexRefine" kind="struct"><name>faiss::IndexRefine</name>
     <member refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" kind="variable"><name>base_index</name></member>
     <member refid="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" kind="variable"><name>refine_index</name></member>
@@ -6371,6 +6405,7 @@
     <member refid="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
+    <member refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kind="variable"><name>bucket_sort_verbose</name></member>
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>
     <member refid="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" kind="function"><name>clone_Quantizer</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
@@ -6529,6 +6564,10 @@
     <member refid="namespacefaiss_1a554df30b43cdf9d435fd91cd2135ed1b" kind="function"><name>unpacklo</name></member>
     <member refid="namespacefaiss_1a61c7690da3feacac77f0fea9d1ce3109" kind="function"><name>unpackhi</name></member>
     <member refid="namespacefaiss_1a93b8f9e8a1da01d0b335d36a5c2fdf2c" kind="function"><name>fmadd</name></member>
+    <member refid="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" kind="function"><name>fvec_argsort</name></member>
+    <member refid="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" kind="function"><name>fvec_argsort_parallel</name></member>
+    <member refid="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" kind="function"><name>bucket_sort</name></member>
+    <member refid="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" kind="function"><name>matrix_bucket_sort_inplace</name></member>
     <member refid="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" kind="function"><name>get_compile_options</name></member>
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
     <member refid="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" kind="function"><name>get_mem_usage_kb</name></member>
@@ -6542,11 +6581,9 @@
     <member refid="namespacefaiss_1a7690bafb56c991da908ee11822c7a8da" kind="function"><name>merge_result_table_with</name></member>
     <member refid="namespacefaiss_1aeffbb44eed1c07967d77b369d7ba7b1c" kind="function"><name>imbalance_factor</name></member>
     <member refid="namespacefaiss_1a94c1d99ac39d22e362aa27ce7c7ff714" kind="function"><name>imbalance_factor</name></member>
-    <member refid="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" kind="function"><name>fvec_argsort</name></member>
-    <member refid="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" kind="function"><name>fvec_argsort_parallel</name></member>
     <member refid="namespacefaiss_1a7bea462108bee98d8d5859b51ec4db8e" kind="function"><name>ivec_hist</name></member>
     <member refid="namespacefaiss_1a154a47857ed321b9db91122770a16e09" kind="function"><name>bincode_hist</name></member>
-    <member refid="namespacefaiss_1a4369329c9dbdfe23e3f35d09ba7b5c6e" kind="function"><name>ivec_checksum</name></member>
+    <member refid="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6" kind="function"><name>ivec_checksum</name></member>
     <member refid="namespacefaiss_1af851590d865ea2eae8dae3ae72406bfb" kind="function"><name>fvecs_maybe_subsample</name></member>
     <member refid="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16" kind="function"><name>binary_to_real</name></member>
     <member refid="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57" kind="function"><name>real_to_binary</name></member>
@@ -7013,6 +7050,8 @@
   <compound refid="simdlib__emulated_8h" kind="file"><name>simdlib_emulated.h</name>
   </compound>
   <compound refid="simdlib__neon_8h" kind="file"><name>simdlib_neon.h</name>
+  </compound>
+  <compound refid="sorting_8h" kind="file"><name>sorting.h</name>
   </compound>
   <compound refid="utils_8h" kind="file"><name>utils.h</name>
   </compound>

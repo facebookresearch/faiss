@@ -125,6 +125,7 @@
     <innerclass refid="structfaiss_1_1OnDiskInvertedListsIOHook" prot="public">faiss::OnDiskInvertedListsIOHook</innerclass>
     <innerclass refid="structfaiss_1_1MatrixStats" prot="public">faiss::MatrixStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRandom" prot="public">faiss::IndexRandom</innerclass>
     <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
     <innerclass refid="structfaiss_1_1AlignedTable" prot="public">faiss::AlignedTable</innerclass>
     <innerclass refid="structfaiss_1_1VectorDistance" prot="public">faiss::VectorDistance</innerclass>
@@ -407,7 +408,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="428" column="19" bodyfile="faiss/utils/Heap.h" bodystart="428" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="441" column="19" bodyfile="faiss/utils/Heap.h" bodystart="441" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a17c03ceef680b86f30abf40c359f0b6c" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; int, int64_t &gt; &gt;</type>
@@ -420,7 +421,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="429" column="19" bodyfile="faiss/utils/Heap.h" bodystart="429" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="442" column="19" bodyfile="faiss/utils/Heap.h" bodystart="442" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -433,7 +434,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="431" column="19" bodyfile="faiss/utils/Heap.h" bodystart="431" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="444" column="19" bodyfile="faiss/utils/Heap.h" bodystart="444" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; int, int64_t &gt; &gt;</type>
@@ -446,7 +447,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="432" column="19" bodyfile="faiss/utils/Heap.h" bodystart="432" bodyend="-1"/>
+        <location file="faiss/utils/Heap.h" line="445" column="19" bodyfile="faiss/utils/Heap.h" bodystart="445" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
@@ -794,6 +795,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/partitioning.h" line="72" column="33" declfile="faiss/utils/partitioning.h" declline="72" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" prot="public" static="no" mutable="no">
+        <type>FAISS_API int</type>
+        <definition>FAISS_API int faiss::bucket_sort_verbose</definition>
+        <argsstring></argsstring>
+        <name>bucket_sort_verbose</name>
+        <briefdescription>
+<para>increase verbosity of the bucket_sort functions </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="27" column="22" declfile="faiss/utils/sorting.h" declline="27" declcolumn="22"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -4977,7 +4992,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="448" column="13" bodyfile="faiss/utils/Heap.h" bodystart="448" bodyend="474"/>
+        <location file="faiss/utils/Heap.h" line="461" column="13" bodyfile="faiss/utils/Heap.h" bodystart="461" bodyend="487"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8ecaf37c77256e02a946e1572b992ed5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5011,7 +5026,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="477" column="13" bodyfile="faiss/utils/Heap.h" bodystart="477" bodyend="493"/>
+        <location file="faiss/utils/Heap.h" line="490" column="13" bodyfile="faiss/utils/Heap.h" bodystart="490" bodyend="506"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a36bf2bb72e8dd3c2e320a6ef89765635" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -6024,6 +6039,222 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_emulated.h" line="654" column="21" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="654" bodyend="663"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::fvec_argsort</definition>
+        <argsstring>(size_t n, const float *vals, size_t *perm)</argsstring>
+        <name>fvec_argsort</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Indirect sort of a floating-point array</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of the array </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>array to sort, size n </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>perm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output: permutation of [0..n-1], st. vals[perm[i + 1]] &gt;= vals[perm[i]] </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="21" column="6" declfile="faiss/utils/sorting.h" declline="21" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::fvec_argsort_parallel</definition>
+        <argsstring>(size_t n, const float *vals, size_t *perm)</argsstring>
+        <name>fvec_argsort_parallel</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Same as fvec_argsort, parallelized </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="24" column="6" declfile="faiss/utils/sorting.h" declline="24" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::bucket_sort</definition>
+        <argsstring>(size_t nval, const uint64_t *vals, uint64_t nbucket, int64_t *lims, int64_t *perm, int nt=0)</argsstring>
+        <name>bucket_sort</name>
+        <param>
+          <type>size_t</type>
+          <declname>nval</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>nbucket</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>lims</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>perm</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nt</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bucket sort of a list of values</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>values to sort, size nval, max value nbucket - 1 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lims</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output limits of buckets, size nbucket + 1 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>perm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output buckets, the elements of bucket i are in perm[lims[i]:lims[i + 1]] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of threads (0 = pure sequential code) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="37" column="6" declfile="faiss/utils/sorting.h" declline="37" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::matrix_bucket_sort_inplace</definition>
+        <argsstring>(size_t nrow, size_t ncol, int32_t *vals, int32_t nbucket, int64_t *lims, int nt=0)</argsstring>
+        <name>matrix_bucket_sort_inplace</name>
+        <param>
+          <type>size_t</type>
+          <declname>nrow</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncol</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>nbucket</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>lims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nt</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>in-place bucket sort (with attention to memory=&gt;int32) on input the values are in a nrow * col matrix we want to store the row numbers in the output.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>positive values to sort, size nrow * ncol, max value nbucket - 1 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lims</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output limits of buckets, size nbucket + 1 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of threads (0 = pure sequential code) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="54" column="6" declfile="faiss/utils/sorting.h" declline="54" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>std::string faiss::get_compile_options</definition>
@@ -6036,7 +6267,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="35" column="13" declfile="faiss/utils/utils.h" declline="35" declcolumn="13"/>
+        <location file="faiss/utils/utils.h" line="32" column="13" declfile="faiss/utils/utils.h" declline="32" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -6050,7 +6281,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="42" column="8" declfile="faiss/utils/utils.h" declline="42" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="39" column="8" declfile="faiss/utils/utils.h" declline="39" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -6064,7 +6295,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="45" column="8" declfile="faiss/utils/utils.h" declline="45" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="42" column="8" declfile="faiss/utils/utils.h" declline="42" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a090355c2725c425a511a367cbfe41262" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -6077,7 +6308,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="47" column="10" declfile="faiss/utils/utils.h" declline="47" declcolumn="10"/>
+        <location file="faiss/utils/utils.h" line="44" column="10" declfile="faiss/utils/utils.h" declline="44" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6145,7 +6376,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="60" column="6" declfile="faiss/utils/utils.h" declline="60" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="57" column="6" declfile="faiss/utils/utils.h" declline="57" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -6181,7 +6412,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="65" column="5" declfile="faiss/utils/utils.h" declline="65" declcolumn="5"/>
+        <location file="faiss/utils/utils.h" line="62" column="5" declfile="faiss/utils/utils.h" declline="62" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab7c6da3d6915a010d5d3074d93878ce9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6214,7 +6445,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="73" column="6" declfile="faiss/utils/utils.h" declline="73" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="70" column="6" declfile="faiss/utils/utils.h" declline="70" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1afb68fe89ad5e948974da1b70d7b4157c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6249,7 +6480,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="78" column="6" declfile="faiss/utils/utils.h" declline="78" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="75" column="6" declfile="faiss/utils/utils.h" declline="75" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad5827240bc67d6f8a612ba8761b34714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6275,7 +6506,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="81" column="6" declfile="faiss/utils/utils.h" declline="81" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="78" column="6" declfile="faiss/utils/utils.h" declline="78" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a104f2c4626def41c53ad1ca0027741cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -6305,7 +6536,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="86" column="8" declfile="faiss/utils/utils.h" declline="86" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="83" column="8" declfile="faiss/utils/utils.h" declline="83" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7690bafb56c991da908ee11822c7a8da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -6391,7 +6622,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="100" column="8" declfile="faiss/utils/utils.h" declline="100" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="97" column="8" declfile="faiss/utils/utils.h" declline="97" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aeffbb44eed1c07967d77b369d7ba7b1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -6417,7 +6648,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="111" column="8" declfile="faiss/utils/utils.h" declline="111" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="108" column="8" declfile="faiss/utils/utils.h" declline="108" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a94c1d99ac39d22e362aa27ce7c7ff714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -6439,57 +6670,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="114" column="8" declfile="faiss/utils/utils.h" declline="114" declcolumn="8"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::fvec_argsort</definition>
-        <argsstring>(size_t n, const float *vals, size_t *perm)</argsstring>
-        <name>fvec_argsort</name>
-        <param>
-          <type>size_t</type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>vals</declname>
-        </param>
-        <param>
-          <type>size_t *</type>
-          <declname>perm</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/utils.h" line="116" column="6" declfile="faiss/utils/utils.h" declline="116" declcolumn="6"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::fvec_argsort_parallel</definition>
-        <argsstring>(size_t n, const float *vals, size_t *perm)</argsstring>
-        <name>fvec_argsort_parallel</name>
-        <param>
-          <type>size_t</type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>vals</declname>
-        </param>
-        <param>
-          <type>size_t *</type>
-          <declname>perm</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/utils.h" line="118" column="6" declfile="faiss/utils/utils.h" declline="118" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="111" column="8" declfile="faiss/utils/utils.h" declline="111" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7bea462108bee98d8d5859b51ec4db8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -6519,7 +6700,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="121" column="5" declfile="faiss/utils/utils.h" declline="121" declcolumn="5"/>
+        <location file="faiss/utils/utils.h" line="114" column="5" declfile="faiss/utils/utils.h" declline="114" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a154a47857ed321b9db91122770a16e09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6567,19 +6748,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="128" column="6" declfile="faiss/utils/utils.h" declline="128" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="121" column="6" declfile="faiss/utils/utils.h" declline="121" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a4369329c9dbdfe23e3f35d09ba7b5c6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::ivec_checksum</definition>
-        <argsstring>(size_t n, const int *a)</argsstring>
+        <argsstring>(size_t n, const int32_t *a)</argsstring>
         <name>ivec_checksum</name>
         <param>
           <type>size_t</type>
           <declname>n</declname>
         </param>
         <param>
-          <type>const int *</type>
+          <type>const int32_t *</type>
           <declname>a</declname>
         </param>
         <briefdescription>
@@ -6589,7 +6770,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="131" column="8" declfile="faiss/utils/utils.h" declline="131" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="124" column="8" declfile="faiss/utils/utils.h" declline="124" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af851590d865ea2eae8dae3ae72406bfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const float *</type>
@@ -6673,7 +6854,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="142" column="13" declfile="faiss/utils/utils.h" declline="142" declcolumn="13"/>
+        <location file="faiss/utils/utils.h" line="135" column="13" declfile="faiss/utils/utils.h" declline="135" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6725,7 +6906,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="156" column="6" declfile="faiss/utils/utils.h" declline="156" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="149" column="6" declfile="faiss/utils/utils.h" declline="149" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -6777,7 +6958,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="165" column="6" declfile="faiss/utils/utils.h" declline="165" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="158" column="6" declfile="faiss/utils/utils.h" declline="158" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -6799,7 +6980,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="168" column="10" declfile="faiss/utils/utils.h" declline="168" declcolumn="10"/>
+        <location file="faiss/utils/utils.h" line="161" column="10" declfile="faiss/utils/utils.h" declline="161" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -6813,7 +6994,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="171" column="6" declfile="faiss/utils/utils.h" declline="171" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="164" column="6" declfile="faiss/utils/utils.h" declline="164" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

@@ -525,6 +525,7 @@
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a4f41c5ae635cb0980607c9428a388879">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a9fa695e20cc4665dbdd5f6adde0b7ee7">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexSplitVectors_1a09aa261dce984fd45a2385a50cfa9a15">search</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRandom_1a2e782ae6183d6c3e67777f2ea3c06d54">search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>

@@ -284,6 +284,64 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="408" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HeapArray&lt; C &gt;::addn_query_subset_with_ids</definition>
+        <argsstring>(size_t nsubset, const TI *subset, size_t nj, const T *vin, const TI *id_in=nullptr, int64_t id_stride=0)</argsstring>
+        <name>addn_query_subset_with_ids</name>
+        <param>
+          <type>size_t</type>
+          <declname>nsubset</declname>
+        </param>
+        <param>
+          <type>const TI *</type>
+          <declname>subset</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nj</declname>
+        </param>
+        <param>
+          <type>const T *</type>
+          <declname>vin</declname>
+        </param>
+        <param>
+          <type>const TI *</type>
+          <declname>id_in</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>id_stride</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>same as addn_with_ids, but for just a subset of queries</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nsubset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of query entries to update </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>subset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>indexes of queries to update, in 0..nh-1, size nsubset </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="421" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::HeapArray&lt; C &gt;::reorder</definition>
@@ -296,7 +354,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="417" column="10"/>
+        <location file="faiss/utils/Heap.h" line="430" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -335,7 +393,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/Heap.h" line="424" column="10"/>
+        <location file="faiss/utils/Heap.h" line="437" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -343,9 +401,10 @@
     <detaileddescription>
 <para>a template structure for a set of [min|max]-heaps it is tailored so that the actual data of the heaps can just live in compact arrays. </para>
     </detaileddescription>
-    <location file="faiss/utils/Heap.h" line="366" column="1" bodyfile="faiss/utils/Heap.h" bodystart="366" bodyend="425"/>
+    <location file="faiss/utils/Heap.h" line="366" column="1" bodyfile="faiss/utils/Heap.h" bodystart="366" bodyend="438"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HeapArray_1a293d8646fba26cfe726d529f3fb58923" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn</name></member>
+      <member refid="structfaiss_1_1HeapArray_1a0ea37899d4d03dcef41c1a8027777b5d" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_query_subset_with_ids</name></member>
       <member refid="structfaiss_1_1HeapArray_1a75cbbd8f60dd00f0523e8515e5072d06" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>addn_with_ids</name></member>
       <member refid="structfaiss_1_1HeapArray_1af6aa57addaa1bc754d09a2a08be4df49" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_ids</name></member>
       <member refid="structfaiss_1_1HeapArray_1ae97911f6f85d152a5b45e459063b6858" prot="public" virt="non-virtual"><scope>faiss::HeapArray</scope><name>get_val</name></member>

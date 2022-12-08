@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="sorting_8h" kind="file" language="C++">
+    <compoundname>sorting.h</compoundname>
+    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
+      <node id="1">
+        <label>faiss/utils/sorting.h</label>
+        <link refid="sorting_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="14"><highlight class="comment">/**<sp/>Indirect<sp/>sort<sp/>of<sp/>a<sp/>floating-point<sp/>array</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>the<sp/>array</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>@param<sp/>vals<sp/><sp/>array<sp/>to<sp/>sort,<sp/>size<sp/>n</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>@param<sp/>perm<sp/><sp/>output:<sp/>permutation<sp/>of<sp/>[0..n-1],<sp/>st.</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vals[perm[i<sp/>+<sp/>1]]<sp/>&gt;=<sp/>vals[perm[i]]</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" kindref="member">fvec_argsort</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>perm);</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="23"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>fvec_argsort,<sp/>parallelized<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" kindref="member">fvec_argsort_parallel</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vals,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>perm);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="26"><highlight class="comment">///<sp/>increase<sp/>verbosity<sp/>of<sp/>the<sp/>bucket_sort<sp/>functions</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"></highlight><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kindref="member">bucket_sort_verbose</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment">/**<sp/>Bucket<sp/>sort<sp/>of<sp/>a<sp/>list<sp/>of<sp/>values</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/>@param<sp/>vals<sp/><sp/><sp/><sp/><sp/>values<sp/>to<sp/>sort,<sp/>size<sp/>nval,<sp/>max<sp/>value<sp/>nbucket<sp/>-<sp/>1</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>@param<sp/>lims<sp/><sp/><sp/><sp/><sp/>output<sp/>limits<sp/>of<sp/>buckets,<sp/>size<sp/>nbucket<sp/>+<sp/>1</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>@param<sp/>perm<sp/><sp/><sp/><sp/><sp/>output<sp/>buckets,<sp/>the<sp/>elements<sp/>of<sp/>bucket</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>are<sp/>in<sp/>perm[lims[i]:lims[i<sp/>+<sp/>1]]</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>@param<sp/>nt<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>threads<sp/>(0<sp/>=<sp/>pure<sp/>sequential<sp/>code)</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" kindref="member">bucket_sort</ref>(</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nval,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>vals,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint64_t<sp/>nbucket,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>lims,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>perm,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nt<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="45"><highlight class="comment">/**<sp/>in-place<sp/>bucket<sp/>sort<sp/>(with<sp/>attention<sp/>to<sp/>memory=&gt;int32)</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*<sp/>on<sp/>input<sp/>the<sp/>values<sp/>are<sp/>in<sp/>a<sp/>nrow<sp/>*<sp/>col<sp/>matrix</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/>*<sp/>we<sp/>want<sp/>to<sp/>store<sp/>the<sp/>row<sp/>numbers<sp/>in<sp/>the<sp/>output.</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/>*<sp/>@param<sp/>vals<sp/><sp/><sp/><sp/><sp/>positive<sp/>values<sp/>to<sp/>sort,<sp/>size<sp/>nrow<sp/>*<sp/>ncol,</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>max<sp/>value<sp/>nbucket<sp/>-<sp/>1</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>@param<sp/>lims<sp/><sp/><sp/><sp/><sp/>output<sp/>limits<sp/>of<sp/>buckets,<sp/>size<sp/>nbucket<sp/>+<sp/>1</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/>@param<sp/>nt<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>threads<sp/>(0<sp/>=<sp/>pure<sp/>sequential<sp/>code)</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" kindref="member">matrix_bucket_sort_inplace</ref>(</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nrow,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncol,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>vals,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t<sp/>nbucket,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>lims,</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nt<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/utils/sorting.h"/>
+  </compounddef>
+</doxygen>
