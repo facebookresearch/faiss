@@ -55,7 +55,7 @@ def kmax(array, k):
     return D, I
 
 
-def pairwise_distances(xq, xb, mt=METRIC_L2, metric_arg=0):
+def pairwise_distances(xq, xb, metric=METRIC_L2, metric_arg=0):
     """compute the whole pairwise distance matrix between two sets of
     vectors"""
     xq = np.ascontiguousarray(xq, dtype='float32')
@@ -64,16 +64,18 @@ def pairwise_distances(xq, xb, mt=METRIC_L2, metric_arg=0):
     nb, d2 = xb.shape
     assert d == d2
     dis = np.empty((nq, nb), dtype='float32')
-    if mt == METRIC_L2:
+    if metric == METRIC_L2:
         pairwise_L2sqr(
             d, nq, swig_ptr(xq),
             nb, swig_ptr(xb),
             swig_ptr(dis))
+    elif metric == METRIC_INNER_PRODUCT:
+        dis[:] = xq @ xb.T
     else:
         pairwise_extra_distances(
             d, nq, swig_ptr(xq),
             nb, swig_ptr(xb),
-            mt, metric_arg,
+            metric, metric_arg,
             swig_ptr(dis))
     return dis
 
@@ -102,6 +104,17 @@ def randn(n, seed=12345):
     return res
 
 
+def checksum(a):
+    """ compute a checksum for quick-and-dirty comparisons of arrays """
+    a = a.view('uint8')
+    n = a.size
+    n4 = n & ~3
+    cs = ivec_checksum(int(n4 / 4), swig_ptr(a[:n4].view('int32')))
+    for i in range(n4, n):
+        cs += x[i] * 33657
+    return cs
+
+
 rand_smooth_vectors_c = rand_smooth_vectors
 
 
@@ -128,6 +141,75 @@ def eval_intersection(I1, I2):
 def normalize_L2(x):
     fvec_renorm_L2(x.shape[1], x.shape[0], swig_ptr(x))
 
+bucket_sort_c = bucket_sort
+
+def bucket_sort(tab, nbucket=None, nt=0):
+    """Perform a bucket sort on a table of integers.
+
+    Parameters
+    ----------
+    tab : array_like
+        elements to sort, max value nbucket - 1
+    nbucket : integer
+        number of buckets, None if unknown
+    nt : integer
+        number of threads to use (0 = use unthreaded codepath)
+
+    Returns
+    -------
+    lims : array_like
+        cumulative sum of bucket sizes (size vmax + 1)
+    perm : array_like
+        perm[lims[i] : lims[i + 1]] contains the indices of bucket #i (size tab.size)
+    """
+    tab = np.ascontiguousarray(tab, dtype="int64")
+    if nbucket is None:
+        nbucket = int(tab.max() + 1)
+    lims = np.empty(nbucket + 1, dtype='int64')
+    perm = np.empty(tab.size, dtype='int64')
+    bucket_sort_c(
+        tab.size, faiss.swig_ptr(tab.view('uint64')),
+        nbucket, faiss.swig_ptr(lims), faiss.swig_ptr(perm),
+        nt
+    )
+    return lims, perm
+
+matrix_bucket_sort_inplace_c = matrix_bucket_sort_inplace
+
+def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
+    """Perform a bucket sort on a matrix, recording the original
+    row of each element.
+
+    Parameters
+    ----------
+    tab : array_like
+        array of size (N, ncol) that contains the bucket ids, maximum
+        value nbucket - 1.
+        On output, it the elements are shuffled such that the flat array
+        tab.ravel()[lims[i] : lims[i + 1]] contains the row numbers
+        of each bucket entry.
+    nbucket : integer
+        number of buckets (the maximum value in tab should be nbucket - 1)
+    nt : integer
+        number of threads to use (0 = use unthreaded codepath)
+
+    Returns
+    -------
+    lims : array_like
+        cumulative sum of bucket sizes (size vmax + 1)
+    """
+    assert tab.dtype == 'int32'
+    nrow, ncol = tab.shape
+    if nbucket is None:
+        nbucket = int(tab.max() + 1)
+    lims = np.empty(nbucket + 1, dtype='int64')
+    matrix_bucket_sort_inplace_c(
+        nrow, ncol, faiss.swig_ptr(tab),
+        nbucket, faiss.swig_ptr(lims),
+        nt
+    )
+    return lims
+
 
 ###########################################
 # ResultHeap
@@ -138,7 +220,11 @@ class ResultHeap:
     be in self.D, self.I."""
 
     def __init__(self, nq, k, keep_max=False):
-        " nq: number of query vectors, k: number of results per query "
+        """
+        nq: number of query vectors,
+        k: number of results per query
+        keep_max: keep the top-k maximum values instead of the minima
+        """
         self.I = np.zeros((nq, k), dtype='int64')
         self.D = np.zeros((nq, k), dtype='float32')
         self.nq, self.k = nq, k
@@ -154,7 +240,11 @@ class ResultHeap:
         self.heaps = heaps
 
     def add_result(self, D, I):
-        """D, I do not need to be in a particular order (heap or sorted)"""
+        """
+        Add results for all heaps
+        D, I should be of size (nh, nres)
+        D, I do not need to be in a particular order (heap or sorted)
+        """
         nq, kd = D.shape
         D = np.ascontiguousarray(D, dtype='float32')
         I = np.ascontiguousarray(I, dtype='int64')
@@ -163,6 +253,27 @@ class ResultHeap:
         self.heaps.addn_with_ids(
             kd, swig_ptr(D),
             swig_ptr(I), kd)
+
+    def add_result_subset(self, subset, D, I):
+        """
+        Add results for a subset of heaps.
+        D, I should hold resutls for all the subset
+        as a special case, if I is 1D, then all ids are assumed to be the same
+        """
+        nsubset, kd = D.shape
+        assert nsubset == len(subset)
+        assert (
+            I.ndim == 2 and D.shape == I.shape or
+            I.ndim == 1 and I.shape == (kd, )
+        )
+        D = np.ascontiguousarray(D, dtype='float32')
+        I = np.ascontiguousarray(I, dtype='int64')
+        subset = np.ascontiguousarray(subset, dtype='int64')
+        id_stride = 0 if I.ndim == 1 else kd
+        self.heaps.addn_query_subset_with_ids(
+            nsubset, swig_ptr(subset),
+            kd, swig_ptr(D), swig_ptr(I), id_stride
+        )
 
     def finalize(self):
         self.heaps.reorder()

@@ -10,8 +10,6 @@
  */
 
 #include <faiss/index_factory.h>
-#include "faiss/MetricType.h"
-#include "faiss/impl/FaissAssert.h"
 
 #include <cinttypes>
 #include <cmath>

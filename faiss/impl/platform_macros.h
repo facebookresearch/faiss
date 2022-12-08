@@ -23,6 +23,10 @@
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
 
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif // _MSC_VER
+
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 
 #define posix_memalign(p, a, s) \

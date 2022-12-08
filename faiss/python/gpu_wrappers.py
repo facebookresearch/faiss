@@ -40,7 +40,9 @@ def index_cpu_to_all_gpus(index, co=None, ngpu=-1):
 
 def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
     """ Here we can pass list of GPU ids as a parameter or ngpu to
-    use first n GPU's. gpus mut be a list or None"""
+    use first n GPU's. gpus mut be a list or None.
+    co is a GpuMultipleClonerOptions
+    """
     if (gpus is None) and (ngpu == -1):  # All blank
         gpus = range(get_num_gpus())
     elif (gpus is None) and (ngpu != -1):  # Get number of GPU's only

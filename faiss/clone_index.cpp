@@ -231,6 +231,17 @@ Index* clone_AdditiveQuantizerIndex(const Index* index) {
     }
 }
 
+namespace {
+
+IndexHNSW* clone_HNSW(const IndexHNSW* ihnsw) {
+    TRYCLONE(IndexHNSWFlat, ihnsw)
+    TRYCLONE(IndexHNSWPQ, ihnsw)
+    TRYCLONE(IndexHNSWSQ, ihnsw)
+    return new IndexHNSW(*ihnsw);
+}
+
+} // anonymous namespace
+
 Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexPQ, index)
     TRYCLONE(IndexLSH, index)
@@ -242,7 +253,7 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexFlat, index)
 
     TRYCLONE(IndexLattice, index)
-
+    TRYCLONE(IndexRandom, index)
     TRYCLONE(IndexPQFastScan, index)
 
     TRYCLONE(IndexScalarQuantizer, index)
@@ -298,7 +309,8 @@ Index* Cloner::clone_Index(const Index* index) {
     } else if (const IndexHNSW* ihnsw = dynamic_cast<const IndexHNSW*>(index)) {
         IndexHNSW* res = clone_IndexHNSW(ihnsw);
         res->own_fields = true;
-        res->storage = clone_Index(ihnsw->storage);
+        // make sure we don't get a GPU index here
+        res->storage = Cloner::clone_Index(ihnsw->storage);
         return res;
     } else if (const IndexNSG* insg = dynamic_cast<const IndexNSG*>(index)) {
         IndexNSG* res = clone_IndexNSG(insg);
@@ -348,7 +360,9 @@ Index* Cloner::clone_Index(const Index* index) {
         reset_AdditiveQuantizerIndex(res);
         return res;
     } else {
-        FAISS_THROW_MSG("clone not supported for this type of Index");
+        FAISS_THROW_FMT(
+                "clone not supported for this Index type %s",
+                typeid(*index).name());
     }
     return nullptr;
 }

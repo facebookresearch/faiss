@@ -14,6 +14,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 #include <cstring>
 

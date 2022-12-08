@@ -49,6 +49,35 @@ struct IndexSplitVectors : Index {
     ~IndexSplitVectors() override;
 };
 
+/** index that returns random results.
+ * used mainly for time benchmarks
+ */
+struct IndexRandom : Index {
+    int64_t seed;
+
+    explicit IndexRandom(
+            idx_t d,
+            idx_t ntotal = 0,
+            int64_t seed = 1234,
+            MetricType mt = METRIC_L2);
+
+    void add(idx_t n, const float* x) override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void reconstruct(idx_t key, float* recons) const override;
+
+    void reset() override;
+
+    ~IndexRandom() override;
+};
+
 } // namespace faiss
 
 #endif

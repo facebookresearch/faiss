@@ -8,7 +8,6 @@
 // -*- c++ -*-
 
 #include <faiss/impl/PolysemousTraining.h>
-#include "faiss/impl/FaissAssert.h"
 
 #include <omp.h>
 #include <stdint.h>

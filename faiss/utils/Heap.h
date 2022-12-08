@@ -413,6 +413,19 @@ struct HeapArray {
             size_t i0 = 0,
             int64_t ni = -1);
 
+    /** same as addn_with_ids, but for just a subset of queries
+     *
+     * @param nsubset  number of query entries to update
+     * @param subset   indexes of queries to update, in 0..nh-1, size nsubset
+     */
+    void addn_query_subset_with_ids(
+            size_t nsubset,
+            const TI* subset,
+            size_t nj,
+            const T* vin,
+            const TI* id_in = nullptr,
+            int64_t id_stride = 0);
+
     /// reorder all the heaps
     void reorder();
 

@@ -1158,3 +1158,19 @@ class TestLargeRangeSearch(unittest.TestCase):
         lims, D, I = index.range_search(xq, 1.0)
 
         assert len(D) == len(xb) * len(xq)
+
+
+class TestRandomIndex(unittest.TestCase):
+
+    def test_random(self):
+        """ just check if several runs of search retrieve the
+        same results """
+        index = faiss.IndexRandom(32, 1000000000)
+        (xt, xb, xq) = get_dataset_2(32, 0, 0, 10)
+
+        Dref, Iref = index.search(xq, 10)
+        self.assertTrue(np.all(Dref[:, 1:] >= Dref[:, :-1]))
+
+        Dnew, Inew = index.search(xq, 10)
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)

@@ -24,9 +24,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef __SSE__
-#endif
-
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFPQ.h>
@@ -35,6 +32,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/sorting.h>
 
 extern "C" {
 

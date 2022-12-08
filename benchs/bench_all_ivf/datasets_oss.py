@@ -81,7 +81,6 @@ def load_dataset(dataset='deep1M', compute_gt=False, download=False):
             f"{centdir}/clustering.dbdeep1M.IVF{ncent}.faissindex"
         )
 
-
     elif dataset.startswith("deep"):
 
         szsuf = dataset[4:]

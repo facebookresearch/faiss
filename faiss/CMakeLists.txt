@@ -85,6 +85,7 @@ set(FAISS_SRC
   utils/partitioning.cpp
   utils/quantize_lut.cpp
   utils/random.cpp
+  utils/sorting.cpp
   utils/utils.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp

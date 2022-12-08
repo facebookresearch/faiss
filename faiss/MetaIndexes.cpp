@@ -19,6 +19,8 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/WorkerThread.h>
+#include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -153,5 +155,89 @@ IndexSplitVectors::~IndexSplitVectors() {
             delete sub_indexes[s];
     }
 }
+
+/********************************************************
+ * IndexRandom implementation
+ */
+
+IndexRandom::IndexRandom(
+        idx_t d,
+        idx_t ntotal,
+        int64_t seed,
+        MetricType metric_type)
+        : Index(d, metric_type), seed(seed) {
+    this->ntotal = ntotal;
+    is_trained = true;
+}
+
+void IndexRandom::add(idx_t n, const float*) {
+    ntotal += n;
+}
+
+void IndexRandom::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+    FAISS_THROW_IF_NOT(k <= ntotal);
+#pragma omp parallel for if (n > 1000)
+    for (idx_t i = 0; i < n; i++) {
+        RandomGenerator rng(
+                seed + ivec_checksum(d, (const int32_t*)(x + i * d)));
+        idx_t* I = labels + i * k;
+        float* D = distances + i * k;
+        // assumes k << ntotal
+        if (k < 100 * ntotal) {
+            std::unordered_set<idx_t> map;
+            for (int j = 0; j < k; j++) {
+                idx_t ii;
+                for (;;) {
+                    // yes I know it's not strictly uniform...
+                    ii = rng.rand_int64() % ntotal;
+                    if (map.count(ii) == 0) {
+                        break;
+                    }
+                }
+                I[j] = ii;
+                map.insert(ii);
+            }
+        } else {
+            std::vector<idx_t> perm(ntotal);
+            for (idx_t j = 0; j < ntotal; j++) {
+                perm[j] = j;
+            }
+            for (int j = 0; j < k; j++) {
+                std::swap(perm[j], perm[rng.rand_int(ntotal)]);
+                I[j] = perm[j];
+            }
+        }
+        float dprev = 0;
+        for (int j = 0; j < k; j++) {
+            float step = rng.rand_float();
+            if (metric_type == METRIC_INNER_PRODUCT) {
+                step = -step;
+            }
+            dprev += step;
+            D[j] = dprev;
+        }
+    }
+}
+
+void IndexRandom::reconstruct(idx_t key, float* recons) const {
+    RandomGenerator rng(seed + 123332 + key);
+    for (size_t i = 0; i < d; i++) {
+        recons[i] = rng.rand_float();
+    }
+}
+
+void IndexRandom::reset() {
+    ntotal = 0;
+}
+
+IndexRandom::~IndexRandom() {}
 
 } // namespace faiss

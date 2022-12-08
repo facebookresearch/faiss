@@ -122,6 +122,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
@@ -380,6 +381,7 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/utils.h>
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
+%include  <faiss/utils/sorting.h>
 
 %include  <faiss/MetricType.h>
 
@@ -612,12 +614,14 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
+    DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
