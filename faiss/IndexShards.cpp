@@ -33,12 +33,15 @@ void translate_labels(long n, idx_t* labels, long translation) {
     }
 }
 
-/** merge result tables from several shards.
+/** Merge result tables from several shards. The per-shard results are assumed
+ * to be sorted. Note that the C comparator is reversed w.r.t. the usual top-k
+ * element heap because we want the best (ie. lowest for L2) result to be on
+ * top, not the worst.
+ *
  * @param all_distances  size nshard * n * k
  * @param all_labels     idem
- * @param translartions  label translations to apply, size nshard
+ * @param translations  label translations to apply, size nshard
  */
-
 template <class IndexClass, class C>
 void merge_tables(
         long n,
@@ -53,12 +56,14 @@ void merge_tables(
         return;
     }
     using distance_t = typename IndexClass::distance_t;
-
     long stride = n * k;
-#pragma omp parallel
+#pragma omp parallel if (n * nshard * k > 100000)
     {
         std::vector<int> buf(2 * nshard);
+        // index in each shard's result list
         int* pointer = buf.data();
+        // (shard_ids, heap_vals): heap that indexes
+        // shard -> current distance for this shard
         int* shard_ids = pointer + nshard;
         std::vector<distance_t> buf2(nshard);
         distance_t* heap_vals = buf2.data();
@@ -70,6 +75,7 @@ void merge_tables(
             const idx_t* I_in = all_labels.data() + i * k;
             int heap_size = 0;
 
+            // push the first element of each shard (if not -1)
             for (long s = 0; s < nshard; s++) {
                 pointer[s] = 0;
                 if (I_in[stride * s] >= 0) {
@@ -85,28 +91,29 @@ void merge_tables(
             distance_t* D = distances + i * k;
             idx_t* I = labels + i * k;
 
-            for (int j = 0; j < k; j++) {
-                if (heap_size == 0) {
-                    I[j] = -1;
-                    D[j] = C::neutral();
-                } else {
-                    // pop best element
-                    int s = shard_ids[0];
-                    int& p = pointer[s];
-                    D[j] = heap_vals[0];
-                    I[j] = I_in[stride * s + p] + translations[s];
+            int j;
+            for (j = 0; j < k && heap_size > 0; j++) {
+                // pop element from best shard
+                int s = shard_ids[0]; // top of heap
+                int& p = pointer[s];
+                D[j] = heap_vals[0];
+                I[j] = I_in[stride * s + p] + translations[s];
 
-                    heap_pop<C>(heap_size--, heap_vals, shard_ids);
-                    p++;
-                    if (p < k && I_in[stride * s + p] >= 0) {
-                        heap_push<C>(
-                                ++heap_size,
-                                heap_vals,
-                                shard_ids,
-                                D_in[stride * s + p],
-                                s);
-                    }
+                // pop from shard, advance pointer for this shard
+                heap_pop<C>(heap_size--, heap_vals, shard_ids);
+                p++;
+                if (p < k && I_in[stride * s + p] >= 0) {
+                    heap_push<C>(
+                            ++heap_size,
+                            heap_vals,
+                            shard_ids,
+                            D_in[stride * s + p],
+                            s);
                 }
+            }
+            for (; j < k; j++) {
+                I[j] = -1;
+                D[j] = C::Crev::neutral();
             }
         }
     }

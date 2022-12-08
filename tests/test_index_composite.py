@@ -677,5 +677,39 @@ class TestInvlistMeta(unittest.TestCase):
         index.replace_invlists(il, True)
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestSplitMerge(unittest.TestCase):
+
+    def do_test(self, index_key, subset_type):
+        xt, xb, xq = get_dataset_2(32, 1000, 100, 10)
+        index = faiss.index_factory(32, index_key)
+        index.train(xt)
+        nsplit = 3
+        sub_indexes = [faiss.clone_index(index) for i in range(nsplit)]
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+        for i in range(nsplit):
+            if subset_type in (1, 3):
+                index.copy_subset_to(sub_indexes[i], subset_type, nsplit, i)
+            elif subset_type in (0, 2):
+                j0 = index.ntotal * i // nsplit
+                j1 = index.ntotal * (i + 1) // nsplit
+                index.copy_subset_to(sub_indexes[i], subset_type, j0, j1)
+
+        index_shards = faiss.IndexShards(False, False)
+        for i in range(nsplit):
+            index_shards.add_shard(sub_indexes[i])
+        Dnew, Inew = index_shards.search(xq, 10)
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+
+    def test_Flat_subset_type_0(self):
+        self.do_test("IVF30,Flat", subset_type=0)
+
+    def test_Flat_subset_type_1(self):
+        self.do_test("IVF30,Flat", subset_type=1)
+
+    def test_Flat_subset_type_2(self):
+        self.do_test("IVF30,PQ4np", subset_type=2)
+
+    def test_Flat_subset_type_3(self):
+        self.do_test("IVF30,Flat", subset_type=3)

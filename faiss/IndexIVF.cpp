@@ -1107,68 +1107,8 @@ void IndexIVF::copy_subset_to(
         int subset_type,
         idx_t a1,
         idx_t a2) const {
-    FAISS_THROW_IF_NOT(nlist == other.nlist);
-    FAISS_THROW_IF_NOT(code_size == other.code_size);
-    FAISS_THROW_IF_NOT(other.direct_map.no());
-    FAISS_THROW_IF_NOT_FMT(
-            subset_type == 0 || subset_type == 1 || subset_type == 2,
-            "subset type %d not implemented",
-            subset_type);
-
-    size_t accu_n = 0;
-    size_t accu_a1 = 0;
-    size_t accu_a2 = 0;
-
-    InvertedLists* oivf = other.invlists;
-
-    for (idx_t list_no = 0; list_no < nlist; list_no++) {
-        size_t n = invlists->list_size(list_no);
-        ScopedIds ids_in(invlists, list_no);
-
-        if (subset_type == 0) {
-            for (idx_t i = 0; i < n; i++) {
-                idx_t id = ids_in[i];
-                if (a1 <= id && id < a2) {
-                    oivf->add_entry(
-                            list_no,
-                            invlists->get_single_id(list_no, i),
-                            ScopedCodes(invlists, list_no, i).get());
-                    other.ntotal++;
-                }
-            }
-        } else if (subset_type == 1) {
-            for (idx_t i = 0; i < n; i++) {
-                idx_t id = ids_in[i];
-                if (id % a1 == a2) {
-                    oivf->add_entry(
-                            list_no,
-                            invlists->get_single_id(list_no, i),
-                            ScopedCodes(invlists, list_no, i).get());
-                    other.ntotal++;
-                }
-            }
-        } else if (subset_type == 2) {
-            // see what is allocated to a1 and to a2
-            size_t next_accu_n = accu_n + n;
-            size_t next_accu_a1 = next_accu_n * a1 / ntotal;
-            size_t i1 = next_accu_a1 - accu_a1;
-            size_t next_accu_a2 = next_accu_n * a2 / ntotal;
-            size_t i2 = next_accu_a2 - accu_a2;
-
-            for (idx_t i = i1; i < i2; i++) {
-                oivf->add_entry(
-                        list_no,
-                        invlists->get_single_id(list_no, i),
-                        ScopedCodes(invlists, list_no, i).get());
-            }
-
-            other.ntotal += i2 - i1;
-            accu_a1 = next_accu_a1;
-            accu_a2 = next_accu_a2;
-        }
-        accu_n += n;
-    }
-    FAISS_ASSERT(accu_n == ntotal);
+    other.ntotal +=
+            invlists->copy_subset_to(*other.invlists, subset_type, a1, a2);
 }
 
 IndexIVF::~IndexIVF() {

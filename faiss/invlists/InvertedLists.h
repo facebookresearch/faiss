@@ -33,6 +33,8 @@ struct InvertedLists {
 
     InvertedLists(size_t nlist, size_t code_size);
 
+    virtual ~InvertedLists();
+
     /// used for BlockInvertedLists, where the codes are packed into groups
     /// and the individual code size is meaningless
     static const size_t INVALID_CODE_SIZE = static_cast<size_t>(-1);
@@ -103,10 +105,28 @@ struct InvertedLists {
 
     virtual void reset();
 
+    /*************************
+     * high level functions     */
+
     /// move all entries from oivf (empty on output)
     void merge_from(InvertedLists* oivf, size_t add_id);
 
-    virtual ~InvertedLists();
+    /** copy a subset of the entries index to the other index
+     *
+     * if subset_type == 0: copies ids in [a1, a2)
+     * if subset_type == 1: copies ids if id % a1 == a2
+     * if subset_type == 2: copies inverted lists such that a1
+     *                      elements are left before and a2 elements are after
+     *                      (insensitive to ids)
+     * if subset_type == 3: take fraction a2 out of a1 from each invlist
+     *                      (does not depend on ids). 0 <= a2 < a1
+     * @return number of entries copied
+     */
+    size_t copy_subset_to(
+            InvertedLists& other,
+            int subset_type,
+            idx_t a1,
+            idx_t a2) const;
 
     /*************************
      * statistics            */

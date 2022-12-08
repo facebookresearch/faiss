@@ -318,11 +318,7 @@ struct IndexIVF : Index, Level1Quantizer {
     virtual void merge_from(Index& otherIndex, idx_t add_id) override;
 
     /** copy a subset of the entries index to the other index
-     *
-     * if subset_type == 0: copies ids in [a1, a2)
-     * if subset_type == 1: copies ids if id % a1 == a2
-     * if subset_type == 2: copies inverted lists such that a1
-     *                      elements are left before and a2 elements are after
+     * see Invlists::copy_subset_to for the meaning of subset_type
      */
     virtual void copy_subset_to(
             IndexIVF& other,
