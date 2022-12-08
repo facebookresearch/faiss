@@ -396,6 +396,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13InvertedListsD0Ev">
+<span id="_CPPv3N5faiss13InvertedListsD0Ev"></span><span id="_CPPv2N5faiss13InvertedListsD0Ev"></span><span id="faiss::InvertedLists::~InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists_1a74508f4759d1b37c5a9e016c495d0dc1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~InvertedLists</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss13InvertedLists9list_sizeE6size_t">
 <span id="_CPPv3NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="_CPPv2NK5faiss13InvertedLists9list_sizeE6size_t"></span><span id="faiss::InvertedLists::list_size__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a9bd256053ee360473842105460fe285f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list_size</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
 <dd><p>get the size of a list </p>
@@ -499,9 +504,16 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13InvertedListsD0Ev">
-<span id="_CPPv3N5faiss13InvertedListsD0Ev"></span><span id="_CPPv2N5faiss13InvertedListsD0Ev"></span><span id="faiss::InvertedLists::~InvertedLists"></span><span class="target" id="structfaiss_1_1InvertedLists_1a74508f4759d1b37c5a9e016c495d0dc1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~InvertedLists</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13InvertedLists14copy_subset_toER13InvertedListsi5idx_t5idx_t">
+<span id="_CPPv3NK5faiss13InvertedLists14copy_subset_toER13InvertedListsi5idx_t5idx_t"></span><span id="_CPPv2NK5faiss13InvertedLists14copy_subset_toER13InvertedListsi5idx_t5idx_t"></span><span id="faiss::InvertedLists::copy_subset_to__InvertedListsR.i.idx_t.idx_tC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a3b8a892340ed3d040bfc9e1cbb236b0a"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy_subset_to</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subset_type</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a1</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a2</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>copy a subset of the entries index to the other index</p>
+<p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after (insensitive to ids) if subset_type == 3: take fraction a2 out of a1 from each invlist (does not depend on ids). 0 &lt;= a2 &lt; a1 </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>number of entries copied </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss13InvertedLists16imbalance_factorEv">

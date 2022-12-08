@@ -1,0 +1,4 @@
+Namespace std
+=============
+
+.. doxygennamespace:: std

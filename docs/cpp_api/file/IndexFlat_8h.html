@@ -469,159 +469,6 @@
 </dd></dl>
 
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1DE">
-<span id="_CPPv3N5faiss11IndexFlat1DE"></span><span id="_CPPv2N5faiss11IndexFlat1DE"></span><span id="faiss::IndexFlat1D"></span><span class="target" id="structfaiss_1_1IndexFlat1D"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat1D</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss11IndexFlatL2E" title="faiss::IndexFlatL2"><span class="n"><span class="pre">IndexFlatL2</span></span></a><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1DE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="docutils container">
-<em>#include &lt;IndexFlat.h&gt;</em></div>
-<p>optimized version for 1D “vectors”. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D11IndexFlat1DEb">
-<span id="_CPPv3N5faiss11IndexFlat1D11IndexFlat1DEb"></span><span id="_CPPv2N5faiss11IndexFlat1D11IndexFlat1DEb"></span><span id="faiss::IndexFlat1D::IndexFlat1D__b"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a789931261cf151b5ca57fff739b9e964"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat1D</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">continuous_update</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D11IndexFlat1DEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D18update_permutationEv">
-<span id="_CPPv3N5faiss11IndexFlat1D18update_permutationEv"></span><span id="_CPPv2N5faiss11IndexFlat1D18update_permutationEv"></span><span id="faiss::IndexFlat1D::update_permutation"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1ac7466c6c9b1e9e81ea19b846ddb8209e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_permutation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D18update_permutationEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>if not continuous_update, call this between the last add and the first search </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D3addE5idx_tPKf">
-<span id="_CPPv3N5faiss11IndexFlat1D3addE5idx_tPKf"></span><span id="_CPPv2N5faiss11IndexFlat1D3addE5idx_tPKf"></span><span id="faiss::IndexFlat1D::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D3addE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Add n vectors of dimension d to the index.</p>
-<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D5resetEv">
-<span id="_CPPv3N5faiss11IndexFlat1D5resetEv"></span><span id="_CPPv2N5faiss11IndexFlat1D5resetEv"></span><span id="faiss::IndexFlat1D::reset"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1aa205c4ffa6cbd50f49ef9cb6cc050000"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D5resetEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>removes all elements from the database. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters">
-<span id="_CPPv3NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="faiss::IndexFlat1D::search__idx_t.floatCP.idx_t.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1adc489649c579772c998db8c8e495d9bc"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Warn: the distances returned are L1 not L2. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters">
-<span id="_CPPv3NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="_CPPv2NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="faiss::IndexFlat1D::range_search__idx_t.floatCP.float.RangeSearchResultP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1af3c56bae3b28baeb3e50aed74006a319"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radius</span></span>, <span class="n"><span class="pre">RangeSearchResult</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">result</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>query n vectors of dimension d to the index.</p>
-<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
-<li><p><strong>radius</strong> – search radius </p></li>
-<li><p><strong>result</strong> – result table </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D11reconstructE5idx_tPf">
-<span id="_CPPv3NK5faiss11IndexFlat1D11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss11IndexFlat1D11reconstructE5idx_tPf"></span><span id="faiss::IndexFlat1D::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1ae4b33315752b62cff1626f9f967167b1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D11reconstructE5idx_tPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
-<p>this function may not be defined for some indexes </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
-<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t">
-<span id="_CPPv3NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t"></span><span id="_CPPv2NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t"></span><span id="faiss::IndexFlat1D::compute_distance_subset__idx_t.floatCP.idx_t.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a6da84c9f0aca74a1d6b5130478d83357"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_distance_subset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>compute distance with a subset of vectors</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – query vectors, size n * d </p></li>
-<li><p><strong>labels</strong> – indices of the vectors that should be compared for each query vector, size n * k </p></li>
-<li><p><strong>distances</strong> – corresponding output distances, size n * k </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D6get_xbEv">
-<span id="_CPPv3N5faiss11IndexFlat1D6get_xbEv"></span><span id="_CPPv2N5faiss11IndexFlat1D6get_xbEv"></span><span id="faiss::IndexFlat1D::get_xb"></span><span class="target" id="structfaiss_1_1IndexFlat_1ad8baeefb1c0b78316e70d9c994a54a80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D6get_xbEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D6get_xbEv">
-<span id="_CPPv3NK5faiss11IndexFlat1D6get_xbEv"></span><span id="_CPPv2NK5faiss11IndexFlat1D6get_xbEv"></span><span id="faiss::IndexFlat1D::get_xbC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a6a5cd875d1a63260e29d00cab7df9a74"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D6get_xbEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv">
-<span id="_CPPv3NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexFlat1D::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a5396c3f2f2ee3a716ef2accb6d5d8e24"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>a FlatCodesDistanceComputer offers a distance_to_code method </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t">
-<span id="_CPPv3NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexFlat1D::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>encode a set of vectors</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>x</strong> – input vectors, size n * d </p></li>
-<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf">
-<span id="_CPPv3NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexFlat1D::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>decode a set of vectors</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> – number of vectors </p></li>
-<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
-<li><p><strong>x</strong> – output vectors, size n * d </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D17continuous_updateE">
-<span id="_CPPv3N5faiss11IndexFlat1D17continuous_updateE"></span><span id="_CPPv2N5faiss11IndexFlat1D17continuous_updateE"></span><span id="faiss::IndexFlat1D::continuous_update__b"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a8b025a468b088a343cf8079006de45e2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">continuous_update</span></span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D17continuous_updateE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>is the permutation updated continuously? </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D4permE">
-<span id="_CPPv3N5faiss11IndexFlat1D4permE"></span><span id="_CPPv2N5faiss11IndexFlat1D4permE"></span><span id="faiss::IndexFlat1D::perm__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a3442f0d86a14108534f99eea0b7d4d3f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">perm</span></span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D4permE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>sorted database indices </p>
-</dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlatIPE">
 <span id="_CPPv3N5faiss11IndexFlatIPE"></span><span id="_CPPv2N5faiss11IndexFlatIPE"></span><span id="faiss::IndexFlatIP"></span><span class="target" id="structfaiss_1_1IndexFlatIP"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlatIP</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss9IndexFlatE" title="faiss::IndexFlat"><span class="n"><span class="pre">IndexFlat</span></span></a><a class="headerlink" href="#_CPPv4N5faiss11IndexFlatIPE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
@@ -869,6 +716,159 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1DE">
+<span id="_CPPv3N5faiss11IndexFlat1DE"></span><span id="_CPPv2N5faiss11IndexFlat1DE"></span><span id="faiss::IndexFlat1D"></span><span class="target" id="structfaiss_1_1IndexFlat1D"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat1D</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss11IndexFlatL2E" title="faiss::IndexFlatL2"><span class="n"><span class="pre">IndexFlatL2</span></span></a><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1DE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IndexFlat.h&gt;</em></div>
+<p>optimized version for 1D “vectors”. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D11IndexFlat1DEb">
+<span id="_CPPv3N5faiss11IndexFlat1D11IndexFlat1DEb"></span><span id="_CPPv2N5faiss11IndexFlat1D11IndexFlat1DEb"></span><span id="faiss::IndexFlat1D::IndexFlat1D__b"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a789931261cf151b5ca57fff739b9e964"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexFlat1D</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">continuous_update</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D11IndexFlat1DEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D18update_permutationEv">
+<span id="_CPPv3N5faiss11IndexFlat1D18update_permutationEv"></span><span id="_CPPv2N5faiss11IndexFlat1D18update_permutationEv"></span><span id="faiss::IndexFlat1D::update_permutation"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1ac7466c6c9b1e9e81ea19b846ddb8209e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_permutation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D18update_permutationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>if not continuous_update, call this between the last add and the first search </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D3addE5idx_tPKf">
+<span id="_CPPv3N5faiss11IndexFlat1D3addE5idx_tPKf"></span><span id="_CPPv2N5faiss11IndexFlat1D3addE5idx_tPKf"></span><span id="faiss::IndexFlat1D::add__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D3addE5idx_tPKf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add n vectors of dimension d to the index.</p>
+<p>Vectors are implicitly assigned labels ntotal .. ntotal + n - 1 This function slices the input vectors in chunks smaller than blocksize_add and calls add_core. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – input matrix, size n * d </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D5resetEv">
+<span id="_CPPv3N5faiss11IndexFlat1D5resetEv"></span><span id="_CPPv2N5faiss11IndexFlat1D5resetEv"></span><span id="faiss::IndexFlat1D::reset"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1aa205c4ffa6cbd50f49ef9cb6cc050000"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>removes all elements from the database. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters">
+<span id="_CPPv3NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="_CPPv2NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters"></span><span id="faiss::IndexFlat1D::search__idx_t.floatCP.idx_t.floatP.idx_tP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1adc489649c579772c998db8c8e495d9bc"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D6searchE5idx_tPKf5idx_tPfP5idx_tPK16SearchParameters" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Warn: the distances returned are L1 not L2. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters">
+<span id="_CPPv3NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="_CPPv2NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters"></span><span id="faiss::IndexFlat1D::range_search__idx_t.floatCP.float.RangeSearchResultP.SearchParametersCPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1af3c56bae3b28baeb3e50aed74006a319"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_search</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radius</span></span>, <span class="n"><span class="pre">RangeSearchResult</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">result</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D12range_searchE5idx_tPKffP17RangeSearchResultPK16SearchParameters" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>query n vectors of dimension d to the index.</p>
+<p>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input vectors to search, size n * d </p></li>
+<li><p><strong>radius</strong> – search radius </p></li>
+<li><p><strong>result</strong> – result table </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D11reconstructE5idx_tPf">
+<span id="_CPPv3NK5faiss11IndexFlat1D11reconstructE5idx_tPf"></span><span id="_CPPv2NK5faiss11IndexFlat1D11reconstructE5idx_tPf"></span><span id="faiss::IndexFlat1D::reconstruct__idx_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1ae4b33315752b62cff1626f9f967167b1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D11reconstructE5idx_tPf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reconstruct a stored vector (or an approximation if lossy coding)</p>
+<p>this function may not be defined for some indexes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – id of the vector to reconstruct </p></li>
+<li><p><strong>recons</strong> – reconstucted vector (size d) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t">
+<span id="_CPPv3NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t"></span><span id="_CPPv2NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t"></span><span id="faiss::IndexFlat1D::compute_distance_subset__idx_t.floatCP.idx_t.floatP.idx_tCPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a6da84c9f0aca74a1d6b5130478d83357"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_distance_subset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D23compute_distance_subsetE5idx_tPKf5idx_tPfPK5idx_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>compute distance with a subset of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – query vectors, size n * d </p></li>
+<li><p><strong>labels</strong> – indices of the vectors that should be compared for each query vector, size n * k </p></li>
+<li><p><strong>distances</strong> – corresponding output distances, size n * k </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D6get_xbEv">
+<span id="_CPPv3N5faiss11IndexFlat1D6get_xbEv"></span><span id="_CPPv2N5faiss11IndexFlat1D6get_xbEv"></span><span id="faiss::IndexFlat1D::get_xb"></span><span class="target" id="structfaiss_1_1IndexFlat_1ad8baeefb1c0b78316e70d9c994a54a80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D6get_xbEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D6get_xbEv">
+<span id="_CPPv3NK5faiss11IndexFlat1D6get_xbEv"></span><span id="_CPPv2NK5faiss11IndexFlat1D6get_xbEv"></span><span id="faiss::IndexFlat1D::get_xbC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a6a5cd875d1a63260e29d00cab7df9a74"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_xb</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D6get_xbEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv">
+<span id="_CPPv3NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv"></span><span id="_CPPv2NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv"></span><span id="faiss::IndexFlat1D::get_FlatCodesDistanceComputerC"></span><span class="target" id="structfaiss_1_1IndexFlat_1a5396c3f2f2ee3a716ef2accb6d5d8e24"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">FlatCodesDistanceComputer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_FlatCodesDistanceComputer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D29get_FlatCodesDistanceComputerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a FlatCodesDistanceComputer offers a distance_to_code method </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t">
+<span id="_CPPv3NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="_CPPv2NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t"></span><span id="faiss::IndexFlat1D::sa_encode__idx_t.floatCP.uint8_tPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_encode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D9sa_encodeE5idx_tPKfP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>encode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>x</strong> – input vectors, size n * d </p></li>
+<li><p><strong>bytes</strong> – output encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf">
+<span id="_CPPv3NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="_CPPv2NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf"></span><span id="faiss::IndexFlat1D::sa_decode__idx_t.uint8_tCP.floatPC"></span><span class="target" id="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sa_decode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">bytes</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexFlat1D9sa_decodeE5idx_tPK7uint8_tPf" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>decode a set of vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>bytes</strong> – input encoded vectors, size n * <a class="reference internal" href="../struct/structfaiss_1_1IndexScalarQuantizer.html#structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a"><span class="std std-ref">sa_code_size()</span></a> </p></li>
+<li><p><strong>x</strong> – output vectors, size n * d </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D17continuous_updateE">
+<span id="_CPPv3N5faiss11IndexFlat1D17continuous_updateE"></span><span id="_CPPv2N5faiss11IndexFlat1D17continuous_updateE"></span><span id="faiss::IndexFlat1D::continuous_update__b"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a8b025a468b088a343cf8079006de45e2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">continuous_update</span></span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D17continuous_updateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>is the permutation updated continuously? </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexFlat1D4permE">
+<span id="_CPPv3N5faiss11IndexFlat1D4permE"></span><span id="_CPPv2N5faiss11IndexFlat1D4permE"></span><span id="faiss::IndexFlat1D::perm__std::vector:idx_t:"></span><span class="target" id="structfaiss_1_1IndexFlat1D_1a3442f0d86a14108534f99eea0b7d4d3f"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">perm</span></span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexFlat1D4permE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>sorted database indices </p>
 </dd></dl>
 
 </div>

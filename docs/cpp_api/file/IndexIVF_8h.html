@@ -360,6 +360,134 @@
 
 </div>
 <dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1QuantizerE">
+<span id="_CPPv3N5faiss15Level1QuantizerE"></span><span id="_CPPv2N5faiss15Level1QuantizerE"></span><span id="faiss::Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1QuantizerE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IndexIVF.h&gt;</em></div>
+<p>Encapsulates a quantizer object for the <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a></p>
+<p>The class isolates the fields that are independent of the storage of the lists (especially training) </p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">faiss::IndexIVF</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType">
+<span id="_CPPv3N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType"></span><span id="_CPPv2N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType"></span><span id="faiss::Level1Quantizer::train_q1__s.floatCP.b.MetricType"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_q1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">verbose</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer16coarse_code_sizeEv">
+<span id="_CPPv3NK5faiss15Level1Quantizer16coarse_code_sizeEv"></span><span id="_CPPv2NK5faiss15Level1Quantizer16coarse_code_sizeEv"></span><span id="faiss::Level1Quantizer::coarse_code_sizeC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarse_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer16coarse_code_sizeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>compute the number of bytes required to store list ids </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t">
+<span id="_CPPv3NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t"></span><span id="faiss::Level1Quantizer::encode_listno__idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode_listno</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t">
+<span id="_CPPv3NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t"></span><span id="_CPPv2NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t"></span><span id="faiss::Level1Quantizer::decode_listno__uint8_tCPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a"></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_listno</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t">
+<span id="_CPPv3N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t"></span><span id="_CPPv2N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t"></span><span id="faiss::Level1Quantizer::Level1Quantizer__IndexP.s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01"></span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">quantizer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlist</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEv">
+<span id="_CPPv3N5faiss15Level1Quantizer15Level1QuantizerEv"></span><span id="_CPPv2N5faiss15Level1Quantizer15Level1QuantizerEv"></span><span id="faiss::Level1Quantizer::Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18"></span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1QuantizerD0Ev">
+<span id="_CPPv3N5faiss15Level1QuantizerD0Ev"></span><span id="_CPPv2N5faiss15Level1QuantizerD0Ev"></span><span id="faiss::Level1Quantizer::~Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca"></span><span class="sig-name descname"><span class="n"><span class="pre">~Level1Quantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1QuantizerD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer9quantizerE">
+<span id="_CPPv3N5faiss15Level1Quantizer9quantizerE"></span><span id="_CPPv2N5faiss15Level1Quantizer9quantizerE"></span><span id="faiss::Level1Quantizer::quantizer__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer9quantizerE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>quantizer that maps vectors to inverted lists </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer5nlistE">
+<span id="_CPPv3N5faiss15Level1Quantizer5nlistE"></span><span id="_CPPv2N5faiss15Level1Quantizer5nlistE"></span><span id="faiss::Level1Quantizer::nlist__s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nlist</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer5nlistE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>number of possible key values </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer22quantizer_trains_aloneE">
+<span id="_CPPv3N5faiss15Level1Quantizer22quantizer_trains_aloneE"></span><span id="_CPPv2N5faiss15Level1Quantizer22quantizer_trains_aloneE"></span><span id="faiss::Level1Quantizer::quantizer_trains_alone__c"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_trains_alone</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer22quantizer_trains_aloneE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer10own_fieldsE">
+<span id="_CPPv3N5faiss15Level1Quantizer10own_fieldsE"></span><span id="_CPPv2N5faiss15Level1Quantizer10own_fieldsE"></span><span id="faiss::Level1Quantizer::own_fields__b"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_fields</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer10own_fieldsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>whether object owns the quantizer (false by default) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer2cpE">
+<span id="_CPPv3N5faiss15Level1Quantizer2cpE"></span><span id="_CPPv2N5faiss15Level1Quantizer2cpE"></span><span id="faiss::Level1Quantizer::cp__ClusteringParameters"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72"></span><a class="reference internal" href="Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="n"><span class="pre">ClusteringParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cp</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer2cpE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>to override default clustering params </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer16clustering_indexE">
+<span id="_CPPv3N5faiss15Level1Quantizer16clustering_indexE"></span><span id="_CPPv2N5faiss15Level1Quantizer16clustering_indexE"></span><span id="faiss::Level1Quantizer::clustering_index__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">clustering_index</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer16clustering_indexE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>to override index used during clustering </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVFE">
+<span id="_CPPv3N5faiss19SearchParametersIVFE"></span><span id="_CPPv2N5faiss19SearchParametersIVFE"></span><span id="faiss::SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParametersIVF</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVFE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IVFPQSearchParameters.html#structfaiss_1_1IVFPQSearchParameters"><span class="std std-ref">faiss::IVFPQSearchParameters</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF19SearchParametersIVFEv">
+<span id="_CPPv3N5faiss19SearchParametersIVF19SearchParametersIVFEv"></span><span id="_CPPv2N5faiss19SearchParametersIVF19SearchParametersIVFEv"></span><span id="faiss::SearchParametersIVF::SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a069aa5d2af914304fc9302d88fc363fe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParametersIVF</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF19SearchParametersIVFEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVFD0Ev">
+<span id="_CPPv3N5faiss19SearchParametersIVFD0Ev"></span><span id="_CPPv2N5faiss19SearchParametersIVFD0Ev"></span><span id="faiss::SearchParametersIVF::~SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SearchParametersIVF</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVFD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF6nprobeE">
+<span id="_CPPv3N5faiss19SearchParametersIVF6nprobeE"></span><span id="_CPPv2N5faiss19SearchParametersIVF6nprobeE"></span><span id="faiss::SearchParametersIVF::nprobe__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nprobe</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF6nprobeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>number of probes at query time </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF9max_codesE">
+<span id="_CPPv3N5faiss19SearchParametersIVF9max_codesE"></span><span id="_CPPv2N5faiss19SearchParametersIVF9max_codesE"></span><span id="faiss::SearchParametersIVF::max_codes__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF9max_codesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>max nb of codes to visit to do a query </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF16quantizer_paramsE">
+<span id="_CPPv3N5faiss19SearchParametersIVF16quantizer_paramsE"></span><span id="_CPPv2N5faiss19SearchParametersIVF16quantizer_paramsE"></span><span id="faiss::SearchParametersIVF::quantizer_params__SearchParametersP"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF16quantizer_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss8IndexIVFE">
 <span id="_CPPv3N5faiss8IndexIVFE"></span><span id="_CPPv2N5faiss8IndexIVFE"></span><span id="faiss::IndexIVF"></span><span class="target" id="structfaiss_1_1IndexIVF"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVF</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss15Level1QuantizerE" title="faiss::Level1Quantizer"><span class="n"><span class="pre">Level1Quantizer</span></span></a><a class="headerlink" href="#_CPPv4N5faiss8IndexIVFE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="docutils container">
@@ -581,8 +709,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss8IndexIVF14copy_subset_toER8IndexIVFi5idx_t5idx_t">
 <span id="_CPPv3NK5faiss8IndexIVF14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="_CPPv2NK5faiss8IndexIVF14copy_subset_toER8IndexIVFi5idx_t5idx_t"></span><span id="faiss::IndexIVF::copy_subset_to__IndexIVFR.i.idx_t.idx_tC"></span><span class="target" id="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy_subset_to</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss8IndexIVFE" title="faiss::IndexIVF"><span class="n"><span class="pre">IndexIVF</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subset_type</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a1</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a2</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss8IndexIVF14copy_subset_toER8IndexIVFi5idx_t5idx_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>copy a subset of the entries index to the other index</p>
-<p>if subset_type == 0: copies ids in [a1, a2) if subset_type == 1: copies ids if id % a1 == a2 if subset_type == 2: copies inverted lists such that a1 elements are left before and a2 elements are after </p>
+<dd><p>copy a subset of the entries index to the other index see Invlists::copy_subset_to for the meaning of subset_type </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -762,62 +889,6 @@
 </dd></dl>
 
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStatsE">
-<span id="_CPPv3N5faiss13IndexIVFStatsE"></span><span id="_CPPv2N5faiss13IndexIVFStatsE"></span><span id="faiss::IndexIVFStats"></span><span class="target" id="structfaiss_1_1IndexIVFStats"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFStats</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStatsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats13IndexIVFStatsEv">
-<span id="_CPPv3N5faiss13IndexIVFStats13IndexIVFStatsEv"></span><span id="_CPPv2N5faiss13IndexIVFStats13IndexIVFStatsEv"></span><span id="faiss::IndexIVFStats::IndexIVFStats"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a05922812f1133c096bf2c8e1f3123d15"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFStats</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats13IndexIVFStatsEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats5resetEv">
-<span id="_CPPv3N5faiss13IndexIVFStats5resetEv"></span><span id="_CPPv2N5faiss13IndexIVFStats5resetEv"></span><span id="faiss::IndexIVFStats::reset"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a211fe212aeb58cb10c0f0083cb9fbff9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats5resetEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats3addERK13IndexIVFStats">
-<span id="_CPPv3N5faiss13IndexIVFStats3addERK13IndexIVFStats"></span><span id="_CPPv2N5faiss13IndexIVFStats3addERK13IndexIVFStats"></span><span id="faiss::IndexIVFStats::add__IndexIVFStatsCR"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a369d717ea654ebfc1dc393ca28e82fc0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats"><span class="n"><span class="pre">IndexIVFStats</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats3addERK13IndexIVFStats" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats2nqE">
-<span id="_CPPv3N5faiss13IndexIVFStats2nqE"></span><span id="_CPPv2N5faiss13IndexIVFStats2nqE"></span><span id="faiss::IndexIVFStats::nq__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1acffe21a0ec902bc0b695f9615c053b91"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats2nqE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats5nlistE">
-<span id="_CPPv3N5faiss13IndexIVFStats5nlistE"></span><span id="_CPPv2N5faiss13IndexIVFStats5nlistE"></span><span id="faiss::IndexIVFStats::nlist__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a17f1e02b488a05d2dd117d540c16e86d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nlist</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats5nlistE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats4ndisE">
-<span id="_CPPv3N5faiss13IndexIVFStats4ndisE"></span><span id="_CPPv2N5faiss13IndexIVFStats4ndisE"></span><span id="faiss::IndexIVFStats::ndis__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a9a1c44adba73e94c5d46dcf5c0076942"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ndis</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats4ndisE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats13nheap_updatesE">
-<span id="_CPPv3N5faiss13IndexIVFStats13nheap_updatesE"></span><span id="_CPPv2N5faiss13IndexIVFStats13nheap_updatesE"></span><span id="faiss::IndexIVFStats::nheap_updates__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a8c235053dcbbaa31ca15abc0af619e37"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nheap_updates</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats13nheap_updatesE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats17quantization_timeE">
-<span id="_CPPv3N5faiss13IndexIVFStats17quantization_timeE"></span><span id="_CPPv2N5faiss13IndexIVFStats17quantization_timeE"></span><span id="faiss::IndexIVFStats::quantization_time__double"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a76921d378c428b0448664e9a2c797942"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quantization_time</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats17quantization_timeE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats11search_timeE">
-<span id="_CPPv3N5faiss13IndexIVFStats11search_timeE"></span><span id="_CPPv2N5faiss13IndexIVFStats11search_timeE"></span><span id="faiss::IndexIVFStats::search_time__double"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a121510b37cfa603d7a40c5d7c8f8501c"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_time</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats11search_timeE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19InvertedListScannerE">
 <span id="_CPPv3N5faiss19InvertedListScannerE"></span><span id="_CPPv2N5faiss19InvertedListScannerE"></span><span id="faiss::InvertedListScanner"></span><span class="target" id="structfaiss_1_1InvertedListScanner"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InvertedListScanner</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19InvertedListScannerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="docutils container">
@@ -918,128 +989,56 @@
 </dd></dl>
 
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1QuantizerE">
-<span id="_CPPv3N5faiss15Level1QuantizerE"></span><span id="_CPPv2N5faiss15Level1QuantizerE"></span><span id="faiss::Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1QuantizerE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="docutils container">
-<em>#include &lt;IndexIVF.h&gt;</em></div>
-<p>Encapsulates a quantizer object for the <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a></p>
-<p>The class isolates the fields that are independent of the storage of the lists (especially training) </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">faiss::IndexIVF</span></a></p>
-<div class="breathe-sectiondef docutils container">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStatsE">
+<span id="_CPPv3N5faiss13IndexIVFStatsE"></span><span id="_CPPv2N5faiss13IndexIVFStatsE"></span><span id="faiss::IndexIVFStats"></span><span class="target" id="structfaiss_1_1IndexIVFStats"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFStats</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStatsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType">
-<span id="_CPPv3N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType"></span><span id="_CPPv2N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType"></span><span id="faiss::Level1Quantizer::train_q1__s.floatCP.b.MetricType"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_q1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">verbose</span></span>, <a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer8train_q1E6size_tPKfb10MetricType" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer16coarse_code_sizeEv">
-<span id="_CPPv3NK5faiss15Level1Quantizer16coarse_code_sizeEv"></span><span id="_CPPv2NK5faiss15Level1Quantizer16coarse_code_sizeEv"></span><span id="faiss::Level1Quantizer::coarse_code_sizeC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coarse_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer16coarse_code_sizeEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>compute the number of bytes required to store list ids </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t">
-<span id="_CPPv3NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t"></span><span id="_CPPv2NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t"></span><span id="faiss::Level1Quantizer::encode_listno__idx_t.uint8_tPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode_listno</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer13encode_listnoE5idx_tP7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats13IndexIVFStatsEv">
+<span id="_CPPv3N5faiss13IndexIVFStats13IndexIVFStatsEv"></span><span id="_CPPv2N5faiss13IndexIVFStats13IndexIVFStatsEv"></span><span id="faiss::IndexIVFStats::IndexIVFStats"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a05922812f1133c096bf2c8e1f3123d15"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexIVFStats</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats13IndexIVFStatsEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t">
-<span id="_CPPv3NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t"></span><span id="_CPPv2NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t"></span><span id="faiss::Level1Quantizer::decode_listno__uint8_tCPC"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a"></span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode_listno</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5faiss15Level1Quantizer13decode_listnoEPK7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats5resetEv">
+<span id="_CPPv3N5faiss13IndexIVFStats5resetEv"></span><span id="_CPPv2N5faiss13IndexIVFStats5resetEv"></span><span id="faiss::IndexIVFStats::reset"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a211fe212aeb58cb10c0f0083cb9fbff9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats5resetEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t">
-<span id="_CPPv3N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t"></span><span id="_CPPv2N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t"></span><span id="faiss::Level1Quantizer::Level1Quantizer__IndexP.s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01"></span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">quantizer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nlist</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEP5Index6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEv">
-<span id="_CPPv3N5faiss15Level1Quantizer15Level1QuantizerEv"></span><span id="_CPPv2N5faiss15Level1Quantizer15Level1QuantizerEv"></span><span id="faiss::Level1Quantizer::Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18"></span><span class="sig-name descname"><span class="n"><span class="pre">Level1Quantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer15Level1QuantizerEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1QuantizerD0Ev">
-<span id="_CPPv3N5faiss15Level1QuantizerD0Ev"></span><span id="_CPPv2N5faiss15Level1QuantizerD0Ev"></span><span id="faiss::Level1Quantizer::~Level1Quantizer"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca"></span><span class="sig-name descname"><span class="n"><span class="pre">~Level1Quantizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss15Level1QuantizerD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats3addERK13IndexIVFStats">
+<span id="_CPPv3N5faiss13IndexIVFStats3addERK13IndexIVFStats"></span><span id="_CPPv2N5faiss13IndexIVFStats3addERK13IndexIVFStats"></span><span id="faiss::IndexIVFStats::add__IndexIVFStatsCR"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a369d717ea654ebfc1dc393ca28e82fc0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss13IndexIVFStatsE" title="faiss::IndexIVFStats"><span class="n"><span class="pre">IndexIVFStats</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats3addERK13IndexIVFStats" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer9quantizerE">
-<span id="_CPPv3N5faiss15Level1Quantizer9quantizerE"></span><span id="_CPPv2N5faiss15Level1Quantizer9quantizerE"></span><span id="faiss::Level1Quantizer::quantizer__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer9quantizerE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>quantizer that maps vectors to inverted lists </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer5nlistE">
-<span id="_CPPv3N5faiss15Level1Quantizer5nlistE"></span><span id="_CPPv2N5faiss15Level1Quantizer5nlistE"></span><span id="faiss::Level1Quantizer::nlist__s"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nlist</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer5nlistE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>number of possible key values </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer22quantizer_trains_aloneE">
-<span id="_CPPv3N5faiss15Level1Quantizer22quantizer_trains_aloneE"></span><span id="_CPPv2N5faiss15Level1Quantizer22quantizer_trains_aloneE"></span><span id="faiss::Level1Quantizer::quantizer_trains_alone__c"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_trains_alone</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer22quantizer_trains_aloneE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer10own_fieldsE">
-<span id="_CPPv3N5faiss15Level1Quantizer10own_fieldsE"></span><span id="_CPPv2N5faiss15Level1Quantizer10own_fieldsE"></span><span id="faiss::Level1Quantizer::own_fields__b"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_fields</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer10own_fieldsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>whether object owns the quantizer (false by default) </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer2cpE">
-<span id="_CPPv3N5faiss15Level1Quantizer2cpE"></span><span id="_CPPv2N5faiss15Level1Quantizer2cpE"></span><span id="faiss::Level1Quantizer::cp__ClusteringParameters"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72"></span><a class="reference internal" href="Clustering_8h.html#_CPPv4N5faiss20ClusteringParametersE" title="faiss::ClusteringParameters"><span class="n"><span class="pre">ClusteringParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cp</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer2cpE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>to override default clustering params </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss15Level1Quantizer16clustering_indexE">
-<span id="_CPPv3N5faiss15Level1Quantizer16clustering_indexE"></span><span id="_CPPv2N5faiss15Level1Quantizer16clustering_indexE"></span><span id="faiss::Level1Quantizer::clustering_index__IndexP"></span><span class="target" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss5IndexE" title="faiss::Index"><span class="n"><span class="pre">Index</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">clustering_index</span></span></span><a class="headerlink" href="#_CPPv4N5faiss15Level1Quantizer16clustering_indexE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>to override index used during clustering </p>
-</dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVFE">
-<span id="_CPPv3N5faiss19SearchParametersIVFE"></span><span id="_CPPv2N5faiss19SearchParametersIVFE"></span><span id="faiss::SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParametersIVF</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVFE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IVFPQSearchParameters.html#structfaiss_1_1IVFPQSearchParameters"><span class="std std-ref">faiss::IVFPQSearchParameters</span></a></p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF19SearchParametersIVFEv">
-<span id="_CPPv3N5faiss19SearchParametersIVF19SearchParametersIVFEv"></span><span id="_CPPv2N5faiss19SearchParametersIVF19SearchParametersIVFEv"></span><span id="faiss::SearchParametersIVF::SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a069aa5d2af914304fc9302d88fc363fe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParametersIVF</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF19SearchParametersIVFEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats2nqE">
+<span id="_CPPv3N5faiss13IndexIVFStats2nqE"></span><span id="_CPPv2N5faiss13IndexIVFStats2nqE"></span><span id="faiss::IndexIVFStats::nq__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1acffe21a0ec902bc0b695f9615c053b91"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats2nqE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVFD0Ev">
-<span id="_CPPv3N5faiss19SearchParametersIVFD0Ev"></span><span id="_CPPv2N5faiss19SearchParametersIVFD0Ev"></span><span id="faiss::SearchParametersIVF::~SearchParametersIVF"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SearchParametersIVF</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVFD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats5nlistE">
+<span id="_CPPv3N5faiss13IndexIVFStats5nlistE"></span><span id="_CPPv2N5faiss13IndexIVFStats5nlistE"></span><span id="faiss::IndexIVFStats::nlist__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a17f1e02b488a05d2dd117d540c16e86d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nlist</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats5nlistE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF6nprobeE">
-<span id="_CPPv3N5faiss19SearchParametersIVF6nprobeE"></span><span id="_CPPv2N5faiss19SearchParametersIVF6nprobeE"></span><span id="faiss::SearchParametersIVF::nprobe__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nprobe</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF6nprobeE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>number of probes at query time </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats4ndisE">
+<span id="_CPPv3N5faiss13IndexIVFStats4ndisE"></span><span id="_CPPv2N5faiss13IndexIVFStats4ndisE"></span><span id="faiss::IndexIVFStats::ndis__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a9a1c44adba73e94c5d46dcf5c0076942"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ndis</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats4ndisE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF9max_codesE">
-<span id="_CPPv3N5faiss19SearchParametersIVF9max_codesE"></span><span id="_CPPv2N5faiss19SearchParametersIVF9max_codesE"></span><span id="faiss::SearchParametersIVF::max_codes__s"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_codes</span></span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF9max_codesE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>max nb of codes to visit to do a query </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats13nheap_updatesE">
+<span id="_CPPv3N5faiss13IndexIVFStats13nheap_updatesE"></span><span id="_CPPv2N5faiss13IndexIVFStats13nheap_updatesE"></span><span id="faiss::IndexIVFStats::nheap_updates__s"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a8c235053dcbbaa31ca15abc0af619e37"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nheap_updates</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats13nheap_updatesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss19SearchParametersIVF16quantizer_paramsE">
-<span id="_CPPv3N5faiss19SearchParametersIVF16quantizer_paramsE"></span><span id="_CPPv2N5faiss19SearchParametersIVF16quantizer_paramsE"></span><span id="faiss::SearchParametersIVF::quantizer_params__SearchParametersP"></span><span class="target" id="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922"></span><a class="reference internal" href="Index_8h.html#_CPPv4N5faiss16SearchParametersE" title="faiss::SearchParameters"><span class="n"><span class="pre">SearchParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quantizer_params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss19SearchParametersIVF16quantizer_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats17quantization_timeE">
+<span id="_CPPv3N5faiss13IndexIVFStats17quantization_timeE"></span><span id="_CPPv2N5faiss13IndexIVFStats17quantization_timeE"></span><span id="faiss::IndexIVFStats::quantization_time__double"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a76921d378c428b0448664e9a2c797942"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quantization_time</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats17quantization_timeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IndexIVFStats11search_timeE">
+<span id="_CPPv3N5faiss13IndexIVFStats11search_timeE"></span><span id="_CPPv2N5faiss13IndexIVFStats11search_timeE"></span><span id="faiss::IndexIVFStats::search_time__double"></span><span class="target" id="structfaiss_1_1IndexIVFStats_1a121510b37cfa603d7a40c5d7c8f8501c"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">search_time</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IndexIVFStats11search_timeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>

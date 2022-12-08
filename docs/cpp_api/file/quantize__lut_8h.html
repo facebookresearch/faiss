@@ -344,8 +344,7 @@
 <dd><p>Functions to quantize PQ floating-point Look Up Tables (LUT) to uint8, and biases to uint16. The accumulation is supposed to take place in uint16. The quantization coefficients are float (a, b) such that <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">original_value</span> <span class="o">=</span> <span class="n">quantized_value</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
 </pre></div>
 </div>
-</p>
-<p>The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </p>
+ The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">

@@ -46,7 +46,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct list" href="../structlist.html" />
+    <link rel="next" title="Namespace lsq" href="namespacelsq.html" />
     <link rel="prev" title="Namespace faiss::ivflib" href="namespacefaiss_1_1ivflib.html" /> 
 </head>
 
@@ -120,6 +120,8 @@
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::quantize_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacelsq.html">Namespace lsq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacestd.html">Namespace std</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
@@ -200,8 +202,7 @@
 <dd><p>Functions to quantize PQ floating-point Look Up Tables (LUT) to uint8, and biases to uint16. The accumulation is supposed to take place in uint16. The quantization coefficients are float (a, b) such that <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">original_value</span> <span class="o">=</span> <span class="n">quantized_value</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
 </pre></div>
 </div>
-</p>
-<p>The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </p>
+ The hardest part of the quantization is with multiple LUTs that need to be added up together. In that case, coefficient a has to be chosen so that the sum fits in a uint16 accumulator. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
@@ -252,7 +253,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../structlist.html" class="btn btn-neutral float-right" title="Struct list" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="namespacelsq.html" class="btn btn-neutral float-right" title="Namespace lsq" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="namespacefaiss_1_1ivflib.html" class="btn btn-neutral float-left" title="Namespace faiss::ivflib" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

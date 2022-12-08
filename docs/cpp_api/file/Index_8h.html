@@ -359,13 +359,41 @@
 <p>Copyright (c) Facebook, Inc. and its affiliates.</p>
 <p>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Defines a few objects that apply transformations to a set of vectors Often these are pre-processing steps. </p>
 <dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParametersE">
+<span id="_CPPv3N5faiss16SearchParametersE"></span><span id="_CPPv2N5faiss16SearchParametersE"></span><span id="faiss::SearchParameters"></span><span class="target" id="structfaiss_1_1SearchParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParameters</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16SearchParametersE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Index.h&gt;</em></div>
+<p>Parent class for the optional search paramenters.</p>
+<p>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPQ.html#structfaiss_1_1SearchParametersPQ"><span class="std std-ref">faiss::SearchParametersPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParametersD0Ev">
+<span id="_CPPv3N5faiss16SearchParametersD0Ev"></span><span id="_CPPv2N5faiss16SearchParametersD0Ev"></span><span id="faiss::SearchParameters::~SearchParameters"></span><span class="target" id="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SearchParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16SearchParametersD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make sure we can dynamic_cast this </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParameters3selE">
+<span id="_CPPv3N5faiss16SearchParameters3selE"></span><span id="_CPPv2N5faiss16SearchParameters3selE"></span><span id="faiss::SearchParameters::sel__IDSelectorP"></span><span class="target" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a"></span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">sel</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16SearchParameters3selE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>if non-null, only these IDs will be considered during search. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss5IndexE">
 <span id="_CPPv3N5faiss5IndexE"></span><span id="_CPPv2N5faiss5IndexE"></span><span id="faiss::Index"></span><span class="target" id="structfaiss_1_1Index"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Index</span></span></span><a class="headerlink" href="#_CPPv4N5faiss5IndexE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;Index.h&gt;</em></div>
 <p>Abstract structure for an index, supports adding vectors and searching them.</p>
 <p>All vectors provided at add or search time are 32-bit float arrays, although the internal representation may vary. </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1AdditiveCoarseQuantizer.html#structfaiss_1_1AdditiveCoarseQuantizer"><span class="std std-ref">faiss::AdditiveCoarseQuantizer</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">faiss::gpu::GpuIndex</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexFastScan.html#structfaiss_1_1IndexFastScan"><span class="std std-ref">faiss::IndexFastScan</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexFlatCodes.html#structfaiss_1_1IndexFlatCodes"><span class="std std-ref">faiss::IndexFlatCodes</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexHNSW.html#structfaiss_1_1IndexHNSW"><span class="std std-ref">faiss::IndexHNSW</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">faiss::IndexIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexLattice.html#structfaiss_1_1IndexLattice"><span class="std std-ref">faiss::IndexLattice</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexNNDescent.html#structfaiss_1_1IndexNNDescent"><span class="std std-ref">faiss::IndexNNDescent</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexNSG.html#structfaiss_1_1IndexNSG"><span class="std std-ref">faiss::IndexNSG</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">faiss::IndexPreTransform</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexRefine.html#structfaiss_1_1IndexRefine"><span class="std std-ref">faiss::IndexRefine</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexRowwiseMinMaxBase.html#structfaiss_1_1IndexRowwiseMinMaxBase"><span class="std std-ref">faiss::IndexRowwiseMinMaxBase</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexSplitVectors.html#structfaiss_1_1IndexSplitVectors"><span class="std std-ref">faiss::IndexSplitVectors</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer.html#structfaiss_1_1MultiIndexQuantizer"><span class="std std-ref">faiss::MultiIndexQuantizer</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1AdditiveCoarseQuantizer.html#structfaiss_1_1AdditiveCoarseQuantizer"><span class="std std-ref">faiss::AdditiveCoarseQuantizer</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexFastScan.html#structfaiss_1_1IndexFastScan"><span class="std std-ref">faiss::IndexFastScan</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexFlatCodes.html#structfaiss_1_1IndexFlatCodes"><span class="std std-ref">faiss::IndexFlatCodes</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexHNSW.html#structfaiss_1_1IndexHNSW"><span class="std std-ref">faiss::IndexHNSW</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">faiss::IndexIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexLattice.html#structfaiss_1_1IndexLattice"><span class="std std-ref">faiss::IndexLattice</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexNNDescent.html#structfaiss_1_1IndexNNDescent"><span class="std std-ref">faiss::IndexNNDescent</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexNSG.html#structfaiss_1_1IndexNSG"><span class="std std-ref">faiss::IndexNSG</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexPreTransform.html#structfaiss_1_1IndexPreTransform"><span class="std std-ref">faiss::IndexPreTransform</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexRefine.html#structfaiss_1_1IndexRefine"><span class="std std-ref">faiss::IndexRefine</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexRowwiseMinMaxBase.html#structfaiss_1_1IndexRowwiseMinMaxBase"><span class="std std-ref">faiss::IndexRowwiseMinMaxBase</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IndexSplitVectors.html#structfaiss_1_1IndexSplitVectors"><span class="std std-ref">faiss::IndexSplitVectors</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1MultiIndexQuantizer.html#structfaiss_1_1MultiIndexQuantizer"><span class="std std-ref">faiss::MultiIndexQuantizer</span></a>, <a class="reference internal" href="../namespace/namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIndex"><span class="std std-ref">faiss::gpu::GpuIndex</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -668,34 +696,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss5Index10metric_argE">
 <span id="_CPPv3N5faiss5Index10metric_argE"></span><span id="_CPPv2N5faiss5Index10metric_argE"></span><span id="faiss::Index::metric_arg__float"></span><span class="target" id="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metric_arg</span></span></span><a class="headerlink" href="#_CPPv4N5faiss5Index10metric_argE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>argument of the metric type </p>
-</dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParametersE">
-<span id="_CPPv3N5faiss16SearchParametersE"></span><span id="_CPPv2N5faiss16SearchParametersE"></span><span id="faiss::SearchParameters"></span><span class="target" id="structfaiss_1_1SearchParameters"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchParameters</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16SearchParametersE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="docutils container">
-<em>#include &lt;Index.h&gt;</em></div>
-<p>Parent class for the optional search paramenters.</p>
-<p>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersIVF.html#structfaiss_1_1SearchParametersIVF"><span class="std std-ref">faiss::SearchParametersIVF</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPQ.html#structfaiss_1_1SearchParametersPQ"><span class="std std-ref">faiss::SearchParametersPQ</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1SearchParametersPreTransform.html#structfaiss_1_1SearchParametersPreTransform"><span class="std std-ref">faiss::SearchParametersPreTransform</span></a></p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParametersD0Ev">
-<span id="_CPPv3N5faiss16SearchParametersD0Ev"></span><span id="_CPPv2N5faiss16SearchParametersD0Ev"></span><span id="faiss::SearchParameters::~SearchParameters"></span><span class="target" id="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SearchParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16SearchParametersD0Ev" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>make sure we can dynamic_cast this </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss16SearchParameters3selE">
-<span id="_CPPv3N5faiss16SearchParameters3selE"></span><span id="_CPPv2N5faiss16SearchParameters3selE"></span><span id="faiss::SearchParameters::sel__IDSelectorP"></span><span class="target" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a"></span><span class="n"><span class="pre">IDSelector</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">sel</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16SearchParameters3selE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>if non-null, only these IDs will be considered during search. </p>
 </dd></dl>
 
 </div>
