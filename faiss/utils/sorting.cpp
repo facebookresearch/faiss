@@ -11,6 +11,8 @@
 
 #include <omp.h>
 
+#include <algorithm>
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 
