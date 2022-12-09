@@ -9,6 +9,7 @@
 
 #include <faiss/utils/sorting.h>
 
+#include <algorithm>
 #include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
