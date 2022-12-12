@@ -163,7 +163,7 @@ class TestMerge2(unittest.TestCase):
         self.do_flat_codes_test("Flat")
 
     def test_merge_IndexPQ(self):
-        self.do_flat_codes_test("PQ8")
+        self.do_flat_codes_test("PQ8np")
 
     def test_merge_IndexLSH(self):
         self.do_flat_codes_test("LSHr")

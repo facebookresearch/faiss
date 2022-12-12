@@ -776,7 +776,7 @@ class TestNSG(unittest.TestCase):
         """Test IndexNSGPQ"""
         d = self.xq.shape[1]
         R, pq_M = 32, 4
-        index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}")
+        index = faiss.index_factory(d, f"NSG{R}_PQ{pq_M}np")
         assert isinstance(index, faiss.IndexNSGPQ)
         idxpq = faiss.downcast_index(index.storage)
         assert index.nsg.R == R and idxpq.pq.M == pq_M
