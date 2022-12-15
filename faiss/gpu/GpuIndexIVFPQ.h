@@ -68,9 +68,9 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
     GpuIndexIVFPQ(
             GpuResourcesProvider* provider,
             int dims,
-            int nlist,
-            int subQuantizers,
-            int bitsPerCode,
+            idx_t nlist,
+            idx_t subQuantizers,
+            idx_t bitsPerCode,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 
@@ -80,9 +80,9 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
             GpuResourcesProvider* provider,
             Index* coarseQuantizer,
             int dims,
-            int nlist,
-            int subQuantizers,
-            int bitsPerCode,
+            idx_t nlist,
+            idx_t subQuantizers,
+            idx_t bitsPerCode,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFPQConfig config = GpuIndexIVFPQConfig());
 

@@ -23,23 +23,23 @@ namespace gpu {
 
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ, bool Dir>
 __global__ void pass1SelectLists(
-        Tensor<int, 2, true> prefixSumOffsets,
+        Tensor<idx_t, 2, true> prefixSumOffsets,
         Tensor<float, 1, true> distance,
-        int nprobe,
-        int k,
+        idx_t nprobe,
+        idx_t k,
         Tensor<float, 3, true> heapDistances,
-        Tensor<int, 3, true> heapIndices) {
+        Tensor<idx_t, 3, true> heapIndices) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
-    __shared__ int smemV[kNumWarps * NumWarpQ];
+    __shared__ idx_t smemV[kNumWarps * NumWarpQ];
 
-    for (int queryId = blockIdx.y; queryId < prefixSumOffsets.getSize(0);
+    for (idx_t queryId = blockIdx.y; queryId < prefixSumOffsets.getSize(0);
          queryId += gridDim.y) {
         constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
         BlockSelect<
                 float,
-                int,
+                idx_t,
                 Dir,
                 Comparator<float>,
                 NumWarpQ,
@@ -50,20 +50,20 @@ __global__ void pass1SelectLists(
         auto sliceId = blockIdx.x;
         auto numSlices = gridDim.x;
 
-        int sliceSize = (nprobe / numSlices);
-        int sliceStart = sliceSize * sliceId;
-        int sliceEnd =
+        idx_t sliceSize = (nprobe / numSlices);
+        idx_t sliceStart = sliceSize * sliceId;
+        idx_t sliceEnd =
                 sliceId == (numSlices - 1) ? nprobe : sliceStart + sliceSize;
         auto offsets = prefixSumOffsets[queryId].data();
 
         // We ensure that before the array (at offset -1), there is a 0 value
-        int start = *(&offsets[sliceStart] - 1);
-        int end = offsets[sliceEnd - 1];
+        auto start = *(&offsets[sliceStart] - 1);
+        auto end = offsets[sliceEnd - 1];
 
-        int num = end - start;
-        int limit = utils::roundDown(num, kWarpSize);
+        auto num = end - start;
+        auto limit = utils::roundDown(num, (idx_t)kWarpSize);
 
-        int i = threadIdx.x;
+        idx_t i = threadIdx.x;
         auto distanceStart = distance[start].data();
 
         // BlockSelect add cannot be used in a warp divergent circumstance; we
@@ -90,13 +90,13 @@ __global__ void pass1SelectLists(
 }
 
 void runPass1SelectLists(
-        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<float, 1, true>& distance,
-        int nprobe,
-        int k,
+        idx_t nprobe,
+        idx_t k,
         bool chooseLargest,
         Tensor<float, 3, true>& heapDistances,
-        Tensor<int, 3, true>& heapIndices,
+        Tensor<idx_t, 3, true>& heapIndices,
         cudaStream_t stream) {
     // This is caught at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
@@ -105,7 +105,7 @@ void runPass1SelectLists(
             dim3(heapDistances.getSize(1),
                  std::min(
                          prefixSumOffsets.getSize(0),
-                         (int)getMaxGridCurrentDevice().y));
+                         (idx_t)getMaxGridCurrentDevice().y));
 
 #define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
     do {                                                       \

@@ -24,16 +24,16 @@ class GpuResources;
 /// data is possibly needed for certain residual operations
 class FlatIndex {
    public:
-    FlatIndex(GpuResources* res, int dim, bool useFloat16, MemorySpace space);
+    FlatIndex(GpuResources* res, idx_t dim, bool useFloat16, MemorySpace space);
 
     /// Whether or not this flat index primarily stores data in float16
     bool getUseFloat16() const;
 
     /// Returns the number of vectors we contain
-    int getSize() const;
+    idx_t getSize() const;
 
     /// Returns the dimensionality of the vectors
-    int getDim() const;
+    idx_t getDim() const;
 
     /// Reserve storage that can contain at least this many vectors
     void reserve(size_t numVecs, cudaStream_t stream);
@@ -46,20 +46,20 @@ class FlatIndex {
 
     void query(
             Tensor<float, 2, true>& vecs,
-            int k,
+            idx_t k,
             faiss::MetricType metric,
             float metricArg,
             Tensor<float, 2, true>& outDistances,
-            Tensor<int, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance);
 
     void query(
             Tensor<half, 2, true>& vecs,
-            int k,
+            idx_t k,
             faiss::MetricType metric,
             float metricArg,
             Tensor<float, 2, true>& outDistances,
-            Tensor<int, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance);
 
     /// Compute residual for set of vectors
@@ -76,7 +76,7 @@ class FlatIndex {
 
     /// Add vectors to ourselves; the pointer passed can be on the host
     /// or the device
-    void add(const float* data, int numVecs, cudaStream_t stream);
+    void add(const float* data, idx_t numVecs, cudaStream_t stream);
 
     /// Free all storage
     void reset();
@@ -86,7 +86,7 @@ class FlatIndex {
     GpuResources* resources_;
 
     /// Dimensionality of our vectors
-    const int dim_;
+    const idx_t dim_;
 
     /// Float16 data format
     const bool useFloat16_;
@@ -95,7 +95,7 @@ class FlatIndex {
     MemorySpace space_;
 
     /// How many vectors we have
-    int num_;
+    idx_t num_;
 
     /// The underlying expandable storage for float32 data
     DeviceVector<char> rawData32_;

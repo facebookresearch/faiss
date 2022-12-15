@@ -46,7 +46,7 @@ BLOCK_SELECT_DECL(float, false, 2048);
 void runBlockSelect(
         Tensor<float, 2, true>& in,
         Tensor<float, 2, true>& outK,
-        Tensor<int, 2, true>& outV,
+        Tensor<idx_t, 2, true>& outV,
         bool dir,
         int k,
         cudaStream_t stream) {
@@ -97,9 +97,9 @@ void runBlockSelect(
 
 void runBlockSelectPair(
         Tensor<float, 2, true>& inK,
-        Tensor<int, 2, true>& inV,
+        Tensor<idx_t, 2, true>& inV,
         Tensor<float, 2, true>& outK,
-        Tensor<int, 2, true>& outV,
+        Tensor<idx_t, 2, true>& outV,
         bool dir,
         int k,
         cudaStream_t stream) {

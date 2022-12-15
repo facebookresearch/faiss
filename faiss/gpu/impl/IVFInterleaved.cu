@@ -18,9 +18,9 @@ constexpr uint32_t kMaxUInt32 = std::numeric_limits<uint32_t>::max();
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ>
 __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
-        Tensor<int, 3, true> indicesIn,
+        Tensor<idx_t, 3, true> indicesIn,
         Tensor<idx_t, 2, true> listIds,
-        int k,
+        idx_t k,
         void** listIndices,
         IndicesOptions opt,
         bool dir,
@@ -47,15 +47,15 @@ __global__ void ivfInterleavedScan2(
             heap(kFloatMax, kMaxUInt32, smemK, smemV, k);
 
     // nprobe x k
-    int num = distanceIn.getSize(1) * distanceIn.getSize(2);
+    auto num = distanceIn.getSize(1) * distanceIn.getSize(2);
 
     auto distanceBase = distanceIn[queryId].data();
-    int limit = utils::roundDown(num, kWarpSize);
+    idx_t limit = utils::roundDown(num, kWarpSize);
 
     // This will keep our negation factor
     float adj = dir ? -1 : 1;
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     for (; i < limit; i += blockDim.x) {
         // We represent the index as (probe id)(k)
         // Right now, both are limited to a maximum of 2048, but we will
@@ -122,9 +122,9 @@ __global__ void ivfInterleavedScan2(
 
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
-        Tensor<int, 3, true>& indicesIn,
+        Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
-        int k,
+        idx_t k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
@@ -172,8 +172,8 @@ void runIVFInterleavedScan(
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        DeviceVector<int>& listLengths,
-        int k,
+        DeviceVector<idx_t>& listLengths,
+        idx_t k,
         faiss::MetricType metric,
         bool useResidual,
         Tensor<float, 3, true>& residualBase,

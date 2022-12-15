@@ -557,6 +557,53 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
             0.015f);
 }
 
+TEST(TestGpuIndexIVFFlat, LongIVFList) {
+    // Test functionality where a single IVF list has more than 2 GB of data
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    int dim = 64;
+
+    int numCentroids = 1;
+    size_t numAdd = (size_t(1024) * 1024 * 1024 * 2 + 100000) / dim;
+    size_t numTrain = 100;
+    int numQuery = 5;
+    int k = 10;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(numTrain, dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(numAdd, dim);
+
+    faiss::IndexFlatL2 quantizer(dim);
+    faiss::IndexIVFFlat cpuIndex(
+            &quantizer, dim, numCentroids, faiss::METRIC_L2);
+
+    cpuIndex.train(numTrain, trainVecs.data());
+    cpuIndex.add(numAdd, addVecs.data());
+    cpuIndex.nprobe = 1;
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = device;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, dim, numCentroids, faiss::METRIC_L2, config);
+    gpuIndex.train(numTrain, trainVecs.data());
+    gpuIndex.add(numAdd, addVecs.data());
+    gpuIndex.nprobe = 1;
+
+    faiss::gpu::compareIndices(
+            cpuIndex,
+            gpuIndex,
+            numQuery,
+            dim,
+            k,
+            "Unified Memory",
+            kF32MaxRelErr,
+            0.1f,
+            0.015f);
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 

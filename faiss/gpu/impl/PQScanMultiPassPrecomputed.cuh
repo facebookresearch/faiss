@@ -32,9 +32,9 @@ void runPQScanMultiPassPrecomputed(
         DeviceVector<void*>& listCodes,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        DeviceVector<int>& listLengths,
-        int maxListLength,
-        int k,
+        DeviceVector<idx_t>& listLengths,
+        idx_t maxListLength,
+        idx_t k,
         // output
         Tensor<float, 2, true>& outDistances,
         // output

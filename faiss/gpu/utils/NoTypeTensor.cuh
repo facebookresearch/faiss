@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 #include <initializer_list>
@@ -14,7 +15,7 @@
 namespace faiss {
 namespace gpu {
 
-template <int Dim, bool InnerContig = false, typename IndexT = int>
+template <int Dim, bool InnerContig = false, typename IndexT = idx_t>
 class NoTypeTensor {
    public:
     NoTypeTensor() : mem_(nullptr), typeSize_(0) {}
@@ -41,7 +42,7 @@ class NoTypeTensor {
         }
     }
 
-    NoTypeTensor(void* mem, int typeSize, int sizes[Dim])
+    NoTypeTensor(void* mem, int typeSize, IndexT sizes[Dim])
             : mem_(mem), typeSize_(typeSize) {
         for (int i = 0; i < Dim; ++i) {
             size_[i] = sizes[i];

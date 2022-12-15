@@ -16,8 +16,8 @@ void runL2SelectMin(
         Tensor<float, 2, true>& productDistances,
         Tensor<float, 1, true>& centroidDistances,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
-        int k,
+        Tensor<idx_t, 2, true>& outIndices,
+        idx_t k,
         cudaStream_t stream);
 
 }

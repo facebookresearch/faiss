@@ -39,7 +39,7 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
 GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
         GpuResourcesProvider* provider,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::ScalarQuantizer::QuantizerType qtype,
         faiss::MetricType metric,
         bool encodeResidual,
@@ -58,7 +58,7 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
         GpuResourcesProvider* provider,
         Index* coarseQuantizer,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::ScalarQuantizer::QuantizerType qtype,
         faiss::MetricType metric,
         bool encodeResidual,
@@ -205,12 +205,6 @@ void GpuIndexIVFScalarQuantizer::trainResiduals_(idx_t n, const float* x) {
 void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
     // just in case someone changed us
     verifySQSettings_();
     verifyIVFSettings_();
@@ -228,7 +222,7 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+            {n, this->d});
 
     trainQuantizer_(n, hostData.data());
     trainResiduals_(n, hostData.data());

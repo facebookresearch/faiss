@@ -13,7 +13,10 @@
 namespace faiss {
 namespace gpu {
 
-BinaryFlatIndex::BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space)
+BinaryFlatIndex::BinaryFlatIndex(
+        GpuResources* res,
+        idx_t dim,
+        MemorySpace space)
         : resources_(res),
           dim_(dim),
           num_(0),
@@ -27,11 +30,11 @@ BinaryFlatIndex::BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space)
 }
 
 /// Returns the number of vectors we contain
-int BinaryFlatIndex::getSize() const {
+idx_t BinaryFlatIndex::getSize() const {
     return vectors_.getSize(0);
 }
 
-int BinaryFlatIndex::getDim() const {
+idx_t BinaryFlatIndex::getDim() const {
     return vectors_.getSize(1) * 8;
 }
 
@@ -45,9 +48,9 @@ Tensor<unsigned char, 2, true>& BinaryFlatIndex::getVectorsRef() {
 
 void BinaryFlatIndex::query(
         Tensor<unsigned char, 2, true>& input,
-        int k,
+        idx_t k,
         Tensor<int, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     runBinaryDistance(vectors_, input, outDistances, outIndices, k, stream);
@@ -55,7 +58,7 @@ void BinaryFlatIndex::query(
 
 void BinaryFlatIndex::add(
         const unsigned char* data,
-        int numVecs,
+        idx_t numVecs,
         cudaStream_t stream) {
     if (numVecs == 0) {
         return;
@@ -70,7 +73,7 @@ void BinaryFlatIndex::add(
     num_ += numVecs;
 
     DeviceTensor<unsigned char, 2, true> vectors(
-            (unsigned char*)rawData_.data(), {(int)num_, (dim_ / 8)});
+            (unsigned char*)rawData_.data(), {num_, (dim_ / 8)});
     vectors_ = std::move(vectors);
 }
 

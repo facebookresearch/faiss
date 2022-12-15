@@ -16,8 +16,8 @@ void runBinaryDistance(
         Tensor<unsigned char, 2, true>& vecs,
         Tensor<unsigned char, 2, true>& query,
         Tensor<int, 2, true>& outK,
-        Tensor<int, 2, true>& outV,
-        int k,
+        Tensor<idx_t, 2, true>& outV,
+        idx_t k,
         cudaStream_t stream);
 
 } // namespace gpu

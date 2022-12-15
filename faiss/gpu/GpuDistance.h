@@ -62,7 +62,7 @@ struct GpuDistanceParams {
     /// Search parameter: return k nearest neighbors
     /// If the value provided is -1, then we report all pairwise distances
     /// without top-k filtering
-    int k;
+    idx_t k;
 
     /// Vector dimensionality
     int dims;
@@ -77,7 +77,7 @@ struct GpuDistanceParams {
     const void* vectors;
     DistanceDataType vectorType;
     bool vectorsRowMajor;
-    int numVectors;
+    idx_t numVectors;
 
     /// Precomputed L2 norms for each vector in `vectors`, which can be
     /// optionally provided in advance to speed computation for METRIC_L2
@@ -94,7 +94,7 @@ struct GpuDistanceParams {
     const void* queries;
     DistanceDataType queryType;
     bool queriesRowMajor;
-    int numQueries;
+    idx_t numQueries;
 
     //
     // Output results
@@ -149,15 +149,15 @@ void bruteForceKnn(
         // dims x numVectors, with numVectors innermost
         const float* vectors,
         bool vectorsRowMajor,
-        int numVectors,
+        idx_t numVectors,
         // If queriesRowMajor is true, this is
         // numQueries x dims, with dims innermost; otherwise,
         // dims x numQueries, with numQueries innermost
         const float* queries,
         bool queriesRowMajor,
-        int numQueries,
+        idx_t numQueries,
         int dims,
-        int k,
+        idx_t k,
         // A region of memory size numQueries x k, with k
         // innermost (row major)
         float* outDistances,

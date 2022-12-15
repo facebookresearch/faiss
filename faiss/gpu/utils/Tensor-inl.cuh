@@ -573,12 +573,12 @@ template <
         typename IndexT,
         template <typename U>
         class PtrTraits>
-__host__ __device__ size_t
+__host__ __device__ IndexT
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::numElements() const {
-    size_t size = (size_t)getSize(0);
+    auto size = getSize(0);
 
     for (int i = 1; i < Dim; ++i) {
-        size *= (size_t)getSize(i);
+        size *= getSize(i);
     }
 
     return size;
@@ -593,10 +593,10 @@ template <
         class PtrTraits>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isContiguous() const {
-    long prevSize = 1;
+    IndexT prevSize = 1;
 
     for (int i = Dim - 1; i >= 0; --i) {
-        if (getSize(i) != (IndexT)1) {
+        if (getSize(i) != 1) {
             if (getStride(i) == prevSize) {
                 prevSize *= getSize(i);
             } else {

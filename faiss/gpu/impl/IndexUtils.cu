@@ -38,13 +38,5 @@ void validateNProbe(idx_t nprobe) {
             nprobe);
 }
 
-void validateNumVectors(idx_t n) {
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices (requested %zu)",
-            std::numeric_limits<int>::max(),
-            n);
-}
-
 } // namespace gpu
 } // namespace faiss

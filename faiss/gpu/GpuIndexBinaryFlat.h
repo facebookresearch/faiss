@@ -71,18 +71,18 @@ class GpuIndexBinaryFlat : public IndexBinary {
     /// Called from search when the input data is on the CPU;
     /// potentially allows for pinned memory usage
     void searchFromCpuPaged_(
-            int n,
+            idx_t n,
             const uint8_t* x,
-            int k,
+            idx_t k,
             int32_t* outDistancesData,
-            int* outIndicesData) const;
+            idx_t* outIndicesData) const;
 
     void searchNonPaged_(
-            int n,
+            idx_t n,
             const uint8_t* x,
-            int k,
+            idx_t k,
             int32_t* outDistancesData,
-            int* outIndicesData) const;
+            idx_t* outIndicesData) const;
 
    protected:
     /// Manages streans, cuBLAS handles and scratch memory for devices

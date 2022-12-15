@@ -110,14 +110,14 @@ class GpuIndex : public faiss::Index {
 
     /// Overridden to actually perform the add
     /// All data is guaranteed to be resident on our device
-    virtual void addImpl_(int n, const float* x, const idx_t* ids) = 0;
+    virtual void addImpl_(idx_t n, const float* x, const idx_t* ids) = 0;
 
     /// Overridden to actually perform the search
     /// All data is guaranteed to be resident on our device
     virtual void searchImpl_(
-            int n,
+            idx_t n,
             const float* x,
-            int k,
+            idx_t k,
             float* distances,
             idx_t* labels,
             const SearchParameters* params) const = 0;
@@ -125,16 +125,16 @@ class GpuIndex : public faiss::Index {
    private:
     /// Handles paged adds if the add set is too large, passes to
     /// addImpl_ to actually perform the add for the current page
-    void addPaged_(int n, const float* x, const idx_t* ids);
+    void addPaged_(idx_t n, const float* x, const idx_t* ids);
 
     /// Calls addImpl_ for a single page of GPU-resident data
-    void addPage_(int n, const float* x, const idx_t* ids);
+    void addPage_(idx_t n, const float* x, const idx_t* ids);
 
     /// Calls searchImpl_ for a single page of GPU-resident data
     void searchNonPaged_(
-            int n,
+            idx_t n,
             const float* x,
-            int k,
+            idx_t k,
             float* outDistancesData,
             idx_t* outIndicesData,
             const SearchParameters* params) const;
@@ -142,9 +142,9 @@ class GpuIndex : public faiss::Index {
     /// Calls searchImpl_ for a single page of GPU-resident data,
     /// handling paging of the data and copies from the CPU
     void searchFromCpuPaged_(
-            int n,
+            idx_t n,
             const float* x,
-            int k,
+            idx_t k,
             float* outDistancesData,
             idx_t* outIndicesData,
             const SearchParameters* params) const;

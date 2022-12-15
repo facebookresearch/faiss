@@ -19,7 +19,7 @@
             DeviceVector<void*>& listData,              \
             DeviceVector<void*>& listIndices,           \
             IndicesOptions indicesOptions,              \
-            DeviceVector<int>& listLengths,             \
+            DeviceVector<idx_t>& listLengths,           \
             int k,                                      \
             faiss::MetricType metric,                   \
             bool useResidual,                           \
@@ -43,7 +43,7 @@
             DeviceVector<void*>& listData,        \
             DeviceVector<void*>& listIndices,     \
             IndicesOptions indicesOptions,        \
-            DeviceVector<int>& listLengths,       \
+            DeviceVector<idx_t>& listLengths,     \
             int k,                                \
             faiss::MetricType metric,             \
             bool useResidual,                     \

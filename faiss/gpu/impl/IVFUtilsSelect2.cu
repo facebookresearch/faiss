@@ -23,17 +23,14 @@ namespace gpu {
 
 // This is warp divergence central, but this is really a final step
 // and happening a small number of times
-inline __device__ int binarySearchForBucket(
-        int* prefixSumOffsets,
-        int size,
-        int val) {
-    int start = 0;
-    int end = size;
+template <typename T>
+__device__ int binarySearchForBucket(T* prefixSumOffsets, T size, T val) {
+    T start = 0;
+    T end = size;
 
     while (end - start > 0) {
-        int mid = start + (end - start) / 2;
-
-        int midVal = prefixSumOffsets[mid];
+        T mid = start + (end - start) / 2;
+        T midVal = prefixSumOffsets[mid];
 
         // Find the first bucket that we are <=
         if (midVal <= val) {
@@ -52,23 +49,23 @@ inline __device__ int binarySearchForBucket(
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ, bool Dir>
 __global__ void pass2SelectLists(
         Tensor<float, 2, true> heapDistances,
-        Tensor<int, 2, true> heapIndices,
+        Tensor<idx_t, 2, true> heapIndices,
         void** listIndices,
-        Tensor<int, 2, true> prefixSumOffsets,
+        Tensor<idx_t, 2, true> prefixSumOffsets,
         Tensor<idx_t, 2, true> ivfListIds,
-        int k,
+        idx_t k,
         IndicesOptions opt,
         Tensor<float, 2, true> outDistances,
         Tensor<idx_t, 2, true> outIndices) {
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
-    __shared__ int smemV[kNumWarps * NumWarpQ];
+    __shared__ idx_t smemV[kNumWarps * NumWarpQ];
 
     constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
     BlockSelect<
             float,
-            int,
+            idx_t,
             Dir,
             Comparator<float>,
             NumWarpQ,
@@ -77,10 +74,10 @@ __global__ void pass2SelectLists(
             heap(kInit, -1, smemK, smemV, k);
 
     auto queryId = blockIdx.x;
-    int num = heapDistances.getSize(1);
-    int limit = utils::roundDown(num, kWarpSize);
+    idx_t num = heapDistances.getSize(1);
+    idx_t limit = utils::roundDown(num, kWarpSize);
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     auto heapDistanceStart = heapDistances[queryId];
 
     // BlockSelect add cannot be used in a warp divergent circumstance; we
@@ -109,18 +106,18 @@ __global__ void pass2SelectLists(
         // This code is highly divergent, but it's probably ok, since this
         // is the very last step and it is happening a small number of
         // times (#queries x k).
-        int v = smemV[i];
+        auto v = smemV[i];
         idx_t index = -1;
 
         if (v != -1) {
             // `offset` is the offset of the intermediate result, as
             // calculated by the original scan.
-            int offset = heapIndices[queryId][v];
+            idx_t offset = heapIndices[queryId][v];
 
             // In order to determine the actual user index, we need to first
             // determine what list it was in.
             // We do this by binary search in the prefix sum list.
-            int probe = binarySearchForBucket(
+            idx_t probe = binarySearchForBucket(
                     prefixSumOffsets[queryId].data(),
                     prefixSumOffsets.getSize(1),
                     offset);
@@ -132,8 +129,8 @@ __global__ void pass2SelectLists(
             // Now, we need to know the offset within the list
             // We ensure that before the array (at offset -1), there is a 0
             // value
-            int listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
-            int listOffset = offset - listStart;
+            idx_t listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
+            idx_t listOffset = offset - listStart;
 
             // This gives us our final index
             if (opt == INDICES_32_BIT) {
@@ -151,12 +148,12 @@ __global__ void pass2SelectLists(
 
 void runPass2SelectLists(
         Tensor<float, 2, true>& heapDistances,
-        Tensor<int, 2, true>& heapIndices,
+        Tensor<idx_t, 2, true>& heapIndices,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<idx_t, 2, true>& ivfListIds,
-        int k,
+        idx_t k,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,

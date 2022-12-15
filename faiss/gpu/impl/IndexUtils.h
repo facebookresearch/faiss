@@ -25,8 +25,5 @@ void validateKSelect(idx_t k);
 // Validate the nprobe parameter for search
 void validateNProbe(idx_t nprobe);
 
-/// Validate the n (number of vectors) parameter for add, search, reconstruct
-void validateNumVectors(idx_t n);
-
 } // namespace gpu
 } // namespace faiss

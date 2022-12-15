@@ -26,10 +26,11 @@ __global__ void l2SelectMin1(
         Tensor<T, 2, true> productDistances,
         Tensor<T, 1, true> centroidDistances,
         Tensor<T, 2, true> outDistances,
-        Tensor<int, 2, true> outIndices) {
+        Tensor<idx_t, 2, true> outIndices) {
     // Each block handles kRowsPerBlock rows of the distances (results)
-    Pair<T, int> threadMin[kRowsPerBlock];
-    __shared__ Pair<T, int> blockMin[kRowsPerBlock * (kBlockSize / kWarpSize)];
+    Pair<T, idx_t> threadMin[kRowsPerBlock];
+    __shared__ Pair<T, idx_t>
+            blockMin[kRowsPerBlock * (kBlockSize / kWarpSize)];
 
     T distance[kRowsPerBlock];
 
@@ -40,7 +41,7 @@ __global__ void l2SelectMin1(
     }
 
     // blockIdx.x: which chunk of rows we are responsible for updating
-    int rowStart = blockIdx.x * kRowsPerBlock;
+    idx_t rowStart = idx_t(blockIdx.x) * kRowsPerBlock;
 
     // FIXME: if we have exact multiples, don't need this
     bool endRow = (blockIdx.x == gridDim.x - 1);
@@ -52,8 +53,8 @@ __global__ void l2SelectMin1(
     }
 
     if (endRow) {
-        for (int row = rowStart; row < productDistances.getSize(0); ++row) {
-            for (int col = threadIdx.x; col < productDistances.getSize(1);
+        for (idx_t row = rowStart; row < productDistances.getSize(0); ++row) {
+            for (idx_t col = threadIdx.x; col < productDistances.getSize(1);
                  col += blockDim.x) {
                 distance[0] = Math<T>::add(
                         centroidDistances[col], productDistances[row][col]);
@@ -66,10 +67,10 @@ __global__ void l2SelectMin1(
 
             // Reduce within the block
             threadMin[0] = blockReduceAll<
-                    Pair<T, int>,
-                    Min<Pair<T, int>>,
+                    Pair<T, idx_t>,
+                    Min<Pair<T, idx_t>>,
                     false,
-                    false>(threadMin[0], Min<Pair<T, int>>(), blockMin);
+                    false>(threadMin[0], Min<Pair<T, idx_t>>(), blockMin);
 
             if (threadIdx.x == 0) {
                 outDistances[row][0] = threadMin[0].k;
@@ -83,22 +84,22 @@ __global__ void l2SelectMin1(
             threadMin[0].v = -1;
         }
     } else {
-        for (int col = threadIdx.x; col < productDistances.getSize(1);
+        for (idx_t col = threadIdx.x; col < productDistances.getSize(1);
              col += blockDim.x) {
             T centroidDistance = centroidDistances[col];
 
 #pragma unroll
-            for (int row = 0; row < kRowsPerBlock; ++row) {
+            for (idx_t row = 0; row < kRowsPerBlock; ++row) {
                 distance[row] = productDistances[rowStart + row][col];
             }
 
 #pragma unroll
-            for (int row = 0; row < kRowsPerBlock; ++row) {
+            for (idx_t row = 0; row < kRowsPerBlock; ++row) {
                 distance[row] = Math<T>::add(distance[row], centroidDistance);
             }
 
 #pragma unroll
-            for (int row = 0; row < kRowsPerBlock; ++row) {
+            for (idx_t row = 0; row < kRowsPerBlock; ++row) {
                 if (Math<T>::lt(distance[row], threadMin[row].k)) {
                     threadMin[row].k = distance[row];
                     threadMin[row].v = col;
@@ -109,14 +110,14 @@ __global__ void l2SelectMin1(
         // Reduce within the block
         blockReduceAll<
                 kRowsPerBlock,
-                Pair<T, int>,
-                Min<Pair<T, int>>,
+                Pair<T, idx_t>,
+                Min<Pair<T, idx_t>>,
                 false,
-                false>(threadMin, Min<Pair<T, int>>(), blockMin);
+                false>(threadMin, Min<Pair<T, idx_t>>(), blockMin);
 
         if (threadIdx.x == 0) {
 #pragma unroll
-            for (int row = 0; row < kRowsPerBlock; ++row) {
+            for (idx_t row = 0; row < kRowsPerBlock; ++row) {
                 outDistances[rowStart + row][0] = threadMin[row].k;
                 outIndices[rowStart + row][0] = threadMin[row].v;
             }
@@ -130,18 +131,18 @@ __global__ void l2SelectMinK(
         Tensor<T, 2, true> productDistances,
         Tensor<T, 1, true> centroidDistances,
         Tensor<T, 2, true> outDistances,
-        Tensor<int, 2, true> outIndices,
-        int k,
+        Tensor<idx_t, 2, true> outIndices,
+        idx_t k,
         T initK) {
     // Each block handles a single row of the distances (results)
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ T smemK[kNumWarps * NumWarpQ];
-    __shared__ int smemV[kNumWarps * NumWarpQ];
+    __shared__ idx_t smemV[kNumWarps * NumWarpQ];
 
     BlockSelect<
             T,
-            int,
+            idx_t,
             false,
             Comparator<T>,
             NumWarpQ,
@@ -149,11 +150,11 @@ __global__ void l2SelectMinK(
             ThreadsPerBlock>
             heap(initK, -1, smemK, smemV, k);
 
-    int row = blockIdx.x;
+    idx_t row = blockIdx.x;
 
     // Whole warps must participate in the selection
-    int limit = utils::roundDown(productDistances.getSize(1), kWarpSize);
-    int i = threadIdx.x;
+    idx_t limit = utils::roundDown(productDistances.getSize(1), kWarpSize);
+    idx_t i = threadIdx.x;
 
     for (; i < limit; i += blockDim.x) {
         T v = Math<T>::add(centroidDistances[i], productDistances[row][i]);
@@ -177,8 +178,8 @@ void runL2SelectMin(
         Tensor<T, 2, true>& productDistances,
         Tensor<T, 1, true>& centroidDistances,
         Tensor<T, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
-        int k,
+        Tensor<idx_t, 2, true>& outIndices,
+        idx_t k,
         cudaStream_t stream) {
     FAISS_ASSERT(productDistances.getSize(0) == outDistances.getSize(0));
     FAISS_ASSERT(productDistances.getSize(0) == outIndices.getSize(0));
@@ -247,8 +248,8 @@ void runL2SelectMin(
         Tensor<float, 2, true>& productDistances,
         Tensor<float, 1, true>& centroidDistances,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
-        int k,
+        Tensor<idx_t, 2, true>& outIndices,
+        idx_t k,
         cudaStream_t stream) {
     runL2SelectMin<float>(
             productDistances,

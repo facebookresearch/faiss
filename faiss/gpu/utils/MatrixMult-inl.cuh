@@ -12,6 +12,7 @@
 #include <faiss/gpu/utils/Float16.cuh>
 #include <faiss/gpu/utils/HostTensor.cuh>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <limits>
 
 namespace faiss {
 namespace gpu {
@@ -163,6 +164,16 @@ void runMatrixMult(
         float beta,
         cublasHandle_t handle,
         cudaStream_t stream) {
+    // All sizes must be within int bounds
+    FAISS_ASSERT(c.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(c.getSize(1) <= std::numeric_limits<int>::max());
+
+    FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());
+
+    FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());
+
     cublasSetStream(handle, stream);
 
     // Check that we have (m x k) * (k x n) = (m x n)
@@ -243,7 +254,7 @@ void runMatrixMult(
     FAISS_ASSERT_FMT(
             err == CUBLAS_STATUS_SUCCESS,
             "cublas failed (%d): "
-            "(%d, %d)%s x (%d, %d)%s = (%d, %d)%s "
+            "(%ld, %ld)%s x (%ld, %ld)%s = (%ld, %ld)%s "
             "gemm params m %d n %d k %d trA %s trB %s lda %d ldb %d ldc %d",
             (int)err,
             a.getSize(0),
@@ -278,6 +289,19 @@ void runBatchMatrixMult(
         float beta,
         cublasHandle_t handle,
         cudaStream_t stream) {
+    // All sizes must be within int bounds
+    FAISS_ASSERT(c.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(c.getSize(1) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(c.getSize(2) <= std::numeric_limits<int>::max());
+
+    FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(2) <= std::numeric_limits<int>::max());
+
+    FAISS_ASSERT(a.getSize(0) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(1) <= std::numeric_limits<int>::max());
+    FAISS_ASSERT(a.getSize(2) <= std::numeric_limits<int>::max());
+
     FAISS_ASSERT(c.getSize(0) == a.getSize(0));
     FAISS_ASSERT(a.getSize(0) == b.getSize(0));
 
