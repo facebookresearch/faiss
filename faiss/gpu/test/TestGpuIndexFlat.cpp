@@ -141,6 +141,20 @@ TEST(TestGpuIndexFlat, L2_Float32) {
     }
 }
 
+// At least one test for the k > 1024 select
+TEST(TestGpuIndexFlat, L2_k_2048) {
+    if (faiss::gpu::getMaxKSelection() >= 2048) {
+        TestFlatOptions opt;
+        opt.metric = faiss::MetricType::METRIC_L2;
+        opt.useFloat16 = false;
+        opt.kOverride = 2048;
+        opt.dimOverride = 128;
+        opt.numVecsOverride = 10000;
+
+        testFlat(opt);
+    }
+}
+
 // test specialized k == 1 codepath
 TEST(TestGpuIndexFlat, L2_Float32_K1) {
     for (int tries = 0; tries < 3; ++tries) {
