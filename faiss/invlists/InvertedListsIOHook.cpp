@@ -52,7 +52,7 @@ static IOHookTable InvertedListsIOHook_table;
 
 InvertedListsIOHook* InvertedListsIOHook::lookup(int h) {
     for (const auto& callback : InvertedListsIOHook_table) {
-        if (h == fourcc(callback->key)) {
+        if (h == fourcc_str(callback->key)) {
             return callback;
         }
     }

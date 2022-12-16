@@ -226,13 +226,8 @@ BufferedIOWriter::~BufferedIOWriter() {
     }
 }
 
-uint32_t fourcc(const char sx[4]) {
-    FAISS_THROW_IF_NOT(4 == strlen(sx));
-    const unsigned char* x = (unsigned char*)sx;
-    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
-}
 
-uint32_t fourcc(const std::string& sx) {
+uint32_t fourcc_str(const std::string& sx) {
     FAISS_THROW_IF_NOT(sx.length() == 4);
     const unsigned char* x = (unsigned char*)sx.c_str();
     return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;

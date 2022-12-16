@@ -391,10 +391,10 @@ static void write_ivf_header(const IndexIVF* ivf, IOWriter* f) {
 
 void write_index(const Index* idx, IOWriter* f) {
     if (const IndexFlat* idxf = dynamic_cast<const IndexFlat*>(idx)) {
-        uint32_t h =
-                fourcc(idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI"
-                               : idxf->metric_type == METRIC_L2  ? "IxF2"
-                                                                 : "IxFl");
+        const char* hstr = idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI"
+                : idxf->metric_type == METRIC_L2                     ? "IxF2"
+                                                                     : "IxFl";
+        uint32_t h = fourcc(hstr);
         WRITE1(h);
         write_index_header(idx, f);
         WRITEXBVECTOR(idxf->codes);
@@ -688,7 +688,7 @@ void write_index(const Index* idx, IOWriter* f) {
     } else if (const IndexIVFPQ* ivpq = dynamic_cast<const IndexIVFPQ*>(idx)) {
         const IndexIVFPQR* ivfpqr = dynamic_cast<const IndexIVFPQR*>(idx);
 
-        uint32_t h = fourcc(ivfpqr ? "IwQR" : "IwPQ");
+        uint32_t h = ivfpqr ? fourcc("IwQR") : fourcc("IwPQ");
         WRITE1(h);
         write_ivf_header(ivpq, f);
         WRITE1(ivpq->by_residual);

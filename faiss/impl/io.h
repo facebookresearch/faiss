@@ -133,9 +133,24 @@ struct BufferedIOWriter : IOWriter {
     ~BufferedIOWriter() override;
 };
 
+#define E8(x) ((uint32_t)(uint8_t)(x))
+
+#define fourcc(x) (E8(x[0]) | E8(x[1]) << 8 | E8(x[2]) << 16 | E8(x[3]) << 24)
+
+/*
 /// cast a 4-character string to a uint32_t that can be written and read easily
-uint32_t fourcc(const char sx[4]);
-uint32_t fourcc(const std::string& sx);
+constexpr uint32_t fourcc(const char sx[4]) {
+    // verify that strlen(sx) == 4
+    // static_assert(sx[0] && sx[1] && sx[2] && sx[3] && !sx[4]);
+    // const unsigned char* x = (unsigned char*)sx;
+    return E8(x[0]) | E8(x[1]) << 8 | E8(x[2]) << 16 | E8(x[3]) << 24;
+}
+*/
+
+
+
+
+uint32_t fourcc_str(const std::string& sx);
 
 // decoding of fourcc (int32 -> string)
 void fourcc_inv(uint32_t x, char str[5]);

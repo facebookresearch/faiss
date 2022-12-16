@@ -81,14 +81,14 @@ VectorTransform* read_VectorTransform(IOReader* f) {
     READ1(h);
     VectorTransform* vt = nullptr;
 
-    if (h == fourcc("rrot") || h == fourcc("PCAm") || h == fourcc("LTra") ||
-        h == fourcc("PcAm") || h == fourcc("Viqm") || h == fourcc("Pcam")) {
-        LinearTransform* lt = nullptr;
-        if (h == fourcc("rrot")) {
+    LinearTransform* lt = nullptr;
+    switch (h) {
+        case fourcc("rrot"):
             lt = new RandomRotationMatrix();
-        } else if (
-                h == fourcc("PCAm") || h == fourcc("PcAm") ||
-                h == fourcc("Pcam")) {
+            goto handle_linear_transform;
+        case fourcc("PCAm"):
+        case fourcc("PcAm"):
+        case fourcc("Pcam"): {
             PCAMatrix* pca = new PCAMatrix();
             READ1(pca->eigen_power);
             if (h == fourcc("Pcam")) {
@@ -102,58 +102,70 @@ VectorTransform* read_VectorTransform(IOReader* f) {
             READVECTOR(pca->eigenvalues);
             READVECTOR(pca->PCAMat);
             lt = pca;
-        } else if (h == fourcc("Viqm")) {
+            goto handle_linear_transform;
+        }
+        case fourcc("Viqm"): {
             ITQMatrix* itqm = new ITQMatrix();
             READ1(itqm->max_iter);
             READ1(itqm->seed);
             lt = itqm;
-        } else if (h == fourcc("LTra")) {
+            goto handle_linear_transform;
+        }
+        case fourcc("LTra"):
             lt = new LinearTransform();
+        handle_linear_transform:
+            READ1(lt->have_bias);
+            READVECTOR(lt->A);
+            READVECTOR(lt->b);
+            FAISS_THROW_IF_NOT(lt->A.size() >= lt->d_in * lt->d_out);
+            FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= lt->d_out);
+            lt->set_is_orthonormal();
+            vt = lt;
+            break;
+        case fourcc("RmDT"): {
+            RemapDimensionsTransform* rdt = new RemapDimensionsTransform();
+            READVECTOR(rdt->map);
+            vt = rdt;
+            break;
         }
-        READ1(lt->have_bias);
-        READVECTOR(lt->A);
-        READVECTOR(lt->b);
-        FAISS_THROW_IF_NOT(lt->A.size() >= lt->d_in * lt->d_out);
-        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= lt->d_out);
-        lt->set_is_orthonormal();
-        vt = lt;
-    } else if (h == fourcc("RmDT")) {
-        RemapDimensionsTransform* rdt = new RemapDimensionsTransform();
-        READVECTOR(rdt->map);
-        vt = rdt;
-    } else if (h == fourcc("VNrm")) {
-        NormalizationTransform* nt = new NormalizationTransform();
-        READ1(nt->norm);
-        vt = nt;
-    } else if (h == fourcc("VCnt")) {
-        CenteringTransform* ct = new CenteringTransform();
-        READVECTOR(ct->mean);
-        vt = ct;
-    } else if (h == fourcc("Viqt")) {
-        ITQTransform* itqt = new ITQTransform();
+        case fourcc("VNrm"): {
+            NormalizationTransform* nt = new NormalizationTransform();
+            READ1(nt->norm);
+            vt = nt;
+            break;
+        }
+        case fourcc("VCnt"): {
+            CenteringTransform* ct = new CenteringTransform();
+            READVECTOR(ct->mean);
+            vt = ct;
+        }
+        case fourcc("Viqt"): {
+            ITQTransform* itqt = new ITQTransform();
 
-        READVECTOR(itqt->mean);
-        READ1(itqt->do_pca);
-        {
-            ITQMatrix* itqm = dynamic_cast<ITQMatrix*>(read_VectorTransform(f));
-            FAISS_THROW_IF_NOT(itqm);
-            itqt->itq = *itqm;
-            delete itqm;
+            READVECTOR(itqt->mean);
+            READ1(itqt->do_pca);
+            {
+                ITQMatrix* itqm =
+                        dynamic_cast<ITQMatrix*>(read_VectorTransform(f));
+                FAISS_THROW_IF_NOT(itqm);
+                itqt->itq = *itqm;
+                delete itqm;
+            }
+            {
+                LinearTransform* pi =
+                        dynamic_cast<LinearTransform*>(read_VectorTransform(f));
+                FAISS_THROW_IF_NOT(pi);
+                itqt->pca_then_itq = *pi;
+                delete pi;
+            }
+            vt = itqt;
         }
-        {
-            LinearTransform* pi =
-                    dynamic_cast<LinearTransform*>(read_VectorTransform(f));
-            FAISS_THROW_IF_NOT(pi);
-            itqt->pca_then_itq = *pi;
-            delete pi;
-        }
-        vt = itqt;
-    } else {
-        FAISS_THROW_FMT(
-                "fourcc %ud (\"%s\") not recognized in %s",
-                h,
-                fourcc_inv_printable(h).c_str(),
-                f->name.c_str());
+        default:
+            FAISS_THROW_FMT(
+                    "fourcc %ud (\"%s\") not recognized in %s",
+                    h,
+                    fourcc_inv_printable(h).c_str(),
+                    f->name.c_str());
     }
     READ1(vt->d_in);
     READ1(vt->d_out);
@@ -215,9 +227,9 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         return ails;
 
     } else if (h == fourcc("ilar") && (io_flags & IO_FLAG_SKIP_IVF_DATA)) {
-        // code is always ilxx where xx is specific to the type of invlists we
-        // want so we get the 16 high bits from the io_flag and the 16 low bits
-        // as "il"
+        // code is always ilxx where xx is specific to the type of invlists
+        // we want so we get the 16 high bits from the io_flag and the 16
+        // low bits as "il"
         int h2 = (io_flags & 0xffff0000) | (fourcc("il__") & 0x0000ffff);
         size_t nlist, code_size;
         READ1(nlist);
