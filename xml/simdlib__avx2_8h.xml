@@ -573,41 +573,40 @@
 <codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
 <codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>comparison<sp/>=</highlight></codeline>
 <codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_cmp_ps(lowestValues.f,<sp/>candidateValues.f,<sp/>_CMP_LE_OS);</highlight></codeline>
-<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.f<sp/>=</highlight></codeline>
-<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_blendv_ps(candidateValues.f,<sp/>lowestValues.f,<sp/>comparison);</highlight></codeline>
-<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.i<sp/>=<sp/>_mm256_castps_si256(_mm256_blendv_ps(</highlight></codeline>
-<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(candidateIndices.i),</highlight></codeline>
-<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(lowestIndices.i),</highlight></codeline>
-<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison));</highlight></codeline>
-<codeline lineno="537"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="538"><highlight class="normal"></highlight></codeline>
-<codeline lineno="539"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="540"><highlight class="normal"></highlight></codeline>
-<codeline lineno="541"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="542"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>geteven(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="543"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
-<codeline lineno="544"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>0<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>0<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
-<codeline lineno="545"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="546"><highlight class="normal"></highlight></codeline>
-<codeline lineno="547"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="548"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getodd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
-<codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>1<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>1<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
-<codeline lineno="551"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="552"><highlight class="normal"></highlight></codeline>
-<codeline lineno="553"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="554"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="555"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getlow128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
-<codeline lineno="557"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="558"><highlight class="normal"></highlight></codeline>
-<codeline lineno="559"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="560"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>1<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
-<codeline lineno="561"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="562"><highlight class="normal"></highlight></codeline>
-<codeline lineno="563"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="564"><highlight class="normal"></highlight></codeline>
-<codeline lineno="565"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.f<sp/>=<sp/>_mm256_min_ps(candidateValues.f,<sp/>lowestValues.f);</highlight></codeline>
+<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.i<sp/>=<sp/>_mm256_castps_si256(_mm256_blendv_ps(</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(candidateIndices.i),</highlight></codeline>
+<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(lowestIndices.i),</highlight></codeline>
+<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison));</highlight></codeline>
+<codeline lineno="536"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="537"><highlight class="normal"></highlight></codeline>
+<codeline lineno="538"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"></highlight></codeline>
+<codeline lineno="540"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="541"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>geteven(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="542"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
+<codeline lineno="543"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>0<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>0<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
+<codeline lineno="544"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="545"><highlight class="normal"></highlight></codeline>
+<codeline lineno="546"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="547"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getodd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
+<codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>1<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>1<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
+<codeline lineno="550"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="551"><highlight class="normal"></highlight></codeline>
+<codeline lineno="552"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="553"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="554"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getlow128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
+<codeline lineno="556"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="557"><highlight class="normal"></highlight></codeline>
+<codeline lineno="558"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="559"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>1<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
+<codeline lineno="560"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="561"><highlight class="normal"></highlight></codeline>
+<codeline lineno="562"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="563"><highlight class="normal"></highlight></codeline>
+<codeline lineno="564"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_avx2.h"/>
   </compounddef>

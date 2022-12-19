@@ -5771,7 +5771,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_avx2.h" line="524" column="13" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="524" bodyend="537"/>
+        <location file="faiss/utils/simdlib_avx2.h" line="524" column="13" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="524" bodyend="536"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
