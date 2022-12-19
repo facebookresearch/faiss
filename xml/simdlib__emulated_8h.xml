@@ -637,207 +637,215 @@
 <codeline lineno="579"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">,<sp/>other,<sp/>[](</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a<sp/>-<sp/>b;<sp/>});</highlight></codeline>
 <codeline lineno="580"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="581"><highlight class="normal"></highlight></codeline>
-<codeline lineno="582"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="582"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>other)<sp/>{</highlight></codeline>
 <codeline lineno="583"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="584"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(f32[i]<sp/>!=<sp/>other.f32[i])<sp/>{</highlight></codeline>
-<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="586"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="588"><highlight class="normal"></highlight></codeline>
-<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="591"><highlight class="normal"></highlight></codeline>
-<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
-<codeline lineno="594"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="595"><highlight class="normal"></highlight></codeline>
-<codeline lineno="596"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="597"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>res[1000],<sp/>*ptr<sp/>=<sp/>res;</highlight></codeline>
-<codeline lineno="598"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="599"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr<sp/>+=<sp/>sprintf(ptr,<sp/></highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>f32[i]);</highlight></codeline>
-<codeline lineno="600"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>strip<sp/>last<sp/>,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="602"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr[-1]<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="603"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::string(res);</highlight></codeline>
-<codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="605"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="606"><highlight class="normal"></highlight></codeline>
-<codeline lineno="607"><highlight class="normal"></highlight><highlight class="comment">//<sp/>hadd<sp/>does<sp/>not<sp/>cross<sp/>lanes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="608"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>hadd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0]<sp/>+<sp/>a.f32[1];</highlight></codeline>
-<codeline lineno="611"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[2]<sp/>+<sp/>a.f32[3];</highlight></codeline>
-<codeline lineno="612"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[0]<sp/>+<sp/>b.f32[1];</highlight></codeline>
-<codeline lineno="613"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[2]<sp/>+<sp/>b.f32[3];</highlight></codeline>
+<codeline lineno="584"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f32[i]<sp/>+=<sp/>other.f32[i];</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"></highlight></codeline>
+<codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="588"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"></highlight></codeline>
+<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(f32[i]<sp/>!=<sp/>other.f32[i])<sp/>{</highlight></codeline>
+<codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="594"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="595"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="596"><highlight class="normal"></highlight></codeline>
+<codeline lineno="597"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="598"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="599"><highlight class="normal"></highlight></codeline>
+<codeline lineno="600"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
+<codeline lineno="602"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="603"><highlight class="normal"></highlight></codeline>
+<codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="605"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>res[1000],<sp/>*ptr<sp/>=<sp/>res;</highlight></codeline>
+<codeline lineno="606"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="607"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr<sp/>+=<sp/>sprintf(ptr,<sp/></highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>f32[i]);</highlight></codeline>
+<codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>strip<sp/>last<sp/>,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr[-1]<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="611"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::string(res);</highlight></codeline>
+<codeline lineno="612"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="613"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="614"><highlight class="normal"></highlight></codeline>
-<codeline lineno="615"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4]<sp/>+<sp/>a.f32[5];</highlight></codeline>
-<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[6]<sp/>+<sp/>a.f32[7];</highlight></codeline>
-<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[4]<sp/>+<sp/>b.f32[5];</highlight></codeline>
-<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[6]<sp/>+<sp/>b.f32[7];</highlight></codeline>
-<codeline lineno="619"><highlight class="normal"></highlight></codeline>
-<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="621"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="615"><highlight class="normal"></highlight><highlight class="comment">//<sp/>hadd<sp/>does<sp/>not<sp/>cross<sp/>lanes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="616"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>hadd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0]<sp/>+<sp/>a.f32[1];</highlight></codeline>
+<codeline lineno="619"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[2]<sp/>+<sp/>a.f32[3];</highlight></codeline>
+<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[0]<sp/>+<sp/>b.f32[1];</highlight></codeline>
+<codeline lineno="621"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[2]<sp/>+<sp/>b.f32[3];</highlight></codeline>
 <codeline lineno="622"><highlight class="normal"></highlight></codeline>
-<codeline lineno="623"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="624"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="625"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
-<codeline lineno="626"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>b.f32[0];</highlight></codeline>
-<codeline lineno="627"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[1];</highlight></codeline>
-<codeline lineno="628"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[1];</highlight></codeline>
-<codeline lineno="629"><highlight class="normal"></highlight></codeline>
-<codeline lineno="630"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4];</highlight></codeline>
-<codeline lineno="631"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[4];</highlight></codeline>
-<codeline lineno="632"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>a.f32[5];</highlight></codeline>
-<codeline lineno="633"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[5];</highlight></codeline>
-<codeline lineno="634"><highlight class="normal"></highlight></codeline>
-<codeline lineno="635"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="636"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="623"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4]<sp/>+<sp/>a.f32[5];</highlight></codeline>
+<codeline lineno="624"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[6]<sp/>+<sp/>a.f32[7];</highlight></codeline>
+<codeline lineno="625"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[4]<sp/>+<sp/>b.f32[5];</highlight></codeline>
+<codeline lineno="626"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[6]<sp/>+<sp/>b.f32[7];</highlight></codeline>
+<codeline lineno="627"><highlight class="normal"></highlight></codeline>
+<codeline lineno="628"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="629"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="630"><highlight class="normal"></highlight></codeline>
+<codeline lineno="631"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="632"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="633"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
+<codeline lineno="634"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>b.f32[0];</highlight></codeline>
+<codeline lineno="635"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[1];</highlight></codeline>
+<codeline lineno="636"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[1];</highlight></codeline>
 <codeline lineno="637"><highlight class="normal"></highlight></codeline>
-<codeline lineno="638"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="639"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[2];</highlight></codeline>
-<codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>b.f32[2];</highlight></codeline>
-<codeline lineno="642"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[3];</highlight></codeline>
-<codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[3];</highlight></codeline>
-<codeline lineno="644"><highlight class="normal"></highlight></codeline>
-<codeline lineno="645"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[6];</highlight></codeline>
-<codeline lineno="646"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[6];</highlight></codeline>
-<codeline lineno="647"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>a.f32[7];</highlight></codeline>
-<codeline lineno="648"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
-<codeline lineno="649"><highlight class="normal"></highlight></codeline>
-<codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="651"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="638"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4];</highlight></codeline>
+<codeline lineno="639"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[4];</highlight></codeline>
+<codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>a.f32[5];</highlight></codeline>
+<codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[5];</highlight></codeline>
+<codeline lineno="642"><highlight class="normal"></highlight></codeline>
+<codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="644"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="645"><highlight class="normal"></highlight></codeline>
+<codeline lineno="646"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="647"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="648"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[2];</highlight></codeline>
+<codeline lineno="649"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>b.f32[2];</highlight></codeline>
+<codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[3];</highlight></codeline>
+<codeline lineno="651"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[3];</highlight></codeline>
 <codeline lineno="652"><highlight class="normal"></highlight></codeline>
-<codeline lineno="653"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="654"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(</highlight></codeline>
-<codeline lineno="655"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,</highlight></codeline>
-<codeline lineno="656"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b,</highlight></codeline>
-<codeline lineno="657"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>c)<sp/>{</highlight></codeline>
-<codeline lineno="658"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>res;</highlight></codeline>
-<codeline lineno="659"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="660"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res.f32[i]<sp/>=<sp/>a.f32[i]<sp/>*<sp/>b.f32[i]<sp/>+<sp/>c.f32[i];</highlight></codeline>
-<codeline lineno="661"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="662"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>res;</highlight></codeline>
-<codeline lineno="663"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="664"><highlight class="normal"></highlight></codeline>
-<codeline lineno="665"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="666"><highlight class="normal"></highlight></codeline>
-<codeline lineno="667"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="668"><highlight class="normal">simd8float32<sp/>geteven(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="669"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="670"><highlight class="normal"></highlight></codeline>
-<codeline lineno="671"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
-<codeline lineno="672"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[2];</highlight></codeline>
-<codeline lineno="673"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[0];</highlight></codeline>
-<codeline lineno="674"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[2];</highlight></codeline>
-<codeline lineno="675"><highlight class="normal"></highlight></codeline>
-<codeline lineno="676"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4];</highlight></codeline>
-<codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[6];</highlight></codeline>
-<codeline lineno="678"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[4];</highlight></codeline>
-<codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[6];</highlight></codeline>
-<codeline lineno="680"><highlight class="normal"></highlight></codeline>
-<codeline lineno="681"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="682"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="653"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[6];</highlight></codeline>
+<codeline lineno="654"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[6];</highlight></codeline>
+<codeline lineno="655"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>a.f32[7];</highlight></codeline>
+<codeline lineno="656"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
+<codeline lineno="657"><highlight class="normal"></highlight></codeline>
+<codeline lineno="658"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="659"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="660"><highlight class="normal"></highlight></codeline>
+<codeline lineno="661"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="662"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(</highlight></codeline>
+<codeline lineno="663"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="664"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="665"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="666"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>res;</highlight></codeline>
+<codeline lineno="667"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="668"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res.f32[i]<sp/>=<sp/>a.f32[i]<sp/>*<sp/>b.f32[i]<sp/>+<sp/>c.f32[i];</highlight></codeline>
+<codeline lineno="669"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="670"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>res;</highlight></codeline>
+<codeline lineno="671"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="672"><highlight class="normal"></highlight></codeline>
+<codeline lineno="673"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="674"><highlight class="normal"></highlight></codeline>
+<codeline lineno="675"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="676"><highlight class="normal">simd8float32<sp/>geteven(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="678"><highlight class="normal"></highlight></codeline>
+<codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
+<codeline lineno="680"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[2];</highlight></codeline>
+<codeline lineno="681"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[0];</highlight></codeline>
+<codeline lineno="682"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[2];</highlight></codeline>
 <codeline lineno="683"><highlight class="normal"></highlight></codeline>
-<codeline lineno="684"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="685"><highlight class="normal">simd8float32<sp/>getodd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="686"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="687"><highlight class="normal"></highlight></codeline>
-<codeline lineno="688"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[1];</highlight></codeline>
-<codeline lineno="689"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[3];</highlight></codeline>
-<codeline lineno="690"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[1];</highlight></codeline>
-<codeline lineno="691"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[3];</highlight></codeline>
-<codeline lineno="692"><highlight class="normal"></highlight></codeline>
-<codeline lineno="693"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[5];</highlight></codeline>
-<codeline lineno="694"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[7];</highlight></codeline>
-<codeline lineno="695"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[5];</highlight></codeline>
-<codeline lineno="696"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
-<codeline lineno="697"><highlight class="normal"></highlight></codeline>
-<codeline lineno="698"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="699"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="684"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[4];</highlight></codeline>
+<codeline lineno="685"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[6];</highlight></codeline>
+<codeline lineno="686"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[4];</highlight></codeline>
+<codeline lineno="687"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[6];</highlight></codeline>
+<codeline lineno="688"><highlight class="normal"></highlight></codeline>
+<codeline lineno="689"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="690"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="691"><highlight class="normal"></highlight></codeline>
+<codeline lineno="692"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="693"><highlight class="normal">simd8float32<sp/>getodd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="694"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="695"><highlight class="normal"></highlight></codeline>
+<codeline lineno="696"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[1];</highlight></codeline>
+<codeline lineno="697"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[3];</highlight></codeline>
+<codeline lineno="698"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>b.f32[1];</highlight></codeline>
+<codeline lineno="699"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>b.f32[3];</highlight></codeline>
 <codeline lineno="700"><highlight class="normal"></highlight></codeline>
-<codeline lineno="701"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="702"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="703"><highlight class="normal">simd8float32<sp/>getlow128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="704"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="701"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>a.f32[5];</highlight></codeline>
+<codeline lineno="702"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>a.f32[7];</highlight></codeline>
+<codeline lineno="703"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[5];</highlight></codeline>
+<codeline lineno="704"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
 <codeline lineno="705"><highlight class="normal"></highlight></codeline>
-<codeline lineno="706"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
-<codeline lineno="707"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[1];</highlight></codeline>
-<codeline lineno="708"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[2];</highlight></codeline>
-<codeline lineno="709"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>a.f32[3];</highlight></codeline>
-<codeline lineno="710"><highlight class="normal"></highlight></codeline>
-<codeline lineno="711"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>b.f32[0];</highlight></codeline>
-<codeline lineno="712"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[1];</highlight></codeline>
-<codeline lineno="713"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[2];</highlight></codeline>
-<codeline lineno="714"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[3];</highlight></codeline>
-<codeline lineno="715"><highlight class="normal"></highlight></codeline>
-<codeline lineno="716"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="717"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="706"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="707"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="708"><highlight class="normal"></highlight></codeline>
+<codeline lineno="709"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="710"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="711"><highlight class="normal">simd8float32<sp/>getlow128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="712"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="713"><highlight class="normal"></highlight></codeline>
+<codeline lineno="714"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[0];</highlight></codeline>
+<codeline lineno="715"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[1];</highlight></codeline>
+<codeline lineno="716"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[2];</highlight></codeline>
+<codeline lineno="717"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>a.f32[3];</highlight></codeline>
 <codeline lineno="718"><highlight class="normal"></highlight></codeline>
-<codeline lineno="719"><highlight class="normal">simd8float32<sp/>gethigh128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="720"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
-<codeline lineno="721"><highlight class="normal"></highlight></codeline>
-<codeline lineno="722"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[4];</highlight></codeline>
-<codeline lineno="723"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[5];</highlight></codeline>
-<codeline lineno="724"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[6];</highlight></codeline>
-<codeline lineno="725"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>a.f32[7];</highlight></codeline>
+<codeline lineno="719"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>b.f32[0];</highlight></codeline>
+<codeline lineno="720"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[1];</highlight></codeline>
+<codeline lineno="721"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[2];</highlight></codeline>
+<codeline lineno="722"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[3];</highlight></codeline>
+<codeline lineno="723"><highlight class="normal"></highlight></codeline>
+<codeline lineno="724"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="725"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="726"><highlight class="normal"></highlight></codeline>
-<codeline lineno="727"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>b.f32[4];</highlight></codeline>
-<codeline lineno="728"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[5];</highlight></codeline>
-<codeline lineno="729"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[6];</highlight></codeline>
-<codeline lineno="730"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
-<codeline lineno="731"><highlight class="normal"></highlight></codeline>
-<codeline lineno="732"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
-<codeline lineno="733"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="727"><highlight class="normal">simd8float32<sp/>gethigh128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="728"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32<sp/>c;</highlight></codeline>
+<codeline lineno="729"><highlight class="normal"></highlight></codeline>
+<codeline lineno="730"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[0]<sp/>=<sp/>a.f32[4];</highlight></codeline>
+<codeline lineno="731"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[1]<sp/>=<sp/>a.f32[5];</highlight></codeline>
+<codeline lineno="732"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[2]<sp/>=<sp/>a.f32[6];</highlight></codeline>
+<codeline lineno="733"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[3]<sp/>=<sp/>a.f32[7];</highlight></codeline>
 <codeline lineno="734"><highlight class="normal"></highlight></codeline>
-<codeline lineno="735"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="736"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="737"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="738"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="739"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="740"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="741"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="742"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="743"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="744"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="745"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="746"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="747"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="748"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="749"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="750"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="751"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="752"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="753"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="754"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="755"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="756"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="757"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="758"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="759"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="760"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="761"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="762"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="763"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="764"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="765"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="766"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
-<codeline lineno="767"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
-<codeline lineno="768"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
-<codeline lineno="769"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
-<codeline lineno="770"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
-<codeline lineno="771"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>8;<sp/>j++)<sp/>{</highlight></codeline>
-<codeline lineno="772"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>comparison<sp/>=<sp/>(candidateValues.f32[j]<sp/>&lt;<sp/>lowestValues.f32[j]);</highlight></codeline>
-<codeline lineno="773"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(comparison)<sp/>{</highlight></codeline>
-<codeline lineno="774"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.f32[j]<sp/>=<sp/>candidateValues.f32[j];</highlight></codeline>
-<codeline lineno="775"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.u32[j]<sp/>=<sp/>candidateIndices.u32[j];</highlight></codeline>
-<codeline lineno="776"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="777"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="778"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="779"><highlight class="normal"></highlight></codeline>
-<codeline lineno="780"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="781"><highlight class="normal"></highlight></codeline>
-<codeline lineno="782"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="735"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[4]<sp/>=<sp/>b.f32[4];</highlight></codeline>
+<codeline lineno="736"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[5]<sp/>=<sp/>b.f32[5];</highlight></codeline>
+<codeline lineno="737"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[6]<sp/>=<sp/>b.f32[6];</highlight></codeline>
+<codeline lineno="738"><highlight class="normal"><sp/><sp/><sp/><sp/>c.f32[7]<sp/>=<sp/>b.f32[7];</highlight></codeline>
+<codeline lineno="739"><highlight class="normal"></highlight></codeline>
+<codeline lineno="740"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="741"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="742"><highlight class="normal"></highlight></codeline>
+<codeline lineno="743"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="744"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="745"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="746"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="747"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="748"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="749"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="750"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="751"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="752"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="753"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="754"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="755"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="756"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="757"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="758"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="759"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="760"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="761"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="762"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="763"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="764"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="765"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="766"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="767"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="768"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="769"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="770"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="771"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="772"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="773"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="774"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
+<codeline lineno="775"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
+<codeline lineno="776"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
+<codeline lineno="777"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
+<codeline lineno="778"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
+<codeline lineno="779"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>8;<sp/>j++)<sp/>{</highlight></codeline>
+<codeline lineno="780"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>comparison<sp/>=<sp/>(candidateValues.f32[j]<sp/>&lt;<sp/>lowestValues.f32[j]);</highlight></codeline>
+<codeline lineno="781"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(comparison)<sp/>{</highlight></codeline>
+<codeline lineno="782"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.f32[j]<sp/>=<sp/>candidateValues.f32[j];</highlight></codeline>
+<codeline lineno="783"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.u32[j]<sp/>=<sp/>candidateIndices.u32[j];</highlight></codeline>
+<codeline lineno="784"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="785"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="786"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="787"><highlight class="normal"></highlight></codeline>
+<codeline lineno="788"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="789"><highlight class="normal"></highlight></codeline>
+<codeline lineno="790"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_emulated.h"/>
   </compounddef>

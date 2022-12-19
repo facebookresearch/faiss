@@ -493,120 +493,125 @@
 <codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_sub_ps(f,<sp/>other.f));</highlight></codeline>
 <codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="450"><highlight class="normal"></highlight></codeline>
-<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m256i<sp/>pcmp<sp/>=</highlight></codeline>
-<codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castps_si256(_mm256_cmp_ps(f,<sp/>other.f,<sp/>_CMP_EQ_OQ));</highlight></codeline>
-<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>bitmask<sp/>=<sp/>_mm256_movemask_epi8(pcmp);</highlight></codeline>
-<codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(bitmask<sp/>==<sp/>0xffffffffU);</highlight></codeline>
-<codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="457"><highlight class="normal"></highlight></codeline>
-<codeline lineno="458"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="459"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
-<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="461"><highlight class="normal"></highlight></codeline>
-<codeline lineno="462"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>tab[8];</highlight></codeline>
-<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>storeu((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)tab);</highlight></codeline>
-<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>res[1000];</highlight></codeline>
-<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ptr<sp/>=<sp/>res;</highlight></codeline>
-<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr<sp/>+=<sp/>sprintf(ptr,<sp/></highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>tab[i]);</highlight></codeline>
-<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>strip<sp/>last<sp/>,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr[-1]<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::string(res);</highlight></codeline>
-<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="474"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="475"><highlight class="normal"></highlight></codeline>
-<codeline lineno="476"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>hadd(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_hadd_ps(a.f,<sp/>b.f));</highlight></codeline>
-<codeline lineno="478"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="479"><highlight class="normal"></highlight></codeline>
-<codeline lineno="480"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpacklo_ps(a.f,<sp/>b.f));</highlight></codeline>
-<codeline lineno="482"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="483"><highlight class="normal"></highlight></codeline>
-<codeline lineno="484"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpackhi_ps(a.f,<sp/>b.f));</highlight></codeline>
-<codeline lineno="486"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="487"><highlight class="normal"></highlight></codeline>
-<codeline lineno="488"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="489"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b,<sp/>simd8float32<sp/>c)<sp/>{</highlight></codeline>
-<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>=<sp/>_mm256_add_ps(f,<sp/>other.f);</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="455"><highlight class="normal"></highlight></codeline>
+<codeline lineno="456"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m256i<sp/>pcmp<sp/>=</highlight></codeline>
+<codeline lineno="458"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castps_si256(_mm256_cmp_ps(f,<sp/>other.f,<sp/>_CMP_EQ_OQ));</highlight></codeline>
+<codeline lineno="459"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>bitmask<sp/>=<sp/>_mm256_movemask_epi8(pcmp);</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(bitmask<sp/>==<sp/>0xffffffffU);</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"></highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="466"><highlight class="normal"></highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>tab[8];</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>storeu((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)tab);</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>res[1000];</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ptr<sp/>=<sp/>res;</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>8;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr<sp/>+=<sp/>sprintf(ptr,<sp/></highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>tab[i]);</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>strip<sp/>last<sp/>,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr[-1]<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::string(res);</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="479"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="480"><highlight class="normal"></highlight></codeline>
+<codeline lineno="481"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>hadd(<ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>a,<sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref><sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd8float32" kindref="compound">simd8float32</ref>(_mm256_hadd_ps(a.f,<sp/>b.f));</highlight></codeline>
+<codeline lineno="483"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpacklo_ps(a.f,<sp/>b.f));</highlight></codeline>
+<codeline lineno="487"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"></highlight></codeline>
+<codeline lineno="489"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_unpackhi_ps(a.f,<sp/>b.f));</highlight></codeline>
 <codeline lineno="491"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="492"><highlight class="normal"></highlight></codeline>
-<codeline lineno="493"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="494"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="495"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="496"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="497"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="498"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="499"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="500"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="501"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="502"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="503"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="504"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="505"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="506"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="507"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="508"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="509"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="510"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="511"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="512"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="513"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="514"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="515"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="516"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="517"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="518"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="519"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="520"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="521"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="522"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="523"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="524"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
-<codeline lineno="525"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
-<codeline lineno="526"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
-<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
-<codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
-<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>comparison<sp/>=</highlight></codeline>
-<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_cmp_ps(lowestValues.f,<sp/>candidateValues.f,<sp/>_CMP_LE_OS);</highlight></codeline>
-<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.f<sp/>=<sp/>_mm256_min_ps(candidateValues.f,<sp/>lowestValues.f);</highlight></codeline>
-<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.i<sp/>=<sp/>_mm256_castps_si256(_mm256_blendv_ps(</highlight></codeline>
-<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(candidateIndices.i),</highlight></codeline>
-<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(lowestIndices.i),</highlight></codeline>
-<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison));</highlight></codeline>
-<codeline lineno="536"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="537"><highlight class="normal"></highlight></codeline>
-<codeline lineno="538"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="539"><highlight class="normal"></highlight></codeline>
-<codeline lineno="540"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="541"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>geteven(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="542"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
-<codeline lineno="543"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>0<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>0<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
-<codeline lineno="544"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="545"><highlight class="normal"></highlight></codeline>
-<codeline lineno="546"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="547"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getodd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
-<codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>1<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>1<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
-<codeline lineno="550"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="551"><highlight class="normal"></highlight></codeline>
-<codeline lineno="552"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="553"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="554"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getlow128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
-<codeline lineno="556"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="557"><highlight class="normal"></highlight></codeline>
-<codeline lineno="558"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="559"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>1<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
-<codeline lineno="560"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="561"><highlight class="normal"></highlight></codeline>
-<codeline lineno="562"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="563"><highlight class="normal"></highlight></codeline>
-<codeline lineno="564"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="493"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="494"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b,<sp/>simd8float32<sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
+<codeline lineno="496"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"></highlight></codeline>
+<codeline lineno="498"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="499"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="500"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="501"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="502"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="503"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="504"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="505"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="506"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="507"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="508"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="509"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="510"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="511"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="512"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="513"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="514"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="515"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="516"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="517"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="518"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="519"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="520"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="521"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="522"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="523"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="524"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="525"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="526"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="527"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="528"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="529"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
+<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
+<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
+<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
+<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>comparison<sp/>=</highlight></codeline>
+<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_cmp_ps(lowestValues.f,<sp/>candidateValues.f,<sp/>_CMP_LE_OS);</highlight></codeline>
+<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.f<sp/>=<sp/>_mm256_min_ps(candidateValues.f,<sp/>lowestValues.f);</highlight></codeline>
+<codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.i<sp/>=<sp/>_mm256_castps_si256(_mm256_blendv_ps(</highlight></codeline>
+<codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(candidateIndices.i),</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castsi256_ps(lowestIndices.i),</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison));</highlight></codeline>
+<codeline lineno="541"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="542"><highlight class="normal"></highlight></codeline>
+<codeline lineno="543"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="544"><highlight class="normal"></highlight></codeline>
+<codeline lineno="545"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="546"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>geteven(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="547"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
+<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>0<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>0<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
+<codeline lineno="549"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="550"><highlight class="normal"></highlight></codeline>
+<codeline lineno="551"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="552"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getodd(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="553"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(</highlight></codeline>
+<codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_shuffle_ps(a.f,<sp/>b.f,<sp/>1<sp/>&lt;&lt;<sp/>0<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>2<sp/>|<sp/>1<sp/>&lt;&lt;<sp/>4<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>6));</highlight></codeline>
+<codeline lineno="555"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="556"><highlight class="normal"></highlight></codeline>
+<codeline lineno="557"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="558"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="559"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>getlow128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="560"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
+<codeline lineno="561"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="562"><highlight class="normal"></highlight></codeline>
+<codeline lineno="563"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="564"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>1<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
+<codeline lineno="565"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="566"><highlight class="normal"></highlight></codeline>
+<codeline lineno="567"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="568"><highlight class="normal"></highlight></codeline>
+<codeline lineno="569"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_avx2.h"/>
   </compounddef>

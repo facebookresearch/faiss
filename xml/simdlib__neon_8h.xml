@@ -903,141 +903,147 @@
 <codeline lineno="832"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(data,<sp/>other.data,<sp/>&amp;vsubq_f32)};</highlight></codeline>
 <codeline lineno="833"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="834"><highlight class="normal"></highlight></codeline>
-<codeline lineno="835"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="836"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>equal0<sp/>=</highlight></codeline>
-<codeline lineno="837"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(vminvq_u32(vceqq_f32(data.val[0],<sp/>other.data.val[0]))<sp/>==</highlight></codeline>
-<codeline lineno="838"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0xffffffff);</highlight></codeline>
-<codeline lineno="839"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>equal1<sp/>=</highlight></codeline>
-<codeline lineno="840"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(vminvq_u32(vceqq_f32(data.val[1],<sp/>other.data.val[1]))<sp/>==</highlight></codeline>
-<codeline lineno="841"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0xffffffff);</highlight></codeline>
-<codeline lineno="842"><highlight class="normal"></highlight></codeline>
-<codeline lineno="843"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>equal0<sp/>&amp;&amp;<sp/>equal1;</highlight></codeline>
-<codeline lineno="844"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="845"><highlight class="normal"></highlight></codeline>
-<codeline lineno="846"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="847"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
-<codeline lineno="848"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="849"><highlight class="normal"></highlight></codeline>
-<codeline lineno="850"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="851"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>detail::simdlib::elements_to_string&lt;float,<sp/>8u&gt;(</highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="852"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="853"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="854"><highlight class="normal"></highlight></codeline>
-<codeline lineno="855"><highlight class="normal"></highlight><highlight class="comment">//<sp/>hadd<sp/>does<sp/>not<sp/>cross<sp/>lanes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="856"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>hadd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="857"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
-<codeline lineno="858"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vpaddq_f32)};</highlight></codeline>
-<codeline lineno="859"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="835"><highlight class="normal"><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="836"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data.val[0]<sp/>=<sp/>vaddq_f32(data.val[0],<sp/>other.data.val[0]);</highlight></codeline>
+<codeline lineno="837"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data.val[1]<sp/>=<sp/>vaddq_f32(data.val[1],<sp/>other.data.val[1]);</highlight></codeline>
+<codeline lineno="838"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="839"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="840"><highlight class="normal"></highlight></codeline>
+<codeline lineno="841"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="842"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>equal0<sp/>=</highlight></codeline>
+<codeline lineno="843"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(vminvq_u32(vceqq_f32(data.val[0],<sp/>other.data.val[0]))<sp/>==</highlight></codeline>
+<codeline lineno="844"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0xffffffff);</highlight></codeline>
+<codeline lineno="845"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>equal1<sp/>=</highlight></codeline>
+<codeline lineno="846"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(vminvq_u32(vceqq_f32(data.val[1],<sp/>other.data.val[1]))<sp/>==</highlight></codeline>
+<codeline lineno="847"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0xffffffff);</highlight></codeline>
+<codeline lineno="848"><highlight class="normal"></highlight></codeline>
+<codeline lineno="849"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>equal0<sp/>&amp;&amp;<sp/>equal1;</highlight></codeline>
+<codeline lineno="850"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="851"><highlight class="normal"></highlight></codeline>
+<codeline lineno="852"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(simd8float32<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="853"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>other);</highlight></codeline>
+<codeline lineno="854"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="855"><highlight class="normal"></highlight></codeline>
+<codeline lineno="856"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="857"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>detail::simdlib::elements_to_string&lt;float,<sp/>8u&gt;(</highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="858"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="859"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="860"><highlight class="normal"></highlight></codeline>
-<codeline lineno="861"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="862"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
-<codeline lineno="863"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vzip1q_f32)};</highlight></codeline>
-<codeline lineno="864"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="865"><highlight class="normal"></highlight></codeline>
-<codeline lineno="866"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="867"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
-<codeline lineno="868"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vzip2q_f32)};</highlight></codeline>
-<codeline lineno="869"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="870"><highlight class="normal"></highlight></codeline>
-<codeline lineno="871"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="872"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(</highlight></codeline>
-<codeline lineno="873"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,</highlight></codeline>
-<codeline lineno="874"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b,</highlight></codeline>
-<codeline lineno="875"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>c)<sp/>{</highlight></codeline>
-<codeline lineno="876"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
-<codeline lineno="877"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vfmaq_f32(c.data.val[0],<sp/>a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
-<codeline lineno="878"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vfmaq_f32(c.data.val[1],<sp/>a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
-<codeline lineno="879"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="880"><highlight class="normal"></highlight></codeline>
-<codeline lineno="881"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="882"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="883"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="884"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="885"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="886"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="887"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="888"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="889"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="890"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="891"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="892"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="893"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="894"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="895"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="896"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="897"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="898"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="899"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="900"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="901"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="902"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="903"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="904"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="905"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="906"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="907"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="908"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="909"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="910"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="911"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="912"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
-<codeline lineno="913"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
-<codeline lineno="914"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
-<codeline lineno="915"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
-<codeline lineno="916"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
-<codeline lineno="917"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32x4x2_t<sp/>comparison<sp/>=<sp/>uint32x4x2_t{</highlight></codeline>
-<codeline lineno="918"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vcltq_f32(candidateValues.data.val[0],<sp/>lowestValues.data.val[0]),</highlight></codeline>
-<codeline lineno="919"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vcltq_f32(candidateValues.data.val[1],<sp/>lowestValues.data.val[1])};</highlight></codeline>
-<codeline lineno="920"><highlight class="normal"></highlight></codeline>
-<codeline lineno="921"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.data<sp/>=<sp/>float32x4x2_t{</highlight></codeline>
-<codeline lineno="922"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_f32(</highlight></codeline>
-<codeline lineno="923"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[0],</highlight></codeline>
-<codeline lineno="924"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateValues.data.val[0],</highlight></codeline>
-<codeline lineno="925"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.data.val[0]),</highlight></codeline>
-<codeline lineno="926"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_f32(</highlight></codeline>
-<codeline lineno="927"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[1],</highlight></codeline>
-<codeline lineno="928"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateValues.data.val[1],</highlight></codeline>
-<codeline lineno="929"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.data.val[1])};</highlight></codeline>
-<codeline lineno="930"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.data<sp/>=<sp/>uint32x4x2_t{</highlight></codeline>
-<codeline lineno="931"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_u32(</highlight></codeline>
-<codeline lineno="932"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[0],</highlight></codeline>
-<codeline lineno="933"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateIndices.data.val[0],</highlight></codeline>
-<codeline lineno="934"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.data.val[0]),</highlight></codeline>
-<codeline lineno="935"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_u32(</highlight></codeline>
-<codeline lineno="936"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[1],</highlight></codeline>
-<codeline lineno="937"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateIndices.data.val[1],</highlight></codeline>
-<codeline lineno="938"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.data.val[1])};</highlight></codeline>
-<codeline lineno="939"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="940"><highlight class="normal"></highlight></codeline>
-<codeline lineno="941"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="942"><highlight class="normal"></highlight></codeline>
-<codeline lineno="943"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="944"><highlight class="normal">simd8float32<sp/>geteven(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="945"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
-<codeline lineno="946"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp1q_f32(a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
-<codeline lineno="947"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp1q_f32(a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
-<codeline lineno="948"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="949"><highlight class="normal"></highlight></codeline>
-<codeline lineno="950"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="951"><highlight class="normal">simd8float32<sp/>getodd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="952"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
-<codeline lineno="953"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp2q_f32(a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
-<codeline lineno="954"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp2q_f32(a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
-<codeline lineno="955"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="956"><highlight class="normal"></highlight></codeline>
-<codeline lineno="957"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="958"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="959"><highlight class="normal">simd8float32<sp/>getlow128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="960"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{a.data.val[0],<sp/>b.data.val[0]}};</highlight></codeline>
+<codeline lineno="861"><highlight class="normal"></highlight><highlight class="comment">//<sp/>hadd<sp/>does<sp/>not<sp/>cross<sp/>lanes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="862"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>hadd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="863"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
+<codeline lineno="864"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vpaddq_f32)};</highlight></codeline>
+<codeline lineno="865"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="866"><highlight class="normal"></highlight></codeline>
+<codeline lineno="867"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpacklo(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="868"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
+<codeline lineno="869"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vzip1q_f32)};</highlight></codeline>
+<codeline lineno="870"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="871"><highlight class="normal"></highlight></codeline>
+<codeline lineno="872"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>unpackhi(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="873"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{</highlight></codeline>
+<codeline lineno="874"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detail::simdlib::binary_func(a.data,<sp/>b.data,<sp/>&amp;vzip2q_f32)};</highlight></codeline>
+<codeline lineno="875"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="876"><highlight class="normal"></highlight></codeline>
+<codeline lineno="877"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="878"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>fmadd(</highlight></codeline>
+<codeline lineno="879"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="880"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="881"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="882"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
+<codeline lineno="883"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vfmaq_f32(c.data.val[0],<sp/>a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
+<codeline lineno="884"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vfmaq_f32(c.data.val[1],<sp/>a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
+<codeline lineno="885"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="886"><highlight class="normal"></highlight></codeline>
+<codeline lineno="887"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>primitive<sp/>is<sp/>a<sp/>vectorized<sp/>version<sp/>of<sp/>the<sp/>following<sp/>code</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="888"><highlight class="normal"></highlight><highlight class="comment">//<sp/>snippet:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="889"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>float<sp/>lowestValue<sp/>=<sp/>HUGE_VAL;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="890"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>uint<sp/>lowestIndex<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="891"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="892"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(values[i]<sp/>&lt;<sp/>lowestValue)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="893"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValue<sp/>=<sp/>values[i];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="894"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndex<sp/>=<sp/>i;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="895"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="896"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="897"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Vectorized<sp/>version<sp/>can<sp/>be<sp/>implemented<sp/>via<sp/>two<sp/>operations:<sp/>cmp<sp/>and<sp/>blend</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="898"><highlight class="normal"></highlight><highlight class="comment">//<sp/>with<sp/>something<sp/>like<sp/>this:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="899"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestValues<sp/>=<sp/>[HUGE_VAL;<sp/>8];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="900"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>lowestIndices<sp/>=<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="901"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i<sp/>+=<sp/>8)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="902"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>auto<sp/>comparison<sp/>=<sp/>cmp(values<sp/>+<sp/>i,<sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="903"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestValues<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="904"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="905"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values<sp/>+<sp/>i,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="906"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="907"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>=<sp/>blend(</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="908"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="909"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i<sp/>+<sp/>{0,<sp/>1,<sp/>2,<sp/>3,<sp/>4,<sp/>5,<sp/>6,<sp/>7},</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="910"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="911"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>lowestIndices<sp/>+=<sp/>{8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8,<sp/>8};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="912"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="913"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>problem<sp/>is<sp/>that<sp/>blend<sp/>primitive<sp/>needs<sp/>very<sp/>different<sp/>instruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="914"><highlight class="normal"></highlight><highlight class="comment">//<sp/>order<sp/>for<sp/>AVX<sp/>and<sp/>ARM.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="915"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>let&apos;s<sp/>introduce<sp/>a<sp/>combination<sp/>of<sp/>these<sp/>two<sp/>in<sp/>order<sp/>to<sp/>avoid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="916"><highlight class="normal"></highlight><highlight class="comment">//<sp/>confusion<sp/>for<sp/>ppl<sp/>who<sp/>write<sp/>in<sp/>low-level<sp/>SIMD<sp/>instructions.<sp/>Additionally,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="917"><highlight class="normal"></highlight><highlight class="comment">//<sp/>these<sp/>two<sp/>ops<sp/>(cmp<sp/>and<sp/>blend)<sp/>are<sp/>very<sp/>often<sp/>used<sp/>together.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="918"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cmplt_and_blend_inplace(</highlight></codeline>
+<codeline lineno="919"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32<sp/>candidateValues,</highlight></codeline>
+<codeline lineno="920"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8uint32<sp/>candidateIndices,</highlight></codeline>
+<codeline lineno="921"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8float32&amp;<sp/>lowestValues,</highlight></codeline>
+<codeline lineno="922"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd8uint32&amp;<sp/>lowestIndices)<sp/>{</highlight></codeline>
+<codeline lineno="923"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32x4x2_t<sp/>comparison<sp/>=<sp/>uint32x4x2_t{</highlight></codeline>
+<codeline lineno="924"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vcltq_f32(candidateValues.data.val[0],<sp/>lowestValues.data.val[0]),</highlight></codeline>
+<codeline lineno="925"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vcltq_f32(candidateValues.data.val[1],<sp/>lowestValues.data.val[1])};</highlight></codeline>
+<codeline lineno="926"><highlight class="normal"></highlight></codeline>
+<codeline lineno="927"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestValues.data<sp/>=<sp/>float32x4x2_t{</highlight></codeline>
+<codeline lineno="928"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_f32(</highlight></codeline>
+<codeline lineno="929"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[0],</highlight></codeline>
+<codeline lineno="930"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateValues.data.val[0],</highlight></codeline>
+<codeline lineno="931"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.data.val[0]),</highlight></codeline>
+<codeline lineno="932"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_f32(</highlight></codeline>
+<codeline lineno="933"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[1],</highlight></codeline>
+<codeline lineno="934"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateValues.data.val[1],</highlight></codeline>
+<codeline lineno="935"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestValues.data.val[1])};</highlight></codeline>
+<codeline lineno="936"><highlight class="normal"><sp/><sp/><sp/><sp/>lowestIndices.data<sp/>=<sp/>uint32x4x2_t{</highlight></codeline>
+<codeline lineno="937"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_u32(</highlight></codeline>
+<codeline lineno="938"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[0],</highlight></codeline>
+<codeline lineno="939"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateIndices.data.val[0],</highlight></codeline>
+<codeline lineno="940"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.data.val[0]),</highlight></codeline>
+<codeline lineno="941"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vbslq_u32(</highlight></codeline>
+<codeline lineno="942"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comparison.val[1],</highlight></codeline>
+<codeline lineno="943"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>candidateIndices.data.val[1],</highlight></codeline>
+<codeline lineno="944"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lowestIndices.data.val[1])};</highlight></codeline>
+<codeline lineno="945"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="946"><highlight class="normal"></highlight></codeline>
+<codeline lineno="947"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="948"><highlight class="normal"></highlight></codeline>
+<codeline lineno="949"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>even<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="950"><highlight class="normal">simd8float32<sp/>geteven(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="951"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
+<codeline lineno="952"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp1q_f32(a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
+<codeline lineno="953"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp1q_f32(a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
+<codeline lineno="954"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="955"><highlight class="normal"></highlight></codeline>
+<codeline lineno="956"><highlight class="normal"></highlight><highlight class="comment">//<sp/>get<sp/>odd<sp/>float32&apos;s<sp/>of<sp/>a<sp/>and<sp/>b,<sp/>interleaved</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="957"><highlight class="normal">simd8float32<sp/>getodd(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="958"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{</highlight></codeline>
+<codeline lineno="959"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp2q_f32(a.data.val[0],<sp/>b.data.val[0]),</highlight></codeline>
+<codeline lineno="960"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vuzp2q_f32(a.data.val[1],<sp/>b.data.val[1])}};</highlight></codeline>
 <codeline lineno="961"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="962"><highlight class="normal"></highlight></codeline>
-<codeline lineno="963"><highlight class="normal">simd8float32<sp/>gethigh128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="964"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{a.data.val[1],<sp/>b.data.val[1]}};</highlight></codeline>
-<codeline lineno="965"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="966"><highlight class="normal"></highlight></codeline>
-<codeline lineno="967"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="963"><highlight class="normal"></highlight><highlight class="comment">//<sp/>3<sp/>cycles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="964"><highlight class="normal"></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>lanes<sp/>are<sp/>a<sp/>=<sp/>[a0<sp/>a1]<sp/>and<sp/>b<sp/>=<sp/>[b0<sp/>b1],<sp/>return<sp/>[a0<sp/>b0]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="965"><highlight class="normal">simd8float32<sp/>getlow128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="966"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{a.data.val[0],<sp/>b.data.val[0]}};</highlight></codeline>
+<codeline lineno="967"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="968"><highlight class="normal"></highlight></codeline>
-<codeline lineno="969"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="969"><highlight class="normal">simd8float32<sp/>gethigh128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="970"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{a.data.val[1],<sp/>b.data.val[1]}};</highlight></codeline>
+<codeline lineno="971"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="972"><highlight class="normal"></highlight></codeline>
+<codeline lineno="973"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="974"><highlight class="normal"></highlight></codeline>
+<codeline lineno="975"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_neon.h"/>
   </compounddef>

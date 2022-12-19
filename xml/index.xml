@@ -5988,6 +5988,7 @@
     <member refid="structfaiss_1_1simd8float32_1adf26fba0ccce9854456863aaa8719a11" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1af5643dcc476bcc526fdeb6e46893d49f" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a5d16bd606c76d37851e35eeb0ce85cba" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0ea92912cdbb703f8c9510b48b953465" kind="function"><name>operator+=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
@@ -6000,6 +6001,7 @@
     <member refid="structfaiss_1_1simd8float32_1ad262436ce2ae29c78e8e25b6c559e2fa" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0ea92912cdbb703f8c9510b48b953465" kind="function"><name>operator+=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
@@ -6018,6 +6020,7 @@
     <member refid="structfaiss_1_1simd8float32_1ad262436ce2ae29c78e8e25b6c559e2fa" kind="function"><name>operator*</name></member>
     <member refid="structfaiss_1_1simd8float32_1ac015645650ef079ee8975cbdc04c4813" kind="function"><name>operator+</name></member>
     <member refid="structfaiss_1_1simd8float32_1a526ff37e5dfec782a5530662cfe09c57" kind="function"><name>operator-</name></member>
+    <member refid="structfaiss_1_1simd8float32_1a0ea92912cdbb703f8c9510b48b953465" kind="function"><name>operator+=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a0752de8c06cf950bc94f1d22ac3c1fc6" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd8float32_1add1077584838369ffc9a7f0644abd7c2" kind="function"><name>operator!=</name></member>
     <member refid="structfaiss_1_1simd8float32_1a275a26173f4feaf234c625ed5ecbac9a" kind="function"><name>tostring</name></member>
