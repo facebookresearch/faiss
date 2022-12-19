@@ -299,13 +299,49 @@ bool exhaustive_L2sqr_fused_cmax_simdlib(
         return true;                                             \
     }
 
+    // faiss/benchs/bench_quantizer.py was used for benchmarking
+    // and tuning 2nd and 3rd parameters values.
+    // Basically, the larger the values for 2nd and 3rd parameters are,
+    // the faster the execution is, but the more SIMD registers are needed.
+    // This can be compensated with L1 cache, this is why this
+    // code might operate with more registers than available
+    // because of concurrent ports operations for ALU and LOAD/STORE.
+
+#if defined(__AVX2__)
+    // It was possible to tweak these parameters on x64 machine.
     switch (d) {
+        DISPATCH(1, 6, 1)
+        DISPATCH(2, 6, 1)
+        DISPATCH(3, 6, 1)
+        DISPATCH(4, 8, 1)
+        DISPATCH(5, 8, 1)
+        DISPATCH(6, 8, 1)
+        DISPATCH(7, 8, 1)
+        DISPATCH(8, 8, 1)
+        DISPATCH(9, 8, 1)
+        DISPATCH(10, 8, 1)
+        DISPATCH(11, 8, 1)
+        DISPATCH(12, 8, 1)
+        DISPATCH(13, 6, 1)
+        DISPATCH(14, 6, 1)
+        DISPATCH(15, 6, 1)
+        DISPATCH(16, 6, 1)
+    }
+#else
+    // Please feel free to alter 2nd and 3rd parameters if you have access
+    // to ARM-based machine so that you are able to benchmark this code.
+    // Or to enable other dimensions.
+    switch (d) {
+        DISPATCH(1, 4, 2)
         DISPATCH(2, 2, 2)
         DISPATCH(3, 2, 2)
         DISPATCH(4, 2, 1)
+        DISPATCH(5, 1, 1)
         DISPATCH(6, 1, 1)
+        DISPATCH(7, 1, 1)
         DISPATCH(8, 1, 1)
     }
+#endif
 
     return false;
 #undef DISPATCH

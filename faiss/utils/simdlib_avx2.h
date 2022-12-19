@@ -528,8 +528,7 @@ inline void cmplt_and_blend_inplace(
         simd8uint32& lowestIndices) {
     auto comparison =
             _mm256_cmp_ps(lowestValues.f, candidateValues.f, _CMP_LE_OS);
-    lowestValues.f =
-            _mm256_blendv_ps(candidateValues.f, lowestValues.f, comparison);
+    lowestValues.f = _mm256_min_ps(candidateValues.f, lowestValues.f);
     lowestIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
             _mm256_castsi256_ps(candidateIndices.i),
             _mm256_castsi256_ps(lowestIndices.i),
