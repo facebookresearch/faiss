@@ -832,6 +832,12 @@ struct simd8float32 {
                 detail::simdlib::binary_func(data, other.data, &vsubq_f32)};
     }
 
+    simd8float32& operator+=(const simd8float32& other) {
+        data.val[0] = vaddq_f32(data.val[0], other.data.val[0]);
+        data.val[1] = vaddq_f32(data.val[1], other.data.val[1]);
+        return *this;
+    }
+
     bool operator==(simd8float32 other) const {
         const bool equal0 =
                 (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==

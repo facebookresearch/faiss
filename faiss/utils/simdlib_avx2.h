@@ -448,6 +448,11 @@ struct simd8float32 : simd256bit {
         return simd8float32(_mm256_sub_ps(f, other.f));
     }
 
+    simd8float32& operator+=(const simd8float32& other) {
+        f = _mm256_add_ps(f, other.f);
+        return *this;
+    }
+
     bool operator==(simd8float32 other) const {
         const __m256i pcmp =
                 _mm256_castps_si256(_mm256_cmp_ps(f, other.f, _CMP_EQ_OQ));

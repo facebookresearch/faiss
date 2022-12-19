@@ -579,6 +579,14 @@ struct simd8float32 : simd256bit {
                 *this, other, [](float a, float b) { return a - b; });
     }
 
+    simd8float32& operator+=(const simd8float32& other) {
+        for (size_t i = 0; i < 8; i++) {
+            f32[i] += other.f32[i];
+        }
+
+        return *this;
+    }
+
     bool operator==(simd8float32 other) const {
         for (size_t i = 0; i < 8; i++) {
             if (f32[i] != other.f32[i]) {
