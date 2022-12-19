@@ -23,6 +23,8 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
+#include <faiss/utils/simdlib.h>
+
 extern "C" {
 
 // general matrix multiplication
@@ -964,6 +966,186 @@ void ResidualQuantizer::compute_codebook_tables() {
     }
 }
 
+namespace {
+
+template <size_t M, size_t NK>
+void accum_and_store_tab(
+        const size_t m_offset,
+        const float* const __restrict codebook_cross_norms,
+        const uint64_t* const __restrict codebook_offsets,
+        const int32_t* const __restrict codes_i,
+        const size_t b,
+        const size_t ldc,
+        const size_t K,
+        float* const __restrict output) {
+    // load pointers into registers
+    const float* cbs[M];
+    for (size_t ij = 0; ij < M; ij++) {
+        const size_t code = static_cast<size_t>(codes_i[b * m_offset + ij]);
+        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
+    }
+
+    // do accumulation in registers using SIMD.
+    // It is possible that compiler may be smart enough so that
+    //   this manual SIMD unrolling might be unneeded.
+#if defined(__AVX2__) || defined(__aarch64__)
+    const size_t K8 = (K / (8 * NK)) * (8 * NK);
+
+    // process in chunks of size (8 * NK) floats
+    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
+        simd8float32 regs[NK];
+        for (size_t ik = 0; ik < NK; ik++) {
+            regs[ik].loadu(cbs[0] + kk + ik * 8);
+        }
+
+        for (size_t ij = 1; ij < M; ij++) {
+            for (size_t ik = 0; ik < NK; ik++) {
+                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+            }
+        }
+
+        // write the result
+        for (size_t ik = 0; ik < NK; ik++) {
+            regs[ik].storeu(output + kk + ik * 8);
+        }
+    }
+#else
+    const size_t K8 = 0;
+#endif
+
+    // process leftovers
+    for (size_t kk = K8; kk < K; kk++) {
+        float reg = cbs[0][kk];
+        for (size_t ij = 1; ij < M; ij++) {
+            reg += cbs[ij][kk];
+        }
+        output[b * K + kk] = reg;
+    }
+}
+
+template <size_t M, size_t NK>
+void accum_and_add_tab(
+        const size_t m_offset,
+        const float* const __restrict codebook_cross_norms,
+        const uint64_t* const __restrict codebook_offsets,
+        const int32_t* const __restrict codes_i,
+        const size_t b,
+        const size_t ldc,
+        const size_t K,
+        float* const __restrict output) {
+    // load pointers into registers
+    const float* cbs[M];
+    for (size_t ij = 0; ij < M; ij++) {
+        const size_t code = static_cast<size_t>(codes_i[b * m_offset + ij]);
+        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
+    }
+
+    // do accumulation in registers using SIMD.
+    // It is possible that compiler may be smart enough so that
+    //   this manual SIMD unrolling might be unneeded.
+#if defined(__AVX2__) || defined(__aarch64__)
+    const size_t K8 = (K / (8 * NK)) * (8 * NK);
+
+    // process in chunks of size (8 * NK) floats
+    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
+        simd8float32 regs[NK];
+        for (size_t ik = 0; ik < NK; ik++) {
+            regs[ik].loadu(cbs[0] + kk + ik * 8);
+        }
+
+        for (size_t ij = 1; ij < M; ij++) {
+            for (size_t ik = 0; ik < NK; ik++) {
+                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+            }
+        }
+
+        // write the result
+        for (size_t ik = 0; ik < NK; ik++) {
+            simd8float32 existing(output + kk + ik * 8);
+            existing += regs[ik];
+            existing.storeu(output + kk + ik * 8);
+        }
+    }
+#else
+    const size_t K8 = 0;
+#endif
+
+    // process leftovers
+    for (size_t kk = K8; kk < K; kk++) {
+        float reg = cbs[0][kk];
+        for (size_t ij = 1; ij < M; ij++) {
+            reg += cbs[ij][kk];
+        }
+        output[b * K + kk] += reg;
+    }
+}
+
+template <size_t M, size_t NK>
+void accum_and_finalize_tab(
+        const float* const __restrict codebook_cross_norms,
+        const uint64_t* const __restrict codebook_offsets,
+        const int32_t* const __restrict codes_i,
+        const size_t b,
+        const size_t ldc,
+        const size_t K,
+        const float* const __restrict distances_i,
+        const float* const __restrict cd_common,
+        float* const __restrict output) {
+    // load pointers into registers
+    const float* cbs[M];
+    for (size_t ij = 0; ij < M; ij++) {
+        const size_t code = static_cast<size_t>(codes_i[b * M + ij]);
+        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
+    }
+
+    // do accumulation in registers using SIMD.
+    // It is possible that compiler may be smart enough so that
+    //   this manual SIMD unrolling might be unneeded.
+#if defined(__AVX2__) || defined(__aarch64__)
+    const size_t K8 = (K / (8 * NK)) * (8 * NK);
+
+    // process in chunks of size (8 * NK) floats
+    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
+        simd8float32 regs[NK];
+        for (size_t ik = 0; ik < NK; ik++) {
+            regs[ik].loadu(cbs[0] + kk + ik * 8);
+        }
+
+        for (size_t ij = 1; ij < M; ij++) {
+            for (size_t ik = 0; ik < NK; ik++) {
+                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+            }
+        }
+
+        simd8float32 two(2.0f);
+        for (size_t ik = 0; ik < NK; ik++) {
+            // cent_distances[b * K + k] = distances_i[b] + cd_common[k]
+            //     + 2 * dp[k];
+
+            simd8float32 common_v(cd_common + kk + ik * 8);
+            common_v = fmadd(two, regs[ik], common_v);
+
+            common_v += simd8float32(distances_i[b]);
+            common_v.storeu(output + b * K + kk + ik * 8);
+        }
+    }
+#else
+    const size_t K8 = 0;
+#endif
+
+    // process leftovers
+    for (size_t kk = K8; kk < K; kk++) {
+        float reg = cbs[0][kk];
+        for (size_t ij = 1; ij < M; ij++) {
+            reg += cbs[ij][kk];
+        }
+
+        output[b * K + kk] = distances_i[b] + cd_common[kk] + 2 * reg;
+    }
+}
+
+} // namespace
+
 void beam_search_encode_step_tab(
         size_t K,
         size_t n,
@@ -996,6 +1178,14 @@ void beam_search_encode_step_tab(
             cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
         }
 
+        /*
+        // This is the baseline implementation. Its primary flaw
+        //   that it writes way too many info to the temporary buffer
+        //   called dp.
+        //
+        // This baseline code is kept intentionally because it is easy to
+        // understand what an optimized version optimizes exactly.
+        //
         for (size_t b = 0; b < beam_size; b++) {
             std::vector<float> dp(K);
 
@@ -1011,6 +1201,117 @@ void beam_search_encode_step_tab(
                         distances_i[b] + cd_common[k] + 2 * dp[k];
             }
         }
+        */
+
+        // An optimized implementation that avoids using a temporary buffer
+        // and does the accumulation in registers.
+
+        // Compute a sum of NK AQ codes.
+#define ACCUM_AND_FINALIZE_TAB(NK)               \
+    case NK:                                     \
+        for (size_t b = 0; b < beam_size; b++) { \
+            accum_and_finalize_tab<NK, 4>(       \
+                    codebook_cross_norms,        \
+                    codebook_offsets,            \
+                    codes_i,                     \
+                    b,                           \
+                    ldc,                         \
+                    K,                           \
+                    distances_i,                 \
+                    cd_common.data(),            \
+                    cent_distances.data());      \
+        }                                        \
+        break;
+
+        // this version contains many switch-case scenarios, but
+        // they won't affect branch predictor.
+        switch (m) {
+            case 0:
+                // trivial case
+                for (size_t b = 0; b < beam_size; b++) {
+                    for (size_t k = 0; k < K; k++) {
+                        cent_distances[b * K + k] =
+                                distances_i[b] + cd_common[k];
+                    }
+                }
+                break;
+
+                ACCUM_AND_FINALIZE_TAB(1)
+                ACCUM_AND_FINALIZE_TAB(2)
+                ACCUM_AND_FINALIZE_TAB(3)
+                ACCUM_AND_FINALIZE_TAB(4)
+                ACCUM_AND_FINALIZE_TAB(5)
+                ACCUM_AND_FINALIZE_TAB(6)
+                ACCUM_AND_FINALIZE_TAB(7)
+
+            default: {
+                // m >= 8 case.
+
+                // A temporary buffer has to be used due to the lack of
+                // registers. But we'll try to accumulate up to 8 AQ codes in
+                // registers and issue a single write operation to the buffer,
+                // while the baseline does no accumulation. So, the number of
+                // write operations to the temporary buffer is reduced 8x.
+
+                // allocate a temporary buffer
+                std::vector<float> dp(K);
+
+                for (size_t b = 0; b < beam_size; b++) {
+                    // Initialize it. Compute a sum of first 8 AQ codes
+                    // because m >= 8 .
+                    accum_and_store_tab<8, 4>(
+                            m,
+                            codebook_cross_norms,
+                            codebook_offsets,
+                            codes_i,
+                            b,
+                            ldc,
+                            K,
+                            dp.data());
+
+#define ACCUM_AND_ADD_TAB(NK)          \
+    case NK:                           \
+        accum_and_add_tab<NK, 4>(      \
+                m,                     \
+                codebook_cross_norms,  \
+                codebook_offsets + im, \
+                codes_i + im,          \
+                b,                     \
+                ldc,                   \
+                K,                     \
+                dp.data());            \
+        break;
+
+                    // accumulate up to 8 additional AQ codes into
+                    // a temporary buffer
+                    for (size_t im = 8; im < ((m + 7) / 8) * 8; im += 8) {
+                        size_t m_left = m - im;
+                        if (m_left > 8) {
+                            m_left = 8;
+                        }
+
+                        switch (m_left) {
+                            ACCUM_AND_ADD_TAB(1)
+                            ACCUM_AND_ADD_TAB(2)
+                            ACCUM_AND_ADD_TAB(3)
+                            ACCUM_AND_ADD_TAB(4)
+                            ACCUM_AND_ADD_TAB(5)
+                            ACCUM_AND_ADD_TAB(6)
+                            ACCUM_AND_ADD_TAB(7)
+                            ACCUM_AND_ADD_TAB(8)
+                        }
+                    }
+
+                    // done. finalize the result
+                    for (size_t k = 0; k < K; k++) {
+                        cent_distances[b * K + k] =
+                                distances_i[b] + cd_common[k] + 2 * dp[k];
+                    }
+                }
+            }
+        }
+
+        // the optimized implementation ends here
 
         using C = CMax<float, int>;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
@@ -1097,7 +1398,8 @@ void refine_beam_LUT_mp(
     for (int m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
-        // it is guaranteed that (new_beam_size <= than max_beam_size) == true
+        // it is guaranteed that (new_beam_size <= than max_beam_size) ==
+        // true
         int new_beam_size = std::min(beam_size * K, out_beam_size);
 
         // std::vector<int32_t> new_codes(n * new_beam_size * (m + 1));
