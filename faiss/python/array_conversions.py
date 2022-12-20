@@ -103,6 +103,8 @@ vector_name_map = {
 def vector_to_array(v):
     """ convert a C++ vector to a numpy array """
     classname = v.__class__.__name__
+    if classname.startswith('AlignedTable'):
+        return AlignedTable_to_array(v)
     assert classname.endswith('Vector')
     dtype = np.dtype(vector_name_map[classname[:-6]])
     a = np.empty(v.size(), dtype=dtype)

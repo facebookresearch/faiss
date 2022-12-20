@@ -42,6 +42,7 @@
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/pq4_fast_scan.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -240,6 +241,24 @@ IndexHNSW* clone_HNSW(const IndexHNSW* ihnsw) {
     return new IndexHNSW(*ihnsw);
 }
 
+InvertedLists* clone_InvertedLists(const InvertedLists* invlists) {
+    if (auto* ails = dynamic_cast<const ArrayInvertedLists*>(invlists)) {
+        return new ArrayInvertedLists(*ails);
+    }
+    if (auto* bils = dynamic_cast<const BlockInvertedLists*>(invlists)) {
+        auto* bils2 = new BlockInvertedLists(*bils);
+        if (bils->packer) {
+            auto* packerPQ4 = dynamic_cast<const CodePackerPQ4*>(bils->packer);
+            FAISS_THROW_IF_NOT(packerPQ4);
+            bils2->packer = new CodePackerPQ4(*packerPQ4);
+        }
+        return bils2;
+    }
+    FAISS_THROW_FMT(
+            "clone not supported for this type of inverted lists %s",
+            typeid(*invlists).name());
+}
+
 } // anonymous namespace
 
 Index* Cloner::clone_Index(const Index* index) {
@@ -263,20 +282,11 @@ Index* Cloner::clone_Index(const Index* index) {
         IndexIVF* res = clone_IndexIVF(ivf);
         if (ivf->invlists == nullptr) {
             res->invlists = nullptr;
-        } else if (
-                auto* ails = dynamic_cast<const ArrayInvertedLists*>(
-                        ivf->invlists)) {
-            res->invlists = new ArrayInvertedLists(*ails);
-            res->own_invlists = true;
-        } else if (
-                auto* bils = dynamic_cast<const BlockInvertedLists*>(
-                        ivf->invlists)) {
-            res->invlists = new BlockInvertedLists(*bils);
-            res->own_invlists = true;
         } else {
-            FAISS_THROW_MSG(
-                    "clone not supported for this type of inverted lists");
+            res->invlists = clone_InvertedLists(ivf->invlists);
+            res->own_invlists = true;
         }
+
         res->own_fields = true;
         res->quantizer = clone_Index(ivf->quantizer);
 
@@ -365,7 +375,7 @@ Index* Cloner::clone_Index(const Index* index) {
                 typeid(*index).name());
     }
     return nullptr;
-}
+} // namespace
 
 Quantizer* clone_Quantizer(const Quantizer* quant) {
     TRYCLONE(ResidualQuantizer, quant)

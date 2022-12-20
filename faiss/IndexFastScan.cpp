@@ -98,18 +98,21 @@ void IndexFastScan::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+CodePacker* IndexFastScan::get_CodePacker() const {
+    return new CodePackerPQ4(M, bbs);
+}
+
 size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
     for (idx_t i = 0; i < ntotal; i++) {
         if (sel.is_member(i)) {
             // should be removed
         } else {
             if (i > j) {
-                for (int sq = 0; sq < M; sq++) {
-                    uint8_t code =
-                            pq4_get_packed_element(codes.data(), bbs, M, i, sq);
-                    pq4_set_packed_element(codes.data(), code, bbs, M, j, sq);
-                }
+                packer.unpack_1(codes.data(), i, buffer.data());
+                packer.pack_1(buffer.data(), j, codes.data());
             }
             j++;
         }
@@ -142,12 +145,12 @@ void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
     codes.resize(ntotal2 * M2 / 2);
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
+
     for (int i = 0; i < other->ntotal; i++) {
-        for (int sq = 0; sq < M; sq++) {
-            uint8_t code =
-                    pq4_get_packed_element(other->codes.data(), bbs, M, i, sq);
-            pq4_set_packed_element(codes.data(), code, bbs, M, ntotal + i, sq);
-        }
+        packer.unpack_1(other->codes.data(), i, buffer.data());
+        packer.pack_1(buffer.data(), ntotal + i, codes.data());
     }
     ntotal += other->ntotal;
     other->reset();

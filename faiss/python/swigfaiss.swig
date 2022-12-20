@@ -136,6 +136,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
+#include  <faiss/impl/CodePacker.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -386,6 +387,8 @@ void gpu_sync_all_devices()
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
+%newobject *::get_CodePacker() const;
+
 %include  <faiss/Index.h>
 
 %include <faiss/impl/DistanceComputer.h>
@@ -405,6 +408,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
+%include  <faiss/impl/CodePacker.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>

@@ -223,7 +223,7 @@ void IndexFlat1D::search(
             perm.size() == ntotal, "Call update_permutation before search");
     const float* xb = get_xb();
 
-#pragma omp parallel for
+#pragma omp parallel for if (n > 10000)
     for (idx_t i = 0; i < n; i++) {
         float q = x[i]; // query
         float* D = distances + i * k;
@@ -232,6 +232,14 @@ void IndexFlat1D::search(
         // binary search
         idx_t i0 = 0, i1 = ntotal;
         idx_t wp = 0;
+
+        if (ntotal == 0) {
+            for (idx_t j = 0; j < k; j++) {
+                I[j] = -1;
+                D[j] = HUGE_VAL;
+            }
+            goto done;
+        }
 
         if (xb[perm[i0]] > q) {
             i1 = 0;

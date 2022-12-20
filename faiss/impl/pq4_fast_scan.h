@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <faiss/impl/CodePacker.h>
+
 /** PQ4 SIMD packing and accumulation functions
  *
  * The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors
@@ -83,6 +85,18 @@ void pq4_set_packed_element(
         size_t nsq,
         size_t vector_id,
         size_t sq);
+
+/** CodePacker API for the PQ4 fast-scan */
+struct CodePackerPQ4 : CodePacker {
+    size_t nsq;
+
+    CodePackerPQ4(size_t nsq, size_t bbs);
+
+    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
+            const final;
+    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
+            const final;
+};
 
 /** Pack Look-up table for consumption by the kernel.
  *

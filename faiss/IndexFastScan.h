@@ -12,6 +12,8 @@
 
 namespace faiss {
 
+struct CodePacker;
+
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
  * The codes are not stored sequentially but grouped in blocks of size bbs.
@@ -25,7 +27,6 @@ namespace faiss {
  * 14: no qbs with heap accumulator
  * 15: no qbs with reservoir accumulator
  */
-
 struct IndexFastScan : Index {
     // implementation to select
     int implem = 0;
@@ -126,6 +127,9 @@ struct IndexFastScan : Index {
 
     void reconstruct(idx_t key, float* recons) const override;
     size_t remove_ids(const IDSelector& sel) override;
+
+    CodePacker* get_CodePacker() const;
+
     void merge_from(Index& otherIndex, idx_t add_id = 0) override;
     void check_compatible_for_merge(const Index& otherIndex) const override;
 };

@@ -279,6 +279,8 @@ static void read_AdditiveQuantizer(AdditiveQuantizer* aq, IOReader* f) {
         aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
         aq->search_type == AdditiveQuantizer::ST_norm_rq2x4) {
         READXBVECTOR(aq->qnorm.codes);
+        aq->qnorm.ntotal = aq->qnorm.codes.size() / 4;
+        aq->qnorm.update_permutation();
     }
 
     if (aq->search_type == AdditiveQuantizer::ST_norm_lsq2x4 ||
@@ -727,6 +729,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivaqfs->max_train_points);
 
         read_InvertedLists(ivaqfs, f, io_flags);
+        ivaqfs->init_code_packer();
         idx = ivaqfs;
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
@@ -1001,6 +1004,7 @@ Index* read_index(IOReader* f, int io_flags) {
         ivpq->nbits = pq.nbits;
         ivpq->ksub = (1 << pq.nbits);
         ivpq->code_size = pq.code_size;
+        ivpq->init_code_packer();
 
         idx = ivpq;
     } else if (h == fourcc("IRMf")) {

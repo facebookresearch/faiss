@@ -50,6 +50,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AuxIndexStructures.cpp
+  impl/CodePacker.cpp
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp

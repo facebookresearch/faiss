@@ -174,18 +174,28 @@ class TestMerge2(unittest.TestCase):
     def test_merge_PreTransform(self):
         self.do_flat_codes_test("PCA16,SQ4")
 
-    def do_fast_scan_test(self, factory_key, size1):
+    def do_fast_scan_test(self, factory_key, size1, with_add_id=False):
         ds = SyntheticDataset(110, 1000, 1000, 100)
-        index1 = faiss.index_factory(ds.d, factory_key)
-        index1.train(ds.get_train())
+        index_trained = faiss.index_factory(ds.d, factory_key)
+        index_trained.train(ds.get_train())
+        # test both clone and index_read/write
+        if True:
+            index1 = faiss.deserialize_index(
+                faiss.serialize_index(index_trained))
+        else:
+            index1 = faiss.clone_index(index_trained)
+        # assert index1.aq.qnorm.ntotal == index_trained.aq.qnorm.ntotal
+
         index1.add(ds.get_database())
         _, Iref = index1.search(ds.get_queries(), 5)
         index1.reset()
-        index2 = faiss.index_factory(ds.d, factory_key)
-        index2.train(ds.get_train())
+        index2 = faiss.clone_index(index_trained)
         index1.add(ds.get_database()[:size1])
         index2.add(ds.get_database()[size1:])
-        index1.merge_from(index2)
+        if with_add_id:
+            index1.merge_from(index2, add_id=index1.ntotal)
+        else:
+            index1.merge_from(index2)
         _, Inew = index1.search(ds.get_queries(), 5)
         np.testing.assert_array_equal(Inew, Iref)
 
@@ -200,6 +210,9 @@ class TestMerge2(unittest.TestCase):
 
     def test_merge_IndexAdditiveQuantizerFastScan(self):
         self.do_fast_scan_test("RQ10x4fs_32_Nrq2x4", 330)
+
+    def test_merge_IVFFastScan(self):
+        self.do_fast_scan_test("IVF20,PQ5x4fs", 123, with_add_id=True)
 
     def do_test_with_ids(self, factory_key):
         ds = SyntheticDataset(32, 300, 300, 100)
@@ -224,3 +237,23 @@ class TestMerge2(unittest.TestCase):
 
     def test_merge_IDMap2(self):
         self.do_test_with_ids("Flat,IDMap2")
+
+
+class TestRemoveFastScan(unittest.TestCase):
+
+    def do_fast_scan_test(self, factory_key, size1):
+        ds = SyntheticDataset(110, 1000, 1000, 100)
+        index1 = faiss.index_factory(ds.d, factory_key)
+        index1.train(ds.get_train())
+        index1.reset()
+        tokeep = [i % 3 == 0 for i in range(ds.nb)]
+        index1.add(ds.get_database()[tokeep])
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index1.add(ds.get_database())
+        index1.remove_ids(np.where(np.logical_not(tokeep))[0])
+        _, Inew = index1.search(ds.get_queries(), 5)
+        np.testing.assert_array_equal(Inew, Iref)
+
+    def test_remove(self):
+        self.do_fast_scan_test("PQ5x4fs", 320)

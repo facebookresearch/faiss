@@ -82,7 +82,7 @@ struct IndexFlatL2 : IndexFlat {
 
 /// optimized version for 1D "vectors".
 struct IndexFlat1D : IndexFlatL2 {
-    bool continuous_update; ///< is the permutation updated continuously?
+    bool continuous_update = true; ///< is the permutation updated continuously?
 
     std::vector<idx_t> perm; ///< sorted database indices
 

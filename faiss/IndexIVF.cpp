@@ -22,6 +22,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 
@@ -1084,6 +1085,10 @@ void IndexIVF::merge_from(Index& otherIndex, idx_t add_id) {
 
     ntotal += other->ntotal;
     other->ntotal = 0;
+}
+
+CodePacker* IndexIVF::get_CodePacker() const {
+    return new CodePackerFlat(code_size);
 }
 
 void IndexIVF::replace_invlists(InvertedLists* il, bool own) {

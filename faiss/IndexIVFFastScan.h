@@ -67,6 +67,9 @@ struct IndexIVFFastScan : IndexIVF {
             MetricType metric,
             int bbs);
 
+    // initialize the CodePacker in the InvertedLists
+    void init_code_packer();
+
     ~IndexIVFFastScan() override;
 
     /// orig's inverted lists (for debugging)
@@ -180,6 +183,8 @@ struct IndexIVFFastScan : IndexIVF {
     // reconstruct vectors from packed invlists
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
+
+    CodePacker* get_CodePacker() const override;
 
     // reconstruct orig invlists (for debugging)
     void reconstruct_orig_invlists();
