@@ -471,6 +471,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss43IndexIVFProductLocalSearchQuantizerFastScan16init_code_packerEv">
+<span id="_CPPv3N5faiss43IndexIVFProductLocalSearchQuantizerFastScan16init_code_packerEv"></span><span id="_CPPv2N5faiss43IndexIVFProductLocalSearchQuantizerFastScan16init_code_packerEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizerFastScan::init_code_packer"></span><span class="target" id="structfaiss_1_1IndexIVFFastScan_1aa347150918de4a4b7ea630b6be12415b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_code_packer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss43IndexIVFProductLocalSearchQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t">
 <span id="_CPPv3N5faiss43IndexIVFProductLocalSearchQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss43IndexIVFProductLocalSearchQuantizerFastScan12add_with_idsE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexIVFProductLocalSearchQuantizerFastScan::add_with_ids__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFFastScan_1a8699e7d828750f02bfc86014269e4a6c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_with_ids</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xids</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>default implementation that calls encode_vectors </p>
@@ -523,6 +528,11 @@
 <dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
 <p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss43IndexIVFProductLocalSearchQuantizerFastScan14get_CodePackerEv">
+<span id="_CPPv3NK5faiss43IndexIVFProductLocalSearchQuantizerFastScan14get_CodePackerEv"></span><span id="_CPPv2NK5faiss43IndexIVFProductLocalSearchQuantizerFastScan14get_CodePackerEv"></span><span id="faiss::IndexIVFProductLocalSearchQuantizerFastScan::get_CodePackerC"></span><span class="target" id="structfaiss_1_1IndexIVFFastScan_1a18cf6c3f0091bbba30c652d072afb809"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">CodePacker</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_CodePacker</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss43IndexIVFProductLocalSearchQuantizerFastScan25reconstruct_orig_invlistsEv">
