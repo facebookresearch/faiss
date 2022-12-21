@@ -8,6 +8,7 @@
 #include <faiss/IndexFlatCodes.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -96,6 +97,10 @@ void IndexFlatCodes::merge_from(Index& otherIndex, idx_t add_id) {
            other->ntotal * code_size);
     ntotal += other->ntotal;
     other->reset();
+}
+
+CodePacker* IndexFlatCodes::get_CodePacker() const {
+    return new CodePackerFlat(code_size);
 }
 
 } // namespace faiss

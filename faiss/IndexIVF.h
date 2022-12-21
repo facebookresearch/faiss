@@ -78,6 +78,7 @@ using IVFSearchParameters = SearchParametersIVF;
 
 struct InvertedListScanner;
 struct IndexIVFStats;
+struct CodePacker;
 
 /** Index based on a inverted file (IVF)
  *
@@ -317,6 +318,9 @@ struct IndexIVF : Index, Level1Quantizer {
 
     virtual void merge_from(Index& otherIndex, idx_t add_id) override;
 
+    // returns a new instance of a CodePacker
+    virtual CodePacker* get_CodePacker() const;
+
     /** copy a subset of the entries index to the other index
      * see Invlists::copy_subset_to for the meaning of subset_type
      */
@@ -349,7 +353,6 @@ struct IndexIVF : Index, Level1Quantizer {
 
     /* The standalone codec interface (except sa_decode that is specific) */
     size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     IndexIVF();

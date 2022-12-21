@@ -807,6 +807,26 @@ def handle_IndexRowwiseMinMax(the_class):
     replace_method(the_class, 'train_inplace', replacement_train_inplace)
 
 
+def handle_CodePacker(the_class):
+
+    def replacement_pack_1(self, x, offset, block):
+        assert x.shape == (self.code_size,)
+        nblock, block_size = block.shape
+        assert block_size == self.block_size
+        assert 0 <= offset < block_size * self.nvec
+        self.pack_1_c(swig_ptr(x), offset, faiss.swig_ptr(block))
+
+    def replacement_unpack_1(self, block, offset):
+        nblock, block_size = block.shape
+        assert block_size == self.block_size
+        assert 0 <= offset < block_size * self.nvec
+        x = np.zeros(self.code_size, dtype='uint8')
+        self.unpack_1_c(faiss.swig_ptr(block), offset, swig_ptr(x))
+        return x
+
+    replace_method(the_class, 'pack_1', replacement_pack_1)
+    replace_method(the_class, 'unpack_1', replacement_unpack_1)
+
 ######################################################
 # MapLong2Long interface
 ######################################################
@@ -827,7 +847,7 @@ def handle_MapLong2Long(the_class):
 
     replace_method(the_class, 'add', replacement_map_add)
     replace_method(the_class, 'search_multiple',
-                replacement_map_search_multiple)
+                   replacement_map_search_multiple)
 
 
 ######################################################

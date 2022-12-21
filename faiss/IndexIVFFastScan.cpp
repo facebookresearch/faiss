@@ -69,7 +69,14 @@ void IndexIVFFastScan::init_fastscan(
     code_size = M2 / 2;
 
     is_trained = false;
-    replace_invlists(new BlockInvertedLists(nlist, bbs, bbs * M2 / 2), true);
+    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+}
+
+void IndexIVFFastScan::init_code_packer() {
+    auto bil = dynamic_cast<BlockInvertedLists*>(invlists);
+    FAISS_THROW_IF_NOT(bil);
+    delete bil->packer; // in case there was one before
+    bil->packer = get_CodePacker();
 }
 
 IndexIVFFastScan::~IndexIVFFastScan() {}
@@ -185,6 +192,10 @@ void IndexIVFFastScan::add_with_ids(
     }
 
     ntotal += n;
+}
+
+CodePacker* IndexIVFFastScan::get_CodePacker() const {
+    return new CodePackerPQ4(M, bbs);
 }
 
 /*********************************************************

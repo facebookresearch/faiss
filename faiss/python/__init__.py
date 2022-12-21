@@ -68,6 +68,9 @@ for symbol in dir(this_module):
         if issubclass(the_class, SearchParameters):
             class_wrappers.handle_SearchParameters(the_class)
 
+        if issubclass(the_class, CodePacker):
+            class_wrappers.handle_CodePacker(the_class)
+
 ##############################################################################
 # For some classes (IndexIVF, IDSelector), the object holds a reference to
 # a C++ object (eg. the quantizer object of IndexIVF). We don't transfer the

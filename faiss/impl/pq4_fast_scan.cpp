@@ -190,6 +190,50 @@ void pq4_set_packed_element(
 }
 
 /***************************************************************
+ * CodePackerPQ4 implementation
+ ***************************************************************/
+
+CodePackerPQ4::CodePackerPQ4(size_t nsq, size_t bbs) {
+    this->nsq = nsq;
+    nvec = bbs;
+    code_size = (nsq * 4 + 7) / 8;
+    block_size = ((nsq + 1) / 2) * bbs;
+}
+
+void CodePackerPQ4::pack_1(
+        const uint8_t* flat_code,
+        size_t offset,
+        uint8_t* block) const {
+    size_t bbs = nvec;
+    if (offset >= nvec) {
+        block += (offset / nvec) * block_size;
+        offset = offset % nvec;
+    }
+    for (size_t i = 0; i < code_size; i++) {
+        uint8_t code = flat_code[i];
+        pq4_set_packed_element(block, code & 15, bbs, nsq, offset, 2 * i);
+        pq4_set_packed_element(block, code >> 4, bbs, nsq, offset, 2 * i + 1);
+    }
+}
+
+void CodePackerPQ4::unpack_1(
+        const uint8_t* block,
+        size_t offset,
+        uint8_t* flat_code) const {
+    size_t bbs = nvec;
+    if (offset >= nvec) {
+        block += (offset / nvec) * block_size;
+        offset = offset % nvec;
+    }
+    for (size_t i = 0; i < code_size; i++) {
+        uint8_t code0, code1;
+        code0 = pq4_get_packed_element(block, bbs, nsq, offset, 2 * i);
+        code1 = pq4_get_packed_element(block, bbs, nsq, offset, 2 * i + 1);
+        flat_code[i] = code0 | (code1 << 4);
+    }
+}
+
+/***************************************************************
  * Packing functions for Look-Up Tables (LUT)
  ***************************************************************/
 

@@ -15,6 +15,8 @@
 
 namespace faiss {
 
+struct CodePacker;
+
 /** Index that encodes all vectors as fixed-size codes (size code_size). Storage
  * is in the codes vector */
 struct IndexFlatCodes : Index {
@@ -39,8 +41,8 @@ struct IndexFlatCodes : Index {
 
     size_t sa_code_size() const override;
 
-    /** remove some ids. NB that Because of the structure of the
-     * indexing structure, the semantics of this operation are
+    /** remove some ids. NB that because of the structure of the
+     * index, the semantics of this operation are
      * different from the usual ones: the new ids are shifted */
     size_t remove_ids(const IDSelector& sel) override;
 
@@ -50,6 +52,9 @@ struct IndexFlatCodes : Index {
     DistanceComputer* get_distance_computer() const override {
         return get_FlatCodesDistanceComputer();
     }
+
+    // returns a new instance of a CodePacker
+    CodePacker* get_CodePacker() const;
 
     void check_compatible_for_merge(const Index& otherIndex) const override;
 
