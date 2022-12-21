@@ -572,7 +572,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="143" column="32" declfile="faiss/IndexFastScan.h" declline="143" declcolumn="32"/>
+        <location file="faiss/IndexFastScan.h" line="147" column="32" declfile="faiss/IndexFastScan.h" declline="147" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" mutable="no">
         <type>FAISS_API bool</type>
@@ -585,7 +585,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="425" column="23" declfile="faiss/IndexIVF.h" declline="425" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="428" column="23" declfile="faiss/IndexIVF.h" declline="428" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -598,7 +598,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="443" column="32" declfile="faiss/IndexIVF.h" declline="443" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="446" column="32" declfile="faiss/IndexIVF.h" declline="446" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -611,7 +611,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="211" column="35" declfile="faiss/IndexIVFFastScan.h" declline="211" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="216" column="35" declfile="faiss/IndexIVFFastScan.h" declline="216" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" mutable="no">
         <type>FAISS_API size_t</type>
