@@ -78,9 +78,7 @@ void IndexBinaryFlat::search(
 size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
+        if (!sel.is_member(i)) {
             if (i > j) {
                 memmove(&xb[code_size * j],
                         &xb[code_size * i],

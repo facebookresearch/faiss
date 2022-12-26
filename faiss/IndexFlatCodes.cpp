@@ -42,9 +42,7 @@ size_t IndexFlatCodes::sa_code_size() const {
 size_t IndexFlatCodes::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
+        if (!sel.is_member(i)) {
             if (i > j) {
                 memmove(&codes[code_size * j],
                         &codes[code_size * i],

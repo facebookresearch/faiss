@@ -107,9 +107,7 @@ size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     std::vector<uint8_t> buffer(code_size);
     CodePackerPQ4 packer(M, bbs);
     for (idx_t i = 0; i < ntotal; i++) {
-        if (sel.is_member(i)) {
-            // should be removed
-        } else {
+        if (!sel.is_member(i)) {
             if (i > j) {
                 packer.unpack_1(codes.data(), i, buffer.data());
                 packer.pack_1(buffer.data(), j, codes.data());
