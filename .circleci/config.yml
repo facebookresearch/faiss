@@ -89,6 +89,7 @@ jobs:
   build_linux_conda:
     docker:
       - image: continuumio/miniconda3
+    resource_class: medium+
     steps:
       - checkout
       - run:
@@ -220,6 +221,7 @@ jobs:
         default: main
     docker:
       - image: continuumio/miniconda3
+    resource_class: medium+
     steps:
       - checkout
       - run:
