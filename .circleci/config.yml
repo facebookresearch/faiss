@@ -45,29 +45,31 @@ jobs:
       - checkout
       - run:
           name: Build faiss library
+          no_output_timeout: 30m
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
-            make -k -C build -j3 faiss
+            make -k -C build -j$(nproc) faiss
       - when:
           condition:
             equal: [ "avx2", << parameters.opt_level >> ]
           steps:
             - run:
                 name: Build faiss_avx2 library
-                command: make -k -C build -j3 faiss_avx2 swigfaiss_avx2
+                no_output_timeout: 30m
+                command: make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
           command: |
-            make -C build -j3 faiss_test
+            make -C build -j$(nproc) faiss_test
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Build python extension
           command: |
-            make -C build -j3 swigfaiss
+            make -C build -j$(nproc) swigfaiss
             cd build/faiss/python
             python3 setup.py build
       - run:
@@ -87,10 +89,12 @@ jobs:
   build_linux_conda:
     docker:
       - image: continuumio/miniconda3
+    resource_class: medium+
     steps:
       - checkout
       - run:
           name: Conda build
+          no_output_timeout: 30m
           command: |
             conda install -y -q conda-build
             cd conda
@@ -166,17 +170,17 @@ jobs:
                   -DFAISS_ENABLE_C_API=ON \
                   -DCMAKE_BUILD_TYPE=Release \
                   -DPython_EXECUTABLE=$PYTHON .
-            make -k -C build -j3 faiss
+            make -k -C build -j$(nproc) faiss
       - run:
           name: Test faiss library
           command: |
-            make -C build -j3 faiss_test
+            make -C build -j$(nproc) faiss_test
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Build python extension
           command: |
-            make -C build -j3 swigfaiss
+            make -C build -j$(nproc) swigfaiss
             cd build/faiss/python
             $PYTHON setup.py build
       - run:
@@ -217,6 +221,7 @@ jobs:
         default: main
     docker:
       - image: continuumio/miniconda3
+    resource_class: medium+
     steps:
       - checkout
       - run:
@@ -226,6 +231,7 @@ jobs:
             conda config --set anaconda_upload yes
       - run:
           name: Build packages
+          no_output_timeout: 30m
           environment:
             PACKAGE_TYPE: <<parameters.label>>
           command: |
