@@ -45,6 +45,7 @@ jobs:
       - checkout
       - run:
           name: Build faiss library
+          no_output_timeout: 30m
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
@@ -57,6 +58,7 @@ jobs:
           steps:
             - run:
                 name: Build faiss_avx2 library
+                no_output_timeout: 30m
                 command: make -k -C build -j3 faiss_avx2 swigfaiss_avx2
       - run:
           name: Test faiss library
@@ -91,6 +93,7 @@ jobs:
       - checkout
       - run:
           name: Conda build
+          no_output_timeout: 30m
           command: |
             conda install -y -q conda-build
             cd conda
@@ -226,6 +229,7 @@ jobs:
             conda config --set anaconda_upload yes
       - run:
           name: Build packages
+          no_output_timeout: 30m
           environment:
             PACKAGE_TYPE: <<parameters.label>>
           command: |
