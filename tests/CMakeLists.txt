@@ -23,6 +23,7 @@ set(FAISS_TEST_SRC
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
+  test_approx_topk.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

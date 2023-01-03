@@ -508,7 +508,7 @@ void gpu_sync_all_devices()
 %include <faiss/impl/AuxIndexStructures.h>
 %include <faiss/impl/IDSelector.h>
 
-
+%include <faiss/utils/approx_topk/approx_topk.h>
 
 #ifdef GPU_WRAPPER
 
