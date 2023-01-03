@@ -25,6 +25,8 @@
 
 #include <faiss/utils/simdlib.h>
 
+#include <faiss/utils/approx_topk/approx_topk.h>
+
 extern "C" {
 
 // general matrix multiplication
@@ -70,6 +72,7 @@ ResidualQuantizer::ResidualQuantizer()
           niter_codebook_refine(5),
           max_beam_size(5),
           use_beam_LUT(0),
+          approx_topk_mode(ApproxTopK_mode_t::EXACT_TOPK),
           assign_index_factory(nullptr) {
     d = 0;
     M = 0;
@@ -141,7 +144,8 @@ void beam_search_encode_step(
         int32_t* new_codes,   /// size (n, new_beam_size, m + 1)
         float* new_residuals, /// size (n, new_beam_size, d)
         float* new_distances, /// size (n, new_beam_size)
-        Index* assign_index) {
+        Index* assign_index,
+        ApproxTopK_mode_t approx_topk_mode) {
     // we have to fill in the whole output matrix
     FAISS_THROW_IF_NOT(new_beam_size <= beam_size * K);
 
@@ -230,14 +234,35 @@ void beam_search_encode_step(
                 new_distances_i[i] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
-            heap_addn<C>(
-                    new_beam_size,
-                    new_distances_i,
-                    perm.data(),
-                    cent_distances_i,
-                    nullptr,
-                    beam_size * K);
+
+#define HANDLE_APPROX(NB, BD)                                  \
+    case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD: \
+        HeapWithBuckets<C, NB, BD>::bs_addn(                   \
+                beam_size,                                     \
+                K,                                             \
+                cent_distances_i,                              \
+                new_beam_size,                                 \
+                new_distances_i,                               \
+                perm.data());                                  \
+        break;
+
+            switch (approx_topk_mode) {
+                HANDLE_APPROX(8, 3)
+                HANDLE_APPROX(8, 2)
+                HANDLE_APPROX(16, 2)
+                HANDLE_APPROX(32, 2)
+                default:
+                    heap_addn<C>(
+                            new_beam_size,
+                            new_distances_i,
+                            perm.data(),
+                            cent_distances_i,
+                            nullptr,
+                            beam_size * K);
+            }
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
+
+#undef HANDLE_APPROX
 
             for (int j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / K;
@@ -364,7 +389,8 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                     new_codes.data() + i0 * new_beam_size * (m + 1),
                     new_residuals.data() + i0 * new_beam_size * d,
                     new_distances.data() + i0 * new_beam_size,
-                    assign_index.get());
+                    assign_index.get(),
+                    approx_topk_mode);
         }
         codes.swap(new_codes);
         residuals.swap(new_residuals);
@@ -864,7 +890,8 @@ void refine_beam_mp(
                 // new_residuals.data(),
                 new_residuals_ptr,
                 pool.distances.data(),
-                assign_index.get());
+                assign_index.get(),
+                rq.approx_topk_mode);
 
         assign_index->reset();
 
@@ -1160,8 +1187,9 @@ void beam_search_encode_step_tab(
         const int32_t* codes,   // n * beam_size * m
         const float* distances, // n * beam_size
         size_t new_beam_size,
-        int32_t* new_codes,   // n * new_beam_size * (m + 1)
-        float* new_distances) // n * new_beam_size
+        int32_t* new_codes,                 // n * new_beam_size * (m + 1)
+        float* new_distances,               // n * new_beam_size
+        ApproxTopK_mode_t approx_topk_mode) //
 {
     FAISS_THROW_IF_NOT(ldc >= K);
 
@@ -1324,14 +1352,37 @@ void beam_search_encode_step_tab(
             new_distances_i[i] = C::neutral();
         }
         std::vector<int> perm(new_beam_size, -1);
-        heap_addn<C>(
-                new_beam_size,
-                new_distances_i,
-                perm.data(),
-                cent_distances_i,
-                nullptr,
-                beam_size * K);
+
+#define HANDLE_APPROX(NB, BD)                                  \
+    case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD: \
+        HeapWithBuckets<C, NB, BD>::bs_addn(                   \
+                beam_size,                                     \
+                K,                                             \
+                cent_distances_i,                              \
+                new_beam_size,                                 \
+                new_distances_i,                               \
+                perm.data());                                  \
+        break;
+
+        switch (approx_topk_mode) {
+            HANDLE_APPROX(8, 3)
+            HANDLE_APPROX(8, 2)
+            HANDLE_APPROX(16, 2)
+            HANDLE_APPROX(32, 2)
+            default:
+                heap_addn<C>(
+                        new_beam_size,
+                        new_distances_i,
+                        perm.data(),
+                        cent_distances_i,
+                        nullptr,
+                        beam_size * K);
+                break;
+        }
+
         heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
+
+#undef HANDLE_APPROX
 
         for (int j = 0; j < new_beam_size; j++) {
             int js = perm[j] / K;
@@ -1427,7 +1478,8 @@ void refine_beam_LUT_mp(
                 // new_codes.data(),
                 new_codes_ptr,
                 // new_distances.data()
-                new_distances_ptr);
+                new_distances_ptr,
+                rq.approx_topk_mode);
 
         // codes.swap(new_codes);
         std::swap(codes_ptr, new_codes_ptr);
