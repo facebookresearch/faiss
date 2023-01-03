@@ -1238,6 +1238,15 @@
     <member refid="structfaiss_1_1HeapArray_1a3c686b3cc0594e6a284fa3a595bebdec" kind="function"><name>reorder</name></member>
     <member refid="structfaiss_1_1HeapArray_1a394c96180e1ebd1cab14a4506e54645b" kind="function"><name>per_line_extrema</name></member>
   </compound>
+  <compound refid="structfaiss_1_1HeapWithBuckets" kind="struct"><name>faiss::HeapWithBuckets</name>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct"><name>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</name>
+    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab65ce3d760f39a27e39532abd3db93f0" kind="variable"><name>NBUCKETS_8</name></member>
+    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" kind="function"><name>bs_addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" kind="function"><name>bs_addn</name></member>
+  </compound>
   <compound refid="structfaiss_1_1HStackInvertedLists" kind="struct"><name>faiss::HStackInvertedLists</name>
     <member refid="structfaiss_1_1HStackInvertedLists_1a1e13f4a3dd344dbaf679d5f40fd328d6" kind="variable"><name>ils</name></member>
     <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kind="variable"><name>nlist</name></member>
@@ -6642,13 +6651,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d103" kind="namespace"><name>faiss::@103</name>
+  <compound refid="namespacefaiss_1_1_0d106" kind="namespace"><name>faiss::@106</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d104" kind="namespace"><name>faiss::@104</name>
+  <compound refid="namespacefaiss_1_1_0d107" kind="namespace"><name>faiss::@107</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d105" kind="namespace"><name>faiss::@105</name>
+  <compound refid="namespacefaiss_1_1_0d108" kind="namespace"><name>faiss::@108</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d93" kind="namespace"><name>faiss::@93</name>
+  <compound refid="namespacefaiss_1_1_0d96" kind="namespace"><name>faiss::@96</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -7061,6 +7070,18 @@
   </compound>
   <compound refid="AlignedTable_8h" kind="file"><name>AlignedTable.h</name>
   </compound>
+  <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299" kind="enum"><name>ApproxTopK_mode_t</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" kind="enumvalue"><name>EXACT_TOPK</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B32_D2</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D3</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
+  </compound>
+  <compound refid="avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
+  </compound>
+  <compound refid="generic_8h" kind="file"><name>generic.h</name>
+  </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>
   <compound refid="avx512_8h" kind="file"><name>avx512.h</name>
@@ -7110,6 +7131,8 @@
   <compound refid="WorkerThread_8h" kind="file"><name>WorkerThread.h</name>
   </compound>
   <compound refid="VectorTransform_8h" kind="file"><name>VectorTransform.h</name>
+  </compound>
+  <compound refid="dir_c2dc665bb85977007db19edac984ae84" kind="dir"><name>faiss/utils/approx_topk</name>
   </compound>
   <compound refid="dir_e0bc4e8ba6e534e3fbf335254ee8d911" kind="dir"><name>faiss/gpu/utils/blockselect</name>
   </compound>

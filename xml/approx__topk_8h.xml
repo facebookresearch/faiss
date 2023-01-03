@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="approx__topk_8h" kind="file" language="C++">
+    <compoundname>approx_topk.h</compoundname>
+    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>limits</label>
+      </node>
+      <node id="2">
+        <label>faiss/impl/platform_macros.h</label>
+      </node>
+      <node id="3">
+        <label>faiss/utils/approx_topk/generic.h</label>
+        <link refid="generic_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>stdint.h</label>
+      </node>
+      <node id="10">
+        <label>cmath</label>
+      </node>
+      <node id="13">
+        <label>cassert</label>
+      </node>
+      <node id="1">
+        <label>faiss/utils/approx_topk/approx_topk.h</label>
+        <link refid="approx__topk_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/impl/FaissAssert.h</label>
+      </node>
+      <node id="14">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
+        <label>utility</label>
+      </node>
+      <node id="8">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>climits</label>
+      </node>
+      <node id="4">
+        <label>algorithm</label>
+      </node>
+      <node id="11">
+        <label>cstring</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299" prot="public" static="no" strong="no">
+        <type>int</type>
+        <name>ApproxTopK_mode_t</name>
+        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" prot="public">
+          <name>EXACT_TOPK</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" prot="public">
+          <name>APPROX_TOPK_BUCKETS_B32_D2</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" prot="public">
+          <name>APPROX_TOPK_BUCKETS_B8_D3</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" prot="public">
+          <name>APPROX_TOPK_BUCKETS_B16_D2</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" prot="public">
+          <name>APPROX_TOPK_BUCKETS_B8_D2</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</para>
+<para>B represents the number of buckets. D is the number of min-k elements to track within every bucket.</para>
+<para>Default option is EXACT_TOPK. APPROX_TOPK_BUCKETS_B16_D2 is worth starting from, if you&apos;d like to experiment a bit.</para>
+<para>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so ones were not introduced.</para>
+<para>TODO: Consider d-ary SIMD heap. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/approx_topk/approx_topk.h" line="88" column="1" bodyfile="faiss/utils/approx_topk/approx_topk.h" bodystart="88" bodyend="94"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>This<sp/>file<sp/>contains<sp/>an<sp/>implementation<sp/>of<sp/>approximate<sp/>top-k<sp/>search</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>using<sp/>heap.<sp/>It<sp/>was<sp/>initially<sp/>created<sp/>for<sp/>a<sp/>beam<sp/>search.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>core<sp/>idea<sp/>is<sp/>the<sp/>following.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Say<sp/>we<sp/>need<sp/>to<sp/>find<sp/>beam_size<sp/>indices<sp/>with<sp/>the<sp/>minimal<sp/>distance</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>values.<sp/>It<sp/>is<sp/>done<sp/>via<sp/>heap<sp/>(priority_queue)<sp/>using<sp/>the<sp/>following</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>pseudocode:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>def<sp/>baseline():</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>distances<sp/>=<sp/>np.empty([beam_size<sp/>*<sp/>n],<sp/>dtype=float)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>indices<sp/>=<sp/>np.empty([beam_size<sp/>*<sp/>n],<sp/>dtype=int)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>heap<sp/>=<sp/>Heap(max_heap_size=beam_size)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>for<sp/>i<sp/>in<sp/>range(0,<sp/>beam_size<sp/>*<sp/>n):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.push(distances[i],<sp/>indices[i])</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Basically,<sp/>this<sp/>is<sp/>what<sp/>heap_addn()<sp/>function<sp/>from<sp/>utils/Heap.h<sp/>does.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>following<sp/>scheme<sp/>can<sp/>be<sp/>used<sp/>for<sp/>approximate<sp/>beam<sp/>search.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Say,<sp/>we<sp/>need<sp/>to<sp/>find<sp/>elements<sp/>with<sp/>min<sp/>distance.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Basically,<sp/>we<sp/>split<sp/>n<sp/>elements<sp/>of<sp/>every<sp/>beam<sp/>into<sp/>NBUCKETS<sp/>buckets</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>track<sp/>the<sp/>index<sp/>with<sp/>the<sp/>minimal<sp/>distance<sp/>for<sp/>every<sp/>bucket.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>can<sp/>be<sp/>effectively<sp/>SIMD-ed<sp/>and<sp/>significantly<sp/>lowers<sp/>the<sp/>number</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>of<sp/>operations,<sp/>but<sp/>yields<sp/>approximate<sp/>results<sp/>for<sp/>beam_size<sp/>&gt;=<sp/>2.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/>def<sp/>approximate_v1():</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>distances<sp/>=<sp/>np.empty([beam_size<sp/>*<sp/>n],<sp/>dtype=float)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>indices<sp/>=<sp/>np.empty([beam_size<sp/>*<sp/>n],<sp/>dtype=int)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>heap<sp/>=<sp/>Heap(max_heap_size=beam_size)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>for<sp/>beam<sp/>in<sp/>range(0,<sp/>beam_size):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>The<sp/>value<sp/>of<sp/>32<sp/>is<sp/>just<sp/>an<sp/>example.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>The<sp/>value<sp/>may<sp/>be<sp/>varied:<sp/>the<sp/>larger<sp/>the<sp/>value<sp/>is,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>#<sp/><sp/>the<sp/>slower<sp/>and<sp/>the<sp/>more<sp/>precise<sp/>vs<sp/>baseline<sp/>beam<sp/>search<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>NBUCKETS<sp/>=<sp/>32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>local_min_distances<sp/>=<sp/>[HUGE_VALF]<sp/>*<sp/>NBUCKETS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>local_min_indices<sp/>=<sp/>[0]<sp/>*<sp/>NBUCKETS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>i<sp/>in<sp/>range(0,<sp/>n<sp/>/<sp/>NBUCKETS):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>j<sp/>in<sp/>range(0,<sp/>NBUCKETS):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx<sp/>=<sp/>beam<sp/>*<sp/>n<sp/>+<sp/>i<sp/>*<sp/>NBUCKETS<sp/>+<sp/>j</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>distances[idx]<sp/>&lt;<sp/>local_min_distances[j]:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>local_min_distances[i]<sp/>=<sp/>distances[idx]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>local_min_indices[i]<sp/>=<sp/>indices[idx]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>for<sp/>j<sp/>in<sp/>range(0,<sp/>NBUCKETS):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/>heap.push(local_min_distances[j],<sp/>local_min_indices[j])</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>accuracy<sp/>can<sp/>be<sp/>improved<sp/>by<sp/>tracking<sp/>min-2<sp/>elements<sp/>for<sp/>every</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment">//<sp/>bucket.<sp/>Such<sp/>a<sp/>min-2<sp/>implementation<sp/>with<sp/>NBUCKETS<sp/>buckets<sp/>provides</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">//<sp/>better<sp/>accuracy<sp/>than<sp/>top-1<sp/>implementation<sp/>with<sp/>2<sp/>*<sp/>NBUCKETS<sp/>buckets.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Min-3<sp/>is<sp/>also<sp/>doable.<sp/>One<sp/>can<sp/>use<sp/>min-N<sp/>approach,<sp/>but<sp/>I&apos;m<sp/>not<sp/>sure</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment">//<sp/>whether<sp/>min-4<sp/>and<sp/>above<sp/>are<sp/>practical,<sp/>because<sp/>of<sp/>the<sp/>lack<sp/>of<sp/>SIMD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">//<sp/>registers<sp/>(unless<sp/>AVX-512<sp/>version<sp/>is<sp/>used).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment">//<sp/>C++<sp/>template<sp/>for<sp/>top-N<sp/>implementation<sp/>is<sp/>provided.<sp/>The<sp/>code</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment">//<sp/>assumes<sp/>that<sp/>indices[idx]<sp/>==<sp/>idx.<sp/>One<sp/>can<sp/>write<sp/>a<sp/>code<sp/>that<sp/>lifts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment">//<sp/>such<sp/>an<sp/>assumption<sp/>easily.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Currently,<sp/>the<sp/>code<sp/>that<sp/>tracks<sp/>elements<sp/>with<sp/>min<sp/>distances<sp/>is<sp/>implemented</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>(Max<sp/>Heap).<sp/>Min<sp/>Heap<sp/>option<sp/>can<sp/>be<sp/>added<sp/>easily.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="70"><highlight class="comment">///<sp/>Represents<sp/>the<sp/>mode<sp/>of<sp/>use<sp/>of<sp/>approximate<sp/>top-k<sp/>computations</highlight></codeline>
+<codeline lineno="71"><highlight class="comment">///<sp/>that<sp/>allows<sp/>to<sp/>trade<sp/>accuracy<sp/>vs<sp/>speed.<sp/>So,<sp/>every<sp/>options</highlight></codeline>
+<codeline lineno="72"><highlight class="comment">///<sp/>besides<sp/>EXACT_TOPK<sp/>increases<sp/>the<sp/>speed.</highlight></codeline>
+<codeline lineno="73"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="74"><highlight class="comment">///<sp/>B<sp/>represents<sp/>the<sp/>number<sp/>of<sp/>buckets.</highlight></codeline>
+<codeline lineno="75"><highlight class="comment">///<sp/>D<sp/>is<sp/>the<sp/>number<sp/>of<sp/>min-k<sp/>elements<sp/>to<sp/>track<sp/>within<sp/>every<sp/>bucket.</highlight></codeline>
+<codeline lineno="76"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="77"><highlight class="comment">///<sp/>Default<sp/>option<sp/>is<sp/>EXACT_TOPK.</highlight></codeline>
+<codeline lineno="78"><highlight class="comment">///<sp/>APPROX_TOPK_BUCKETS_B16_D2<sp/>is<sp/>worth<sp/>starting<sp/>from,<sp/>if<sp/>you&apos;d<sp/>like</highlight></codeline>
+<codeline lineno="79"><highlight class="comment">///<sp/>to<sp/>experiment<sp/>a<sp/>bit.</highlight></codeline>
+<codeline lineno="80"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="81"><highlight class="comment">///<sp/>It<sp/>seems<sp/>that<sp/>only<sp/>the<sp/>limited<sp/>number<sp/>of<sp/>combinations<sp/>are</highlight></codeline>
+<codeline lineno="82"><highlight class="comment">///<sp/>meaningful,<sp/>because<sp/>of<sp/>the<sp/>limited<sp/>supply<sp/>of<sp/>SIMD<sp/>registers.</highlight></codeline>
+<codeline lineno="83"><highlight class="comment">///<sp/>Also,<sp/>certain<sp/>combinations,<sp/>such<sp/>as<sp/>B32_D1<sp/>and<sp/>B16_D1,<sp/>were<sp/>concluded</highlight></codeline>
+<codeline lineno="84"><highlight class="comment">///<sp/>to<sp/>be<sp/>not<sp/>very<sp/>precise<sp/>in<sp/>benchmarks,<sp/>so<sp/>ones<sp/>were<sp/>not<sp/>introduced.</highlight></codeline>
+<codeline lineno="85"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="86"><highlight class="comment">///<sp/>TODO:<sp/>Consider<sp/>d-ary<sp/>SIMD<sp/>heap.</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>ApproxTopK_mode_t<sp/>:<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>EXACT_TOPK<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B32_D2<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B8_D3<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B16_D2<sp/>=<sp/>3,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B8_D2<sp/>=<sp/>4,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/generic.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="faiss/utils/approx_topk/approx_topk.h"/>
+  </compounddef>
+</doxygen>

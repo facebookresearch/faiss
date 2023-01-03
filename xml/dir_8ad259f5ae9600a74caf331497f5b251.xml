@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir">
     <compoundname>faiss/utils</compoundname>
+    <innerdir refid="dir_c2dc665bb85977007db19edac984ae84">faiss/utils/approx_topk</innerdir>
     <innerdir refid="dir_8024a5c5304a6089dbde2bf6560405dc">faiss/utils/distances_fused</innerdir>
     <innerfile refid="AlignedTable_8h">AlignedTable.h</innerfile>
     <innerfile refid="distances_8h">distances.h</innerfile>

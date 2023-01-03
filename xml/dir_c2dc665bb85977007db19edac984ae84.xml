@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="dir_c2dc665bb85977007db19edac984ae84" kind="dir">
+    <compoundname>faiss/utils/approx_topk</compoundname>
+    <innerfile refid="approx__topk_8h">approx_topk.h</innerfile>
+    <innerfile refid="avx2-inl_8h">avx2-inl.h</innerfile>
+    <innerfile refid="generic_8h">generic.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/approx_topk/"/>
+  </compounddef>
+</doxygen>

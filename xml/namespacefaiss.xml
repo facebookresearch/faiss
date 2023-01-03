@@ -128,6 +128,8 @@
     <innerclass refid="structfaiss_1_1IndexRandom" prot="public">faiss::IndexRandom</innerclass>
     <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
     <innerclass refid="structfaiss_1_1AlignedTable" prot="public">faiss::AlignedTable</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBuckets" prot="public">faiss::HeapWithBuckets</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public">faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</innerclass>
     <innerclass refid="structfaiss_1_1VectorDistance" prot="public">faiss::VectorDistance</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer4" prot="public">faiss::HammingComputer4</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer8" prot="public">faiss::HammingComputer8</innerclass>
