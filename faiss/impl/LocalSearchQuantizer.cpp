@@ -192,7 +192,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     // allocate memory for codebooks, size [M, K, d]
     codebooks.resize(M * K * d);
 
-    // randomly intialize codes
+    // randomly initialize codes
     std::mt19937 gen(random_seed);
     std::vector<int32_t> codes(n * M); // [n, M]
     random_int32(codes, 0, K - 1, gen);

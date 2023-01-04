@@ -169,7 +169,7 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* nlist_out,
             const Scaler& scaler) const;
 
-    // implem 14 is mukltithreaded internally across nprobes and queries
+    // implem 14 is multithreaded internally across nprobes and queries
     template <class C, class Scaler>
     void search_implem_14(
             idx_t n,

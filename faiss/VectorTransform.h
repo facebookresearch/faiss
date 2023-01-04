@@ -120,7 +120,7 @@ struct RandomRotationMatrix : LinearTransform {
     /// must be called before the transform is used
     void init(int seed);
 
-    // intializes with an arbitrary seed
+    // initializes with an arbitrary seed
     void train(idx_t n, const float* x) override;
 
     RandomRotationMatrix() {}

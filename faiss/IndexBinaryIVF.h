@@ -196,7 +196,7 @@ struct IndexBinaryIVF : IndexBinary {
         return invlists->list_size(list_no);
     }
 
-    /** intialize a direct map
+    /** initialize a direct map
      *
      * @param new_maintain_direct_map    if true, create a direct map,
      *                                   else clear it
