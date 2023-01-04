@@ -31,7 +31,7 @@ namespace faiss {
  * @param ntotal  number of input codes
  * @param nb      output number of codes (ntotal rounded up to a multiple of
  *                bbs)
- * @param M2      number of sub-quantizers (=M rounded up to a muliple of 2)
+ * @param nsq      number of sub-quantizers (=M rounded up to a muliple of 2)
  * @param bbs     size of database blocks (multiple of 32)
  * @param blocks  output array, size nb * nsq / 2.
  */
@@ -41,7 +41,7 @@ void pq4_pack_codes(
         size_t M,
         size_t nb,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks);
 
 /** Same as pack_codes but write in a given range of the output,
@@ -58,7 +58,7 @@ void pq4_pack_codes_range(
         size_t i0,
         size_t i1,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks);
 
 /** get a single element from a packed codes table
