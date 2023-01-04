@@ -425,7 +425,7 @@ void NNDescent::search(
     // candidate pool, the K best items is the result.
     std::vector<Neighbor> retset(L + 1);
 
-    // Randomly choose L points to intialize the candidate pool
+    // Randomly choose L points to initialize the candidate pool
     std::vector<int> init_ids(L);
     std::mt19937 rng(random_seed);
 

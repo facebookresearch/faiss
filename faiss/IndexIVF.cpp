@@ -458,7 +458,7 @@ void IndexIVF::search_preassigned(
          * that are in common between the two
          ******************************************************/
 
-        // intialize + reorder a result heap
+        // initialize + reorder a result heap
 
         auto init_result = [&](float* simi, idx_t* idxi) {
             if (!do_heap_init)

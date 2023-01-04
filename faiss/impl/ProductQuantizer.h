@@ -36,8 +36,8 @@ struct ProductQuantizer : Quantizer {
         Train_default,
         Train_hot_start,     ///< the centroids are already initialized
         Train_shared,        ///< share dictionary accross PQ segments
-        Train_hypercube,     ///< intialize centroids with nbits-D hypercube
-        Train_hypercube_pca, ///< intialize centroids with nbits-D hypercube
+        Train_hypercube,     ///< initialize centroids with nbits-D hypercube
+        Train_hypercube_pca, ///< initialize centroids with nbits-D hypercube
     };
     train_type_t train_type;
 
