@@ -393,7 +393,7 @@
 <codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryIVF_1a094ef9572645ff86a76ff4df967bf65a" kindref="member">invlists</ref>-&gt;<ref refid="structfaiss_1_1InvertedLists_1a9bd256053ee360473842105460fe285f" kindref="member">list_size</ref>(list_no);</highlight></codeline>
 <codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="198"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>intialize<sp/>a<sp/>direct<sp/>map</highlight></codeline>
+<codeline lineno="199"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>initialize<sp/>a<sp/>direct<sp/>map</highlight></codeline>
 <codeline lineno="200"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="201"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>new_maintain_direct_map<sp/><sp/><sp/><sp/>if<sp/>true,<sp/>create<sp/>a<sp/>direct<sp/>map,</highlight></codeline>
 <codeline lineno="202"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>else<sp/>clear<sp/>it</highlight></codeline>

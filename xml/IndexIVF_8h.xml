@@ -656,7 +656,7 @@
 <codeline lineno="339"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>are<sp/>the<sp/>ids<sp/>sorted?</highlight></codeline>
 <codeline lineno="340" refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexIVF_1a92fd8b2703f8d47c89aa69f39e0fa683" kindref="member">check_ids_sorted</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="341"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="342"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>intialize<sp/>a<sp/>direct<sp/>map</highlight></codeline>
+<codeline lineno="342"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>initialize<sp/>a<sp/>direct<sp/>map</highlight></codeline>
 <codeline lineno="343"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="344"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>new_maintain_direct_map<sp/><sp/><sp/><sp/>if<sp/>true,<sp/>create<sp/>a<sp/>direct<sp/>map,</highlight></codeline>
 <codeline lineno="345"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>else<sp/>clear<sp/>it</highlight></codeline>

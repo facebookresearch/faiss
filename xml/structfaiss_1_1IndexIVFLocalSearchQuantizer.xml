@@ -1444,7 +1444,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>intialize a direct map</para>
+<para>initialize a direct map</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>new_maintain_direct_map</parametername>
