@@ -160,13 +160,16 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
                     _mm256_storeu_ps(
                             min_distances_scalar, min_distances_i[j][p]);
 
-                    heap_addn<C>(
-                            k,
-                            bh_val,
-                            bh_ids,
-                            min_distances_scalar,
-                            min_indices_scalar,
-                            8);
+                    // this exact way is needed to maintain the order as if the
+                    // input elements were pushed to the heap sequentially
+                    for (size_t j8 = 0; j8 < 8; j8++) {
+                        const auto value = min_distances_scalar[j8];
+                        const auto index = min_indices_scalar[j8];
+                        if (C::cmp2(bh_val[0], value, bh_ids[0], index)) {
+                            heap_replace_top<C>(
+                                    k, bh_val, bh_ids, value, index);
+                        }
+                    }
                 }
             }
 
