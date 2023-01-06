@@ -252,11 +252,21 @@ class TestComponents(unittest.TestCase):
 
         rs = np.random.RandomState(123)
 
-        # randomly generate codes, binary terms and unary terms
+        # randomly generate codes and unary terms
         codes = rs.randint(0, K, (n, M)).astype(np.int32)
         new_codes = codes.copy()
         unaries = rs.rand(M, n, K).astype(np.float32)
-        binaries = rs.rand(M, M, K, K).astype(np.float32)
+
+        # binary terms should be symmetric, because binary terms
+        #  represent cached dot products between the code C1 in codebook M1
+        #  and the code C2 in codebook M2.
+        # so, binaries[M1, M2, C1, C2] == binaries[M2, M1, C2, C1]
+        #
+        # generate binary terms in a standard way that provides
+        #  the needed symmetry
+        codebooks = rs.rand(M, K, d).astype(np.float32)
+        binaries = compute_binary_terms_ref(codebooks)
+        binaries = np.ascontiguousarray(binaries)
 
         # do icm encoding given binary and unary terms
         lsq = faiss.LocalSearchQuantizer(d, M, nbits)
