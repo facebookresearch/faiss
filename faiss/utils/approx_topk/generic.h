@@ -98,7 +98,13 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
             // merge every bucket into the regular heap
             for (uint32_t p = 0; p < N; p++) {
                 for (uint32_t j = 0; j < NBUCKETS; j++) {
-                    if (C::cmp(bh_val[0], min_distances_i[p][j])) {
+                    // this exact way is needed to maintain the order as if the
+                    // input elements were pushed to the heap sequentially
+
+                    if (C::cmp2(bh_val[0],
+                                min_distances_i[p][j],
+                                bh_ids[0],
+                                min_indices_i[p][j])) {
                         heap_replace_top<C>(
                                 k,
                                 bh_val,
