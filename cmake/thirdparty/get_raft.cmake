@@ -39,6 +39,7 @@ function(find_and_configure_raft)
             "BUILD_TESTS OFF"
             "BUILD_BENCH OFF"
             "RAFT_COMPILE_LIBRARIES OFF"
+            "RAFT_ENABLE_NN_DEPENDENCIES OFF"
             )
 endfunction()
 
