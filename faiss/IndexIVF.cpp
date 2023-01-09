@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cinttypes>
 #include <cstdio>
+#include <limits>
 #include <memory>
 
 #include <faiss/utils/hamming.h>
@@ -413,6 +414,7 @@ void IndexIVF::search_preassigned(
     nprobe = std::min((idx_t)nlist, nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
+    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
     idx_t max_codes = params ? params->max_codes : this->max_codes;
     IDSelector* sel = params ? params->sel : nullptr;
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
@@ -439,6 +441,14 @@ void IndexIVF::search_preassigned(
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
+
+    FAISS_THROW_IF_NOT_MSG(
+            max_codes == 0 || pmode == 0 || pmode == 3,
+            "max_codes supported only for parallel_mode = 0 or 3");
+
+    if (max_codes == 0) {
+        max_codes = unlimited_list_size;
+    }
 
     bool do_parallel = omp_get_max_threads() >= 2 &&
             (pmode == 0           ? false
@@ -496,7 +506,8 @@ void IndexIVF::search_preassigned(
         auto scan_one_list = [&](idx_t key,
                                  float coarse_dis_i,
                                  float* simi,
-                                 idx_t* idxi) {
+                                 idx_t* idxi,
+                                 idx_t list_size_max) {
             if (key < 0) {
                 // not enough centroids for multiprobe
                 return (size_t)0;
@@ -508,6 +519,9 @@ void IndexIVF::search_preassigned(
                     nlist);
 
             size_t list_size = invlists->list_size(key);
+            if (list_size > list_size_max) {
+                list_size = list_size_max;
+            }
 
             // don't waste time on empty lists
             if (list_size == 0) {
@@ -582,9 +596,9 @@ void IndexIVF::search_preassigned(
                             keys[i * nprobe + ik],
                             coarse_dis[i * nprobe + ik],
                             simi,
-                            idxi);
-
-                    if (max_codes && nscan >= max_codes) {
+                            idxi,
+                            max_codes - nscan);
+                    if (nscan >= max_codes) {
                         break;
                     }
                 }
@@ -611,7 +625,8 @@ void IndexIVF::search_preassigned(
                             keys[i * nprobe + ik],
                             coarse_dis[i * nprobe + ik],
                             local_dis.data(),
-                            local_idx.data());
+                            local_idx.data(),
+                            unlimited_list_size);
 
                     // can't do the test on max_codes
                 }
@@ -652,7 +667,8 @@ void IndexIVF::search_preassigned(
                         keys[ij],
                         coarse_dis[ij],
                         local_dis.data(),
-                        local_idx.data());
+                        local_idx.data(),
+                        unlimited_list_size);
 #pragma omp critical
                 {
                     add_local_results(

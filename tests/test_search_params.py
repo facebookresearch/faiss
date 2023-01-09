@@ -248,6 +248,33 @@ class TestSearchParams(unittest.TestCase):
             )
         )
 
+    def test_max_codes(self):
+        " tests whether the max nb codes is taken into account "
+        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
+        index = faiss.index_factory(ds.d, "IVF32,Flat")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        stats = faiss.cvar.indexIVF_stats
+        stats.reset()
+        D0, I0 = index.search(
+            ds.get_queries(), 10,
+            params=faiss.SearchParametersIVF(nprobe=8)
+        )
+        ndis0 = stats.ndis
+        target_ndis = ndis0 // ds.nq  # a few queries will be below, a few above
+        for q in range(ds.nq):
+            stats.reset()
+            Dq, Iq = index.search(
+                ds.get_queries()[q:q + 1], 10,
+                params=faiss.SearchParametersIVF(
+                    nprobe=8, max_codes=target_ndis
+                )
+            )
+            self.assertLessEqual(stats.ndis, target_ndis)
+            if stats.ndis < target_ndis:
+                np.testing.assert_equal(I0[q], Iq[0])
+
 
 class TestSelectorCallback(unittest.TestCase):
 
