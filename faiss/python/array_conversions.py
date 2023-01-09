@@ -10,6 +10,7 @@
 
 import numpy as np
 import array
+import warnings
 
 from faiss.loader import *
 
