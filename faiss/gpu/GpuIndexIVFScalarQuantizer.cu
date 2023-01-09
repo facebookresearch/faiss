@@ -197,19 +197,17 @@ void GpuIndexIVFScalarQuantizer::reset() {
     }
 }
 
-void GpuIndexIVFScalarQuantizer::trainResiduals_(
-        Index::idx_t n,
-        const float* x) {
+void GpuIndexIVFScalarQuantizer::trainResiduals_(idx_t n, const float* x) {
     // The input is already guaranteed to be on the CPU
     sq.train_residual(n, x, quantizer, by_residual, verbose);
 }
 
-void GpuIndexIVFScalarQuantizer::train(Index::idx_t n, const float* x) {
+void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            n <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %d indices",
             std::numeric_limits<int>::max());
 

@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <faiss/impl/CodePacker.h>
+
 /** PQ4 SIMD packing and accumulation functions
  *
  * The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors
@@ -29,7 +31,7 @@ namespace faiss {
  * @param ntotal  number of input codes
  * @param nb      output number of codes (ntotal rounded up to a multiple of
  *                bbs)
- * @param M2      number of sub-quantizers (=M rounded up to a muliple of 2)
+ * @param nsq      number of sub-quantizers (=M rounded up to a muliple of 2)
  * @param bbs     size of database blocks (multiple of 32)
  * @param blocks  output array, size nb * nsq / 2.
  */
@@ -39,7 +41,7 @@ void pq4_pack_codes(
         size_t M,
         size_t nb,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks);
 
 /** Same as pack_codes but write in a given range of the output,
@@ -56,7 +58,7 @@ void pq4_pack_codes_range(
         size_t i0,
         size_t i1,
         size_t bbs,
-        size_t M2,
+        size_t nsq,
         uint8_t* blocks);
 
 /** get a single element from a packed codes table
@@ -83,6 +85,18 @@ void pq4_set_packed_element(
         size_t nsq,
         size_t vector_id,
         size_t sq);
+
+/** CodePacker API for the PQ4 fast-scan */
+struct CodePackerPQ4 : CodePacker {
+    size_t nsq;
+
+    CodePackerPQ4(size_t nsq, size_t bbs);
+
+    void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
+            const final;
+    void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
+            const final;
+};
 
 /** Pack Look-up table for consumption by the kernel.
  *

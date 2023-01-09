@@ -19,6 +19,8 @@ namespace {
 
 struct TestException : public std::exception {};
 
+using idx_t = faiss::idx_t;
+
 struct MockIndex : public faiss::Index {
     explicit MockIndex(idx_t d) : faiss::Index(d) {
         resetMock();
@@ -66,7 +68,7 @@ struct MockIndex : public faiss::Index {
 
 template <typename IndexT>
 struct MockThreadedIndex : public faiss::ThreadedIndex<IndexT> {
-    using idx_t = faiss::Index::idx_t;
+    using idx_t = faiss::idx_t;
 
     explicit MockThreadedIndex(bool threaded)
             : faiss::ThreadedIndex<IndexT>(threaded) {}
@@ -178,7 +180,7 @@ TEST(ThreadedIndex, TestReplica) {
 
         std::vector<float> x(n * d);
         std::vector<float> distances(n * k);
-        std::vector<faiss::Index::idx_t> labels(n * k);
+        std::vector<faiss::idx_t> labels(n * k);
 
         replica.add(n, x.data());
 
@@ -227,7 +229,7 @@ TEST(ThreadedIndex, TestShards) {
 
         std::vector<float> x(n * d);
         std::vector<float> distances(n * k);
-        std::vector<faiss::Index::idx_t> labels(n * k);
+        std::vector<faiss::idx_t> labels(n * k);
 
         shards.add(n, x.data());
 

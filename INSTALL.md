@@ -31,6 +31,17 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly faiss-gpu
 ```
 
+A combination of versions that works with Pytorch (as of 2022-11-23):
+```
+conda create -n faiss_1.7.3 python=3.8
+conda activate faiss_1.7.3
+conda install pytorch==1.11.0 cudatoolkit=11.3 -c pytorch
+conda install numpy
+conda install -c pytorch faiss-gpu=1.7.3 cudatoolkit=11.3
+conda install -c conda-forge notebook
+conda install -y matplotlib
+```
+
 ## Installing from conda-forge
 
 Faiss is also being packaged by [conda-forge](https://conda-forge.org/), the

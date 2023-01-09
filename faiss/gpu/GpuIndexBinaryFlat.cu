@@ -78,7 +78,7 @@ void GpuIndexBinaryFlat::copyFrom(const faiss::IndexBinaryFlat* index) {
 
     // GPU code has 32 bit indices
     FAISS_THROW_IF_NOT_FMT(
-            index->ntotal <= (Index::idx_t)std::numeric_limits<int>::max(),
+            index->ntotal <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %zu indices; "
             "attempting to copy CPU index with %zu parameters",
             (size_t)std::numeric_limits<int>::max(),
@@ -117,7 +117,7 @@ void GpuIndexBinaryFlat::copyTo(faiss::IndexBinaryFlat* index) const {
     }
 }
 
-void GpuIndexBinaryFlat::add(faiss::IndexBinary::idx_t n, const uint8_t* x) {
+void GpuIndexBinaryFlat::add(faiss::idx_t n, const uint8_t* x) {
     DeviceScope scope(binaryFlatConfig_.device);
 
     validateNumVectors(n);
@@ -129,7 +129,7 @@ void GpuIndexBinaryFlat::add(faiss::IndexBinary::idx_t n, const uint8_t* x) {
     // Due to GPU indexing in int32, we can't store more than this
     // number of vectors on a GPU
     FAISS_THROW_IF_NOT_FMT(
-            this->ntotal + n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            this->ntotal + n <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %zu indices",
             (size_t)std::numeric_limits<int>::max());
 
@@ -149,11 +149,11 @@ void GpuIndexBinaryFlat::reset() {
 }
 
 void GpuIndexBinaryFlat::search(
-        faiss::IndexBinary::idx_t n,
+        faiss::idx_t n,
         const uint8_t* x,
-        faiss::IndexBinary::idx_t k,
+        faiss::idx_t k,
         int32_t* distances,
-        faiss::IndexBinary::idx_t* labels,
+        faiss::idx_t* labels,
         const SearchParameters* params) const {
     DeviceScope scope(binaryFlatConfig_.device);
     auto stream = resources_->getDefaultStream(binaryFlatConfig_.device);
@@ -209,7 +209,7 @@ void GpuIndexBinaryFlat::search(
     }
 
     // Convert and copy int indices out
-    auto outIndices = toDeviceTemporary<Index::idx_t, 2>(
+    auto outIndices = toDeviceTemporary<idx_t, 2>(
             resources_.get(),
             binaryFlatConfig_.device,
             labels,
@@ -217,11 +217,11 @@ void GpuIndexBinaryFlat::search(
             {(int)n, (int)k});
 
     // Convert int to idx_t
-    convertTensor<int, Index::idx_t, 2>(stream, outIntIndices, outIndices);
+    convertTensor<int, idx_t, 2>(stream, outIntIndices, outIndices);
 
     // Copy back if necessary
     fromDevice<int32_t, 2>(outDistances, distances, stream);
-    fromDevice<Index::idx_t, 2>(outIndices, labels, stream);
+    fromDevice<idx_t, 2>(outIndices, labels, stream);
 }
 
 void GpuIndexBinaryFlat::searchNonPaged_(
@@ -277,9 +277,7 @@ void GpuIndexBinaryFlat::searchFromCpuPaged_(
     }
 }
 
-void GpuIndexBinaryFlat::reconstruct(
-        faiss::IndexBinary::idx_t key,
-        uint8_t* out) const {
+void GpuIndexBinaryFlat::reconstruct(faiss::idx_t key, uint8_t* out) const {
     DeviceScope scope(binaryFlatConfig_.device);
 
     FAISS_THROW_IF_NOT_MSG(key < this->ntotal, "index out of bounds");

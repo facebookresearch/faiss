@@ -9,6 +9,7 @@
 
 /* Function for soft heap */
 
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
@@ -32,7 +33,7 @@ void HeapArray<C>::addn(size_t nj, const T* vin, TI j0, size_t i0, int64_t ni) {
     if (ni == -1)
         ni = nh;
     assert(i0 >= 0 && i0 + ni <= nh);
-#pragma omp parallel for
+#pragma omp parallel for if (ni * nj > 100000)
     for (int64_t i = i0; i < i0 + ni; i++) {
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
@@ -62,7 +63,7 @@ void HeapArray<C>::addn_with_ids(
     if (ni == -1)
         ni = nh;
     assert(i0 >= 0 && i0 + ni <= nh);
-#pragma omp parallel for
+#pragma omp parallel for if (ni * nj > 100000)
     for (int64_t i = i0; i < i0 + ni; i++) {
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
@@ -79,8 +80,37 @@ void HeapArray<C>::addn_with_ids(
 }
 
 template <typename C>
+void HeapArray<C>::addn_query_subset_with_ids(
+        size_t nsubset,
+        const TI* subset,
+        size_t nj,
+        const T* vin,
+        const TI* id_in,
+        int64_t id_stride) {
+    FAISS_THROW_IF_NOT_MSG(id_in, "anonymous ids not supported");
+    if (id_stride < 0) {
+        id_stride = nj;
+    }
+#pragma omp parallel for if (nsubset * nj > 100000)
+    for (int64_t si = 0; si < nsubset; si++) {
+        T i = subset[si];
+        T* __restrict simi = get_val(i);
+        TI* __restrict idxi = get_ids(i);
+        const T* ip_line = vin + si * nj;
+        const TI* id_line = id_in + si * id_stride;
+
+        for (size_t j = 0; j < nj; j++) {
+            T ip = ip_line[j];
+            if (C::cmp(simi[0], ip)) {
+                heap_replace_top<C>(k, simi, idxi, ip, id_line[j]);
+            }
+        }
+    }
+}
+
+template <typename C>
 void HeapArray<C>::per_line_extrema(T* out_val, TI* out_ids) const {
-#pragma omp parallel for
+#pragma omp parallel for if (nh * k > 100000)
     for (int64_t j = 0; j < nh; j++) {
         int64_t imin = -1;
         typename C::T xval = C::Crev::neutral();

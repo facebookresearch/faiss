@@ -187,16 +187,16 @@ struct IndexBinaryIVF : IndexBinary {
     /// Dataset manipulation functions
     size_t remove_ids(const IDSelector& sel) override;
 
-    /** moves the entries from another dataset to self. On output,
-     * other is empty. add_id is added to all moved ids (for
-     * sequential ids, this would be this->ntotal */
-    virtual void merge_from(IndexBinaryIVF& other, idx_t add_id);
+    void merge_from(IndexBinary& other, idx_t add_id) override;
+
+    void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const override;
 
     size_t get_list_size(size_t list_no) const {
         return invlists->list_size(list_no);
     }
 
-    /** intialize a direct map
+    /** initialize a direct map
      *
      * @param new_maintain_direct_map    if true, create a direct map,
      *                                   else clear it
@@ -209,8 +209,6 @@ struct IndexBinaryIVF : IndexBinary {
 };
 
 struct BinaryInvertedListScanner {
-    using idx_t = Index::idx_t;
-
     /// from now on we handle this query.
     virtual void set_query(const uint8_t* query_vector) = 0;
 

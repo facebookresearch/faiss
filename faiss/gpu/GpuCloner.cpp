@@ -116,7 +116,6 @@ ToGpuCloner::ToGpuCloner(
         : GpuClonerOptions(options), provider(prov), device(device) {}
 
 Index* ToGpuCloner::clone_Index(const Index* index) {
-    using idx_t = Index::idx_t;
     if (auto ifl = dynamic_cast<const IndexFlat*>(index)) {
         GpuIndexFlatConfig config;
         config.device = device;

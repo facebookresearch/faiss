@@ -74,7 +74,7 @@ template <class PQDecoder>
 struct PQDistanceComputer : FlatCodesDistanceComputer {
     size_t d;
     MetricType metric;
-    Index::idx_t nb;
+    idx_t nb;
     const ProductQuantizer& pq;
     const float* sdc;
     std::vector<float> precomputed_table;

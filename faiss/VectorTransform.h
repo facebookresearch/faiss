@@ -23,8 +23,6 @@ namespace faiss {
 
 /** Any transformation applied on a set of vectors */
 struct VectorTransform {
-    typedef Index::idx_t idx_t;
-
     int d_in;  ///! input dimension
     int d_out; ///! output dimension
 
@@ -60,6 +58,9 @@ struct VectorTransform {
     /// reverse transformation. May not be implemented or may return
     /// approximate result
     virtual void reverse_transform(idx_t n, const float* xt, float* x) const;
+
+    // check that the two transforms are identical (to merge indexes)
+    virtual void check_identical(const VectorTransform& other) const = 0;
 
     virtual ~VectorTransform() {}
 };
@@ -105,6 +106,8 @@ struct LinearTransform : VectorTransform {
             int n,
             int d) const;
 
+    void check_identical(const VectorTransform& other) const override;
+
     ~LinearTransform() override {}
 };
 
@@ -117,7 +120,7 @@ struct RandomRotationMatrix : LinearTransform {
     /// must be called before the transform is used
     void init(int seed);
 
-    // intializes with an arbitrary seed
+    // initializes with an arbitrary seed
     void train(idx_t n, const float* x) override;
 
     RandomRotationMatrix() {}
@@ -212,6 +215,8 @@ struct ITQTransform : VectorTransform {
     void train(idx_t n, const float* x) override;
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
+
+    void check_identical(const VectorTransform& other) const override;
 };
 
 struct ProductQuantizer;
@@ -265,6 +270,8 @@ struct RemapDimensionsTransform : VectorTransform {
     void reverse_transform(idx_t n, const float* xt, float* x) const override;
 
     RemapDimensionsTransform() {}
+
+    void check_identical(const VectorTransform& other) const override;
 };
 
 /** per-vector normalization */
@@ -278,6 +285,8 @@ struct NormalizationTransform : VectorTransform {
 
     /// Identity transform since norm is not revertible
     void reverse_transform(idx_t n, const float* xt, float* x) const override;
+
+    void check_identical(const VectorTransform& other) const override;
 };
 
 /** Subtract the mean of each component from the vectors. */
@@ -295,6 +304,8 @@ struct CenteringTransform : VectorTransform {
 
     /// add the mean
     void reverse_transform(idx_t n, const float* xt, float* x) const override;
+
+    void check_identical(const VectorTransform& other) const override;
 };
 
 } // namespace faiss

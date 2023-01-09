@@ -8,7 +8,6 @@
 // -*- c++ -*-
 
 #include <faiss/impl/PolysemousTraining.h>
-#include "faiss/impl/FaissAssert.h"
 
 #include <omp.h>
 #include <stdint.h>
@@ -906,7 +905,7 @@ void PolysemousTraining::optimize_ranking(
         ScopeDeleter1<PermutationObjective> del(obj);
 
         if (verbose > 0) {
-            printf("   m=%d, nq=%zd, nb=%zd, intialize RankingScore "
+            printf("   m=%d, nq=%zd, nb=%zd, initialize RankingScore "
                    "in %.3f ms\n",
                    m,
                    nq,

@@ -130,7 +130,7 @@ int main() {
                k,
                nq);
 
-        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<faiss::idx_t> nns(k * nq);
         std::vector<float> dis(k * nq);
 
         index.search(nq, queries.data(), k, dis.data(), nns.data());

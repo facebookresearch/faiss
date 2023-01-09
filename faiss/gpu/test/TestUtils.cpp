@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cuda_fp16.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
@@ -74,6 +75,15 @@ std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim) {
     return v;
 }
 
+std::vector<float> roundToHalf(const std::vector<float>& v) {
+    auto out = std::vector<float>(v.size());
+    for (int i = 0; i < v.size(); ++i) {
+        out[i] = __half2float(__float2half(v[i]));
+    }
+
+    return out;
+}
+
 void compareIndices(
         const std::vector<float>& queryVecs,
         faiss::Index& refIndex,
@@ -87,7 +97,7 @@ void compareIndices(
         float pctMaxDiffN) {
     // Compare
     std::vector<float> refDistance(numQuery * k, 0);
-    std::vector<faiss::Index::idx_t> refIndices(numQuery * k, -1);
+    std::vector<faiss::idx_t> refIndices(numQuery * k, -1);
     refIndex.search(
             numQuery,
             queryVecs.data(),
@@ -96,7 +106,7 @@ void compareIndices(
             refIndices.data());
 
     std::vector<float> testDistance(numQuery * k, 0);
-    std::vector<faiss::Index::idx_t> testIndices(numQuery * k, -1);
+    std::vector<faiss::idx_t> testIndices(numQuery * k, -1);
     testIndex.search(
             numQuery,
             queryVecs.data(),
@@ -181,9 +191,9 @@ inline T lookup(const T* p, int i, int j, int /*dim1*/, int dim2) {
 
 void compareLists(
         const float* refDist,
-        const faiss::Index::idx_t* refInd,
+        const faiss::idx_t* refInd,
         const float* testDist,
-        const faiss::Index::idx_t* testInd,
+        const faiss::idx_t* testInd,
         int dim1,
         int dim2,
         const std::string& configMsg,
@@ -200,10 +210,10 @@ void compareLists(
     int numResults = dim1 * dim2;
 
     // query -> {index -> result position}
-    std::vector<std::unordered_map<faiss::Index::idx_t, int>> refIndexMap;
+    std::vector<std::unordered_map<faiss::idx_t, int>> refIndexMap;
 
     for (int query = 0; query < dim1; ++query) {
-        std::unordered_map<faiss::Index::idx_t, int> indices;
+        std::unordered_map<faiss::idx_t, int> indices;
 
         for (int result = 0; result < dim2; ++result) {
             indices[lookup(refInd, query, result, dim1, dim2)] = result;
@@ -227,7 +237,7 @@ void compareLists(
 
     for (int query = 0; query < dim1; ++query) {
         std::vector<int> diffs;
-        std::set<faiss::Index::idx_t> uniqueIndices;
+        std::set<faiss::idx_t> uniqueIndices;
 
         auto& indices = refIndexMap[query];
 

@@ -18,9 +18,9 @@
 
 void compareBinaryDist(
         const std::vector<int>& cpuDist,
-        const std::vector<faiss::IndexBinary::idx_t>& cpuLabels,
+        const std::vector<faiss::idx_t>& cpuLabels,
         const std::vector<int>& gpuDist,
-        const std::vector<faiss::IndexBinary::idx_t>& gpuLabels,
+        const std::vector<faiss::idx_t>& gpuLabels,
         int numQuery,
         int k) {
     for (int i = 0; i < numQuery; ++i) {
@@ -29,8 +29,8 @@ void compareBinaryDist(
         // encounters the values. The last set of equivalent distances seen in
         // the min-k might be truncated, so we can't check that set, but all
         // others we can check.
-        std::set<faiss::IndexBinary::idx_t> cpuLabelSet;
-        std::set<faiss::IndexBinary::idx_t> gpuLabelSet;
+        std::set<faiss::idx_t> cpuLabelSet;
+        std::set<faiss::idx_t> gpuLabelSet;
 
         int curDist = -1;
 
@@ -89,13 +89,13 @@ void testGpuIndexBinaryFlat(int kOverride = -1) {
     auto query = faiss::gpu::randBinaryVecs(numQuery, dims);
 
     std::vector<int> cpuDist(numQuery * k);
-    std::vector<faiss::IndexBinary::idx_t> cpuLabels(numQuery * k);
+    std::vector<faiss::idx_t> cpuLabels(numQuery * k);
 
     cpuIndex.search(
             numQuery, query.data(), k, cpuDist.data(), cpuLabels.data());
 
     std::vector<int> gpuDist(numQuery * k);
-    std::vector<faiss::IndexBinary::idx_t> gpuLabels(numQuery * k);
+    std::vector<faiss::idx_t> gpuLabels(numQuery * k);
 
     gpuIndex.search(
             numQuery, query.data(), k, gpuDist.data(), gpuLabels.data());

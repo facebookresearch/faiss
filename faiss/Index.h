@@ -18,7 +18,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 2
+#define FAISS_VERSION_PATCH 3
 
 /**
  * @namespace faiss
@@ -62,7 +62,6 @@ struct SearchParameters {
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 

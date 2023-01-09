@@ -270,7 +270,7 @@ void GpuIndexIVFPQ::updateQuantizer() {
     }
 }
 
-void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
+void GpuIndexIVFPQ::trainResidualQuantizer_(idx_t n, const float* x) {
     // Code largely copied from faiss::IndexIVFPQ
     auto x_in = x;
 
@@ -288,7 +288,7 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
         printf("computing residuals\n");
     }
 
-    std::vector<Index::idx_t> assign(n);
+    std::vector<idx_t> assign(n);
     quantizer->assign(n, x, assign.data());
 
     std::vector<float> residuals(n * d);
@@ -347,12 +347,12 @@ void GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
     index_->setPrecomputedCodes(quantizer, usePrecomputedTables_);
 }
 
-void GpuIndexIVFPQ::train(Index::idx_t n, const float* x) {
+void GpuIndexIVFPQ::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
     // For now, only support <= max int results
     FAISS_THROW_IF_NOT_FMT(
-            n <= (Index::idx_t)std::numeric_limits<int>::max(),
+            n <= (idx_t)std::numeric_limits<int>::max(),
             "GPU index only supports up to %d indices",
             std::numeric_limits<int>::max());
 

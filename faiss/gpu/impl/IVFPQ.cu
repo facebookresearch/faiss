@@ -129,12 +129,12 @@ Tensor<float, 3, true> IVFPQ::getPQCentroids() {
 void IVFPQ::appendVectors_(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfCentroidResiduals,
-        Tensor<Index::idx_t, 1, true>& indices,
-        Tensor<Index::idx_t, 1, true>& uniqueLists,
+        Tensor<idx_t, 1, true>& indices,
+        Tensor<idx_t, 1, true>& uniqueLists,
         Tensor<int, 1, true>& vectorsByUniqueList,
         Tensor<int, 1, true>& uniqueListVectorStart,
         Tensor<int, 1, true>& uniqueListStartOffset,
-        Tensor<Index::idx_t, 1, true>& listIds,
+        Tensor<idx_t, 1, true>& listIds,
         Tensor<int, 1, true>& listOffset,
         cudaStream_t stream) {
     //
@@ -376,22 +376,15 @@ void IVFPQ::precomputeCodes_(Index* quantizer) {
     //         => (sub q) x {(centroid id)(code id)}
     //         => (sub q)(centroid id)(code id)
 
-    // First, gather all of the IVF centroids from our quantizer via
-    // reconstruction.
-    DeviceTensor<float, 2, true> ivfCentroids(
-            resources_,
-            makeTempAlloc(AllocType::QuantizerPrecomputedCodes, stream),
-            {(int)getNumLists(), getDim()});
-
-    auto gpuQuantizer = tryCastGpuIndex(quantizer);
-    if (gpuQuantizer) {
-        gpuQuantizer->reconstruct_n(0, getNumLists(), ivfCentroids.data());
-    } else {
-        auto ivfCentroidsHost = std::vector<float>(getNumLists() * getDim());
-
-        quantizer->reconstruct_n(0, getNumLists(), ivfCentroidsHost.data());
-        ivfCentroids.copyFrom(ivfCentroidsHost, stream);
-    }
+    // Whether or not there is a CPU or GPU coarse quantizer, updateQuantizer()
+    // should have been called to reconstruct as float32 the IVF centroids to
+    // have the data available on the GPU
+    FAISS_THROW_IF_NOT_MSG(
+            ivfCentroids_.getSize(0) == getNumLists() &&
+                    ivfCentroids_.getSize(1) == getDim(),
+            "IVFPQ::precomputeCodes: coarse quantizer data "
+            "not synchronized on GPU; must call updateQuantizer() "
+            "before continuing");
 
     // View (centroid id)(dim) as
     //      (centroid id)(sub q)(dim)
@@ -499,7 +492,7 @@ void IVFPQ::search(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     // These are caught at a higher level
     FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
@@ -516,7 +509,7 @@ void IVFPQ::search(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
-    DeviceTensor<Index::idx_t, 2, true> coarseIndices(
+    DeviceTensor<idx_t, 2, true> coarseIndices(
             resources_,
             makeTempAlloc(AllocType::Other, stream),
             {queries.getSize(0), nprobe});
@@ -544,10 +537,10 @@ void IVFPQ::searchPreassigned(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& ivfDistances,
-        Tensor<Index::idx_t, 2, true>& ivfAssignments,
+        Tensor<idx_t, 2, true>& ivfAssignments,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     FAISS_ASSERT(ivfDistances.getSize(0) == vecs.getSize(0));
     FAISS_ASSERT(ivfAssignments.getSize(0) == vecs.getSize(0));
@@ -572,10 +565,10 @@ void IVFPQ::searchPreassigned(
 void IVFPQ::searchImpl_(
         Tensor<float, 2, true>& queries,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool storePairs) {
     FAISS_ASSERT(storePairs == false);
 
@@ -606,7 +599,7 @@ void IVFPQ::searchImpl_(
     // FIXME: we might ultimately be calling this function with inputs
     // from the CPU, these are unnecessary copies
     if (indicesOptions_ == INDICES_CPU) {
-        HostTensor<Index::idx_t, 2, true> hostOutIndices(outIndices, stream);
+        HostTensor<idx_t, 2, true> hostOutIndices(outIndices, stream);
 
         ivfOffsetToUserIndex(
                 hostOutIndices.data(),
@@ -624,10 +617,10 @@ void IVFPQ::searchImpl_(
 void IVFPQ::runPQPrecomputedCodes_(
         Tensor<float, 2, true>& queries,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     FAISS_ASSERT(metric_ == MetricType::METRIC_L2);
 
     auto stream = resources_->getDefaultStreamCurrentDevice();
@@ -712,10 +705,10 @@ void IVFPQ::runPQPrecomputedCodes_(
 void IVFPQ::runPQNoPrecomputedCodes_(
         Tensor<float, 2, true>& queries,
         Tensor<float, 2, true>& coarseDistances,
-        Tensor<Index::idx_t, 2, true>& coarseIndices,
+        Tensor<idx_t, 2, true>& coarseIndices,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     runPQScanMultiPassNoPrecomputed(
             queries,
             ivfCentroids_,

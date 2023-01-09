@@ -84,7 +84,7 @@ namespace faiss {
 static void write_index_header(const Index* idx, IOWriter* f) {
     WRITE1(idx->d);
     WRITE1(idx->ntotal);
-    Index::idx_t dummy = 1 << 20;
+    idx_t dummy = 1 << 20;
     WRITE1(dummy);
     WRITE1(dummy);
     WRITE1(idx->is_trained);
@@ -373,7 +373,6 @@ static void write_direct_map(const DirectMap* dm, IOWriter* f) {
     WRITE1(maintain_direct_map);
     WRITEVECTOR(dm->array);
     if (dm->type == DirectMap::Hashtable) {
-        using idx_t = Index::idx_t;
         std::vector<std::pair<idx_t, idx_t>> v;
         const std::unordered_map<idx_t, idx_t>& map = dm->hashtable;
         v.resize(map.size());
@@ -615,7 +614,7 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(h);
         write_ivf_header(ivfl, f);
         {
-            std::vector<Index::idx_t> tab(2 * ivfl->instances.size());
+            std::vector<idx_t> tab(2 * ivfl->instances.size());
             long i = 0;
             for (auto it = ivfl->instances.begin(); it != ivfl->instances.end();
                  ++it) {
@@ -900,7 +899,7 @@ static void write_binary_multi_hash_map(
         size_t ntotal,
         IOWriter* f) {
     int id_bits = 0;
-    while ((ntotal > ((Index::idx_t)1 << id_bits))) {
+    while ((ntotal > ((idx_t)1 << id_bits))) {
         id_bits++;
     }
     WRITE1(id_bits);

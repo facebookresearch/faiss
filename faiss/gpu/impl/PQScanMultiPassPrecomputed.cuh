@@ -23,7 +23,7 @@ void runPQScanMultiPassPrecomputed(
         Tensor<float, 2, true>& precompTerm1,
         NoTypeTensor<3, true>& precompTerm2,
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<Index::idx_t, 2, true>& ivfListIds,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
@@ -38,7 +38,7 @@ void runPQScanMultiPassPrecomputed(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res);
 
 } // namespace gpu

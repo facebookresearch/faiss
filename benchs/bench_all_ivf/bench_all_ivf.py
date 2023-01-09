@@ -3,15 +3,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import argparse
 import os
 import sys
 import time
-import pdb
-import numpy as np
+
 import faiss
-import argparse
-import datasets
-from datasets import sanitize
+import numpy as np
+
+try:
+    import datasets_fb as datasets
+except ModuleNotFoundError:
+    import datasets_oss as datasets
+
+sanitize = datasets.sanitize
 
 
 ######################################################
@@ -262,8 +267,7 @@ else:
         print("Getting centroids from", args.get_centroids_from)
         src_index = faiss.read_index(args.get_centroids_from)
         src_quant = faiss.downcast_index(src_index.quantizer)
-        centroids = faiss.vector_to_array(src_quant.xb)
-        centroids = centroids.reshape(-1, d)
+        centroids = src_quant.reconstruct_n()
         print("  centroid table shape", centroids.shape)
 
         if isinstance(vec_transform, faiss.VectorTransform):
@@ -333,7 +337,7 @@ print("precomputed tables size:", precomputed_table_size)
 
 xq = sanitize(ds.get_queries())
 gt = ds.get_groundtruth(k=args.k)
-assert gt.shape[1] == args.k, pdb.set_trace()
+assert gt.shape[1] == args.k
 
 if args.searchthreads != -1:
     print("Setting nb of threads to", args.searchthreads)

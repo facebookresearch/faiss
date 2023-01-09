@@ -25,7 +25,6 @@ struct IndexNNDescent : Index {
     using storage_idx_t = NNDescent::storage_idx_t;
 
     /// Faiss results are 64-bit
-    using idx_t = Index::idx_t;
 
     // the link strcuture
     NNDescent nndescent;

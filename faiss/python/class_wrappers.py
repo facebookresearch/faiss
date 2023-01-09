@@ -476,16 +476,16 @@ def handle_Index(the_class):
         self.reconstruct_batch_c(n, swig_ptr(key), swig_ptr(x))
         return x
 
-    def replacement_reconstruct_n(self, n0, ni, x=None):
+    def replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
         """Approximate reconstruction of vectors `n0` ... `n0 + ni - 1` from the index.
         Missing vectors trigger an exception.
 
         Parameters
         ----------
         n0 : int
-            Id of the first vector to reconstruct
+            Id of the first vector to reconstruct (default 0)
         ni : int
-            Number of vectors to reconstruct
+            Number of vectors to reconstruct (-1 = default = ntotal)
         x : array_like, optional
             pre-allocated array to store the results
 
@@ -494,6 +494,8 @@ def handle_Index(the_class):
         x : array_like
             Reconstructed vectors, size (`ni`, `self.d`), `dtype`=float32
         """
+        if ni == -1:
+            ni = self.ntotal
         if x is None:
             x = np.empty((ni, self.d), dtype=np.float32)
         else:
@@ -805,6 +807,26 @@ def handle_IndexRowwiseMinMax(the_class):
     replace_method(the_class, 'train_inplace', replacement_train_inplace)
 
 
+def handle_CodePacker(the_class):
+
+    def replacement_pack_1(self, x, offset, block):
+        assert x.shape == (self.code_size,)
+        nblock, block_size = block.shape
+        assert block_size == self.block_size
+        assert 0 <= offset < block_size * self.nvec
+        self.pack_1_c(swig_ptr(x), offset, faiss.swig_ptr(block))
+
+    def replacement_unpack_1(self, block, offset):
+        nblock, block_size = block.shape
+        assert block_size == self.block_size
+        assert 0 <= offset < block_size * self.nvec
+        x = np.zeros(self.code_size, dtype='uint8')
+        self.unpack_1_c(faiss.swig_ptr(block), offset, swig_ptr(x))
+        return x
+
+    replace_method(the_class, 'pack_1', replacement_pack_1)
+    replace_method(the_class, 'unpack_1', replacement_unpack_1)
+
 ######################################################
 # MapLong2Long interface
 ######################################################
@@ -825,7 +847,7 @@ def handle_MapLong2Long(the_class):
 
     replace_method(the_class, 'add', replacement_map_add)
     replace_method(the_class, 'search_multiple',
-                replacement_map_search_multiple)
+                   replacement_map_search_multiple)
 
 
 ######################################################
@@ -838,6 +860,7 @@ def add_to_referenced_objects(self, ref):
         self.referenced_objects = [ref]
     else:
         self.referenced_objects.append(ref)
+
 
 def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form

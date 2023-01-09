@@ -54,8 +54,8 @@ struct Level1Quantizer {
 
     /// compute the number of bytes required to store list ids
     size_t coarse_code_size() const;
-    void encode_listno(Index::idx_t list_no, uint8_t* code) const;
-    Index::idx_t decode_listno(const uint8_t* code) const;
+    void encode_listno(idx_t list_no, uint8_t* code) const;
+    idx_t decode_listno(const uint8_t* code) const;
 
     Level1Quantizer(Index* quantizer, size_t nlist);
 
@@ -78,6 +78,7 @@ using IVFSearchParameters = SearchParametersIVF;
 
 struct InvertedListScanner;
 struct IndexIVFStats;
+struct CodePacker;
 
 /** Index based on a inverted file (IVF)
  *
@@ -317,12 +318,11 @@ struct IndexIVF : Index, Level1Quantizer {
 
     virtual void merge_from(Index& otherIndex, idx_t add_id) override;
 
+    // returns a new instance of a CodePacker
+    virtual CodePacker* get_CodePacker() const;
+
     /** copy a subset of the entries index to the other index
-     *
-     * if subset_type == 0: copies ids in [a1, a2)
-     * if subset_type == 1: copies ids if id % a1 == a2
-     * if subset_type == 2: copies inverted lists such that a1
-     *                      elements are left before and a2 elements are after
+     * see Invlists::copy_subset_to for the meaning of subset_type
      */
     virtual void copy_subset_to(
             IndexIVF& other,
@@ -339,7 +339,7 @@ struct IndexIVF : Index, Level1Quantizer {
     /// are the ids sorted?
     bool check_ids_sorted() const;
 
-    /** intialize a direct map
+    /** initialize a direct map
      *
      * @param new_maintain_direct_map    if true, create a direct map,
      *                                   else clear it
@@ -353,7 +353,6 @@ struct IndexIVF : Index, Level1Quantizer {
 
     /* The standalone codec interface (except sa_decode that is specific) */
     size_t sa_code_size() const override;
-
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     IndexIVF();
@@ -366,8 +365,6 @@ struct RangeQueryResult;
  * distance_to_code and scan_codes can be called in multiple
  * threads */
 struct InvertedListScanner {
-    using idx_t = Index::idx_t;
-
     idx_t list_no = -1;    ///< remember current list
     bool keep_max = false; ///< keep maximum instead of minimum
     /// store positions in invlists rather than labels
@@ -426,6 +423,9 @@ struct InvertedListScanner {
 
     virtual ~InvertedListScanner() {}
 };
+
+// whether to check that coarse quantizers are the same
+FAISS_API extern bool check_compatible_for_merge_expensive_check;
 
 struct IndexIVFStats {
     size_t nq;                // nb of queries run

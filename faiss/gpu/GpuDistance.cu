@@ -40,10 +40,28 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
             args.outIndices || args.k == -1,
             "bfKnn: outIndices must be provided (passed null)");
 
+    // If the user specified a device, then ensure that it is currently set
+    int device = -1;
+    if (args.device == -1) {
+        // Original behavior if no device is specified, use the current CUDA
+        // thread local device
+        device = getCurrentDevice();
+    } else {
+        // Otherwise, use the device specified in `args`
+        device = args.device;
+
+        FAISS_THROW_IF_NOT_FMT(
+                device >= 0 && device < getNumDevices(),
+                "bfKnn: device specified must be -1 (current CUDA thread local device) "
+                "or within the range [0, %d)",
+                getNumDevices());
+    }
+
+    DeviceScope scope(device);
+
     // Don't let the resources go out of scope
     auto resImpl = prov->getResources();
     auto res = resImpl.get();
-    auto device = getCurrentDevice();
     auto stream = res->getDefaultStreamCurrentDevice();
 
     auto tVectors = toDeviceTemporary<T, 2>(
@@ -118,20 +136,18 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 tOutIntIndices,
                 args.ignoreOutDistances);
         // Convert and copy int indices out
-        auto tOutIndices = toDeviceTemporary<Index::idx_t, 2>(
+        auto tOutIndices = toDeviceTemporary<idx_t, 2>(
                 res,
                 device,
-                (Index::idx_t*)args.outIndices,
+                (idx_t*)args.outIndices,
                 stream,
                 {args.numQueries, args.k});
 
         // Convert int to idx_t
-        convertTensor<int, Index::idx_t, 2>(
-                stream, tOutIntIndices, tOutIndices);
+        convertTensor<int, idx_t, 2>(stream, tOutIntIndices, tOutIndices);
 
         // Copy back if necessary
-        fromDevice<Index::idx_t, 2>(
-                tOutIndices, (Index::idx_t*)args.outIndices, stream);
+        fromDevice<idx_t, 2>(tOutIndices, (idx_t*)args.outIndices, stream);
 
     } else if (args.outIndicesType == IndicesDataType::I32) {
         // We can use the brute-force API directly, as it takes i32 indices
@@ -210,7 +226,7 @@ void bruteForceKnn(
         float* outDistances,
         // A region of memory size numQueries x k, with k
         // innermost
-        Index::idx_t* outIndices) {
+        idx_t* outIndices) {
     std::cerr << "bruteForceKnn is deprecated; call bfKnn instead" << std::endl;
 
     GpuDistanceParams args;

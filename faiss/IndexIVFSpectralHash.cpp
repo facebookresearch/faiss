@@ -213,8 +213,6 @@ struct IVFScanner : InvertedListScanner {
     std::vector<uint8_t> qcode;
     HammingComputer hc;
 
-    using idx_t = Index::idx_t;
-
     IVFScanner(const IndexIVFSpectralHash* index, bool store_pairs)
             : index(index),
               nbit(index->nbit),

@@ -284,6 +284,17 @@ class TestImplems(unittest.TestCase):
             index2.implem = 4
             Dref, Iref = index2.search(ds.get_queries(), 10)
 
+            # check CodePacker
+            codes_ref = faiss.vector_to_array(index.codes)
+            codes_ref = codes_ref.reshape(-1, index.code_size)
+            index2codes = faiss.vector_to_array(index2.codes)
+            code_packer = index2.get_CodePacker()
+            index2codes = index2codes.reshape(-1, code_packer.block_size)
+
+            for i in range(0, len(codes_ref), 13):
+                code_new = code_packer.unpack_1(index2codes, i)
+                np.testing.assert_array_equal(codes_ref[i], code_new)
+
             self.cache[(d, metric)] = (ds, index, Dref, Iref)
 
         return self.cache[(d, metric)]
@@ -300,12 +311,10 @@ class TestImplems(unittest.TestCase):
 
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
 
-
     def build_fast_scan_index(self, index, params):
         index2 = faiss.IndexPQFastScan(index)
         index2.implem = 5
         return index2
-
 
 
 class TestImplem12(TestImplems):
@@ -402,6 +411,7 @@ class TestImplem15(TestImplems):
 
     def test_2_64(self):
         self.do_with_params(32, (2, 64))
+
 
 class TestAdd(unittest.TestCase):
 
@@ -661,7 +671,7 @@ class TestPAQFastScan(unittest.TestCase):
 
     def test_accuracy_PLSQ(self):
         self.subtest_accuracy("PLSQ")
-    
+
     def test_accuracy_PRQ(self):
         self.subtest_accuracy("PRQ")
 

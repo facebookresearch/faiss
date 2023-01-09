@@ -103,6 +103,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexNSG.h>
 
 #include <faiss/MetaIndexes.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexRefine.h>
 
 #include <faiss/IndexRowwiseMinMax.h>
@@ -121,6 +122,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
@@ -134,6 +136,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
+#include  <faiss/impl/CodePacker.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -379,10 +382,13 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/utils.h>
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
+%include  <faiss/utils/sorting.h>
 
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
+%newobject *::get_CodePacker() const;
+
 %include  <faiss/Index.h>
 
 %include <faiss/impl/DistanceComputer.h>
@@ -402,6 +408,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
+%include  <faiss/impl/CodePacker.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -482,6 +489,7 @@ void gpu_sync_all_devices()
 %template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
 
 %include  <faiss/MetaIndexes.h>
+%include  <faiss/IndexIDMap.h>
 %template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
 %template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
@@ -500,7 +508,7 @@ void gpu_sync_all_devices()
 %include <faiss/impl/AuxIndexStructures.h>
 %include <faiss/impl/IDSelector.h>
 
-
+%include <faiss/utils/approx_topk/approx_topk.h>
 
 #ifdef GPU_WRAPPER
 
@@ -610,12 +618,14 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
+    DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
@@ -1004,8 +1014,8 @@ float * cast_integer_to_float_ptr (int64_t x) {
     return (float*)x;
 }
 
-faiss::Index::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
-    return (faiss::Index::idx_t*)x;
+faiss::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
+    return (faiss::idx_t*)x;
 }
 
 int * cast_integer_to_int_ptr (int64_t x) {

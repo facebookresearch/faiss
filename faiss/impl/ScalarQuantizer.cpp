@@ -54,7 +54,6 @@ namespace faiss {
 
 namespace {
 
-typedef Index::idx_t idx_t;
 typedef ScalarQuantizer::QuantizerType QuantizerType;
 typedef ScalarQuantizer::RangeStat RangeStat;
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
@@ -1131,7 +1130,7 @@ void ScalarQuantizer::train_residual(
     ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<Index::idx_t> idx(n);
+        std::vector<idx_t> idx(n);
         quantizer->assign(n, x, idx.data());
 
         std::vector<float> residuals(n * d);

@@ -19,10 +19,7 @@
 #include <stdint.h>
 #include <string>
 
-#ifdef _MSC_VER
-#define strtok_r strtok_s
-#endif // _MSC_VER
-
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
@@ -113,10 +110,6 @@ double imbalance_factor(int n, int k, const int64_t* assign);
 /// same, takes a histogram as input
 double imbalance_factor(int k, const int* hist);
 
-void fvec_argsort(size_t n, const float* vals, size_t* perm);
-
-void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm);
-
 /// compute histogram on v
 int ivec_hist(size_t n, const int* v, int vmax, int* hist);
 
@@ -128,7 +121,7 @@ int ivec_hist(size_t n, const int* v, int vmax, int* hist);
 void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist);
 
 /// compute a checksum on a table.
-size_t ivec_checksum(size_t n, const int* a);
+size_t ivec_checksum(size_t n, const int32_t* a);
 
 /** random subsamples a set of vectors if there are too many of them
  *

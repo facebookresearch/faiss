@@ -10,11 +10,23 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
 
+## [1.7.3] - 2022-11-3
+### Added
 - Added sparse k-means routines and moved the generic kmeans to contrib
 - Added FlatDistanceComputer for all FlatCodes indexes
 - Support for fast accumulation of 4-bit LSQ and RQ
 - Added product additive quantization
 - Support per-query search parameters for many indexes + filtering by ids
+- write_VectorTransform and read_vectorTransform were added to the public API (by @AbdelrahmanElmeniawy)
+- Support for IDMap2 in index_factory by adding "IDMap2" to prefix or suffix of the input String (by @AbdelrahmanElmeniawy)
+- Support for merging all IndexFlatCodes descendants (by @AbdelrahmanElmeniawy)
+- Remove and merge features for IndexFastScan (by @AbdelrahmanElmeniawy)
+- Performance improvements: 1) specialized the AVX2 pieces of code speeding up certain hotspots, 2) specialized kernels for vector codecs (this can be found in faiss/cppcontrib)
+
+
+### Fixed
+- Fixed memory leak in OnDiskInvertedLists::do_mmap when the file is not closed (by @AbdelrahmanElmeniawy)
+- LSH correctly throws error for metric types other than METRIC_L2 (by @AbdelrahmanElmeniawy)
 
 ## [1.7.2] - 2021-12-15
 ### Added
@@ -213,6 +225,7 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - Extended tutorial to GPU indices.
 
 [Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[1.7.3]: https://github.com/facebookresearch/faiss/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/facebookresearch/faiss/compare/v1.6.5...v1.7.0
