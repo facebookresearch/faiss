@@ -422,7 +422,7 @@ void initialize_IVFPQ_precomputed_table(
         const Index* quantizer,
         const ProductQuantizer& pq,
         AlignedTable<float>& precomputed_table,
-        bool& by_residual,
+        bool by_residual,
         bool verbose) {
     size_t nlist = quantizer->ntotal;
     size_t d = quantizer->d;
