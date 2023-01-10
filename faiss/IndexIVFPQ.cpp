@@ -437,7 +437,7 @@ void initialize_IVFPQ_precomputed_table(
         if (!(quantizer->metric_type == METRIC_L2 && by_residual)) {
             if (verbose) {
                 printf("IndexIVFPQ::precompute_table: precomputed "
-                       "tables not needed only if L2 quantizer and by_residual is enabled\n");
+                       "tables needed only for L2 metric and by_residual is enabled\n");
             }
             precomputed_table.resize(0);
             return;
