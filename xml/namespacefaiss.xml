@@ -652,7 +652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFPQ.h" line="186" column="34" declfile="faiss/IndexIVFPQ.h" declline="186" declcolumn="34"/>
+        <location file="faiss/IndexIVFPQ.h" line="187" column="34" declfile="faiss/IndexIVFPQ.h" declline="187" declcolumn="34"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a386cc28ead8e63ddabac9f1f9be8ff7e" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexPQStats" kindref="compound">IndexPQStats</ref></type>
@@ -1426,10 +1426,10 @@
         </inbodydescription>
         <location file="faiss/index_io.h" line="80" column="15" declfile="faiss/index_io.h" declline="80" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a08f648e8a7cb35af103a982fee81986e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::initialize_IVFPQ_precomputed_table</definition>
-        <argsstring>(int &amp;use_precomputed_table, const Index *quantizer, const ProductQuantizer &amp;pq, AlignedTable&lt; float &gt; &amp;precomputed_table, bool verbose)</argsstring>
+        <argsstring>(int &amp;use_precomputed_table, const Index *quantizer, const ProductQuantizer &amp;pq, AlignedTable&lt; float &gt; &amp;precomputed_table, bool by_residual, bool verbose)</argsstring>
         <name>initialize_IVFPQ_precomputed_table</name>
         <param>
           <type>int &amp;</type>
@@ -1446,6 +1446,10 @@
         <param>
           <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; float &gt; &amp;</type>
           <declname>precomputed_table</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>by_residual</declname>
         </param>
         <param>
           <type>bool</type>
