@@ -43,7 +43,7 @@ class RaftIVFFlat : public IVFFlat {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices) override;
+            Tensor<idx_t, 2, true>& outIndices) override;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)
@@ -51,10 +51,10 @@ class RaftIVFFlat : public IVFFlat {
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<float, 2, true>& ivfDistances,
-            Tensor<Index::idx_t, 2, true>& ivfAssignments,
+            Tensor<idx_t, 2, true>& ivfAssignments,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<Index::idx_t, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool storePairs) override;
 
     /// Classify and encode/add vectors to our IVF lists.
@@ -64,7 +64,7 @@ class RaftIVFFlat : public IVFFlat {
     int addVectors(
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
-            Tensor<Index::idx_t, 1, true>& indices) override;
+            Tensor<idx_t, 1, true>& indices) override;
 
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
@@ -75,7 +75,7 @@ class RaftIVFFlat : public IVFFlat {
     int getListLength(int listId) const override;
 
     /// Return the list indices of a particular list back to the CPU
-    std::vector<Index::idx_t> getListIndices(int listId) const override;
+    std::vector<idx_t> getListIndices(int listId) const override;
 
     /// Return the encoded vectors of a particular list back to the CPU
     std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const override;
@@ -102,7 +102,7 @@ class RaftIVFFlat : public IVFFlat {
 //            size_t numVecs) override;
 
 
-    std::optional<raft::neighbors::ivf_flat::index<float, Index::idx_t>> raft_knn_index{std::nullopt};
+    std::optional<raft::neighbors::ivf_flat::index<float, idx_t>> raft_knn_index{std::nullopt};
 
 };
 

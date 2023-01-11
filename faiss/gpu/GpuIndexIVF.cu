@@ -475,7 +475,7 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         raft_idx_params.kmeans_n_iters = 100;
 
         auto raft_index = raft::neighbors::ivf_flat::build(
-            raft_handle, raft_idx_params, x, n, (Index::idx_t)d);
+            raft_handle, raft_idx_params, x, n, (idx_t)d);
 
         raft_handle.sync_stream();
 
