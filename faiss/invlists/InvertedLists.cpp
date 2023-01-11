@@ -94,7 +94,7 @@ size_t InvertedLists::copy_subset_to(
     FAISS_THROW_IF_NOT(nlist == oivf.nlist);
     FAISS_THROW_IF_NOT(code_size == oivf.code_size);
     FAISS_THROW_IF_NOT_FMT(
-            subset_type >= 0 && subset_type <= 3,
+            subset_type >= 0 && subset_type <= 4,
             "subset type %d not implemented",
             subset_type);
     size_t accu_n = 0;
@@ -163,6 +163,15 @@ size_t InvertedLists::copy_subset_to(
             }
 
             n_added += i2 - i1;
+        } else if (subset_type == 4) {
+            if (list_no >= a1 && list_no < a2) {
+                oivf.add_entries(
+                        list_no,
+                        n,
+                        ScopedIds(this, list_no).get(),
+                        ScopedCodes(this, list_no).get());
+                n_added += n;
+            }
         }
         accu_n += n;
     }

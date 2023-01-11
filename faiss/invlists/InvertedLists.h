@@ -120,6 +120,7 @@ struct InvertedLists {
      *                      (insensitive to ids)
      * if subset_type == 3: take fraction a2 out of a1 from each invlist
      *                      (does not depend on ids). 0 <= a2 < a1
+     * if subset_type == 4: copy only inverted lists a1:a2
      * @return number of entries copied
      */
     size_t copy_subset_to(

@@ -33,92 +33,6 @@ void translate_labels(long n, idx_t* labels, long translation) {
     }
 }
 
-/** Merge result tables from several shards. The per-shard results are assumed
- * to be sorted. Note that the C comparator is reversed w.r.t. the usual top-k
- * element heap because we want the best (ie. lowest for L2) result to be on
- * top, not the worst.
- *
- * @param all_distances  size nshard * n * k
- * @param all_labels     idem
- * @param translations  label translations to apply, size nshard
- */
-template <class IndexClass, class C>
-void merge_tables(
-        long n,
-        long k,
-        long nshard,
-        typename IndexClass::distance_t* distances,
-        idx_t* labels,
-        const std::vector<typename IndexClass::distance_t>& all_distances,
-        const std::vector<idx_t>& all_labels,
-        const std::vector<long>& translations) {
-    if (k == 0) {
-        return;
-    }
-    using distance_t = typename IndexClass::distance_t;
-    long stride = n * k;
-#pragma omp parallel if (n * nshard * k > 100000)
-    {
-        std::vector<int> buf(2 * nshard);
-        // index in each shard's result list
-        int* pointer = buf.data();
-        // (shard_ids, heap_vals): heap that indexes
-        // shard -> current distance for this shard
-        int* shard_ids = pointer + nshard;
-        std::vector<distance_t> buf2(nshard);
-        distance_t* heap_vals = buf2.data();
-#pragma omp for
-        for (long i = 0; i < n; i++) {
-            // the heap maps values to the shard where they are
-            // produced.
-            const distance_t* D_in = all_distances.data() + i * k;
-            const idx_t* I_in = all_labels.data() + i * k;
-            int heap_size = 0;
-
-            // push the first element of each shard (if not -1)
-            for (long s = 0; s < nshard; s++) {
-                pointer[s] = 0;
-                if (I_in[stride * s] >= 0) {
-                    heap_push<C>(
-                            ++heap_size,
-                            heap_vals,
-                            shard_ids,
-                            D_in[stride * s],
-                            s);
-                }
-            }
-
-            distance_t* D = distances + i * k;
-            idx_t* I = labels + i * k;
-
-            int j;
-            for (j = 0; j < k && heap_size > 0; j++) {
-                // pop element from best shard
-                int s = shard_ids[0]; // top of heap
-                int& p = pointer[s];
-                D[j] = heap_vals[0];
-                I[j] = I_in[stride * s + p] + translations[s];
-
-                // pop from shard, advance pointer for this shard
-                heap_pop<C>(heap_size--, heap_vals, shard_ids);
-                p++;
-                if (p < k && I_in[stride * s + p] >= 0) {
-                    heap_push<C>(
-                            ++heap_size,
-                            heap_vals,
-                            shard_ids,
-                            D_in[stride * s + p],
-                            s);
-                }
-            }
-            for (; j < k; j++) {
-                I[j] = -1;
-                D[j] = C::Crev::neutral();
-            }
-        }
-    }
-}
-
 } // anonymous namespace
 
 template <typename IndexT>
@@ -303,27 +217,6 @@ void IndexShardsTemplate<IndexT>::search(
 
     std::vector<distance_t> all_distances(nshard * k * n);
     std::vector<idx_t> all_labels(nshard * k * n);
-
-    auto fn = [n, k, x, &all_distances, &all_labels](
-                      int no, const IndexT* index) {
-        if (index->verbose) {
-            printf("begin query shard %d on %" PRId64 " points\n", no, n);
-        }
-
-        index->search(
-                n,
-                x,
-                k,
-                all_distances.data() + no * k * n,
-                all_labels.data() + no * k * n);
-
-        if (index->verbose) {
-            printf("end query shard %d\n", no);
-        }
-    };
-
-    this->runOnIndex(fn);
-
     std::vector<long> translations(nshard, 0);
 
     // Because we just called runOnIndex above, it is safe to access the
@@ -336,26 +229,47 @@ void IndexShardsTemplate<IndexT>::search(
         }
     }
 
+    auto fn = [n, k, x, &all_distances, &all_labels, &translations](
+                      int no, const IndexT* index) {
+        if (index->verbose) {
+            printf("begin query shard %d on %" PRId64 " points\n", no, n);
+        }
+
+        index->search(
+                n,
+                x,
+                k,
+                all_distances.data() + no * k * n,
+                all_labels.data() + no * k * n);
+
+        translate_labels(
+                n * k, all_labels.data() + no * k * n, translations[no]);
+
+        if (index->verbose) {
+            printf("end query shard %d\n", no);
+        }
+    };
+
+    this->runOnIndex(fn);
+
     if (this->metric_type == METRIC_L2) {
-        merge_tables<IndexT, CMin<distance_t, int>>(
+        merge_knn_results<idx_t, CMin<distance_t, int>>(
                 n,
                 k,
                 nshard,
+                all_distances.data(),
+                all_labels.data(),
                 distances,
-                labels,
-                all_distances,
-                all_labels,
-                translations);
+                labels);
     } else {
-        merge_tables<IndexT, CMax<distance_t, int>>(
+        merge_knn_results<idx_t, CMax<distance_t, int>>(
                 n,
                 k,
                 nshard,
+                all_distances.data(),
+                all_labels.data(),
                 distances,
-                labels,
-                all_distances,
-                all_labels,
-                translations);
+                labels);
     }
 }
 
