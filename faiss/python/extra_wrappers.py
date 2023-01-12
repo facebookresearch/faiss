@@ -279,6 +279,23 @@ class ResultHeap:
         self.heaps.reorder()
 
 
+def merge_knn_results(Dall, Iall, keep_max=False):
+    """
+    Merge a set of sorted knn-results obtained from different shards in a dataset
+    Dall and Iall are of size (nshard, nq, k) each D[i, j] should be sorted
+    returns D, I of size (nq, k) as the merged result set
+    """
+    assert Iall.shape == Dall.shape
+    nshard, n, k = Dall.shape
+    Dnew = np.empty((n, k), dtype=Dall.dtype)
+    Inew = np.empty((n, k), dtype=Iall.dtype)
+    func = merge_knn_results_CMax if keep_max else merge_knn_results_CMin
+    func(
+        n, k, nshard,
+        swig_ptr(Dall), swig_ptr(Iall),
+        swig_ptr(Dnew), swig_ptr(Inew)
+    )
+    return Dnew, Inew
 
 ######################################################
 # KNN function

@@ -326,7 +326,7 @@ struct IndexIVF : Index, Level1Quantizer {
      */
     virtual void copy_subset_to(
             IndexIVF& other,
-            int subset_type,
+            InvertedLists::subset_type_t subset_type,
             idx_t a1,
             idx_t a2) const;
 

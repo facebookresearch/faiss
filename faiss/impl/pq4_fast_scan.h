@@ -19,7 +19,7 @@
  * otherwise register spilling becomes too large.
  *
  * The implementation of these functions is spread over 3 cpp files to reduce
- * parallel compile times. Templates are instanciated explicitly.
+ * parallel compile times. Templates are instantiated explicitly.
  */
 
 namespace faiss {

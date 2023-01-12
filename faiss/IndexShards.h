@@ -71,7 +71,7 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
      * Cases (successive_ids, xids):
      * - true, non-NULL       ERROR: it makes no sense to pass in ids and
      *                        request them to be shifted
-     * - true, NULL           OK, but should be called only once (calls add()
+     * - true, NULL           OK: but should be called only once (calls add()
      *                        on sub-indexes).
      * - false, non-NULL      OK: will call add_with_ids with passed in xids
      *                        distributed evenly over shards

@@ -189,7 +189,7 @@ void accumulate(
         DISPATCH(3);
         DISPATCH(4);
     }
-    FAISS_THROW_FMT("accumulate nq=%d not instanciated", nq);
+    FAISS_THROW_FMT("accumulate nq=%d not instantiated", nq);
 
 #undef DISPATCH
 }
@@ -263,7 +263,7 @@ void pq4_accumulate_loop_qbs(
                 DISPATCH(4);
 #undef DISPATCH
                 default:
-                    FAISS_THROW_FMT("accumulate nq=%d not instanciated", nq);
+                    FAISS_THROW_FMT("accumulate nq=%d not instantiated", nq);
             }
             i0 += nq;
             LUT += nq * nsq * 16;
