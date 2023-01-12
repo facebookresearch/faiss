@@ -166,6 +166,13 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             printf("Reconstructing %d original vectors and adding to GPU index\n", index->ntotal);
             std::vector<float> buf_host(index->ntotal * index->d);
             index->reconstruct_n(0, index->ntotal, buf_host.data());
+
+            printf("reconstructed vectors: [");
+            for(int i = 0; i < 50; ++i) {
+                printf("%f, ", buf_host[i]);
+            }
+            printf("]\n");
+
             add(index->ntotal, buf_host.data());
         }
     } else {

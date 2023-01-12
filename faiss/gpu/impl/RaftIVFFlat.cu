@@ -31,6 +31,8 @@
 #include <limits>
 #include <unordered_map>
 
+#include <raft/core/logger.hpp>
+
 namespace faiss {
 namespace gpu {
 
@@ -104,6 +106,8 @@ int RaftIVFFlat::addVectors(
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
     printf("Inside RaftIVFFlat addVectors()\n");
+
+    raft::print_device_vector("add_vectors", vecs.data(), 50, std::cout);
 
     auto vecs_view = raft::make_device_matrix_view<const float, idx_t>(vecs.data(), vecs.getSize(0), dim_);
     auto inds_view = raft::make_device_vector_view<const idx_t, idx_t>(indices.data(), (idx_t )indices.getSize(0));
@@ -226,7 +230,10 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
 
+    raft::logger::get().set_level(RAFT_LEVEL_TRACE);
+
     raft::spatial::knn::ivf_flat::index_params pams;
+    pams.add_data_on_build = false;
 
     switch (this->metric_) {
         case faiss::METRIC_L2:
