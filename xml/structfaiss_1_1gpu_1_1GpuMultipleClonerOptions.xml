@@ -25,7 +25,7 @@
         <argsstring></argsstring>
         <name>shard_type</name>
         <briefdescription>
-<para><ref refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" kindref="member">IndexIVF::copy_subset_to</ref> subset type. </para>
+<para><ref refid="structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb" kindref="member">IndexIVF::copy_subset_to</ref> subset type. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

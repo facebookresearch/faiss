@@ -248,7 +248,7 @@
         <detaileddescription>
 <para>Cases (successive_ids, xids):<itemizedlist>
 <listitem><para>true, non-NULL ERROR: it makes no sense to pass in ids and request them to be shifted</para>
-</listitem><listitem><para>true, NULL OK, but should be called only once (calls <ref refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" kindref="member">add()</ref> on sub-indexes).</para>
+</listitem><listitem><para>true, NULL OK: but should be called only once (calls <ref refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" kindref="member">add()</ref> on sub-indexes).</para>
 </listitem><listitem><para>false, non-NULL OK: will call add_with_ids with passed in xids distributed evenly over shards</para>
 </listitem><listitem><para>false, NULL OK: will call add_with_ids on each sub-index, starting at ntotal </para>
 </listitem></itemizedlist>

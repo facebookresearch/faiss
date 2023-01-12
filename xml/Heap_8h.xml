@@ -760,7 +760,7 @@
 <codeline lineno="444"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;float, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>;</highlight></codeline>
 <codeline lineno="445"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray&lt;CMax&lt;int, int64_t&gt;</ref>&gt;<sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">int_maxheap_array_t</ref>;</highlight></codeline>
 <codeline lineno="446"><highlight class="normal"></highlight></codeline>
-<codeline lineno="447"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instanciated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="447"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>heap<sp/>templates<sp/>are<sp/>instantiated<sp/>explicitly<sp/>in<sp/>Heap.cpp</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="448"><highlight class="normal"></highlight></codeline>
 <codeline lineno="449"><highlight class="normal"></highlight><highlight class="comment">/*********************************************************************</highlight></codeline>
 <codeline lineno="450"><highlight class="comment"><sp/>*<sp/>Indirect<sp/>heaps:<sp/>instead<sp/>of<sp/>having</highlight></codeline>
@@ -820,10 +820,31 @@
 <codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
 <codeline lineno="506"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="507"><highlight class="normal"></highlight></codeline>
-<codeline lineno="508"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="509"><highlight class="normal"></highlight></codeline>
-<codeline lineno="510"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="507"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="508"><highlight class="comment">/**<sp/>Merge<sp/>result<sp/>tables<sp/>from<sp/>several<sp/>shards.<sp/>The<sp/>per-shard<sp/>results<sp/>are<sp/>assumed</highlight></codeline>
+<codeline lineno="509"><highlight class="comment"><sp/>*<sp/>to<sp/>be<sp/>sorted.<sp/>Note<sp/>that<sp/>the<sp/>C<sp/>comparator<sp/>is<sp/>reversed<sp/>w.r.t.<sp/>the<sp/>usual<sp/>top-k</highlight></codeline>
+<codeline lineno="510"><highlight class="comment"><sp/>*<sp/>element<sp/>heap<sp/>because<sp/>we<sp/>want<sp/>the<sp/>best<sp/>(ie.<sp/>lowest<sp/>for<sp/>L2)<sp/>result<sp/>to<sp/>be<sp/>on</highlight></codeline>
+<codeline lineno="511"><highlight class="comment"><sp/>*<sp/>top,<sp/>not<sp/>the<sp/>worst.<sp/>Also,<sp/>it<sp/>needs<sp/>to<sp/>hold<sp/>an<sp/>index<sp/>of<sp/>a<sp/>shard<sp/>id<sp/>(ie.</highlight></codeline>
+<codeline lineno="512"><highlight class="comment"><sp/>*<sp/>usually<sp/>int32<sp/>is<sp/>more<sp/>than<sp/>enough).</highlight></codeline>
+<codeline lineno="513"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="514"><highlight class="comment"><sp/>*<sp/>@param<sp/>all_distances<sp/><sp/>size<sp/>(nshard,<sp/>n,<sp/>k)</highlight></codeline>
+<codeline lineno="515"><highlight class="comment"><sp/>*<sp/>@param<sp/>all_labels<sp/><sp/><sp/><sp/><sp/>size<sp/>(nshard,<sp/>n,<sp/>k)</highlight></codeline>
+<codeline lineno="516"><highlight class="comment"><sp/>*<sp/>@param<sp/>distances<sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>distances,<sp/>size<sp/>(n,<sp/>k)</highlight></codeline>
+<codeline lineno="517"><highlight class="comment"><sp/>*<sp/>@param<sp/>labels<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>labels,<sp/>size<sp/>(n,<sp/>k)</highlight></codeline>
+<codeline lineno="518"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="519"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">x_t,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="520" refid="namespacefaiss_1a5bd0fd59cade66b4d3bda7ba3d59cfd0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5bd0fd59cade66b4d3bda7ba3d59cfd0" kindref="member">merge_knn_results</ref>(</highlight></codeline>
+<codeline lineno="521"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
+<codeline lineno="523"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI<sp/>nshard,</highlight></codeline>
+<codeline lineno="524"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>all_distances,</highlight></codeline>
+<codeline lineno="525"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>all_labels,</highlight></codeline>
+<codeline lineno="526"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>distances,</highlight></codeline>
+<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels);</highlight></codeline>
+<codeline lineno="528"><highlight class="normal"></highlight></codeline>
+<codeline lineno="529"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="530"><highlight class="normal"></highlight></codeline>
+<codeline lineno="531"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/Heap.h"/>
   </compounddef>

@@ -1289,17 +1289,17 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="322" column="24"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::IndexIVF::copy_subset_to</definition>
-        <argsstring>(IndexIVF &amp;other, int subset_type, idx_t a1, idx_t a2) const</argsstring>
+        <argsstring>(IndexIVF &amp;other, InvertedLists::subset_type_t subset_type, idx_t a1, idx_t a2) const</argsstring>
         <name>copy_subset_to</name>
         <param>
           <type><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <param>
-          <type>int</type>
+          <type>InvertedLists::subset_type_t</type>
           <declname>subset_type</declname>
         </param>
         <param>
@@ -1935,7 +1935,7 @@
       <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>component_t</name></member>
       <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>compute_residual</name></member>
       <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1IndexIVF_1ada0c2daaf628138ad21c77eb616fbbae" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>copy_subset_to</name></member>
+      <member refid="structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb" prot="public" virt="virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>copy_subset_to</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" virt="non-virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>cp</name></member>
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>d</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" virt="non-virtual"><scope>faiss::IndexIVFScalarQuantizer</scope><name>decode_listno</name></member>

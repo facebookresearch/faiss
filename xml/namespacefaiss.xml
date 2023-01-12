@@ -383,7 +383,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="287" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="287" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="295" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="295" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>
@@ -5033,6 +5033,90 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="490" column="13" bodyfile="faiss/utils/Heap.h" bodystart="490" bodyend="506"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a5bd0fd59cade66b4d3bda7ba3d59cfd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class idx_t</type>
+          </param>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::merge_knn_results</definition>
+        <argsstring>(size_t n, size_t k, typename C::TI nshard, const typename C::T *all_distances, const idx_t *all_labels, typename C::T *distances, idx_t *labels)</argsstring>
+        <name>merge_knn_results</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>typename C::TI</type>
+          <declname>nshard</declname>
+        </param>
+        <param>
+          <type>const typename C::T *</type>
+          <declname>all_distances</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>all_labels</declname>
+        </param>
+        <param>
+          <type>typename C::T *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Merge result tables from several shards. The per-shard results are assumed to be sorted. Note that the C comparator is reversed w.r.t. the usual top-k element heap because we want the best (ie. lowest for L2) result to be on top, not the worst. Also, it needs to hold an index of a shard id (ie. usually int32 is more than enough).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>all_distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size (nshard, n, k) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>all_labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size (nshard, n, k) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output distances, size (n, k) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels, size (n, k) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="520" column="6" declfile="faiss/utils/Heap.h" declline="520" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a36bf2bb72e8dd3c2e320a6ef89765635" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
