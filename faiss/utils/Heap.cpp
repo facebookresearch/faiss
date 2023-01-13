@@ -245,5 +245,4 @@ INSTANTIATE(CMax, float);
 INSTANTIATE(CMin, int32_t);
 INSTANTIATE(CMax, int32_t);
 
-
 } // namespace faiss
