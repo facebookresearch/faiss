@@ -100,6 +100,8 @@ void queryTest(
         gpuIndex.setNumProbes(opt.nprobe);
 
         bool compFloat16 = useFloat16CoarseQuantizer;
+
+        printf("Use float16: %d\n", compFloat16);
         faiss::gpu::compareIndices(
                 cpuIndex,
                 gpuIndex,

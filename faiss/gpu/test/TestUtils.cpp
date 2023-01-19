@@ -114,9 +114,7 @@ void compareIndices(
             testDistance.data(),
             testIndices.data());
 
-    int idx = 4;
-
-    int start_idx = idx * numQuery;
+    int start_idx = 17 * k;
     int stop_idx = start_idx + k;
     printf("ref inds: [");
     for(int i = start_idx; i < stop_idx; i++) {
