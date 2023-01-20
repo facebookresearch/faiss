@@ -32,7 +32,9 @@ def add_preassigned(index_ivf, x, a, ids=None):
 
 def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
     """
-    Perform a search in the IVF index, with predefined lists to search into
+    Perform a search in the IVF index, with predefined lists to search into.
+    Supports indexes with pretransforms (as opposed to the
+    IndexIVF.search_preassigned, that cannot be applied with pretransform).
     """
     n, d = xq.shape
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
@@ -51,14 +53,7 @@ def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
     else:
         assert coarse_dis.shape == (n, index_ivf.nprobe)
 
-    D = np.empty((n, k), dtype=dis_type)
-    I = np.empty((n, k), dtype='int64')
-
-    sp = faiss.swig_ptr
-    index_ivf.search_preassigned(
-        n, sp(xq), k,
-        sp(list_nos), sp(coarse_dis), sp(D), sp(I), False)
-    return D, I
+    return index_ivf.search_preassigned(xq, k, list_nos, coarse_dis)
 
 
 def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):

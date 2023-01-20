@@ -422,6 +422,7 @@ void initialize_IVFPQ_precomputed_table(
         const Index* quantizer,
         const ProductQuantizer& pq,
         AlignedTable<float>& precomputed_table,
+        bool by_residual,
         bool verbose) {
     size_t nlist = quantizer->ntotal;
     size_t d = quantizer->d;
@@ -433,10 +434,10 @@ void initialize_IVFPQ_precomputed_table(
     }
 
     if (use_precomputed_table == 0) { // then choose the type of table
-        if (quantizer->metric_type == METRIC_INNER_PRODUCT) {
+        if (!(quantizer->metric_type == METRIC_L2 && by_residual)) {
             if (verbose) {
                 printf("IndexIVFPQ::precompute_table: precomputed "
-                       "tables not needed for inner product quantizers\n");
+                       "tables needed only for L2 metric and by_residual is enabled\n");
             }
             precomputed_table.resize(0);
             return;
@@ -515,7 +516,12 @@ void initialize_IVFPQ_precomputed_table(
 
 void IndexIVFPQ::precompute_table() {
     initialize_IVFPQ_precomputed_table(
-            use_precomputed_table, quantizer, pq, precomputed_table, verbose);
+            use_precomputed_table,
+            quantizer,
+            pq,
+            precomputed_table,
+            by_residual,
+            verbose);
 }
 
 namespace {

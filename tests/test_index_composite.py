@@ -687,6 +687,7 @@ class TestSplitMerge(unittest.TestCase):
         sub_indexes = [faiss.clone_index(index) for i in range(nsplit)]
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
+        nlist = index.nlist
         for i in range(nsplit):
             if subset_type in (1, 3):
                 index.copy_subset_to(sub_indexes[i], subset_type, nsplit, i)
@@ -694,6 +695,10 @@ class TestSplitMerge(unittest.TestCase):
                 j0 = index.ntotal * i // nsplit
                 j1 = index.ntotal * (i + 1) // nsplit
                 index.copy_subset_to(sub_indexes[i], subset_type, j0, j1)
+            elif subset_type == 4:
+                index.copy_subset_to(
+                    sub_indexes[i], subset_type,
+                    i * nlist // nsplit, (i + 1) * nlist // nsplit)
 
         index_shards = faiss.IndexShards(False, False)
         for i in range(nsplit):
@@ -713,3 +718,6 @@ class TestSplitMerge(unittest.TestCase):
 
     def test_Flat_subset_type_3(self):
         self.do_test("IVF30,Flat", subset_type=3)
+
+    def test_Flat_subset_type_4(self):
+        self.do_test("IVF30,Flat", subset_type=4)

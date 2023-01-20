@@ -111,20 +111,28 @@ struct InvertedLists {
     /// move all entries from oivf (empty on output)
     void merge_from(InvertedLists* oivf, size_t add_id);
 
+    // how to copy a subset of elements from the inverted lists
+    // This depends on two integers, a1 and a2.
+    enum subset_type_t : int {
+        // depends on IDs
+        SUBSET_TYPE_ID_RANGE = 0, // copies ids in [a1, a2)
+        SUBSET_TYPE_ID_MOD = 1,   // copies ids if id % a1 == a2
+        // depends on order within invlists
+        SUBSET_TYPE_ELEMENT_RANGE =
+                2, // copies fractions of invlists so that a1 elements are left
+                   // before and a2 after
+        SUBSET_TYPE_INVLIST_FRACTION =
+                3, // take fraction a2 out of a1 from each invlist, 0 <= a2 < a1
+        // copy only inverted lists a1:a2
+        SUBSET_TYPE_INVLIST = 4
+    };
+
     /** copy a subset of the entries index to the other index
-     *
-     * if subset_type == 0: copies ids in [a1, a2)
-     * if subset_type == 1: copies ids if id % a1 == a2
-     * if subset_type == 2: copies inverted lists such that a1
-     *                      elements are left before and a2 elements are after
-     *                      (insensitive to ids)
-     * if subset_type == 3: take fraction a2 out of a1 from each invlist
-     *                      (does not depend on ids). 0 <= a2 < a1
      * @return number of entries copied
      */
     size_t copy_subset_to(
             InvertedLists& other,
-            int subset_type,
+            subset_type_t subset_type,
             idx_t a1,
             idx_t a2) const;
 

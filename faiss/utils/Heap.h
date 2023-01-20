@@ -444,7 +444,7 @@ typedef HeapArray<CMin<int, int64_t>> int_minheap_array_t;
 typedef HeapArray<CMax<float, int64_t>> float_maxheap_array_t;
 typedef HeapArray<CMax<int, int64_t>> int_maxheap_array_t;
 
-// The heap templates are instanciated explicitly in Heap.cpp
+// The heap templates are instantiated explicitly in Heap.cpp
 
 /*********************************************************************
  * Indirect heaps: instead of having
@@ -504,6 +504,27 @@ inline void indirect_heap_push(
     }
     bh_ids[i] = id;
 }
+
+/** Merge result tables from several shards. The per-shard results are assumed
+ * to be sorted. Note that the C comparator is reversed w.r.t. the usual top-k
+ * element heap because we want the best (ie. lowest for L2) result to be on
+ * top, not the worst. Also, it needs to hold an index of a shard id (ie.
+ * usually int32 is more than enough).
+ *
+ * @param all_distances  size (nshard, n, k)
+ * @param all_labels     size (nshard, n, k)
+ * @param distances      output distances, size (n, k)
+ * @param labels         output labels, size (n, k)
+ */
+template <class idx_t, class C>
+void merge_knn_results(
+        size_t n,
+        size_t k,
+        typename C::TI nshard,
+        const typename C::T* all_distances,
+        const idx_t* all_labels,
+        typename C::T* distances,
+        idx_t* labels);
 
 } // namespace faiss
 

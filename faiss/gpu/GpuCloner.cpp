@@ -248,12 +248,14 @@ void ToGpuClonerMultiple::copy_ivf_shard(
 
         if (verbose)
             printf("IndexShards shard %ld indices %ld:%ld\n", i, i0, i1);
-        index_ivf->copy_subset_to(*idx2, 2, i0, i1);
+        index_ivf->copy_subset_to(
+                *idx2, InvertedLists::SUBSET_TYPE_ID_RANGE, i0, i1);
         FAISS_ASSERT(idx2->ntotal == i1 - i0);
     } else if (shard_type == 1) {
         if (verbose)
             printf("IndexShards shard %ld select modulo %ld = %ld\n", i, n, i);
-        index_ivf->copy_subset_to(*idx2, 1, n, i);
+        index_ivf->copy_subset_to(
+                *idx2, InvertedLists::SUBSET_TYPE_ID_MOD, n, i);
     } else {
         FAISS_THROW_FMT("shard_type %d not implemented", shard_type);
     }
