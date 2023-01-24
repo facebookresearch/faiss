@@ -574,3 +574,21 @@ class TestLSQIcmEncoder(unittest.TestCase):
     def test_multiple_gpu(self):
         ngpu = faiss.get_num_gpus()
         self.subtest_gpu_encoding(ngpu)
+
+
+class TestGpuAutoTune(unittest.TestCase):
+
+    def test_params(self):
+        index = faiss.index_factory(32, "IVF65536_HNSW,PQ16")
+        index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(), 0, index)
+        ps = faiss.GpuParameterSpace()
+        ps.initialize(index)
+        for i in range(ps.parameter_ranges.size()):
+            pr = ps.parameter_ranges.at(i)
+            if pr.name == "quantizer_efSearch":
+                break
+        else:
+            self.fail("should include efSearch")
+        ps.set_index_parameter(index, "quantizer_efSearch", 123)
+        quantizer = faiss.downcast_index(index.quantizer)
+        self.assertEqual(quantizer.hnsw.efSearch, 123)
