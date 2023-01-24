@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOTE: This file is temporary for the proof-of-concept branch and will be removed before this PR is merged
+
 BUILD_TYPE=Release
 BUILD_DIR=build/
 
