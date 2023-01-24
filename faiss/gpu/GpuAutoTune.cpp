@@ -53,6 +53,14 @@ void GpuParameterSpace::initialize(const Index* index) {
                 break;
             pr.values.push_back(nprobe);
         }
+
+        ParameterSpace ivf_pspace;
+        ivf_pspace.initialize(ix->quantizer);
+
+        for (const ParameterRange& p : ivf_pspace.parameter_ranges) {
+            ParameterRange& pr = add_range("quantizer_" + p.name);
+            pr.values = p.values;
+        }
     }
     // not sure we should call the parent initializer
 }
@@ -79,6 +87,14 @@ void GpuParameterSpace::set_index_parameter(
     if (name == "use_precomputed_table") {
         if (DC(GpuIndexIVFPQ)) {
             ix->setPrecomputedCodes(bool(val));
+            return;
+        }
+    }
+
+    if (name.find("quantizer_") == 0) {
+        if (DC(GpuIndexIVF)) {
+            std::string sub_name = name.substr(strlen("quantizer_"));
+            set_index_parameter(ix->quantizer, sub_name, val);
             return;
         }
     }

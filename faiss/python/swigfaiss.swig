@@ -246,6 +246,7 @@ namespace std {
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
+%template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
 
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
