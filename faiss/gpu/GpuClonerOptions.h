@@ -18,26 +18,26 @@ struct GpuClonerOptions {
 
     /// how should indices be stored on index types that support indices
     /// (anything but GpuIndexFlat*)?
-    IndicesOptions indicesOptions;
+    IndicesOptions indicesOptions = INDICES_64_BIT;
 
     /// is the coarse quantizer in float16?
-    bool useFloat16CoarseQuantizer;
+    bool useFloat16CoarseQuantizer = false;
 
     /// for GpuIndexIVFFlat, is storage in float16?
     /// for GpuIndexIVFPQ, are intermediate calculations in float16?
-    bool useFloat16;
+    bool useFloat16 = false;
 
     /// use precomputed tables?
-    bool usePrecomputed;
+    bool usePrecomputed = false;
 
     /// reserve vectors in the invfiles?
-    long reserveVecs;
+    long reserveVecs = 0;
 
     /// For GpuIndexFlat, store data in transposed layout?
-    bool storeTransposed;
+    bool storeTransposed = false;
 
     /// Set verbose options on the index
-    bool verbose;
+    bool verbose = false;
 };
 
 struct GpuMultipleClonerOptions : public GpuClonerOptions {
@@ -45,10 +45,10 @@ struct GpuMultipleClonerOptions : public GpuClonerOptions {
 
     /// Whether to shard the index across GPUs, versus replication
     /// across GPUs
-    bool shard;
+    bool shard = false;
 
     /// IndexIVF::copy_subset_to subset type
-    int shard_type;
+    int shard_type = 1;
 };
 
 } // namespace gpu

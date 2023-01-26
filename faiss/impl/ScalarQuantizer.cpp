@@ -1047,12 +1047,11 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
+        : Quantizer(d), qtype(qtype) {
     set_derived_sizes();
 }
 
-ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
+ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {

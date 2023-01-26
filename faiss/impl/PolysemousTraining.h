@@ -17,18 +17,19 @@ namespace faiss {
 /// parameters used for the simulated annealing method
 struct SimulatedAnnealingParameters {
     // optimization parameters
-    double init_temperature;  // init probability of accepting a bad swap
-    double temperature_decay; // at each iteration the temp is multiplied by
-                              // this
-    int n_iter;               // nb of iterations
-    int n_redo;               // nb of runs of the simulation
-    int seed;                 // random seed
-    int verbose;
-    bool only_bit_flips; // restrict permutation changes to bit flips
-    bool init_random;    // initialize with a random permutation (not identity)
+    double init_temperature = 0.7; // init probability of accepting a bad swap
+    // at each iteration the temp is multiplied by this
+    double temperature_decay = 0.9997893011688015; // = 0.9^(1/500)
+    int n_iter = 500000;                           // nb of iterations
+    int n_redo = 2; // nb of runs of the simulation
+    int seed = 123; // random seed
+    int verbose = 0;
+    bool only_bit_flips = false; // restrict permutation changes to bit flips
+    bool init_random =
+            false; // initialize with a random permutation (not identity)
 
     // set reasonable defaults
-    SimulatedAnnealingParameters();
+    SimulatedAnnealingParameters() {}
 };
 
 /// abstract class for the loss function

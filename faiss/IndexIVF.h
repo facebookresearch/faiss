@@ -31,19 +31,23 @@ namespace faiss {
  * of the lists (especially training)
  */
 struct Level1Quantizer {
-    Index* quantizer; ///< quantizer that maps vectors to inverted lists
-    size_t nlist;     ///< number of possible key values
+    /// quantizer that maps vectors to inverted lists
+    Index* quantizer = nullptr;
+
+    /// number of inverted lists
+    size_t nlist = 0;
 
     /**
      * = 0: use the quantizer as index in a kmeans training
      * = 1: just pass on the training set to the train() of the quantizer
      * = 2: kmeans training on a flat index + add the centroids to the quantizer
      */
-    char quantizer_trains_alone;
-    bool own_fields; ///< whether object owns the quantizer (false by default)
+    char quantizer_trains_alone = 0;
+    bool own_fields = false; ///< whether object owns the quantizer
 
     ClusteringParameters cp; ///< to override default clustering params
-    Index* clustering_index; ///< to override index used during clustering
+    /// to override index used during clustering
+    Index* clustering_index = nullptr;
 
     /// Trains the quantizer and calls train_residual to train sub-quantizers
     void train_q1(
@@ -65,11 +69,10 @@ struct Level1Quantizer {
 };
 
 struct SearchParametersIVF : SearchParameters {
-    size_t nprobe;    ///< number of probes at query time
-    size_t max_codes; ///< max nb of codes to visit to do a query
+    size_t nprobe = 1;    ///< number of probes at query time
+    size_t max_codes = 0; ///< max nb of codes to visit to do a query
     SearchParameters* quantizer_params = nullptr;
 
-    SearchParametersIVF() : nprobe(1), max_codes(0) {}
     virtual ~SearchParametersIVF() {}
 };
 
@@ -102,13 +105,12 @@ struct CodePacker;
  */
 struct IndexIVF : Index, Level1Quantizer {
     /// Access to the actual data
-    InvertedLists* invlists;
-    bool own_invlists;
+    InvertedLists* invlists = nullptr;
+    bool own_invlists = false;
 
-    size_t code_size; ///< code size per vector in bytes
-
-    size_t nprobe;    ///< number of probes at query time
-    size_t max_codes; ///< max nb of codes to visit to do a query
+    size_t code_size = 0; ///< code size per vector in bytes
+    size_t nprobe = 1;    ///< number of probes at query time
+    size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
     /** Parallel mode determines how queries are parallelized with OpenMP
      *
@@ -120,7 +122,7 @@ struct IndexIVF : Index, Level1Quantizer {
      * PARALLEL_MODE_NO_HEAP_INIT: binary or with the previous to
      * prevent the heap to be initialized and finalized
      */
-    int parallel_mode;
+    int parallel_mode = 0;
     const int PARALLEL_MODE_NO_HEAP_INIT = 1024;
 
     /** optional map that maps back ids to invlist entries. This

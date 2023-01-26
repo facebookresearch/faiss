@@ -100,7 +100,7 @@ struct NSG {
     /// internal storage of vectors (32 bits: this is expensive)
     using storage_idx_t = int32_t;
 
-    int ntotal; ///< nb of nodes
+    int ntotal = 0; ///< nb of nodes
 
     // construction-time parameters
     int R; ///< nb of neighbors per node
@@ -108,13 +108,13 @@ struct NSG {
     int C; ///< candidate pool size at construction time
 
     // search-time parameters
-    int search_L; ///< length of the search path
+    int search_L = 16; ///< length of the search path
 
     int enterpoint; ///< enterpoint
 
     std::shared_ptr<nsg::Graph<int>> final_graph; ///< NSG graph structure
 
-    bool is_built; ///< NSG is built or not
+    bool is_built = false; ///< NSG is built or not
 
     RandomGenerator rng; ///< random generator
 
