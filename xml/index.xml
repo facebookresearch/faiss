@@ -5854,7 +5854,6 @@
     <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" kind="variable"><name>max_codes</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" kind="variable"><name>quantizer_params</name></member>
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
-    <member refid="structfaiss_1_1SearchParametersIVF_1a069aa5d2af914304fc9302d88fc363fe" kind="function"><name>SearchParametersIVF</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1ab03d390a3bbb120e23304fe3794c04df" kind="function"><name>~SearchParametersIVF</name></member>
   </compound>
   <compound refid="structfaiss_1_1SearchParametersPQ" kind="struct"><name>faiss::SearchParametersPQ</name>

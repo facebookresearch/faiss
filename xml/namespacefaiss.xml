@@ -318,7 +318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="77" column="1" bodyfile="faiss/IndexIVF.h" bodystart="77" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="80" column="1" bodyfile="faiss/IndexIVF.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1af3735e1903da947aaa2d79389d4ddfd0" prot="public" static="no">
         <type><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -587,7 +587,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="428" column="23" declfile="faiss/IndexIVF.h" declline="428" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="430" column="23" declfile="faiss/IndexIVF.h" declline="430" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -600,7 +600,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="446" column="32" declfile="faiss/IndexIVF.h" declline="446" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="448" column="32" declfile="faiss/IndexIVF.h" declline="448" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>

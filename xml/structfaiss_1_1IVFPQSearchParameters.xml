@@ -37,6 +37,7 @@
         <definition>size_t faiss::SearchParametersIVF::nprobe</definition>
         <argsstring></argsstring>
         <name>nprobe</name>
+        <initializer>= 1</initializer>
         <briefdescription>
 <para>number of probes at query time </para>
         </briefdescription>
@@ -44,13 +45,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="68" column="12" bodyfile="faiss/IndexIVF.h" bodystart="68" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="72" column="12" bodyfile="faiss/IndexIVF.h" bodystart="72" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::SearchParametersIVF::max_codes</definition>
         <argsstring></argsstring>
         <name>max_codes</name>
+        <initializer>= 0</initializer>
         <briefdescription>
 <para>max nb of codes to visit to do a query </para>
         </briefdescription>
@@ -58,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="69" column="12" bodyfile="faiss/IndexIVF.h" bodystart="69" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="73" column="12" bodyfile="faiss/IndexIVF.h" bodystart="73" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
@@ -72,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="70" column="22" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="74" column="22" bodyfile="faiss/IndexIVF.h" bodystart="74" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type>IDSelector *</type>
@@ -169,7 +171,6 @@
       <member refid="structfaiss_1_1IVFPQSearchParameters_1a66ff24d0f4fd606488ded44354a8a6cf" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>polysemous_ht</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>quantizer_params</name></member>
       <member refid="structfaiss_1_1IVFPQSearchParameters_1a5537033b0fe6cf3ef8334a16de7a47d5" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>scan_table_threshold</name></member>
-      <member refid="structfaiss_1_1SearchParametersIVF_1a069aa5d2af914304fc9302d88fc363fe" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>SearchParametersIVF</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>sel</name></member>
       <member refid="structfaiss_1_1IVFPQSearchParameters_1a233675559ed182bd59490cad0641ca8e" prot="public" virt="non-virtual"><scope>faiss::IVFPQSearchParameters</scope><name>~IVFPQSearchParameters</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::IVFPQSearchParameters</scope><name>~SearchParameters</name></member>

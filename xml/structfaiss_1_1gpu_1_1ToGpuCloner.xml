@@ -37,6 +37,7 @@
         <definition>IndicesOptions faiss::gpu::GpuClonerOptions::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
+        <initializer>= INDICES_64_BIT</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -51,6 +52,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16CoarseQuantizer</definition>
         <argsstring></argsstring>
         <name>useFloat16CoarseQuantizer</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>is the coarse quantizer in float16? </para>
         </briefdescription>
@@ -65,6 +67,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::useFloat16</definition>
         <argsstring></argsstring>
         <name>useFloat16</name>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -79,6 +82,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::usePrecomputed</definition>
         <argsstring></argsstring>
         <name>usePrecomputed</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>use precomputed tables? </para>
         </briefdescription>
@@ -93,6 +97,7 @@
         <definition>long faiss::gpu::GpuClonerOptions::reserveVecs</definition>
         <argsstring></argsstring>
         <name>reserveVecs</name>
+        <initializer>= 0</initializer>
         <briefdescription>
 <para>reserve vectors in the invfiles? </para>
         </briefdescription>
@@ -107,6 +112,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::storeTransposed</definition>
         <argsstring></argsstring>
         <name>storeTransposed</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kindref="compound">GpuIndexFlat</ref>, store data in transposed layout? </para>
         </briefdescription>
@@ -121,6 +127,7 @@
         <definition>bool faiss::gpu::GpuClonerOptions::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>Set verbose options on the index. </para>
         </briefdescription>
