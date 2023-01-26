@@ -47,11 +47,6 @@ void HNSW::neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
 
 HNSW::HNSW(int M) : rng(12345) {
     set_default_probas(M, 1.0 / log(M));
-    max_level = -1;
-    entry_point = -1;
-    efSearch = 16;
-    efConstruction = 40;
-    upper_beam = 1;
     offsets.push_back(0);
 }
 

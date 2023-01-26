@@ -121,25 +121,25 @@ struct HNSW {
 
     /// entry point in the search structure (one of the points with maximum
     /// level
-    storage_idx_t entry_point;
+    storage_idx_t entry_point = -1;
 
     faiss::RandomGenerator rng;
 
     /// maximum level
-    int max_level;
+    int max_level = -1;
 
     /// expansion factor at construction time
-    int efConstruction;
+    int efConstruction = 40;
 
     /// expansion factor at search time
-    int efSearch;
+    int efSearch = 16;
 
     /// during search: do we check whether the next best distance is good
     /// enough?
     bool check_relative_distance = true;
 
     /// number of entry points in levels > 0.
-    int upper_beam;
+    int upper_beam = 1;
 
     /// use bounded queue during exploration
     bool search_bounded_queue = true;

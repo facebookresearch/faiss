@@ -37,27 +37,19 @@ using ScopedCodes = InvertedLists::ScopedCodes;
  ******************************************/
 
 Level1Quantizer::Level1Quantizer(Index* quantizer, size_t nlist)
-        : quantizer(quantizer),
-          nlist(nlist),
-          quantizer_trains_alone(0),
-          own_fields(false),
-          clustering_index(nullptr) {
+        : quantizer(quantizer), nlist(nlist) {
     // here we set a low # iterations because this is typically used
     // for large clusterings (nb this is not used for the MultiIndex,
     // for which quantizer_trains_alone = true)
     cp.niter = 10;
 }
 
-Level1Quantizer::Level1Quantizer()
-        : quantizer(nullptr),
-          nlist(0),
-          quantizer_trains_alone(0),
-          own_fields(false),
-          clustering_index(nullptr) {}
+Level1Quantizer::Level1Quantizer() {}
 
 Level1Quantizer::~Level1Quantizer() {
-    if (own_fields)
+    if (own_fields) {
         delete quantizer;
+    }
 }
 
 void Level1Quantizer::train_q1(
@@ -170,10 +162,7 @@ IndexIVF::IndexIVF(
           Level1Quantizer(quantizer, nlist),
           invlists(new ArrayInvertedLists(nlist, code_size)),
           own_invlists(true),
-          code_size(code_size),
-          nprobe(1),
-          max_codes(0),
-          parallel_mode(0) {
+          code_size(code_size) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
     // Spherical by default if the metric is inner_product

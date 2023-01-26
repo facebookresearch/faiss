@@ -61,7 +61,10 @@ int faiss_IndexIVF_copy_subset_to(
         idx_t a2) {
     try {
         reinterpret_cast<const IndexIVF*>(index)->copy_subset_to(
-                *reinterpret_cast<IndexIVF*>(other), subset_type, a1, a2);
+                *reinterpret_cast<IndexIVF*>(other),
+                static_cast<faiss::InvertedLists::subset_type_t>(subset_type),
+                a1,
+                a2);
     }
     CATCH_AND_HANDLE
 }
