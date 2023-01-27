@@ -588,6 +588,16 @@ class TestFlat1D(unittest.TestCase):
         max_diff_D = np.abs(ref_D - new_D).max()
         assert max_diff_D < 1e-5
 
+    def test_size_0(self):
+        # just make sure it does not crash on small nb
+        index = faiss.IndexFlat1D()
+        rs = np.random.RandomState(123)
+        for i in range(3):
+            x = np.array([[rs.rand()]])
+            D, I = index.search(x, 10)
+            self.assertEqual((I == -1).sum(), 10 - i)
+            index.add(x)
+
 
 class OPQRelativeAccuracy(unittest.TestCase):
     # translated from test_opq.lua

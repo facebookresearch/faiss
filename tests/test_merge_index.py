@@ -13,7 +13,7 @@ nb, d = xb.shape
 nq, d = xq.shape
 
 
-class Merge(unittest.TestCase):
+class TestMerge1(unittest.TestCase):
     def make_index_for_merge(self, quant, index_type, master_index):
         ncent = 40
         if index_type == 1:
@@ -78,6 +78,9 @@ class Merge(unittest.TestCase):
         self.do_test_merge(2)
         self.do_test_merge(3)
 
+    ######################################
+    # remove tests that piggyback on merge
+
     def do_test_remove(self, index_type):
         k = 16
         quant = faiss.IndexFlatL2(d)
@@ -140,11 +143,11 @@ class Merge(unittest.TestCase):
 
 
 # Test merge_from method for all IndexFlatCodes Types
-class IndexFlatCodes_merge(unittest.TestCase):
+class TestMerge2(unittest.TestCase):
 
-    def do_flat_codes_test(self, index):
+    def do_flat_codes_test(self, factory_key):
         ds = SyntheticDataset(32, 300, 300, 100)
-        index1 = faiss.index_factory(ds.d, index)
+        index1 = faiss.index_factory(ds.d, factory_key)
         index1.train(ds.get_train())
         index1.add(ds.get_database())
         _, Iref = index1.search(ds.get_queries(), 5)
@@ -160,10 +163,97 @@ class IndexFlatCodes_merge(unittest.TestCase):
         self.do_flat_codes_test("Flat")
 
     def test_merge_IndexPQ(self):
-        self.do_flat_codes_test("PQ8")
+        self.do_flat_codes_test("PQ8np")
 
     def test_merge_IndexLSH(self):
         self.do_flat_codes_test("LSHr")
 
     def test_merge_IndexScalarQuantizer(self):
         self.do_flat_codes_test("SQ4")
+
+    def test_merge_PreTransform(self):
+        self.do_flat_codes_test("PCA16,SQ4")
+
+    def do_fast_scan_test(self, factory_key, size1, with_add_id=False):
+        ds = SyntheticDataset(110, 1000, 1000, 100)
+        index_trained = faiss.index_factory(ds.d, factory_key)
+        index_trained.train(ds.get_train())
+        # test both clone and index_read/write
+        if True:
+            index1 = faiss.deserialize_index(
+                faiss.serialize_index(index_trained))
+        else:
+            index1 = faiss.clone_index(index_trained)
+        # assert index1.aq.qnorm.ntotal == index_trained.aq.qnorm.ntotal
+
+        index1.add(ds.get_database())
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index2 = faiss.clone_index(index_trained)
+        index1.add(ds.get_database()[:size1])
+        index2.add(ds.get_database()[size1:])
+        if with_add_id:
+            index1.merge_from(index2, add_id=index1.ntotal)
+        else:
+            index1.merge_from(index2)
+        _, Inew = index1.search(ds.get_queries(), 5)
+        np.testing.assert_array_equal(Inew, Iref)
+
+    def test_merge_IndexFastScan_complete_block(self):
+        self.do_fast_scan_test("PQ5x4fs", 320)
+
+    def test_merge_IndexFastScan_not_complete_block(self):
+        self.do_fast_scan_test("PQ11x4fs", 310)
+
+    def test_merge_IndexFastScan_even_M(self):
+        self.do_fast_scan_test("PQ10x4fs", 500)
+
+    def test_merge_IndexAdditiveQuantizerFastScan(self):
+        self.do_fast_scan_test("RQ10x4fs_32_Nrq2x4", 330)
+
+    def test_merge_IVFFastScan(self):
+        self.do_fast_scan_test("IVF20,PQ5x4fs", 123, with_add_id=True)
+
+    def do_test_with_ids(self, factory_key):
+        ds = SyntheticDataset(32, 300, 300, 100)
+        rs = np.random.RandomState(123)
+        ids = rs.choice(10000, ds.nb, replace=False).astype('int64')
+        index1 = faiss.index_factory(ds.d, factory_key)
+        index1.train(ds.get_train())
+        index1.add_with_ids(ds.get_database(), ids)
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index2 = faiss.clone_index(index1)
+        index1.add_with_ids(ds.get_database()[:100], ids[:100])
+        index2.add_with_ids(ds.get_database()[100:], ids[100:])
+        index1.merge_from(index2)
+        _, Inew = index1.search(ds.get_queries(), 5)
+        np.testing.assert_array_equal(Inew, Iref)
+        if "IDMap2" in factory_key:
+            index1.check_consistency()
+
+    def test_merge_IDMap(self):
+        self.do_test_with_ids("Flat,IDMap")
+
+    def test_merge_IDMap2(self):
+        self.do_test_with_ids("Flat,IDMap2")
+
+
+class TestRemoveFastScan(unittest.TestCase):
+
+    def do_fast_scan_test(self, factory_key, size1):
+        ds = SyntheticDataset(110, 1000, 1000, 100)
+        index1 = faiss.index_factory(ds.d, factory_key)
+        index1.train(ds.get_train())
+        index1.reset()
+        tokeep = [i % 3 == 0 for i in range(ds.nb)]
+        index1.add(ds.get_database()[tokeep])
+        _, Iref = index1.search(ds.get_queries(), 5)
+        index1.reset()
+        index1.add(ds.get_database())
+        index1.remove_ids(np.where(np.logical_not(tokeep))[0])
+        _, Inew = index1.search(ds.get_queries(), 5)
+        np.testing.assert_array_equal(Inew, Iref)
+
+    def test_remove(self):
+        self.do_fast_scan_test("PQ5x4fs", 320)

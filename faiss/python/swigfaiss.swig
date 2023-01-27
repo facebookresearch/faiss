@@ -103,6 +103,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexNSG.h>
 
 #include <faiss/MetaIndexes.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexRefine.h>
 
 #include <faiss/IndexRowwiseMinMax.h>
@@ -121,6 +122,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/random.h>
@@ -134,6 +136,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
+#include  <faiss/impl/CodePacker.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -243,6 +246,7 @@ namespace std {
 %template(InvertedListsPtrVector) std::vector<faiss::InvertedLists*>;
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
+%template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
 
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
@@ -379,10 +383,13 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/utils.h>
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
+%include  <faiss/utils/sorting.h>
 
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
+%newobject *::get_CodePacker() const;
+
 %include  <faiss/Index.h>
 
 %include <faiss/impl/DistanceComputer.h>
@@ -402,6 +409,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
+%include  <faiss/impl/CodePacker.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -482,6 +490,7 @@ void gpu_sync_all_devices()
 %template(IndexBinaryReplicas) faiss::IndexReplicasTemplate<faiss::IndexBinary>;
 
 %include  <faiss/MetaIndexes.h>
+%include  <faiss/IndexIDMap.h>
 %template(IndexIDMap) faiss::IndexIDMapTemplate<faiss::Index>;
 %template(IndexBinaryIDMap) faiss::IndexIDMapTemplate<faiss::IndexBinary>;
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
@@ -500,7 +509,7 @@ void gpu_sync_all_devices()
 %include <faiss/impl/AuxIndexStructures.h>
 %include <faiss/impl/IDSelector.h>
 
-
+%include <faiss/utils/approx_topk/approx_topk.h>
 
 #ifdef GPU_WRAPPER
 
@@ -610,12 +619,14 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
+    DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
     DOWNCAST ( Index2Layer )
+    DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef GPU_WRAPPER
@@ -928,7 +939,6 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 %template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
 %template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
-
 %template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
 %template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
 
@@ -941,45 +951,54 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 %template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
 %template(AlignedTableFloat32) faiss::AlignedTable<float>;
 
+
+// SWIG seems to have some trouble resolving function template types here, so
+// declare explicitly
+
+%define INSTANTIATE_uint16_partition_fuzzy(C, id_t)
+
 %inline %{
 
-// SWIG seems to have has some trouble resolving the template type here, so
-// declare explicitly
-uint16_t CMax_uint16_partition_fuzzy(
-        uint16_t *vals, int64_t *ids, size_t n,
+uint16_t C ## _uint16_partition_fuzzy(
+        uint16_t *vals, id_t *ids, size_t n,
         size_t q_min, size_t q_max, size_t * q_out)
 {
-    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int64_t> >(
-        vals, ids, n, q_min, q_max, q_out);
-}
-
-uint16_t CMin_uint16_partition_fuzzy(
-        uint16_t *vals, int64_t *ids, size_t n,
-        size_t q_min, size_t q_max, size_t * q_out)
-{
-    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int64_t> >(
-        vals, ids, n, q_min, q_max, q_out);
-}
-
-// and overload with the int32 version
-
-uint16_t CMax_uint16_partition_fuzzy(
-        uint16_t *vals, int *ids, size_t n,
-        size_t q_min, size_t q_max, size_t * q_out)
-{
-    return faiss::partition_fuzzy<faiss::CMax<unsigned short, int> >(
-        vals, ids, n, q_min, q_max, q_out);
-}
-
-uint16_t CMin_uint16_partition_fuzzy(
-        uint16_t *vals, int *ids, size_t n,
-        size_t q_min, size_t q_max, size_t * q_out)
-{
-    return faiss::partition_fuzzy<faiss::CMin<unsigned short, int> >(
+    return faiss::partition_fuzzy<faiss::C<unsigned short, id_t> >(
         vals, ids, n, q_min, q_max, q_out);
 }
 
 %}
+
+%enddef
+
+INSTANTIATE_uint16_partition_fuzzy(CMin, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMin, int)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int)
+
+// Same for merge_knn_results
+
+// same define as explicit instanciation in Heap.cpp
+%define INSTANTIATE_merge_knn_results(C, distance_t)
+
+%inline %{
+void merge_knn_results_ ## C(
+    size_t n, size_t k, int nshard,
+    const distance_t *all_distances, const faiss::idx_t *all_labels,
+    distance_t *distances, faiss::idx_t *labels)
+{
+    faiss::merge_knn_results<faiss::idx_t, faiss::C<distance_t, int>>(
+        n, k, nshard, all_distances, all_labels, distances, labels);
+}
+%}
+
+%enddef
+
+INSTANTIATE_merge_knn_results(CMin, float);
+INSTANTIATE_merge_knn_results(CMax, float);
+INSTANTIATE_merge_knn_results(CMin, int32_t);
+INSTANTIATE_merge_knn_results(CMax, int32_t);
+
 
 /*******************************************************************
  * Expose a few basic functions
@@ -1004,8 +1023,8 @@ float * cast_integer_to_float_ptr (int64_t x) {
     return (float*)x;
 }
 
-faiss::Index::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
-    return (faiss::Index::idx_t*)x;
+faiss::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
+    return (faiss::idx_t*)x;
 }
 
 int * cast_integer_to_int_ptr (int64_t x) {

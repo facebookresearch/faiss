@@ -21,7 +21,8 @@ from faiss.gpu_wrappers import *
 from faiss.array_conversions import *
 from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
     lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
-    ResultHeap, knn, Kmeans
+    ResultHeap, knn, Kmeans, checksum, matrix_bucket_sort_inplace, bucket_sort, \
+    merge_knn_results
 
 
 __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
@@ -37,6 +38,9 @@ class_wrappers.handle_AutoTuneCriterion(AutoTuneCriterion)
 class_wrappers.handle_ParameterSpace(ParameterSpace)
 class_wrappers.handle_NSG(IndexNSG)
 class_wrappers.handle_MapLong2Long(MapLong2Long)
+class_wrappers.handle_IDSelectorSubset(IDSelectorBatch, class_owns=True)
+class_wrappers.handle_IDSelectorSubset(IDSelectorArray, class_owns=False)
+class_wrappers.handle_IDSelectorSubset(IDSelectorBitmap, class_owns=False, force_int64=False)
 
 this_module = sys.modules[__name__]
 
@@ -65,10 +69,19 @@ for symbol in dir(this_module):
         if issubclass(the_class, SearchParameters):
             class_wrappers.handle_SearchParameters(the_class)
 
-###########################################
-# Add Python references to objects
-# we do this at the Python class wrapper level.
-###########################################
+        if issubclass(the_class, CodePacker):
+            class_wrappers.handle_CodePacker(the_class)
+
+##############################################################################
+# For some classes (IndexIVF, IDSelector), the object holds a reference to
+# a C++ object (eg. the quantizer object of IndexIVF). We don't transfer the
+# ownership to the C++ object (ie. set own_quantizer=true), but instead we add
+# a reference in the Python class wrapper instead. This is done via an
+# additional referenced_objects field.
+#
+# Since the semantics of ownership in the C++ classes are sometimes irregular,
+# these references are added manually using the functions below.
+##############################################################################
 
 
 def add_ref_in_constructor(the_class, parameter_no):
@@ -91,16 +104,19 @@ def add_ref_in_constructor(the_class, parameter_no):
     else:
         the_class.__init__ = replacement_init
 
+def add_to_referenced_objects(self, ref):
+    if not hasattr(self, 'referenced_objects'):
+        self.referenced_objects = [ref]
+    else:
+        self.referenced_objects.append(ref)
+
 
 def add_ref_in_method(the_class, method_name, parameter_no):
     original_method = getattr(the_class, method_name)
 
     def replacement_method(self, *args):
         ref = args[parameter_no]
-        if not hasattr(self, 'referenced_objects'):
-            self.referenced_objects = [ref]
-        else:
-            self.referenced_objects.append(ref)
+        add_to_referenced_objects(self, ref)
         return original_method(self, *args)
     setattr(the_class, method_name, replacement_method)
 
@@ -171,6 +187,8 @@ add_ref_in_method(IndexBinaryReplicas, 'addIndex', 0)
 
 add_ref_in_constructor(BufferedIOWriter, 0)
 add_ref_in_constructor(BufferedIOReader, 0)
+
+add_ref_in_constructor(IDSelectorNot, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)

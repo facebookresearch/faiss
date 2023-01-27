@@ -22,6 +22,8 @@ set(FAISS_TEST_SRC
   test_mem_leak.cpp
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
+  test_simdlib.cpp
+  test_approx_topk.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -39,7 +41,7 @@ endif()
 
 include(FetchContent)
 FetchContent_Declare(googletest
-  URL "https://github.com/google/googletest/archive/release-1.10.0.tar.gz")
+  URL "https://github.com/google/googletest/archive/release-1.12.1.tar.gz")
 set(BUILD_GMOCK CACHE BOOL OFF)
 set(INSTALL_GTEST CACHE BOOL OFF)
 FetchContent_MakeAvailable(googletest)

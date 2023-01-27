@@ -7,7 +7,7 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 project(faiss
-  VERSION 1.7.2
+  VERSION 1.7.3
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)

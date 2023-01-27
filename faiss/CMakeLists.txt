@@ -20,6 +20,7 @@ set(FAISS_SRC
   IndexFlat.cpp
   IndexFlatCodes.cpp
   IndexHNSW.cpp
+  IndexIDMap.cpp
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
@@ -49,6 +50,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AuxIndexStructures.cpp
+  impl/CodePacker.cpp
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
@@ -84,7 +86,11 @@ set(FAISS_SRC
   utils/partitioning.cpp
   utils/quantize_lut.cpp
   utils/random.cpp
+  utils/sorting.cpp
   utils/utils.cpp
+  utils/distances_fused/avx512.cpp
+  utils/distances_fused/distances_fused.cpp
+  utils/distances_fused/simdlib_based.cpp
 )
 
 set(FAISS_HEADERS
@@ -103,6 +109,7 @@ set(FAISS_HEADERS
   IndexFlat.h
   IndexFlatCodes.h
   IndexHNSW.h
+  IndexIDMap.h
   IndexIVF.h
   IndexIVFAdditiveQuantizer.h
   IndexIVFFlat.h
@@ -185,6 +192,12 @@ set(FAISS_HEADERS
   utils/simdlib_emulated.h
   utils/simdlib_neon.h
   utils/utils.h
+  utils/distances_fused/avx512.h
+  utils/distances_fused/distances_fused.h
+  utils/distances_fused/simdlib_based.h
+  utils/approx_topk/approx_topk.h
+  utils/approx_topk/avx2-inl.h
+  utils/approx_topk/generic.h
 )
 
 if(NOT WIN32)

@@ -50,7 +50,6 @@ int sgemm_(
 
 namespace faiss {
 
-using idx_t = Index::idx_t;
 using storage_idx_t = NNDescent::storage_idx_t;
 
 /**************************************************************

@@ -7,6 +7,10 @@
 
 #pragma once
 
+// basic int types and size_t
+#include <cstdint>
+#include <cstdio>
+
 #ifdef _MSC_VER
 
 /*******************************************************
@@ -18,6 +22,10 @@
 #else // _FAISS_MAIN_LIB
 #define FAISS_API __declspec(dllimport)
 #endif // FAISS_MAIN_LIB
+
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif // _MSC_VER
 
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 
@@ -87,3 +95,9 @@ inline int __builtin_clzll(uint64_t x) {
 #define ALIGNED(x) __attribute__((aligned(x)))
 
 #endif // _MSC_VER
+
+#if defined(__GNUC__) || defined(__clang__)
+#define FAISS_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#else
+#define FAISS_DEPRECATED(msg)
+#endif // GCC or Clang

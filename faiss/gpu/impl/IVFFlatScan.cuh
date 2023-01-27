@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
@@ -20,7 +21,7 @@ class GpuResources;
 
 void runIVFFlatScan(
         Tensor<float, 2, true>& queries,
-        Tensor<int, 2, true>& listIds,
+        Tensor<idx_t, 2, true>& listIds,
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
@@ -34,7 +35,7 @@ void runIVFFlatScan(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res);
 
 } // namespace gpu

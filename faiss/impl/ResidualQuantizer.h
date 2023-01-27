@@ -13,6 +13,8 @@
 #include <faiss/Clustering.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 
+#include <faiss/utils/approx_topk/approx_topk.h>
+
 namespace faiss {
 
 /** Residual quantizer with variable number of bits per sub-quantizer
@@ -56,6 +58,10 @@ struct ResidualQuantizer : AdditiveQuantizer {
 
     /// use LUT for beam search
     int use_beam_LUT;
+
+    /// Currently used mode of approximate min-k computations.
+    /// Default value is EXACT_TOPK.
+    ApproxTopK_mode_t approx_topk_mode;
 
     /// clustering parameters
     ProgressiveDimClusteringParameters cp;
@@ -183,7 +189,8 @@ void beam_search_encode_step(
         int32_t* new_codes,
         float* new_residuals,
         float* new_distances,
-        Index* assign_index = nullptr);
+        Index* assign_index = nullptr,
+        ApproxTopK_mode_t approx_topk = ApproxTopK_mode_t::EXACT_TOPK);
 
 /** Encode a set of vectors using their dot products with the codebooks
  *
@@ -202,7 +209,8 @@ void beam_search_encode_step_tab(
         const int32_t* codes,   // n * beam_size * m
         const float* distances, // n * beam_size
         size_t new_beam_size,
-        int32_t* new_codes,    // n * new_beam_size * (m + 1)
-        float* new_distances); // n * new_beam_size
+        int32_t* new_codes,   // n * new_beam_size * (m + 1)
+        float* new_distances, // n * new_beam_size
+        ApproxTopK_mode_t approx_topk = ApproxTopK_mode_t::EXACT_TOPK);
 
 }; // namespace faiss

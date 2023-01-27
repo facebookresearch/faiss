@@ -283,6 +283,24 @@ void IndexPreTransform::sa_decode(idx_t n, const uint8_t* bytes, float* x)
     }
 }
 
+void IndexPreTransform::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    auto other = static_cast<const IndexPreTransform*>(&otherIndex);
+    index->merge_from(*other->index, add_id);
+    ntotal = index->ntotal;
+}
+
+void IndexPreTransform::check_compatible_for_merge(
+        const Index& otherIndex) const {
+    auto other = dynamic_cast<const IndexPreTransform*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(chain.size() == other->chain.size());
+    for (int i = 0; i < chain.size(); i++) {
+        chain[i]->check_identical(*other->chain[i]);
+    }
+    index->check_compatible_for_merge(*other->index);
+}
+
 namespace {
 
 struct PreTransformDistanceComputer : DistanceComputer {

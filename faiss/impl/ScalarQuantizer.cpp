@@ -54,7 +54,6 @@ namespace faiss {
 
 namespace {
 
-typedef Index::idx_t idx_t;
 typedef ScalarQuantizer::QuantizerType QuantizerType;
 typedef ScalarQuantizer::RangeStat RangeStat;
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
@@ -1048,12 +1047,11 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : Quantizer(d), qtype(qtype), rangestat(RS_minmax), rangestat_arg(0) {
+        : Quantizer(d), qtype(qtype) {
     set_derived_sizes();
 }
 
-ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit), rangestat(RS_minmax), rangestat_arg(0), bits(0) {}
+ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1131,7 +1129,7 @@ void ScalarQuantizer::train_residual(
     ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<Index::idx_t> idx(n);
+        std::vector<idx_t> idx(n);
         quantizer->assign(n, x, idx.data());
 
         std::vector<float> residuals(n * d);

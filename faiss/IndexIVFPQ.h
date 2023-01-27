@@ -162,6 +162,7 @@ void initialize_IVFPQ_precomputed_table(
         const Index* quantizer,
         const ProductQuantizer& pq,
         AlignedTable<float>& precomputed_table,
+        bool by_residual,
         bool verbose);
 
 /// statistics are robust to internal threading, but not if

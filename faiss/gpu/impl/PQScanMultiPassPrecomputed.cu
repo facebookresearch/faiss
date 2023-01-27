@@ -35,7 +35,7 @@ __global__ void pqScanPrecomputedInterleaved(
         Tensor<CodeDistanceT, 3, true> precompTerm2,
         // (query id)(sub q)(code id)
         Tensor<CodeDistanceT, 3, true> precompTerm3,
-        Tensor<int, 2, true> topQueryToCentroid,
+        Tensor<idx_t, 2, true> ivfListIds,
         void** listCodes,
         int* listLengths,
         Tensor<int, 2, true> prefixSumOffsets,
@@ -44,7 +44,7 @@ __global__ void pqScanPrecomputedInterleaved(
     auto queryId = blockIdx.y;
     auto probeId = blockIdx.x;
 
-    auto listId = topQueryToCentroid[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -206,7 +206,7 @@ __global__ void pqScanPrecomputedMultiPass(
         Tensor<float, 2, true> precompTerm1,
         Tensor<LookupT, 3, true> precompTerm2,
         Tensor<LookupT, 3, true> precompTerm3,
-        Tensor<int, 2, true> topQueryToCentroid,
+        Tensor<idx_t, 2, true> ivfListIds,
         void** listCodes,
         int* listLengths,
         Tensor<int, 2, true> prefixSumOffsets,
@@ -227,7 +227,7 @@ __global__ void pqScanPrecomputedMultiPass(
     int outBase = *(prefixSumOffsets[queryId][probeId].data() - 1);
     float* distanceOut = distance[outBase].data();
 
-    auto listId = topQueryToCentroid[queryId][probeId];
+    idx_t listId = ivfListIds[queryId][probeId];
     // Safety guard in case NaNs in input cause no list ID to be generated
     if (listId == -1) {
         return;
@@ -310,7 +310,7 @@ void runMultiPassTile(
         Tensor<float, 2, true>& precompTerm1,
         NoTypeTensor<3, true>& precompTerm2,
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
@@ -327,24 +327,18 @@ void runMultiPassTile(
         Tensor<int, 3, true>& heapIndices,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
     // Calculate offset lengths, so we know where to write out
     // intermediate results
     runCalcListOffsets(
-            res,
-            topQueryToCentroid,
-            listLengths,
-            prefixSumOffsets,
-            thrustMem,
-            stream);
+            res, ivfListIds, listLengths, prefixSumOffsets, thrustMem, stream);
 
     // The vector interleaved layout implementation
     if (interleavedCodeLayout) {
         auto kThreadsPerBlock = 256;
 
-        auto grid = dim3(
-                topQueryToCentroid.getSize(1), topQueryToCentroid.getSize(0));
+        auto grid = dim3(ivfListIds.getSize(1), ivfListIds.getSize(0));
         auto block = dim3(kThreadsPerBlock);
 
 #define RUN_INTERLEAVED(BITS_PER_CODE, CODE_DIST_T)                       \
@@ -355,7 +349,7 @@ void runMultiPassTile(
                         precompTerm1,                                     \
                         precompTerm2T,                                    \
                         precompTerm3T,                                    \
-                        topQueryToCentroid,                               \
+                        ivfListIds,                                       \
                         listCodes.data(),                                 \
                         listLengths.data(),                               \
                         prefixSumOffsets,                                 \
@@ -410,8 +404,7 @@ void runMultiPassTile(
         // index) values for all intermediate results
         auto kThreadsPerBlock = 256;
 
-        auto grid = dim3(
-                topQueryToCentroid.getSize(1), topQueryToCentroid.getSize(0));
+        auto grid = dim3(ivfListIds.getSize(1), ivfListIds.getSize(0));
         auto block = dim3(kThreadsPerBlock);
 
         // pq precomputed terms (2 + 3)
@@ -431,7 +424,7 @@ void runMultiPassTile(
                         precompTerm1,                                 \
                         precompTerm2T,                                \
                         precompTerm3T,                                \
-                        topQueryToCentroid,                           \
+                        ivfListIds,                                   \
                         listCodes.data(),                             \
                         listLengths.data(),                           \
                         prefixSumOffsets,                             \
@@ -512,7 +505,7 @@ void runMultiPassTile(
     runPass1SelectLists(
             prefixSumOffsets,
             allDistances,
-            topQueryToCentroid.getSize(1),
+            ivfListIds.getSize(1),
             k,
             false, // L2 distance chooses smallest
             heapDistances,
@@ -529,7 +522,7 @@ void runMultiPassTile(
             listIndices,
             indicesOptions,
             prefixSumOffsets,
-            topQueryToCentroid,
+            ivfListIds,
             k,
             false, // L2 distance chooses smallest
             outDistances,
@@ -547,7 +540,7 @@ void runPQScanMultiPassPrecomputed(
         NoTypeTensor<3, true>& precompTerm2,
         // (query id)(sub q)(code id)
         NoTypeTensor<3, true>& precompTerm3,
-        Tensor<int, 2, true>& topQueryToCentroid,
+        Tensor<idx_t, 2, true>& ivfListIds,
         bool useFloat16Lookup,
         bool interleavedCodeLayout,
         int bitsPerSubQuantizer,
@@ -562,13 +555,13 @@ void runPQScanMultiPassPrecomputed(
         // output
         Tensor<float, 2, true>& outDistances,
         // output
-        Tensor<Index::idx_t, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         GpuResources* res) {
     constexpr int kMinQueryTileSize = 8;
-    constexpr int kMaxQueryTileSize = 128;
+    constexpr int kMaxQueryTileSize = 65536; // typical max gridDim.y
     constexpr int kThrustMemSize = 16384;
 
-    int nprobe = topQueryToCentroid.getSize(1);
+    int nprobe = ivfListIds.getSize(1);
 
     auto stream = res->getDefaultStreamCurrentDevice();
 
@@ -684,7 +677,7 @@ void runPQScanMultiPassPrecomputed(
                         0, numQueriesInTile);
 
         auto coarseIndicesView =
-                topQueryToCentroid.narrowOutermost(query, numQueriesInTile);
+                ivfListIds.narrowOutermost(query, numQueriesInTile);
         auto queryView = queries.narrowOutermost(query, numQueriesInTile);
         auto term1View = precompTerm1.narrowOutermost(query, numQueriesInTile);
         auto term3View = precompTerm3.narrowOutermost(query, numQueriesInTile);

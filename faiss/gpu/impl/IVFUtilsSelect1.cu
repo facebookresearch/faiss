@@ -34,55 +34,58 @@ __global__ void pass1SelectLists(
     __shared__ float smemK[kNumWarps * NumWarpQ];
     __shared__ int smemV[kNumWarps * NumWarpQ];
 
-    constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
-    BlockSelect<
-            float,
-            int,
-            Dir,
-            Comparator<float>,
-            NumWarpQ,
-            NumThreadQ,
-            ThreadsPerBlock>
-            heap(kInit, -1, smemK, smemV, k);
+    for (int queryId = blockIdx.y; queryId < prefixSumOffsets.getSize(0);
+         queryId += gridDim.y) {
+        constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
+        BlockSelect<
+                float,
+                int,
+                Dir,
+                Comparator<float>,
+                NumWarpQ,
+                NumThreadQ,
+                ThreadsPerBlock>
+                heap(kInit, -1, smemK, smemV, k);
 
-    auto queryId = blockIdx.y;
-    auto sliceId = blockIdx.x;
-    auto numSlices = gridDim.x;
+        auto sliceId = blockIdx.x;
+        auto numSlices = gridDim.x;
 
-    int sliceSize = (nprobe / numSlices);
-    int sliceStart = sliceSize * sliceId;
-    int sliceEnd = sliceId == (numSlices - 1) ? nprobe : sliceStart + sliceSize;
-    auto offsets = prefixSumOffsets[queryId].data();
+        int sliceSize = (nprobe / numSlices);
+        int sliceStart = sliceSize * sliceId;
+        int sliceEnd =
+                sliceId == (numSlices - 1) ? nprobe : sliceStart + sliceSize;
+        auto offsets = prefixSumOffsets[queryId].data();
 
-    // We ensure that before the array (at offset -1), there is a 0 value
-    int start = *(&offsets[sliceStart] - 1);
-    int end = offsets[sliceEnd - 1];
+        // We ensure that before the array (at offset -1), there is a 0 value
+        int start = *(&offsets[sliceStart] - 1);
+        int end = offsets[sliceEnd - 1];
 
-    int num = end - start;
-    int limit = utils::roundDown(num, kWarpSize);
+        int num = end - start;
+        int limit = utils::roundDown(num, kWarpSize);
 
-    int i = threadIdx.x;
-    auto distanceStart = distance[start].data();
+        int i = threadIdx.x;
+        auto distanceStart = distance[start].data();
 
-    // BlockSelect add cannot be used in a warp divergent circumstance; we
-    // handle the remainder warp below
-    for (; i < limit; i += blockDim.x) {
-        heap.add(distanceStart[i], start + i);
-    }
+        // BlockSelect add cannot be used in a warp divergent circumstance; we
+        // handle the remainder warp below
+        for (; i < limit; i += blockDim.x) {
+            heap.add(distanceStart[i], start + i);
+        }
 
-    // Handle warp divergence separately
-    if (i < num) {
-        heap.addThreadQ(distanceStart[i], start + i);
-    }
+        // Handle warp divergence separately
+        if (i < num) {
+            heap.addThreadQ(distanceStart[i], start + i);
+        }
 
-    // Merge all final results
-    heap.reduce();
+        // Merge all final results
+        heap.reduce();
 
-    // Write out the final k-selected values; they should be all
-    // together
-    for (int i = threadIdx.x; i < k; i += blockDim.x) {
-        heapDistances[queryId][sliceId][i] = smemK[i];
-        heapIndices[queryId][sliceId][i] = smemV[i];
+        // Write out the final k-selected values; they should be all
+        // together
+        for (int i = threadIdx.x; i < k; i += blockDim.x) {
+            heapDistances[queryId][sliceId][i] = smemK[i];
+            heapIndices[queryId][sliceId][i] = smemV[i];
+        }
     }
 }
 
@@ -98,7 +101,11 @@ void runPass1SelectLists(
     // This is caught at a higher level
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
 
-    auto grid = dim3(heapDistances.getSize(1), prefixSumOffsets.getSize(0));
+    auto grid =
+            dim3(heapDistances.getSize(1),
+                 std::min(
+                         prefixSumOffsets.getSize(0),
+                         (int)getMaxGridCurrentDevice().y));
 
 #define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
     do {                                                       \

@@ -22,10 +22,10 @@ namespace faiss {
  * @param argmins  argmin of each row
  */
 void smawk(
-        const Index::idx_t nrows,
-        const Index::idx_t ncols,
+        const idx_t nrows,
+        const idx_t ncols,
         const float* x,
-        Index::idx_t* argmins);
+        idx_t* argmins);
 
 /** Exact 1D K-Means by dynamic programming
  *

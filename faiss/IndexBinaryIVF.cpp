@@ -158,7 +158,7 @@ void IndexBinaryIVF::reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const {
 
     for (idx_t list_no = 0; list_no < nlist; list_no++) {
         size_t list_size = invlists->list_size(list_no);
-        const Index::idx_t* idlist = invlists->get_ids(list_no);
+        const idx_t* idlist = invlists->get_ids(list_no);
 
         for (idx_t offset = 0; offset < list_size; offset++) {
             idx_t id = idlist[offset];
@@ -285,22 +285,28 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
     is_trained = true;
 }
 
-void IndexBinaryIVF::merge_from(IndexBinaryIVF& other, idx_t add_id) {
-    // minimal sanity checks
-    FAISS_THROW_IF_NOT(other.d == d);
-    FAISS_THROW_IF_NOT(other.nlist == nlist);
-    FAISS_THROW_IF_NOT(other.code_size == code_size);
+void IndexBinaryIVF::check_compatible_for_merge(
+        const IndexBinary& otherIndex) const {
+    auto other = dynamic_cast<const IndexBinaryIVF*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->nlist == nlist);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
     FAISS_THROW_IF_NOT_MSG(
-            direct_map.no() && other.direct_map.no(),
+            direct_map.no() && other->direct_map.no(),
             "direct map copy not implemented");
     FAISS_THROW_IF_NOT_MSG(
             typeid(*this) == typeid(other),
             "can only merge indexes of the same type");
+}
 
-    invlists->merge_from(other.invlists, add_id);
-
-    ntotal += other.ntotal;
-    other.ntotal = 0;
+void IndexBinaryIVF::merge_from(IndexBinary& otherIndex, idx_t add_id) {
+    // minimal sanity checks
+    check_compatible_for_merge(otherIndex);
+    auto other = static_cast<IndexBinaryIVF*>(&otherIndex);
+    invlists->merge_from(other->invlists, add_id);
+    ntotal += other->ntotal;
+    other->ntotal = 0;
 }
 
 void IndexBinaryIVF::replace_invlists(InvertedLists* il, bool own) {
@@ -313,8 +319,6 @@ void IndexBinaryIVF::replace_invlists(InvertedLists* il, bool own) {
 }
 
 namespace {
-
-using idx_t = Index::idx_t;
 
 template <class HammingComputer>
 struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
@@ -442,7 +446,7 @@ void search_knn_hamming_heap(
                 size_t list_size = ivf.invlists->list_size(key);
                 InvertedLists::ScopedCodes scodes(ivf.invlists, key);
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const Index::idx_t* ids = nullptr;
+                const idx_t* ids = nullptr;
 
                 if (!store_pairs) {
                     sids.reset(new InvertedLists::ScopedIds(ivf.invlists, key));
@@ -527,7 +531,7 @@ void search_knn_hamming_count(
             size_t list_size = ivf.invlists->list_size(key);
             InvertedLists::ScopedCodes scodes(ivf.invlists, key);
             const uint8_t* list_vecs = scodes.get();
-            const Index::idx_t* ids =
+            const idx_t* ids =
                     store_pairs ? nullptr : ivf.invlists->get_ids(key);
 
             for (size_t j = 0; j < list_size; j++) {

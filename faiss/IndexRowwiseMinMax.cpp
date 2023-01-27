@@ -11,7 +11,7 @@ namespace faiss {
 
 namespace {
 
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 struct StorageMinMaxFP16 {
     uint16_t scaler;
@@ -154,8 +154,10 @@ void sa_decode_impl(
     const size_t new_code_size = index->sa_code_size();
 
     // allocate tmp buffers
-    std::vector<uint8_t> tmp(chunk_size * old_code_size);
-    std::vector<StorageMinMaxFP16> minmax(chunk_size);
+    std::vector<uint8_t> tmp(
+            (chunk_size < n_input ? chunk_size : n_input) * old_code_size);
+    std::vector<StorageMinMaxFP16> minmax(
+            (chunk_size < n_input ? chunk_size : n_input));
 
     // all the elements to process
     size_t n_left = n_input;

@@ -24,6 +24,7 @@ set(FAISS_GPU_SRC
   impl/BroadcastSum.cu
   impl/Distance.cu
   impl/FlatIndex.cu
+  impl/IndexUtils.cu
   impl/IVFAppend.cu
   impl/IVFBase.cu
   impl/IVFFlat.cu
@@ -102,6 +103,7 @@ set(FAISS_GPU_HEADERS
   impl/FlatIndex.cuh
   impl/GeneralDistance.cuh
   impl/GpuScalarQuantizer.cuh
+  impl/IndexUtils.h
   impl/IVFAppend.cuh
   impl/IVFBase.cuh
   impl/IVFFlat.cuh

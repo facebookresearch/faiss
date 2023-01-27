@@ -21,7 +21,7 @@
 
 namespace {
 
-typedef faiss::Index::idx_t idx_t;
+typedef faiss::idx_t idx_t;
 
 /*************************************************************
  * Test utils

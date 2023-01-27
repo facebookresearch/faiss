@@ -35,22 +35,23 @@ class TestEncodeDecode(unittest.TestCase):
 
         codes2 = codec.sa_encode(x2)
 
-        if 'IVF' not in factory_key:
-            self.assertTrue(np.all(codes == codes2))
-        else:
+        if 'IVF' in factory_key or 'RQ' in factory_key:
             # some rows are not reconstructed exactly because they
             # flip into another quantization cell
             nrowdiff = (codes != codes2).any(axis=1).sum()
             self.assertTrue(nrowdiff < 10)
+        else:
+            self.assertTrue(np.all(codes == codes2))
 
         x3 = codec.sa_decode(codes2)
-        if 'IVF' not in factory_key:
-            self.assertTrue(np.allclose(x2, x3))
-        else:
+
+        if 'IVF' in factory_key or 'RQ' in factory_key:
             diffs = np.abs(x2 - x3).sum(axis=1)
             avg = np.abs(x2).sum(axis=1).mean()
             diffs.sort()
             assert diffs[-10] < avg * 1e-5
+        else:
+            self.assertTrue(np.allclose(x2, x3))
 
     def test_SQ8(self):
         self.do_encode_twice('SQ8')

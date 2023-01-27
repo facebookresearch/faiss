@@ -18,7 +18,7 @@
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 7
-#define FAISS_VERSION_PATCH 2
+#define FAISS_VERSION_PATCH 3
 
 /**
  * @namespace faiss
@@ -44,6 +44,11 @@ struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
 
+/** Parent class for the optional search paramenters.
+ *
+ * Sub-classes with additional search parameters should inherit this class.
+ * Ownership of the object fields is always to the caller.
+ */
 struct SearchParameters {
     /// if non-null, only these IDs will be considered during search.
     IDSelector* sel = nullptr;
@@ -57,7 +62,6 @@ struct SearchParameters {
  * although the internal representation may vary.
  */
 struct Index {
-    using idx_t = int64_t; ///< all indices are this type
     using component_t = float;
     using distance_t = float;
 

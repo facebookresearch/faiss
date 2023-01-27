@@ -24,7 +24,6 @@ namespace faiss {
  * higher is better.
  */
 struct AutoTuneCriterion {
-    typedef Index::idx_t idx_t;
     idx_t nq;     ///< nb of queries this criterion is evaluated on
     idx_t nnn;    ///< nb of NNs that the query should request
     idx_t gt_nnn; ///< nb of GT NNs required to evaluate criterion
