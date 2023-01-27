@@ -10,20 +10,30 @@
 #include <faiss/invlists/InvertedLists.h>
 
 #include <cstdio>
+#include <memory>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
 
+InvertedListsIterator::~InvertedListsIterator() {}
+
 /*****************************************
  * InvertedLists implementation
  ******************************************/
 
 InvertedLists::InvertedLists(size_t nlist, size_t code_size)
-        : nlist(nlist), code_size(code_size) {}
+        : nlist(nlist), code_size(code_size), use_iterator(false) {}
 
 InvertedLists::~InvertedLists() {}
+
+bool InvertedLists::is_empty(size_t list_no) const {
+    return use_iterator
+            ? !std::unique_ptr<InvertedListsIterator>(get_iterator(list_no))
+                       ->has_next()
+            : list_size(list_no) == 0;
+}
 
 idx_t InvertedLists::get_single_id(size_t list_no, size_t offset) const {
     assert(offset < list_size(list_no));
@@ -64,6 +74,10 @@ void InvertedLists::reset() {
     for (size_t i = 0; i < nlist; i++) {
         resize(i, 0);
     }
+}
+
+InvertedListsIterator* InvertedLists::get_iterator(size_t /*list_no*/) const {
+    FAISS_THROW_MSG("get_iterator is not supported");
 }
 
 void InvertedLists::merge_from(InvertedLists* oivf, size_t add_id) {

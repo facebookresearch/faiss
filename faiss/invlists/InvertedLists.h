@@ -20,6 +20,12 @@
 
 namespace faiss {
 
+struct InvertedListsIterator {
+    virtual ~InvertedListsIterator();
+    virtual bool has_next() const = 0;
+    virtual std::pair<idx_t, const uint8_t*> next() = 0;
+};
+
 /** Table of inverted lists
  * multithreading rules:
  * - concurrent read accesses are allowed
@@ -30,6 +36,7 @@ namespace faiss {
 struct InvertedLists {
     size_t nlist;     ///< number of possible key values
     size_t code_size; ///< code size per vector in bytes
+    bool use_iterator;
 
     InvertedLists(size_t nlist, size_t code_size);
 
@@ -42,8 +49,14 @@ struct InvertedLists {
     /*************************
      *  Read only functions */
 
+    // check if the list is empty
+    bool is_empty(size_t list_no) const;
+
     /// get the size of a list
     virtual size_t list_size(size_t list_no) const = 0;
+
+    /// get iterable for lists that use_iterator
+    virtual InvertedListsIterator* get_iterator(size_t list_no) const;
 
     /** get the codes for an inverted list
      * must be released by release_codes
@@ -106,7 +119,7 @@ struct InvertedLists {
     virtual void reset();
 
     /*************************
-     * high level functions     */
+     * high level functions  */
 
     /// move all entries from oivf (empty on output)
     void merge_from(InvertedLists* oivf, size_t add_id);

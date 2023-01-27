@@ -10,6 +10,7 @@
 #include <faiss/IndexIVF.h>
 
 #include <omp.h>
+#include <cstdint>
 #include <mutex>
 
 #include <algorithm>
@@ -419,6 +420,10 @@ void IndexIVF::search_preassigned(
             !(sel && store_pairs),
             "selector and store_pairs cannot be combined");
 
+    FAISS_THROW_IF_NOT_MSG(
+            !invlists->use_iterator || (max_codes == 0 && store_pairs == false),
+            "iterable inverted lists don't support max_codes and store_pairs");
+
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
     using HeapForIP = CMin<float, idx_t>;
@@ -507,13 +512,8 @@ void IndexIVF::search_preassigned(
                     key,
                     nlist);
 
-            size_t list_size = invlists->list_size(key);
-            if (list_size > list_size_max) {
-                list_size = list_size_max;
-            }
-
             // don't waste time on empty lists
-            if (list_size == 0) {
+            if (invlists->is_empty(key)) {
                 return (size_t)0;
             }
 
@@ -522,32 +522,51 @@ void IndexIVF::search_preassigned(
             nlistv++;
 
             try {
-                InvertedLists::ScopedCodes scodes(invlists, key);
-                const uint8_t* codes = scodes.get();
+                if (invlists->use_iterator) {
+                    size_t list_size = 0;
 
-                std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const idx_t* ids = nullptr;
+                    std::unique_ptr<InvertedListsIterator> it(
+                            invlists->get_iterator(key));
 
-                if (!store_pairs) {
-                    sids.reset(new InvertedLists::ScopedIds(invlists, key));
-                    ids = sids->get();
-                }
+                    nheap += scanner->iterate_codes(
+                            it.get(), list_size, simi, idxi, k);
 
-                if (selr) { // IDSelectorRange
-                    // restrict search to a section of the inverted list
-                    size_t jmin, jmax;
-                    selr->find_sorted_ids_bounds(list_size, ids, &jmin, &jmax);
-                    list_size = jmax - jmin;
-                    if (list_size == 0) {
-                        return (size_t)0;
+                    return list_size;
+                } else {
+                    size_t list_size = invlists->list_size(key);
+                    if (list_size > list_size_max) {
+                        list_size = list_size_max;
                     }
-                    codes += jmin * code_size;
-                    ids += jmin;
+
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    const uint8_t* codes = scodes.get();
+
+                    std::unique_ptr<InvertedLists::ScopedIds> sids;
+                    const idx_t* ids = nullptr;
+
+                    if (!store_pairs) {
+                        sids.reset(new InvertedLists::ScopedIds(invlists, key));
+                        ids = sids->get();
+                    }
+
+                    if (selr) { // IDSelectorRange
+                        // restrict search to a section of the inverted list
+                        size_t jmin, jmax;
+                        selr->find_sorted_ids_bounds(
+                                list_size, ids, &jmin, &jmax);
+                        list_size = jmax - jmin;
+                        if (list_size == 0) {
+                            return (size_t)0;
+                        }
+                        codes += jmin * code_size;
+                        ids += jmin;
+                    }
+
+                    nheap += scanner->scan_codes(
+                            list_size, codes, ids, simi, idxi, k);
+
+                    return list_size;
                 }
-
-                nheap += scanner->scan_codes(
-                        list_size, codes, ids, simi, idxi, k);
-
             } catch (const std::exception& e) {
                 std::lock_guard<std::mutex> lock(exception_mutex);
                 exception_string =
@@ -555,8 +574,6 @@ void IndexIVF::search_preassigned(
                 interrupt = true;
                 return size_t(0);
             }
-
-            return list_size;
         };
 
         /****************************************************
@@ -1178,6 +1195,39 @@ size_t InvertedListScanner::scan_codes(
                 nup++;
             }
             codes += code_size;
+        }
+    }
+    return nup;
+}
+
+size_t InvertedListScanner::iterate_codes(
+        InvertedListsIterator* it,
+        size_t& n,
+        float* simi,
+        idx_t* idxi,
+        size_t k) const {
+    size_t nup = 0;
+    n = 0;
+
+    if (!keep_max) {
+        while (it->has_next()) {
+            auto id_and_codes = it->next();
+            float dis = distance_to_code(id_and_codes.second);
+            if (dis < simi[0]) {
+                maxheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
+                nup++;
+            }
+            n++;
+        }
+    } else {
+        while (it->has_next()) {
+            auto id_and_codes = it->next();
+            float dis = distance_to_code(id_and_codes.second);
+            if (dis > simi[0]) {
+                minheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
+                nup++;
+            }
+            n++;
         }
     }
     return nup;
