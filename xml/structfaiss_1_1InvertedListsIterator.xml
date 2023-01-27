@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1InvertedListsIterator" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::InvertedListsIterator</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::InvertedListsIterator::~InvertedListsIterator</definition>
+        <argsstring>()</argsstring>
+        <name>~InvertedListsIterator</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/InvertedLists.h" line="24" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1aae129b51e4a2f896822d410b34ba9746" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::InvertedListsIterator::has_next</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_next</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/InvertedLists.h" line="25" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InvertedListsIterator_1ad778e8ce2064fdf97081d34e4327907d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::pair&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>, const uint8_t * &gt;</type>
+        <definition>virtual std::pair&lt;idx_t, const uint8_t*&gt; faiss::InvertedListsIterator::next</definition>
+        <argsstring>()=0</argsstring>
+        <name>next</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/invlists/InvertedLists.h" line="26" column="23"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/invlists/InvertedLists.h" line="23" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="23" bodyend="27"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1InvertedListsIterator_1aae129b51e4a2f896822d410b34ba9746" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>has_next</name></member>
+      <member refid="structfaiss_1_1InvertedListsIterator_1ad778e8ce2064fdf97081d34e4327907d" prot="public" virt="pure-virtual"><scope>faiss::InvertedListsIterator</scope><name>next</name></member>
+      <member refid="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" prot="public" virt="virtual"><scope>faiss::InvertedListsIterator</scope><name>~InvertedListsIterator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
