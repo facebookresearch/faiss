@@ -11,7 +11,7 @@ namespace faiss {
 
 namespace {
 
-using idx_t = faiss::Index::idx_t;
+using idx_t = faiss::idx_t;
 
 struct StorageMinMaxFP16 {
     uint16_t scaler;
@@ -154,8 +154,10 @@ void sa_decode_impl(
     const size_t new_code_size = index->sa_code_size();
 
     // allocate tmp buffers
-    std::vector<uint8_t> tmp(chunk_size * old_code_size);
-    std::vector<StorageMinMaxFP16> minmax(chunk_size);
+    std::vector<uint8_t> tmp(
+            (chunk_size < n_input ? chunk_size : n_input) * old_code_size);
+    std::vector<StorageMinMaxFP16> minmax(
+            (chunk_size < n_input ? chunk_size : n_input));
 
     // all the elements to process
     size_t n_left = n_input;
@@ -345,16 +347,17 @@ IndexRowwiseMinMaxBase::~IndexRowwiseMinMaxBase() {
     }
 }
 
-void IndexRowwiseMinMaxBase::add(idx_t n, const float* x) {
+void IndexRowwiseMinMaxBase::add(idx_t, const float*) {
     FAISS_THROW_MSG("add not implemented for this type of index");
 }
 
 void IndexRowwiseMinMaxBase::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const {
+        idx_t,
+        const float*,
+        idx_t,
+        float*,
+        idx_t*,
+        const SearchParameters*) const {
     FAISS_THROW_MSG("search not implemented for this type of index");
 }
 

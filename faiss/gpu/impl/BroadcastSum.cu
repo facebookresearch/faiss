@@ -244,16 +244,20 @@ void runSumAlongColumns(
         auto inputV = input.template castResize<TVec>();
         auto outputV = output.template castResize<TVec>();
 
-        auto grid = dim3(
-                utils::divUp(outputV.getSize(0), kRowsPerBlock),
-                utils::divUp(outputV.getSize(1), threadsPerBlock * kColLoad));
+        auto rowTiles = utils::divUp(outputV.getSize(0), kRowsPerBlock);
+        auto colTiles =
+                utils::divUp(outputV.getSize(1), threadsPerBlock * kColLoad);
+        FAISS_ASSERT(colTiles <= getMaxGridCurrentDevice().y);
+        auto grid = dim3(rowTiles, colTiles);
 
         sumAlongColumns<TVec, kRowsPerBlock, kRowUnroll, kColLoad>
                 <<<grid, block, 0, stream>>>(inputV, outputV);
     } else {
-        auto grid = dim3(
-                utils::divUp(output.getSize(0), kRowsPerBlock),
-                utils::divUp(output.getSize(1), threadsPerBlock * kColLoad));
+        auto rowTiles = utils::divUp(output.getSize(0), kRowsPerBlock);
+        auto colTiles =
+                utils::divUp(output.getSize(1), threadsPerBlock * kColLoad);
+        FAISS_ASSERT(colTiles <= getMaxGridCurrentDevice().y);
+        auto grid = dim3(rowTiles, colTiles);
 
         sumAlongColumns<T, kRowsPerBlock, kRowUnroll, kColLoad>
                 <<<grid, block, 0, stream>>>(input, output);
@@ -295,16 +299,20 @@ void runAssignAlongColumns(
         auto inputV = input.template castResize<TVec>();
         auto outputV = output.template castResize<TVec>();
 
-        auto grid = dim3(
-                utils::divUp(outputV.getSize(0), kRowsPerBlock),
-                utils::divUp(outputV.getSize(1), threadsPerBlock * kColLoad));
+        auto rowTiles = utils::divUp(outputV.getSize(0), kRowsPerBlock);
+        auto colTiles =
+                utils::divUp(outputV.getSize(1), threadsPerBlock * kColLoad);
+        FAISS_ASSERT(colTiles <= getMaxGridCurrentDevice().y);
+        auto grid = dim3(rowTiles, colTiles);
 
         assignAlongColumns<TVec, kRowsPerBlock, kRowUnroll, kColLoad>
                 <<<grid, block, 0, stream>>>(inputV, outputV);
     } else {
-        auto grid = dim3(
-                utils::divUp(output.getSize(0), kRowsPerBlock),
-                utils::divUp(output.getSize(1), threadsPerBlock * kColLoad));
+        auto rowTiles = utils::divUp(output.getSize(0), kRowsPerBlock);
+        auto colTiles =
+                utils::divUp(output.getSize(1), threadsPerBlock * kColLoad);
+        FAISS_ASSERT(colTiles <= getMaxGridCurrentDevice().y);
+        auto grid = dim3(rowTiles, colTiles);
 
         assignAlongColumns<T, kRowsPerBlock, kRowUnroll, kColLoad>
                 <<<grid, block, 0, stream>>>(input, output);

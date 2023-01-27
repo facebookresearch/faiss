@@ -69,7 +69,14 @@ void IndexIVFFastScan::init_fastscan(
     code_size = M2 / 2;
 
     is_trained = false;
-    replace_invlists(new BlockInvertedLists(nlist, bbs, bbs * M2 / 2), true);
+    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+}
+
+void IndexIVFFastScan::init_code_packer() {
+    auto bil = dynamic_cast<BlockInvertedLists*>(invlists);
+    FAISS_THROW_IF_NOT(bil);
+    delete bil->packer; // in case there was one before
+    bil->packer = get_CodePacker();
 }
 
 IndexIVFFastScan::~IndexIVFFastScan() {}
@@ -112,17 +119,9 @@ void IndexIVFFastScan::add_with_ids(
     }
     InterruptCallback::check();
 
-    AlignedTable<uint8_t> codes(n * code_size);
     direct_map.check_can_add(xids);
     std::unique_ptr<idx_t[]> idx(new idx_t[n]);
     quantizer->assign(n, x, idx.get());
-    size_t nadd = 0, nminus1 = 0;
-
-    for (size_t i = 0; i < n; i++) {
-        if (idx[i] < 0) {
-            nminus1++;
-        }
-    }
 
     AlignedTable<uint8_t> flat_codes(n * code_size);
     encode_vectors(n, x, idx.get(), flat_codes.get());
@@ -170,7 +169,6 @@ void IndexIVFFastScan::add_with_ids(
             memcpy(list_codes.data() + (i - i0) * code_size,
                    flat_codes.data() + order[i] * code_size,
                    code_size);
-            nadd++;
         }
         pq4_pack_codes_range(
                 list_codes.data(),
@@ -185,6 +183,10 @@ void IndexIVFFastScan::add_with_ids(
     }
 
     ntotal += n;
+}
+
+CodePacker* IndexIVFFastScan::get_CodePacker() const {
+    return new CodePackerPQ4(M, bbs);
 }
 
 /*********************************************************
@@ -229,7 +231,6 @@ void estimators_from_tables_generic(
     }
 }
 
-using idx_t = Index::idx_t;
 using namespace quantize_lut;
 
 } // anonymous namespace
@@ -302,7 +303,10 @@ void IndexIVFFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     DummyScaler scaler;
@@ -311,6 +315,15 @@ void IndexIVFFastScan::search(
     } else {
         search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
     }
+}
+
+void IndexIVFFastScan::range_search(
+        idx_t,
+        const float*,
+        float,
+        RangeSearchResult*,
+        const SearchParameters*) const {
+    FAISS_THROW_MSG("not implemented");
 }
 
 template <bool is_max, class Scaler>

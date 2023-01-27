@@ -9,7 +9,7 @@ import time
 import numpy as np
 import re
 import faiss
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 from datasets import ivecs_read
 
 

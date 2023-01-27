@@ -49,7 +49,9 @@ struct IndexRowwiseMinMaxBase : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
     void reset() override;
 
     virtual void train_inplace(idx_t n, float* x) = 0;

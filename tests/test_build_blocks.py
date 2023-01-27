@@ -597,3 +597,93 @@ class TestReconstructBatch(unittest.TestCase):
             RuntimeError,
             lambda : index.reconstruct_batch(subset),
         )
+
+
+class TestBucketSort(unittest.TestCase):
+
+    def do_test_bucket_sort(self, nt):
+        rs = np.random.RandomState(123)
+        tab = rs.randint(100, size=1000, dtype='int64')
+        lims, perm = faiss.bucket_sort(tab, nt=nt)
+        for i in range(max(tab) + 1):
+            assert np.all(tab[perm[lims[i]: lims[i + 1]]] == i)
+
+    def test_bucket_sort(self):
+        self.do_test_bucket_sort(0)
+
+    def test_bucket_sort_parallel(self):
+        self.do_test_bucket_sort(4)
+
+    def do_test_bucket_sort_inplace(
+            self, nt, nrow=500, ncol=20, nbucket=300, repro=False):
+        rs = np.random.RandomState(123)
+        tab = rs.randint(nbucket, size=(nrow, ncol), dtype='int32')
+
+        tab2 = tab.copy()
+        faiss.cvar.bucket_sort_verbose
+        faiss.cvar.bucket_sort_verbose = 1
+
+        lims = faiss.matrix_bucket_sort_inplace(tab2, nt=nt)
+        tab2 = tab2.ravel()
+
+        for b in range(nbucket):
+            rows, _ = np.where(tab == b)
+            rows.sort()
+            tab2[lims[b]:lims[b + 1]].sort()
+            # print(rows, tab2[lims[b] : lims[b + 1]])
+            rows = set(rows)
+            self.assertEqual(rows, set(tab2[lims[b]:lims[b + 1]]))
+
+    def test_bucket_sort_inplace(self):
+        self.do_test_bucket_sort_inplace(0)
+
+    def test_bucket_sort_inplace_parallel(self):
+        self.do_test_bucket_sort_inplace(4)
+
+    def test_bucket_sort_inplace_parallel_fewcol(self):
+        self.do_test_bucket_sort_inplace(4, ncol=3)
+
+    def test_bucket_sort_inplace_parallel_fewbucket(self):
+        self.do_test_bucket_sort_inplace(4, nbucket=5)
+
+
+class TestMergeKNNResults(unittest.TestCase):
+
+    def do_test(self, ismax, dtype):
+        rs = np.random.RandomState()
+        n, k, nshard = 10, 5, 3
+        all_ids = rs.randint(100000, size=(nshard, n, k)).astype('int64')
+        all_dis = rs.rand(nshard, n, k)
+        if dtype == 'int32':
+            all_dis = (all_dis * 1000000).astype("int32")
+        else:
+            all_dis = all_dis.astype(dtype)
+        for i in range(nshard):
+            for j in range(n):
+                all_dis[i, j].sort()
+                if ismax:
+                    all_dis[i, j] = all_dis[i, j][::-1]
+        Dref = np.zeros((n, k), dtype=dtype)
+        Iref = np.zeros((n, k), dtype='int64')
+
+        for i in range(n):
+            dis = all_dis[:, i, :].ravel()
+            ids = all_ids[:, i, :].ravel()
+            o = dis.argsort()
+            if ismax:
+                o = o[::-1]
+            Dref[i] = dis[o[:k]]
+            Iref[i] = ids[o[:k]]
+
+        Dnew, Inew = faiss.merge_knn_results(all_dis, all_ids, keep_max=ismax)
+        np.testing.assert_array_equal(Dnew, Dref)
+        np.testing.assert_array_equal(Inew, Iref)
+
+    def test_min_float(self):
+        self.do_test(ismax=False, dtype='float32')
+
+    def test_max_int(self):
+        self.do_test(ismax=True, dtype='int32')
+
+    def test_max_float(self):
+        self.do_test(ismax=True, dtype='float32')

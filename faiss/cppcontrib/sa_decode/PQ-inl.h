@@ -1,6 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
-#pragma once
+#ifndef PQ_INL_H
+#define PQ_INL_H
 
 #include <cstddef>
 #include <cstdint>
@@ -248,3 +248,4 @@ struct IndexPQDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+#endif // PQ_INL_H

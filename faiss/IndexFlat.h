@@ -25,13 +25,15 @@ struct IndexFlat : IndexFlatCodes {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void range_search(
             idx_t n,
             const float* x,
             float radius,
-            RangeSearchResult* result) const override;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 
@@ -80,7 +82,7 @@ struct IndexFlatL2 : IndexFlat {
 
 /// optimized version for 1D "vectors".
 struct IndexFlat1D : IndexFlatL2 {
-    bool continuous_update; ///< is the permutation updated continuously?
+    bool continuous_update = true; ///< is the permutation updated continuously?
 
     std::vector<idx_t> perm; ///< sorted database indices
 
@@ -100,7 +102,8 @@ struct IndexFlat1D : IndexFlatL2 {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

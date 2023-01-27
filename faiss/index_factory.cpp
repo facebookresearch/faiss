@@ -10,8 +10,6 @@
  */
 
 #include <faiss/index_factory.h>
-#include "faiss/MetricType.h"
-#include "faiss/impl/FaissAssert.h"
 
 #include <cinttypes>
 #include <cmath>
@@ -665,19 +663,19 @@ std::unique_ptr<Index> index_factory_sub(
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
         std::unique_ptr<Index> filter_index =
                 index_factory_sub(d, sm[1].str(), metric);
-        std::unique_ptr<Index> refine_index;
 
+        IndexRefine* index_rf = nullptr;
         if (sm.size() == 3) { // Refine
-            refine_index = index_factory_sub(d, sm[2].str(), metric);
+            std::unique_ptr<Index> refine_index =
+                    index_factory_sub(d, sm[2].str(), metric);
+            index_rf = new IndexRefine(
+                    filter_index.release(), refine_index.release());
+            index_rf->own_refine_index = true;
         } else { // RFlat
-            refine_index.reset(new IndexFlat(d, metric));
+            index_rf = new IndexRefineFlat(filter_index.release(), nullptr);
         }
-        IndexRefine* index_rf =
-                new IndexRefine(filter_index.get(), refine_index.get());
+        FAISS_ASSERT(index_rf != nullptr);
         index_rf->own_fields = true;
-        filter_index.release();
-        refine_index.release();
-        index_rf->own_refine_index = true;
         return std::unique_ptr<Index>(index_rf);
     }
 
@@ -738,6 +736,14 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
     // support both
+    if (re_match(description, "(.+),IDMap2", sm) ||
+        re_match(description, "IDMap2,(.+)", sm)) {
+        IndexIDMap2* idmap2 = new IndexIDMap2(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap2->own_fields = true;
+        return std::unique_ptr<Index>(idmap2);
+    }
+
     if (re_match(description, "(.+),IDMap", sm) ||
         re_match(description, "IDMap,(.+)", sm)) {
         IndexIDMap* idmap = new IndexIDMap(

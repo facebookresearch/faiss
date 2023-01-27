@@ -147,14 +147,8 @@ using namespace nndescent;
 
 constexpr int NUM_EVAL_POINTS = 100;
 
-NNDescent::NNDescent(const int d, const int K) : K(K), random_seed(2021), d(d) {
-    ntotal = 0;
-    has_built = false;
-    S = 10;
-    R = 100;
+NNDescent::NNDescent(const int d, const int K) : K(K), d(d) {
     L = K + 50;
-    iter = 10;
-    search_L = 0;
 }
 
 NNDescent::~NNDescent() {}
@@ -425,7 +419,7 @@ void NNDescent::search(
     // candidate pool, the K best items is the result.
     std::vector<Neighbor> retset(L + 1);
 
-    // Randomly choose L points to intialize the candidate pool
+    // Randomly choose L points to initialize the candidate pool
     std::vector<int> init_ids(L);
     std::mt19937 rng(random_seed);
 

@@ -92,7 +92,7 @@ void knn_extra_metrics_template(
 template <class VD>
 struct ExtraDistanceComputer : FlatCodesDistanceComputer {
     VD vd;
-    Index::idx_t nb;
+    idx_t nb;
     const float* q;
     const float* b;
 

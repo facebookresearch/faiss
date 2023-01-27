@@ -134,7 +134,8 @@ struct IndexIVFPQ : IndexIVF {
             float* x) const;
 
     InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs) const override;
+            bool store_pairs,
+            const IDSelector* sel) const override;
 
     /// build precomputed table
     void precompute_table();
@@ -161,6 +162,7 @@ void initialize_IVFPQ_precomputed_table(
         const Index* quantizer,
         const ProductQuantizer& pq,
         AlignedTable<float>& precomputed_table,
+        bool by_residual,
         bool verbose);
 
 /// statistics are robust to internal threading, but not if

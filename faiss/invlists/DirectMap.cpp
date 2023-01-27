@@ -14,6 +14,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 
 namespace faiss {
 
@@ -67,7 +68,7 @@ void DirectMap::clear() {
     hashtable.clear();
 }
 
-DirectMap::idx_t DirectMap::get(idx_t key) const {
+idx_t DirectMap::get(idx_t key) const {
     if (type == Array) {
         FAISS_THROW_IF_NOT_MSG(key >= 0 && key < array.size(), "invalid key");
         idx_t lo = array[key];

@@ -158,29 +158,42 @@ void IndexPreTransform::add_with_ids(
     ntotal = index->ntotal;
 }
 
+namespace {
+
+const SearchParameters* extract_index_search_params(
+        const SearchParameters* params_in) {
+    auto params = dynamic_cast<const SearchParametersPreTransform*>(params_in);
+    return params ? params->index_params : params_in;
+}
+
+} // namespace
+
 void IndexPreTransform::search(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_chain(n, x);
     ScopeDeleter<float> del(xt == x ? nullptr : xt);
-    index->search(n, xt, k, distances, labels);
+    index->search(
+            n, xt, k, distances, labels, extract_index_search_params(params));
 }
 
 void IndexPreTransform::range_search(
         idx_t n,
         const float* x,
         float radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_chain(n, x);
     ScopeDeleter<float> del(xt == x ? nullptr : xt);
-    index->range_search(n, xt, radius, result);
+    index->range_search(
+            n, xt, radius, result, extract_index_search_params(params));
 }
 
 void IndexPreTransform::reset() {
@@ -220,9 +233,9 @@ void IndexPreTransform::search_and_reconstruct(
         idx_t k,
         float* distances,
         idx_t* labels,
-        float* recons) const {
+        float* recons,
+        const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT(is_trained);
 
     const float* xt = apply_chain(n, x);
@@ -230,7 +243,14 @@ void IndexPreTransform::search_and_reconstruct(
 
     float* recons_temp = chain.empty() ? recons : new float[n * k * index->d];
     ScopeDeleter<float> del2((recons_temp == recons) ? nullptr : recons_temp);
-    index->search_and_reconstruct(n, xt, k, distances, labels, recons_temp);
+    index->search_and_reconstruct(
+            n,
+            xt,
+            k,
+            distances,
+            labels,
+            recons_temp,
+            extract_index_search_params(params));
 
     // Revert transformations from last to first
     reverse_chain(n * k, recons_temp, recons);
@@ -261,6 +281,24 @@ void IndexPreTransform::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         // Revert transformations from last to first
         reverse_chain(n, x1.get(), x);
     }
+}
+
+void IndexPreTransform::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    auto other = static_cast<const IndexPreTransform*>(&otherIndex);
+    index->merge_from(*other->index, add_id);
+    ntotal = index->ntotal;
+}
+
+void IndexPreTransform::check_compatible_for_merge(
+        const Index& otherIndex) const {
+    auto other = dynamic_cast<const IndexPreTransform*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(chain.size() == other->chain.size());
+    for (int i = 0; i < chain.size(); i++) {
+        chain[i]->check_identical(*other->chain[i]);
+    }
+    index->check_compatible_for_merge(*other->index);
 }
 
 namespace {

@@ -14,6 +14,7 @@
 #include <omp.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances.h>
@@ -97,6 +98,64 @@ void IndexFastScan::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
+CodePacker* IndexFastScan::get_CodePacker() const {
+    return new CodePackerPQ4(M, bbs);
+}
+
+size_t IndexFastScan::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                packer.unpack_1(codes.data(), i, buffer.data());
+                packer.pack_1(buffer.data(), j, codes.data());
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        ntotal2 = roundup(ntotal, bbs);
+        size_t new_size = ntotal2 * M2 / 2;
+        codes.resize(new_size);
+    }
+    return nremove;
+}
+
+void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
+    const IndexFastScan* other =
+            dynamic_cast<const IndexFastScan*>(&otherIndex);
+    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT(other->M == M);
+    FAISS_THROW_IF_NOT(other->bbs == bbs);
+    FAISS_THROW_IF_NOT(other->d == d);
+    FAISS_THROW_IF_NOT(other->code_size == code_size);
+    FAISS_THROW_IF_NOT_MSG(
+            typeid(*this) == typeid(*other),
+            "can only merge indexes of the same type");
+}
+
+void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+    check_compatible_for_merge(otherIndex);
+    IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
+    ntotal2 = roundup(ntotal + other->ntotal, bbs);
+    codes.resize(ntotal2 * M2 / 2);
+    std::vector<uint8_t> buffer(code_size);
+    CodePackerPQ4 packer(M, bbs);
+
+    for (int i = 0; i < other->ntotal; i++) {
+        packer.unpack_1(other->codes.data(), i, buffer.data());
+        packer.pack_1(buffer.data(), ntotal + i, codes.data());
+    }
+    ntotal += other->ntotal;
+    other->reset();
+}
+
 namespace {
 
 template <class C, typename dis_t, class Scaler>
@@ -176,7 +235,10 @@ void IndexFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     DummyScaler scaler;

@@ -51,7 +51,7 @@ void IndexIVFAdditiveQuantizer::train_residual(idx_t n, const float* x) {
     ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<Index::idx_t> idx(n);
+        std::vector<idx_t> idx(n);
         quantizer->assign(n, x, idx.data());
 
         std::vector<float> residuals(n * d);
@@ -247,7 +247,9 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
-        bool store_pairs) const {
+        bool store_pairs,
+        const IDSelector* sel) const {
+    FAISS_THROW_IF_NOT(!sel);
     if (metric_type == METRIC_INNER_PRODUCT) {
         if (aq->search_type == AdditiveQuantizer::ST_decompress) {
             return new AQInvertedListScannerDecompress<true>(

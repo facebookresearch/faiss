@@ -40,6 +40,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
+#include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
@@ -83,7 +84,7 @@ namespace faiss {
 static void write_index_header(const Index* idx, IOWriter* f) {
     WRITE1(idx->d);
     WRITE1(idx->ntotal);
-    Index::idx_t dummy = 1 << 20;
+    idx_t dummy = 1 << 20;
     WRITE1(dummy);
     WRITE1(dummy);
     WRITE1(idx->is_trained);
@@ -351,13 +352,27 @@ static void write_NSG(const NSG* nsg, IOWriter* f) {
     }
 }
 
+static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
+    WRITE1(nnd->ntotal);
+    WRITE1(nnd->d);
+    WRITE1(nnd->K);
+    WRITE1(nnd->S);
+    WRITE1(nnd->R);
+    WRITE1(nnd->L);
+    WRITE1(nnd->iter);
+    WRITE1(nnd->search_L);
+    WRITE1(nnd->random_seed);
+    WRITE1(nnd->has_built);
+
+    WRITEVECTOR(nnd->final_graph);
+}
+
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
     char maintain_direct_map =
             (char)dm->type; // for backwards compatibility with bool
     WRITE1(maintain_direct_map);
     WRITEVECTOR(dm->array);
     if (dm->type == DirectMap::Hashtable) {
-        using idx_t = Index::idx_t;
         std::vector<std::pair<idx_t, idx_t>> v;
         const std::unordered_map<idx_t, idx_t>& map = dm->hashtable;
         v.resize(map.size());
@@ -599,7 +614,7 @@ void write_index(const Index* idx, IOWriter* f) {
         WRITE1(h);
         write_ivf_header(ivfl, f);
         {
-            std::vector<Index::idx_t> tab(2 * ivfl->instances.size());
+            std::vector<idx_t> tab(2 * ivfl->instances.size());
             long i = 0;
             for (auto it = ivfl->instances.begin(); it != ivfl->instances.end();
                  ++it) {
@@ -749,6 +764,17 @@ void write_index(const Index* idx, IOWriter* f) {
         write_NSG(&idxnsg->nsg, f);
         write_index(idxnsg->storage, f);
     } else if (
+            const IndexNNDescent* idxnnd =
+                    dynamic_cast<const IndexNNDescent*>(idx)) {
+        auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
+        FAISS_THROW_IF_NOT(idxnndflat != nullptr);
+        uint32_t h = fourcc("INNf");
+        FAISS_THROW_IF_NOT(h != 0);
+        WRITE1(h);
+        write_index_header(idxnnd, f);
+        write_NNDescent(&idxnnd->nndescent, f);
+        write_index(idxnnd->storage, f);
+    } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {
         uint32_t h = fourcc("IPfs");
@@ -873,7 +899,7 @@ static void write_binary_multi_hash_map(
         size_t ntotal,
         IOWriter* f) {
     int id_bits = 0;
-    while ((ntotal > ((Index::idx_t)1 << id_bits))) {
+    while ((ntotal > ((idx_t)1 << id_bits))) {
         id_bits++;
     }
     WRITE1(id_bits);

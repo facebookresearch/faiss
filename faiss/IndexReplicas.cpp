@@ -108,9 +108,11 @@ void IndexReplicasTemplate<IndexT>::search(
         const component_t* x,
         idx_t k,
         distance_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT_MSG(this->count() > 0, "no replicas in index");
 
     if (n == 0) {
@@ -121,14 +123,13 @@ void IndexReplicasTemplate<IndexT>::search(
     size_t componentsPerVec = sizeof(component_t) == 1 ? (dim + 7) / 8 : dim;
 
     // Partition the query by the number of indices we have
-    faiss::Index::idx_t queriesPerIndex =
-            (faiss::Index::idx_t)(n + this->count() - 1) /
-            (faiss::Index::idx_t)this->count();
+    faiss::idx_t queriesPerIndex =
+            (faiss::idx_t)(n + this->count() - 1) / (faiss::idx_t)this->count();
     FAISS_ASSERT(n / queriesPerIndex <= this->count());
 
     auto fn = [queriesPerIndex, componentsPerVec, n, x, k, distances, labels](
                       int i, const IndexT* index) {
-        faiss::Index::idx_t base = (faiss::Index::idx_t)i * queriesPerIndex;
+        faiss::idx_t base = (faiss::idx_t)i * queriesPerIndex;
 
         if (base < n) {
             auto numForIndex = std::min(queriesPerIndex, n - base);

@@ -41,7 +41,7 @@ def swig_ptr_from_HalfTensor(x):
     assert x.dtype == torch.float16
     # no canonical half type in C/C++
     return faiss.cast_integer_to_void_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 4)
+        x.storage().data_ptr() + x.storage_offset() * 2)
 
 def swig_ptr_from_FloatTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -55,7 +55,7 @@ def swig_ptr_from_IntTensor(x):
     assert x.is_contiguous()
     assert x.dtype == torch.int32, 'dtype=%s' % x.dtype
     return faiss.cast_integer_to_int_ptr(
-        x.storage().data_ptr() + x.storage_offset() * 8)
+        x.storage().data_ptr() + x.storage_offset() * 4)
 
 def swig_ptr_from_IndicesTensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
@@ -204,7 +204,7 @@ def handle_torch_Index(the_class):
     def torch_replacement_search(self, x, k, D=None, I=None):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
-            return self.search_numpy(x, k, D, I)
+            return self.search_numpy(x, k, D=D, I=I)
 
         assert type(x) is torch.Tensor
         n, d = x.shape
@@ -240,7 +240,7 @@ def handle_torch_Index(the_class):
     def torch_replacement_search_and_reconstruct(self, x, k, D=None, I=None, R=None):
         if type(x) is np.ndarray:
             # Forward to faiss __init__.py base method
-            return self.search_and_reconstruct_numpy(x, k, D, I, R)
+            return self.search_and_reconstruct_numpy(x, k, D=D, I=I, R=R)
 
         assert type(x) is torch.Tensor
         n, d = x.shape
@@ -319,7 +319,10 @@ def handle_torch_Index(the_class):
 
         return x
 
-    def torch_replacement_reconstruct_n(self, n0, ni, x=None):
+    def torch_replacement_reconstruct_n(self, n0=0, ni=-1, x=None):
+        if ni == -1:
+            ni = self.ntotal
+
         # No tensor inputs are required, but with importing this module, we
         # assume that the default should be torch tensors. If we are passed a
         # numpy array, however, assume that the user is overriding this default
@@ -490,10 +493,10 @@ for symbol in dir(faiss_module):
             handle_torch_Index(the_class)
 
 # allows torch tensor usage with bfKnn
-def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2):
+def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRIC_L2, device=-1):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
-        return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric)
+        return faiss.knn_gpu_numpy(res, xq, xb, k, D, I, metric, device)
 
     nb, d = xb.size()
     if xb.is_contiguous():
@@ -570,6 +573,7 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
     args.outDistances = D_ptr
     args.outIndices = I_ptr
     args.outIndicesType = I_type
+    args.device = device
 
     with using_stream(res):
         faiss.bfKnn(res, args)
@@ -579,7 +583,7 @@ def torch_replacement_knn_gpu(res, xq, xb, k, D=None, I=None, metric=faiss.METRI
 torch_replace_method(faiss_module, 'knn_gpu', torch_replacement_knn_gpu, True, True)
 
 # allows torch tensor usage with bfKnn for all pairwise distances
-def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.METRIC_L2):
+def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.METRIC_L2, device=-1):
     if type(xb) is np.ndarray:
         # Forward to faiss __init__.py base method
         return faiss.pairwise_distance_gpu_numpy(res, xq, xb, D, metric)
@@ -643,6 +647,7 @@ def torch_replacement_pairwise_distance_gpu(res, xq, xb, D=None, metric=faiss.ME
     args.queryType = xq_type
     args.numQueries = nq
     args.outDistances = D_ptr
+    args.device = device
 
     with using_stream(res):
         faiss.bfKnn(res, args)

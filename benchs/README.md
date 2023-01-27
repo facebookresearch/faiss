@@ -75,7 +75,7 @@ http://corpus-texmex.irisa.fr/ to subdirectory bigann/
 
 ### Getting Deep1B
 
-The ground-truth and queries are available here 
+The ground-truth and queries are available here
 
 https://yadi.sk/d/11eDCm7Dsn9GA
 
@@ -145,7 +145,7 @@ The 8-byte results can be reproduced with the factory key `IMI2x12,PQ8`
 
 ### Experiments of the appendix
 
-The experiments in the appendix are only in the ArXiv version of the paper (table 3). 
+The experiments in the appendix are only in the ArXiv version of the paper (table 3).
 
 ```
 python bench_polysemous_1bn.py SIFT1000M OPQ8_64,IMI2x13,PQ8 nprobe={1,2,4,8,16,32,64,128},ht={20,24,26,28,30}
@@ -179,11 +179,11 @@ The original results were obtained with `nprobe=1024,ht=66,max_codes=262144`.
 
 ## GPU experiments
 
-The benchmarks below run 1 or 4 Titan X GPUs and reproduce the results of the "GPU paper". They are also a good starting point on how to use GPU Faiss. 
+The benchmarks below run 1 or 4 Titan X GPUs and reproduce the results of the "GPU paper". They are also a good starting point on how to use GPU Faiss.
 
 ### Search on SIFT1M
 
-See above on how to get SIFT1M into subdirectory sift1M/. The script [`bench_gpu_sift1m.py`](bench_gpu_sift1m.py) reproduces the "exact k-NN time" plot in the ArXiv paper, and the SIFT1M numbers. 
+See above on how to get SIFT1M into subdirectory sift1M/. The script [`bench_gpu_sift1m.py`](bench_gpu_sift1m.py) reproduces the "exact k-NN time" plot in the ArXiv paper, and the SIFT1M numbers.
 
 The output is:
 ```
@@ -245,14 +245,14 @@ nprobe= 512 0.527 s recalls= 0.9907 0.9987 0.9987
 
 To get the "infinite MNIST dataset", follow the instructions on [Léon Bottou's website](http://leon.bottou.org/projects/infimnist). The script assumes the file `mnist8m-patterns-idx3-ubyte` is in subdirectory `mnist8m`
 
-The script [`kmeans_mnist.py`](kmeans_mnist.py) produces the following output: 
+The script [`kmeans_mnist.py`](kmeans_mnist.py) produces the following output:
 
 ```
 python kmeans_mnist.py 1 256
 ...
 Clustering 8100000 points in 784D to 256 clusters, redo 1 times, 20 iterations
   Preprocessing in 7.94526 s
-  Iteration 19 (131.697 s, search 114.78 s): objective=1.44881e+13 imbalance=1.05963 nsplit=0        
+  Iteration 19 (131.697 s, search 114.78 s): objective=1.44881e+13 imbalance=1.05963 nsplit=0
 final objective: 1.449e+13
 total runtime: 140.615 s
 ```
@@ -263,7 +263,7 @@ The script [`bench_gpu_1bn.py`](bench_gpu_1bn.py) runs multi-gpu searches on the
 
 Even on multiple GPUs, building the 1B datasets can last several hours. It is often a good idea to validate that everything is working fine on smaller datasets like SIFT1M, SIFT2M, etc.
 
-The search results on SIFT1B in the "GPU paper" can be obtained with 
+The search results on SIFT1B in the "GPU paper" can be obtained with
 
 <!-- see P57124181 -->
 
@@ -285,7 +285,7 @@ We use the `-tempmem` option to reduce the temporary memory allocation to 1.5G, 
 
 ### search on Deep1B
 
-The same script generates the GPU search results on Deep1B. 
+The same script generates the GPU search results on Deep1B.
 
 ```
 python bench_gpu_1bn.py  Deep1B OPQ20_80,IVF262144,PQ20 -nnn 10 -R 2 -ngpu 4 -altadd -noptables -tempmem $[1024*1024*1024]
@@ -336,3 +336,26 @@ search...
 999997440/1000000000 (36717.207 s, 0.6015)      probe=128: 36717.309 s rank-10 intersection results: 0.6015
 999997440/1000000000 (70616.392 s, 0.6047)      probe=256: 70616.581 s rank-10 intersection results: 0.6047
 ```
+
+# Additional benchmarks
+
+This directory also contains certain additional benchmarks (and serve as an additional source of examples of how to use the FAISS code).
+Certain tests / benchmarks might be outdated.
+
+* bench_6bit_codec.cpp - tests vector codecs for SQ6 quantization on a synthetic dataset
+* bench_cppcontrib_sa_decode.cpp - benchmarks specialized kernels for vector codecs for PQ, IVFPQ and Resudial+PQ on a synthetic dataset
+* bench_for_interrupt.py - evaluates the impact of the interrupt callback handler (which can be triggered from Python code)
+* bench_hamming_computer.cpp - specialized implementations for Hamming distance computations
+* bench_heap_replace.cpp - benchmarks different implementations of certain calls for a Heap data structure
+* bench_hnsw.py - benchmarks HNSW in combination with other ones for SIFT1M dataset
+* bench_index_flat.py - benchmarks IndexFlatL2 on a synthetic dataset
+* bench_index_pq.py - benchmarks PQ on SIFT1M dataset
+* bench_ivf_fastscan_single_query.py - benchmarks a single query for different nprobe levels for IVF{nlist},PQ{M}x4fs on BIGANN dataset
+* bench_ivf_fastscan.py - compares IVF{nlist},PQ{M}x4fs against other indices on SIFT1M dataset
+* bench_ivf_selector.cpp - checks the possible overhead when using faiss::IDSelectorAll interface
+* bench_pairwise_distances.py - benchmarks pairwise distance computation between two synthetic datasets
+* bench_partition.py - benchmarks partitioning functions
+* bench_pq_tables.py - benchmarks ProductQuantizer.compute_inner_prod_tables() and ProductQuantizer.compute_distance_tables() calls
+* bench_quantizer.py - benchmarks various quantizers for SIFT1M, Deep1B, BigANN datasets
+* bench_scalar_quantizer.py - benchmarks IVF+SQ on a Sift1M dataset
+* bench_vector_ops.py - benchmarks dot product and distances computations on a synthetic dataset

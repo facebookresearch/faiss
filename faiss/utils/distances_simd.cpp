@@ -113,6 +113,29 @@ void fvec_L2sqr_ny_ref(
     }
 }
 
+void fvec_L2sqr_ny_y_transposed_ref(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    float x_sqlen = 0;
+    for (size_t j = 0; j < d; j++) {
+        x_sqlen += x[j] * x[j];
+    }
+
+    for (size_t i = 0; i < ny; i++) {
+        float dp = 0;
+        for (size_t j = 0; j < d; j++) {
+            dp += x[j] * y[i + j * d_offset];
+        }
+
+        dis[i] = x_sqlen + y_sqlen[i] - 2 * dp;
+    }
+}
+
 size_t fvec_L2sqr_ny_nearest_ref(
         float* distances_tmp_buffer,
         const float* x,
@@ -120,6 +143,30 @@ size_t fvec_L2sqr_ny_nearest_ref(
         size_t d,
         size_t ny) {
     fvec_L2sqr_ny(distances_tmp_buffer, x, y, d, ny);
+
+    size_t nearest_idx = 0;
+    float min_dis = HUGE_VALF;
+
+    for (size_t i = 0; i < ny; i++) {
+        if (distances_tmp_buffer[i] < min_dis) {
+            min_dis = distances_tmp_buffer[i];
+            nearest_idx = i;
+        }
+    }
+
+    return nearest_idx;
+}
+
+size_t fvec_L2sqr_ny_nearest_y_transposed_ref(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    fvec_L2sqr_ny_y_transposed_ref(
+            distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
 
     size_t nearest_idx = 0;
     float min_dis = HUGE_VALF;
@@ -691,7 +738,6 @@ size_t fvec_L2sqr_ny_nearest(
         size_t d,
         size_t ny) {
     // optimized for a few special cases
-
 #define DISPATCH(dval) \
     case dval:         \
         return fvec_L2sqr_ny_nearest_D##dval(distances_tmp_buffer, x, y, ny);
@@ -702,6 +748,156 @@ size_t fvec_L2sqr_ny_nearest(
             return fvec_L2sqr_ny_nearest_ref(distances_tmp_buffer, x, y, d, ny);
     }
 #undef DISPATCH
+}
+
+#ifdef __AVX2__
+template <size_t DIM>
+size_t fvec_L2sqr_ny_nearest_y_transposed_D(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        const size_t d_offset,
+        size_t ny) {
+    // this implementation does not use distances_tmp_buffer.
+
+    // current index being processed
+    size_t i = 0;
+
+    // min distance and the index of the closest vector so far
+    float current_min_distance = HUGE_VALF;
+    size_t current_min_index = 0;
+
+    // process 8 vectors per loop.
+    const size_t ny8 = ny / 8;
+
+    if (ny8 > 0) {
+        // track min distance and the closest vector independently
+        // for each of 8 AVX2 components.
+        __m256 min_distances = _mm256_set1_ps(HUGE_VALF);
+        __m256i min_indices = _mm256_set1_epi32(0);
+
+        __m256i current_indices = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+        const __m256i indices_increment = _mm256_set1_epi32(8);
+
+        // m[i] = (2 * x[i], ... 2 * x[i])
+        __m256 m[DIM];
+        for (size_t j = 0; j < DIM; j++) {
+            m[j] = _mm256_set1_ps(x[j]);
+            m[j] = _mm256_add_ps(m[j], m[j]);
+        }
+
+        for (; i < ny8 * 8; i += 8) {
+            // collect dim 0 for 8 D4-vectors.
+            const __m256 v0 = _mm256_loadu_ps(y + 0 * d_offset);
+            // compute dot products
+            __m256 dp = _mm256_mul_ps(m[0], v0);
+
+            for (size_t j = 1; j < DIM; j++) {
+                // collect dim j for 8 D4-vectors.
+                const __m256 vj = _mm256_loadu_ps(y + j * d_offset);
+                dp = _mm256_fmadd_ps(m[j], vj, dp);
+            }
+
+            // compute y^2 - (2 * x, y), which is sufficient for looking for the
+            //   lowest distance.
+            // x^2 is the constant that can be avoided.
+            const __m256 distances =
+                    _mm256_sub_ps(_mm256_loadu_ps(y_sqlen), dp);
+
+            // compare the new distances to the min distances
+            // for each of 8 AVX2 components.
+            const __m256 comparison =
+                    _mm256_cmp_ps(min_distances, distances, _CMP_LT_OS);
+
+            // update min distances and indices with closest vectors if needed.
+            min_distances =
+                    _mm256_blendv_ps(distances, min_distances, comparison);
+            min_indices = _mm256_castps_si256(_mm256_blendv_ps(
+                    _mm256_castsi256_ps(current_indices),
+                    _mm256_castsi256_ps(min_indices),
+                    comparison));
+
+            // update current indices values. Basically, +8 to each of the
+            // 8 AVX2 components.
+            current_indices =
+                    _mm256_add_epi32(current_indices, indices_increment);
+
+            // scroll y and y_sqlen forward.
+            y += 8;
+            y_sqlen += 8;
+        }
+
+        // dump values and find the minimum distance / minimum index
+        float min_distances_scalar[8];
+        uint32_t min_indices_scalar[8];
+        _mm256_storeu_ps(min_distances_scalar, min_distances);
+        _mm256_storeu_si256((__m256i*)(min_indices_scalar), min_indices);
+
+        for (size_t j = 0; j < 8; j++) {
+            if (current_min_distance > min_distances_scalar[j]) {
+                current_min_distance = min_distances_scalar[j];
+                current_min_index = min_indices_scalar[j];
+            }
+        }
+    }
+
+    if (i < ny) {
+        // process leftovers
+        for (; i < ny; i++) {
+            float dp = 0;
+            for (size_t j = 0; j < DIM; j++) {
+                dp += x[j] * y[j * d_offset];
+            }
+
+            // compute y^2 - 2 * (x, y), which is sufficient for looking for the
+            //   lowest distance.
+            const float distance = y_sqlen[0] - 2 * dp;
+
+            if (current_min_distance > distance) {
+                current_min_distance = distance;
+                current_min_index = i;
+            }
+
+            y += 1;
+            y_sqlen += 1;
+        }
+    }
+
+    return current_min_index;
+}
+#endif
+
+size_t fvec_L2sqr_ny_nearest_y_transposed(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    // optimized for a few special cases
+#ifdef __AVX2__
+#define DISPATCH(dval)                                     \
+    case dval:                                             \
+        return fvec_L2sqr_ny_nearest_y_transposed_D<dval>( \
+                distances_tmp_buffer, x, y, y_sqlen, d_offset, ny);
+
+    switch (d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        default:
+            return fvec_L2sqr_ny_nearest_y_transposed_ref(
+                    distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
+    }
+#undef DISPATCH
+#else
+    // non-AVX2 case
+    return fvec_L2sqr_ny_nearest_y_transposed_ref(
+            distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
+#endif
 }
 
 #endif
@@ -1012,6 +1208,18 @@ size_t fvec_L2sqr_ny_nearest(
     return fvec_L2sqr_ny_nearest_ref(distances_tmp_buffer, x, y, d, ny);
 }
 
+size_t fvec_L2sqr_ny_nearest_y_transposed(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    return fvec_L2sqr_ny_nearest_y_transposed_ref(
+            distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
+}
+
 float fvec_L1(const float* x, const float* y, size_t d) {
     return fvec_L1_ref(x, y, d);
 }
@@ -1068,6 +1276,18 @@ size_t fvec_L2sqr_ny_nearest(
         size_t d,
         size_t ny) {
     return fvec_L2sqr_ny_nearest_ref(distances_tmp_buffer, x, y, d, ny);
+}
+
+size_t fvec_L2sqr_ny_nearest_y_transposed(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    return fvec_L2sqr_ny_nearest_y_transposed_ref(
+            distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
 }
 
 void fvec_inner_products_ny(

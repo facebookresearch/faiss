@@ -6,7 +6,7 @@
 import numpy as np
 import unittest
 
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 
 ###############################################################
 # Simple functions to evaluate knn results

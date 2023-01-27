@@ -250,13 +250,27 @@ class GpuResources {
     cudaStream_t getAsyncCopyStreamCurrentDevice();
 };
 
-/// Interface for a provider of a shared resources object
+/// Interface for a provider of a shared resources object. This is to avoid
+/// interfacing std::shared_ptr to Python
 class GpuResourcesProvider {
    public:
     virtual ~GpuResourcesProvider();
 
     /// Returns the shared resources object
     virtual std::shared_ptr<GpuResources> getResources() = 0;
+};
+
+/// A simple wrapper for a GpuResources object to make a GpuResourcesProvider
+/// out of it again
+class GpuResourcesProviderFromInstance : public GpuResourcesProvider {
+   public:
+    explicit GpuResourcesProviderFromInstance(std::shared_ptr<GpuResources> p);
+    ~GpuResourcesProviderFromInstance() override;
+
+    std::shared_ptr<GpuResources> getResources() override;
+
+   private:
+    std::shared_ptr<GpuResources> res_;
 };
 
 } // namespace gpu

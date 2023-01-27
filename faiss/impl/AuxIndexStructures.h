@@ -16,10 +16,9 @@
 #include <cstring>
 #include <memory>
 #include <mutex>
-#include <unordered_set>
 #include <vector>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 
 namespace faiss {
@@ -31,8 +30,6 @@ namespace faiss {
 struct RangeSearchResult {
     size_t nq;    ///< nb of queries
     size_t* lims; ///< size (nq + 1)
-
-    typedef Index::idx_t idx_t;
 
     idx_t* labels;    ///< result for query i is labels[lims[i]:lims[i+1]]
     float* distances; ///< corresponding distances (not sorted)
@@ -50,55 +47,6 @@ struct RangeSearchResult {
     virtual ~RangeSearchResult();
 };
 
-/** Encapsulates a set of ids to remove. */
-struct IDSelector {
-    typedef Index::idx_t idx_t;
-    virtual bool is_member(idx_t id) const = 0;
-    virtual ~IDSelector() {}
-};
-
-/** remove ids between [imni, imax) */
-struct IDSelectorRange : IDSelector {
-    idx_t imin, imax;
-
-    IDSelectorRange(idx_t imin, idx_t imax);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorRange() override {}
-};
-
-/** simple list of elements to remove
- *
- * this is inefficient in most cases, except for IndexIVF with
- * maintain_direct_map
- */
-struct IDSelectorArray : IDSelector {
-    size_t n;
-    const idx_t* ids;
-
-    IDSelectorArray(size_t n, const idx_t* ids);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorArray() override {}
-};
-
-/** Remove ids from a set. Repetitions of ids in the indices set
- * passed to the constructor does not hurt performance. The hash
- * function used for the bloom filter and GCC's implementation of
- * unordered_set are just the least significant bits of the id. This
- * works fine for random ids or ids in sequences but will produce many
- * hash collisions if lsb's are always the same */
-struct IDSelectorBatch : IDSelector {
-    std::unordered_set<idx_t> set;
-
-    typedef unsigned char uint8_t;
-    std::vector<uint8_t> bloom; // assumes low bits of id are a good hash value
-    int nbits;
-    idx_t mask;
-
-    IDSelectorBatch(size_t n, const idx_t* indices);
-    bool is_member(idx_t id) const override;
-    ~IDSelectorBatch() override {}
-};
-
 /****************************************************************
  * Result structures for range search.
  *
@@ -112,8 +60,6 @@ struct IDSelectorBatch : IDSelector {
 /** List of temporary buffers used to store results before they are
  *  copied to the RangeSearchResult object. */
 struct BufferList {
-    typedef Index::idx_t idx_t;
-
     // buffer sizes in # entries
     size_t buffer_size;
 
@@ -144,7 +90,6 @@ struct RangeSearchPartialResult;
 
 /// result structure for a single query
 struct RangeQueryResult {
-    using idx_t = Index::idx_t;
     idx_t qno;   //< id of the query
     size_t nres; //< nb of results for this query
     RangeSearchPartialResult* pres;

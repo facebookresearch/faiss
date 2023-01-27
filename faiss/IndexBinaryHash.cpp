@@ -12,6 +12,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <memory>
+#include <unordered_set>
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -106,8 +107,6 @@ struct FlipEnumerator {
         return true;
     }
 };
-
-using idx_t = Index::idx_t;
 
 struct RangeSearchResults {
     int radius;
@@ -216,7 +215,10 @@ void IndexBinaryHash::range_search(
         idx_t n,
         const uint8_t* x,
         int radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel if (n > 100) reduction(+ : ndis, n0, nlist)
@@ -244,7 +246,10 @@ void IndexBinaryHash::search(
         const uint8_t* x,
         idx_t k,
         int32_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     using HeapForL2 = CMax<int32_t, idx_t>;
@@ -346,7 +351,7 @@ template <class HammingComputer, class SearchResults>
 static void verify_shortlist(
         const IndexBinaryFlat& index,
         const uint8_t* q,
-        const std::unordered_set<Index::idx_t>& shortlist,
+        const std::unordered_set<idx_t>& shortlist,
         SearchResults& res) {
     size_t code_size = index.code_size;
     size_t nlist = 0, ndis = 0, n0 = 0;
@@ -431,7 +436,10 @@ void IndexBinaryMultiHash::range_search(
         idx_t n,
         const uint8_t* x,
         int radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     size_t nlist = 0, ndis = 0, n0 = 0;
 
 #pragma omp parallel if (n > 100) reduction(+ : ndis, n0, nlist)
@@ -459,7 +467,10 @@ void IndexBinaryMultiHash::search(
         const uint8_t* x,
         idx_t k,
         int32_t* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     using HeapForL2 = CMax<int32_t, idx_t>;

@@ -140,8 +140,8 @@ int main() {
         assert(d == d2 || !"query does not have same dimension as train set");
     }
 
-    size_t k;                // nb of results per query in the GT
-    faiss::Index::idx_t* gt; // nq * k matrix of ground-truth nearest-neighbors
+    size_t k;         // nb of results per query in the GT
+    faiss::idx_t* gt; // nq * k matrix of ground-truth nearest-neighbors
 
     {
         printf("[%.3f s] Loading ground truth for %ld queries\n",
@@ -153,7 +153,7 @@ int main() {
         int* gt_int = ivecs_read("sift1M/sift_groundtruth.ivecs", &k, &nq2);
         assert(nq2 == nq || !"incorrect nb of ground truth entries");
 
-        gt = new faiss::Index::idx_t[k * nq];
+        gt = new faiss::idx_t[k * nq];
         for (int i = 0; i < k * nq; i++) {
             gt[i] = gt_int[i];
         }
@@ -219,7 +219,7 @@ int main() {
                nq);
 
         // output buffers
-        faiss::Index::idx_t* I = new faiss::Index::idx_t[nq * k];
+        faiss::idx_t* I = new faiss::idx_t[nq * k];
         float* D = new float[nq * k];
 
         index->search(nq, xq, k, D, I);

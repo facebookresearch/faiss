@@ -67,6 +67,9 @@ struct IndexIVFFastScan : IndexIVF {
             MetricType metric,
             int bbs);
 
+    // initialize the CodePacker in the InvertedLists
+    void init_code_packer();
+
     ~IndexIVFFastScan() override;
 
     /// orig's inverted lists (for debugging)
@@ -100,7 +103,16 @@ struct IndexIVFFastScan : IndexIVF {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    /// will just fail
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
 
     // internal search funcs
 
@@ -157,7 +169,7 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* nlist_out,
             const Scaler& scaler) const;
 
-    // implem 14 is mukltithreaded internally across nprobes and queries
+    // implem 14 is multithreaded internally across nprobes and queries
     template <class C, class Scaler>
     void search_implem_14(
             idx_t n,
@@ -171,6 +183,8 @@ struct IndexIVFFastScan : IndexIVF {
     // reconstruct vectors from packed invlists
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
+
+    CodePacker* get_CodePacker() const override;
 
     // reconstruct orig invlists (for debugging)
     void reconstruct_orig_invlists();

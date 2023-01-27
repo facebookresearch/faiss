@@ -43,12 +43,16 @@ struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
 
+struct SearchParametersHNSW : SearchParameters {
+    int efSearch = 16;
+    bool check_relative_distance = true;
+
+    ~SearchParametersHNSW() {}
+};
+
 struct HNSW {
     /// internal storage of vectors (32 bits: this is expensive)
-    typedef int storage_idx_t;
-
-    /// Faiss results are 64-bit
-    typedef Index::idx_t idx_t;
+    using storage_idx_t = int32_t;
 
     typedef std::pair<float, storage_idx_t> Node;
 
@@ -117,25 +121,25 @@ struct HNSW {
 
     /// entry point in the search structure (one of the points with maximum
     /// level
-    storage_idx_t entry_point;
+    storage_idx_t entry_point = -1;
 
     faiss::RandomGenerator rng;
 
     /// maximum level
-    int max_level;
+    int max_level = -1;
 
     /// expansion factor at construction time
-    int efConstruction;
+    int efConstruction = 40;
 
     /// expansion factor at search time
-    int efSearch;
+    int efSearch = 16;
 
     /// during search: do we check whether the next best distance is good
     /// enough?
     bool check_relative_distance = true;
 
     /// number of entry points in levels > 0.
-    int upper_beam;
+    int upper_beam = 1;
 
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
@@ -188,30 +192,26 @@ struct HNSW {
             std::vector<omp_lock_t>& locks,
             VisitedTable& vt);
 
-    int search_from_candidates(
-            DistanceComputer& qdis,
-            int k,
-            idx_t* I,
-            float* D,
-            MinimaxHeap& candidates,
-            VisitedTable& vt,
-            HNSWStats& stats,
-            int level,
-            int nres_in = 0) const;
-
-    std::priority_queue<Node> search_from_candidate_unbounded(
-            const Node& node,
-            DistanceComputer& qdis,
-            int ef,
-            VisitedTable* vt,
-            HNSWStats& stats) const;
-
-    /// search interface
+    /// search interface for 1 point, single thread
     HNSWStats search(
             DistanceComputer& qdis,
             int k,
             idx_t* I,
             float* D,
+            VisitedTable& vt,
+            const SearchParametersHNSW* params = nullptr) const;
+
+    /// search only in level 0 from a given vertex
+    void search_level_0(
+            DistanceComputer& qdis,
+            int k,
+            idx_t* idxi,
+            float* simi,
+            idx_t nprobe,
+            const storage_idx_t* nearest_i,
+            const float* nearest_d,
+            int search_type,
+            HNSWStats& search_stats,
             VisitedTable& vt) const;
 
     void reset();

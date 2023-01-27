@@ -86,6 +86,10 @@ if(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
+else()
+  # we need bigobj for the swig wrapper
+  target_compile_options(swigfaiss PRIVATE /bigobj)
+  target_compile_options(swigfaiss_avx2 PRIVATE /bigobj)
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -137,6 +141,10 @@ target_link_libraries(swigfaiss_avx2 PRIVATE faiss_python_callbacks)
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)
 configure_file(loader.py loader.py COPYONLY)
+configure_file(class_wrappers.py class_wrappers.py COPYONLY)
+configure_file(gpu_wrappers.py gpu_wrappers.py COPYONLY)
+configure_file(extra_wrappers.py extra_wrappers.py COPYONLY)
+configure_file(array_conversions.py array_conversions.py COPYONLY)
 
 file(GLOB files "${PROJECT_SOURCE_DIR}/../../contrib/*.py")
 file(COPY ${files} DESTINATION contrib/)

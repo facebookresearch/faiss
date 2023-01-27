@@ -11,6 +11,7 @@
 #include "AuxIndexStructures_c.h"
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/IDSelector.h>
 #include <iostream>
 #include "../macros_impl.h"
 

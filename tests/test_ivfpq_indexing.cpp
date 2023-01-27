@@ -71,14 +71,14 @@ TEST(IVFPQ, accuracy) {
             queries[i] = distrib(rng);
         }
 
-        std::vector<faiss::Index::idx_t> gt_nns(nq);
+        std::vector<faiss::idx_t> gt_nns(nq);
         std::vector<float> gt_dis(nq);
 
         index_gt.search(nq, queries.data(), 1, gt_dis.data(), gt_nns.data());
 
         index.nprobe = 5;
         int k = 5;
-        std::vector<faiss::Index::idx_t> nns(k * nq);
+        std::vector<faiss::idx_t> nns(k * nq);
         std::vector<float> dis(k * nq);
 
         index.search(nq, queries.data(), k, dis.data(), nns.data());

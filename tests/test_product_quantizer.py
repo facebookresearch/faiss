@@ -75,6 +75,44 @@ class TestProductQuantizer(unittest.TestCase):
             self.do_test_codec(i + 1)
 
 
+class TestPQTransposedCentroids(unittest.TestCase):
+
+    def do_test(self, d, dsub):
+        M = d // dsub
+        pq = faiss.ProductQuantizer(d, M, 8)
+        xt = faiss.randn((max(1000, pq.ksub * 50), d), 123)
+        pq.cp.niter = 4    # to avoid timeouts in tests
+        pq.train(xt)
+
+        codes = pq.compute_codes(xt)
+
+        # enable transposed centroids table to speedup compute_codes()
+        pq.sync_transposed_centroids()
+        codes_transposed = pq.compute_codes(xt)
+
+        # disable transposed centroids table
+        pq.clear_transposed_centroids()
+        codes_cleared = pq.compute_codes(xt)
+
+        assert np.all(codes == codes_transposed)
+        assert np.all(codes == codes_cleared)
+
+    def test_dsub2(self):
+        self.do_test(16, 2)
+
+    def test_dsub5(self):
+        self.do_test(20, 5)
+
+    def test_dsub2_odd(self):
+        self.do_test(18, 2)
+
+    def test_dsub4(self):
+        self.do_test(32, 4)
+
+    def test_dsub4_odd(self):
+        self.do_test(36, 4)
+
+
 class TestPQTables(unittest.TestCase):
 
     def do_test(self, d, dsub, nbit=8, metric=None):
