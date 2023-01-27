@@ -230,6 +230,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListScanner.html">Struct faiss::InvertedListScanner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists.html">Struct faiss::InvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIOHook.html">Struct faiss::InvertedListsIOHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedListsIterator.html">Struct faiss::InvertedListsIterator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedCodes.html">Struct faiss::InvertedLists::ScopedCodes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1InvertedLists_1_1ScopedIds.html">Struct faiss::InvertedLists::ScopedIds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1Level1Quantizer.html">Struct faiss::Level1Quantizer</a></li>
@@ -509,6 +510,17 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19HStackInvertedLists8is_emptyE6size_t">
+<span id="_CPPv3NK5faiss19HStackInvertedLists8is_emptyE6size_t"></span><span id="_CPPv2NK5faiss19HStackInvertedLists8is_emptyE6size_t"></span><span id="faiss::HStackInvertedLists::is_empty__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1afba013c7993209233977f2ad8cceb5b7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_empty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss19HStackInvertedLists12get_iteratorE6size_t">
+<span id="_CPPv3NK5faiss19HStackInvertedLists12get_iteratorE6size_t"></span><span id="_CPPv2NK5faiss19HStackInvertedLists12get_iteratorE6size_t"></span><span id="faiss::HStackInvertedLists::get_iterator__sC"></span><span class="target" id="structfaiss_1_1InvertedLists_1a2d4440bffe71607a7d493408c8e34870"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss21InvertedListsIteratorE" title="faiss::InvertedListsIterator"><span class="n"><span class="pre">InvertedListsIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_iterator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>get iterable for lists that use_iterator </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19HStackInvertedLists9add_entryE6size_t5idx_tPK7uint8_t">
 <span id="_CPPv3N5faiss19HStackInvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="_CPPv2N5faiss19HStackInvertedLists9add_entryE6size_t5idx_tPK7uint8_t"></span><span id="faiss::HStackInvertedLists::add_entry__s.idx_t.uint8_tCP"></span><span class="target" id="structfaiss_1_1InvertedLists_1a5b4328db9d4e2832de1a66bc6aa479de"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_entry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">theid</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>add one entry to an inverted list </p>
@@ -578,6 +590,11 @@
 <span id="_CPPv3N5faiss19HStackInvertedLists9code_sizeE"></span><span id="_CPPv2N5faiss19HStackInvertedLists9code_sizeE"></span><span id="faiss::HStackInvertedLists::code_size__s"></span><span class="target" id="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code_size</span></span></span><br /></dt>
 <dd><p>code size per vector in bytes </p>
 </dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss19HStackInvertedLists12use_iteratorE">
+<span id="_CPPv3N5faiss19HStackInvertedLists12use_iteratorE"></span><span id="_CPPv2N5faiss19HStackInvertedLists12use_iteratorE"></span><span id="faiss::HStackInvertedLists::use_iterator__b"></span><span class="target" id="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_iterator</span></span></span><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
