@@ -26,7 +26,7 @@ namespace {
 struct Tempfilename {
     static pthread_mutex_t mutex;
 
-    std::string filename = "faiss_tmp_XXXXXX";
+    std::string filename = "/tmp/faiss_tmp_XXXXXX";
 
     Tempfilename() {
         pthread_mutex_lock(&mutex);
@@ -48,7 +48,7 @@ struct Tempfilename {
 
 pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
 
-typedef faiss::Index::idx_t idx_t;
+typedef faiss::idx_t idx_t;
 
 // parameters to use for the test
 int d = 64;

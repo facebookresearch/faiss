@@ -14,6 +14,7 @@
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
+#include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
 #include <cstring>
 
@@ -27,18 +28,20 @@ void IndexFlat::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
     FAISS_THROW_IF_NOT(k > 0);
 
     // we see the distances and labels as heaps
-
     if (metric_type == METRIC_INNER_PRODUCT) {
         float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_inner_product(x, get_xb(), d, n, ntotal, &res);
+        knn_inner_product(x, get_xb(), d, n, ntotal, &res, sel);
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-        knn_L2sqr(x, get_xb(), d, n, ntotal, &res);
+        knn_L2sqr(x, get_xb(), d, n, ntotal, &res, nullptr, sel);
     } else {
+        FAISS_THROW_IF_NOT(!sel);
         float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
         knn_extra_metrics(
                 x, get_xb(), d, n, ntotal, metric_type, metric_arg, &res);
@@ -49,14 +52,17 @@ void IndexFlat::range_search(
         idx_t n,
         const float* x,
         float radius,
-        RangeSearchResult* result) const {
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
+
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             range_search_inner_product(
-                    x, get_xb(), d, n, ntotal, radius, result);
+                    x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         case METRIC_L2:
-            range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result);
+            range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
             FAISS_THROW_MSG("metric type not supported");
@@ -85,7 +91,7 @@ namespace {
 
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
-    Index::idx_t nb;
+    idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;
@@ -116,7 +122,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 
 struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
-    Index::idx_t nb;
+    idx_t nb;
     const float* q;
     const float* b;
     size_t ndis;
@@ -208,14 +214,16 @@ void IndexFlat1D::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
-
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == ntotal, "Call update_permutation before search");
     const float* xb = get_xb();
 
-#pragma omp parallel for
+#pragma omp parallel for if (n > 10000)
     for (idx_t i = 0; i < n; i++) {
         float q = x[i]; // query
         float* D = distances + i * k;
@@ -224,6 +232,14 @@ void IndexFlat1D::search(
         // binary search
         idx_t i0 = 0, i1 = ntotal;
         idx_t wp = 0;
+
+        if (ntotal == 0) {
+            for (idx_t j = 0; j < k; j++) {
+                I[j] = -1;
+                D[j] = HUGE_VAL;
+            }
+            goto done;
+        }
 
         if (xb[perm[i0]] > q) {
             i1 = 0;

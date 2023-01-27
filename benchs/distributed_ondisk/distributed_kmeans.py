@@ -17,7 +17,7 @@ import numpy as np
 
 import faiss
 
-from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.pool import ThreadPool
 from faiss.contrib import rpc
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.vecs_io import bvecs_mmap, fvecs_mmap

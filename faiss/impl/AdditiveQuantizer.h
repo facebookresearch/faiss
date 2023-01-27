@@ -7,11 +7,13 @@
 
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 #include <vector>
 
 #include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
+#include <faiss/impl/Quantizer.h>
 
 namespace faiss {
 
@@ -21,26 +23,28 @@ namespace faiss {
  * concatenation of M sub-vectors, additive quantizers sum M sub-vectors
  * to get the decoded vector.
  */
-struct AdditiveQuantizer {
-    size_t d;                     ///< size of the input vectors
+struct AdditiveQuantizer : Quantizer {
     size_t M;                     ///< number of codebooks
     std::vector<size_t> nbits;    ///< bits for each step
     std::vector<float> codebooks; ///< codebooks
 
     // derived values
     std::vector<uint64_t> codebook_offsets;
-    size_t code_size;           ///< code size in bytes
-    size_t tot_bits;            ///< total number of bits (indexes + norms)
-    size_t norm_bits;           ///< bits allocated for the norms
-    size_t total_codebook_size; ///< size of the codebook in vectors
-    bool only_8bit;             ///< are all nbits = 8 (use faster decoder)
+    size_t tot_bits = 0;            ///< total number of bits (indexes + norms)
+    size_t norm_bits = 0;           ///< bits allocated for the norms
+    size_t total_codebook_size = 0; ///< size of the codebook in vectors
+    bool only_8bit = false;         ///< are all nbits = 8 (use faster decoder)
 
-    bool verbose;    ///< verbose during training?
-    bool is_trained; ///< is trained or not
+    bool verbose = false;    ///< verbose during training?
+    bool is_trained = false; ///< is trained or not
 
     IndexFlat1D qnorm;            ///< store and search norms
     std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
                                   ///< fastscan search
+
+    /// norms and distance matrixes with beam search can get large, so use this
+    /// to control for the amount of memory that can be allocated
+    size_t max_mem_distances = 5 * (size_t(1) << 30);
 
     /// encode a norm into norm_bits bits
     uint64_t encode_norm(float norm) const;
@@ -79,11 +83,13 @@ struct AdditiveQuantizer {
     ///< compute derived values when d, M and nbits have been set
     void set_derived_values();
 
-    ///< Train the additive quantizer
-    virtual void train(size_t n, const float* x) = 0;
-
     ///< Train the norm quantizer
     void train_norm(size_t n, const float* norms);
+
+    void compute_codes(const float* x, uint8_t* codes, size_t n)
+            const override {
+        compute_codes_add_centroids(x, codes, n);
+    }
 
     /** Encode a set of vectors
      *
@@ -91,7 +97,7 @@ struct AdditiveQuantizer {
      * @param codes  output codes, size n * code_size
      * @param centroids  centroids to be added to x, size n * d
      */
-    virtual void compute_codes(
+    virtual void compute_codes_add_centroids(
             const float* x,
             uint8_t* codes,
             size_t n,
@@ -119,14 +125,14 @@ struct AdditiveQuantizer {
      * @param codes  codes to decode, size n * code_size
      * @param x      output vectors, size n * d
      */
-    void decode(const uint8_t* codes, float* x, size_t n) const;
+    void decode(const uint8_t* codes, float* x, size_t n) const override;
 
     /** Decode a set of vectors in non-packed format
      *
      * @param codes  codes to decode, size n * ld_codes
      * @param x      output vectors, size n * d
      */
-    void decode_unpacked(
+    virtual void decode_unpacked(
             const int32_t* codes,
             float* x,
             size_t n,
@@ -140,7 +146,7 @@ struct AdditiveQuantizer {
     Search_type_t search_type;
 
     /// min/max for quantization of norms
-    float norm_min, norm_max;
+    float norm_min = NAN, norm_max = NAN;
 
     template <bool is_IP, Search_type_t effective_search_type>
     float compute_1_distance_LUT(const uint8_t* codes, const float* LUT) const;
@@ -152,7 +158,6 @@ struct AdditiveQuantizer {
      * Support for exhaustive distance computations with all the centroids.
      * Hence, the number of these centroids should not be too large.
      ****************************************************************************/
-    using idx_t = Index::idx_t;
 
     /// decoding function for a code in a 64-bit word
     void decode_64bit(idx_t n, float* x) const;
@@ -163,9 +168,9 @@ struct AdditiveQuantizer {
      * @param xq     query vector, size (n, d)
      * @param LUT    look-up table, size (n, total_codebook_size)
      * @param alpha  compute alpha * inner-product
-     * @param ld     leading dimension of LUT
+     * @param ld_lut  leading dimension of LUT
      */
-    void compute_LUT(
+    virtual void compute_LUT(
             size_t n,
             const float* xq,
             float* LUT,

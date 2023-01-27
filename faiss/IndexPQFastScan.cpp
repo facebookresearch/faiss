@@ -67,4 +67,8 @@ void IndexPQFastScan::compute_float_LUT(float* lut, idx_t n, const float* x)
     }
 }
 
+void IndexPQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
+    pq.decode(bytes, x, n);
+}
+
 } // namespace faiss

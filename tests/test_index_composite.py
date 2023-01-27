@@ -16,6 +16,44 @@ import platform
 
 from common_faiss_tests import get_dataset_2
 
+
+class TestRemoveFastScan(unittest.TestCase):
+    def do_test(self, ntotal, removed):
+        d = 20
+        xt, xb, _ = get_dataset_2(d, ntotal, ntotal, 0)
+        index = faiss.index_factory(20, 'IDMap2,PQ5x4fs')
+        index.train(xt)
+        index.add_with_ids(xb, np.arange(ntotal).astype("int64"))
+        before = index.reconstruct_n(0, ntotal)
+        index.remove_ids(np.array(removed))
+        for i in range(ntotal):
+            if i in removed:
+                # should throw RuntimeError as this vector should be removed
+                try:
+                    after = index.reconstruct(i)
+                    assert False
+                except RuntimeError:
+                    pass
+            else:
+                after = index.reconstruct(i)
+                np.testing.assert_array_equal(before[i], after)
+        assert index.ntotal == ntotal - len(removed)
+
+    def test_remove_last_vector(self):
+        self.do_test(993, [992])
+
+    # test remove element from every address 0 -> 31
+    # [0, 32 + 1, 2 * 32 + 2, ....]
+    # [0,   33  ,     66    , 99, 132, .....]
+    def test_remove_every_address(self):
+        removed = (33 * np.arange(32)).tolist()
+        self.do_test(1100, removed)
+
+    # test remove range of vectors and leave ntotal divisible by 32
+    def test_leave_complete_block(self):
+        self.do_test(1000, np.arange(8).tolist())
+
+
 class TestRemove(unittest.TestCase):
 
     def do_merge_then_remove(self, ondisk):
@@ -97,6 +135,26 @@ class TestRemove(unittest.TestCase):
         else:
             assert False, 'should have raised an exception'
 
+    def test_factory_idmap2_suffix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "Flat,IDMap2")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(104)[0] == 1004
+        index.remove_ids(np.array([103], dtype='int64'))
+        assert index.reconstruct(104)[0] == 1004
+
+    def test_factory_idmap2_prefix(self):
+        xb = np.zeros((10, 5), dtype='float32')
+        xb[:, 0] = np.arange(10) + 1000
+        index = faiss.index_factory(5, "IDMap2,Flat")
+        ids = np.arange(10, dtype='int64') + 100
+        index.add_with_ids(xb, ids)
+        assert index.reconstruct(109)[0] == 1009
+        index.remove_ids(np.array([100], dtype='int64'))
+        assert index.reconstruct(109)[0] == 1009
+
     def test_remove_id_map_2(self):
         # from https://github.com/facebookresearch/faiss/issues/255
         rs = np.random.RandomState(1234)
@@ -149,7 +207,6 @@ class TestRemove(unittest.TestCase):
             pass
         else:
             assert False, 'should have raised an exception'
-
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -310,6 +367,7 @@ class TestTransformChain(unittest.TestCase):
         D2, I2 = index2.search(manual_trans(xq), 5)
 
         assert np.all(I == I2)
+
 
 @unittest.skipIf(platform.system() == 'Windows', \
                  'Mmap not supported on Windows.')
@@ -484,6 +542,7 @@ class TestSerialize(unittest.TestCase):
         Dnew, Inew = index3.search(xq, 5)
         assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
+
 @unittest.skipIf(platform.system() == 'Windows',
                  'OnDiskInvertedLists is unsupported on Windows.')
 class TestRenameOndisk(unittest.TestCase):
@@ -618,7 +677,47 @@ class TestInvlistMeta(unittest.TestCase):
         index.replace_invlists(il, True)
 
 
+class TestSplitMerge(unittest.TestCase):
 
+    def do_test(self, index_key, subset_type):
+        xt, xb, xq = get_dataset_2(32, 1000, 100, 10)
+        index = faiss.index_factory(32, index_key)
+        index.train(xt)
+        nsplit = 3
+        sub_indexes = [faiss.clone_index(index) for i in range(nsplit)]
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+        nlist = index.nlist
+        for i in range(nsplit):
+            if subset_type in (1, 3):
+                index.copy_subset_to(sub_indexes[i], subset_type, nsplit, i)
+            elif subset_type in (0, 2):
+                j0 = index.ntotal * i // nsplit
+                j1 = index.ntotal * (i + 1) // nsplit
+                index.copy_subset_to(sub_indexes[i], subset_type, j0, j1)
+            elif subset_type == 4:
+                index.copy_subset_to(
+                    sub_indexes[i], subset_type,
+                    i * nlist // nsplit, (i + 1) * nlist // nsplit)
 
-if __name__ == '__main__':
-    unittest.main()
+        index_shards = faiss.IndexShards(False, False)
+        for i in range(nsplit):
+            index_shards.add_shard(sub_indexes[i])
+        Dnew, Inew = index_shards.search(xq, 10)
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+
+    def test_Flat_subset_type_0(self):
+        self.do_test("IVF30,Flat", subset_type=0)
+
+    def test_Flat_subset_type_1(self):
+        self.do_test("IVF30,Flat", subset_type=1)
+
+    def test_Flat_subset_type_2(self):
+        self.do_test("IVF30,PQ4np", subset_type=2)
+
+    def test_Flat_subset_type_3(self):
+        self.do_test("IVF30,Flat", subset_type=3)
+
+    def test_Flat_subset_type_4(self):
+        self.do_test("IVF30,Flat", subset_type=4)

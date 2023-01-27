@@ -299,7 +299,9 @@ void IndexIVFAdditiveQuantizerFastScan::encode_vectors(
             quantizer->reconstruct(list_nos[i], c);
         }
 
-        aq->compute_codes(residuals.data(), codes, n, centroids.data());
+        aq->compute_codes_add_centroids(
+                residuals.data(), codes, n, centroids.data());
+
     } else {
         aq->compute_codes(x, codes, n);
     }
@@ -323,7 +325,11 @@ void IndexIVFAdditiveQuantizerFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+
     FAISS_THROW_IF_NOT(k > 0);
     bool rescale = (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2);
     if (!rescale) {
@@ -497,8 +503,6 @@ IndexIVFLocalSearchQuantizerFastScan::IndexIVFLocalSearchQuantizerFastScan() {
     aq = &lsq;
 }
 
-IndexIVFLocalSearchQuantizerFastScan::~IndexIVFLocalSearchQuantizerFastScan() {}
-
 /********** IndexIVFResidualQuantizerFastScan ************/
 IndexIVFResidualQuantizerFastScan::IndexIVFResidualQuantizerFastScan(
         Index* quantizer,
@@ -525,6 +529,62 @@ IndexIVFResidualQuantizerFastScan::IndexIVFResidualQuantizerFastScan() {
     aq = &rq;
 }
 
-IndexIVFResidualQuantizerFastScan::~IndexIVFResidualQuantizerFastScan() {}
+/********** IndexIVFProductLocalSearchQuantizerFastScan ************/
+IndexIVFProductLocalSearchQuantizerFastScan::
+        IndexIVFProductLocalSearchQuantizerFastScan(
+                Index* quantizer,
+                size_t d,
+                size_t nlist,
+                size_t nsplits,
+                size_t Msub,
+                size_t nbits,
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : IndexIVFAdditiveQuantizerFastScan(
+                  quantizer,
+                  nullptr,
+                  d,
+                  nlist,
+                  metric,
+                  bbs),
+          plsq(d, nsplits, Msub, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4);
+    init(&plsq, nlist, metric, bbs);
+}
+
+IndexIVFProductLocalSearchQuantizerFastScan::
+        IndexIVFProductLocalSearchQuantizerFastScan() {
+    aq = &plsq;
+}
+
+/********** IndexIVFProductResidualQuantizerFastScan ************/
+IndexIVFProductResidualQuantizerFastScan::
+        IndexIVFProductResidualQuantizerFastScan(
+                Index* quantizer,
+                size_t d,
+                size_t nlist,
+                size_t nsplits,
+                size_t Msub,
+                size_t nbits,
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : IndexIVFAdditiveQuantizerFastScan(
+                  quantizer,
+                  nullptr,
+                  d,
+                  nlist,
+                  metric,
+                  bbs),
+          prq(d, nsplits, Msub, nbits, search_type) {
+    FAISS_THROW_IF_NOT(nbits == 4);
+    init(&prq, nlist, metric, bbs);
+}
+
+IndexIVFProductResidualQuantizerFastScan::
+        IndexIVFProductResidualQuantizerFastScan() {
+    aq = &prq;
+}
 
 } // namespace faiss

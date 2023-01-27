@@ -61,7 +61,6 @@ struct ClusteringIterationStats {
  *
  */
 struct Clustering : ClusteringParameters {
-    typedef Index::idx_t idx_t;
     size_t d; ///< dimension of the vectors
     size_t k; ///< nb of centroids
 
@@ -154,7 +153,6 @@ struct ProgressiveDimIndexFactory {
  * https://arxiv.org/abs/1509.05195
  */
 struct ProgressiveDimClustering : ProgressiveDimClusteringParameters {
-    using idx_t = Index::idx_t;
     size_t d; ///< dimension of the vectors
     size_t k; ///< nb of centroids
 

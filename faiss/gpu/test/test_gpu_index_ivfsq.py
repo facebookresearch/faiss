@@ -215,7 +215,3 @@ class TestSQ(unittest.TestCase):
 
     def test_8bit_direct(self):
         do_multi_test(faiss.ScalarQuantizer.QT_8bit_direct)
-
-
-if __name__ == '__main__':
-    unittest.main()

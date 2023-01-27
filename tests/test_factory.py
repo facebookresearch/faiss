@@ -6,10 +6,11 @@
 
 import numpy as np
 import unittest
+import gc
 import faiss
 
 from faiss.contrib import factory_tools
-
+from faiss.contrib import datasets
 
 class TestFactory(unittest.TestCase):
 
@@ -160,6 +161,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(50, "IVF1000,PQ25x4fsr")
         self.assertTrue(index.by_residual)
 
+
 class TestCodeSize(unittest.TestCase):
 
     def test_1(self):
@@ -225,6 +227,16 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.index_factory(123, "Flat,IDMap")
         self.assertEqual(index.__class__, faiss.IndexIDMap)
 
+    def test_idmap2_suffix(self):
+        index = faiss.index_factory(123, "Flat,IDMap2")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
+    def test_idmap2_prefix(self):
+        index = faiss.index_factory(123, "IDMap2,Flat")
+        index = faiss.downcast_index(index)
+        self.assertEqual(index.__class__, faiss.IndexIDMap2)
+
     def test_ivf_hnsw(self):
         index = faiss.index_factory(123, "IVF100_HNSW,Flat")
         quantizer = faiss.downcast_index(index.quantizer)
@@ -265,3 +277,37 @@ class TestSpectralHash(unittest.TestCase):
     def test_sh(self):
         index = faiss.index_factory(123, "IVF256,ITQ64,SH1.2")
         self.assertEqual(index.__class__, faiss.IndexIVFSpectralHash)
+
+
+class TestQuantizerClone(unittest.TestCase):
+
+    def test_clone(self):
+        ds = datasets.SyntheticDataset(32, 200, 10, 0)
+
+        quant = faiss.ScalarQuantizer(32, faiss.ScalarQuantizer.QT_4bit)
+        quant.train(ds.get_train())
+
+        codes = quant.compute_codes(ds.get_database())
+
+        quant2 = faiss.clone_Quantizer(quant)
+        self.assertTrue(quant2.this.own())
+
+        # make sure typemap works
+        self.assertEqual(quant2.__class__, faiss.ScalarQuantizer)
+
+        codes2 = quant2.compute_codes(ds.get_database())
+        np.testing.assert_array_equal(codes, codes2)
+
+
+class TestIVFSpectralHashOwnerhsip(unittest.TestCase):
+
+    def test_constructor(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        gc.collect()
+        index.quantizer.ntotal   # this should not crash
+
+    def test_replace_vt(self):
+        index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
+        index.replace_vt(faiss.ITQTransform(10, 10))
+        gc.collect()
+        index.vt.d_out # this should not crash

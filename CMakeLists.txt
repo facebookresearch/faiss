@@ -7,7 +7,7 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 project(faiss
-  VERSION 1.6.4
+  VERSION 1.7.3
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
@@ -43,6 +43,7 @@ if(FAISS_ENABLE_C_API)
 endif()
 
 add_subdirectory(demos)
+add_subdirectory(benchs)
 add_subdirectory(tutorial/cpp)
 
 # CTest must be included in the top level to enable `make test` target.

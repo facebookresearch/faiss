@@ -32,7 +32,6 @@ struct RangeSearchResult;
  * vectors.
  */
 struct IndexBinary {
-    using idx_t = Index::idx_t; ///< all indices are this type
     using component_t = uint8_t;
     using distance_t = int32_t;
 
@@ -97,7 +96,8 @@ struct IndexBinary {
             const uint8_t* x,
             idx_t k,
             int32_t* distances,
-            idx_t* labels) const = 0;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const = 0;
 
     /** Query n vectors of dimension d to the index.
      *
@@ -117,7 +117,8 @@ struct IndexBinary {
             idx_t n,
             const uint8_t* x,
             int radius,
-            RangeSearchResult* result) const;
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const;
 
     /** Return the indexes of the k vectors closest to the query x.
      *
@@ -164,10 +165,23 @@ struct IndexBinary {
             idx_t k,
             int32_t* distances,
             idx_t* labels,
-            uint8_t* recons) const;
+            uint8_t* recons,
+            const SearchParameters* params = nullptr) const;
 
     /** Display the actual class name and some more info. */
     void display() const;
+
+    /** moves the entries from another dataset to self.
+     * On output, other is empty.
+     * add_id is added to all moved ids
+     * (for sequential ids, this would be this->ntotal) */
+    virtual void merge_from(IndexBinary& otherIndex, idx_t add_id = 0);
+
+    /** check that the two indexes are compatible (ie, they are
+     * trained in the same way and have the same
+     * parameters). Otherwise throw. */
+    virtual void check_compatible_for_merge(
+            const IndexBinary& otherIndex) const;
 };
 
 } // namespace faiss

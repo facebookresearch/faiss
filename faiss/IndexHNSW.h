@@ -22,7 +22,6 @@ namespace faiss {
 struct IndexHNSW;
 
 struct ReconstructFromNeighbors {
-    typedef Index::idx_t idx_t;
     typedef HNSW::storage_idx_t storage_idx_t;
 
     const IndexHNSW& index;
@@ -96,7 +95,8 @@ struct IndexHNSW : Index {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 
@@ -180,7 +180,8 @@ struct IndexHNSW2Level : IndexHNSW {
             const float* x,
             idx_t k,
             float* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 };
 
 } // namespace faiss

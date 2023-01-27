@@ -19,8 +19,11 @@
 #include <immintrin.h>
 #endif
 
+#include <faiss/IndexIVF.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/IDSelector.h>
+#include <faiss/utils/fp16.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -51,7 +54,6 @@ namespace faiss {
 
 namespace {
 
-typedef Index::idx_t idx_t;
 typedef ScalarQuantizer::QuantizerType QuantizerType;
 typedef ScalarQuantizer::RangeStat RangeStat;
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
@@ -201,114 +203,6 @@ struct Codec6bit {
 #endif
 };
 
-#ifdef USE_F16C
-
-uint16_t encode_fp16(float x) {
-    __m128 xf = _mm_set1_ps(x);
-    __m128i xi =
-            _mm_cvtps_ph(xf, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
-    return _mm_cvtsi128_si32(xi) & 0xffff;
-}
-
-float decode_fp16(uint16_t x) {
-    __m128i xi = _mm_set1_epi16(x);
-    __m128 xf = _mm_cvtph_ps(xi);
-    return _mm_cvtss_f32(xf);
-}
-
-#else
-
-// non-intrinsic FP16 <-> FP32 code adapted from
-// https://github.com/ispc/ispc/blob/master/stdlib.ispc
-
-float floatbits(uint32_t x) {
-    void* xptr = &x;
-    return *(float*)xptr;
-}
-
-uint32_t intbits(float f) {
-    void* fptr = &f;
-    return *(uint32_t*)fptr;
-}
-
-uint16_t encode_fp16(float f) {
-    // via Fabian "ryg" Giesen.
-    // https://gist.github.com/2156668
-    uint32_t sign_mask = 0x80000000u;
-    int32_t o;
-
-    uint32_t fint = intbits(f);
-    uint32_t sign = fint & sign_mask;
-    fint ^= sign;
-
-    // NOTE all the integer compares in this function can be safely
-    // compiled into signed compares since all operands are below
-    // 0x80000000. Important if you want fast straight SSE2 code (since
-    // there's no unsigned PCMPGTD).
-
-    // Inf or NaN (all exponent bits set)
-    // NaN->qNaN and Inf->Inf
-    // unconditional assignment here, will override with right value for
-    // the regular case below.
-    uint32_t f32infty = 255u << 23;
-    o = (fint > f32infty) ? 0x7e00u : 0x7c00u;
-
-    // (De)normalized number or zero
-    // update fint unconditionally to save the blending; we don't need it
-    // anymore for the Inf/NaN case anyway.
-
-    const uint32_t round_mask = ~0xfffu;
-    const uint32_t magic = 15u << 23;
-
-    // Shift exponent down, denormalize if necessary.
-    // NOTE This represents half-float denormals using single
-    // precision denormals.  The main reason to do this is that
-    // there's no shift with per-lane variable shifts in SSE*, which
-    // we'd otherwise need. It has some funky side effects though:
-    // - This conversion will actually respect the FTZ (Flush To Zero)
-    //   flag in MXCSR - if it's set, no half-float denormals will be
-    //   generated. I'm honestly not sure whether this is good or
-    //   bad. It's definitely interesting.
-    // - If the underlying HW doesn't support denormals (not an issue
-    //   with Intel CPUs, but might be a problem on GPUs or PS3 SPUs),
-    //   you will always get flush-to-zero behavior. This is bad,
-    //   unless you're on a CPU where you don't care.
-    // - Denormals tend to be slow. FP32 denormals are rare in
-    //   practice outside of things like recursive filters in DSP -
-    //   not a typical half-float application. Whether FP16 denormals
-    //   are rare in practice, I don't know. Whatever slow path your
-    //   HW may or may not have for denormals, this may well hit it.
-    float fscale = floatbits(fint & round_mask) * floatbits(magic);
-    fscale = std::min(fscale, floatbits((31u << 23) - 0x1000u));
-    int32_t fint2 = intbits(fscale) - round_mask;
-
-    if (fint < f32infty)
-        o = fint2 >> 13; // Take the bits!
-
-    return (o | (sign >> 16));
-}
-
-float decode_fp16(uint16_t h) {
-    // https://gist.github.com/2144712
-    // Fabian "ryg" Giesen.
-
-    const uint32_t shifted_exp = 0x7c00u << 13; // exponent mask after shift
-
-    int32_t o = ((int32_t)(h & 0x7fffu)) << 13; // exponent/mantissa bits
-    int32_t exp = shifted_exp & o;              // just the exponent
-    o += (int32_t)(127 - 15) << 23;             // exponent adjust
-
-    int32_t infnan_val = o + ((int32_t)(128 - 16) << 23);
-    int32_t zerodenorm_val =
-            intbits(floatbits(o + (1u << 23)) - floatbits(113u << 23));
-    int32_t reg_val = (exp == 0) ? zerodenorm_val : o;
-
-    int32_t sign_bit = ((int32_t)(h & 0x8000u)) << 16;
-    return floatbits(((exp == shifted_exp) ? infnan_val : reg_val) | sign_bit);
-}
-
-#endif
-
 /*******************************************************************
  * Quantizer: normalizes scalar vector components, then passes them
  * through a codec
@@ -318,7 +212,7 @@ template <class Codec, bool uniform, int SIMD>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, true, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -372,7 +266,7 @@ struct QuantizerTemplate<Codec, true, 8> : QuantizerTemplate<Codec, true, 1> {
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::Quantizer {
+struct QuantizerTemplate<Codec, false, 1> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -433,7 +327,7 @@ template <int SIMDWIDTH>
 struct QuantizerFP16 {};
 
 template <>
-struct QuantizerFP16<1> : ScalarQuantizer::Quantizer {
+struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -478,7 +372,7 @@ template <int SIMDWIDTH>
 struct Quantizer8bitDirect {};
 
 template <>
-struct Quantizer8bitDirect<1> : ScalarQuantizer::Quantizer {
+struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
@@ -518,7 +412,7 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 #endif
 
 template <int SIMDWIDTH>
-ScalarQuantizer::Quantizer* select_quantizer_1(
+ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
@@ -1153,17 +1047,11 @@ SQDistanceComputer* select_distance_computer(
  ********************************************************************/
 
 ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : qtype(qtype), rangestat(RS_minmax), rangestat_arg(0), d(d) {
+        : Quantizer(d), qtype(qtype) {
     set_derived_sizes();
 }
 
-ScalarQuantizer::ScalarQuantizer()
-        : qtype(QT_8bit),
-          rangestat(RS_minmax),
-          rangestat_arg(0),
-          d(0),
-          bits(0),
-          code_size(0) {}
+ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
@@ -1241,7 +1129,7 @@ void ScalarQuantizer::train_residual(
     ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
 
     if (by_residual) {
-        std::vector<Index::idx_t> idx(n);
+        std::vector<idx_t> idx(n);
         quantizer->assign(n, x, idx.data());
 
         std::vector<float> residuals(n * d);
@@ -1253,7 +1141,7 @@ void ScalarQuantizer::train_residual(
     }
 }
 
-ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
+ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #ifdef USE_F16C
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
@@ -1266,7 +1154,7 @@ ScalarQuantizer::Quantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
@@ -1275,7 +1163,7 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
-    std::unique_ptr<Quantizer> squant(select_quantizer());
+    std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++)
@@ -1312,10 +1200,11 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
 
 namespace {
 
-template <class DCClass>
+template <class DCClass, int use_sel>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
     bool by_residual;
+    const IDSelector* sel;
 
     float accu0; /// added to all distances
 
@@ -1324,8 +1213,9 @@ struct IVFSQScannerIP : InvertedListScanner {
             const std::vector<float>& trained,
             size_t code_size,
             bool store_pairs,
+            const IDSelector* sel,
             bool by_residual)
-            : dc(d, trained), by_residual(by_residual), accu0(0) {
+            : dc(d, trained), by_residual(by_residual), sel(sel), accu0(0) {
         this->store_pairs = store_pairs;
         this->code_size = code_size;
     }
@@ -1352,7 +1242,11 @@ struct IVFSQScannerIP : InvertedListScanner {
             size_t k) const override {
         size_t nup = 0;
 
-        for (size_t j = 0; j < list_size; j++) {
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
             float accu = accu0 + dc.query_to_code(codes);
 
             if (accu > simi[0]) {
@@ -1360,7 +1254,6 @@ struct IVFSQScannerIP : InvertedListScanner {
                 minheap_replace_top(k, simi, idxi, accu, id);
                 nup++;
             }
-            codes += code_size;
         }
         return nup;
     }
@@ -1371,23 +1264,31 @@ struct IVFSQScannerIP : InvertedListScanner {
             const idx_t* ids,
             float radius,
             RangeQueryResult& res) const override {
-        for (size_t j = 0; j < list_size; j++) {
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
             float accu = accu0 + dc.query_to_code(codes);
             if (accu > radius) {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 res.add(accu, id);
             }
-            codes += code_size;
         }
     }
 };
 
-template <class DCClass>
+/* use_sel = 0: don't check selector
+ * = 1: check on ids[j]
+ * = 2: check in j directly (normally ids is nullptr and store_pairs)
+ */
+template <class DCClass, int use_sel>
 struct IVFSQScannerL2 : InvertedListScanner {
     DCClass dc;
 
     bool by_residual;
     const Index* quantizer;
+    const IDSelector* sel;
     const float* x; /// current query
 
     std::vector<float> tmp;
@@ -1398,10 +1299,12 @@ struct IVFSQScannerL2 : InvertedListScanner {
             size_t code_size,
             const Index* quantizer,
             bool store_pairs,
+            const IDSelector* sel,
             bool by_residual)
             : dc(d, trained),
               by_residual(by_residual),
               quantizer(quantizer),
+              sel(sel),
               x(nullptr),
               tmp(d) {
         this->store_pairs = store_pairs;
@@ -1438,7 +1341,11 @@ struct IVFSQScannerL2 : InvertedListScanner {
             idx_t* idxi,
             size_t k) const override {
         size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
             float dis = dc.query_to_code(codes);
 
             if (dis < simi[0]) {
@@ -1446,7 +1353,6 @@ struct IVFSQScannerL2 : InvertedListScanner {
                 maxheap_replace_top(k, simi, idxi, dis, id);
                 nup++;
             }
-            codes += code_size;
         }
         return nup;
     }
@@ -1457,31 +1363,62 @@ struct IVFSQScannerL2 : InvertedListScanner {
             const idx_t* ids,
             float radius,
             RangeQueryResult& res) const override {
-        for (size_t j = 0; j < list_size; j++) {
+        for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
+                continue;
+            }
+
             float dis = dc.query_to_code(codes);
             if (dis < radius) {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
                 res.add(dis, id);
             }
-            codes += code_size;
         }
     }
 };
+
+template <class DCClass, int use_sel>
+InvertedListScanner* sel3_InvertedListScanner(
+        const ScalarQuantizer* sq,
+        const Index* quantizer,
+        bool store_pairs,
+        const IDSelector* sel,
+        bool r) {
+    if (DCClass::Sim::metric_type == METRIC_L2) {
+        return new IVFSQScannerL2<DCClass, use_sel>(
+                sq->d,
+                sq->trained,
+                sq->code_size,
+                quantizer,
+                store_pairs,
+                sel,
+                r);
+    } else if (DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
+        return new IVFSQScannerIP<DCClass, use_sel>(
+                sq->d, sq->trained, sq->code_size, store_pairs, sel, r);
+    } else {
+        FAISS_THROW_MSG("unsupported metric type");
+    }
+}
 
 template <class DCClass>
 InvertedListScanner* sel2_InvertedListScanner(
         const ScalarQuantizer* sq,
         const Index* quantizer,
         bool store_pairs,
+        const IDSelector* sel,
         bool r) {
-    if (DCClass::Sim::metric_type == METRIC_L2) {
-        return new IVFSQScannerL2<DCClass>(
-                sq->d, sq->trained, sq->code_size, quantizer, store_pairs, r);
-    } else if (DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
-        return new IVFSQScannerIP<DCClass>(
-                sq->d, sq->trained, sq->code_size, store_pairs, r);
+    if (sel) {
+        if (store_pairs) {
+            return sel3_InvertedListScanner<DCClass, 2>(
+                    sq, quantizer, store_pairs, sel, r);
+        } else {
+            return sel3_InvertedListScanner<DCClass, 1>(
+                    sq, quantizer, store_pairs, sel, r);
+        }
     } else {
-        FAISS_THROW_MSG("unsupported metric type");
+        return sel3_InvertedListScanner<DCClass, 0>(
+                sq, quantizer, store_pairs, sel, r);
     }
 }
 
@@ -1490,11 +1427,13 @@ InvertedListScanner* sel12_InvertedListScanner(
         const ScalarQuantizer* sq,
         const Index* quantizer,
         bool store_pairs,
+        const IDSelector* sel,
         bool r) {
     constexpr int SIMDWIDTH = Similarity::simdwidth;
     using QuantizerClass = QuantizerTemplate<Codec, uniform, SIMDWIDTH>;
     using DCClass = DCTemplate<QuantizerClass, Similarity, SIMDWIDTH>;
-    return sel2_InvertedListScanner<DCClass>(sq, quantizer, store_pairs, r);
+    return sel2_InvertedListScanner<DCClass>(
+            sq, quantizer, store_pairs, sel, r);
 }
 
 template <class Similarity>
@@ -1502,39 +1441,40 @@ InvertedListScanner* sel1_InvertedListScanner(
         const ScalarQuantizer* sq,
         const Index* quantizer,
         bool store_pairs,
+        const IDSelector* sel,
         bool r) {
     constexpr int SIMDWIDTH = Similarity::simdwidth;
     switch (sq->qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return sel12_InvertedListScanner<Similarity, Codec8bit, true>(
-                    sq, quantizer, store_pairs, r);
+                    sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_4bit_uniform:
             return sel12_InvertedListScanner<Similarity, Codec4bit, true>(
-                    sq, quantizer, store_pairs, r);
+                    sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_8bit:
             return sel12_InvertedListScanner<Similarity, Codec8bit, false>(
-                    sq, quantizer, store_pairs, r);
+                    sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_4bit:
             return sel12_InvertedListScanner<Similarity, Codec4bit, false>(
-                    sq, quantizer, store_pairs, r);
+                    sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_6bit:
             return sel12_InvertedListScanner<Similarity, Codec6bit, false>(
-                    sq, quantizer, store_pairs, r);
+                    sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_fp16:
             return sel2_InvertedListScanner<DCTemplate<
                     QuantizerFP16<SIMDWIDTH>,
                     Similarity,
-                    SIMDWIDTH>>(sq, quantizer, store_pairs, r);
+                    SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
         case ScalarQuantizer::QT_8bit_direct:
             if (sq->d % 16 == 0) {
                 return sel2_InvertedListScanner<
                         DistanceComputerByte<Similarity, SIMDWIDTH>>(
-                        sq, quantizer, store_pairs, r);
+                        sq, quantizer, store_pairs, sel, r);
             } else {
                 return sel2_InvertedListScanner<DCTemplate<
                         Quantizer8bitDirect<SIMDWIDTH>,
                         Similarity,
-                        SIMDWIDTH>>(sq, quantizer, store_pairs, r);
+                        SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
             }
     }
 
@@ -1548,13 +1488,14 @@ InvertedListScanner* sel0_InvertedListScanner(
         const ScalarQuantizer* sq,
         const Index* quantizer,
         bool store_pairs,
+        const IDSelector* sel,
         bool by_residual) {
     if (mt == METRIC_L2) {
         return sel1_InvertedListScanner<SimilarityL2<SIMDWIDTH>>(
-                sq, quantizer, store_pairs, by_residual);
+                sq, quantizer, store_pairs, sel, by_residual);
     } else if (mt == METRIC_INNER_PRODUCT) {
         return sel1_InvertedListScanner<SimilarityIP<SIMDWIDTH>>(
-                sq, quantizer, store_pairs, by_residual);
+                sq, quantizer, store_pairs, sel, by_residual);
     } else {
         FAISS_THROW_MSG("unsupported metric type");
     }
@@ -1566,16 +1507,17 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         MetricType mt,
         const Index* quantizer,
         bool store_pairs,
+        const IDSelector* sel,
         bool by_residual) const {
 #ifdef USE_F16C
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
-                mt, this, quantizer, store_pairs, by_residual);
+                mt, this, quantizer, store_pairs, sel, by_residual);
     } else
 #endif
     {
         return sel0_InvertedListScanner<1>(
-                mt, this, quantizer, store_pairs, by_residual);
+                mt, this, quantizer, store_pairs, sel, by_residual);
     }
 }
 

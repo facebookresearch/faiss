@@ -47,6 +47,12 @@ int getMaxThreads(int device);
 /// Equivalent to getMaxThreads(getCurrentDevice())
 int getMaxThreadsCurrentDevice();
 
+/// Returns the maximum grid size for the given GPU device
+dim3 getMaxGrid(int device);
+
+/// Equivalent to getMaxGrid(getCurrentDevice())
+dim3 getMaxGridCurrentDevice();
+
 /// Returns the maximum smem available for the given GPU device
 size_t getMaxSharedMemPerBlock(int device);
 
@@ -70,10 +76,11 @@ bool getTensorCoreSupport(int device);
 /// Equivalent to getTensorCoreSupport(getCurrentDevice())
 bool getTensorCoreSupportCurrentDevice();
 
-/// Returns the maximum k-selection value supported based on the CUDA SDK that
-/// we were compiled with. .cu files can use DeviceDefs.cuh, but this is for
-/// non-CUDA files
-int getMaxKSelection();
+/// Returns the amount of currently available memory on the given device
+size_t getFreeMemory(int device);
+
+/// Equivalent to getFreeMemory(getCurrentDevice())
+size_t getFreeMemoryCurrentDevice();
 
 /// RAII object to set the current device, and restore the previous
 /// device upon destruction

@@ -8,10 +8,7 @@ import os
 import sys
 import time
 import numpy as np
-import re
 import faiss
-from multiprocessing.dummy import Pool as ThreadPool
-import pdb
 import argparse
 import datasets
 from datasets import sanitize

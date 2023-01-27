@@ -20,7 +20,6 @@ namespace faiss {
 template <typename IndexT>
 class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
    public:
-    using idx_t = typename IndexT::idx_t;
     using component_t = typename IndexT::component_t;
     using distance_t = typename IndexT::distance_t;
 
@@ -65,7 +64,8 @@ class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
             const component_t* x,
             idx_t k,
             distance_t* distances,
-            idx_t* labels) const override;
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
 
     /// reconstructs from the first index
     void reconstruct(idx_t, component_t* v) const override;

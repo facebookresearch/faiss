@@ -17,6 +17,8 @@
 #include <faiss/IndexFlat.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
@@ -40,9 +42,7 @@ void IndexIVFFlat::add_core(
         idx_t n,
         const float* x,
         const int64_t* xids,
-        const int64_t* coarse_idx)
-
-{
+        const int64_t* coarse_idx) {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
     assert(invlists);
@@ -118,13 +118,12 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 namespace {
 
-template <MetricType metric, class C>
+template <MetricType metric, class C, bool use_sel>
 struct IVFFlatScanner : InvertedListScanner {
     size_t d;
 
-    IVFFlatScanner(size_t d, bool store_pairs) : d(d) {
-        this->store_pairs = store_pairs;
-    }
+    IVFFlatScanner(size_t d, bool store_pairs, const IDSelector* sel)
+            : InvertedListScanner(store_pairs, sel), d(d) {}
 
     const float* xi;
     void set_query(const float* query) override {
@@ -154,6 +153,9 @@ struct IVFFlatScanner : InvertedListScanner {
         size_t nup = 0;
         for (size_t j = 0; j < list_size; j++) {
             const float* yj = list_vecs + d * j;
+            if (use_sel && !sel->is_member(ids[j])) {
+                continue;
+            }
             float dis = metric == METRIC_INNER_PRODUCT
                     ? fvec_inner_product(xi, yj, d)
                     : fvec_L2sqr(xi, yj, d);
@@ -175,6 +177,9 @@ struct IVFFlatScanner : InvertedListScanner {
         const float* list_vecs = (const float*)codes;
         for (size_t j = 0; j < list_size; j++) {
             const float* yj = list_vecs + d * j;
+            if (use_sel && !sel->is_member(ids[j])) {
+                continue;
+            }
             float dis = metric == METRIC_INNER_PRODUCT
                     ? fvec_inner_product(xi, yj, d)
                     : fvec_L2sqr(xi, yj, d);
@@ -186,20 +191,34 @@ struct IVFFlatScanner : InvertedListScanner {
     }
 };
 
-} // anonymous namespace
-
-InvertedListScanner* IndexIVFFlat::get_InvertedListScanner(
-        bool store_pairs) const {
-    if (metric_type == METRIC_INNER_PRODUCT) {
-        return new IVFFlatScanner<METRIC_INNER_PRODUCT, CMin<float, int64_t>>(
-                d, store_pairs);
-    } else if (metric_type == METRIC_L2) {
-        return new IVFFlatScanner<METRIC_L2, CMax<float, int64_t>>(
-                d, store_pairs);
+template <bool use_sel>
+InvertedListScanner* get_InvertedListScanner1(
+        const IndexIVFFlat* ivf,
+        bool store_pairs,
+        const IDSelector* sel) {
+    if (ivf->metric_type == METRIC_INNER_PRODUCT) {
+        return new IVFFlatScanner<
+                METRIC_INNER_PRODUCT,
+                CMin<float, int64_t>,
+                use_sel>(ivf->d, store_pairs, sel);
+    } else if (ivf->metric_type == METRIC_L2) {
+        return new IVFFlatScanner<METRIC_L2, CMax<float, int64_t>, use_sel>(
+                ivf->d, store_pairs, sel);
     } else {
         FAISS_THROW_MSG("metric type not supported");
     }
-    return nullptr;
+}
+
+} // anonymous namespace
+
+InvertedListScanner* IndexIVFFlat::get_InvertedListScanner(
+        bool store_pairs,
+        const IDSelector* sel) const {
+    if (sel) {
+        return get_InvertedListScanner1<true>(this, store_pairs, sel);
+    } else {
+        return get_InvertedListScanner1<false>(this, store_pairs, sel);
+    }
 }
 
 void IndexIVFFlat::reconstruct_from_offset(
@@ -447,7 +466,8 @@ void IndexIVFFlatDedup::range_search(
         idx_t,
         const float*,
         float,
-        RangeSearchResult*) const {
+        RangeSearchResult*,
+        const SearchParameters*) const {
     FAISS_THROW_MSG("not implemented");
 }
 

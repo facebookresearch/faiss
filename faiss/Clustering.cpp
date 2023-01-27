@@ -88,8 +88,6 @@ void Clustering::train(
 
 namespace {
 
-using idx_t = Clustering::idx_t;
-
 idx_t subsample_training_set(
         const Clustering& clus,
         idx_t nx,
@@ -623,8 +621,6 @@ ProgressiveDimClustering::ProgressiveDimClustering(
         : ProgressiveDimClusteringParameters(cp), d(d), k(k) {}
 
 namespace {
-
-using idx_t = Index::idx_t;
 
 void copy_columns(idx_t n, idx_t d1, const float* src, idx_t d2, float* dest) {
     idx_t d = std::min(d1, d2);

@@ -156,7 +156,12 @@ void IndexIVFPQFastScan::train_residual(idx_t n, const float* x_in) {
 
 void IndexIVFPQFastScan::precompute_table() {
     initialize_IVFPQ_precomputed_table(
-            use_precomputed_table, quantizer, pq, precomputed_table, verbose);
+            use_precomputed_table,
+            quantizer,
+            pq,
+            precomputed_table,
+            by_residual,
+            verbose);
 }
 
 /*********************************************************

@@ -14,6 +14,8 @@ import faiss
 
 from faiss.contrib import datasets
 
+# the tests tend to timeout in stress modes + dev otherwise
+faiss.omp_set_num_threads(4)
 
 class TestCompileOptions(unittest.TestCase):
 
@@ -137,6 +139,36 @@ class TestRounding(unittest.TestCase):
     def test_implem_14_ip(self):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
+
+class TestReconstruct(unittest.TestCase):
+
+    def test_pqfastscan(self):
+        ds = datasets.SyntheticDataset(20, 1000, 1000, 0)
+
+        index = faiss.index_factory(20, 'PQ5x4')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        recons = index.reconstruct_n(0, index.ntotal)
+
+        index2 = faiss.IndexPQFastScan(index)
+        recons2 = index2.reconstruct_n(0, index.ntotal)
+
+        np.testing.assert_array_equal(recons, recons2)
+
+    def test_aqfastscan(self):
+        ds = datasets.SyntheticDataset(20, 1000, 1000, 0)
+
+        index = faiss.index_factory(20, 'RQ5x4_Nrq2x4')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        recons = index.reconstruct_n(0, index.ntotal)
+
+        index2 = faiss.IndexAdditiveQuantizerFastScan(index)
+        recons2 = index2.reconstruct_n(0, index.ntotal)
+
+        np.testing.assert_array_equal(recons, recons2)
+
+
 #########################################################
 # Kernel unit test
 #########################################################
@@ -252,6 +284,17 @@ class TestImplems(unittest.TestCase):
             index2.implem = 4
             Dref, Iref = index2.search(ds.get_queries(), 10)
 
+            # check CodePacker
+            codes_ref = faiss.vector_to_array(index.codes)
+            codes_ref = codes_ref.reshape(-1, index.code_size)
+            index2codes = faiss.vector_to_array(index2.codes)
+            code_packer = index2.get_CodePacker()
+            index2codes = index2codes.reshape(-1, code_packer.block_size)
+
+            for i in range(0, len(codes_ref), 13):
+                code_new = code_packer.unpack_1(index2codes, i)
+                np.testing.assert_array_equal(codes_ref[i], code_new)
+
             self.cache[(d, metric)] = (ds, index, Dref, Iref)
 
         return self.cache[(d, metric)]
@@ -268,12 +311,10 @@ class TestImplems(unittest.TestCase):
 
         verify_with_draws(self, Dref, Iref, Dnew, Inew)
 
-
     def build_fast_scan_index(self, index, params):
         index2 = faiss.IndexPQFastScan(index)
         index2.implem = 5
         return index2
-
 
 
 class TestImplem12(TestImplems):
@@ -371,6 +412,7 @@ class TestImplem15(TestImplems):
     def test_2_64(self):
         self.do_with_params(32, (2, 64))
 
+
 class TestAdd(unittest.TestCase):
 
     def do_test_add(self, d, bbs):
@@ -439,7 +481,6 @@ class TestAQFastScan(unittest.TestCase):
         Compare IndexAdditiveQuantizerFastScan with IndexAQ (qint8)
         """
         d = 16
-        # ds = datasets.SyntheticDataset(d, 1000, 2000, 1000, metric_type)
         ds = datasets.SyntheticDataset(d, 1000, 1000, 500, metric_type)
         gt = ds.get_groundtruth(k=1)
 
@@ -600,3 +641,70 @@ def add_TestAQFastScan_subtest_from_idxaq(implem, metric):
 for implem in 2, 3, 4:
     add_TestAQFastScan_subtest_from_idxaq(implem, 'L2')
     add_TestAQFastScan_subtest_from_idxaq(implem, 'IP')
+
+
+class TestPAQFastScan(unittest.TestCase):
+
+    def subtest_accuracy(self, paq):
+        """
+        Compare IndexPAQFastScan with IndexPAQ (qint8)
+        """
+        d = 16
+        ds = datasets.SyntheticDataset(d, 1000, 1000, 500)
+        gt = ds.get_groundtruth(k=1)
+
+        index = faiss.index_factory(d, f'{paq}2x3x4_Nqint8')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 1)
+
+        indexfs = faiss.index_factory(d, f'{paq}2x3x4fs_Nlsq2x4')
+        indexfs.train(ds.get_train())
+        indexfs.add(ds.get_database())
+        Da, Ia = indexfs.search(ds.get_queries(), 1)
+
+        nq = Iref.shape[0]
+        recall_ref = (Iref == gt).sum() / nq
+        recall = (Ia == gt).sum() / nq
+
+        assert abs(recall_ref - recall) < 0.05
+
+    def test_accuracy_PLSQ(self):
+        self.subtest_accuracy("PLSQ")
+
+    def test_accuracy_PRQ(self):
+        self.subtest_accuracy("PRQ")
+
+    def subtest_factory(self, paq):
+        index = faiss.index_factory(16, f'{paq}2x3x4fs_Nlsq2x4')
+        q = faiss.downcast_Quantizer(index.aq)
+        self.assertEqual(q.nsplits, 2)
+        self.assertEqual(q.subquantizer(0).M, 3)
+
+    def test_factory(self):
+        self.subtest_factory('PRQ')
+        self.subtest_factory('PLSQ')
+
+    def subtest_io(self, factory_str):
+        d = 8
+        ds = datasets.SyntheticDataset(d, 1000, 500, 100)
+
+        index = faiss.index_factory(d, factory_str)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D1, I1 = index.search(ds.get_queries(), 1)
+
+        fd, fname = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            faiss.write_index(index, fname)
+            index2 = faiss.read_index(fname)
+            D2, I2 = index2.search(ds.get_queries(), 1)
+            np.testing.assert_array_equal(I1, I2)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+    def test_io(self):
+        self.subtest_io('PLSQ2x3x4fs_Nlsq2x4')
+        self.subtest_io('PRQ2x3x4fs_Nrq2x4')

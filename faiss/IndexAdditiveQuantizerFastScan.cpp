@@ -190,7 +190,10 @@ void IndexAdditiveQuantizerFastScan::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const {
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     bool rescale = (rescale_norm && norm_scale > 1 && metric_type == METRIC_L2);
     if (!rescale) {
@@ -204,6 +207,13 @@ void IndexAdditiveQuantizerFastScan::search(
     } else {
         search_dispatch_implem<false>(n, x, k, distances, labels, scaler);
     }
+}
+
+void IndexAdditiveQuantizerFastScan::sa_decode(
+        idx_t n,
+        const uint8_t* bytes,
+        float* x) const {
+    aq->decode(bytes, x, n);
 }
 
 /**************************************************************************************
@@ -242,6 +252,48 @@ IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan(
 
 IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan() {
     aq = &lsq;
+}
+
+/**************************************************************************************
+ * IndexProductResidualQuantizerFastScan
+ **************************************************************************************/
+
+IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan(
+        int d,          ///< dimensionality of the input vectors
+        size_t nsplits, ///< number of residual quantizers
+        size_t Msub,    ///< number of subquantizers per RQ
+        size_t nbits,   ///< number of bit per subvector index
+        MetricType metric,
+        Search_type_t search_type,
+        int bbs)
+        : prq(d, nsplits, Msub, nbits, search_type) {
+    init(&prq, metric, bbs);
+}
+
+IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan() {
+    aq = &prq;
+}
+
+/**************************************************************************************
+ * IndexProductLocalSearchQuantizerFastScan
+ **************************************************************************************/
+
+IndexProductLocalSearchQuantizerFastScan::
+        IndexProductLocalSearchQuantizerFastScan(
+                int d,          ///< dimensionality of the input vectors
+                size_t nsplits, ///< number of local search quantizers
+                size_t Msub,    ///< number of subquantizers per LSQ
+                size_t nbits,   ///< number of bit per subvector index
+                MetricType metric,
+                Search_type_t search_type,
+                int bbs)
+        : plsq(d, nsplits, Msub, nbits, search_type) {
+    init(&plsq, metric, bbs);
+}
+
+IndexProductLocalSearchQuantizerFastScan::
+        IndexProductLocalSearchQuantizerFastScan() {
+    aq = &plsq;
 }
 
 } // namespace faiss

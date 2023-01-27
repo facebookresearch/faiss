@@ -11,7 +11,7 @@
 #ifndef FAISS_DEVICE_UTILS_C_H
 #define FAISS_DEVICE_UTILS_C_H
 
-#include <cublas.h>
+#include <cublas_v2.h>
 #include <cuda_runtime_api.h>
 #include "../faiss_c.h"
 

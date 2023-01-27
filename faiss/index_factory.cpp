@@ -10,8 +10,6 @@
  */
 
 #include <faiss/index_factory.h>
-#include "faiss/MetricType.h"
-#include "faiss/impl/FaissAssert.h"
 
 #include <cinttypes>
 #include <cmath>
@@ -44,6 +42,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -158,6 +157,8 @@ std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
 const std::string aq_def_pattern = "[0-9]+x[0-9]+(_[0-9]+x[0-9]+)*";
 const std::string aq_norm_pattern =
         "(|_Nnone|_Nfloat|_Nqint8|_Nqint4|_Ncqint8|_Ncqint4|_Nlsq2x4|_Nrq2x4)";
+
+const std::string paq_def_pattern = "([0-9]+)x([0-9]+)x([0-9]+)";
 
 AdditiveQuantizer::Search_type_t aq_parse_search_type(
         std::string stok,
@@ -345,6 +346,21 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
+    if (match("(PRQ|PLSQ)" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[2]);
+        int Msub = mres_to_int(sm[3]);
+        int nbit = mres_to_int(sm[4]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
+        IndexIVF* index_ivf;
+        if (sm[1].str() == "PRQ") {
+            index_ivf = new IndexIVFProductResidualQuantizer(
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+        } else {
+            index_ivf = new IndexIVFProductLocalSearchQuantizer(
+                    get_q(), d, nlist, nsplits, Msub, nbit, mt, st);
+        }
+        return index_ivf;
+    }
     if (match("(RQ|LSQ)([0-9]+)x4fs(r?)(_[0-9]+)?" + aq_norm_pattern)) {
         int M = std::stoi(sm[2].str());
         int bbs = mres_to_int(sm[4], 32, 1);
@@ -358,6 +374,23 @@ IndexIVF* parse_IndexIVF(
                     get_q(), d, nlist, M, 4, mt, st, bbs);
         }
         index_ivf->by_residual = (sm[3].str() == "r");
+        return index_ivf;
+    }
+    if (match("(PRQ|PLSQ)([0-9]+)x([0-9]+)x4fs(r?)(_[0-9]+)?" +
+              aq_norm_pattern)) {
+        int nsplits = std::stoi(sm[2].str());
+        int Msub = std::stoi(sm[3].str());
+        int bbs = mres_to_int(sm[5], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), mt);
+        IndexIVFAdditiveQuantizerFastScan* index_ivf;
+        if (sm[1].str() == "PRQ") {
+            index_ivf = new IndexIVFProductResidualQuantizerFastScan(
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+        } else {
+            index_ivf = new IndexIVFProductLocalSearchQuantizerFastScan(
+                    get_q(), d, nlist, nsplits, Msub, 4, mt, st, bbs);
+        }
+        index_ivf->by_residual = (sm[4].str() == "r");
         return index_ivf;
     }
     if (match("(ITQ|PCA|PCAR)([0-9]+)?,SH([-0-9.e]+)?([gcm])?")) {
@@ -550,6 +583,26 @@ Index* parse_other_indexes(
         return new IndexLocalSearchQuantizer(d, M, nbit, metric, st);
     }
 
+    // IndexProductResidualQuantizer
+    if (match("PRQ" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[1]);
+        int Msub = mres_to_int(sm[2]);
+        int nbit = mres_to_int(sm[3]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+        return new IndexProductResidualQuantizer(
+                d, nsplits, Msub, nbit, metric, st);
+    }
+
+    // IndexProductLocalSearchQuantizer
+    if (match("PLSQ" + paq_def_pattern + aq_norm_pattern)) {
+        int nsplits = mres_to_int(sm[1]);
+        int Msub = mres_to_int(sm[2]);
+        int nbit = mres_to_int(sm[3]);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+        return new IndexProductLocalSearchQuantizer(
+                d, nsplits, Msub, nbit, metric, st);
+    }
+
     // IndexAdditiveQuantizerFastScan
     // RQ{M}x4fs_{bbs}_{search_type}
     pattern = "(LSQ|RQ)([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern;
@@ -563,6 +616,24 @@ Index* parse_other_indexes(
         } else if (sm[1].str() == "LSQ") {
             return new IndexLocalSearchQuantizerFastScan(
                     d, M, 4, metric, st, bbs);
+        }
+    }
+
+    // IndexProductAdditiveQuantizerFastScan
+    // PRQ{nsplits}x{Msub}x4fs_{bbs}_{search_type}
+    pattern = "(PLSQ|PRQ)([0-9]+)x([0-9]+)x4fs(_[0-9]+)?" + aq_norm_pattern;
+    if (match(pattern)) {
+        int nsplits = std::stoi(sm[2].str());
+        int Msub = std::stoi(sm[3].str());
+        int bbs = mres_to_int(sm[4], 32, 1);
+        auto st = aq_parse_search_type(sm[sm.size() - 1].str(), metric);
+
+        if (sm[1].str() == "PRQ") {
+            return new IndexProductResidualQuantizerFastScan(
+                    d, nsplits, Msub, 4, metric, st, bbs);
+        } else if (sm[1].str() == "PLSQ") {
+            return new IndexProductLocalSearchQuantizerFastScan(
+                    d, nsplits, Msub, 4, metric, st, bbs);
         }
     }
 
@@ -592,19 +663,19 @@ std::unique_ptr<Index> index_factory_sub(
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
         std::unique_ptr<Index> filter_index =
                 index_factory_sub(d, sm[1].str(), metric);
-        std::unique_ptr<Index> refine_index;
 
+        IndexRefine* index_rf = nullptr;
         if (sm.size() == 3) { // Refine
-            refine_index = index_factory_sub(d, sm[2].str(), metric);
+            std::unique_ptr<Index> refine_index =
+                    index_factory_sub(d, sm[2].str(), metric);
+            index_rf = new IndexRefine(
+                    filter_index.release(), refine_index.release());
+            index_rf->own_refine_index = true;
         } else { // RFlat
-            refine_index.reset(new IndexFlat(d, metric));
+            index_rf = new IndexRefineFlat(filter_index.release(), nullptr);
         }
-        IndexRefine* index_rf =
-                new IndexRefine(filter_index.get(), refine_index.get());
+        FAISS_ASSERT(index_rf != nullptr);
         index_rf->own_fields = true;
-        filter_index.release();
-        refine_index.release();
-        index_rf->own_refine_index = true;
         return std::unique_ptr<Index>(index_rf);
     }
 
@@ -665,6 +736,14 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIDMap -- it turns out is was used both as a prefix and a suffix, so
     // support both
+    if (re_match(description, "(.+),IDMap2", sm) ||
+        re_match(description, "IDMap2,(.+)", sm)) {
+        IndexIDMap2* idmap2 = new IndexIDMap2(
+                index_factory_sub(d, sm[1].str(), metric).release());
+        idmap2->own_fields = true;
+        return std::unique_ptr<Index>(idmap2);
+    }
+
     if (re_match(description, "(.+),IDMap", sm) ||
         re_match(description, "IDMap,(.+)", sm)) {
         IndexIDMap* idmap = new IndexIDMap(
@@ -723,6 +802,30 @@ std::unique_ptr<Index> index_factory_sub(
                 "could not parse NSG code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp32 version
+    if (description.compare(0, 7, "MinMax,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMax(sub_index.release());
+        index->own_fields = true;
+
+        return std::unique_ptr<Index>(index);
+    }
+
+    // IndexRowwiseMinMax, fp16 version
+    if (description.compare(0, 11, "MinMaxFP16,") == 0) {
+        size_t comma = description.find(",");
+        std::string sub_index_string = description.substr(comma + 1);
+        auto sub_index = index_factory_sub(d, sub_index_string, metric);
+
+        auto index = new IndexRowwiseMinMaxFP16(sub_index.release());
+        index->own_fields = true;
+
         return std::unique_ptr<Index>(index);
     }
 

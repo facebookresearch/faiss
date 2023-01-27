@@ -154,7 +154,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             const OnDiskInvertedLists* od = pf->od;
             od->locks->lock_1(list_no);
             size_t n = od->list_size(list_no);
-            const Index::idx_t* idx = od->get_ids(list_no);
+            const idx_t* idx = od->get_ids(list_no);
             const uint8_t* codes = od->get_codes(list_no);
             int cs = 0;
             for (size_t i = 0; i < n; i++) {
@@ -278,13 +278,14 @@ void OnDiskInvertedLists::do_mmap() {
     uint8_t* ptro =
             (uint8_t*)mmap(nullptr, totsize, prot, MAP_SHARED, fileno(f), 0);
 
+    fclose(f);
+
     FAISS_THROW_IF_NOT_FMT(
             ptro != MAP_FAILED,
             "could not mmap %s: %s",
             filename.c_str(),
             strerror(errno));
     ptr = ptro;
-    fclose(f);
 }
 
 void OnDiskInvertedLists::update_totsize(size_t new_size) {
@@ -388,7 +389,7 @@ const uint8_t* OnDiskInvertedLists::get_codes(size_t list_no) const {
     return ptr + lists[list_no].offset;
 }
 
-const Index::idx_t* OnDiskInvertedLists::get_ids(size_t list_no) const {
+const idx_t* OnDiskInvertedLists::get_ids(size_t list_no) const {
     if (lists[list_no].offset == INVALID_OFFSET) {
         return nullptr;
     }
@@ -780,7 +781,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read_ArrayInvertedLists(
         OnDiskInvertedLists::List& l = ails->lists[i];
         l.size = l.capacity = sizes[i];
         l.offset = o;
-        o += l.size * (sizeof(OnDiskInvertedLists::idx_t) + ails->code_size);
+        o += l.size * (sizeof(idx_t) + ails->code_size);
     }
     // resume normal reading of file
     fseek(fdesc, o, SEEK_SET);

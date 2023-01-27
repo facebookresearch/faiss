@@ -23,7 +23,6 @@
 
 namespace faiss {
 
-using idx_t = Index::idx_t;
 using namespace nsg;
 
 /**************************************************************
@@ -78,9 +77,10 @@ void IndexNSG::search(
         const float* x,
         idx_t k,
         float* distances,
-        idx_t* labels) const
-
-{
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT_MSG(
             storage,
             "Please use IndexNSGFlat (or variants) instead of IndexNSG directly");

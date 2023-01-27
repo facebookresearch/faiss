@@ -31,6 +31,17 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly faiss-gpu
 ```
 
+A combination of versions that works with Pytorch (as of 2022-11-23):
+```
+conda create -n faiss_1.7.3 python=3.8
+conda activate faiss_1.7.3
+conda install pytorch==1.11.0 cudatoolkit=11.3 -c pytorch
+conda install numpy
+conda install -c pytorch faiss-gpu=1.7.3 cudatoolkit=11.3
+conda install -c conda-forge notebook
+conda install -y matplotlib
+```
+
 ## Installing from conda-forge
 
 Faiss is also being packaged by [conda-forge](https://conda-forge.org/), the
@@ -101,8 +112,8 @@ Several options can be passed to CMake, among which:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
-  generate code using optimized SIMD instructions (possible values are `generic`,
-  `sse4`, and `avx2`, by increasing order of optimization),
+  generate code using optimized SIMD instructions (possible values are `generic`
+  and `avx2`, by increasing order of optimization),
 - BLAS-related options:
   - `-DBLA_VENDOR=Intel10_64_dyn -DMKL_LIBRARIES=/path/to/mkl/libs` to use the
   Intel MKL BLAS implementation, which is significantly faster than OpenBLAS

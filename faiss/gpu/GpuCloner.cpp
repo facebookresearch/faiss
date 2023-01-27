@@ -116,12 +116,10 @@ ToGpuCloner::ToGpuCloner(
         : GpuClonerOptions(options), provider(prov), device(device) {}
 
 Index* ToGpuCloner::clone_Index(const Index* index) {
-    using idx_t = Index::idx_t;
     if (auto ifl = dynamic_cast<const IndexFlat*>(index)) {
         GpuIndexFlatConfig config;
         config.device = device;
         config.useFloat16 = useFloat16;
-        config.storeTransposed = storeTransposed;
         return new GpuIndexFlat(provider, ifl, config);
     } else if (
             dynamic_cast<const IndexScalarQuantizer*>(index) &&
@@ -147,7 +145,6 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.flatConfig.storeTransposed = storeTransposed;
 
         GpuIndexIVFFlat* res = new GpuIndexIVFFlat(
                 provider, ifl->d, ifl->nlist, ifl->metric_type, config);
@@ -164,7 +161,6 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.flatConfig.storeTransposed = storeTransposed;
 
         GpuIndexIVFScalarQuantizer* res = new GpuIndexIVFScalarQuantizer(
                 provider,
@@ -195,7 +191,6 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         config.indicesOptions = indicesOptions;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.flatConfig.storeTransposed = storeTransposed;
         config.useFloat16LookupTables = useFloat16;
         config.usePrecomputedTables = usePrecomputed;
 
@@ -253,12 +248,14 @@ void ToGpuClonerMultiple::copy_ivf_shard(
 
         if (verbose)
             printf("IndexShards shard %ld indices %ld:%ld\n", i, i0, i1);
-        index_ivf->copy_subset_to(*idx2, 2, i0, i1);
+        index_ivf->copy_subset_to(
+                *idx2, InvertedLists::SUBSET_TYPE_ID_RANGE, i0, i1);
         FAISS_ASSERT(idx2->ntotal == i1 - i0);
     } else if (shard_type == 1) {
         if (verbose)
             printf("IndexShards shard %ld select modulo %ld = %ld\n", i, n, i);
-        index_ivf->copy_subset_to(*idx2, 1, n, i);
+        index_ivf->copy_subset_to(
+                *idx2, InvertedLists::SUBSET_TYPE_ID_MOD, n, i);
     } else {
         FAISS_THROW_FMT("shard_type %d not implemented", shard_type);
     }

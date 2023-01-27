@@ -111,7 +111,8 @@ void Index2Layer::search(
         const float* /*x*/,
         idx_t /*k*/,
         float* /*distances*/,
-        idx_t* /*labels*/) const {
+        idx_t* /*labels*/,
+        const SearchParameters* /* params */) const {
     FAISS_THROW_MSG("not implemented");
 }
 
@@ -282,10 +283,13 @@ DistanceComputer* Index2Layer::get_distance_computer() const {
 
 /* The standalone codec interface */
 
+// block size used in Index2Layer::sa_encode
+int index2layer_sa_encode_bs = 32768;
+
 void Index2Layer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
 
-    idx_t bs = 32768;
+    idx_t bs = index2layer_sa_encode_bs;
     if (n > bs) {
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
