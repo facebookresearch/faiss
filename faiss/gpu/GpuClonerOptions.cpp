@@ -10,17 +10,9 @@
 namespace faiss {
 namespace gpu {
 
-GpuClonerOptions::GpuClonerOptions()
-        : indicesOptions(INDICES_64_BIT),
-          useFloat16CoarseQuantizer(false),
-          useFloat16(false),
-          usePrecomputed(false),
-          reserveVecs(0),
-          storeTransposed(false),
-          verbose(false) {}
+GpuClonerOptions::GpuClonerOptions() {}
 
-GpuMultipleClonerOptions::GpuMultipleClonerOptions()
-        : shard(false), shard_type(1) {}
+GpuMultipleClonerOptions::GpuMultipleClonerOptions() {}
 
 } // namespace gpu
 } // namespace faiss

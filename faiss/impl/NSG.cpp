@@ -138,9 +138,6 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
 NSG::NSG(int R) : R(R), rng(0x0903) {
     L = R + 32;
     C = R + 100;
-    search_L = 16;
-    ntotal = 0;
-    is_built = false;
     srand(0x1998);
 }
 
