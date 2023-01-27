@@ -423,6 +423,13 @@ struct InvertedListScanner {
             float radius,
             RangeQueryResult& result) const;
 
+    virtual size_t iterate_codes(
+            InvertedListsIterator* iterator,
+            size_t& n,
+            float* distances,
+            idx_t* labels,
+            size_t k) const;
+
     virtual ~InvertedListScanner() {}
 };
 
