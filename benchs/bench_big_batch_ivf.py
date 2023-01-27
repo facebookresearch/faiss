@@ -70,7 +70,7 @@ if args.factory_string == "":
 else:
     factory_string = args.factory_string
 
-print(f"instanciate {factory_string}")
+print(f"instantiate {factory_string}")
 index = faiss.index_factory(ds.d, factory_string)
 
 if args.factory_string != "":

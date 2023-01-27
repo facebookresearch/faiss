@@ -10,11 +10,13 @@
 #include <faiss/IndexIVF.h>
 
 #include <omp.h>
+#include <cstdint>
 #include <mutex>
 
 #include <algorithm>
 #include <cinttypes>
 #include <cstdio>
+#include <limits>
 #include <memory>
 
 #include <faiss/utils/hamming.h>
@@ -36,27 +38,19 @@ using ScopedCodes = InvertedLists::ScopedCodes;
  ******************************************/
 
 Level1Quantizer::Level1Quantizer(Index* quantizer, size_t nlist)
-        : quantizer(quantizer),
-          nlist(nlist),
-          quantizer_trains_alone(0),
-          own_fields(false),
-          clustering_index(nullptr) {
+        : quantizer(quantizer), nlist(nlist) {
     // here we set a low # iterations because this is typically used
     // for large clusterings (nb this is not used for the MultiIndex,
     // for which quantizer_trains_alone = true)
     cp.niter = 10;
 }
 
-Level1Quantizer::Level1Quantizer()
-        : quantizer(nullptr),
-          nlist(0),
-          quantizer_trains_alone(0),
-          own_fields(false),
-          clustering_index(nullptr) {}
+Level1Quantizer::Level1Quantizer() {}
 
 Level1Quantizer::~Level1Quantizer() {
-    if (own_fields)
+    if (own_fields) {
         delete quantizer;
+    }
 }
 
 void Level1Quantizer::train_q1(
@@ -169,10 +163,7 @@ IndexIVF::IndexIVF(
           Level1Quantizer(quantizer, nlist),
           invlists(new ArrayInvertedLists(nlist, code_size)),
           own_invlists(true),
-          code_size(code_size),
-          nprobe(1),
-          max_codes(0),
-          parallel_mode(0) {
+          code_size(code_size) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
     // Spherical by default if the metric is inner_product
@@ -413,6 +404,7 @@ void IndexIVF::search_preassigned(
     nprobe = std::min((idx_t)nlist, nprobe);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
+    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
     idx_t max_codes = params ? params->max_codes : this->max_codes;
     IDSelector* sel = params ? params->sel : nullptr;
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
@@ -428,6 +420,10 @@ void IndexIVF::search_preassigned(
             !(sel && store_pairs),
             "selector and store_pairs cannot be combined");
 
+    FAISS_THROW_IF_NOT_MSG(
+            !invlists->use_iterator || (max_codes == 0 && store_pairs == false),
+            "iterable inverted lists don't support max_codes and store_pairs");
+
     size_t nlistv = 0, ndis = 0, nheap = 0;
 
     using HeapForIP = CMin<float, idx_t>;
@@ -439,6 +435,14 @@ void IndexIVF::search_preassigned(
 
     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
+
+    FAISS_THROW_IF_NOT_MSG(
+            max_codes == 0 || pmode == 0 || pmode == 3,
+            "max_codes supported only for parallel_mode = 0 or 3");
+
+    if (max_codes == 0) {
+        max_codes = unlimited_list_size;
+    }
 
     bool do_parallel = omp_get_max_threads() >= 2 &&
             (pmode == 0           ? false
@@ -496,7 +500,8 @@ void IndexIVF::search_preassigned(
         auto scan_one_list = [&](idx_t key,
                                  float coarse_dis_i,
                                  float* simi,
-                                 idx_t* idxi) {
+                                 idx_t* idxi,
+                                 idx_t list_size_max) {
             if (key < 0) {
                 // not enough centroids for multiprobe
                 return (size_t)0;
@@ -507,10 +512,8 @@ void IndexIVF::search_preassigned(
                     key,
                     nlist);
 
-            size_t list_size = invlists->list_size(key);
-
             // don't waste time on empty lists
-            if (list_size == 0) {
+            if (invlists->is_empty(key)) {
                 return (size_t)0;
             }
 
@@ -519,32 +522,51 @@ void IndexIVF::search_preassigned(
             nlistv++;
 
             try {
-                InvertedLists::ScopedCodes scodes(invlists, key);
-                const uint8_t* codes = scodes.get();
+                if (invlists->use_iterator) {
+                    size_t list_size = 0;
 
-                std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const idx_t* ids = nullptr;
+                    std::unique_ptr<InvertedListsIterator> it(
+                            invlists->get_iterator(key));
 
-                if (!store_pairs) {
-                    sids.reset(new InvertedLists::ScopedIds(invlists, key));
-                    ids = sids->get();
-                }
+                    nheap += scanner->iterate_codes(
+                            it.get(), list_size, simi, idxi, k);
 
-                if (selr) { // IDSelectorRange
-                    // restrict search to a section of the inverted list
-                    size_t jmin, jmax;
-                    selr->find_sorted_ids_bounds(list_size, ids, &jmin, &jmax);
-                    list_size = jmax - jmin;
-                    if (list_size == 0) {
-                        return (size_t)0;
+                    return list_size;
+                } else {
+                    size_t list_size = invlists->list_size(key);
+                    if (list_size > list_size_max) {
+                        list_size = list_size_max;
                     }
-                    codes += jmin * code_size;
-                    ids += jmin;
+
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    const uint8_t* codes = scodes.get();
+
+                    std::unique_ptr<InvertedLists::ScopedIds> sids;
+                    const idx_t* ids = nullptr;
+
+                    if (!store_pairs) {
+                        sids.reset(new InvertedLists::ScopedIds(invlists, key));
+                        ids = sids->get();
+                    }
+
+                    if (selr) { // IDSelectorRange
+                        // restrict search to a section of the inverted list
+                        size_t jmin, jmax;
+                        selr->find_sorted_ids_bounds(
+                                list_size, ids, &jmin, &jmax);
+                        list_size = jmax - jmin;
+                        if (list_size == 0) {
+                            return (size_t)0;
+                        }
+                        codes += jmin * code_size;
+                        ids += jmin;
+                    }
+
+                    nheap += scanner->scan_codes(
+                            list_size, codes, ids, simi, idxi, k);
+
+                    return list_size;
                 }
-
-                nheap += scanner->scan_codes(
-                        list_size, codes, ids, simi, idxi, k);
-
             } catch (const std::exception& e) {
                 std::lock_guard<std::mutex> lock(exception_mutex);
                 exception_string =
@@ -552,8 +574,6 @@ void IndexIVF::search_preassigned(
                 interrupt = true;
                 return size_t(0);
             }
-
-            return list_size;
         };
 
         /****************************************************
@@ -582,9 +602,9 @@ void IndexIVF::search_preassigned(
                             keys[i * nprobe + ik],
                             coarse_dis[i * nprobe + ik],
                             simi,
-                            idxi);
-
-                    if (max_codes && nscan >= max_codes) {
+                            idxi,
+                            max_codes - nscan);
+                    if (nscan >= max_codes) {
                         break;
                     }
                 }
@@ -611,7 +631,8 @@ void IndexIVF::search_preassigned(
                             keys[i * nprobe + ik],
                             coarse_dis[i * nprobe + ik],
                             local_dis.data(),
-                            local_idx.data());
+                            local_idx.data(),
+                            unlimited_list_size);
 
                     // can't do the test on max_codes
                 }
@@ -652,7 +673,8 @@ void IndexIVF::search_preassigned(
                         keys[ij],
                         coarse_dis[ij],
                         local_dis.data(),
-                        local_idx.data());
+                        local_idx.data(),
+                        unlimited_list_size);
 #pragma omp critical
                 {
                     add_local_results(
@@ -1109,7 +1131,7 @@ void IndexIVF::replace_invlists(InvertedLists* il, bool own) {
 
 void IndexIVF::copy_subset_to(
         IndexIVF& other,
-        int subset_type,
+        InvertedLists::subset_type_t subset_type,
         idx_t a1,
         idx_t a2) const {
     other.ntotal +=
@@ -1173,6 +1195,39 @@ size_t InvertedListScanner::scan_codes(
                 nup++;
             }
             codes += code_size;
+        }
+    }
+    return nup;
+}
+
+size_t InvertedListScanner::iterate_codes(
+        InvertedListsIterator* it,
+        size_t& n,
+        float* simi,
+        idx_t* idxi,
+        size_t k) const {
+    size_t nup = 0;
+    n = 0;
+
+    if (!keep_max) {
+        while (it->has_next()) {
+            auto id_and_codes = it->next();
+            float dis = distance_to_code(id_and_codes.second);
+            if (dis < simi[0]) {
+                maxheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
+                nup++;
+            }
+            n++;
+        }
+    } else {
+        while (it->has_next()) {
+            auto id_and_codes = it->next();
+            float dis = distance_to_code(id_and_codes.second);
+            if (dis > simi[0]) {
+                minheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
+                nup++;
+            }
+            n++;
         }
     }
     return nup;

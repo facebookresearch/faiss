@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 #include <vector>
 
@@ -29,13 +30,13 @@ struct AdditiveQuantizer : Quantizer {
 
     // derived values
     std::vector<uint64_t> codebook_offsets;
-    size_t tot_bits;            ///< total number of bits (indexes + norms)
-    size_t norm_bits;           ///< bits allocated for the norms
-    size_t total_codebook_size; ///< size of the codebook in vectors
-    bool only_8bit;             ///< are all nbits = 8 (use faster decoder)
+    size_t tot_bits = 0;            ///< total number of bits (indexes + norms)
+    size_t norm_bits = 0;           ///< bits allocated for the norms
+    size_t total_codebook_size = 0; ///< size of the codebook in vectors
+    bool only_8bit = false;         ///< are all nbits = 8 (use faster decoder)
 
-    bool verbose;    ///< verbose during training?
-    bool is_trained; ///< is trained or not
+    bool verbose = false;    ///< verbose during training?
+    bool is_trained = false; ///< is trained or not
 
     IndexFlat1D qnorm;            ///< store and search norms
     std::vector<float> norm_tabs; ///< store norms of codebook entries for 4-bit
@@ -43,7 +44,7 @@ struct AdditiveQuantizer : Quantizer {
 
     /// norms and distance matrixes with beam search can get large, so use this
     /// to control for the amount of memory that can be allocated
-    size_t max_mem_distances;
+    size_t max_mem_distances = 5 * (size_t(1) << 30);
 
     /// encode a norm into norm_bits bits
     uint64_t encode_norm(float norm) const;
@@ -145,7 +146,7 @@ struct AdditiveQuantizer : Quantizer {
     Search_type_t search_type;
 
     /// min/max for quantization of norms
-    float norm_min, norm_max;
+    float norm_min = NAN, norm_max = NAN;
 
     template <bool is_IP, Search_type_t effective_search_type>
     float compute_1_distance_LUT(const uint8_t* codes, const float* LUT) const;
