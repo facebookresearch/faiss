@@ -305,7 +305,8 @@ class TestAllPairwiseDistance(unittest.TestCase):
             faiss.METRIC_Linf,
             faiss.METRIC_Canberra,
             faiss.METRIC_BrayCurtis,
-            faiss.METRIC_JensenShannon
+            faiss.METRIC_JensenShannon,
+            faiss.METRIC_Jaccard
         ]
 
         for metric in metrics:

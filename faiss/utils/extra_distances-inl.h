@@ -123,7 +123,7 @@ inline float VectorDistance<METRIC_Jaccard>::operator()(
         accu_num += fmin(x[i], y[i]);
         accu_den += fmax(x[i], y[i]);
     }
-    return accu_num / accu_den;
+    return 1 - (accu_num / accu_den);
 }
 
 } // namespace faiss
