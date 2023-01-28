@@ -114,4 +114,16 @@ inline float VectorDistance<METRIC_JensenShannon>::operator()(
     return 0.5 * accu;
 }
 
+template <>
+inline float VectorDistance<METRIC_Jaccard>::operator()(
+        const float* x,
+        const float* y) const {
+    float accu_num = 0, accu_den = 0;
+    for (size_t i = 0; i < d; i++) {
+        accu_num += fmin(x[i], y[i]);
+        accu_den += fmax(x[i], y[i]);
+    }
+    return accu_num / accu_den;
+}
+
 } // namespace faiss
