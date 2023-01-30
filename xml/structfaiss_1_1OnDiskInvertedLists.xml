@@ -969,7 +969,7 @@
     </briefdescription>
     <detaileddescription>
 <para>On-disk storage of inverted lists.</para>
-<para>The data is stored in a mmapped chunk of memory (base ptointer ptr, size totsize). Each list is a range of memory that contains (object List) that contains:</para>
+<para>The data is stored in a mmapped chunk of memory (base pointer ptr, size totsize). Each list is a range of memory that contains (object List) that contains:</para>
 <para><itemizedlist>
 <listitem><para>uint8_t codes[capacity * code_size]</para>
 </listitem><listitem><para>followed by idx_t ids[capacity]</para>

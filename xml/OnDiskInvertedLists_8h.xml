@@ -242,7 +242,7 @@
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="32"><highlight class="comment">/**<sp/>On-disk<sp/>storage<sp/>of<sp/>inverted<sp/>lists.</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>The<sp/>data<sp/>is<sp/>stored<sp/>in<sp/>a<sp/>mmapped<sp/>chunk<sp/>of<sp/>memory<sp/>(base<sp/>ptointer<sp/>ptr,</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>The<sp/>data<sp/>is<sp/>stored<sp/>in<sp/>a<sp/>mmapped<sp/>chunk<sp/>of<sp/>memory<sp/>(base<sp/>pointer<sp/>ptr,</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*<sp/>size<sp/>totsize).<sp/>Each<sp/>list<sp/>is<sp/>a<sp/>range<sp/>of<sp/>memory<sp/>that<sp/>contains<sp/>(object</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*<sp/>List)<sp/>that<sp/>contains:</highlight></codeline>
 <codeline lineno="37"><highlight class="comment"><sp/>*</highlight></codeline>
