@@ -264,7 +264,7 @@ struct JaccardDistance {
     }
 
     __host__ __device__ float reduce() {
-        return 1 - (numerator / denominator);
+        return numerator / denominator;
     }
 
     __host__ __device__ void combine(const JaccardDistance& v) {

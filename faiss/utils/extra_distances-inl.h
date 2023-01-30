@@ -118,12 +118,14 @@ template <>
 inline float VectorDistance<METRIC_Jaccard>::operator()(
         const float* x,
         const float* y) const {
+    // WARNING: this distance is defined only for positive input vectors. 
+    // Providing vectors with negative values would lead to incorrect results.
     float accu_num = 0, accu_den = 0;
     for (size_t i = 0; i < d; i++) {
         accu_num += fmin(x[i], y[i]);
         accu_den += fmax(x[i], y[i]);
     }
-    return 1 - (accu_num / accu_den);
+    return accu_num / accu_den;
 }
 
 } // namespace faiss
