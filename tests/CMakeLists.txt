@@ -24,6 +24,7 @@ set(FAISS_TEST_SRC
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
   test_approx_topk.cpp
+  test_RCQ_cropping.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
