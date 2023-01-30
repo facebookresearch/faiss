@@ -386,7 +386,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19OnDiskInvertedListsE">
 <span id="_CPPv3N5faiss19OnDiskInvertedListsE"></span><span id="_CPPv2N5faiss19OnDiskInvertedListsE"></span><span id="faiss::OnDiskInvertedLists"></span><span class="target" id="structfaiss_1_1OnDiskInvertedLists"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnDiskInvertedLists</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/InvertedLists_8h.html#_CPPv4N5faiss13InvertedListsE" title="faiss::InvertedLists"><span class="n"><span class="pre">InvertedLists</span></span></a><br /></dt>
 <dd><p>On-disk storage of inverted lists.</p>
-<p>The data is stored in a mmapped chunk of memory (base ptointer ptr, size totsize). Each list is a range of memory that contains (object List) that contains:</p>
+<p>The data is stored in a mmapped chunk of memory (base pointer ptr, size totsize). Each list is a range of memory that contains (object List) that contains:</p>
 <p><ul class="simple">
 <li><p>uint8_t codes[capacity * code_size]</p></li>
 <li><p>followed by idx_t ids[capacity]</p></li>
