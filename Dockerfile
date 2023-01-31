@@ -13,7 +13,7 @@ ENV LD_PRELOAD /usr/lib64/libgomp.so.1:/opt/intel/mkl/lib/intel64/libmkl_def.so:
 # Install necessary build tools
 RUN yum install -y gcc-c++ make swig3
 
-# Install necesary headers/libs
+# Install necessary headers/libs
 RUN yum install -y python-devel numpy
 
 COPY . /opt/faiss

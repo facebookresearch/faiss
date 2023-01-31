@@ -45,22 +45,21 @@ struct IcmEncoderFactory;
 struct LocalSearchQuantizer : AdditiveQuantizer {
     size_t K; ///< number of codes per codebook
 
-    size_t train_iters; ///< number of iterations in training
+    size_t train_iters = 25;      ///< number of iterations in training
+    size_t encode_ils_iters = 16; ///< iterations of local search in encoding
+    size_t train_ils_iters = 8;   ///< iterations of local search in training
+    size_t icm_iters = 4;         ///< number of iterations in icm
 
-    size_t encode_ils_iters; ///< iterations of local search in encoding
-    size_t train_ils_iters;  ///< iterations of local search in training
-    size_t icm_iters;        ///< number of iterations in icm
+    float p = 0.5f;      ///< temperature factor
+    float lambd = 1e-2f; ///< regularization factor
 
-    float p;     ///< temperature factor
-    float lambd; ///< regularization factor
+    size_t chunk_size = 10000; ///< nb of vectors to encode at a time
 
-    size_t chunk_size; ///< nb of vectors to encode at a time
+    int random_seed = 0x12345; ///< seed for random generator
+    size_t nperts = 4;         ///< number of perturbation in each code
 
-    int random_seed; ///< seed for random generator
-    size_t nperts;   ///< number of perturbation in each code
-
-    ///< if non-NULL, use this encoder to encode
-    lsq::IcmEncoderFactory* icm_encoder_factory;
+    ///< if non-NULL, use this encoder to encode (owned by the object)
+    lsq::IcmEncoderFactory* icm_encoder_factory = nullptr;
 
     bool update_codebooks_with_double = true;
 

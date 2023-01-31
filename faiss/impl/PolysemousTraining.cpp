@@ -35,19 +35,6 @@ namespace faiss {
  * Optimization code
  ****************************************************/
 
-SimulatedAnnealingParameters::SimulatedAnnealingParameters() {
-    // set some reasonable defaults for the optimization
-    init_temperature = 0.7;
-    temperature_decay = pow(0.9, 1 / 500.);
-    // reduce by a factor 0.9 every 500 it
-    n_iter = 500000;
-    n_redo = 2;
-    seed = 123;
-    verbose = 0;
-    only_bit_flips = false;
-    init_random = false;
-}
-
 // what would the cost update be if iw and jw were swapped?
 // default implementation just computes both and computes the difference
 double PermutationObjective::cost_update(const int* perm, int iw, int jw)
