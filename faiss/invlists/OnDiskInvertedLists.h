@@ -31,7 +31,7 @@ struct OnDiskOneList {
 
 /** On-disk storage of inverted lists.
  *
- * The data is stored in a mmapped chunk of memory (base ptointer ptr,
+ * The data is stored in a mmapped chunk of memory (base pointer ptr,
  * size totsize). Each list is a range of memory that contains (object
  * List) that contains:
  *
