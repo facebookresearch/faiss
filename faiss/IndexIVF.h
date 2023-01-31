@@ -412,6 +412,14 @@ struct InvertedListScanner {
             idx_t* labels,
             size_t k) const;
 
+    // same as scan_codes, using an iterator
+    virtual size_t iterate_codes(
+            InvertedListsIterator* iterator,
+            float* distances,
+            idx_t* labels,
+            size_t k,
+            size_t& list_size) const;
+
     /** scan a set of codes, compute distances to current query and
      * update results if distances are below radius
      *
@@ -423,12 +431,12 @@ struct InvertedListScanner {
             float radius,
             RangeQueryResult& result) const;
 
-    virtual size_t iterate_codes(
+    // same as scan_codes_range, using an iterator
+    virtual void iterate_codes_range(
             InvertedListsIterator* iterator,
-            size_t& n,
-            float* distances,
-            idx_t* labels,
-            size_t k) const;
+            float radius,
+            RangeQueryResult& result,
+            size_t& list_size) const;
 
     virtual ~InvertedListScanner() {}
 };

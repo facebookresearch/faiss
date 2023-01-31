@@ -31,7 +31,7 @@ InvertedLists::~InvertedLists() {}
 bool InvertedLists::is_empty(size_t list_no) const {
     return use_iterator
             ? !std::unique_ptr<InvertedListsIterator>(get_iterator(list_no))
-                       ->has_next()
+                       ->is_available()
             : list_size(list_no) == 0;
 }
 
