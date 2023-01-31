@@ -5141,8 +5141,9 @@
     <member refid="structfaiss_1_1InvertedListScanner_1ae801ea7ba0086a05ace3b779c3acf305" kind="function"><name>set_list</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1ade9518f1b0ee00c2a43a2eb2ae350ae1" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1ab50ad33ecf0080ca218b27aa2698329e" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
-    <member refid="structfaiss_1_1InvertedListScanner_1abb1a1baee10f776ac85a84fa86df53ec" kind="function"><name>iterate_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" kind="function"><name>iterate_codes_range</name></member>
     <member refid="structfaiss_1_1InvertedListScanner_1aa660ce2637299466c486080f44fd9820" kind="function"><name>~InvertedListScanner</name></member>
   </compound>
   <compound refid="structfaiss_1_1InvertedListsIOHook" kind="struct"><name>faiss::InvertedListsIOHook</name>
@@ -5160,8 +5161,9 @@
   </compound>
   <compound refid="structfaiss_1_1InvertedListsIterator" kind="struct"><name>faiss::InvertedListsIterator</name>
     <member refid="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" kind="function"><name>~InvertedListsIterator</name></member>
-    <member refid="structfaiss_1_1InvertedListsIterator_1aae129b51e4a2f896822d410b34ba9746" kind="function"><name>has_next</name></member>
-    <member refid="structfaiss_1_1InvertedListsIterator_1ad778e8ce2064fdf97081d34e4327907d" kind="function"><name>next</name></member>
+    <member refid="structfaiss_1_1InvertedListsIterator_1afd70a0c999749b2192ab8b4cbdf3e829" kind="function"><name>is_available</name></member>
+    <member refid="structfaiss_1_1InvertedListsIterator_1a9173654909e52fb7336f13820dab045e" kind="function"><name>next</name></member>
+    <member refid="structfaiss_1_1InvertedListsIterator_1a03a5ff7f48b942fa98124047e4e93947" kind="function"><name>get_id_and_codes</name></member>
   </compound>
   <compound refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kind="struct"><name>faiss::detail::simdlib::is_simd256bit</name>
   </compound>
