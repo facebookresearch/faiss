@@ -115,7 +115,6 @@ class GpuIndexFlat : public GpuIndex {
     }
 
    protected:
-
     void resetIndex_(int dims);
 
     /// Flat index does not require IDs as there is no storage available for

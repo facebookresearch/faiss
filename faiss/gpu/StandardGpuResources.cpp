@@ -379,7 +379,7 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     return defaultStreams_[device];
 }
 
-raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) {
+raft::handle_t& StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
 
     auto it = raftHandles_.find(device);
@@ -390,7 +390,6 @@ raft::handle_t &StandardGpuResourcesImpl::getRaftHandle(int device) {
 
     // Otherwise, our base default handle
     return raftHandles_[device];
-
 }
 
 std::vector<cudaStream_t> StandardGpuResourcesImpl::getAlternateStreams(
@@ -618,7 +617,7 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
 
- raft::handle_t &StandardGpuResources::getRaftHandle(int device) {
+raft::handle_t& StandardGpuResources::getRaftHandle(int device) {
     return res_->getRaftHandle(device);
 }
 

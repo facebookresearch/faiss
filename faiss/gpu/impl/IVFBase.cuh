@@ -65,7 +65,8 @@ class IVFBase {
     virtual std::vector<idx_t> getListIndices(int listId) const;
 
     /// Return the encoded vectors of a particular list back to the CPU
-    virtual std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat) const;
+    virtual std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat)
+            const;
 
     /// Copy all inverted lists from a CPU representation to ourselves
     virtual void copyInvertedListsFrom(const InvertedLists* ivf);

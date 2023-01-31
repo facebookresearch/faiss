@@ -390,8 +390,8 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 //    gpuListSizeInBytes << std::endl;
 //
 ////
-///RAFT_CUDA_TRY(cudaMemcpyAsync(raft_knn_index.value().data().data_handle()+(),
-///translatedCodes.data(), ))
+/// RAFT_CUDA_TRY(cudaMemcpyAsync(raft_knn_index.value().data().data_handle()+(),
+/// translatedCodes.data(), ))
 //
 ////    listCodes->data.append(
 ////            translatedCodes.data(),

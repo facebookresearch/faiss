@@ -463,10 +463,10 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
     }
 
-    if(config_.use_raft) {
-
+    if (config_.use_raft) {
         printf("Using raft to train quantizer for %d vectors\n", n);
-        const raft::handle_t &raft_handle = resources_->getRaftHandleCurrentDevice();
+        const raft::handle_t& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
 
         raft::neighbors::ivf_flat::index_params raft_idx_params;
         raft_idx_params.n_lists = nlist;
@@ -475,7 +475,7 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         raft_idx_params.kmeans_n_iters = 100;
 
         auto raft_index = raft::neighbors::ivf_flat::build(
-            raft_handle, raft_idx_params, x, n, (idx_t)d);
+                raft_handle, raft_idx_params, x, n, (idx_t)d);
 
         raft_handle.sync_stream();
 

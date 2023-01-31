@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <raft/core/cudart_utils.hpp>
-#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <raft/core/cudart_utils.hpp>
 #include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/IVFFlat.cuh>
+#include <faiss/gpu/impl/RaftIVFFlat.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
@@ -74,7 +74,8 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
 
     if (this->is_trained) {
         FAISS_ASSERT(this->quantizer);
-        set_index_(resources_.get(),
+        set_index_(
+                resources_.get(),
                 this->d,
                 this->nlist,
                 this->metric_type,
@@ -91,26 +92,43 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
 
 GpuIndexIVFFlat::~GpuIndexIVFFlat() {}
 
-void GpuIndexIVFFlat::set_index_(GpuResources* resources,
-                                int dim,
-                                int nlist,
-                                faiss::MetricType metric,
-                                float metricArg,
-                                bool useResidual,
-                                /// Optional ScalarQuantizer
-                                faiss::ScalarQuantizer* scalarQ,
-                                bool interleavedLayout,
-                                IndicesOptions indicesOptions,
-                                MemorySpace space) {
-    if(config_.use_raft) {
+void GpuIndexIVFFlat::set_index_(
+        GpuResources* resources,
+        int dim,
+        int nlist,
+        faiss::MetricType metric,
+        float metricArg,
+        bool useResidual,
+        /// Optional ScalarQuantizer
+        faiss::ScalarQuantizer* scalarQ,
+        bool interleavedLayout,
+        IndicesOptions indicesOptions,
+        MemorySpace space) {
+    if (config_.use_raft) {
         printf("Setting RaftIVFFlat index\n");
         index_.reset(new RaftIVFFlat(
-                resources, dim, nlist, metric, metricArg, useResidual,
-                scalarQ, interleavedLayout, indicesOptions, space));
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
     } else {
         index_.reset(new IVFFlat(
-                resources, dim, nlist, metric, metricArg, useResidual,
-                scalarQ, interleavedLayout, indicesOptions, space));
+                resources,
+                dim,
+                nlist,
+                metric,
+                metricArg,
+                useResidual,
+                scalarQ,
+                interleavedLayout,
+                indicesOptions,
+                space));
     }
 
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
@@ -127,7 +145,6 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 }
 
 void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-
     printf("Inside copyFrom\n");
     DeviceScope scope(config_.device);
 
@@ -148,7 +165,8 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
     FAISS_ASSERT(is_trained);
 
     // Copy our lists as well
-    set_index_(resources_.get(),
+    set_index_(
+            resources_.get(),
             d,
             nlist,
             index->metric_type,
@@ -159,12 +177,13 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
 
-    if(config_.use_raft) {
+    if (config_.use_raft) {
+        printf("Reconstructing %d original vectors and adding to GPU index\n",
+               ntotal);
 
-        printf("Reconstructing %d original vectors and adding to GPU index\n", ntotal);
-
-        // Quantizer should already have been updated above. Add reconstructed vectors to raft index
-        if(ntotal > 0) {
+        // Quantizer should already have been updated above. Add reconstructed
+        // vectors to raft index
+        if (ntotal > 0) {
             std::vector<float> buf_host(ntotal * d);
             std::vector<idx_t> ids(ntotal);
             std::iota(ids.begin(), ids.end(), 0);
@@ -172,7 +191,6 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             add_with_ids(ntotal, buf_host.data(), ids.data());
         }
     } else {
-
         // Copy all of the IVF data
         printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
         index_->copyInvertedListsFrom(index->invlists);
@@ -251,7 +269,8 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     FAISS_ASSERT(!index_);
 
     // FIXME: GPUize more of this
-    // First, make sure that the data is resident on the CPU, if it is not on the CPU, as we depend upon parts of the CPU code
+    // First, make sure that the data is resident on the CPU, if it is not on
+    // the CPU, as we depend upon parts of the CPU code
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
@@ -260,18 +279,19 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     trainQuantizer_(n, hostData.data());
 
     // The quantizer is now trained; construct the IVF index
-    set_index_(resources_.get(),
-              this->d,
-              this->nlist,
-              this->metric_type,
-              this->metric_arg,
-              false,   // no residual
-              nullptr, // no scalar quantizer
-              ivfFlatConfig_.interleavedLayout,
-              ivfFlatConfig_.indicesOptions,
-              config_.memorySpace);
+    set_index_(
+            resources_.get(),
+            this->d,
+            this->nlist,
+            this->metric_type,
+            this->metric_arg,
+            false,   // no residual
+            nullptr, // no scalar quantizer
+            ivfFlatConfig_.interleavedLayout,
+            ivfFlatConfig_.indicesOptions,
+            config_.memorySpace);
 
-     if (reserveMemoryVecs_) {
+    if (reserveMemoryVecs_) {
         index_->reserveMemory(reserveMemoryVecs_);
     }
 
