@@ -86,8 +86,9 @@ class GpuIndexIVF : public GpuIndex {
     /// GPU-side representation.
     /// Otherwise, it is converted to the CPU format.
     /// compliant format, while the native GPU format may differ.
-    virtual std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
-            const;
+    virtual std::vector<uint8_t> getListVectorData(
+            int listId,
+            bool gpuFormat = false) const;
 
     /// Return the vector indices contained in a particular inverted list, for
     /// debugging purposes.

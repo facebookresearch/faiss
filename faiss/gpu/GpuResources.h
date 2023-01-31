@@ -194,8 +194,8 @@ class GpuResources {
 
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    virtual raft::handle_t &getRaftHandle(int device) = 0;
-    raft::handle_t &getRaftHandleCurrentDevice();
+    virtual raft::handle_t& getRaftHandle(int device) = 0;
+    raft::handle_t& getRaftHandleCurrentDevice();
 
     /// Overrides the default stream for a device to the user-supplied stream.
     /// The resources object does not own this stream (i.e., it will not destroy

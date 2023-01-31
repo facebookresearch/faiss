@@ -89,8 +89,7 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-
-    if(config_.use_raft) {
+    if (config_.use_raft) {
         printf("Should use raft!\n");
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
@@ -107,7 +106,6 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 config_.memorySpace));
     }
 }
-
 
 void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
     DeviceScope scope(config_.device);

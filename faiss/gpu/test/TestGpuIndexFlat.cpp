@@ -266,7 +266,7 @@ TEST(TestGpuIndexFlat, CopyFrom) {
     for (bool useFloat16 : {false, true}) {
         faiss::gpu::GpuIndexFlatConfig config;
         config.device = device;
-	config.use_raft = true;
+        config.use_raft = true;
         config.useFloat16 = useFloat16;
 
         // Fill with garbage values
@@ -309,7 +309,7 @@ TEST(TestGpuIndexFlat, CopyTo) {
     for (bool useFloat16 : {false, true}) {
         faiss::gpu::GpuIndexFlatConfig config;
         config.device = device;
-	config.use_raft = true;
+        config.use_raft = true;
         config.useFloat16 = useFloat16;
 
         faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);

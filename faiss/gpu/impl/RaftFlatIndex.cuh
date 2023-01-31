@@ -25,7 +25,11 @@ class GpuResources;
 /// data is possibly needed for certain residual operations
 class RaftFlatIndex : public FlatIndex {
    public:
-    RaftFlatIndex(GpuResources* res, int dim, bool useFloat16, MemorySpace space);
+    RaftFlatIndex(
+            GpuResources* res,
+            int dim,
+            bool useFloat16,
+            MemorySpace space);
 
     void query(
             Tensor<float, 2, true>& vecs,
@@ -35,7 +39,6 @@ class RaftFlatIndex : public FlatIndex {
             Tensor<float, 2, true>& outDistances,
             Tensor<int, 2, true>& outIndices,
             bool exactDistance) override;
-
 };
 
 } // namespace gpu
