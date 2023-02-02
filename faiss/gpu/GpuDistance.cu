@@ -111,9 +111,39 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 args.metricArg,
                 tOutDistances);
     } else if (args.outIndicesType == IndicesDataType::I64) {
-        // The brute-force API only supports an interface for i32 indices only,
-        // so we must create an output i32 buffer then convert back
-        DeviceTensor<int, 2, true> tOutIntIndices(
+        auto tOutIndices = toDeviceTemporary<idx_t, 2>(
+                res,
+                device,
+                (idx_t*)args.outIndices,
+                stream,
+                {args.numQueries, args.k});
+
+        // Since we've guaranteed that all arguments are on device, call the
+        // implementation
+        bfKnnOnDevice<T>(
+                res,
+                device,
+                stream,
+                tVectors,
+                args.vectorsRowMajor,
+                args.vectorNorms ? &tVectorNorms : nullptr,
+                tQueries,
+                args.queriesRowMajor,
+                args.k,
+                args.metric,
+                args.metricArg,
+                tOutDistances,
+                tOutIndices,
+                args.ignoreOutDistances);
+
+        fromDevice<idx_t, 2>(tOutIndices, (idx_t*)args.outIndices, stream);
+
+    } else if (args.outIndicesType == IndicesDataType::I32) {
+        // The brute-force API supports i64 indices, but our output buffer is
+        // i32 so we need to temporarily allocate and then convert back to i32
+        // FIXME: convert to int32_t everywhere?
+        static_assert(sizeof(int) == 4, "");
+        DeviceTensor<idx_t, 2, true> tIntIndices(
                 res,
                 makeTempAlloc(AllocType::Other, stream),
                 {args.numQueries, args.k});
@@ -133,28 +163,10 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 args.metric,
                 args.metricArg,
                 tOutDistances,
-                tOutIntIndices,
+                tIntIndices,
                 args.ignoreOutDistances);
 
         // Convert and copy int indices out
-        auto tOutIndices = toDeviceTemporary<idx_t, 2>(
-                res,
-                device,
-                (idx_t*)args.outIndices,
-                stream,
-                {args.numQueries, args.k});
-
-        // Convert int to idx_t
-        convertTensor<int, idx_t, 2>(stream, tOutIntIndices, tOutIndices);
-
-        // Copy back if necessary
-        fromDevice<idx_t, 2>(tOutIndices, (idx_t*)args.outIndices, stream);
-
-    } else if (args.outIndicesType == IndicesDataType::I32) {
-        // We can use the brute-force API directly, as it takes i32 indices
-        // FIXME: convert to int32_t everywhere?
-        static_assert(sizeof(int) == 4, "");
-
         auto tOutIntIndices = toDeviceTemporary<int, 2>(
                 res,
                 device,
@@ -162,23 +174,7 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 stream,
                 {args.numQueries, args.k});
 
-        // Since we've guaranteed that all arguments are on device, call the
-        // implementation
-        bfKnnOnDevice<T>(
-                res,
-                device,
-                stream,
-                tVectors,
-                args.vectorsRowMajor,
-                args.vectorNorms ? &tVectorNorms : nullptr,
-                tQueries,
-                args.queriesRowMajor,
-                args.k,
-                args.metric,
-                args.metricArg,
-                tOutDistances,
-                tOutIntIndices,
-                args.ignoreOutDistances);
+        convertTensor<idx_t, int, 2>(stream, tIntIndices, tOutIntIndices);
 
         // Copy back if necessary
         fromDevice<int, 2>(tOutIntIndices, (int*)args.outIndices, stream);
@@ -214,12 +210,12 @@ void bruteForceKnn(
         // innermost
         const float* vectors,
         bool vectorsRowMajor,
-        int numVectors,
+        idx_t numVectors,
         // A region of memory size numQueries x dims, with dims
         // innermost
         const float* queries,
         bool queriesRowMajor,
-        int numQueries,
+        idx_t numQueries,
         int dims,
         int k,
         // A region of memory size numQueries x k, with k

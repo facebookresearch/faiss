@@ -80,7 +80,7 @@ void GpuParameterSpace::set_index_parameter(
     }
     if (name == "nprobe") {
         if (DC(GpuIndexIVF)) {
-            ix->setNumProbes(int(val));
+            ix->nprobe = size_t(val);
             return;
         }
     }

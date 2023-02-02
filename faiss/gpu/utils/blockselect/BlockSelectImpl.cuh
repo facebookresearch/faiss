@@ -14,16 +14,16 @@
     extern void runBlockSelect_##TYPE##_##DIR##_##WARP_Q##_(     \
             Tensor<TYPE, 2, true>& in,                           \
             Tensor<TYPE, 2, true>& outK,                         \
-            Tensor<int, 2, true>& outV,                          \
+            Tensor<idx_t, 2, true>& outV,                        \
             bool dir,                                            \
             int k,                                               \
             cudaStream_t stream);                                \
                                                                  \
     extern void runBlockSelectPair_##TYPE##_##DIR##_##WARP_Q##_( \
             Tensor<TYPE, 2, true>& inK,                          \
-            Tensor<int, 2, true>& inV,                           \
+            Tensor<idx_t, 2, true>& inV,                         \
             Tensor<TYPE, 2, true>& outK,                         \
-            Tensor<int, 2, true>& outV,                          \
+            Tensor<idx_t, 2, true>& outV,                        \
             bool dir,                                            \
             int k,                                               \
             cudaStream_t stream)
@@ -32,7 +32,7 @@
     void runBlockSelect_##TYPE##_##DIR##_##WARP_Q##_(                          \
             Tensor<TYPE, 2, true>& in,                                         \
             Tensor<TYPE, 2, true>& outK,                                       \
-            Tensor<int, 2, true>& outV,                                        \
+            Tensor<idx_t, 2, true>& outV,                                      \
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
@@ -52,16 +52,22 @@
         auto kInit = dir ? Limits<TYPE>::getMin() : Limits<TYPE>::getMax();    \
         auto vInit = -1;                                                       \
                                                                                \
-        blockSelect<TYPE, int, DIR, WARP_Q, THREAD_Q, kBlockSelectNumThreads>  \
+        blockSelect<                                                           \
+                TYPE,                                                          \
+                idx_t,                                                         \
+                DIR,                                                           \
+                WARP_Q,                                                        \
+                THREAD_Q,                                                      \
+                kBlockSelectNumThreads>                                        \
                 <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k); \
         CUDA_TEST_ERROR();                                                     \
     }                                                                          \
                                                                                \
     void runBlockSelectPair_##TYPE##_##DIR##_##WARP_Q##_(                      \
             Tensor<TYPE, 2, true>& inK,                                        \
-            Tensor<int, 2, true>& inV,                                         \
+            Tensor<idx_t, 2, true>& inV,                                       \
             Tensor<TYPE, 2, true>& outK,                                       \
-            Tensor<int, 2, true>& outV,                                        \
+            Tensor<idx_t, 2, true>& outV,                                      \
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
@@ -81,7 +87,7 @@
                                                                                \
         blockSelectPair<                                                       \
                 TYPE,                                                          \
-                int,                                                           \
+                idx_t,                                                         \
                 DIR,                                                           \
                 WARP_Q,                                                        \
                 THREAD_Q,                                                      \

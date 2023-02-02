@@ -39,7 +39,7 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
 GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
         GpuResourcesProvider* provider,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::ScalarQuantizer::QuantizerType qtype,
         faiss::MetricType metric,
         bool encodeResidual,
@@ -58,7 +58,7 @@ GpuIndexIVFScalarQuantizer::GpuIndexIVFScalarQuantizer(
         GpuResourcesProvider* provider,
         Index* coarseQuantizer,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::ScalarQuantizer::QuantizerType qtype,
         faiss::MetricType metric,
         bool encodeResidual,
@@ -88,6 +88,26 @@ GpuIndexIVFScalarQuantizer::~GpuIndexIVFScalarQuantizer() {}
 void GpuIndexIVFScalarQuantizer::verifySQSettings_() const {
     FAISS_THROW_IF_NOT_MSG(
             isSQSupported(sq.qtype), "Unsupported scalar QuantizerType on GPU");
+
+    // Check the amount of shared memory per block available based on our type
+    // is sufficient
+    // This check was previously in IVFFlatScan.cu, moved here to apply upon
+    // index construction
+    if (sq.qtype == ScalarQuantizer::QuantizerType::QT_8bit ||
+        sq.qtype == ScalarQuantizer::QuantizerType::QT_4bit) {
+        // There are quantization parameters per each dimension for these SQ
+        // types. These parameters are retained in shared memory for access
+        int maxDim =
+                getMaxSharedMemPerBlock(config_.device) / (sizeof(float) * 2);
+
+        FAISS_THROW_IF_NOT_FMT(
+                this->d < maxDim,
+                "GpuIndexIVFScalarQuantizer: Insufficient shared memory "
+                "available on the GPU for QT_8bit or QT_4bit with %d "
+                "dimensions; maximum dimensions possible is %d",
+                this->d,
+                maxDim);
+    }
 }
 
 void GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
@@ -205,12 +225,6 @@ void GpuIndexIVFScalarQuantizer::trainResiduals_(idx_t n, const float* x) {
 void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
     // just in case someone changed us
     verifySQSettings_();
     verifyIVFSettings_();
@@ -228,7 +242,7 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+            {n, this->d});
 
     trainQuantizer_(n, hostData.data());
     trainResiduals_(n, hostData.data());

@@ -42,7 +42,7 @@ class GpuIndexIVF : public GpuIndex {
             int dims,
             faiss::MetricType metric,
             float metricArg,
-            int nlist,
+            idx_t nlist,
             GpuIndexIVFConfig config = GpuIndexIVFConfig());
 
     /// Version that takes a coarse quantizer instance. The GpuIndexIVF does not
@@ -53,7 +53,7 @@ class GpuIndexIVF : public GpuIndex {
             int dims,
             faiss::MetricType metric,
             float metricArg,
-            int nlist,
+            idx_t nlist,
             GpuIndexIVFConfig config = GpuIndexIVFConfig());
 
     ~GpuIndexIVF() override;
@@ -75,10 +75,10 @@ class GpuIndexIVF : public GpuIndex {
     virtual void updateQuantizer() = 0;
 
     /// Returns the number of inverted lists we're managing
-    int getNumLists() const;
+    idx_t getNumLists() const;
 
     /// Returns the number of vectors present in a particular inverted list
-    int getListLength(int listId) const;
+    idx_t getListLength(idx_t listId) const;
 
     /// Return the encoded vector data contained in a particular inverted list,
     /// for debugging purposes.
@@ -86,18 +86,12 @@ class GpuIndexIVF : public GpuIndex {
     /// GPU-side representation.
     /// Otherwise, it is converted to the CPU format.
     /// compliant format, while the native GPU format may differ.
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat = false)
+    std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat = false)
             const;
 
     /// Return the vector indices contained in a particular inverted list, for
     /// debugging purposes.
-    std::vector<idx_t> getListIndices(int listId) const;
-
-    /// Sets the number of list probes per query
-    void setNumProbes(int nprobe);
-
-    /// Returns our current number of list probes per query
-    int getNumProbes() const;
+    std::vector<idx_t> getListIndices(idx_t listId) const;
 
     /// Same interface as faiss::IndexIVF, in order to search a set of vectors
     /// pre-quantized by the IVF quantizer. Does not include IndexIVFStats as
@@ -117,7 +111,7 @@ class GpuIndexIVF : public GpuIndex {
     void search_preassigned(
             idx_t n,
             const float* x,
-            idx_t k,
+            int k,
             const idx_t* assign,
             const float* centroid_dis,
             float* distances,
@@ -126,16 +120,19 @@ class GpuIndexIVF : public GpuIndex {
             const SearchParametersIVF* params = nullptr) const;
 
    protected:
+    /// From either the current set nprobe or the SearchParameters if available,
+    /// return the nprobe that we should use for the current search
+    int getCurrentNProbe_(const SearchParameters* params) const;
     void verifyIVFSettings_() const;
     bool addImplRequiresIDs_() const override;
     void trainQuantizer_(idx_t n, const float* x);
 
     /// Called from GpuIndex for add/add_with_ids
-    void addImpl_(int n, const float* x, const idx_t* ids) override;
+    void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
-            int n,
+            idx_t n,
             const float* x,
             int k,
             float* distances,
@@ -147,10 +144,11 @@ class GpuIndexIVF : public GpuIndex {
     ClusteringParameters cp;
 
     /// Exposing this like the CPU version for query
-    int nlist;
+    idx_t nlist;
 
     /// Exposing this like the CPU version for manipulation
-    int nprobe;
+    /// FIXME: IndexIVF has size_t for nprobe, not idx_t
+    size_t nprobe;
 
     /// A user-pluggable coarse quantizer
     Index* quantizer;

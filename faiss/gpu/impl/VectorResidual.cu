@@ -18,21 +18,21 @@
 namespace faiss {
 namespace gpu {
 
-template <typename IndexT, typename CentroidT, bool LargeDim>
+template <typename CentroidT, bool LargeDim>
 __global__ void calcResidual(
         Tensor<float, 2, true> vecs,
         Tensor<CentroidT, 2, true> centroids,
-        Tensor<IndexT, 1, true> vecToCentroid,
+        Tensor<idx_t, 1, true> vecToCentroid,
         Tensor<float, 2, true> residuals) {
     auto vec = vecs[blockIdx.x];
     auto residual = residuals[blockIdx.x];
-    IndexT centroidId = vecToCentroid[blockIdx.x];
+    auto centroidId = vecToCentroid[blockIdx.x];
 
     // Vector could be invalid (containing NaNs), so -1 was the
     // classified centroid
     if (centroidId == -1) {
         if (LargeDim) {
-            for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+            for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
                 residual[i] = CUDART_NAN_F;
             }
         } else {
@@ -45,7 +45,7 @@ __global__ void calcResidual(
     auto centroid = centroids[centroidId];
 
     if (LargeDim) {
-        for (int i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
             residual[i] = vec[i] - ConvertTo<float>::to(centroid[i]);
         }
     } else {
@@ -54,11 +54,11 @@ __global__ void calcResidual(
     }
 }
 
-template <typename IndexT, typename CentroidT>
+template <typename CentroidT>
 void calcResidual(
         Tensor<float, 2, true>& vecs,
         Tensor<CentroidT, 2, true>& centroids,
-        Tensor<IndexT, 1, true>& vecToCentroid,
+        Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
     FAISS_ASSERT(vecs.getSize(1) == centroids.getSize(1));
@@ -68,15 +68,15 @@ void calcResidual(
 
     dim3 grid(vecs.getSize(0));
 
-    int maxThreads = getMaxThreadsCurrentDevice();
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
     bool largeDim = vecs.getSize(1) > maxThreads;
     dim3 block(std::min(vecs.getSize(1), maxThreads));
 
     if (largeDim) {
-        calcResidual<IndexT, CentroidT, true><<<grid, block, 0, stream>>>(
+        calcResidual<CentroidT, true><<<grid, block, 0, stream>>>(
                 vecs, centroids, vecToCentroid, residuals);
     } else {
-        calcResidual<IndexT, CentroidT, false><<<grid, block, 0, stream>>>(
+        calcResidual<CentroidT, false><<<grid, block, 0, stream>>>(
                 vecs, centroids, vecToCentroid, residuals);
     }
 
@@ -89,8 +89,7 @@ void runCalcResidual(
         Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
-    calcResidual<idx_t, float>(
-            vecs, centroids, vecToCentroid, residuals, stream);
+    calcResidual<float>(vecs, centroids, vecToCentroid, residuals, stream);
 }
 
 void runCalcResidual(
@@ -99,56 +98,45 @@ void runCalcResidual(
         Tensor<idx_t, 1, true>& vecToCentroid,
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream) {
-    calcResidual<idx_t, half>(
-            vecs, centroids, vecToCentroid, residuals, stream);
+    calcResidual<half>(vecs, centroids, vecToCentroid, residuals, stream);
 }
 
-template <typename IndexT, typename T>
+template <typename T>
 __global__ void gatherReconstructByIds(
-        Tensor<IndexT, 1, true> ids,
+        Tensor<idx_t, 1, true> ids,
         Tensor<T, 2, true> vecs,
         Tensor<float, 2, true> out) {
-    IndexT id = ids[blockIdx.x];
-
-    // FIXME: will update all GPU code shortly to use int64 indexing types, but
-    // this is a minimal change to allow for >= 2^31 elements in a matrix
-    // auto vec = vecs[id];
-    // auto outVec = out[blockIdx.x];
-    auto vec = vecs.data() + id * vecs.getSize(1);
-    auto outVec = out.data() + blockIdx.x * out.getSize(1);
+    auto id = ids[blockIdx.x];
+    auto vec = vecs[id];
+    auto outVec = out[blockIdx.x];
 
     Convert<T, float> conv;
 
-    for (IndexT i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
-        outVec[i] = id == IndexT(-1) ? 0.0f : conv(vec[i]);
+    for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
     }
 }
 
-template <typename IndexT, typename T>
+template <typename T>
 __global__ void gatherReconstructByRange(
-        IndexT start,
-        IndexT num,
+        idx_t start,
+        idx_t num,
         Tensor<T, 2, true> vecs,
         Tensor<float, 2, true> out) {
-    IndexT id = start + blockIdx.x;
-
-    // FIXME: will update all GPU code shortly to use int64 indexing types, but
-    // this is a minimal change to allow for >= 2^31 elements in a matrix
-    // auto vec = vecs[id];
-    // auto outVec = out[blockIdx.x];
-    auto vec = vecs.data() + id * vecs.getSize(1);
-    auto outVec = out.data() + blockIdx.x * out.getSize(1);
+    auto id = start + blockIdx.x;
+    auto vec = vecs[id];
+    auto outVec = out[blockIdx.x];
 
     Convert<T, float> conv;
 
-    for (IndexT i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
-        outVec[i] = id == IndexT(-1) ? 0.0f : conv(vec[i]);
+    for (idx_t i = threadIdx.x; i < vecs.getSize(1); i += blockDim.x) {
+        outVec[i] = id == idx_t(-1) ? 0.0f : conv(vec[i]);
     }
 }
 
-template <typename IndexT, typename T>
+template <typename T>
 void gatherReconstructByIds(
-        Tensor<IndexT, 1, true>& ids,
+        Tensor<idx_t, 1, true>& ids,
         Tensor<T, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
@@ -157,19 +145,18 @@ void gatherReconstructByIds(
 
     dim3 grid(ids.getSize(0));
 
-    int maxThreads = getMaxThreadsCurrentDevice();
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
     dim3 block(std::min(vecs.getSize(1), maxThreads));
 
-    gatherReconstructByIds<IndexT, T>
-            <<<grid, block, 0, stream>>>(ids, vecs, out);
+    gatherReconstructByIds<T><<<grid, block, 0, stream>>>(ids, vecs, out);
 
     CUDA_TEST_ERROR();
 }
 
-template <typename IndexT, typename T>
+template <typename T>
 void gatherReconstructByRange(
-        IndexT start,
-        IndexT num,
+        idx_t start,
+        idx_t num,
         Tensor<T, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
@@ -180,10 +167,10 @@ void gatherReconstructByRange(
 
     dim3 grid(num);
 
-    int maxThreads = getMaxThreadsCurrentDevice();
+    idx_t maxThreads = getMaxThreadsCurrentDevice();
     dim3 block(std::min(vecs.getSize(1), maxThreads));
 
-    gatherReconstructByRange<IndexT, T>
+    gatherReconstructByRange<T>
             <<<grid, block, 0, stream>>>(start, num, vecs, out);
 
     CUDA_TEST_ERROR();
@@ -194,7 +181,7 @@ void runReconstruct(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByIds<idx_t, float>(ids, vecs, out, stream);
+    gatherReconstructByIds<float>(ids, vecs, out, stream);
 }
 
 void runReconstruct(
@@ -202,7 +189,7 @@ void runReconstruct(
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByIds<idx_t, half>(ids, vecs, out, stream);
+    gatherReconstructByIds<half>(ids, vecs, out, stream);
 }
 
 void runReconstruct(
@@ -211,7 +198,7 @@ void runReconstruct(
         Tensor<float, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByRange<idx_t, float>(start, num, vecs, out, stream);
+    gatherReconstructByRange<float>(start, num, vecs, out, stream);
 }
 
 void runReconstruct(
@@ -220,7 +207,7 @@ void runReconstruct(
         Tensor<half, 2, true>& vecs,
         Tensor<float, 2, true>& out,
         cudaStream_t stream) {
-    gatherReconstructByRange<idx_t, half>(start, num, vecs, out, stream);
+    gatherReconstructByRange<half>(start, num, vecs, out, stream);
 }
 
 } // namespace gpu

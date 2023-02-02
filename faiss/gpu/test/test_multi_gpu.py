@@ -123,7 +123,7 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         assert type(mem_info[0]['FlatData'][0]) == int
         assert type(mem_info[0]['FlatData'][1]) == int
 
-        gpu_index.setNumProbes(4)
+        gpu_index.nprobe = 4
 
         Dnew, Inew = gpu_index.search(xq, 10)
         ts.append(time.time())

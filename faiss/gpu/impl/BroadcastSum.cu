@@ -25,9 +25,9 @@ __global__ void sumAlongColumns(
     // blockIdx.x: which chunk of rows we are responsible for updating
     // blockIdx.y: which chunk of columns we are responsible for
     // updating
-    int rowStart = blockIdx.x * kRowsPerBlock;
-    int rowEnd = rowStart + kRowsPerBlock;
-    int colStart = blockIdx.y * blockDim.x * kColLoad;
+    idx_t rowStart = idx_t(blockIdx.x) * kRowsPerBlock;
+    idx_t rowEnd = rowStart + kRowsPerBlock;
+    idx_t colStart = idx_t(blockIdx.y) * blockDim.x * kColLoad;
 
     // FIXME: if we have exact multiples, don't need this
     bool endRow = (blockIdx.x == gridDim.x - 1);
@@ -40,12 +40,12 @@ __global__ void sumAlongColumns(
     }
 
     if (endCol) {
-        for (int col = colStart + threadIdx.x; col < input.getSize(0);
+        for (idx_t col = colStart + threadIdx.x; col < input.getSize(0);
              col += blockDim.x) {
             T val = input[col];
 
             if (endRow) {
-                for (int row = rowStart; row < output.getSize(0); ++row) {
+                for (idx_t row = rowStart; row < output.getSize(0); ++row) {
                     T out = output[row][col];
                     out = Math<T>::add(out, val);
                     output[row][col] = out;
@@ -53,7 +53,7 @@ __global__ void sumAlongColumns(
             } else {
                 T rows[kRowUnroll];
 
-                for (int row = rowStart; row < rowEnd; row += kRowUnroll) {
+                for (idx_t row = rowStart; row < rowEnd; row += kRowUnroll) {
 #pragma unroll
                     for (int i = 0; i < kRowUnroll; ++i) {
                         rows[i] = output[row + i][col];
@@ -72,7 +72,7 @@ __global__ void sumAlongColumns(
             }
         }
     } else {
-        int col = colStart + threadIdx.x;
+        idx_t col = colStart + threadIdx.x;
 
         T val[kColLoad];
 
@@ -82,7 +82,7 @@ __global__ void sumAlongColumns(
         }
 
         if (endRow) {
-            for (int row = rowStart; row < output.getSize(0); ++row) {
+            for (idx_t row = rowStart; row < output.getSize(0); ++row) {
 #pragma unroll
                 for (int i = 0; i < kColLoad; ++i) {
                     T out = output[row][col + i * blockDim.x];
@@ -93,7 +93,7 @@ __global__ void sumAlongColumns(
         } else {
             T rows[kRowUnroll * kColLoad];
 
-            for (int row = rowStart; row < rowEnd; row += kRowUnroll) {
+            for (idx_t row = rowStart; row < rowEnd; row += kRowUnroll) {
 #pragma unroll
                 for (int i = 0; i < kRowUnroll; ++i) {
 #pragma unroll
@@ -134,9 +134,9 @@ __global__ void assignAlongColumns(
     // blockIdx.x: which chunk of rows we are responsible for updating
     // blockIdx.y: which chunk of columns we are responsible for
     // updating
-    int rowStart = blockIdx.x * kRowsPerBlock;
-    int rowEnd = rowStart + kRowsPerBlock;
-    int colStart = blockIdx.y * blockDim.x * kColLoad;
+    idx_t rowStart = idx_t(blockIdx.x) * kRowsPerBlock;
+    idx_t rowEnd = rowStart + kRowsPerBlock;
+    idx_t colStart = idx_t(blockIdx.y) * blockDim.x * kColLoad;
 
     // FIXME: if we have exact multiples, don't need this
     bool endRow = (blockIdx.x == gridDim.x - 1);
@@ -149,16 +149,16 @@ __global__ void assignAlongColumns(
     }
 
     if (endCol) {
-        for (int col = colStart + threadIdx.x; col < input.getSize(0);
+        for (idx_t col = colStart + threadIdx.x; col < input.getSize(0);
              col += blockDim.x) {
             T val = input[col];
 
             if (endRow) {
-                for (int row = rowStart; row < output.getSize(0); ++row) {
+                for (idx_t row = rowStart; row < output.getSize(0); ++row) {
                     output[row][col] = val;
                 }
             } else {
-                for (int row = rowStart; row < rowEnd; row += kRowUnroll) {
+                for (idx_t row = rowStart; row < rowEnd; row += kRowUnroll) {
 #pragma unroll
                     for (int i = 0; i < kRowUnroll; ++i) {
                         output[row + i][col] = val;
@@ -167,7 +167,7 @@ __global__ void assignAlongColumns(
             }
         }
     } else {
-        int col = colStart + threadIdx.x;
+        idx_t col = colStart + threadIdx.x;
 
         T val[kColLoad];
 
@@ -177,14 +177,14 @@ __global__ void assignAlongColumns(
         }
 
         if (endRow) {
-            for (int row = rowStart; row < output.getSize(0); ++row) {
+            for (idx_t row = rowStart; row < output.getSize(0); ++row) {
 #pragma unroll
                 for (int i = 0; i < kColLoad; ++i) {
                     output[row][col + i * blockDim.x] = val[i];
                 }
             }
         } else {
-            for (int row = rowStart; row < rowEnd; row += kRowUnroll) {
+            for (idx_t row = rowStart; row < rowEnd; row += kRowUnroll) {
 #pragma unroll
                 for (int i = 0; i < kRowUnroll; ++i) {
 #pragma unroll
@@ -203,7 +203,7 @@ __global__ void sumAlongRows(
         Tensor<T, 2, true> output) {
     __shared__ T sval;
 
-    int row = blockIdx.x;
+    idx_t row = blockIdx.x;
 
     if (threadIdx.x == 0) {
         sval = input[row];
@@ -214,7 +214,7 @@ __global__ void sumAlongRows(
     T val = sval;
 
     // FIXME: speed up
-    for (int i = threadIdx.x; i < output.getSize(1); i += blockDim.x) {
+    for (idx_t i = threadIdx.x; i < output.getSize(1); i += blockDim.x) {
         T out = output[row][i];
         out = Math<T>::add(out, val);
         if (ZeroClamp) {
@@ -343,8 +343,8 @@ void runSumAlongRows(
         cudaStream_t stream) {
     FAISS_ASSERT(input.getSize(0) == output.getSize(0));
 
-    int threadsPerBlock =
-            std::min(output.getSize(1), getMaxThreadsCurrentDevice());
+    idx_t threadsPerBlock =
+            std::min(output.getSize(1), (idx_t)getMaxThreadsCurrentDevice());
     auto grid = dim3(output.getSize(0));
     auto block = dim3(threadsPerBlock);
 
