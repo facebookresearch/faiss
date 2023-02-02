@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 # Install python3, wget, and openblas.
 RUN apt-get update && \
