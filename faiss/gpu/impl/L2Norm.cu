@@ -34,32 +34,32 @@ namespace gpu {
 template <
         typename T,
         typename TVec,
-        typename IndexType,
         int RowTileSize,
         bool NormLoop,
         bool NormSquared>
 __global__ void l2NormRowMajor(
-        Tensor<TVec, 2, true, IndexType> input,
-        Tensor<float, 1, true, IndexType> output) {
+        Tensor<TVec, 2, true> input,
+        Tensor<float, 1, true> output) {
     extern __shared__ char smemByte[]; // #warps * RowTileSize elements
     float* smem = (float*)smemByte;
 
-    IndexType numWarps = utils::divUp(blockDim.x, kWarpSize);
-    IndexType laneId = getLaneId();
-    IndexType warpId = threadIdx.x / kWarpSize;
+    // these are fine to be int (just based on block dimensions)
+    int numWarps = utils::divUp(blockDim.x, kWarpSize);
+    int laneId = getLaneId();
+    int warpId = threadIdx.x / kWarpSize;
 
     bool lastRowTile = (blockIdx.x == (gridDim.x - 1));
-    IndexType rowStart = RowTileSize * blockIdx.x;
+    idx_t rowStart = idx_t(blockIdx.x) * RowTileSize;
     // accumulate in f32
     float rowNorm[RowTileSize];
 
     if (lastRowTile) {
         // We are handling the very end of the input matrix rows
-        for (IndexType row = 0; row < input.getSize(0) - rowStart; ++row) {
+        for (idx_t row = 0; row < input.getSize(0) - rowStart; ++row) {
             if (NormLoop) {
                 rowNorm[0] = 0;
 
-                for (IndexType col = threadIdx.x; col < input.getSize(1);
+                for (idx_t col = threadIdx.x; col < input.getSize(1);
                      col += blockDim.x) {
                     TVec val = input[rowStart + row][col];
                     val = Math<TVec>::mul(val, val);
@@ -90,7 +90,7 @@ __global__ void l2NormRowMajor(
                 rowNorm[row] = 0;
             }
 
-            for (IndexType col = threadIdx.x; col < input.getSize(1);
+            for (idx_t col = threadIdx.x; col < input.getSize(1);
                  col += blockDim.x) {
 #pragma unroll
                 for (int row = 0; row < RowTileSize; ++row) {
@@ -183,18 +183,18 @@ __global__ void l2NormRowMajor(
 // Output: (batch norm)
 // Handles the case where `input` is column major. A single thread calculates
 // the norm of each vector instead of a block-wide reduction.
-template <typename T, typename IndexType, bool NormSquared>
+template <typename T, bool NormSquared>
 __global__ void l2NormColMajor(
-        Tensor<T, 2, true, IndexType> input,
-        Tensor<float, 1, true, IndexType> output) {
+        Tensor<T, 2, true> input,
+        Tensor<float, 1, true> output) {
     // grid-stride loop to handle all batch elements
-    for (IndexType batch = blockIdx.x * blockDim.x + threadIdx.x;
+    for (idx_t batch = idx_t(blockIdx.x) * blockDim.x + threadIdx.x;
          batch < input.getSize(1);
          batch += gridDim.x * blockDim.x) {
         float sum = 0;
 
         // This is still a coalesced load from the memory
-        for (IndexType dim = 0; dim < input.getSize(0); ++dim) {
+        for (idx_t dim = 0; dim < input.getSize(0); ++dim) {
             // Just do the math in float32, even if the input is float16
             float v = ConvertTo<float>::to(input[dim][batch]);
             sum += v * v;
@@ -208,55 +208,35 @@ __global__ void l2NormColMajor(
     }
 }
 
-template <typename T, typename TVec, typename IndexType>
+template <typename T, typename TVec>
 void runL2Norm(
-        Tensor<T, 2, true, IndexType>& input,
+        Tensor<T, 2, true>& input,
         bool inputRowMajor,
-        Tensor<float, 1, true, IndexType>& output,
+        Tensor<float, 1, true>& output,
         bool normSquared,
         cudaStream_t stream) {
-    IndexType maxThreads = (IndexType)getMaxThreadsCurrentDevice();
+    idx_t maxThreads = (idx_t)getMaxThreadsCurrentDevice();
     constexpr int rowTileSize = 8;
 
-#define RUN_L2_ROW_MAJOR(TYPE_T, TYPE_TVEC, INPUT)                            \
-    do {                                                                      \
-        if (normLoop) {                                                       \
-            if (normSquared) {                                                \
-                l2NormRowMajor<                                               \
-                        TYPE_T,                                               \
-                        TYPE_TVEC,                                            \
-                        IndexType,                                            \
-                        rowTileSize,                                          \
-                        true,                                                 \
-                        true><<<grid, block, smem, stream>>>(INPUT, output);  \
-            } else {                                                          \
-                l2NormRowMajor<                                               \
-                        TYPE_T,                                               \
-                        TYPE_TVEC,                                            \
-                        IndexType,                                            \
-                        rowTileSize,                                          \
-                        true,                                                 \
-                        false><<<grid, block, smem, stream>>>(INPUT, output); \
-            }                                                                 \
-        } else {                                                              \
-            if (normSquared) {                                                \
-                l2NormRowMajor<                                               \
-                        TYPE_T,                                               \
-                        TYPE_TVEC,                                            \
-                        IndexType,                                            \
-                        rowTileSize,                                          \
-                        false,                                                \
-                        true><<<grid, block, smem, stream>>>(INPUT, output);  \
-            } else {                                                          \
-                l2NormRowMajor<                                               \
-                        TYPE_T,                                               \
-                        TYPE_TVEC,                                            \
-                        IndexType,                                            \
-                        rowTileSize,                                          \
-                        false,                                                \
-                        false><<<grid, block, smem, stream>>>(INPUT, output); \
-            }                                                                 \
-        }                                                                     \
+#define RUN_L2_ROW_MAJOR(TYPE_T, TYPE_TVEC, INPUT)                           \
+    do {                                                                     \
+        if (normLoop) {                                                      \
+            if (normSquared) {                                               \
+                l2NormRowMajor<TYPE_T, TYPE_TVEC, rowTileSize, true, true>   \
+                        <<<grid, block, smem, stream>>>(INPUT, output);      \
+            } else {                                                         \
+                l2NormRowMajor<TYPE_T, TYPE_TVEC, rowTileSize, true, false>  \
+                        <<<grid, block, smem, stream>>>(INPUT, output);      \
+            }                                                                \
+        } else {                                                             \
+            if (normSquared) {                                               \
+                l2NormRowMajor<TYPE_T, TYPE_TVEC, rowTileSize, false, true>  \
+                        <<<grid, block, smem, stream>>>(INPUT, output);      \
+            } else {                                                         \
+                l2NormRowMajor<TYPE_T, TYPE_TVEC, rowTileSize, false, false> \
+                        <<<grid, block, smem, stream>>>(INPUT, output);      \
+            }                                                                \
+        }                                                                    \
     } while (0)
 
     if (inputRowMajor) {
@@ -306,15 +286,12 @@ void runL2Norm(
         // Cap the grid size at 2^16 since there is a grid-stride loop to handle
         // processing everything
         auto grid = (int)std::min(
-                utils::divUp(input.getSize(1), (IndexType)block),
-                (IndexType)65536);
+                utils::divUp(input.getSize(1), (idx_t)block), (idx_t)65536);
 
         if (normSquared) {
-            l2NormColMajor<T, IndexType, true>
-                    <<<grid, block, 0, stream>>>(input, output);
+            l2NormColMajor<T, true><<<grid, block, 0, stream>>>(input, output);
         } else {
-            l2NormColMajor<T, IndexType, false>
-                    <<<grid, block, 0, stream>>>(input, output);
+            l2NormColMajor<T, false><<<grid, block, 0, stream>>>(input, output);
         }
     }
 
@@ -329,16 +306,7 @@ void runL2Norm(
         Tensor<float, 1, true>& output,
         bool normSquared,
         cudaStream_t stream) {
-    if (input.canUseIndexType<int>()) {
-        runL2Norm<float, float4, int>(
-                input, inputRowMajor, output, normSquared, stream);
-    } else {
-        auto inputCast = input.castIndexType<long>();
-        auto outputCast = output.castIndexType<long>();
-
-        runL2Norm<float, float4, long>(
-                inputCast, inputRowMajor, outputCast, normSquared, stream);
-    }
+    runL2Norm<float, float4>(input, inputRowMajor, output, normSquared, stream);
 }
 
 void runL2Norm(
@@ -347,16 +315,7 @@ void runL2Norm(
         Tensor<float, 1, true>& output,
         bool normSquared,
         cudaStream_t stream) {
-    if (input.canUseIndexType<int>()) {
-        runL2Norm<half, half2, int>(
-                input, inputRowMajor, output, normSquared, stream);
-    } else {
-        auto inputCast = input.castIndexType<long>();
-        auto outputCast = output.castIndexType<long>();
-
-        runL2Norm<half, half2, long>(
-                inputCast, inputRowMajor, outputCast, normSquared, stream);
-    }
+    runL2Norm<half, half2>(input, inputRowMajor, output, normSquared, stream);
 }
 
 } // namespace gpu

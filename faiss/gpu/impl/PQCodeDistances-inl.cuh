@@ -76,7 +76,7 @@ __global__ void __launch_bounds__(288, 3) pqCodeDistances(
     // performing the reductions locally
 
     // Handle multiple queries per block
-    auto startQueryId = blockIdx.x * queriesPerBlock;
+    auto startQueryId = idx_t(blockIdx.x) * queriesPerBlock;
     auto numQueries = queries.getSize(0) - startQueryId;
     if (numQueries > queriesPerBlock) {
         numQueries = queriesPerBlock;
@@ -329,8 +329,8 @@ void runPQResidualVector(
         cudaStream_t stream) {
     // blockDim.y is limited by nprobe
     auto grid = dim3(coarseIndices.getSize(0), coarseIndices.getSize(1));
-    auto block =
-            dim3(std::min(queries.getSize(1), getMaxThreadsCurrentDevice()));
+    auto block = dim3(
+            std::min(queries.getSize(1), (idx_t)getMaxThreadsCurrentDevice()));
 
     if (l2Residual) {
         pqResidualVector<CentroidT, true><<<grid, block, 0, stream>>>(

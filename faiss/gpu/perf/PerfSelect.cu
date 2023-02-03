@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
                 resUse.get(),
                 makeDevAlloc(AllocType::Other, 0),
                 {FLAGS_rows, k});
-        DeviceTensor<int, 2, true> gpuOutInd(
+        DeviceTensor<faiss::idx_t, 2, true> gpuOutInd(
                 resUse.get(),
                 makeDevAlloc(AllocType::Other, 0),
                 {FLAGS_rows, k});

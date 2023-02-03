@@ -115,6 +115,55 @@ TEST(TestGpuIndexBinaryFlat, Test32) {
     }
 }
 
+TEST(TestGpuIndexBinaryFlat, LargeIndex) {
+    // Construct on a random device to test multi-device, if we have
+    // multiple devices
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    // Skip this device if we do not have sufficient memory
+    constexpr size_t kMem = size_t(8) * 1024 * 1024 * 1024;
+
+    if (faiss::gpu::getFreeMemory(device) < kMem) {
+        std::cerr << "TestGpuIndexFlat.LargeIndex: skipping due "
+                     "to insufficient device memory\n";
+        return;
+    }
+
+    std::cerr << "Running LargeIndex test\n";
+
+    faiss::gpu::GpuIndexBinaryFlatConfig config;
+    config.device = device;
+
+    int dims = 1250 * 8;
+    faiss::gpu::GpuIndexBinaryFlat gpuIndex(&res, dims, config);
+
+    faiss::IndexBinaryFlat cpuIndex(dims);
+
+    int k = 10;
+    int nb = 4000000;
+    int nq = 10;
+
+    auto xb = faiss::gpu::randBinaryVecs(nb, dims);
+    auto xq = faiss::gpu::randBinaryVecs(nq, dims);
+    gpuIndex.add(nb, xb.data());
+    cpuIndex.add(nb, xb.data());
+
+    std::vector<int> cpuDist(nq * k);
+    std::vector<faiss::idx_t> cpuLabels(nq * k);
+
+    cpuIndex.search(nq, xq.data(), k, cpuDist.data(), cpuLabels.data());
+
+    std::vector<int> gpuDist(nq * k);
+    std::vector<faiss::idx_t> gpuLabels(nq * k);
+
+    gpuIndex.search(nq, xq.data(), k, gpuDist.data(), gpuLabels.data());
+
+    compareBinaryDist(cpuDist, cpuLabels, gpuDist, gpuLabels, nq, k);
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
 

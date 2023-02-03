@@ -67,6 +67,19 @@ struct Limits<int> {
     }
 };
 
+constexpr idx_t kIdxTMax = std::numeric_limits<idx_t>::max();
+constexpr idx_t kIdxTMin = std::numeric_limits<idx_t>::lowest();
+
+template <>
+struct Limits<idx_t> {
+    static __device__ __host__ inline idx_t getMin() {
+        return kIdxTMin;
+    }
+    static __device__ __host__ inline idx_t getMax() {
+        return kIdxTMax;
+    }
+};
+
 template <typename K, typename V>
 struct Limits<Pair<K, V>> {
     static __device__ __host__ inline Pair<K, V> getMin() {

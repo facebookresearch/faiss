@@ -23,17 +23,14 @@ namespace gpu {
 
 // This is warp divergence central, but this is really a final step
 // and happening a small number of times
-inline __device__ int binarySearchForBucket(
-        int* prefixSumOffsets,
-        int size,
-        int val) {
-    int start = 0;
-    int end = size;
+template <typename T>
+__device__ int binarySearchForBucket(T* prefixSumOffsets, T size, T val) {
+    T start = 0;
+    T end = size;
 
     while (end - start > 0) {
-        int mid = start + (end - start) / 2;
-
-        int midVal = prefixSumOffsets[mid];
+        T mid = start + (end - start) / 2;
+        T midVal = prefixSumOffsets[mid];
 
         // Find the first bucket that we are <=
         if (midVal <= val) {
@@ -49,12 +46,17 @@ inline __device__ int binarySearchForBucket(
     return start;
 }
 
-template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ, bool Dir>
+template <
+        typename IndexT,
+        int ThreadsPerBlock,
+        int NumWarpQ,
+        int NumThreadQ,
+        bool Dir>
 __global__ void pass2SelectLists(
         Tensor<float, 2, true> heapDistances,
-        Tensor<int, 2, true> heapIndices,
+        Tensor<idx_t, 2, true> heapIndices,
         void** listIndices,
-        Tensor<int, 2, true> prefixSumOffsets,
+        Tensor<idx_t, 2, true> prefixSumOffsets,
         Tensor<idx_t, 2, true> ivfListIds,
         int k,
         IndicesOptions opt,
@@ -63,12 +65,12 @@ __global__ void pass2SelectLists(
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
-    __shared__ int smemV[kNumWarps * NumWarpQ];
+    __shared__ IndexT smemV[kNumWarps * NumWarpQ];
 
     constexpr auto kInit = Dir ? kFloatMin : kFloatMax;
     BlockSelect<
             float,
-            int,
+            IndexT,
             Dir,
             Comparator<float>,
             NumWarpQ,
@@ -77,21 +79,21 @@ __global__ void pass2SelectLists(
             heap(kInit, -1, smemK, smemV, k);
 
     auto queryId = blockIdx.x;
-    int num = heapDistances.getSize(1);
-    int limit = utils::roundDown(num, kWarpSize);
+    idx_t num = heapDistances.getSize(1);
+    idx_t limit = utils::roundDown(num, kWarpSize);
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     auto heapDistanceStart = heapDistances[queryId];
 
     // BlockSelect add cannot be used in a warp divergent circumstance; we
     // handle the remainder warp below
     for (; i < limit; i += blockDim.x) {
-        heap.add(heapDistanceStart[i], i);
+        heap.add(heapDistanceStart[i], IndexT(i));
     }
 
     // Handle warp divergence separately
     if (i < num) {
-        heap.addThreadQ(heapDistanceStart[i], i);
+        heap.addThreadQ(heapDistanceStart[i], IndexT(i));
     }
 
     // Merge all final results
@@ -109,18 +111,18 @@ __global__ void pass2SelectLists(
         // This code is highly divergent, but it's probably ok, since this
         // is the very last step and it is happening a small number of
         // times (#queries x k).
-        int v = smemV[i];
+        idx_t v = smemV[i];
         idx_t index = -1;
 
         if (v != -1) {
             // `offset` is the offset of the intermediate result, as
             // calculated by the original scan.
-            int offset = heapIndices[queryId][v];
+            idx_t offset = heapIndices[queryId][v];
 
             // In order to determine the actual user index, we need to first
             // determine what list it was in.
             // We do this by binary search in the prefix sum list.
-            int probe = binarySearchForBucket(
+            idx_t probe = binarySearchForBucket(
                     prefixSumOffsets[queryId].data(),
                     prefixSumOffsets.getSize(1),
                     offset);
@@ -132,8 +134,8 @@ __global__ void pass2SelectLists(
             // Now, we need to know the offset within the list
             // We ensure that before the array (at offset -1), there is a 0
             // value
-            int listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
-            int listOffset = offset - listStart;
+            idx_t listStart = *(prefixSumOffsets[queryId][probe].data() - 1);
+            idx_t listOffset = offset - listStart;
 
             // This gives us our final index
             if (opt == INDICES_32_BIT) {
@@ -151,93 +153,102 @@ __global__ void pass2SelectLists(
 
 void runPass2SelectLists(
         Tensor<float, 2, true>& heapDistances,
-        Tensor<int, 2, true>& heapIndices,
+        Tensor<idx_t, 2, true>& heapIndices,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<idx_t, 2, true>& ivfListIds,
         int k,
+        bool use64BitSelection,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         cudaStream_t stream) {
+    // This is also caught at a higher level
+    FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);
+
     auto grid = dim3(ivfListIds.getSize(0));
 
-#define RUN_PASS(BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
-    do {                                                       \
-        pass2SelectLists<BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR> \
-                <<<grid, BLOCK, 0, stream>>>(                  \
-                        heapDistances,                         \
-                        heapIndices,                           \
-                        listIndices.data(),                    \
-                        prefixSumOffsets,                      \
-                        ivfListIds,                            \
-                        k,                                     \
-                        indicesOptions,                        \
-                        outDistances,                          \
-                        outIndices);                           \
-        CUDA_TEST_ERROR();                                     \
-        return; /* success */                                  \
+#define RUN_PASS(INDEX_T, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR)         \
+    do {                                                                \
+        pass2SelectLists<INDEX_T, BLOCK, NUM_WARP_Q, NUM_THREAD_Q, DIR> \
+                <<<grid, BLOCK, 0, stream>>>(                           \
+                        heapDistances,                                  \
+                        heapIndices,                                    \
+                        listIndices.data(),                             \
+                        prefixSumOffsets,                               \
+                        ivfListIds,                                     \
+                        k,                                              \
+                        indicesOptions,                                 \
+                        outDistances,                                   \
+                        outIndices);                                    \
     } while (0)
 
 #if GPU_MAX_SELECTION_K >= 2048
 
     // block size 128 for k <= 1024, 64 for k = 2048
-#define RUN_PASS_DIR(DIR)                \
-    do {                                 \
-        if (k == 1) {                    \
-            RUN_PASS(128, 1, 1, DIR);    \
-        } else if (k <= 32) {            \
-            RUN_PASS(128, 32, 2, DIR);   \
-        } else if (k <= 64) {            \
-            RUN_PASS(128, 64, 3, DIR);   \
-        } else if (k <= 128) {           \
-            RUN_PASS(128, 128, 3, DIR);  \
-        } else if (k <= 256) {           \
-            RUN_PASS(128, 256, 4, DIR);  \
-        } else if (k <= 512) {           \
-            RUN_PASS(128, 512, 8, DIR);  \
-        } else if (k <= 1024) {          \
-            RUN_PASS(128, 1024, 8, DIR); \
-        } else if (k <= 2048) {          \
-            RUN_PASS(64, 2048, 8, DIR);  \
-        }                                \
+#define RUN_PASS_DIR(INDEX_T, DIR)                \
+    do {                                          \
+        if (k == 1) {                             \
+            RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
+        } else if (k <= 32) {                     \
+            RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
+        } else if (k <= 64) {                     \
+            RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \
+        } else if (k <= 128) {                    \
+            RUN_PASS(INDEX_T, 128, 128, 3, DIR);  \
+        } else if (k <= 256) {                    \
+            RUN_PASS(INDEX_T, 128, 256, 4, DIR);  \
+        } else if (k <= 512) {                    \
+            RUN_PASS(INDEX_T, 128, 512, 8, DIR);  \
+        } else if (k <= 1024) {                   \
+            RUN_PASS(INDEX_T, 128, 1024, 8, DIR); \
+        } else if (k <= 2048) {                   \
+            RUN_PASS(INDEX_T, 64, 2048, 8, DIR);  \
+        }                                         \
     } while (0)
 
 #else
 
-#define RUN_PASS_DIR(DIR)                \
-    do {                                 \
-        if (k == 1) {                    \
-            RUN_PASS(128, 1, 1, DIR);    \
-        } else if (k <= 32) {            \
-            RUN_PASS(128, 32, 2, DIR);   \
-        } else if (k <= 64) {            \
-            RUN_PASS(128, 64, 3, DIR);   \
-        } else if (k <= 128) {           \
-            RUN_PASS(128, 128, 3, DIR);  \
-        } else if (k <= 256) {           \
-            RUN_PASS(128, 256, 4, DIR);  \
-        } else if (k <= 512) {           \
-            RUN_PASS(128, 512, 8, DIR);  \
-        } else if (k <= 1024) {          \
-            RUN_PASS(128, 1024, 8, DIR); \
-        }                                \
+#define RUN_PASS_DIR(INDEX_T, DIR)                \
+    do {                                          \
+        if (k == 1) {                             \
+            RUN_PASS(INDEX_T, 128, 1, 1, DIR);    \
+        } else if (k <= 32) {                     \
+            RUN_PASS(INDEX_T, 128, 32, 2, DIR);   \
+        } else if (k <= 64) {                     \
+            RUN_PASS(INDEX_T, 128, 64, 3, DIR);   \
+        } else if (k <= 128) {                    \
+            RUN_PASS(INDEX_T, 128, 128, 3, DIR);  \
+        } else if (k <= 256) {                    \
+            RUN_PASS(INDEX_T, 128, 256, 4, DIR);  \
+        } else if (k <= 512) {                    \
+            RUN_PASS(INDEX_T, 128, 512, 8, DIR);  \
+        } else if (k <= 1024) {                   \
+            RUN_PASS(INDEX_T, 128, 1024, 8, DIR); \
+        }                                         \
     } while (0)
 
 #endif // GPU_MAX_SELECTION_K
 
-    if (chooseLargest) {
-        RUN_PASS_DIR(true);
+    if (use64BitSelection) {
+        if (chooseLargest) {
+            RUN_PASS_DIR(idx_t, true);
+        } else {
+            RUN_PASS_DIR(idx_t, false);
+        }
     } else {
-        RUN_PASS_DIR(false);
+        if (chooseLargest) {
+            RUN_PASS_DIR(int32_t, true);
+        } else {
+            RUN_PASS_DIR(int32_t, false);
+        }
     }
-
-    // unimplemented / too many resources
-    FAISS_ASSERT_FMT(false, "unimplemented k value (%d)", k);
 
 #undef RUN_PASS_DIR
 #undef RUN_PASS
+
+    CUDA_TEST_ERROR();
 }
 
 } // namespace gpu

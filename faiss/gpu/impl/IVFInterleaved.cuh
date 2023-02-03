@@ -42,18 +42,18 @@ __global__ void ivfInterleavedScan(
         Tensor<float, 3, true> residualBase,
         Tensor<idx_t, 2, true> listIds,
         void** allListData,
-        int* listLengths,
+        idx_t* listLengths,
         Codec codec,
         Metric metric,
         int k,
         // [query][probe][k]
         Tensor<float, 3, true> distanceOut,
-        Tensor<int, 3, true> indicesOut) {
+        Tensor<idx_t, 3, true> indicesOut) {
     extern __shared__ float smem[];
 
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
-    for (int queryId = blockIdx.y; queryId < queries.getSize(0);
+    for (idx_t queryId = blockIdx.y; queryId < queries.getSize(0);
          queryId += gridDim.y) {
         int probeId = blockIdx.x;
         idx_t listId = listIds[queryId][probeId];
@@ -64,6 +64,7 @@ __global__ void ivfInterleavedScan(
             return;
         }
 
+        // Vector dimension is currently limited to 32 bit
         int dim = queries.getSize(1);
 
         // FIXME: some issue with getLaneId() and CUDA 10.1 and P4 GPUs?
@@ -80,11 +81,11 @@ __global__ void ivfInterleavedScan(
         constexpr auto kInit = Metric::kDirection ? kFloatMin : kFloatMax;
 
         __shared__ float smemK[kNumWarps * NumWarpQ];
-        __shared__ int smemV[kNumWarps * NumWarpQ];
+        __shared__ idx_t smemV[kNumWarps * NumWarpQ];
 
         BlockSelect<
                 float,
-                int,
+                idx_t,
                 Metric::kDirection,
                 Comparator<float>,
                 NumWarpQ,
@@ -98,7 +99,7 @@ __global__ void ivfInterleavedScan(
         __syncthreads();
 
         // How many vector blocks of 32 are in this list?
-        int numBlocks = utils::divUp(numVecs, 32);
+        idx_t numBlocks = utils::divUp(numVecs, (idx_t)32);
 
         // Number of EncodeT words per each dimension of block of 32 vecs
         constexpr int bytesPerVectorBlockDim = Codec::kEncodeBits * 32 / 8;
@@ -108,12 +109,12 @@ __global__ void ivfInterleavedScan(
 
         int dimBlocks = utils::roundDown(dim, kWarpSize);
 
-        for (int block = warpId; block < numBlocks; block += kNumWarps) {
+        for (idx_t block = warpId; block < numBlocks; block += kNumWarps) {
             // We're handling a new vector
             Metric dist = metric.zero();
 
             // This is the vector a given lane/thread handles
-            int vec = block * kWarpSize + laneId;
+            idx_t vec = block * kWarpSize + laneId;
             bool valid = vec < numVecs;
 
             // This is where this warp begins reading data
@@ -218,7 +219,7 @@ __global__ void ivfInterleavedScan(
 
 #define IVFINT_RUN(CODEC_TYPE, METRIC_TYPE, THREADS, NUM_WARP_Q, NUM_THREAD_Q) \
     do {                                                                       \
-        dim3 grid(nprobe, std::min(nq, (int)getMaxGridCurrentDevice().y));     \
+        dim3 grid(nprobe, std::min(nq, (idx_t)getMaxGridCurrentDevice().y));   \
         if (useResidual) {                                                     \
             ivfInterleavedScan<                                                \
                     CODEC_TYPE,                                                \
@@ -392,7 +393,7 @@ __global__ void ivfInterleavedScan(
                 res,                                                      \
                 makeTempAlloc(AllocType::Other, stream),                  \
                 {queries.getSize(0), listIds.getSize(1), k});             \
-        DeviceTensor<int, 3, true> indicesTemp(                           \
+        DeviceTensor<idx_t, 3, true> indicesTemp(                         \
                 res,                                                      \
                 makeTempAlloc(AllocType::Other, stream),                  \
                 {queries.getSize(0), listIds.getSize(1), k});             \
@@ -416,7 +417,7 @@ void runIVFInterleavedScan(
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        DeviceVector<int>& listLengths,
+        DeviceVector<idx_t>& listLengths,
         int k,
         faiss::MetricType metric,
         bool useResidual,
@@ -432,7 +433,7 @@ void runIVFInterleavedScan(
 // user indices
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
-        Tensor<int, 3, true>& indicesIn,
+        Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
         int k,
         DeviceVector<void*>& listIndices,

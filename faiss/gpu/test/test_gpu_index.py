@@ -519,20 +519,16 @@ class TestInvalidParams(unittest.TestCase):
 
         # invalid k (should be > 0)
         k = -5
-        idx.setNumProbes(3)
+        idx.nprobe = 3
         self.assertRaises(AssertionError, idx.search, xb[10:20], k)
 
-        # invalid nprobe (should be > 0)
-        self.assertRaises(RuntimeError, idx.setNumProbes, 0)
-        self.assertRaises(RuntimeError, idx.setNumProbes, -3)
-
         k = 5
-        idx.nprobe = -3
+        idx.nprobe = 0
         self.assertRaises(RuntimeError, idx.search, xb[10:20], k)
 
         # valid params
         k = 5
-        idx.setNumProbes(3)
+        idx.nprobe = 3
         _, I = idx.search(xb[10:20], k)
         self.assertTrue(np.array_equal(xb_indices[10:20], I[:, 0]))
 

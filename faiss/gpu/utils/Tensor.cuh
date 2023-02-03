@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <faiss/Index.h> // idx_t
+#include <stdint.h>
 #include <initializer_list>
 #include <vector>
 
@@ -76,7 +78,7 @@ template <
         typename T,
         int Dim,
         bool InnerContig = false,
-        typename IndexT = int,
+        typename IndexT = idx_t,
         template <typename U> class PtrTraits = traits::DefaultPtrTraits>
 class Tensor {
    public:
@@ -252,7 +254,7 @@ class Tensor {
 
     /// Returns the total number of elements contained within our data
     /// (product of `getSize(i)`)
-    __host__ __device__ size_t numElements() const;
+    __host__ __device__ IndexT numElements() const;
 
     /// If we are contiguous, returns the total size in bytes of our
     /// data

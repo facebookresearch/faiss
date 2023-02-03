@@ -95,7 +95,7 @@ void queryTest(
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
         gpuIndex.copyFrom(&cpuIndex);
-        gpuIndex.setNumProbes(opt.nprobe);
+        gpuIndex.nprobe = opt.nprobe;
 
         bool compFloat16 = useFloat16CoarseQuantizer;
         faiss::gpu::compareIndices(
@@ -144,7 +144,7 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
         gpuIndex.copyFrom(&cpuIndex);
-        gpuIndex.setNumProbes(opt.nprobe);
+        gpuIndex.nprobe = opt.nprobe;
 
         cpuIndex.add(opt.numAdd, addVecs.data());
         gpuIndex.add(opt.numAdd, addVecs.data());
@@ -180,7 +180,7 @@ void copyToTest(bool useFloat16CoarseQuantizer) {
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
     gpuIndex.train(opt.numTrain, trainVecs.data());
     gpuIndex.add(opt.numAdd, addVecs.data());
-    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.nprobe = opt.nprobe;
 
     // use garbage values to see if we overwrite then
     faiss::IndexFlatL2 cpuQuantizer(1);
@@ -196,7 +196,7 @@ void copyToTest(bool useFloat16CoarseQuantizer) {
     EXPECT_EQ(cpuIndex.quantizer->d, gpuIndex.quantizer->d);
     EXPECT_EQ(cpuIndex.d, opt.dim);
     EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
-    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.nprobe);
 
     testIVFEquality(cpuIndex, gpuIndex);
 
@@ -236,7 +236,7 @@ void copyFromTest(bool useFloat16CoarseQuantizer) {
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(&res, 1, 1, faiss::METRIC_L2, config);
-    gpuIndex.setNumProbes(1);
+    gpuIndex.nprobe = 1;
 
     gpuIndex.copyFrom(&cpuIndex);
 
@@ -246,7 +246,7 @@ void copyFromTest(bool useFloat16CoarseQuantizer) {
     EXPECT_EQ(cpuIndex.d, gpuIndex.d);
     EXPECT_EQ(cpuIndex.d, opt.dim);
     EXPECT_EQ(cpuIndex.nlist, gpuIndex.getNumLists());
-    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.getNumProbes());
+    EXPECT_EQ(cpuIndex.nprobe, gpuIndex.nprobe);
 
     testIVFEquality(cpuIndex, gpuIndex);
 
@@ -384,7 +384,7 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
     gpuIndex.copyFrom(&cpuIndex);
-    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.nprobe = opt.nprobe;
 
     // Construct a positive test set
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -431,7 +431,7 @@ TEST(TestGpuIndexIVFFlat, QueryNaN) {
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
-    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.nprobe = opt.nprobe;
 
     gpuIndex.train(opt.numTrain, trainVecs.data());
     gpuIndex.add(opt.numAdd, addVecs.data());
@@ -469,7 +469,7 @@ TEST(TestGpuIndexIVFFlat, AddNaN) {
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, opt.dim, opt.numCentroids, faiss::METRIC_L2, config);
-    gpuIndex.setNumProbes(opt.nprobe);
+    gpuIndex.nprobe = opt.nprobe;
 
     int numNans = 10;
     std::vector<float> nans(
@@ -543,7 +543,65 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
             &res, dim, numCentroids, faiss::METRIC_L2, config);
     gpuIndex.copyFrom(&cpuIndex);
-    gpuIndex.setNumProbes(nprobe);
+    gpuIndex.nprobe = nprobe;
+
+    faiss::gpu::compareIndices(
+            cpuIndex,
+            gpuIndex,
+            numQuery,
+            dim,
+            k,
+            "Unified Memory",
+            kF32MaxRelErr,
+            0.1f,
+            0.015f);
+}
+
+TEST(TestGpuIndexIVFFlat, LongIVFList) {
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    // Skip this device if we do not have sufficient memory
+    constexpr size_t kMem = size_t(24) * 1024 * 1024 * 1024;
+
+    if (faiss::gpu::getFreeMemory(device) < kMem) {
+        std::cout << "TestGpuIndexIVFFlat.LongIVFList: skipping due "
+                     "to insufficient device memory\n";
+        return;
+    }
+
+    std::cout << "Running LongIVFList test\n";
+
+    // Test functionality where a single IVF list has more than 2B code values
+    int dim = 64;
+
+    int numCentroids = 1;
+    size_t numAdd = (size_t(1024) * 1024 * 1024 * 2 + 100000) / dim;
+    size_t numTrain = 100;
+    int numQuery = 5;
+    int k = 10;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(numTrain, dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(numAdd, dim);
+
+    faiss::IndexFlatL2 quantizer(dim);
+    faiss::IndexIVFFlat cpuIndex(
+            &quantizer, dim, numCentroids, faiss::METRIC_L2);
+
+    cpuIndex.train(numTrain, trainVecs.data());
+    cpuIndex.add(numAdd, addVecs.data());
+    cpuIndex.nprobe = 1;
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = device;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, dim, numCentroids, faiss::METRIC_L2, config);
+    gpuIndex.train(numTrain, trainVecs.data());
+    gpuIndex.add(numAdd, addVecs.data());
+    gpuIndex.nprobe = 1;
 
     faiss::gpu::compareIndices(
             cpuIndex,
