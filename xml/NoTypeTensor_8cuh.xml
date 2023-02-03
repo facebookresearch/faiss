@@ -16,6 +16,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/Index.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;initializer_list&gt;</highlight></codeline>
@@ -23,7 +24,7 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Dim,<sp/>bool<sp/>InnerContig<sp/>=<sp/>false,<sp/>typename<sp/>IndexT<sp/>=<sp/>int&gt;</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Dim,<sp/>bool<sp/>InnerContig<sp/>=<sp/>false,<sp/>typename<sp/>IndexT<sp/>=<sp/>idx_t&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>NoTypeTensor<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>NoTypeTensor()<sp/>:<sp/>mem_(nullptr),<sp/>typeSize_(0)<sp/>{}</highlight></codeline>
@@ -50,7 +51,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>NoTypeTensor(void*<sp/>mem,<sp/>int<sp/>typeSize,<sp/>int<sp/>sizes[Dim])</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>NoTypeTensor(void*<sp/>mem,<sp/>int<sp/>typeSize,<sp/>IndexT<sp/>sizes[Dim])</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>mem_(mem),<sp/>typeSize_(typeSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_[i]<sp/>=<sp/>sizes[i];</highlight></codeline>

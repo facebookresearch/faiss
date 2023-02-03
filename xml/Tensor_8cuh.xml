@@ -19,6 +19,8 @@
 <codeline><highlight class="normal">#include<sp/>&lt;assert.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda_runtime.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/Index.h&gt;<sp/>//<sp/>idx_t</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;stdint.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;initializer_list&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;vector&gt;</highlight></codeline>
 <codeline></codeline>
@@ -85,7 +87,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>idx_t,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>Tensor<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>
@@ -261,7 +263,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>total<sp/>number<sp/>of<sp/>elements<sp/>contained<sp/>within<sp/>our<sp/>data</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(product<sp/>of<sp/>`getSize(i)`)</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>size_t<sp/>numElements()<sp/>const;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>__host__<sp/>__device__<sp/>IndexT<sp/>numElements()<sp/>const;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>If<sp/>we<sp/>are<sp/>contiguous,<sp/>returns<sp/>the<sp/>total<sp/>size<sp/>in<sp/>bytes<sp/>of<sp/>our</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>data</highlight></codeline>

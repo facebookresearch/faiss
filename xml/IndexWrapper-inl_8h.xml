@@ -94,8 +94,8 @@
 <codeline lineno="58"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="59"><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>GpuIndex&gt;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>IndexWrapper&lt;GpuIndex&gt;::setNumProbes(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nprobe)<sp/>{</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>runOnIndices([nprobe](GpuIndex*<sp/>index)<sp/>{<sp/>index-&gt;setNumProbes(nprobe);<sp/>});</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>IndexWrapper&lt;GpuIndex&gt;::setNumProbes(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nprobe)<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>runOnIndices([nprobe](GpuIndex*<sp/>index)<sp/>{<sp/>index-&gt;nprobe<sp/>=<sp/>nprobe;<sp/>});</highlight></codeline>
 <codeline lineno="63"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
 <codeline lineno="65"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>

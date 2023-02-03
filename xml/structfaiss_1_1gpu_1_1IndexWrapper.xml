@@ -100,13 +100,13 @@
         </inbodydescription>
         <location file="faiss/gpu/perf/IndexWrapper.h" line="34" column="10" bodyfile="faiss/gpu/perf/IndexWrapper-inl.h" bodystart="49" bodyend="58"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1IndexWrapper_1a98d34a44e898d9e6c35de0da8f4eff8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1IndexWrapper_1adf6cf1bc0756b207c9ee3c78a0b4a2b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::IndexWrapper&lt; GpuIndex &gt;::setNumProbes</definition>
-        <argsstring>(int nprobe)</argsstring>
+        <argsstring>(size_t nprobe)</argsstring>
         <name>setNumProbes</name>
         <param>
-          <type>int</type>
+          <type>size_t</type>
           <declname>nprobe</declname>
         </param>
         <briefdescription>
@@ -129,7 +129,7 @@
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1af265d777bf70e674192125f090718750" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>replicaIndex</name></member>
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a9a617b326139ba9e1082f6052a8963f6" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>resources</name></member>
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a533e41b6d13eaeefb960fa48aba50430" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>runOnIndices</name></member>
-      <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a98d34a44e898d9e6c35de0da8f4eff8e" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>setNumProbes</name></member>
+      <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1adf6cf1bc0756b207c9ee3c78a0b4a2b4" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>setNumProbes</name></member>
       <member refid="structfaiss_1_1gpu_1_1IndexWrapper_1a166f30f9ea4d8d6b9a5dacc5c37e8871" prot="public" virt="non-virtual"><scope>faiss::gpu::IndexWrapper</scope><name>subIndex</name></member>
     </listofallmembers>
   </compounddef>

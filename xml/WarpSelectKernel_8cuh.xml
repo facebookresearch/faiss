@@ -48,17 +48,17 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>warpId<sp/>=<sp/>threadIdx.x<sp/>/<sp/>kWarpSize;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>row<sp/>=<sp/>blockIdx.x<sp/>*<sp/>kNumWarps<sp/>+<sp/>warpId;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>idx_t(blockIdx.x)<sp/>*<sp/>kNumWarps<sp/>+<sp/>warpId;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(row<sp/>&gt;=<sp/>in.getSize(0))<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>i<sp/>=<sp/>getLaneId();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>getLaneId();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>kWarpSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)i);</highlight></codeline>
@@ -77,7 +77,7 @@
 <codeline><highlight class="normal">void<sp/>runWarpSelect(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
@@ -85,7 +85,7 @@
 <codeline><highlight class="normal">void<sp/>runWarpSelect(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>

@@ -21,6 +21,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Float16.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/HostTensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;limits&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
@@ -172,6 +173,16 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>beta,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>handle,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>All<sp/>sizes<sp/>must<sp/>be<sp/>within<sp/>int<sp/>bounds</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>cublasSetStream(handle,<sp/>stream);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Check<sp/>that<sp/>we<sp/>have<sp/>(m<sp/>x<sp/>k)<sp/>*<sp/>(k<sp/>x<sp/>n)<sp/>=<sp/>(m<sp/>x<sp/>n)</highlight></codeline>
@@ -252,7 +263,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err<sp/>==<sp/>CUBLAS_STATUS_SUCCESS,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;cublas<sp/>failed<sp/>(%d):<sp/>&quot;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;(%d,<sp/>%d)%s<sp/>x<sp/>(%d,<sp/>%d)%s<sp/>=<sp/>(%d,<sp/>%d)%s<sp/>&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;(%ld,<sp/>%ld)%s<sp/>x<sp/>(%ld,<sp/>%ld)%s<sp/>=<sp/>(%ld,<sp/>%ld)%s<sp/>&quot;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;gemm<sp/>params<sp/>m<sp/>%d<sp/>n<sp/>%d<sp/>k<sp/>%d<sp/>trA<sp/>%s<sp/>trB<sp/>%s<sp/>lda<sp/>%d<sp/>ldb<sp/>%d<sp/>ldc<sp/>%d&quot;,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int)err,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a.getSize(0),</highlight></codeline>
@@ -287,6 +298,19 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>beta,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cublasHandle_t<sp/>handle,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>All<sp/>sizes<sp/>must<sp/>be<sp/>within<sp/>int<sp/>bounds</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(2)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(2)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(1)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(2)<sp/>&lt;=<sp/>std::numeric_limits&lt;int&gt;::max());</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(c.getSize(0)<sp/>==<sp/>a.getSize(0));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(a.getSize(0)<sp/>==<sp/>b.getSize(0));</highlight></codeline>
 <codeline></codeline>

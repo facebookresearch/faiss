@@ -582,12 +582,12 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
-<codeline><highlight class="normal">__host__<sp/>__device__<sp/>size_t</highlight></codeline>
+<codeline><highlight class="normal">__host__<sp/>__device__<sp/>IndexT</highlight></codeline>
 <codeline><highlight class="normal">Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::numElements()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size_t<sp/>size<sp/>=<sp/>(size_t)getSize(0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>size<sp/>=<sp/>getSize(0);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>1;<sp/>i<sp/>&lt;<sp/>Dim;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size<sp/>*=<sp/>(size_t)getSize(i);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size<sp/>*=<sp/>getSize(i);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>size;</highlight></codeline>
@@ -602,10 +602,10 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class<sp/>PtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">__host__<sp/>__device__<sp/>bool<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;::</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>isContiguous()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>long<sp/>prevSize<sp/>=<sp/>1;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT<sp/>prevSize<sp/>=<sp/>1;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>Dim<sp/>-<sp/>1;<sp/>i<sp/>&gt;=<sp/>0;<sp/>--i)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(getSize(i)<sp/>!=<sp/>(IndexT)1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(getSize(i)<sp/>!=<sp/>1)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(getStride(i)<sp/>==<sp/>prevSize)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prevSize<sp/>*=<sp/>getSize(i);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>

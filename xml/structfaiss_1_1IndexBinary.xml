@@ -287,7 +287,7 @@
         <definition>virtual void faiss::IndexBinary::search</definition>
         <argsstring>(idx_t n, const uint8_t *x, idx_t k, int32_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const =0</argsstring>
         <name>search</name>
-        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a1a840ece1387890382bb00bede19044c">search</reimplementedby>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIndexBinaryFlat_1a2fbea875ba970e52c9ffb18fcdee3aff">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1a7a7812438f41665abe536cf623680341">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryFromFloat_1a6c563fb3242d765abdc7974157e02bb6">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryHash_1a2edc9bfa055aa91e6674127335db8c44">search</reimplementedby>

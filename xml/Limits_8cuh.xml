@@ -76,6 +76,19 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">constexpr<sp/>idx_t<sp/>kIdxTMax<sp/>=<sp/>std::numeric_limits&lt;idx_t&gt;::max();</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>idx_t<sp/>kIdxTMin<sp/>=<sp/>std::numeric_limits&lt;idx_t&gt;::lowest();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Limits&lt;idx_t&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>idx_t<sp/>getMin()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kIdxTMin;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>idx_t<sp/>getMax()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>kIdxTMax;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;typename<sp/>K,<sp/>typename<sp/>V&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>Limits&lt;Pair&lt;K,<sp/>V&gt;&gt;<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>__device__<sp/>__host__<sp/>inline<sp/>Pair&lt;K,<sp/>V&gt;<sp/>getMin()<sp/>{</highlight></codeline>

@@ -16,6 +16,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/Index.h&gt;<sp/>//<sp/>idx_t</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/Tensor.cuh&gt;</highlight></codeline>
 <codeline></codeline>
@@ -26,7 +27,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>T,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>Dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>InnerContig<sp/>=<sp/>false,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>int,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>IndexT<sp/>=<sp/>idx_t,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>U&gt;<sp/>class<sp/>PtrTraits<sp/>=<sp/>traits::DefaultPtrTraits&gt;</highlight></codeline>
 <codeline><highlight class="normal">class<sp/>DeviceTensor<sp/>:<sp/>public<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/>public:</highlight></codeline>

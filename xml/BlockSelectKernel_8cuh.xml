@@ -51,13 +51,13 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inStart<sp/>=<sp/>in[row][i].data();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(in.getSize(1),<sp/>kWarpSize);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inStart,<sp/>(IndexType)i);</highlight></codeline>
@@ -108,14 +108,14 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap(initK,<sp/>initV,<sp/>smemK,<sp/>smemV,<sp/>k);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Grid<sp/>is<sp/>exactly<sp/>sized<sp/>to<sp/>rows<sp/>available</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>row<sp/>=<sp/>blockIdx.x;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>i<sp/>=<sp/>threadIdx.x;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>K*<sp/>inKStart<sp/>=<sp/>inK[row][i].data();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IndexType*<sp/>inVStart<sp/>=<sp/>inV[row][i].data();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Whole<sp/>warps<sp/>must<sp/>participate<sp/>in<sp/>the<sp/>selection</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>limit<sp/>=<sp/>utils::roundDown(inK.getSize(1),<sp/>kWarpSize);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>idx_t<sp/>limit<sp/>=<sp/>utils::roundDown(inK.getSize(1),<sp/>(idx_t)kWarpSize);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>for<sp/>(;<sp/>i<sp/>&lt;<sp/>limit;<sp/>i<sp/>+=<sp/>ThreadsPerBlock)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>heap.add(*inKStart,<sp/>*inVStart);</highlight></codeline>
@@ -139,16 +139,16 @@
 <codeline><highlight class="normal">void<sp/>runBlockSelect(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">void<sp/>runBlockSelectPair(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>inKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>inIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>inIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
@@ -156,16 +156,16 @@
 <codeline><highlight class="normal">void<sp/>runBlockSelect(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>in,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">void<sp/>runBlockSelectPair(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>inKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>inIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>inIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>outKeys,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;int,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>dir,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaStream_t<sp/>stream);</highlight></codeline>
