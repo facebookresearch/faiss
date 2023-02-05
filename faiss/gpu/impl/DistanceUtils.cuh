@@ -251,8 +251,8 @@ struct JensenShannonDistance {
     float dist;
 };
 
-struct JaccardDistance {
-    __host__ __device__ JaccardDistance() : numerator(0), denominator(0) {}
+struct JaccardSimilarity {
+    __host__ __device__ JaccardSimilarity() : numerator(0), denominator(0) {}
 
     static constexpr bool kDirection = false; // minimize
     static constexpr float kIdentityData = 0;
@@ -267,13 +267,13 @@ struct JaccardDistance {
         return numerator / denominator;
     }
 
-    __host__ __device__ void combine(const JaccardDistance& v) {
+    __host__ __device__ void combine(const JaccardSimilarity& v) {
         numerator += v.numerator;
         denominator += v.denominator;
     }
 
-    __host__ __device__ JaccardDistance zero() const {
-        return JaccardDistance();
+    __host__ __device__ JaccardSimilarity zero() const {
+        return JaccardSimilarity();
     }
 
     float numerator;

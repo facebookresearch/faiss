@@ -233,7 +233,7 @@ void allPairwiseDistanceOnDevice(
                     tVectorsDimInnermost,
                     tQueriesDimInnermost,
                     outDistances,
-                    JaccardDistance(),
+                    JaccardSimilarity(),
                     stream);
         } else {
             FAISS_THROW_FMT("unimplemented metric type %d", metric);
@@ -389,7 +389,7 @@ void bfKnnOnDevice(
                     tVectorsDimInnermost,
                     tQueriesDimInnermost,
                     k,
-                    JaccardDistance(),
+                    JaccardSimilarity(),
                     outDistances,
                     outIndices);
         } else {
