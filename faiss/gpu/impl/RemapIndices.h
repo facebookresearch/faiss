@@ -17,8 +17,8 @@ namespace gpu {
 /// the CPU. In a cpp in order to use OpenMP.
 void ivfOffsetToUserIndex(
         idx_t* indices,
-        int numLists,
-        int queries,
+        idx_t numLists,
+        idx_t queries,
         int k,
         const std::vector<std::vector<idx_t>>& listOffsetToUserIndex);
 

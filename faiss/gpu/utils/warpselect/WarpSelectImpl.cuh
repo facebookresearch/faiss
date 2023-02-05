@@ -12,7 +12,7 @@
     extern void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_( \
             Tensor<TYPE, 2, true>& in,                      \
             Tensor<TYPE, 2, true>& outK,                    \
-            Tensor<int, 2, true>& outV,                     \
+            Tensor<idx_t, 2, true>& outV,                   \
             bool dir,                                       \
             int k,                                          \
             cudaStream_t stream)
@@ -21,7 +21,7 @@
     void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_(                           \
             Tensor<TYPE, 2, true>& in,                                         \
             Tensor<TYPE, 2, true>& outK,                                       \
-            Tensor<int, 2, true>& outV,                                        \
+            Tensor<idx_t, 2, true>& outV,                                      \
             bool dir,                                                          \
             int k,                                                             \
             cudaStream_t stream) {                                             \
@@ -36,7 +36,7 @@
         auto kInit = dir ? Limits<TYPE>::getMin() : Limits<TYPE>::getMax();    \
         auto vInit = -1;                                                       \
                                                                                \
-        warpSelect<TYPE, int, DIR, WARP_Q, THREAD_Q, kWarpSelectNumThreads>    \
+        warpSelect<TYPE, idx_t, DIR, WARP_Q, THREAD_Q, kWarpSelectNumThreads>  \
                 <<<grid, block, 0, stream>>>(in, outK, outV, kInit, vInit, k); \
         CUDA_TEST_ERROR();                                                     \
     }

@@ -20,6 +20,16 @@
 namespace faiss {
 namespace gpu {
 
+// For growing GPU allocations:
+// Below this size, we always round the allocation size up to the next highest
+// power of 2
+constexpr size_t kDeviceVector_2x_Limit = 4 * 1024 * 1024;
+
+// Otherwise, below this size, we always round the allocation size up by a
+// factor of 1.25. Otherwise, all reallocations are exact to the newly requested
+// size.
+constexpr size_t kDeviceVector_1_25x_Limit = 128 * 1024 * 1024;
+
 /// A simple version of thrust::device_vector<T>, but has more control
 /// over streams, whether resize() initializes new space with T() (which we
 /// don't want), and control on how much the reserved space grows by
@@ -236,7 +246,13 @@ class DeviceVector {
     }
 
     size_t getNewCapacity_(size_t preferredSize) {
-        return utils::nextHighestPowerOf2(preferredSize);
+        if (preferredSize <= kDeviceVector_2x_Limit) {
+            return utils::nextHighestPowerOf2(preferredSize);
+        } else if (preferredSize <= kDeviceVector_1_25x_Limit) {
+            return preferredSize + (preferredSize << 2);
+        } else {
+            return preferredSize;
+        }
     }
 
     /// Our current memory allocation, if any

@@ -24,32 +24,34 @@ class GpuResources;
 void runCalcListOffsets(
         GpuResources* res,
         Tensor<idx_t, 2, true>& ivfListIds,
-        DeviceVector<int>& listLengths,
-        Tensor<int, 2, true>& prefixSumOffsets,
+        DeviceVector<idx_t>& listLengths,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<char, 1, true>& thrustMem,
         cudaStream_t stream);
 
 /// Performs a first pass of k-selection on the results
 void runPass1SelectLists(
-        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<float, 1, true>& distance,
         int nprobe,
         int k,
+        bool use64BitSelection,
         bool chooseLargest,
         Tensor<float, 3, true>& heapDistances,
-        Tensor<int, 3, true>& heapIndices,
+        Tensor<idx_t, 3, true>& heapIndices,
         cudaStream_t stream);
 
 /// Performs a final pass of k-selection on the results, producing the
 /// final indices
 void runPass2SelectLists(
         Tensor<float, 2, true>& heapDistances,
-        Tensor<int, 2, true>& heapIndices,
+        Tensor<idx_t, 2, true>& heapIndices,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        Tensor<int, 2, true>& prefixSumOffsets,
+        Tensor<idx_t, 2, true>& prefixSumOffsets,
         Tensor<idx_t, 2, true>& ivfListIds,
         int k,
+        bool use64BitSelection,
         bool chooseLargest,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,

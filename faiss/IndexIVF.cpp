@@ -529,7 +529,7 @@ void IndexIVF::search_preassigned(
                             invlists->get_iterator(key));
 
                     nheap += scanner->iterate_codes(
-                            it.get(), list_size, simi, idxi, k);
+                            it.get(), simi, idxi, k, list_size);
 
                     return list_size;
                 } else {
@@ -767,6 +767,10 @@ void IndexIVF::range_search_preassigned(
     idx_t max_codes = params ? params->max_codes : this->max_codes;
     IDSelector* sel = params ? params->sel : nullptr;
 
+    FAISS_THROW_IF_NOT_MSG(
+            !invlists->use_iterator || (max_codes == 0 && store_pairs == false),
+            "iterable inverted lists don't support max_codes and store_pairs");
+
     size_t nlistv = 0, ndis = 0;
 
     bool interrupt = false;
@@ -803,21 +807,30 @@ void IndexIVF::range_search_preassigned(
                     key,
                     ik,
                     nlist);
-            const size_t list_size = invlists->list_size(key);
 
-            if (list_size == 0)
+            if (invlists->is_empty(key)) {
                 return;
+            }
 
             try {
-                InvertedLists::ScopedCodes scodes(invlists, key);
-                InvertedLists::ScopedIds ids(invlists, key);
-
+                size_t list_size = 0;
                 scanner->set_list(key, coarse_dis[i * nprobe + ik]);
+                if (invlists->use_iterator) {
+                    std::unique_ptr<InvertedListsIterator> it(
+                            invlists->get_iterator(key));
+
+                    scanner->iterate_codes_range(
+                            it.get(), radius, qres, list_size);
+                } else {
+                    InvertedLists::ScopedCodes scodes(invlists, key);
+                    InvertedLists::ScopedIds ids(invlists, key);
+                    list_size = invlists->list_size(key);
+
+                    scanner->scan_codes_range(
+                            list_size, scodes.get(), ids.get(), radius, qres);
+                }
                 nlistv++;
                 ndis += list_size;
-                scanner->scan_codes_range(
-                        list_size, scodes.get(), ids.get(), radius, qres);
-
             } catch (const std::exception& e) {
                 std::lock_guard<std::mutex> lock(exception_mutex);
                 exception_string =
@@ -1202,32 +1215,32 @@ size_t InvertedListScanner::scan_codes(
 
 size_t InvertedListScanner::iterate_codes(
         InvertedListsIterator* it,
-        size_t& n,
         float* simi,
         idx_t* idxi,
-        size_t k) const {
+        size_t k,
+        size_t& list_size) const {
     size_t nup = 0;
-    n = 0;
+    list_size = 0;
 
     if (!keep_max) {
-        while (it->has_next()) {
-            auto id_and_codes = it->next();
+        for (; it->is_available(); it->next()) {
+            auto id_and_codes = it->get_id_and_codes();
             float dis = distance_to_code(id_and_codes.second);
             if (dis < simi[0]) {
                 maxheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
                 nup++;
             }
-            n++;
+            list_size++;
         }
     } else {
-        while (it->has_next()) {
-            auto id_and_codes = it->next();
+        for (; it->is_available(); it->next()) {
+            auto id_and_codes = it->get_id_and_codes();
             float dis = distance_to_code(id_and_codes.second);
             if (dis > simi[0]) {
                 minheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
                 nup++;
             }
-            n++;
+            list_size++;
         }
     }
     return nup;
@@ -1249,6 +1262,25 @@ void InvertedListScanner::scan_codes_range(
             res.add(dis, id);
         }
         codes += code_size;
+    }
+}
+
+void InvertedListScanner::iterate_codes_range(
+        InvertedListsIterator* it,
+        float radius,
+        RangeQueryResult& res,
+        size_t& list_size) const {
+    list_size = 0;
+    for (; it->is_available(); it->next()) {
+        auto id_and_codes = it->get_id_and_codes();
+        float dis = distance_to_code(id_and_codes.second);
+        bool keep = !keep_max
+                ? dis < radius
+                : dis > radius; // TODO templatize to remove this test
+        if (keep) {
+            res.add(dis, id_and_codes.first);
+        }
+        list_size++;
     }
 }
 

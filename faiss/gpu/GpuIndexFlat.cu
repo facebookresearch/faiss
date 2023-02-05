@@ -100,14 +100,6 @@ void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
 
     GpuIndex::copyFrom(index);
 
-    // GPU code has 32 bit indices
-    FAISS_THROW_IF_NOT_FMT(
-            index->ntotal <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %zu indices; "
-            "attempting to copy CPU index with %zu parameters",
-            (size_t)std::numeric_limits<int>::max(),
-            (size_t)index->ntotal);
-
     data_.reset();
     data_.reset(new FlatIndex(
             resources_.get(),
@@ -161,7 +153,6 @@ void GpuIndexFlat::add(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
-    validateNumVectors(n);
 
     if (n == 0) {
         // nothing to add
@@ -186,7 +177,7 @@ bool GpuIndexFlat::addImplRequiresIDs_() const {
     return false;
 }
 
-void GpuIndexFlat::addImpl_(int n, const float* x, const idx_t* ids) {
+void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     // current device already set
     // n already validated
     FAISS_ASSERT(data_);
@@ -195,19 +186,12 @@ void GpuIndexFlat::addImpl_(int n, const float* x, const idx_t* ids) {
     // We do not support add_with_ids
     FAISS_THROW_IF_NOT_MSG(!ids, "add_with_ids not supported");
 
-    // Due to GPU indexing in int32, we can't store more than this
-    // number of vectors on a GPU
-    FAISS_THROW_IF_NOT_FMT(
-            this->ntotal + n <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %zu indices",
-            (size_t)std::numeric_limits<int>::max());
-
     data_->add(x, n, resources_->getDefaultStream(config_.device));
     this->ntotal += n;
 }
 
 void GpuIndexFlat::searchImpl_(
-        int n,
+        idx_t n,
         const float* x,
         int k,
         float* distances,
@@ -218,25 +202,12 @@ void GpuIndexFlat::searchImpl_(
     auto stream = resources_->getDefaultStream(config_.device);
 
     // Input and output data are already resident on the GPU
-    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int)this->d});
+    Tensor<float, 2, true> queries(const_cast<float*>(x), {n, this->d});
     Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(labels, {n, k});
 
-    // FlatIndex only supports int indices
-    DeviceTensor<int, 2, true> outIntLabels(
-            resources_.get(), makeTempAlloc(AllocType::Other, stream), {n, k});
-
     data_->query(
-            queries,
-            k,
-            metric_type,
-            metric_arg,
-            outDistances,
-            outIntLabels,
-            true);
-
-    // Convert int to idx_t
-    convertTensor<int, idx_t, 2>(stream, outIntLabels, outLabels);
+            queries, k, metric_type, metric_arg, outDistances, outLabels, true);
 }
 
 void GpuIndexFlat::reconstruct(idx_t key, float* out) const {
@@ -270,8 +241,6 @@ void GpuIndexFlat::reconstruct_n(idx_t i0, idx_t n, float* out) const {
         return;
     }
 
-    validateNumVectors(n);
-
     FAISS_THROW_IF_NOT_FMT(
             i0 < this->ntotal,
             "start index (%zu) out of bounds (ntotal %zu)",
@@ -282,19 +251,10 @@ void GpuIndexFlat::reconstruct_n(idx_t i0, idx_t n, float* out) const {
             "max index requested (%zu) out of bounds (ntotal %zu)",
             i0 + n - 1,
             this->ntotal);
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (idx_t)std::numeric_limits<int>::max(),
-            "number of vectors requested (%zu) must be less than %zu",
-            n,
-            (idx_t)std::numeric_limits<int>::max());
     auto stream = resources_->getDefaultStream(config_.device);
 
     auto outDevice = toDeviceTemporary<float, 2>(
-            resources_.get(),
-            config_.device,
-            out,
-            stream,
-            {(int)n, (int)this->d});
+            resources_.get(), config_.device, out, stream, {n, this->d});
 
     FAISS_ASSERT(data_);
     data_->reconstruct(i0, n, outDevice);
@@ -312,21 +272,15 @@ void GpuIndexFlat::reconstruct_batch(idx_t n, const idx_t* keys, float* out)
         return;
     }
 
-    validateNumVectors(n);
-
     auto keysDevice = toDeviceTemporary<faiss::idx_t, 1>(
             resources_.get(),
             config_.device,
             const_cast<idx_t*>(keys),
             stream,
-            {(int)n});
+            {n});
 
     auto outDevice = toDeviceTemporary<float, 2>(
-            resources_.get(),
-            config_.device,
-            out,
-            stream,
-            {(int)n, (int)this->d});
+            resources_.get(), config_.device, out, stream, {n, this->d});
 
     FAISS_ASSERT(data_);
     data_->reconstruct(keysDevice, outDevice);
@@ -353,26 +307,20 @@ void GpuIndexFlat::compute_residual_n(
         return;
     }
 
-    validateNumVectors(n);
-
     auto vecsDevice = toDeviceTemporary<float, 2>(
             resources_.get(),
             config_.device,
             const_cast<float*>(xs),
             stream,
-            {(int)n, (int)this->d});
+            {n, this->d});
     auto idsDevice = toDeviceTemporary<idx_t, 1>(
             resources_.get(),
             config_.device,
             const_cast<idx_t*>(keys),
             stream,
-            {(int)n});
+            {n});
     auto residualDevice = toDeviceTemporary<float, 2>(
-            resources_.get(),
-            config_.device,
-            residuals,
-            stream,
-            {(int)n, (int)this->d});
+            resources_.get(), config_.device, residuals, stream, {n, this->d});
 
     FAISS_ASSERT(data_);
     data_->computeResidual(vecsDevice, idsDevice, residualDevice);

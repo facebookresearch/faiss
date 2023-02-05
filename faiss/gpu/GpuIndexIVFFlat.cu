@@ -39,7 +39,7 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
 GpuIndexIVFFlat::GpuIndexIVFFlat(
         GpuResourcesProvider* provider,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::MetricType metric,
         GpuIndexIVFFlatConfig config)
         : GpuIndexIVF(provider, dims, metric, 0, nlist, config),
@@ -53,7 +53,7 @@ GpuIndexIVFFlat::GpuIndexIVFFlat(
         GpuResourcesProvider* provider,
         Index* coarseQuantizer,
         int dims,
-        int nlist,
+        idx_t nlist,
         faiss::MetricType metric,
         GpuIndexIVFFlatConfig config)
         : GpuIndexIVF(
@@ -191,12 +191,6 @@ void GpuIndexIVFFlat::updateQuantizer() {
 void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     DeviceScope scope(config_.device);
 
-    // For now, only support <= max int results
-    FAISS_THROW_IF_NOT_FMT(
-            n <= (idx_t)std::numeric_limits<int>::max(),
-            "GPU index only supports up to %d indices",
-            std::numeric_limits<int>::max());
-
     // just in case someone changed our quantizer
     verifyIVFSettings_();
 
@@ -213,7 +207,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
     auto hostData = toHost<float, 2>(
             (float*)x,
             resources_->getDefaultStream(config_.device),
-            {(int)n, (int)this->d});
+            {n, this->d});
 
     trainQuantizer_(n, hostData.data());
 

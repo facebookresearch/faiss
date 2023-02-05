@@ -120,11 +120,11 @@ class GpuIndexFlat : public GpuIndex {
     bool addImplRequiresIDs_() const override;
 
     /// Called from GpuIndex for add
-    void addImpl_(int n, const float* x, const idx_t* ids) override;
+    void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
-            int n,
+            idx_t n,
             const float* x,
             int k,
             float* distances,

@@ -16,7 +16,7 @@ void runBinaryDistance(
         Tensor<unsigned char, 2, true>& vecs,
         Tensor<unsigned char, 2, true>& query,
         Tensor<int, 2, true>& outK,
-        Tensor<int, 2, true>& outV,
+        Tensor<idx_t, 2, true>& outV,
         int k,
         cudaStream_t stream);
 

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/Index.h> // idx_t
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 
@@ -17,7 +18,7 @@ template <
         typename T,
         int Dim,
         bool InnerContig = false,
-        typename IndexT = int,
+        typename IndexT = idx_t,
         template <typename U> class PtrTraits = traits::DefaultPtrTraits>
 class DeviceTensor : public Tensor<T, Dim, InnerContig, IndexT, PtrTraits> {
    public:
