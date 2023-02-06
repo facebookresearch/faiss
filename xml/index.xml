@@ -5829,6 +5829,7 @@
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1ad6bb3494dc22593782dc9e332ccb2947" kind="function"><name>ResidualCoarseQuantizer</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a587834371f23f8a938a43449f5983002" kind="function"><name>ResidualCoarseQuantizer</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a0e90357323324f990a6546301424e95a" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1ResidualCoarseQuantizer_1af1a04701a9d571f6233149d2b5fdf810" kind="function"><name>initialize_from</name></member>
     <member refid="structfaiss_1_1ResidualCoarseQuantizer_1a77b30167d292d340a237702805cd01fc" kind="function"><name>ResidualCoarseQuantizer</name></member>
     <member refid="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1AdditiveCoarseQuantizer_1a68a74f41ca7c511663dd573183fb670b" kind="function"><name>reconstruct</name></member>
@@ -5889,6 +5890,11 @@
   <compound refid="structfaiss_1_1SearchParametersPreTransform" kind="struct"><name>faiss::SearchParametersPreTransform</name>
     <member refid="structfaiss_1_1SearchParametersPreTransform_1ad702994db562c5d3b2def8ce3ed1c0fc" kind="variable"><name>index_params</name></member>
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" kind="struct"><name>faiss::SearchParametersResidualCoarseQuantizer</name>
+    <member refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1aa4e4f4aaeba8c80fc24f34c8f858e78f" kind="variable"><name>beam_factor</name></member>
+    <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1ac0b4d3b2ce2e0873b3d2c52632df0040" kind="function"><name>~SearchParametersResidualCoarseQuantizer</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd16uint16" kind="struct"><name>faiss::simd16uint16</name>
     <member refid="structfaiss_1_1simd16uint16_1ab55c9dbcc50e95d98bdde9ca6820570b" kind="variable"><name>data</name></member>

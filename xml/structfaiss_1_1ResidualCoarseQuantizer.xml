@@ -17,13 +17,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="195" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="195" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="201" column="23" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="201" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95" prot="public" static="no" mutable="no">
         <type>float</type>
         <definition>float faiss::ResidualCoarseQuantizer::beam_factor</definition>
         <argsstring></argsstring>
         <name>beam_factor</name>
+        <initializer>= 4.0f</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -31,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="199" column="11" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="199" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="205" column="11" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="205" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1AdditiveCoarseQuantizer_1accf96f99f09d707152a2039fb00e9fd9" prot="public" static="no" mutable="no">
         <type>AdditiveQuantizer *</type>
@@ -162,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="202" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="208" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1ad6bb3494dc22593782dc9e332ccb2947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -225,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="210" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="216" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a587834371f23f8a938a43449f5983002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -251,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="216" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="222" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a0e90357323324f990a6546301424e95a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -318,7 +319,25 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="221" column="10"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="227" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1af1a04701a9d571f6233149d2b5fdf810" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ResidualCoarseQuantizer::initialize_from</definition>
+        <argsstring>(const ResidualCoarseQuantizer &amp;other)</argsstring>
+        <name>initialize_from</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ResidualCoarseQuantizer" kindref="compound">ResidualCoarseQuantizer</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy the M first codebook levels from other. Useful to crop a ResidualQuantizer to its first M quantizers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="237" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ResidualCoarseQuantizer_1a77b30167d292d340a237702805cd01fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -331,7 +350,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="229" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="239" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1203,7 +1222,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizer.h" line="193" column="1" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="193" bodyend="230"/>
+    <location file="faiss/IndexAdditiveQuantizer.h" line="199" column="1" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="199" bodyend="240"/>
     <listofallmembers>
       <member refid="structfaiss_1_1AdditiveCoarseQuantizer_1ab89eda0c3fedb121517337cef79c01a6" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>add_with_ids</name></member>
@@ -1220,6 +1239,7 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1ResidualCoarseQuantizer_1af1a04701a9d571f6233149d2b5fdf810" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>initialize_from</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::ResidualCoarseQuantizer</scope><name>metric_arg</name></member>

@@ -5,6 +5,7 @@
     <derivedcompoundref refid="structfaiss_1_1SearchParametersIVF" prot="public" virt="non-virtual">faiss::SearchParametersIVF</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPQ" prot="public" virt="non-virtual">faiss::SearchParametersPQ</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPreTransform" prot="public" virt="non-virtual">faiss::SearchParametersPreTransform</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public" virt="non-virtual">faiss::SearchParametersResidualCoarseQuantizer</derivedcompoundref>
     <includes refid="Index_8h" local="no">Index.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
@@ -72,6 +73,12 @@
         <label>faiss::IVFPQSearchParameters</label>
         <link refid="structfaiss_1_1IVFPQSearchParameters"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::SearchParametersResidualCoarseQuantizer</label>
+        <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

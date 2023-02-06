@@ -26,6 +26,7 @@
     <innerclass refid="structfaiss_1_1IndexProductResidualQuantizer" prot="public">faiss::IndexProductResidualQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexProductLocalSearchQuantizer" prot="public">faiss::IndexProductLocalSearchQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1AdditiveCoarseQuantizer" prot="public">faiss::AdditiveCoarseQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public">faiss::SearchParametersResidualCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1ResidualCoarseQuantizer" prot="public">faiss::ResidualCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1LocalSearchCoarseQuantizer" prot="public">faiss::LocalSearchCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" prot="public">faiss::IndexAdditiveQuantizerFastScan</innerclass>
