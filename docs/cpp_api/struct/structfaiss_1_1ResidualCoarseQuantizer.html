@@ -268,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersIVF.html">Struct faiss::SearchParametersIVF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPQ.html">Struct faiss::SearchParametersPQ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersPreTransform.html">Struct faiss::SearchParametersPreTransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SearchParametersResidualCoarseQuantizer.html">Struct faiss::SearchParametersResidualCoarseQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
@@ -444,6 +445,12 @@
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss23ResidualCoarseQuantizer15initialize_fromERK23ResidualCoarseQuantizer">
+<span id="_CPPv3N5faiss23ResidualCoarseQuantizer15initialize_fromERK23ResidualCoarseQuantizer"></span><span id="_CPPv2N5faiss23ResidualCoarseQuantizer15initialize_fromERK23ResidualCoarseQuantizer"></span><span id="faiss::ResidualCoarseQuantizer::initialize_from__ResidualCoarseQuantizerCR"></span><span class="target" id="structfaiss_1_1ResidualCoarseQuantizer_1af1a04701a9d571f6233149d2b5fdf810"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialize_from</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/IndexAdditiveQuantizer_8h.html#_CPPv4N5faiss23ResidualCoarseQuantizerE" title="faiss::ResidualCoarseQuantizer"><span class="n"><span class="pre">ResidualCoarseQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Copy the M first codebook levels from other. Useful to crop a ResidualQuantizer to its first M quantizers. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -680,7 +687,7 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss23ResidualCoarseQuantizer11beam_factorE">
-<span id="_CPPv3N5faiss23ResidualCoarseQuantizer11beam_factorE"></span><span id="_CPPv2N5faiss23ResidualCoarseQuantizer11beam_factorE"></span><span id="faiss::ResidualCoarseQuantizer::beam_factor__float"></span><span class="target" id="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">beam_factor</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss23ResidualCoarseQuantizer11beam_factorE"></span><span id="_CPPv2N5faiss23ResidualCoarseQuantizer11beam_factorE"></span><span id="faiss::ResidualCoarseQuantizer::beam_factor__float"></span><span class="target" id="structfaiss_1_1ResidualCoarseQuantizer_1a274f7631a5344a053a4d305b0cd2bf95"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">beam_factor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4.0f</span></span><br /></dt>
 <dd><p>factor between the beam size and the search k if negative, use exact search-to-centroid </p>
 </dd></dl>
 
