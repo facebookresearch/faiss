@@ -459,9 +459,7 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         return;
     }
 
-    if (this->verbose) {
-        printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
-    }
+    printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
 
     if (config_.use_raft) {
         printf("Using raft to train quantizer for %d vectors\n", n);
@@ -472,6 +470,7 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         raft_idx_params.n_lists = nlist;
         raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
         raft_idx_params.add_data_on_build = false;
+        raft_idx_params.kmeans_trainset_fraction = 1.0;
         raft_idx_params.kmeans_n_iters = 100;
 
         auto raft_index = raft::neighbors::ivf_flat::build(

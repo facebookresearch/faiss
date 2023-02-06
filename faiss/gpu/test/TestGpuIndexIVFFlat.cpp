@@ -20,6 +20,7 @@
 constexpr float kF16MaxRelErr = 0.3f;
 constexpr float kF32MaxRelErr = 0.03f;
 
+
 struct Options {
     Options() {
         numAdd = 2 * faiss::gpu::randVal(2000, 5000);
@@ -27,10 +28,7 @@ struct Options {
 
         numCentroids = std::sqrt((float)numAdd / 2);
         numTrain = numCentroids * 40;
-        nprobe = std::min(
-                numCentroids,
-                int(numCentroids / 2) + 10); // faiss::gpu::randVal(std::min(50,
-                                             // numCentroids), numCentroids);
+        nprobe = faiss::gpu::randVal(std::min(50, numCentroids), numCentroids);
         numQuery = faiss::gpu::randVal(32, 100);
 
         // Due to the approximate nature of the query and of floating point
@@ -102,8 +100,6 @@ void queryTest(
         gpuIndex.setNumProbes(opt.nprobe);
 
         bool compFloat16 = useFloat16CoarseQuantizer;
-
-        printf("Use float16: %d\n", compFloat16);
         faiss::gpu::compareIndices(
                 cpuIndex,
                 gpuIndex,
