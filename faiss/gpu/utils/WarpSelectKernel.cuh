@@ -39,17 +39,17 @@ __global__ void warpSelect(
             heap(initK, initV, k);
 
     int warpId = threadIdx.x / kWarpSize;
-    int row = blockIdx.x * kNumWarps + warpId;
+    idx_t row = idx_t(blockIdx.x) * kNumWarps + warpId;
 
     if (row >= in.getSize(0)) {
         return;
     }
 
-    int i = getLaneId();
+    idx_t i = getLaneId();
     K* inStart = in[row][i].data();
 
     // Whole warps must participate in the selection
-    int limit = utils::roundDown(in.getSize(1), kWarpSize);
+    idx_t limit = utils::roundDown(in.getSize(1), kWarpSize);
 
     for (; i < limit; i += kWarpSize) {
         heap.add(*inStart, (IndexType)i);
@@ -68,7 +68,7 @@ __global__ void warpSelect(
 void runWarpSelect(
         Tensor<float, 2, true>& in,
         Tensor<float, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);
@@ -76,7 +76,7 @@ void runWarpSelect(
 void runWarpSelect(
         Tensor<half, 2, true>& in,
         Tensor<half, 2, true>& outKeys,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool dir,
         int k,
         cudaStream_t stream);

@@ -21,7 +21,7 @@ DeviceTensor<T, Dim, true> toDeviceTemporary(
         int dstDevice,
         T* src,
         cudaStream_t stream,
-        std::initializer_list<int> sizes) {
+        std::initializer_list<idx_t> sizes) {
     int dev = getDeviceForAddress(src);
     DeviceTensor<T, Dim, true> oldT(src, sizes);
 
@@ -46,7 +46,7 @@ DeviceTensor<T, Dim, true> toDeviceNonTemporary(
         int dstDevice,
         T* src,
         cudaStream_t stream,
-        std::initializer_list<int> sizes) {
+        std::initializer_list<idx_t> sizes) {
     int dev = getDeviceForAddress(src);
     DeviceTensor<T, Dim, true> oldT(src, sizes);
 
@@ -74,12 +74,10 @@ DeviceTensor<T, 1, true> toDeviceTemporary(
     // Uses the current device if device == -1
     DeviceScope scope(device);
 
-    FAISS_ASSERT(src.size() < (size_t)std::numeric_limits<int>::max());
-
     DeviceTensor<T, 1, true> out(
             resources,
             makeTempAlloc(AllocType::Other, stream),
-            {(int)src.size()});
+            {(idx_t)src.size()});
 
     out.copyFrom(src, stream);
 
@@ -91,7 +89,7 @@ template <typename T, int Dim>
 HostTensor<T, Dim, true> toHost(
         T* src,
         cudaStream_t stream,
-        std::initializer_list<int> sizes) {
+        std::initializer_list<idx_t> sizes) {
     int dev = getDeviceForAddress(src);
 
     if (dev == -1) {

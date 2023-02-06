@@ -13,6 +13,8 @@
 namespace faiss {
 namespace gpu {
 
+constexpr int kBitsPerByte = 8;
+
 BinaryFlatIndex::BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space)
         : resources_(res),
           dim_(dim),
@@ -23,20 +25,25 @@ BinaryFlatIndex::BinaryFlatIndex(GpuResources* res, int dim, MemorySpace space)
                           AllocType::FlatData,
                           space,
                           res->getDefaultStreamCurrentDevice())) {
-    FAISS_ASSERT(dim % 8 == 0);
+    // Like the CPU version, dimensions must be evenly divisible by 8 (fit into
+    // an integral number of bytes)
+    FAISS_ASSERT(dim % kBitsPerByte == 0);
 }
 
 /// Returns the number of vectors we contain
-int BinaryFlatIndex::getSize() const {
+idx_t BinaryFlatIndex::getSize() const {
     return vectors_.getSize(0);
 }
 
-int BinaryFlatIndex::getDim() const {
-    return vectors_.getSize(1) * 8;
+idx_t BinaryFlatIndex::getDim() const {
+    return vectors_.getSize(1) * kBitsPerByte;
 }
 
 void BinaryFlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
-    rawData_.reserve(numVecs * (dim_ / 8) * sizeof(unsigned int), stream);
+    // Like the CPU version, dimensions must be evenly divisible by 8 (fit into
+    // an integral number of bytes)
+    rawData_.reserve(
+            numVecs * (dim_ / kBitsPerByte) * sizeof(unsigned char), stream);
 }
 
 Tensor<unsigned char, 2, true>& BinaryFlatIndex::getVectorsRef() {
@@ -47,7 +54,7 @@ void BinaryFlatIndex::query(
         Tensor<unsigned char, 2, true>& input,
         int k,
         Tensor<int, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     runBinaryDistance(vectors_, input, outDistances, outIndices, k, stream);
@@ -55,7 +62,7 @@ void BinaryFlatIndex::query(
 
 void BinaryFlatIndex::add(
         const unsigned char* data,
-        int numVecs,
+        idx_t numVecs,
         cudaStream_t stream) {
     if (numVecs == 0) {
         return;
@@ -63,14 +70,14 @@ void BinaryFlatIndex::add(
 
     rawData_.append(
             (char*)data,
-            (size_t)(dim_ / 8) * numVecs * sizeof(unsigned char),
+            (size_t)(dim_ / kBitsPerByte) * numVecs * sizeof(unsigned char),
             stream,
             true /* reserve exactly */);
 
     num_ += numVecs;
 
     DeviceTensor<unsigned char, 2, true> vectors(
-            (unsigned char*)rawData_.data(), {(int)num_, (dim_ / 8)});
+            (unsigned char*)rawData_.data(), {num_, (dim_ / kBitsPerByte)});
     vectors_ = std::move(vectors);
 }
 

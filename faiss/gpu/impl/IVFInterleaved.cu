@@ -18,7 +18,7 @@ constexpr uint32_t kMaxUInt32 = std::numeric_limits<uint32_t>::max();
 template <int ThreadsPerBlock, int NumWarpQ, int NumThreadQ>
 __global__ void ivfInterleavedScan2(
         Tensor<float, 3, true> distanceIn,
-        Tensor<int, 3, true> indicesIn,
+        Tensor<idx_t, 3, true> indicesIn,
         Tensor<idx_t, 2, true> listIds,
         int k,
         void** listIndices,
@@ -31,6 +31,9 @@ __global__ void ivfInterleavedScan2(
     constexpr int kNumWarps = ThreadsPerBlock / kWarpSize;
 
     __shared__ float smemK[kNumWarps * NumWarpQ];
+    // The BlockSelect value type is uint32_t, as we pack together which probe
+    // (up to nprobe - 1) and which k (up to k - 1) from each individual list
+    // together, and both nprobe and k are limited to GPU_MAX_SELECTION_K.
     __shared__ uint32_t smemV[kNumWarps * NumWarpQ];
 
     // To avoid creating excessive specializations, we combine direction
@@ -47,15 +50,15 @@ __global__ void ivfInterleavedScan2(
             heap(kFloatMax, kMaxUInt32, smemK, smemV, k);
 
     // nprobe x k
-    int num = distanceIn.getSize(1) * distanceIn.getSize(2);
+    idx_t num = distanceIn.getSize(1) * distanceIn.getSize(2);
 
-    auto distanceBase = distanceIn[queryId].data();
-    int limit = utils::roundDown(num, kWarpSize);
+    const float* distanceBase = distanceIn[queryId].data();
+    idx_t limit = utils::roundDown(num, kWarpSize);
 
     // This will keep our negation factor
     float adj = dir ? -1 : 1;
 
-    int i = threadIdx.x;
+    idx_t i = threadIdx.x;
     for (; i < limit; i += blockDim.x) {
         // We represent the index as (probe id)(k)
         // Right now, both are limited to a maximum of 2048, but we will
@@ -64,10 +67,13 @@ __global__ void ivfInterleavedScan2(
 
         uint32_t curProbe = i / k;
         uint32_t curK = i % k;
+        // Since nprobe and k are limited, we can pack both of these together
+        // into a uint32_t
         uint32_t index = (curProbe << 16) | (curK & (uint32_t)0xffff);
 
-        idx_t listId = listIds[queryId][curProbe];
-        if (listId != -1) {
+        // The IDs reported from the list may be -1, if a particular IVF list
+        // doesn't even have k entries in it
+        if (listIds[queryId][curProbe] != -1) {
             // Adjust the value we are selecting based on the sorting order
             heap.addThreadQ(distanceBase[i] * adj, index);
         }
@@ -105,7 +111,7 @@ __global__ void ivfInterleavedScan2(
             uint32_t curK = packedIndex & 0xffff;
 
             idx_t listId = listIds[queryId][curProbe];
-            int listOffset = indicesIn[queryId][curProbe][curK];
+            idx_t listOffset = indicesIn[queryId][curProbe][curK];
 
             if (opt == INDICES_32_BIT) {
                 index = (idx_t)((int*)listIndices[listId])[listOffset];
@@ -122,7 +128,7 @@ __global__ void ivfInterleavedScan2(
 
 void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
-        Tensor<int, 3, true>& indicesIn,
+        Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
         int k,
         DeviceVector<void*>& listIndices,
@@ -172,7 +178,7 @@ void runIVFInterleavedScan(
         DeviceVector<void*>& listData,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
-        DeviceVector<int>& listLengths,
+        DeviceVector<idx_t>& listLengths,
         int k,
         faiss::MetricType metric,
         bool useResidual,

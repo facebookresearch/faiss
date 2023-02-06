@@ -61,7 +61,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
     GpuIndexIVFFlat(
             GpuResourcesProvider* provider,
             int dims,
-            int nlist,
+            idx_t nlist,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 
@@ -71,7 +71,7 @@ class GpuIndexIVFFlat : public GpuIndexIVF {
             GpuResourcesProvider* provider,
             Index* coarseQuantizer,
             int dims,
-            int nlist,
+            idx_t nlist,
             faiss::MetricType metric = faiss::METRIC_L2,
             GpuIndexIVFFlatConfig config = GpuIndexIVFFlatConfig());
 

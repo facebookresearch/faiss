@@ -20,7 +20,7 @@ class IVFPQ : public IVFBase {
    public:
     IVFPQ(GpuResources* resources,
           int dim,
-          int nlist,
+          idx_t nlist,
           faiss::MetricType metric,
           float metricArg,
           int numSubQuantizers,
@@ -69,18 +69,18 @@ class IVFPQ : public IVFBase {
 
    protected:
     /// Returns the encoding size for a PQ-encoded IVF list
-    size_t getGpuVectorsEncodingSize_(int numVecs) const override;
-    size_t getCpuVectorsEncodingSize_(int numVecs) const override;
+    size_t getGpuVectorsEncodingSize_(idx_t numVecs) const override;
+    size_t getCpuVectorsEncodingSize_(idx_t numVecs) const override;
 
     /// Translate to our preferred GPU encoding
     std::vector<uint8_t> translateCodesToGpu_(
             std::vector<uint8_t> codes,
-            size_t numVecs) const override;
+            idx_t numVecs) const override;
 
     /// Translate from our preferred GPU encoding
     std::vector<uint8_t> translateCodesFromGpu_(
             std::vector<uint8_t> codes,
-            size_t numVecs) const override;
+            idx_t numVecs) const override;
 
     /// Encode the vectors that we're adding and append to our IVF lists
     void appendVectors_(
@@ -88,11 +88,11 @@ class IVFPQ : public IVFBase {
             Tensor<float, 2, true>& ivfCentroidResiduals,
             Tensor<idx_t, 1, true>& indices,
             Tensor<idx_t, 1, true>& uniqueLists,
-            Tensor<int, 1, true>& vectorsByUniqueList,
-            Tensor<int, 1, true>& uniqueListVectorStart,
-            Tensor<int, 1, true>& uniqueListStartOffset,
+            Tensor<idx_t, 1, true>& vectorsByUniqueList,
+            Tensor<idx_t, 1, true>& uniqueListVectorStart,
+            Tensor<idx_t, 1, true>& uniqueListStartOffset,
             Tensor<idx_t, 1, true>& listIds,
-            Tensor<int, 1, true>& listOffset,
+            Tensor<idx_t, 1, true>& listOffset,
             cudaStream_t stream) override;
 
     /// Shared IVF search implementation, used by both search and

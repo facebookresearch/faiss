@@ -58,8 +58,8 @@ void IndexWrapper<GpuIndex>::runOnIndices(std::function<void(GpuIndex*)> f) {
 }
 
 template <typename GpuIndex>
-void IndexWrapper<GpuIndex>::setNumProbes(int nprobe) {
-    runOnIndices([nprobe](GpuIndex* index) { index->setNumProbes(nprobe); });
+void IndexWrapper<GpuIndex>::setNumProbes(size_t nprobe) {
+    runOnIndices([nprobe](GpuIndex* index) { index->nprobe = nprobe; });
 }
 
 } // namespace gpu
