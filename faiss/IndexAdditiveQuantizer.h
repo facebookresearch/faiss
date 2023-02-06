@@ -187,6 +187,12 @@ struct AdditiveCoarseQuantizer : Index {
     void reset() override;
 };
 
+
+struct SearchParametersResidualCoarseQuantizer : SearchParameters {
+    float beam_factor = 4.0f;
+    ~SearchParametersResidualCoarseQuantizer() {}
+};
+
 /** The ResidualCoarseQuantizer is a bit specialized compared to the
  * default AdditiveCoarseQuantizer because it can use a beam search
  * at search time (slow but may be useful for very large vocabularies) */
@@ -196,7 +202,7 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
 
     /// factor between the beam size and the search k
     /// if negative, use exact search-to-centroid
-    float beam_factor;
+    float beam_factor = 4.0f;
 
     /// computes centroid norms if required
     void set_beam_factor(float new_beam_factor);
@@ -225,6 +231,10 @@ struct ResidualCoarseQuantizer : AdditiveCoarseQuantizer {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+
+    /** Copy the M first codebook levels from other. Useful to crop a
+     * ResidualQuantizer to its first M quantizers. */
+    void initialize_from(const ResidualCoarseQuantizer& other);
 
     ResidualCoarseQuantizer();
 };
