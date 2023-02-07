@@ -123,7 +123,7 @@ void RaftIVFFlat::search(
 /// The input data must be on our current device.
 /// Returns the number of vectors successfully added. Vectors may
 /// not be able to be added because they contain NaNs.
-int RaftIVFFlat::addVectors(
+idx_t RaftIVFFlat::addVectors(
         Index* coarseQuantizer,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices) {
@@ -163,7 +163,7 @@ void RaftIVFFlat::reset() {
     raft_knn_index.reset();
 }
 
-int RaftIVFFlat::getListLength(int listId) const {
+idx_t RaftIVFFlat::getListLength(idx_t listId) const {
     printf("Inside RaftIVFFlat getListLength\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
@@ -181,7 +181,7 @@ int RaftIVFFlat::getListLength(int listId) const {
 }
 
 /// Return the list indices of a particular list back to the CPU
-std::vector<idx_t> RaftIVFFlat::getListIndices(int listId) const {
+std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     printf("Inside RaftIVFFlat getListIndices\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
@@ -213,7 +213,7 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(int listId) const {
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
-std::vector<uint8_t> RaftIVFFlat::getListVectorData(int listId, bool gpuFormat)
+std::vector<uint8_t> RaftIVFFlat::getListVectorData(idx_t listId, bool gpuFormat)
         const {
     printf("Inside RaftIVFFlat getListVectorData\n");
 

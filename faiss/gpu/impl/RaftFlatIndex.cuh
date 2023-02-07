@@ -52,7 +52,7 @@ class RaftFlatIndex : public FlatIndex {
             faiss::MetricType metric,
             float metricArg,
             Tensor<float, 2, true>& outDistances,
-            Tensor<int, 2, true>& outIndices,
+            Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance) override;
 };
 

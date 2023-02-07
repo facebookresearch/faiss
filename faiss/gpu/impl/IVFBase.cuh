@@ -59,7 +59,7 @@ class IVFBase {
 
     /// For debugging purposes, return the list length of a particular
     /// list
-    virtual idx_t getListLength(int listId) const;
+    virtual idx_t getListLength(idx_t listId) const;
 
     /// Return the list indices of a particular list back to the CPU
     virtual std::vector<idx_t> getListIndices(idx_t listId) const;

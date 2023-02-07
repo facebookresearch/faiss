@@ -45,7 +45,7 @@ void RaftFlatIndex::query(
         faiss::MetricType metric,
         float metricArg,
         Tensor<float, 2, true>& outDistances,
-        Tensor<int, 2, true>& outIndices,
+        Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
     // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
     if (k <= 64 && metric == MetricType::METRIC_L2 && vectors_.getSize(0) > 0) {
@@ -59,7 +59,7 @@ void RaftFlatIndex::query(
                 vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
         auto search = raft::make_device_matrix_view<float>(
                 input.data(), input.getSize(0), input.getSize(1));
-        auto inds = raft::make_device_matrix_view<int>(
+        auto inds = raft::make_device_matrix_view<idx_t>(
                 outIndices.data(),
                 outIndices.getSize(0),
                 outIndices.getSize(1));

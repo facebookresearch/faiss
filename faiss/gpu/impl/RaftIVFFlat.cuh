@@ -76,7 +76,7 @@ class RaftIVFFlat : public IVFFlat {
     /// The input data must be on our current device.
     /// Returns the number of vectors successfully added. Vectors may
     /// not be able to be added because they contain NaNs.
-    int addVectors(
+    idx_t addVectors(
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices) override;
@@ -87,13 +87,13 @@ class RaftIVFFlat : public IVFFlat {
 
     /// For debugging purposes, return the list length of a particular
     /// list
-    int getListLength(int listId) const override;
+    idx_t getListLength(idx_t listId) const override;
 
     /// Return the list indices of a particular list back to the CPU
-    std::vector<idx_t> getListIndices(int listId) const override;
+    std::vector<idx_t> getListIndices(idx_t listId) const override;
 
     /// Return the encoded vectors of a particular list back to the CPU
-    std::vector<uint8_t> getListVectorData(int listId, bool gpuFormat)
+    std::vector<uint8_t> getListVectorData(idx_t listId, bool gpuFormat)
             const override;
 
     void updateQuantizer(Index* quantizer) override;
