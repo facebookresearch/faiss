@@ -4,7 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+# HIP added to cmake 3.21
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 project(faiss
   VERSION 1.7.3
@@ -24,8 +25,13 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 
 if(FAISS_ENABLE_GPU)
-  set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-  enable_language(CUDA)
+    # if ROCm install detected, assume ROCm/HIP is GPU device
+  if (EXISTS /opt/rocm)
+    enable_language(HIP)
+  else ()
+    set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+    enable_language(CUDA)
+  endif()
 endif()
 
 add_subdirectory(faiss)
