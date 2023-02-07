@@ -16,14 +16,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="14" column="5" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="14" bodyend="-1"/>
+        <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="21" column="5" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="21" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="13" column="1" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="13" bodyend="15"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="20" column="1" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="20" bodyend="22"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1detail_1_1CoarseBitType_3_018_01_4_1a39c526b1bc2ae7ff4c4693445d822170" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::detail::CoarseBitType&lt; 8 &gt;</scope><name>bit_type</name></member>
     </listofallmembers>

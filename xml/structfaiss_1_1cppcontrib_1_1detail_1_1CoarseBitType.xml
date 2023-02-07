@@ -13,7 +13,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="10" column="1" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="10" bodyend="10"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="17" column="1" bodyfile="faiss/cppcontrib/detail/CoarseBitType.h" bodystart="17" bodyend="17"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

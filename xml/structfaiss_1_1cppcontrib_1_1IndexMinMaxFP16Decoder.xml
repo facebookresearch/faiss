@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="13" column="31" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="13" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="20" column="31" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="17" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="17" bodyend="35"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="24" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="24" bodyend="42"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa98eda0e5cf78ab3a43d01748cc56877" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="39" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="39" bodyend="53"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="46" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="46" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="59" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="59" bodyend="79"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="66" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="66" bodyend="86"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa0c66ca74280e1829f8407f4365e1d09" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="85" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="85" bodyend="103"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="92" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="92" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa077829fca87fca55037f4a8907b875c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -199,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="113" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="113" bodyend="146"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="120" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="120" bodyend="153"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a239c9e0dda4c6be9eef06c1b64fc4e3c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -244,7 +244,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="156" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="156" bodyend="185"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="163" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="163" bodyend="192"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aead016494cc0c013f94cd20c680ff63a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -289,7 +289,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="194" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="194" bodyend="223"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="201" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="201" bodyend="230"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a7df199bf383988865f476adb5a3536c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -330,7 +330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="232" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="232" bodyend="259"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="239" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="239" bodyend="266"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a72e69902a76d8d3f6e27b090955242c8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -399,7 +399,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="270" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="270" bodyend="316"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="277" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="277" bodyend="323"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a984126a6a0ab44b38a3a8bd69a55fc09" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -452,7 +452,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="327" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="327" bodyend="365"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="334" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="334" bodyend="372"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a552c32684c3c463fa42a5ba3d557c5f3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -509,7 +509,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="375" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="375" bodyend="415"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="382" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="382" bodyend="422"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a1eb751dead2e9f8f570a14b560aeaa69" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -558,14 +558,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="425" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="425" bodyend="461"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="432" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="432" bodyend="468"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="12" column="1" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="12" bodyend="462"/>
+    <location file="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" line="19" column="1" bodyfile="faiss/cppcontrib/sa_decode/MinMaxFP16-inl.h" bodystart="19" bodyend="469"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1a4ad34c7e95907f9318159d650b2e395a" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxFP16Decoder_1aa0c66ca74280e1829f8407f4365e1d09" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxFP16Decoder</scope><name>accum</name></member>

@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="11" column="31" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="11" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="18" column="31" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="18" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="15" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="15" bodyend="33"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="22" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="22" bodyend="40"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a99b0960cd93db38688192af3bd462008" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="37" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="37" bodyend="51"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="44" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="44" bodyend="58"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a1d014d2fb657b4600917b7b628634f4f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="57" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="57" bodyend="77"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="64" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="64" bodyend="84"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a91e48d90e3a241ed5ce28cc1fa7acdb6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="83" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="83" bodyend="98"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="90" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="90" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a13e0bd42f48ab4dc8f9a6825ae6b8a5e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -199,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="108" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="108" bodyend="141"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="115" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="115" bodyend="148"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1ad519b6bf87cc199fa01ba9901b0c172b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -244,7 +244,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="151" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="151" bodyend="180"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="158" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="158" bodyend="187"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1aa5f275889173f9de623904e47ec3e155" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -289,7 +289,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="189" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="189" bodyend="218"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="196" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="196" bodyend="225"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a83c28ef2904ef629940ceb8710213451" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -330,7 +330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="227" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="227" bodyend="254"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="234" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="234" bodyend="261"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a62326dc56a784a8122bf08dc2599be85" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -399,7 +399,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="265" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="265" bodyend="311"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="272" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="272" bodyend="318"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a604835e6e647001b323c82b7ee299bce" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -452,7 +452,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="322" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="322" bodyend="360"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="329" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="329" bodyend="367"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a5e5679d6d87557d6250775e09d64332b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -509,7 +509,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="370" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="370" bodyend="410"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="377" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="377" bodyend="417"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a3abfcccdea856afdc146ca1d63f59027" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -558,14 +558,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="420" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="420" bodyend="456"/>
+        <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="427" column="17" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="427" bodyend="463"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="10" column="1" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="10" bodyend="457"/>
+    <location file="faiss/cppcontrib/sa_decode/MinMax-inl.h" line="17" column="1" bodyfile="faiss/cppcontrib/sa_decode/MinMax-inl.h" bodystart="17" bodyend="464"/>
     <listofallmembers>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a1d014d2fb657b4600917b7b628634f4f" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxDecoder</scope><name>accum</name></member>
       <member refid="structfaiss_1_1cppcontrib_1_1IndexMinMaxDecoder_1a91e48d90e3a241ed5ce28cc1fa7acdb6" prot="public" virt="non-virtual"><scope>faiss::cppcontrib::IndexMinMaxDecoder</scope><name>accum</name></member>

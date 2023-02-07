@@ -39,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/detail/UintReader.h" line="185" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="187" bodyend="-1"/>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="192" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="194" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="UintReader_8h_1a4e74e176d1b9d3deefcce7fa1300cb2d" prot="public" static="no">
         <templateparamlist>
@@ -69,13 +69,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/detail/UintReader.h" line="190" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="191" bodyend="-1"/>
+        <location file="faiss/cppcontrib/detail/UintReader.h" line="197" column="1" bodyfile="faiss/cppcontrib/detail/UintReader.h" bodystart="198" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="7" column="1"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="14" column="1"/>
   </compounddef>
 </doxygen>

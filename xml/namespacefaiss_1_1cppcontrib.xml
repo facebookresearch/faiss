@@ -11,6 +11,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="6" column="1"/>
+    <location file="faiss/cppcontrib/detail/CoarseBitType.h" line="13" column="1"/>
   </compounddef>
 </doxygen>

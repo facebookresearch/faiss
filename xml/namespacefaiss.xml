@@ -694,7 +694,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="89" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="89" declcolumn="22"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="96" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="96" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a437d8466031f88222a50f88e88a7f931" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -707,7 +707,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRowwiseMinMax.h" line="90" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="90" declcolumn="22"/>
+        <location file="faiss/IndexRowwiseMinMax.h" line="97" column="22" declfile="faiss/IndexRowwiseMinMax.h" declline="97" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a9875918581ad243ce5483a090c9da918" prot="public" static="no" mutable="no">
         <type>FAISS_API int</type>
@@ -3357,7 +3357,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/fp16-fp16c.h" line="8" column="17" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="8" bodyend="13"/>
+        <location file="faiss/utils/fp16-fp16c.h" line="15" column="17" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="15" bodyend="20"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac3f112424a7957effd27187654d90986" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -3374,7 +3374,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/fp16-fp16c.h" line="15" column="14" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="15" bodyend="19"/>
+        <location file="faiss/utils/fp16-fp16c.h" line="22" column="14" bodyfile="faiss/utils/fp16-fp16c.h" bodystart="22" bodyend="26"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
