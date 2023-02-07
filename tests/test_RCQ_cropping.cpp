@@ -124,5 +124,4 @@ TEST(RCQ_cropping, search_params) {
     // make sure we find back the original results
     EXPECT_EQ(I1, I3);
     EXPECT_EQ(D1, D3);
-
 }
