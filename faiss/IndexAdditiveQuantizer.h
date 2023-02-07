@@ -187,7 +187,6 @@ struct AdditiveCoarseQuantizer : Index {
     void reset() override;
 };
 
-
 struct SearchParametersResidualCoarseQuantizer : SearchParameters {
     float beam_factor = 4.0f;
     ~SearchParametersResidualCoarseQuantizer() {}
