@@ -484,7 +484,7 @@ ResidualCoarseQuantizer::ResidualCoarseQuantizer(
         int d,        ///< dimensionality of the input vectors
         const std::vector<size_t>& nbits,
         MetricType metric)
-        : AdditiveCoarseQuantizer(d, &rq, metric), rq(d, nbits), beam_factor(4.0) {
+        : AdditiveCoarseQuantizer(d, &rq, metric), rq(d, nbits) {
     FAISS_THROW_IF_NOT(rq.tot_bits <= 63);
     is_trained = false;
 }
@@ -520,10 +520,15 @@ void ResidualCoarseQuantizer::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters * params
+        const SearchParameters * params_in
         ) const {
 
-    FAISS_THROW_IF_NOT_MSG(!params, "search params not supported for this index");
+    float beam_factor = this->beam_factor;
+    if (params_in) {
+        auto params = dynamic_cast<const SearchParametersResidualCoarseQuantizer*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "need SearchParametersResidualCoarseQuantizer parameters");
+        beam_factor = params->beam_factor;
+    }
 
     if (beam_factor < 0) {
         AdditiveCoarseQuantizer::search(n, x, k, distances, labels);
@@ -584,6 +589,15 @@ void ResidualCoarseQuantizer::search(
         }
     }
 }
+
+void ResidualCoarseQuantizer::initialize_from(const ResidualCoarseQuantizer &other) {
+    FAISS_THROW_IF_NOT(rq.M <= other.rq.M);
+    rq.initialize_from(other.rq);
+    set_beam_factor(other.beam_factor);
+    is_trained = other.is_trained;
+    ntotal = (idx_t)1 << aq->tot_bits;
+}
+
 
 /**************************************************************************************
  * LocalSearchCoarseQuantizer
