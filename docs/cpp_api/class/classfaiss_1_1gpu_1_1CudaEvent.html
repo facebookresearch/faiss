@@ -1,97 +1,50 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Class faiss::gpu::CudaEvent &mdash; Faiss  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
     <link rel="canonical" href="https://faiss.ai/cpp_api/class/classfaiss_1_1gpu_1_1CudaEvent.html" />
-
-  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Class faiss::gpu::DeviceScope" href="classfaiss_1_1gpu_1_1DeviceScope.html" />
     <link rel="prev" title="Class faiss::gpu::CublasHandleScope" href="classfaiss_1_1gpu_1_1CublasHandleScope.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html" class="icon icon-home"> Faiss
           
-
-          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
@@ -130,126 +83,84 @@
 <li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Faiss</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../classlist.html">Class list</a> &raquo;</li>
-        
-      <li>Class faiss::gpu::CudaEvent</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../classlist.html">Class list</a></li>
+      <li class="breadcrumb-item active">Class faiss::gpu::CudaEvent</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/cpp_api/class/classfaiss_1_1gpu_1_1CudaEvent.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="class-faiss-gpu-cudaevent">
-<h1>Class faiss::gpu::CudaEvent<a class="headerlink" href="#class-faiss-gpu-cudaevent" title="Permalink to this heading">¶</a></h1>
+<h1>Class faiss::gpu::CudaEvent<a class="headerlink" href="#class-faiss-gpu-cudaevent" title="Permalink to this heading"></a></h1>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventE">
-<span id="_CPPv3N5faiss3gpu9CudaEventE"></span><span id="_CPPv2N5faiss3gpu9CudaEventE"></span><span id="faiss::gpu::CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEventE"></span><span id="_CPPv2N5faiss3gpu9CudaEventE"></span><span id="faiss::gpu::CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="faiss::gpu::CudaEvent::CudaEvent__cudaStream_t.b"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timer</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb"></span><span id="faiss::gpu::CudaEvent::CudaEvent__cudaStream_t.b"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a53bb2b58bd6ddc1b9b8e317db8eb3e2a"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timer</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventE12cudaStream_tb" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Creates an event and records it in this stream. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventCR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad72ad67f6eb35e7716ef153a6d212dc7"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventCR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad72ad67f6eb35e7716ef153a6d212dc7"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERK9CudaEvent" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::CudaEvent__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1acf9a0e14a2b79745a45cff67e94988dd"></span><span class="sig-name descname"><span class="n"><span class="pre">CudaEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="faiss::gpu::CudaEvent::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent9CudaEventERR9CudaEvent" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventD0Ev">
-<span id="_CPPv3N5faiss3gpu9CudaEventD0Ev"></span><span id="_CPPv2N5faiss3gpu9CudaEventD0Ev"></span><span id="faiss::gpu::CudaEvent::~CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a6ab1e9050459d4509daf294eb6e50ea3"></span><span class="sig-name descname"><span class="n"><span class="pre">~CudaEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEventD0Ev"></span><span id="_CPPv2N5faiss3gpu9CudaEventD0Ev"></span><span id="faiss::gpu::CudaEvent::~CudaEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a6ab1e9050459d4509daf294eb6e50ea3"></span><span class="sig-name descname"><span class="n"><span class="pre">~CudaEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventD0Ev" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent3getEv">
-<span id="_CPPv3N5faiss3gpu9CudaEvent3getEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent3getEv"></span><span id="faiss::gpu::CudaEvent::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1adfd9acdace7565145c339c7a3241e151"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent3getEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent3getEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent3getEv"></span><span id="faiss::gpu::CudaEvent::get"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1adfd9acdace7565145c339c7a3241e151"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent3getEv" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t">
-<span id="_CPPv3N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="faiss::gpu::CudaEvent::streamWaitOnEvent__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="_CPPv2N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t"></span><span id="faiss::gpu::CudaEvent::streamWaitOnEvent__cudaStream_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1ad8968b298b95788c7679d7e5aa0571eb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">streamWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent17streamWaitOnEventE12cudaStream_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Wait on this event in this stream. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent14cpuWaitOnEventEv">
-<span id="_CPPv3N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="faiss::gpu::CudaEvent::cpuWaitOnEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cpuWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent14cpuWaitOnEventEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="_CPPv2N5faiss3gpu9CudaEvent14cpuWaitOnEventEv"></span><span id="faiss::gpu::CudaEvent::cpuWaitOnEvent"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a9c85540093aaf87de80ece9f854e7c57"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cpuWaitOnEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent14cpuWaitOnEventEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Have the CPU wait for the completion of this event. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventaSERR9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventaSERR9CudaEvent" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSERR9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventRR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a19acf4ec7faca9bddda2a23f4b1371d3"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventaSERR9CudaEvent" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEventaSER9CudaEvent">
-<span id="_CPPv3N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a204899e640da688e4c5c526656ab0ffc"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventaSER9CudaEvent" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="_CPPv2N5faiss3gpu9CudaEventaSER9CudaEvent"></span><span id="faiss::gpu::CudaEvent::assign-operator__CudaEventR"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a204899e640da688e4c5c526656ab0ffc"></span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss3gpu9CudaEventE" title="faiss::gpu::CudaEvent"><span class="n"><span class="pre">CudaEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEventaSER9CudaEvent" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -257,7 +168,7 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu9CudaEvent6event_E">
-<span id="_CPPv3N5faiss3gpu9CudaEvent6event_E"></span><span id="_CPPv2N5faiss3gpu9CudaEvent6event_E"></span><span id="faiss::gpu::CudaEvent::event___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a8aaeb33f793e5495ca2d12f76602b4e2"></span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">event_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent6event_E" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5faiss3gpu9CudaEvent6event_E"></span><span id="_CPPv2N5faiss3gpu9CudaEvent6event_E"></span><span id="faiss::gpu::CudaEvent::event___cudaEvent_t"></span><span class="target" id="classfaiss_1_1gpu_1_1CudaEvent_1a8aaeb33f793e5495ca2d12f76602b4e2"></span><span class="n"><span class="pre">cudaEvent_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">event_</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu9CudaEvent6event_E" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -267,50 +178,33 @@
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="classfaiss_1_1gpu_1_1DeviceScope.html" class="btn btn-neutral float-right" title="Class faiss::gpu::DeviceScope" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="classfaiss_1_1gpu_1_1CublasHandleScope.html" class="btn btn-neutral float-left" title="Class faiss::gpu::CublasHandleScope" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classfaiss_1_1gpu_1_1DeviceScope.html" class="btn btn-neutral float-right" title="Class faiss::gpu::DeviceScope" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright Facebook, Inc. and its affiliates..
-
-    </p>
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
