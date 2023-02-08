@@ -1026,7 +1026,7 @@ float fvec_inner_product(const float* x, const float* y, size_t d) {
         x += 8;
         __m256 my = _mm256_loadu_ps(y);
         y += 8;
-        msum1 = _mm256_add_ps(msum1, _mm256_mul_ps(mx, my));
+        msum1 = _mm256_fmadd_ps(mx, my, msum1);
         d -= 8;
     }
 
@@ -1038,14 +1038,14 @@ float fvec_inner_product(const float* x, const float* y, size_t d) {
         x += 4;
         __m128 my = _mm_loadu_ps(y);
         y += 4;
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(mx, my));
+        msum2 = _mm_fmadd_ps(mx, my, msum2);
         d -= 4;
     }
 
     if (d > 0) {
         __m128 mx = masked_read(d, x);
         __m128 my = masked_read(d, y);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(mx, my));
+        msum2 = _mm_fmadd_ps(mx, my, msum2);
     }
 
     msum2 = _mm_hadd_ps(msum2, msum2);
@@ -1062,7 +1062,7 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
         __m256 my = _mm256_loadu_ps(y);
         y += 8;
         const __m256 a_m_b1 = _mm256_sub_ps(mx, my);
-        msum1 = _mm256_add_ps(msum1, _mm256_mul_ps(a_m_b1, a_m_b1));
+        msum1 = _mm256_fmadd_ps(a_m_b1, a_m_b1, msum1);
         d -= 8;
     }
 
@@ -1075,7 +1075,7 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
         __m128 my = _mm_loadu_ps(y);
         y += 4;
         const __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
+        msum2 = _mm_fmadd_ps(a_m_b1, a_m_b1, msum2);
         d -= 4;
     }
 
@@ -1083,7 +1083,7 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
         __m128 mx = masked_read(d, x);
         __m128 my = masked_read(d, y);
         __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
+        msum2 = _mm_fmadd_ps(a_m_b1, a_m_b1, msum2);
     }
 
     msum2 = _mm_hadd_ps(msum2, msum2);
