@@ -337,9 +337,9 @@ void fvec_op_ny_D4(float* dis, const float* x, const float* y, size_t ny) {
 
 template <>
 void fvec_op_ny_D4<ElementOpIP>(
-        float* dis,
-        const float* x,
-        const float* y,
+        float* __restrict dis,
+        const float* __restrict x,
+        const float* __restrict y,
         size_t ny) {
     const size_t ny8 = ny / 8;
     size_t i = 0;
@@ -407,9 +407,9 @@ void fvec_op_ny_D4<ElementOpIP>(
 
 template <>
 void fvec_op_ny_D4<ElementOpL2>(
-        float* dis,
-        const float* x,
-        const float* y,
+        float* __restrict dis,
+        const float* __restrict x,
+        const float* __restrict y,
         size_t ny) {
     const size_t ny8 = ny / 8;
     size_t i = 0;
@@ -573,10 +573,10 @@ void fvec_inner_products_ny(
 #ifdef __AVX2__
 template <size_t DIM>
 void fvec_L2sqr_ny_y_transposed_D(
-        float* distances,
-        const float* x,
-        const float* y,
-        const float* y_sqlen,
+        float* __restrict distances,
+        const float* __restrict x,
+        const float* __restrict y,
+        const float* __restrict y_sqlen,
         const size_t d_offset,
         size_t ny) {
     // current index being processed
@@ -683,9 +683,9 @@ void fvec_L2sqr_ny_transposed(
 
 #ifdef __AVX2__
 size_t fvec_L2sqr_ny_nearest_D4(
-        float* distances_tmp_buffer,
-        const float* x,
-        const float* y,
+        float* __restrict distances_tmp_buffer,
+        const float* __restrict x,
+        const float* __restrict y,
         size_t ny) {
     // this implementation does not use distances_tmp_buffer.
 
@@ -852,10 +852,10 @@ size_t fvec_L2sqr_ny_nearest(
 #ifdef __AVX2__
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
-        float* distances_tmp_buffer,
-        const float* x,
-        const float* y,
-        const float* y_sqlen,
+        float* __restrict distances_tmp_buffer,
+        const float* __restrict x,
+        const float* __restrict y,
+        const float* __restrict y_sqlen,
         const size_t d_offset,
         size_t ny) {
     // this implementation does not use distances_tmp_buffer.
