@@ -908,6 +908,56 @@ struct IVFPQScannerT : QueryTables {
         return result;
     }
 
+    // Combines 4 operations of distance_single_code()
+    // General-purpose version.
+    template <class SearchResultType, typename T = PQDecoder>
+    typename std::enable_if<!(std::is_same<T, PQDecoder8>::value), void>::
+            type inline distance_four_codes(
+                    const uint8_t* __restrict code0,
+                    const uint8_t* __restrict code1,
+                    const uint8_t* __restrict code2,
+                    const uint8_t* __restrict code3,
+                    float& result0,
+                    float& result1,
+                    float& result2,
+                    float& result3) const {
+        PQDecoder decoder0(code0, pq.nbits);
+        PQDecoder decoder1(code1, pq.nbits);
+        PQDecoder decoder2(code2, pq.nbits);
+        PQDecoder decoder3(code3, pq.nbits);
+
+        const float* tab = sim_table;
+        result0 = 0;
+        result1 = 0;
+        result2 = 0;
+        result3 = 0;
+
+        for (size_t m = 0; m < pq.M; m++) {
+            result0 += tab[decoder0.decode()];
+            result1 += tab[decoder1.decode()];
+            result2 += tab[decoder2.decode()];
+            result3 += tab[decoder3.decode()];
+            tab += pq.ksub;
+        }
+    }
+
+    // Computes a horizontal sum over an __m256 register
+    static inline float horizontal_sum(const __m256 reg) {
+        const __m256 h0 = _mm256_hadd_ps(reg, reg);
+        const __m256 h1 = _mm256_hadd_ps(h0, h0);
+
+        // extract high and low __m128 regs from __m256
+        const __m128 h2 = _mm256_extractf128_ps(h1, 1);
+        const __m128 h3 = _mm256_castps256_ps128(h1);
+
+        // get a final hsum into all 4 regs
+        const __m128 h4 = _mm_add_ss(h2, h3);
+
+        // extract f[0] from __m128
+        const float hsum = _mm_cvtss_f32(h4);
+        return hsum;
+    }
+
     /// Returns the distance to a single code.
     /// Specialized AVX2 PQDecoder8 version.
     template <class SearchResultType, typename T = PQDecoder>
@@ -976,19 +1026,7 @@ struct IVFPQScannerT : QueryTables {
             }
 
             // horizontal sum for partialSum
-            const __m256 h0 = _mm256_hadd_ps(partialSum, partialSum);
-            const __m256 h1 = _mm256_hadd_ps(h0, h0);
-
-            // extract high and low __m128 regs from __m256
-            const __m128 h2 = _mm256_extractf128_ps(h1, 1);
-            const __m128 h3 = _mm256_castps256_ps128(h1);
-
-            // get a final hsum into all 4 regs
-            const __m128 h4 = _mm_add_ss(h2, h3);
-
-            // extract f[0] from __m128
-            const float hsum = _mm_cvtss_f32(h4);
-            result += hsum;
+            result += horizontal_sum(partialSum);
         }
 
         //
@@ -1004,6 +1042,215 @@ struct IVFPQScannerT : QueryTables {
 
         return result;
     }
+
+    // Combines 4 operations of distance_single_code()
+    template <class SearchResultType, typename T = PQDecoder>
+    typename std::enable_if<(std::is_same<T, PQDecoder8>::value), void>::type
+    distance_four_codes(
+            const uint8_t* __restrict code0,
+            const uint8_t* __restrict code1,
+            const uint8_t* __restrict code2,
+            const uint8_t* __restrict code3,
+            float& result0,
+            float& result1,
+            float& result2,
+            float& result3) const {
+        result0 = 0;
+        result1 = 0;
+        result2 = 0;
+        result3 = 0;
+
+        size_t m = 0;
+        const size_t pqM16 = pq.M / 16;
+
+        constexpr intptr_t N = 4;
+
+        const float* tab = sim_table;
+
+        if (pqM16 > 0) {
+            // process 16 values per loop
+            const __m256i ksub = _mm256_set1_epi32(pq.ksub);
+            __m256i offsets_0 = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+            offsets_0 = _mm256_mullo_epi32(offsets_0, ksub);
+
+            // accumulators of partial sums
+            __m256 partialSums[N];
+            for (intptr_t j = 0; j < N; j++) {
+                partialSums[j] = _mm256_setzero_ps();
+            }
+
+            // loop
+            for (m = 0; m < pqM16 * 16; m += 16) {
+                // load 16 uint8 values
+                __m128i mm1[N];
+                mm1[0] = _mm_loadu_si128((const __m128i_u*)(code0 + m));
+                mm1[1] = _mm_loadu_si128((const __m128i_u*)(code1 + m));
+                mm1[2] = _mm_loadu_si128((const __m128i_u*)(code2 + m));
+                mm1[3] = _mm_loadu_si128((const __m128i_u*)(code3 + m));
+
+                // process first 8 codes
+                for (intptr_t j = 0; j < N; j++) {
+                    // convert uint8 values (low part of __m128i) to int32
+                    // values
+                    const __m256i idx1 = _mm256_cvtepu8_epi32(mm1[j]);
+
+                    // add offsets
+                    const __m256i indices_to_read_from =
+                            _mm256_add_epi32(idx1, offsets_0);
+
+                    // gather 8 values, similar to 8 operations of tab[idx]
+                    __m256 collected = _mm256_i32gather_ps(
+                            tab, indices_to_read_from, sizeof(float));
+
+                    // collect partial sums
+                    partialSums[j] = _mm256_add_ps(partialSums[j], collected);
+                }
+                tab += pq.ksub * 8;
+
+                // process next 8 codes
+                for (intptr_t j = 0; j < N; j++) {
+                    // move high 8 uint8 to low ones
+                    const __m128i mm2 =
+                            _mm_unpackhi_epi64(mm1[j], _mm_setzero_si128());
+
+                    // convert uint8 values (low part of __m128i) to int32
+                    // values
+                    const __m256i idx1 = _mm256_cvtepu8_epi32(mm2);
+
+                    // add offsets
+                    const __m256i indices_to_read_from =
+                            _mm256_add_epi32(idx1, offsets_0);
+
+                    // gather 8 values, similar to 8 operations of tab[idx]
+                    __m256 collected = _mm256_i32gather_ps(
+                            tab, indices_to_read_from, sizeof(float));
+
+                    // collect partial sums
+                    partialSums[j] = _mm256_add_ps(partialSums[j], collected);
+                }
+
+                tab += pq.ksub * 8;
+            }
+
+            // horizontal sum for partialSum
+            result0 += horizontal_sum(partialSums[0]);
+            result1 += horizontal_sum(partialSums[1]);
+            result2 += horizontal_sum(partialSums[2]);
+            result3 += horizontal_sum(partialSums[3]);
+        }
+
+        //
+        if (m < pq.M) {
+            // process leftovers
+            PQDecoder decoder0(code0 + m, pq.nbits);
+            PQDecoder decoder1(code1 + m, pq.nbits);
+            PQDecoder decoder2(code2 + m, pq.nbits);
+            PQDecoder decoder3(code3 + m, pq.nbits);
+            for (; m < pq.M; m++) {
+                result0 += tab[decoder0.decode()];
+                result1 += tab[decoder1.decode()];
+                result2 += tab[decoder2.decode()];
+                result3 += tab[decoder3.decode()];
+                tab += pq.ksub;
+            }
+        }
+    }
+
+    // // // AVX-512 version. It is not used, but let it be for the future
+    // // // needs.
+    // // template <class SearchResultType, typename T = PQDecoder>
+    // // typename std::enable_if<(std::is_same<T, PQDecoder8>::value), void>::
+    // //         type distance_four_codes(
+    // //     const uint8_t* __restrict code0,
+    // //     const uint8_t* __restrict code1,
+    // //     const uint8_t* __restrict code2,
+    // //     const uint8_t* __restrict code3,
+    // //     float& result0,
+    // //     float& result1,
+    // //     float& result2,
+    // //     float& result3
+    // // ) const {
+    // //     result0 = 0;
+    // //     result1 = 0;
+    // //     result2 = 0;
+    // //     result3 = 0;
+
+    // //     size_t m = 0;
+    // //     const size_t pqM16 = pq.M / 16;
+
+    // //     constexpr intptr_t N = 4;
+
+    // //     const float* tab = sim_table;
+
+    // //     if (pqM16 > 0) {
+    // //         // process 16 values per loop
+    // //         const __m512i ksub = _mm512_set1_epi32(pq.ksub);
+    // //         __m512i offsets_0 = _mm512_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7,
+    // //              8, 9, 10, 11, 12, 13, 14, 15);
+    // //         offsets_0 = _mm512_mullo_epi32(offsets_0, ksub);
+
+    // //         // accumulators of partial sums
+    // //         __m512 partialSums[N];
+    // //         for (intptr_t j = 0; j < N; j++) {
+    // //             partialSums[j] = _mm512_setzero_ps();
+    // //         }
+
+    // //         // loop
+    // //         for (m = 0; m < pqM16 * 16; m += 16) {
+    // //             // load 16 uint8 values
+    // //             __m128i mm1[N];
+    // //             mm1[0] = _mm_loadu_si128((const __m128i_u*)(code0 + m));
+    // //             mm1[1] = _mm_loadu_si128((const __m128i_u*)(code1 + m));
+    // //             mm1[2] = _mm_loadu_si128((const __m128i_u*)(code2 + m));
+    // //             mm1[3] = _mm_loadu_si128((const __m128i_u*)(code3 + m));
+
+    // //             // process first 8 codes
+    // //             for (intptr_t j = 0; j < N; j++) {
+    // //                 // convert uint8 values (low part of __m128i) to int32
+    // //                 // values
+    // //                 const __m512i idx1 = _mm512_cvtepu8_epi32(mm1[j]);
+
+    // //                 // add offsets
+    // //                 const __m512i indices_to_read_from =
+    // //                     _mm512_add_epi32(idx1, offsets_0);
+
+    // //                 // gather 8 values, similar to 8 operations of
+    // // //                    tab[idx]
+    // //                 __m512 collected =
+    // //                        _mm512_i32gather_ps(
+    // //                             indices_to_read_from, tab, sizeof(float));
+
+    // //                 // collect partial sums
+    // //                 partialSums[j] = _mm512_add_ps(partialSums[j],
+    // //                    collected);
+    // //             }
+    // //             tab += pq.ksub * 16;
+
+    // //         }
+
+    // //         // horizontal sum for partialSum
+    // //         result0 += _mm512_reduce_add_ps(partialSums[0]);
+    // //         result1 += _mm512_reduce_add_ps(partialSums[1]);
+    // //         result2 += _mm512_reduce_add_ps(partialSums[2]);
+    // //         result3 += _mm512_reduce_add_ps(partialSums[3]);
+    // //     }
+
+    // //     //
+    // //     if (m < pq.M) {
+    // //         // process leftovers
+    // //         PQDecoder decoder0(code0 + m, pq.nbits);
+    // //         PQDecoder decoder1(code1 + m, pq.nbits);
+    // //         PQDecoder decoder2(code2 + m, pq.nbits);
+    // //         PQDecoder decoder3(code3 + m, pq.nbits);
+    // //         for (; m < pq.M; m++) {
+    // //             result0 += tab[decoder0.decode()];
+    // //             result1 += tab[decoder1.decode()];
+    // //             result2 += tab[decoder2.decode()];
+    // //             result3 += tab[decoder3.decode()];
+    // //             tab += pq.ksub;
+    // //         }
+    // //     }
+    // // }
 
 #else
     /// Returns the distance to a single code.
@@ -1022,7 +1269,62 @@ struct IVFPQScannerT : QueryTables {
 
         return result;
     }
+
+    // Combines 4 operations of distance_single_code()
+    // General-purpose version.
+    template <class SearchResultType>
+    inline void distance_four_codes(
+            const uint8_t* __restrict code0,
+            const uint8_t* __restrict code1,
+            const uint8_t* __restrict code2,
+            const uint8_t* __restrict code3,
+            float& result0,
+            float& result1,
+            float& result2,
+            float& result3) const {
+        PQDecoder decoder0(code0, pq.nbits);
+        PQDecoder decoder1(code1, pq.nbits);
+        PQDecoder decoder2(code2, pq.nbits);
+        PQDecoder decoder3(code3, pq.nbits);
+
+        const float* tab = sim_table;
+        result0 = 0;
+        result1 = 0;
+        result2 = 0;
+        result3 = 0;
+
+        for (size_t m = 0; m < pq.M; m++) {
+            result0 += tab[decoder0.decode()];
+            result1 += tab[decoder1.decode()];
+            result2 += tab[decoder2.decode()];
+            result3 += tab[decoder3.decode()];
+            tab += pq.ksub;
+        }
+    }
 #endif
+
+    // This is the baseline version of scan_list_with_tables().
+    // It demonstrates what this function actually does.
+    //
+    // /// version of the scan where we use precomputed tables.
+    // template <class SearchResultType>
+    // void scan_list_with_table(
+    //         size_t ncode,
+    //         const uint8_t* codes,
+    //         SearchResultType& res) const {
+    //
+    //     for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
+    //         if (res.skip_entry(j)) {
+    //             continue;
+    //         }
+    //         float dis = dis0 + distance_single_code<SearchResultType>(codes);
+    //         res.add(j, dis);
+    //     }
+    // }
+
+    // This is the modified version of scan_list_with_tables().
+    // It was observed that doing manual unrolling of the loop that
+    //    utilizes distance_single_code() speeds up the compitations.
 
     /// version of the scan where we use precomputed tables.
     template <class SearchResultType>
@@ -1030,12 +1332,60 @@ struct IVFPQScannerT : QueryTables {
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
+        int counter = 0;
+
+        size_t saved_j[4] = {0, 0, 0, 0};
+        for (size_t j = 0; j < ncode; j++) {
             if (res.skip_entry(j)) {
                 continue;
             }
-            float dis = dis0 + distance_single_code<SearchResultType>(codes);
-            res.add(j, dis);
+
+            saved_j[0] = (counter == 0) ? j : saved_j[0];
+            saved_j[1] = (counter == 1) ? j : saved_j[1];
+            saved_j[2] = (counter == 2) ? j : saved_j[2];
+            saved_j[3] = (counter == 3) ? j : saved_j[3];
+
+            counter += 1;
+            if (counter == 4) {
+                float distance_0 = 0;
+                float distance_1 = 0;
+                float distance_2 = 0;
+                float distance_3 = 0;
+                distance_four_codes<SearchResultType>(
+                        codes + saved_j[0] * pq.code_size,
+                        codes + saved_j[1] * pq.code_size,
+                        codes + saved_j[2] * pq.code_size,
+                        codes + saved_j[3] * pq.code_size,
+                        distance_0,
+                        distance_1,
+                        distance_2,
+                        distance_3);
+
+                res.add(saved_j[0], dis0 + distance_0);
+                res.add(saved_j[1], dis0 + distance_1);
+                res.add(saved_j[2], dis0 + distance_2);
+                res.add(saved_j[3], dis0 + distance_3);
+                counter = 0;
+            }
+        }
+
+        if (counter >= 1) {
+            float dis = dis0 +
+                    distance_single_code<SearchResultType>(
+                                codes + saved_j[0] * pq.code_size);
+            res.add(saved_j[0], dis);
+        }
+        if (counter >= 2) {
+            float dis = dis0 +
+                    distance_single_code<SearchResultType>(
+                                codes + saved_j[1] * pq.code_size);
+            res.add(saved_j[1], dis);
+        }
+        if (counter >= 3) {
+            float dis = dis0 +
+                    distance_single_code<SearchResultType>(
+                                codes + saved_j[2] * pq.code_size);
+            res.add(saved_j[2], dis);
         }
     }
 
@@ -1104,6 +1454,45 @@ struct IVFPQScannerT : QueryTables {
      * Scanning codes with polysemous filtering
      *****************************************************/
 
+    // This is the baseline version of scan_list_polysemous_hc().
+    // It demonstrates what this function actually does.
+
+    //     template <class HammingComputer, class SearchResultType>
+    //     void scan_list_polysemous_hc(
+    //             size_t ncode,
+    //             const uint8_t* codes,
+    //             SearchResultType& res) const {
+    //         int ht = ivfpq.polysemous_ht;
+    //         size_t n_hamming_pass = 0, nup = 0;
+    //
+    //         int code_size = pq.code_size;
+    //
+    //         HammingComputer hc(q_code.data(), code_size);
+    //
+    //         for (size_t j = 0; j < ncode; j++, codes += code_size) {
+    //             if (res.skip_entry(j)) {
+    //                 continue;
+    //             }
+    //             const uint8_t* b_code = codes;
+    //             int hd = hc.hamming(b_code);
+    //             if (hd < ht) {
+    //                 n_hamming_pass++;
+    //
+    //                 float dis =
+    //                         dis0 +
+    //                         distance_single_code<SearchResultType>(codes);
+    //
+    //                 res.add(j, dis);
+    //             }
+    //         }
+    // #pragma omp critical
+    //         { indexIVFPQ_stats.n_hamming_pass += n_hamming_pass; }
+    //     }
+
+    // This is the modified version of scan_list_with_tables().
+    // It was observed that doing manual unrolling of the loop that
+    //    utilizes distance_single_code() speeds up the compitations.
+
     template <class HammingComputer, class SearchResultType>
     void scan_list_polysemous_hc(
             size_t ncode,
@@ -1114,23 +1503,100 @@ struct IVFPQScannerT : QueryTables {
 
         int code_size = pq.code_size;
 
+        size_t saved_j[8];
+        int counter = 0;
+
         HammingComputer hc(q_code.data(), code_size);
 
-        for (size_t j = 0; j < ncode; j++, codes += code_size) {
+        for (size_t j = 0; j < (ncode / 4) * 4; j += 4) {
+            const uint8_t* b_code = codes + j * code_size;
+
+            // Unrolling is a key. Basically, doing multiple popcount
+            // operations one after another speeds things up.
+
+            // 9999999 is just an arbitrary large number
+            int hd0 = (res.skip_entry(j + 0))
+                    ? 99999999
+                    : hc.hamming(b_code + 0 * code_size);
+            int hd1 = (res.skip_entry(j + 1))
+                    ? 99999999
+                    : hc.hamming(b_code + 1 * code_size);
+            int hd2 = (res.skip_entry(j + 2))
+                    ? 99999999
+                    : hc.hamming(b_code + 2 * code_size);
+            int hd3 = (res.skip_entry(j + 3))
+                    ? 99999999
+                    : hc.hamming(b_code + 3 * code_size);
+
+            saved_j[counter] = j + 0;
+            counter = (hd0 < ht) ? (counter + 1) : counter;
+            saved_j[counter] = j + 1;
+            counter = (hd1 < ht) ? (counter + 1) : counter;
+            saved_j[counter] = j + 2;
+            counter = (hd2 < ht) ? (counter + 1) : counter;
+            saved_j[counter] = j + 3;
+            counter = (hd3 < ht) ? (counter + 1) : counter;
+
+            if (counter >= 4) {
+                // process four codes at the same time
+                n_hamming_pass += 4;
+
+                float distance_0 = dis0;
+                float distance_1 = dis0;
+                float distance_2 = dis0;
+                float distance_3 = dis0;
+                distance_four_codes<SearchResultType>(
+                        codes + saved_j[0] * pq.code_size,
+                        codes + saved_j[1] * pq.code_size,
+                        codes + saved_j[2] * pq.code_size,
+                        codes + saved_j[3] * pq.code_size,
+                        distance_0,
+                        distance_1,
+                        distance_2,
+                        distance_3);
+
+                res.add(saved_j[0], dis0 + distance_0);
+                res.add(saved_j[1], dis0 + distance_1);
+                res.add(saved_j[2], dis0 + distance_2);
+                res.add(saved_j[3], dis0 + distance_3);
+
+                //
+                counter -= 4;
+                saved_j[0] = saved_j[4];
+                saved_j[1] = saved_j[5];
+                saved_j[2] = saved_j[6];
+                saved_j[3] = saved_j[7];
+            }
+        }
+
+        for (size_t kk = 0; kk < counter; kk++) {
+            n_hamming_pass++;
+
+            float dis = dis0 +
+                    distance_single_code<SearchResultType>(
+                                codes + saved_j[kk] * pq.code_size);
+
+            res.add(saved_j[kk], dis);
+        }
+
+        // process leftovers
+        for (size_t j = (ncode / 4) * 4; j < ncode; j++) {
             if (res.skip_entry(j)) {
                 continue;
             }
-            const uint8_t* b_code = codes;
+            const uint8_t* b_code = codes + j * code_size;
             int hd = hc.hamming(b_code);
             if (hd < ht) {
                 n_hamming_pass++;
 
-                float dis =
-                        dis0 + distance_single_code<SearchResultType>(codes);
+                float dis = dis0 +
+                        distance_single_code<SearchResultType>(
+                                    codes + j * code_size);
 
                 res.add(j, dis);
             }
         }
+
 #pragma omp critical
         { indexIVFPQ_stats.n_hamming_pass += n_hamming_pass; }
     }
