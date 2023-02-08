@@ -23,6 +23,10 @@
 #include <immintrin.h>
 #endif
 
+#ifdef __AVX2__
+#include <faiss/utils/transpose/transpose-avx2-inl.h>
+#endif
+
 #ifdef __aarch64__
 #include <arm_neon.h>
 #endif
@@ -354,25 +358,25 @@ void fvec_op_ny_D4<ElementOpIP>(
         // m3 = (x[3], x[3], x[3], x[3], x[3], x[3], x[3], x[3])
         const __m256 m3 = _mm256_set1_ps(x[3]);
 
-        const __m256i indices0 =
-                _mm256_setr_epi32(0, 16, 32, 48, 64, 80, 96, 112);
-
         for (i = 0; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_NTA);
-            _mm_prefetch(y + 48, _MM_HINT_NTA);
+            // load 8x4 matrix and transpose it in registers.
+            // the typical bottleneck is memory access, so
+            // let's trade instructions for the bandwidth.
 
-            // collect dim 0 for 8 D4-vectors.
-            // v0 = (y[(i * 8 + 0) * 4 + 0], ..., y[(i * 8 + 7) * 4 + 0])
-            const __m256 v0 = _mm256_i32gather_ps(y, indices0, 1);
-            // collect dim 1 for 8 D4-vectors.
-            // v1 = (y[(i * 8 + 0) * 4 + 1], ..., y[(i * 8 + 7) * 4 + 1])
-            const __m256 v1 = _mm256_i32gather_ps(y + 1, indices0, 1);
-            // collect dim 2 for 8 D4-vectors.
-            // v2 = (y[(i * 8 + 0) * 4 + 2], ..., y[(i * 8 + 7) * 4 + 2])
-            const __m256 v2 = _mm256_i32gather_ps(y + 2, indices0, 1);
-            // collect dim 3 for 8 D4-vectors.
-            // v3 = (y[(i * 8 + 0) * 4 + 3], ..., y[(i * 8 + 7) * 4 + 3])
-            const __m256 v3 = _mm256_i32gather_ps(y + 3, indices0, 1);
+            __m256 v0;
+            __m256 v1;
+            __m256 v2;
+            __m256 v3;
+
+            transpose_8x4(
+                    _mm256_loadu_ps(y + 0 * 8),
+                    _mm256_loadu_ps(y + 1 * 8),
+                    _mm256_loadu_ps(y + 2 * 8),
+                    _mm256_loadu_ps(y + 3 * 8),
+                    v0,
+                    v1,
+                    v2,
+                    v3);
 
             // compute distances
             __m256 distances = _mm256_mul_ps(m0, v0);
@@ -380,15 +384,7 @@ void fvec_op_ny_D4<ElementOpIP>(
             distances = _mm256_fmadd_ps(m2, v2, distances);
             distances = _mm256_fmadd_ps(m3, v3, distances);
 
-            //   distances[0] = (x[0] * y[(i * 8 + 0) * 4 + 0]) +
-            //                  (x[1] * y[(i * 8 + 0) * 4 + 1]) +
-            //                  (x[2] * y[(i * 8 + 0) * 4 + 2]) +
-            //                  (x[3] * y[(i * 8 + 0) * 4 + 3])
-            //   ...
-            //   distances[7] = (x[0] * y[(i * 8 + 7) * 4 + 0]) +
-            //                  (x[1] * y[(i * 8 + 7) * 4 + 1]) +
-            //                  (x[2] * y[(i * 8 + 7) * 4 + 2]) +
-            //                  (x[3] * y[(i * 8 + 7) * 4 + 3])
+            // store
             _mm256_storeu_ps(dis + i, distances);
 
             y += 32;
@@ -432,25 +428,25 @@ void fvec_op_ny_D4<ElementOpL2>(
         // m3 = (x[3], x[3], x[3], x[3], x[3], x[3], x[3], x[3])
         const __m256 m3 = _mm256_set1_ps(x[3]);
 
-        const __m256i indices0 =
-                _mm256_setr_epi32(0, 16, 32, 48, 64, 80, 96, 112);
-
         for (i = 0; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_NTA);
-            _mm_prefetch(y + 48, _MM_HINT_NTA);
+            // load 8x4 matrix and transpose it in registers.
+            // the typical bottleneck is memory access, so
+            // let's trade instructions for the bandwidth.
 
-            // collect dim 0 for 8 D4-vectors.
-            // v0 = (y[(i * 8 + 0) * 4 + 0], ..., y[(i * 8 + 7) * 4 + 0])
-            const __m256 v0 = _mm256_i32gather_ps(y, indices0, 1);
-            // collect dim 1 for 8 D4-vectors.
-            // v1 = (y[(i * 8 + 0) * 4 + 1], ..., y[(i * 8 + 7) * 4 + 1])
-            const __m256 v1 = _mm256_i32gather_ps(y + 1, indices0, 1);
-            // collect dim 2 for 8 D4-vectors.
-            // v2 = (y[(i * 8 + 0) * 4 + 2], ..., y[(i * 8 + 7) * 4 + 2])
-            const __m256 v2 = _mm256_i32gather_ps(y + 2, indices0, 1);
-            // collect dim 3 for 8 D4-vectors.
-            // v3 = (y[(i * 8 + 0) * 4 + 3], ..., y[(i * 8 + 7) * 4 + 3])
-            const __m256 v3 = _mm256_i32gather_ps(y + 3, indices0, 1);
+            __m256 v0;
+            __m256 v1;
+            __m256 v2;
+            __m256 v3;
+
+            transpose_8x4(
+                    _mm256_loadu_ps(y + 0 * 8),
+                    _mm256_loadu_ps(y + 1 * 8),
+                    _mm256_loadu_ps(y + 2 * 8),
+                    _mm256_loadu_ps(y + 3 * 8),
+                    v0,
+                    v1,
+                    v2,
+                    v3);
 
             // compute differences
             const __m256 d0 = _mm256_sub_ps(m0, v0);
@@ -464,15 +460,7 @@ void fvec_op_ny_D4<ElementOpL2>(
             distances = _mm256_fmadd_ps(d2, d2, distances);
             distances = _mm256_fmadd_ps(d3, d3, distances);
 
-            //   distances[0] = (x[0] - y[(i * 8 + 0) * 4 + 0]) ^ 2 +
-            //                  (x[1] - y[(i * 8 + 0) * 4 + 1]) ^ 2 +
-            //                  (x[2] - y[(i * 8 + 0) * 4 + 2]) ^ 2 +
-            //                  (x[3] - y[(i * 8 + 0) * 4 + 3])
-            //   ...
-            //   distances[7] = (x[0] - y[(i * 8 + 7) * 4 + 0]) ^ 2 +
-            //                  (x[1] - y[(i * 8 + 7) * 4 + 1]) ^ 2 +
-            //                  (x[2] - y[(i * 8 + 7) * 4 + 2]) ^ 2 +
-            //                  (x[3] - y[(i * 8 + 7) * 4 + 3])
+            // store
             _mm256_storeu_ps(dis + i, distances);
 
             y += 32;
