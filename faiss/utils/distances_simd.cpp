@@ -571,6 +571,117 @@ void fvec_inner_products_ny(
 }
 
 #ifdef __AVX2__
+template <size_t DIM>
+void fvec_L2sqr_ny_y_transposed_D(
+        float* distances,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        const size_t d_offset,
+        size_t ny) {
+    // current index being processed
+    size_t i = 0;
+
+    // squared length of x
+    float x_sqlen = 0;
+    ;
+    for (size_t j = 0; j < DIM; j++) {
+        x_sqlen += x[j] * x[j];
+    }
+
+    // process 8 vectors per loop.
+    const size_t ny8 = ny / 8;
+
+    if (ny8 > 0) {
+        // m[i] = (2 * x[i], ... 2 * x[i])
+        __m256 m[DIM];
+        for (size_t j = 0; j < DIM; j++) {
+            m[j] = _mm256_set1_ps(x[j]);
+            m[j] = _mm256_add_ps(m[j], m[j]);
+        }
+
+        __m256 x_sqlen_ymm = _mm256_set1_ps(x_sqlen);
+
+        for (; i < ny8 * 8; i += 8) {
+            // collect dim 0 for 8 D4-vectors.
+            const __m256 v0 = _mm256_loadu_ps(y + 0 * d_offset);
+
+            // compute dot products
+            // this is x^2 - 2x[0]*y[0]
+            __m256 dp = _mm256_fnmadd_ps(m[0], v0, x_sqlen_ymm);
+
+            for (size_t j = 1; j < DIM; j++) {
+                // collect dim j for 8 D4-vectors.
+                const __m256 vj = _mm256_loadu_ps(y + j * d_offset);
+                dp = _mm256_fnmadd_ps(m[j], vj, dp);
+            }
+
+            // we've got x^2 - (2x, y) at this point
+
+            // y^2 - (2x, y) + x^2
+            __m256 distances_v = _mm256_add_ps(_mm256_loadu_ps(y_sqlen), dp);
+
+            _mm256_storeu_ps(distances + i, distances_v);
+
+            // scroll y and y_sqlen forward.
+            y += 8;
+            y_sqlen += 8;
+        }
+    }
+
+    if (i < ny) {
+        // process leftovers
+        for (; i < ny; i++) {
+            float dp = 0;
+            for (size_t j = 0; j < DIM; j++) {
+                dp += x[j] * y[j * d_offset];
+            }
+
+            // compute y^2 - 2 * (x, y), which is sufficient for looking for the
+            //   lowest distance.
+            const float distance = y_sqlen[0] - 2 * dp + x_sqlen;
+            distances[i] = distance;
+
+            y += 1;
+            y_sqlen += 1;
+        }
+    }
+}
+#endif
+
+void fvec_L2sqr_ny_transposed(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    // optimized for a few special cases
+
+#ifdef __AVX2__
+#define DISPATCH(dval)                             \
+    case dval:                                     \
+        return fvec_L2sqr_ny_y_transposed_D<dval>( \
+                dis, x, y, y_sqlen, d_offset, ny);
+
+    switch (d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        default:
+            return fvec_L2sqr_ny_y_transposed_ref(
+                    dis, x, y, y_sqlen, d, d_offset, ny);
+    }
+#undef DISPATCH
+#else
+    // non-AVX2 case
+    return fvec_L2sqr_ny_y_transposed_ref(dis, x, y, y_sqlen, d, d_offset, ny);
+#endif
+}
+
+#ifdef __AVX2__
 size_t fvec_L2sqr_ny_nearest_D4(
         float* distances_tmp_buffer,
         const float* x,
@@ -1187,6 +1298,17 @@ void fvec_L2sqr_ny(
     fvec_L2sqr_ny_ref(dis, x, y, d, ny);
 }
 
+void fvec_L2sqr_ny_transposed(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    return fvec_L2sqr_ny_y_transposed_ref(dis, x, y, y_sqlen, d, d_offset, ny);
+}
+
 size_t fvec_L2sqr_ny_nearest(
         float* distances_tmp_buffer,
         const float* x,
@@ -1255,6 +1377,17 @@ void fvec_L2sqr_ny(
         size_t d,
         size_t ny) {
     fvec_L2sqr_ny_ref(dis, x, y, d, ny);
+}
+
+void fvec_L2sqr_ny_transposed(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    return fvec_L2sqr_ny_y_transposed_ref(dis, x, y, y_sqlen, d, d_offset, ny);
 }
 
 size_t fvec_L2sqr_ny_nearest(
