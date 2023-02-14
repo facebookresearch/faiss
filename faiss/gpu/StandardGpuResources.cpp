@@ -20,7 +20,9 @@
  * limitations under the License.
  */
 
+#if defined USE_NVIDIA_RAFT
 #include <raft/core/handle.hpp>
+#endif
 
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -330,8 +332,9 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
+#if defined USE_NVIDIA_RAFT
     raftHandles_.emplace(std::make_pair(device, defaultStream));
-
+#endif
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
             cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
@@ -394,18 +397,14 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
     return defaultStreams_[device];
 }
 
+#if defined USE_NVIDIA_RAFT
 raft::handle_t& StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
-
-    auto it = raftHandles_.find(device);
-    if (it != raftHandles_.end()) {
-        // There is a user override handle set
-        return it->second;
-    }
 
     // Otherwise, our base default handle
     return raftHandles_[device];
 }
+#endif
 
 std::vector<cudaStream_t> StandardGpuResourcesImpl::getAlternateStreams(
         int device) {
@@ -632,9 +631,11 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
     return res_->getDefaultStream(device);
 }
 
+#if defined USE_NVIDIA_RAFT
 raft::handle_t& StandardGpuResources::getRaftHandle(int device) {
     return res_->getRaftHandle(device);
 }
+#endif
 
 size_t StandardGpuResources::getTempMemoryAvailable(int device) const {
     return res_->getTempMemoryAvailable(device);
