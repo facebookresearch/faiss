@@ -213,8 +213,9 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
 }
 
 /// Return the encoded vectors of a particular list back to the CPU
-std::vector<uint8_t> RaftIVFFlat::getListVectorData(idx_t listId, bool gpuFormat)
-        const {
+std::vector<uint8_t> RaftIVFFlat::getListVectorData(
+        idx_t listId,
+        bool gpuFormat) const {
     printf("Inside RaftIVFFlat getListVectorData\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());

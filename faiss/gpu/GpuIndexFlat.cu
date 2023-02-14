@@ -90,17 +90,17 @@ GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
 #if defined USE_NVIDIA_RAFT
-        data_.reset(new RaftFlatIndex(
-                resources_.get(),
-                dims,
-                flatConfig_.useFloat16,
-                config_.memorySpace));
+    data_.reset(new RaftFlatIndex(
+            resources_.get(),
+            dims,
+            flatConfig_.useFloat16,
+            config_.memorySpace));
 #else
-        data_.reset(new FlatIndex(
-                resources_.get(),
-                dims,
-                flatConfig_.useFloat16,
-                config_.memorySpace));
+    data_.reset(new FlatIndex(
+            resources_.get(),
+            dims,
+            flatConfig_.useFloat16,
+            config_.memorySpace));
 #endif
 }
 
