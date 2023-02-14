@@ -113,7 +113,7 @@ void compareIndices(
             k,
             testDistance.data(),
             testIndices.data());
-    
+
     faiss::gpu::compareLists(
             refDistance.data(),
             refIndices.data(),

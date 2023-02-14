@@ -28,7 +28,7 @@ struct Options {
 
         numCentroids = std::sqrt((float)numAdd / 2);
         numTrain = numCentroids * 40;
-        nprobe = faiss::gpu::randVal(std::min(50, numCentroids), numCentroids);
+        nprobe = faiss::gpu::randVal(std::min(10, numCentroids), numCentroids);
         numQuery = faiss::gpu::randVal(32, 100);
 
         // Due to the approximate nature of the query and of floating point
@@ -122,12 +122,6 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
         std::vector<float> trainVecs =
                 faiss::gpu::randVecs(opt.numTrain, opt.dim);
         std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
-
-        printf("original add vectors: [");
-        for (int i = 0; i < 50; ++i) {
-            printf("%f, ", addVecs[i]);
-        }
-        printf("]\n");
 
         faiss::IndexFlatL2 quantizerL2(opt.dim);
         faiss::IndexFlatIP quantizerIP(opt.dim);
