@@ -20,17 +20,19 @@
  * limitations under the License.
  */
 
-#include <faiss/gpu/utils/DeviceUtils.h>
-#include <faiss/gpu/impl/Distance.cuh>
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#include <vector>
 
+#include <faiss/gpu/impl/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/distance/distance_types.hpp>
-//#include <raft/neighbors/brute_force.cuh>
-#include <raft/spatial/knn/detail/fused_l2_knn.cuh>
+#include <raft/neighbors/brute_force.cuh>
 
 namespace faiss {
 namespace gpu {
+
+using namespace raft::distance;
+using namespace raft::neighbors;
 
 RaftFlatIndex::RaftFlatIndex(
         GpuResources* res,
@@ -47,54 +49,28 @@ void RaftFlatIndex::query(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
+    raft::handle_t& handle = resources_->getRaftHandleCurrentDevice();
+
+    auto index = raft::make_device_matrix_view<const float, idx_t>(
+            vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
+    auto search = raft::make_device_matrix_view<const float, idx_t>(
+            input.data(), input.getSize(0), input.getSize(1));
+    auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
+            outIndices.data(), outIndices.getSize(0), outIndices.getSize(1));
+    auto dists = raft::make_device_matrix_view<float, idx_t>(
+            outDistances.data(),
+            outDistances.getSize(0),
+            outDistances.getSize(1));
+
+    DistanceType distance = faiss_to_raft(metric, exactDistance);
+
+    std::vector<raft::device_matrix_view<const float, idx_t>> index_vec = {index};
+
     // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
     if (k <= 64 && metric == MetricType::METRIC_L2 && vectors_.getSize(0) > 0) {
-        raft::handle_t& raft_handle = resources_->getRaftHandleCurrentDevice();
-
-        auto distance = exactDistance
-                ? raft::distance::DistanceType::L2Unexpanded
-                : raft::distance::DistanceType::L2Expanded;
-
-        auto index = raft::make_device_matrix_view<float>(
-                vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));
-        auto search = raft::make_device_matrix_view<float>(
-                input.data(), input.getSize(0), input.getSize(1));
-        auto inds = raft::make_device_matrix_view<idx_t>(
-                outIndices.data(),
-                outIndices.getSize(0),
-                outIndices.getSize(1));
-        auto dists = raft::make_device_matrix_view<float>(
-                outDistances.data(),
-                outDistances.getSize(0),
-                outDistances.getSize(1));
-
-        //        raft::neighbors::brute_force::knn(raft_handle, index, search,
-        //        inds, dists, k, distance);
-
-        // TODO: Expose the fused L2KNN through RAFT's public APIs
-        raft::spatial::knn::detail::fusedL2Knn(
-                dim_,
-                inds.data_handle(),
-                dists.data_handle(),
-                index.data_handle(),
-                search.data_handle(),
-                index.extent(0),
-                search.extent(0),
-                k,
-                true,
-                true,
-                raft_handle.get_stream(),
-                distance);
-
+        brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
     } else {
-        FlatIndex::query(
-                input,
-                k,
-                metric,
-                metricArg,
-                outDistances,
-                outIndices,
-                exactDistance);
+        brute_force::knn(handle, index_vec, search, inds, dists, k, distance);
     }
 }
 } // namespace gpu
