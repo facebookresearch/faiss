@@ -91,7 +91,6 @@ void queryTest(
         faiss::gpu::GpuIndexIVFFlatConfig config;
         config.device = opt.device;
         config.indicesOptions = opt.indicesOpt;
-        config.use_raft = true;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
 
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
@@ -148,7 +147,6 @@ void addTest(faiss::MetricType metricType, bool useFloat16CoarseQuantizer) {
         config.device = opt.device;
         config.indicesOptions = opt.indicesOpt;
         config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-        config.use_raft = true;
 
         faiss::gpu::GpuIndexIVFFlat gpuIndex(
                 &res, cpuIndex.d, cpuIndex.nlist, cpuIndex.metric_type, config);
@@ -243,7 +241,6 @@ void copyFromTest(bool useFloat16CoarseQuantizer) {
     config.device = opt.device;
     config.indicesOptions = opt.indicesOpt;
     config.flatConfig.useFloat16 = useFloat16CoarseQuantizer;
-    config.use_raft = true;
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(&res, 1, 1, faiss::METRIC_L2, config);
     gpuIndex.nprobe = 1;

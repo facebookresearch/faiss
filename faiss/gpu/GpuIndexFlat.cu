@@ -89,22 +89,19 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-    if (config_.use_raft) {
-        printf("Should use raft!\n");
+#if defined USE_NVIDIA_RAFT
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
                 dims,
                 flatConfig_.useFloat16,
                 config_.memorySpace));
-
-    } else {
-        printf("Not using raft :-(\n");
+#else
         data_.reset(new FlatIndex(
                 resources_.get(),
                 dims,
                 flatConfig_.useFloat16,
                 config_.memorySpace));
-    }
+#endif
 }
 
 void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {

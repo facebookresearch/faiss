@@ -431,38 +431,12 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
         return;
     }
 
-    printf("Training IVF quantizer on %ld vectors in %dD\n", n, d);
-
-    if (config_.use_raft) {
-        printf("Using raft to train quantizer for %d vectors\n", n);
-        const raft::handle_t& raft_handle =
-                resources_->getRaftHandleCurrentDevice();
-
-        raft::neighbors::ivf_flat::index_params raft_idx_params;
-        raft_idx_params.n_lists = nlist;
-        raft_idx_params.metric = raft::distance::DistanceType::L2Expanded;
-        raft_idx_params.add_data_on_build = false;
-        raft_idx_params.kmeans_trainset_fraction = 1.0;
-        raft_idx_params.kmeans_n_iters = 100;
-
-        auto raft_index = raft::neighbors::ivf_flat::build(
-                raft_handle, raft_idx_params, x, n, (idx_t)d);
-
-        raft_handle.sync_stream();
-
-        // TODO: Validate this is all we need to do
-        quantizer->reset();
-        quantizer->train(nlist, raft_index.centers().data_handle());
-        quantizer->add(nlist, raft_index.centers().data_handle());
-
-    } else {
-        // leverage the CPU-side k-means code, which works for the GPU
-        // flat index as well
-        quantizer->reset();
-        Clustering clus(this->d, nlist, this->cp);
-        clus.verbose = verbose;
-        clus.train(n, x, *quantizer);
-    }
+    // leverage the CPU-side k-means code, which works for the GPU
+    // flat index as well
+    quantizer->reset();
+    Clustering clus(this->d, nlist, this->cp);
+    clus.verbose = verbose;
+    clus.train(n, x, *quantizer);
 
     quantizer->is_trained = true;
     FAISS_ASSERT(quantizer->ntotal == nlist);

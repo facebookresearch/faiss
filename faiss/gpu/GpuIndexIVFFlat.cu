@@ -119,33 +119,17 @@ void GpuIndexIVFFlat::set_index_(
         bool interleavedLayout,
         IndicesOptions indicesOptions,
         MemorySpace space) {
-    if (config_.use_raft) {
-        printf("Setting RaftIVFFlat index\n");
-        index_.reset(new RaftIVFFlat(
-                resources,
-                dim,
-                nlist,
-                metric,
-                metricArg,
-                useResidual,
-                scalarQ,
-                interleavedLayout,
-                indicesOptions,
-                space));
-    } else {
-        index_.reset(new IVFFlat(
-                resources,
-                dim,
-                nlist,
-                metric,
-                metricArg,
-                useResidual,
-                scalarQ,
-                interleavedLayout,
-                indicesOptions,
-                space));
-    }
-
+    index_.reset(new IVFFlat(
+            resources,
+            dim,
+            nlist,
+            metric,
+            metricArg,
+            useResidual,
+            scalarQ,
+            interleavedLayout,
+            indicesOptions,
+            space));
     baseIndex_ = std::static_pointer_cast<IVFBase, IVFFlat>(index_);
     updateQuantizer();
 }
@@ -160,7 +144,6 @@ void GpuIndexIVFFlat::reserveMemory(size_t numVecs) {
 }
 
 void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
-    printf("Inside copyFrom\n");
     DeviceScope scope(config_.device);
 
     // This will copy GpuIndexIVF data such as the coarse quantizer
@@ -192,24 +175,8 @@ void GpuIndexIVFFlat::copyFrom(const faiss::IndexIVFFlat* index) {
             ivfFlatConfig_.indicesOptions,
             config_.memorySpace);
 
-    if (config_.use_raft) {
-        printf("Reconstructing %d original vectors and adding to GPU index\n",
-               ntotal);
-
-        // Quantizer should already have been updated above. Add reconstructed
-        // vectors to raft index
-        if (ntotal > 0) {
-            std::vector<float> buf_host(ntotal * d);
-            std::vector<idx_t> ids(ntotal);
-            std::iota(ids.begin(), ids.end(), 0);
-            index->reconstruct_n(0, ntotal, buf_host.data());
-            add_with_ids(ntotal, buf_host.data(), ids.data());
-        }
-    } else {
-        // Copy all of the IVF data
-        printf("Copying inverted lists from cpu index to FAISS gpu index flat\n");
+    // Copy all of the IVF data
         index_->copyInvertedListsFrom(index->invlists);
-    }
 }
 
 void GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {

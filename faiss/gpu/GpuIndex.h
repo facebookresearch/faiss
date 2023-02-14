@@ -23,9 +23,6 @@ struct GpuIndexConfig {
     /// On Pascal and above (CC 6+) architectures, allows GPUs to use
     /// more memory than is available on the GPU.
     MemorySpace memorySpace;
-
-    /// Should the index dispatch down to RAFT?
-    bool use_raft = false;
 };
 
 class GpuIndex : public faiss::Index {
