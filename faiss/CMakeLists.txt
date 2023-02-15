@@ -203,6 +203,7 @@ set(FAISS_HEADERS
   utils/approx_topk/approx_topk.h
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h
+  utils/transpose/transpose-avx2-inl.h
 )
 
 if(NOT WIN32)
