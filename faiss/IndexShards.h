@@ -95,7 +95,7 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
 
     /// Synchronize the top-level index (IndexShards) with data in the
     /// sub-indices
-    void syncWithSubIndexes();
+    virtual void syncWithSubIndexes();
 
    protected:
     /// Called just after an index is added

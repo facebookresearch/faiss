@@ -23,10 +23,10 @@ namespace faiss {
 namespace {
 
 // add translation to all valid labels
-void translate_labels(long n, idx_t* labels, long translation) {
+void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
     if (translation == 0)
         return;
-    for (long i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         if (labels[i] < 0)
             continue;
         labels[i] += translation;
@@ -166,11 +166,9 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
 
     if (!ids && !successive_ids) {
         aids.resize(n);
-
         for (idx_t i = 0; i < n; i++) {
             aids[i] = this->ntotal + i;
         }
-
         ids = aids.data();
     }
 
@@ -213,11 +211,11 @@ void IndexShardsTemplate<IndexT>::search(
             !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
-    long nshard = this->count();
+    int64_t nshard = this->count();
 
     std::vector<distance_t> all_distances(nshard * k * n);
     std::vector<idx_t> all_labels(nshard * k * n);
-    std::vector<long> translations(nshard, 0);
+    std::vector<int64_t> translations(nshard, 0);
 
     // Because we just called runOnIndex above, it is safe to access the
     // sub-index ntotal here
@@ -276,5 +274,6 @@ void IndexShardsTemplate<IndexT>::search(
 // explicit instanciations
 template struct IndexShardsTemplate<Index>;
 template struct IndexShardsTemplate<IndexBinary>;
+
 
 } // namespace faiss

@@ -33,7 +33,7 @@ struct GpuIndexIVFConfig : public GpuIndexConfig {
 /// Base class of all GPU IVF index types. This (for now) deliberately does not
 /// inherit from IndexIVF, as many of the public data members and functionality
 /// in IndexIVF is not supported in the same manner on the GPU.
-class GpuIndexIVF : public GpuIndex {
+class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
    public:
     /// Version that auto-constructs a flat coarse quantizer based on the
     /// desired metric
@@ -93,31 +93,30 @@ class GpuIndexIVF : public GpuIndex {
     /// debugging purposes.
     std::vector<idx_t> getListIndices(idx_t listId) const;
 
-    /// Same interface as faiss::IndexIVF, in order to search a set of vectors
-    /// pre-quantized by the IVF quantizer. Does not include IndexIVFStats as
-    /// that can only be obtained on the host via a GPU d2h copy.
-    /// @param n      nb of vectors to query
-    /// @param x      query vectors, size nx * d
-    /// @param assign coarse quantization indices, size nx * nprobe
-    /// @param centroid_dis
-    ///             distances to coarse centroids, size nx * nprobe
-    /// @param distance
-    ///             output distances, size n * k
-    /// @param labels output labels, size n * k
-    /// @param store_pairs store inv list index + inv list offset
-    ///                   instead in upper/lower 32 bit of result,
-    ///                   instead of ids (used for reranking).
-    /// @param params used to override the object's search parameters
     void search_preassigned(
             idx_t n,
             const float* x,
-            int k,
+            idx_t k,
             const idx_t* assign,
             const float* centroid_dis,
             float* distances,
             idx_t* labels,
             bool store_pairs,
-            const SearchParametersIVF* params = nullptr) const;
+            const SearchParametersIVF* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
+
+    // not implemented for GPU
+    void range_search_preassigned(
+            idx_t nx,
+            const float* x,
+            float radius,
+            const idx_t* keys,
+            const float* coarse_dis,
+            RangeSearchResult* result,
+            bool store_pairs = false,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
+
 
    protected:
     /// From either the current set nprobe or the SearchParameters if available,
@@ -138,23 +137,6 @@ class GpuIndexIVF : public GpuIndex {
             float* distances,
             idx_t* labels,
             const SearchParameters* params) const override;
-
-   public:
-    /// Exposing this like the CPU version for manipulation
-    ClusteringParameters cp;
-
-    /// Exposing this like the CPU version for query
-    idx_t nlist;
-
-    /// Exposing this like the CPU version for manipulation
-    /// FIXME: IndexIVF has size_t for nprobe, not idx_t
-    size_t nprobe;
-
-    /// A user-pluggable coarse quantizer
-    Index* quantizer;
-
-    /// Whether or not we own the coarse quantizer
-    bool own_fields;
 
    protected:
     /// Our configuration options
