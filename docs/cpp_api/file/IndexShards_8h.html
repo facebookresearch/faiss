@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="File IndexWrapper-inl.h" href="IndexWrapper-inl_8h.html" />
-    <link rel="prev" title="File IndexScalarQuantizer.h" href="IndexScalarQuantizer_8h.html" /> 
+    <link rel="prev" title="File IndexShardsIVF.h" href="IndexShardsIVF_8h.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexRowwiseMinMax_8h.html">File IndexRowwiseMinMax.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShardsIVF_8h.html">File IndexShardsIVF.h</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">File IndexShards.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
@@ -272,6 +273,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;IndexShards.h&gt;</em></div>
 <p><a class="reference internal" href="../struct/structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> that concatenates the results from several sub-indexes </p>
+<p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1IndexShardsIVF.html#structfaiss_1_1IndexShardsIVF"><span class="std std-ref">faiss::IndexShardsIVF</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -362,7 +364,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv">
-<span id="_CPPv3N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexShardsTemplate::syncWithSubIndexes"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syncWithSubIndexes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexShardsTemplate::syncWithSubIndexes"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syncWithSubIndexes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Synchronize the top-level index (IndexShards) with data in the sub-indices </p>
 </dd></dl>
 
@@ -400,7 +402,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="IndexScalarQuantizer_8h.html" class="btn btn-neutral float-left" title="File IndexScalarQuantizer.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="IndexShardsIVF_8h.html" class="btn btn-neutral float-left" title="File IndexShardsIVF.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="IndexWrapper-inl_8h.html" class="btn btn-neutral float-right" title="File IndexWrapper-inl.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

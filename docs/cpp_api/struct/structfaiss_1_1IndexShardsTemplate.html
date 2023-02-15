@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Struct faiss::IndexSplitVectors" href="structfaiss_1_1IndexSplitVectors.html" />
-    <link rel="prev" title="Struct faiss::IndexScalarQuantizer" href="structfaiss_1_1IndexScalarQuantizer.html" /> 
+    <link rel="prev" title="Struct faiss::IndexShardsIVF" href="structfaiss_1_1IndexShardsIVF.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -135,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFastScan.html">Struct faiss::IndexIVFFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlat.html">Struct faiss::IndexIVFFlat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFFlatDedup.html">Struct faiss::IndexIVFFlatDedup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFInterface.html">Struct faiss::IndexIVFInterface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizer.html">Struct faiss::IndexIVFLocalSearchQuantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFLocalSearchQuantizerFastScan.html">Struct faiss::IndexIVFLocalSearchQuantizerFastScan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexIVFPQ.html">Struct faiss::IndexIVFPQ</a></li>
@@ -177,6 +178,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRowwiseMinMaxBase.html">Struct faiss::IndexRowwiseMinMaxBase</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexRowwiseMinMaxFP16.html">Struct faiss::IndexRowwiseMinMaxFP16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexScalarQuantizer.html">Struct faiss::IndexScalarQuantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexShardsIVF.html">Struct faiss::IndexShardsIVF</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Struct faiss::IndexShardsTemplate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IndexSplitVectors.html">Struct faiss::IndexSplitVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1IntersectionCriterion.html">Struct faiss::IntersectionCriterion</a></li>
@@ -298,6 +300,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss19IndexShardsTemplateE">
 <span id="_CPPv3I0EN5faiss19IndexShardsTemplateE"></span><span id="_CPPv2I0EN5faiss19IndexShardsTemplateE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1IndexShardsTemplate"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IndexShardsTemplate</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">ThreadedIndex</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/IndexShards_8h.html#_CPPv4I0EN5faiss19IndexShardsTemplateE" title="faiss::IndexShardsTemplate::IndexT"><span class="n"><span class="pre">IndexT</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd><p><a class="reference internal" href="structfaiss_1_1Index.html#structfaiss_1_1Index"><span class="std std-ref">Index</span></a> that concatenates the results from several sub-indexes </p>
+<p>Subclassed by <a class="reference internal" href="structfaiss_1_1IndexShardsIVF.html#structfaiss_1_1IndexShardsIVF"><span class="std std-ref">faiss::IndexShardsIVF</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -388,7 +391,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss19IndexShardsTemplate18syncWithSubIndexesEv">
-<span id="_CPPv3N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexShardsTemplate::syncWithSubIndexes"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syncWithSubIndexes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<span id="_CPPv3N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="_CPPv2N5faiss19IndexShardsTemplate18syncWithSubIndexesEv"></span><span id="faiss::IndexShardsTemplate::syncWithSubIndexes"></span><span class="target" id="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">syncWithSubIndexes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Synchronize the top-level index (IndexShards) with data in the sub-indices </p>
 </dd></dl>
 
@@ -424,7 +427,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structfaiss_1_1IndexScalarQuantizer.html" class="btn btn-neutral float-left" title="Struct faiss::IndexScalarQuantizer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structfaiss_1_1IndexShardsIVF.html" class="btn btn-neutral float-left" title="Struct faiss::IndexShardsIVF" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="structfaiss_1_1IndexSplitVectors.html" class="btn btn-neutral float-right" title="Struct faiss::IndexSplitVectors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

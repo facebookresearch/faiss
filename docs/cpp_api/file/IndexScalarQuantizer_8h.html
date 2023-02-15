@@ -22,7 +22,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="File IndexShards.h" href="IndexShards_8h.html" />
+    <link rel="next" title="File IndexShardsIVF.h" href="IndexShardsIVF_8h.html" />
     <link rel="prev" title="File IndexRowwiseMinMax.h" href="IndexRowwiseMinMax_8h.html" /> 
 </head>
 
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexRowwiseMinMax_8h.html">File IndexRowwiseMinMax.h</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShardsIVF_8h.html">File IndexShardsIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
@@ -420,7 +421,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss23IndexIVFScalarQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf">
 <span id="_CPPv3NK5faiss23IndexIVFScalarQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="_CPPv2NK5faiss23IndexIVFScalarQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf"></span><span id="faiss::IndexIVFScalarQuantizer::reconstruct_from_offset__int64_t.int64_t.floatPC"></span><span class="target" id="structfaiss_1_1IndexIVFScalarQuantizer_1abc33d7d6a5f67719f3ee76b3b12d1f77"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reconstruct_from_offset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list_no</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">recons</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss23IndexIVFScalarQuantizer23reconstruct_from_offsetE7int64_t7int64_tPf" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Reconstruct a vector given the location in terms of (inv list index + inv list offset) instead of the id.</p>
-<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
+<p>Useful for reconstructing when the direct_map is not maintained and the inv list offset is computed by <a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854"><span class="std std-ref">search_preassigned()</span></a> with <code class="docutils literal notranslate"><span class="pre">store_pairs</span></code> set. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -463,7 +464,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="IndexRowwiseMinMax_8h.html" class="btn btn-neutral float-left" title="File IndexRowwiseMinMax.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="IndexShards_8h.html" class="btn btn-neutral float-right" title="File IndexShards.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="IndexShardsIVF_8h.html" class="btn btn-neutral float-right" title="File IndexShardsIVF.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

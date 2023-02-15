@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="IndexReplicas_8h.html">File IndexReplicas.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexRowwiseMinMax_8h.html">File IndexRowwiseMinMax.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexScalarQuantizer_8h.html">File IndexScalarQuantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IndexShardsIVF_8h.html">File IndexShardsIVF.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexShards_8h.html">File IndexShards.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper-inl_8h.html">File IndexWrapper-inl.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IndexWrapper_8h.html">File IndexWrapper.h</a></li>
@@ -264,14 +265,6 @@
 <p>set some options on how to copy to GPU </p>
 <p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuMultipleClonerOptions.html#structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"><span class="std std-ref">faiss::gpu::GpuMultipleClonerOptions</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1ToGpuCloner.html#structfaiss_1_1gpu_1_1ToGpuCloner"><span class="std std-ref">faiss::gpu::ToGpuCloner</span></a></p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv">
-<span id="_CPPv3N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv"></span><span id="faiss::gpu::GpuClonerOptions::GpuClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuClonerOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu16GpuClonerOptions16GpuClonerOptionsEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu16GpuClonerOptions14indicesOptionsE">
@@ -323,14 +316,6 @@
 <span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptionsE"></span><span id="faiss::gpu::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AlignedTable_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="DeviceUtils_8h.html#_CPPv4N5faiss3gpuE" title="faiss::gpu"><span class="n"><span class="pre">gpu</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss3gpu16GpuClonerOptionsE" title="faiss::gpu::GpuClonerOptions"><span class="n"><span class="pre">GpuClonerOptions</span></span></a><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptionsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1ToGpuClonerMultiple.html#structfaiss_1_1gpu_1_1ToGpuClonerMultiple"><span class="std std-ref">faiss::gpu::ToGpuClonerMultiple</span></a></p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv">
-<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv"></span><span id="faiss::gpu::GpuMultipleClonerOptions::GpuMultipleClonerOptions"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1abd3d51458ecb2161a27f118086d4cd15"></span><span class="sig-name descname"><span class="n"><span class="pre">GpuMultipleClonerOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions24GpuMultipleClonerOptionsEv" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions5shardE">
@@ -342,6 +327,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE">
 <span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::shard_type__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a9548f823297298b0a78109dec7feb45e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shard_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions10shard_typeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p><a class="reference internal" href="../struct/structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb"><span class="std std-ref">IndexIVF::copy_subset_to</span></a> subset type. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24GpuMultipleClonerOptions20common_ivf_quantizerE">
+<span id="_CPPv3N5faiss3gpu24GpuMultipleClonerOptions20common_ivf_quantizerE"></span><span id="_CPPv2N5faiss3gpu24GpuMultipleClonerOptions20common_ivf_quantizerE"></span><span id="faiss::gpu::GpuMultipleClonerOptions::common_ivf_quantizer__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuMultipleClonerOptions_1a402387f7f754c12fce1b7f553654e215"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">common_ivf_quantizer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu24GpuMultipleClonerOptions20common_ivf_quantizerE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>set to true if an <a class="reference internal" href="../struct/structfaiss_1_1IndexIVF.html#structfaiss_1_1IndexIVF"><span class="std std-ref">IndexIVF</span></a> is to be dispatched to multiple GPUs with a single common IVF quantizer, ie. only the inverted lists are sharded on the sub-indexes (uses an <a class="reference internal" href="../struct/structfaiss_1_1IndexShardsIVF.html#structfaiss_1_1IndexShardsIVF"><span class="std std-ref">IndexShardsIVF</span></a>) </p>
 </dd></dl>
 
 <dl class="cpp var">
