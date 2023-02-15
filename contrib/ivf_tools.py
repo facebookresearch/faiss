@@ -94,6 +94,30 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     return lims, dist, indices
 
 
+def replace_ivf_quantizer(index_ivf, new_quantizer):
+    """ replace the IVF quantizer with a flat quantizer and return the
+    old quantizer"""
+    if new_quantizer.ntotal == 0:
+        centroids = index_ivf.quantizer.reconstruct_n()
+        new_quantizer.train(centroids)
+        new_quantizer.add(centroids)
+    else:
+        assert new_quantizer.ntotal == index_ivf.nlist
+
+    # cleanly dealloc old quantizer
+    old_own = index_ivf.own_fields
+    index_ivf.own_fields = False
+    old_quantizer = faiss.downcast_index(index_ivf.quantizer)
+    old_quantizer.this.own(old_own)
+    index_ivf.quantizer = new_quantizer
+
+    if hasattr(index_ivf, "referenced_objects"):
+        index_ivf.referenced_objects.append(new_quantizer)
+    else:
+        index_ivf.referenced_objects = [new_quantizer]
+    return old_quantizer
+
+
 class BigBatchSearcher:
     """
     Object that manages all the data related to the computation
