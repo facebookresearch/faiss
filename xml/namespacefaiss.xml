@@ -60,6 +60,7 @@
     <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
     <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersIVF" prot="public">faiss::SearchParametersIVF</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFInterface" prot="public">faiss::IndexIVFInterface</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVF" prot="public">faiss::IndexIVF</innerclass>
     <innerclass refid="structfaiss_1_1InvertedListScanner" prot="public">faiss::InvertedListScanner</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFStats" prot="public">faiss::IndexIVFStats</innerclass>
@@ -108,6 +109,7 @@
     <innerclass refid="structfaiss_1_1IndexScalarQuantizer" prot="public">faiss::IndexScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFScalarQuantizer" prot="public">faiss::IndexIVFScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexShardsTemplate" prot="public">faiss::IndexShardsTemplate</innerclass>
+    <innerclass refid="structfaiss_1_1IndexShardsIVF" prot="public">faiss::IndexShardsIVF</innerclass>
     <innerclass refid="structfaiss_1_1BlockInvertedLists" prot="public">faiss::BlockInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1BlockInvertedListsIOHook" prot="public">faiss::BlockInvertedListsIOHook</innerclass>
     <innerclass refid="structfaiss_1_1DirectMap" prot="public">faiss::DirectMap</innerclass>
@@ -589,7 +591,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="445" column="23" declfile="faiss/IndexIVF.h" declline="445" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="491" column="23" declfile="faiss/IndexIVF.h" declline="491" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -602,7 +604,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="463" column="32" declfile="faiss/IndexIVF.h" declline="463" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="509" column="32" declfile="faiss/IndexIVF.h" declline="509" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>

@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="21" column="20" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="21" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="19" column="20" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="19" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a85f3093908b6e9a503c24bb226b17b1b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="24" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="22" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ac7cc57d6091d6a79ea6020bf8d1fbe27" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="28" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="26" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc9c607f2dfc9f23942a523fb49c63fe" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="31" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="29" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" static="no" mutable="no">
         <type>long</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="34" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="34" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="32" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="37" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="35" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuClonerOptions.h" line="40" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/gpu/GpuClonerOptions.h" line="38" column="10" bodyfile="faiss/gpu/GpuClonerOptions.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -269,7 +269,6 @@
       <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_IndexIVF</name></member>
       <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" prot="public" virt="virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>clone_VectorTransform</name></member>
       <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1a6f68f4bdf04d86a1d45162822e85a224" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>device</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a07e1874e27433a0848dd8fff8392ed0c" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>GpuClonerOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1a0a0c7a86cc9f8bd752392a2a31046b71" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>provider</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" prot="public" virt="non-virtual"><scope>faiss::gpu::ToGpuCloner</scope><name>reserveVecs</name></member>

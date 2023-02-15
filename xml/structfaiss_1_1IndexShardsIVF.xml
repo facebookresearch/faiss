@@ -1,0 +1,566 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IndexShardsIVF" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexShardsIVF</compoundname>
+    <basecompoundref refid="structfaiss_1_1IndexShardsTemplate" prot="public" virt="non-virtual">faiss::IndexShardsTemplate&lt; Index &gt;</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1Level1Quantizer" prot="public" virt="non-virtual">faiss::Level1Quantizer</basecompoundref>
+    <includes refid="IndexShardsIVF_8h" local="no">IndexShardsIVF.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsIVF_1a685884757bba2e9919e894d01de7ae84" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IndexShardsIVF::IndexShardsIVF</definition>
+        <argsstring>(Index *quantizer, size_t nlist, bool threaded=false, bool successive_ids=true)</argsstring>
+        <name>IndexShardsIVF</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>quantizer</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nlist</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>threaded</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>successive_ids</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShardsIVF.h" line="20" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsIVF_1afc251cdfbcc6e02d7f21fda1727067c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsIVF::addIndex</definition>
+        <argsstring>(Index *index) override</argsstring>
+        <name>addIndex</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShardsIVF.h" line="26" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsIVF_1a00c32113b650f4987498ac7a2cec30c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsIVF::add_with_ids</definition>
+        <argsstring>(idx_t n, const component_t *x, const idx_t *xids) override</argsstring>
+        <name>add_with_ids</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const component_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>xids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShardsIVF.h" line="28" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsIVF_1a739b9d0e62230232531889486d818046" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsIVF::train</definition>
+        <argsstring>(idx_t n, const component_t *x) override</argsstring>
+        <name>train</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const component_t *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShardsIVF.h" line="31" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsIVF_1a3a4592a8032cc63e20642d6bfeabc0b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsIVF::search</definition>
+        <argsstring>(idx_t n, const component_t *x, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>search</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const component_t *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>distance_t *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShardsIVF.h" line="33" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::add_shard</definition>
+        <argsstring>(IndexT *index)</argsstring>
+        <name>add_shard</name>
+        <param>
+          <type>IndexT *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Alias for addIndex() </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="58" column="10" bodyfile="faiss/IndexShards.h" bodystart="58" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::remove_shard</definition>
+        <argsstring>(IndexT *index)</argsstring>
+        <name>remove_shard</name>
+        <param>
+          <type>IndexT *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Alias for removeIndex() </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="63" column="10" bodyfile="faiss/IndexShards.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::add</definition>
+        <argsstring>(idx_t n, const component_t *x) override</argsstring>
+        <name>add</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const component_t *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>supported only for sub-indices that implement add_with_ids </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="68" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::IndexShardsTemplate&lt; IndexT &gt;::syncWithSubIndexes</definition>
+        <argsstring>()</argsstring>
+        <name>syncWithSubIndexes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Synchronize the top-level index (IndexShards) with data in the sub-indices </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="98" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Level1Quantizer::train_q1</definition>
+        <argsstring>(size_t n, const float *x, bool verbose, MetricType metric_type)</argsstring>
+        <name>train_q1</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <briefdescription>
+<para>Trains the quantizer and calls train_residual to train sub-quantizers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="53" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::Level1Quantizer::coarse_code_size</definition>
+        <argsstring>() const</argsstring>
+        <name>coarse_code_size</name>
+        <briefdescription>
+<para>compute the number of bytes required to store list ids </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="60" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Level1Quantizer::encode_listno</definition>
+        <argsstring>(idx_t list_no, uint8_t *code) const</argsstring>
+        <name>encode_listno</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>list_no</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="61" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::Level1Quantizer::decode_listno</definition>
+        <argsstring>(const uint8_t *code) const</argsstring>
+        <name>decode_listno</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="62" column="11"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559" prot="public" static="no">
+        <type>typename IndexT::component_t</type>
+        <definition>using faiss::IndexShardsTemplate&lt; IndexT &gt;::component_t =  typename IndexT::component_t</definition>
+        <argsstring></argsstring>
+        <name>component_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="21" column="5" bodyfile="faiss/IndexShards.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1IndexShardsTemplate_1a94570791e9f70d2bef77d76564571417" prot="public" static="no">
+        <type>typename IndexT::distance_t</type>
+        <definition>using faiss::IndexShardsTemplate&lt; IndexT &gt;::distance_t =  typename IndexT::distance_t</definition>
+        <argsstring></argsstring>
+        <name>distance_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="22" column="5" bodyfile="faiss/IndexShards.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexShardsTemplate&lt; IndexT &gt;::successive_ids</definition>
+        <argsstring></argsstring>
+        <name>successive_ids</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="94" column="10" bodyfile="faiss/IndexShards.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::Level1Quantizer::quantizer</definition>
+        <argsstring></argsstring>
+        <name>quantizer</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>quantizer that maps vectors to inverted lists </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="35" column="11" bodyfile="faiss/IndexIVF.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Level1Quantizer::nlist</definition>
+        <argsstring></argsstring>
+        <name>nlist</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>number of inverted lists </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="38" column="12" bodyfile="faiss/IndexIVF.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char faiss::Level1Quantizer::quantizer_trains_alone</definition>
+        <argsstring></argsstring>
+        <name>quantizer_trains_alone</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>= 0: use the quantizer as index in a kmeans training = 1: just pass on the training set to the train() of the quantizer = 2: kmeans training on a flat index + add the centroids to the quantizer </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="45" column="10" bodyfile="faiss/IndexIVF.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::Level1Quantizer::own_fields</definition>
+        <argsstring></argsstring>
+        <name>own_fields</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>whether object owns the quantizer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="46" column="10" bodyfile="faiss/IndexIVF.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref></type>
+        <definition>ClusteringParameters faiss::Level1Quantizer::cp</definition>
+        <argsstring></argsstring>
+        <name>cp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>to override default clustering params </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="48" column="26" bodyfile="faiss/IndexIVF.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::Level1Quantizer::clustering_index</definition>
+        <argsstring></argsstring>
+        <name>clustering_index</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>to override index used during clustering </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVF.h" line="50" column="11" bodyfile="faiss/IndexIVF.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::onAfterAddIndex</definition>
+        <argsstring>(IndexT *index) override</argsstring>
+        <name>onAfterAddIndex</name>
+        <param>
+          <type>IndexT *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Called just after an index is added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="102" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::onAfterRemoveIndex</definition>
+        <argsstring>(IndexT *index) override</argsstring>
+        <name>onAfterRemoveIndex</name>
+        <param>
+          <type>IndexT *</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Called just after an index is removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexShards.h" line="105" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>IndexShards with a common coarse quantizer. All the indexes added should be <ref refid="structfaiss_1_1IndexIVFInterface" kindref="compound">IndexIVFInterface</ref> indexes so that the search_precomputed can be called. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::IndexShardsIVF</label>
+        <link refid="structfaiss_1_1IndexShardsIVF"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::Level1Quantizer</label>
+        <link refid="structfaiss_1_1Level1Quantizer"/>
+      </node>
+      <node id="3">
+        <label>ThreadedIndex&lt; IndexT &gt;</label>
+      </node>
+      <node id="2">
+        <label>IndexShards</label>
+        <link refid="structfaiss_1_1IndexShardsTemplate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::IndexShardsIVF</label>
+        <link refid="structfaiss_1_1IndexShardsIVF"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::Level1Quantizer</label>
+        <link refid="structfaiss_1_1Level1Quantizer"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>clustering_index</edgelabel>
+          <edgelabel>quantizer</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="3">
+        <label>ThreadedIndex&lt; IndexT &gt;</label>
+      </node>
+      <node id="6">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="2">
+        <label>IndexShards</label>
+        <link refid="structfaiss_1_1IndexShardsTemplate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexShardsIVF.h" line="19" column="1" bodyfile="faiss/IndexShardsIVF.h" bodystart="19" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a45647579ff21e0945d8a87a97ec705fe" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>add</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a47a2e1f78d91025857f483be3eb6828a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>add_shard</name></member>
+      <member refid="structfaiss_1_1IndexShardsIVF_1a00c32113b650f4987498ac7a2cec30c1" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1IndexShardsIVF_1afc251cdfbcc6e02d7f21fda1727067c6" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>addIndex</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>clustering_index</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>coarse_code_size</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1ada31784dde1b51d8be8b15288943c559" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>cp</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>decode_listno</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a94570791e9f70d2bef77d76564571417" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>encode_listno</name></member>
+      <member refid="structfaiss_1_1IndexShardsIVF_1a685884757bba2e9919e894d01de7ae84" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>IndexShardsIVF</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a2ffc0edbce1815fae55cae188b83a5cf" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>IndexShardsTemplate</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1ac278d8f7d54923cb034127a4257c56b7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>IndexShardsTemplate</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a0596f5ca67d6c9bfddae1465c5353b29" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>IndexShardsTemplate</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>nlist</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>onAfterAddIndex</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1a0488d95e9d45e0cfab203c83e3a8e3c1" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>onAfterRemoveIndex</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>own_fields</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a3cf99e2ee92b8558a066f821efab95d5" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a1dcea762fc322fdcffe64f78994edea0" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>quantizer_trains_alone</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>remove_shard</name></member>
+      <member refid="structfaiss_1_1IndexShardsIVF_1a3a4592a8032cc63e20642d6bfeabc0b2" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>successive_ids</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" prot="public" virt="virtual"><scope>faiss::IndexShardsIVF</scope><name>syncWithSubIndexes</name></member>
+      <member refid="structfaiss_1_1IndexShardsIVF_1a739b9d0e62230232531889486d818046" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>train_q1</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ab0d7fc7420f306522923a96feddae7ca" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>~Level1Quantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

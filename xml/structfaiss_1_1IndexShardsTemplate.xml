@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1IndexShardsTemplate" kind="struct" language="C++" prot="public">
     <compoundname>faiss::IndexShardsTemplate</compoundname>
     <basecompoundref prot="public" virt="non-virtual">ThreadedIndex&lt; IndexT &gt;</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexShardsIVF" prot="public" virt="non-virtual">faiss::IndexShardsIVF</derivedcompoundref>
     <includes refid="IndexShards_8h" local="no">IndexShards.h</includes>
     <templateparamlist>
       <param>
@@ -317,9 +318,9 @@
         </inbodydescription>
         <location file="faiss/IndexShards.h" line="92" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexShardsTemplate&lt; IndexT &gt;::syncWithSubIndexes</definition>
+        <definition>virtual void faiss::IndexShardsTemplate&lt; IndexT &gt;::syncWithSubIndexes</definition>
         <argsstring>()</argsstring>
         <name>syncWithSubIndexes</name>
         <briefdescription>
@@ -329,7 +330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexShards.h" line="98" column="10"/>
+        <location file="faiss/IndexShards.h" line="98" column="18"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-func">
@@ -382,6 +383,12 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss::IndexShardsIVF&lt; Index &gt;</label>
+        <link refid="structfaiss_1_1IndexShardsIVF"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>ThreadedIndex&lt; IndexT &gt;</label>
       </node>
@@ -412,7 +419,7 @@
       <member refid="structfaiss_1_1IndexShardsTemplate_1ae0bff98885fecae6c42a474d05563ecd" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>remove_shard</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1ad8c210aad3ef56b82cc5ea47105095f7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1aa79db16c723ae37eaf406e840e4f227a" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>successive_ids</name></member>
-      <member refid="structfaiss_1_1IndexShardsTemplate_1a7cd3a39d756000d2e64ba129be6e90d8" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>syncWithSubIndexes</name></member>
+      <member refid="structfaiss_1_1IndexShardsTemplate_1aaf3c7b44b9f30f17f58aded129eeff58" prot="public" virt="virtual"><scope>faiss::IndexShardsTemplate</scope><name>syncWithSubIndexes</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1aa7d268a8a30e16f52e192d41a57b8626" prot="public" virt="non-virtual"><scope>faiss::IndexShardsTemplate</scope><name>train</name></member>
     </listofallmembers>
   </compounddef>

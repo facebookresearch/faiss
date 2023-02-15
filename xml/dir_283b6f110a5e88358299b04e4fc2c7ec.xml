@@ -48,6 +48,7 @@
     <innerfile refid="IndexRowwiseMinMax_8h">IndexRowwiseMinMax.h</innerfile>
     <innerfile refid="IndexScalarQuantizer_8h">IndexScalarQuantizer.h</innerfile>
     <innerfile refid="IndexShards_8h">IndexShards.h</innerfile>
+    <innerfile refid="IndexShardsIVF_8h">IndexShardsIVF.h</innerfile>
     <innerfile refid="IVFlib_8h">IVFlib.h</innerfile>
     <innerfile refid="MatrixStats_8h">MatrixStats.h</innerfile>
     <innerfile refid="MetaIndexes_8h">MetaIndexes.h</innerfile>

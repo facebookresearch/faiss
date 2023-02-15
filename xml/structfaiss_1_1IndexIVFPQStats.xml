@@ -91,7 +91,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1a4185d97542d16576ca0eff6e90bae1a6" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
+<para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854" kindref="member">IndexIVFPQ::search_preassigned</ref> is called by multiple threads </para>
     </detaileddescription>
     <location file="faiss/IndexIVFPQ.h" line="170" column="1" bodyfile="faiss/IndexIVFPQ.h" bodystart="170" bodyend="184"/>
     <listofallmembers>
