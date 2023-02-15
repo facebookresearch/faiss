@@ -6681,6 +6681,7 @@
     <member refid="namespacefaiss_1ac7a976807ce755fe82dde95efaecaf99" kind="function"><name>pairwise_L2sqr</name></member>
     <member refid="namespacefaiss_1a1f0c0270de04cc395edd3d2823d0128d" kind="function"><name>fvec_inner_products_ny</name></member>
     <member refid="namespacefaiss_1a4ca22849311a991b72676be10315e2af" kind="function"><name>fvec_L2sqr_ny</name></member>
+    <member refid="namespacefaiss_1a44aac89768a76f72a4205264194f6505" kind="function"><name>fvec_L2sqr_ny_transposed</name></member>
     <member refid="namespacefaiss_1a8fb5a079795e3aa9e1afa3674de43da5" kind="function"><name>fvec_L2sqr_ny_nearest</name></member>
     <member refid="namespacefaiss_1a1bc40dd030e214216a985c696771cfc0" kind="function"><name>fvec_L2sqr_ny_nearest_y_transposed</name></member>
     <member refid="namespacefaiss_1a7a49180ebf10e643217bbce5862c7f84" kind="function"><name>fvec_norm_L2sqr</name></member>
@@ -7304,6 +7305,8 @@
   </compound>
   <compound refid="sorting_8h" kind="file"><name>sorting.h</name>
   </compound>
+  <compound refid="transpose-avx2-inl_8h" kind="file"><name>transpose-avx2-inl.h</name>
+  </compound>
   <compound refid="utils_8h" kind="file"><name>utils.h</name>
   </compound>
   <compound refid="WorkerThread_8h" kind="file"><name>WorkerThread.h</name>
@@ -7333,6 +7336,8 @@
   <compound refid="dir_223b9c703ffee17e94e6e39e310b329b" kind="dir"><name>faiss/cppcontrib/sa_decode</name>
   </compound>
   <compound refid="dir_221463c854b1b8cd5e47ba008a62b54d" kind="dir"><name>faiss/gpu/test</name>
+  </compound>
+  <compound refid="dir_6db856fab8a406bb2751df9e12e5655b" kind="dir"><name>faiss/utils/transpose</name>
   </compound>
   <compound refid="dir_42f4926097fe2768058790a30a036468" kind="dir"><name>faiss/gpu/utils</name>
   </compound>

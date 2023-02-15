@@ -4,6 +4,7 @@
     <compoundname>faiss/utils</compoundname>
     <innerdir refid="dir_c2dc665bb85977007db19edac984ae84">faiss/utils/approx_topk</innerdir>
     <innerdir refid="dir_8024a5c5304a6089dbde2bf6560405dc">faiss/utils/distances_fused</innerdir>
+    <innerdir refid="dir_6db856fab8a406bb2751df9e12e5655b">faiss/utils/transpose</innerdir>
     <innerfile refid="AlignedTable_8h">AlignedTable.h</innerfile>
     <innerfile refid="distances_8h">distances.h</innerfile>
     <innerfile refid="extra__distances-inl_8h">extra_distances-inl.h</innerfile>
