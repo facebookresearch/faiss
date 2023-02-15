@@ -10,6 +10,8 @@ import unittest
 
 from common_faiss_tests import Randu10k
 
+from faiss.contrib.datasets import SyntheticDataset
+
 ru = Randu10k()
 
 xb = ru.xb
@@ -130,6 +132,52 @@ class Shards(unittest.TestCase):
             print('%d / %d differences' % (ndiff, nq * k))
             assert (ndiff < nq * k / 1000.)
 
+    def test_shards_ivf(self):
+        ds = SyntheticDataset(32, 1000, 100, 20)
+        ref_index = faiss.index_factory(ds.d, "IVF32,SQ8")
+        ref_index.train(ds.get_train())
+        xb = ds.get_database()
+        ref_index.add(ds.get_database())
 
-if __name__ == '__main__':
-    unittest.main()
+        Dref, Iref = ref_index.search(ds.get_database(), 10)
+        ref_index.reset()
+
+        sharded_index = faiss.IndexShardsIVF(
+            ref_index.quantizer, ref_index.nlist, False, True)
+        for shard in range(3):
+            index_i = faiss.clone_index(ref_index)
+            index_i.add(xb[shard * nb // 3: (shard + 1)* nb // 3])
+            sharded_index.add_shard(index_i)
+
+        Dnew, Inew = sharded_index.search(ds.get_database(), 10)
+
+        np.testing.assert_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref)
+
+    def test_shards_ivf_train_add(self):
+        ds = SyntheticDataset(32, 1000, 600, 20)
+        quantizer = faiss.IndexFlatL2(ds.d)
+        sharded_index = faiss.IndexShardsIVF(quantizer, 40, False, False)
+
+        for _ in range(3):
+            sharded_index.add_shard(faiss.index_factory(ds.d, "IVF40,Flat"))
+
+        sharded_index.train(ds.get_train())
+        sharded_index.add(ds.get_database())
+        Dnew, Inew = sharded_index.search(ds.get_queries(), 10)
+
+        index_ref = faiss.IndexIVFFlat(quantizer, ds.d, sharded_index.nlist)
+        index_ref.train(ds.get_train())
+        index_ref.add(ds.get_database())
+        Dref, Iref = index_ref.search(ds.get_queries(), 10)
+        np.testing.assert_equal(Inew, Iref)
+        np.testing.assert_allclose(Dnew, Dref)
+
+        # mess around with the quantizer's centroids
+        centroids = quantizer.reconstruct_n()
+        centroids = centroids[::-1].copy()
+        quantizer.reset()
+        quantizer.add(centroids)
+
+        D2, I2 = sharded_index.search(ds.get_queries(), 10)
+        self.assertFalse(np.all(I2 == Inew))

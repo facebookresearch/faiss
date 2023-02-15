@@ -27,10 +27,7 @@ GpuIndexIVF::GpuIndexIVF(
         idx_t nlistIn,
         GpuIndexIVFConfig config)
         : GpuIndex(provider->getResources(), dims, metric, metricArg, config),
-          nlist(nlistIn),
-          nprobe(1),
-          quantizer(nullptr),
-          own_fields(false),
+          IndexIVFInterface(nullptr, nlistIn),
           ivfConfig_(config) {
     // Only IP and L2 are supported for now
     if (!(metric_type == faiss::METRIC_L2 ||
@@ -50,9 +47,7 @@ GpuIndexIVF::GpuIndexIVF(
         idx_t nlistIn,
         GpuIndexIVFConfig config)
         : GpuIndex(provider->getResources(), dims, metric, metricArg, config),
-          nlist(nlistIn),
-          nprobe(1),
-          quantizer(coarseQuantizer),
+          IndexIVFInterface(coarseQuantizer, nlistIn),
           ivfConfig_(config) {
     FAISS_THROW_IF_NOT_MSG(
             quantizer, "expecting a coarse quantizer object; none provided");
@@ -113,11 +108,7 @@ void GpuIndexIVF::init_() {
     verifyIVFSettings_();
 }
 
-GpuIndexIVF::~GpuIndexIVF() {
-    if (own_fields) {
-        delete quantizer;
-    }
-}
+GpuIndexIVF::~GpuIndexIVF() {}
 
 void GpuIndexIVF::verifyIVFSettings_() const {
     // We should always have a quantizer instance
@@ -130,7 +121,7 @@ void GpuIndexIVF::verifyIVFSettings_() const {
         // IVF quantizer should correspond to our set of lists
         FAISS_THROW_IF_NOT_FMT(
                 quantizer->ntotal == nlist,
-                "IVF nlist count (%ld) does not match trained coarse quantizer size (%zu)",
+                "IVF nlist count (%zu) does not match trained coarse quantizer size (%zu)",
                 nlist,
                 quantizer->ntotal);
     } else {
@@ -336,13 +327,15 @@ void GpuIndexIVF::searchImpl_(
 void GpuIndexIVF::search_preassigned(
         idx_t n,
         const float* x,
-        int k,
+        idx_t k,
         const idx_t* assign,
         const float* centroid_dis,
         float* distances,
         idx_t* labels,
         bool store_pairs,
-        const IVFSearchParameters* params) const {
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
+    FAISS_THROW_IF_NOT_MSG(stats == nullptr, "IVF stats not supported");
     DeviceScope scope(config_.device);
     auto stream = resources_->getDefaultStream(config_.device);
 
@@ -360,7 +353,15 @@ void GpuIndexIVF::search_preassigned(
         return;
     }
 
-    int use_nprobe = getCurrentNProbe_(params);
+    idx_t use_nprobe = params ? params->nprobe : this->nprobe;
+    validateNProbe(use_nprobe);
+
+    size_t max_codes = params ? params->max_codes : this->max_codes;
+    FAISS_THROW_IF_NOT_FMT(
+            max_codes == 0,
+            "GPU IVF index does not currently support "
+            "SearchParametersIVF::max_codes (passed %zu, must be 0)",
+            max_codes);
 
     // Ensure that all data/output buffers are resident on our desired device
     auto vecsDevice = toDeviceTemporary<float, 2>(
@@ -403,6 +404,19 @@ void GpuIndexIVF::search_preassigned(
     // If the output was not already on the GPU, copy it back
     fromDevice<float, 2>(outDistancesDevice, distances, stream);
     fromDevice<idx_t, 2>(outIndicesDevice, labels, stream);
+}
+
+void GpuIndexIVF::range_search_preassigned(
+        idx_t nx,
+        const float* x,
+        float radius,
+        const idx_t* keys,
+        const float* coarse_dis,
+        RangeSearchResult* result,
+        bool store_pairs,
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
+    FAISS_THROW_MSG("range search not implemented");
 }
 
 bool GpuIndexIVF::addImplRequiresIDs_() const {

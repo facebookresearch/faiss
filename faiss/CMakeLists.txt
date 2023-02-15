@@ -44,6 +44,7 @@ set(FAISS_SRC
   IndexRowwiseMinMax.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
+  IndexShardsIVF.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
   VectorTransform.cpp
@@ -133,6 +134,7 @@ set(FAISS_HEADERS
   IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
+  IndexShardsIVF.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
