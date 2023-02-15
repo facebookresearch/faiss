@@ -170,6 +170,9 @@ set(FAISS_HEADERS
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/simd_result_handlers.h
+  impl/ivfpq/code_distance.h
+  impl/ivfpq/code_distance-generic.h
+  impl/ivfpq/code_distance-avx2.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
