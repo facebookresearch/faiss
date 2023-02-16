@@ -29,7 +29,7 @@ class ThreadedIndex : public IndexT {
     /// WARNING: once an index is added, it becomes unsafe to touch it from any
     /// other thread than that on which is managing it, until we are shut
     /// down. Use runOnIndex to perform work on it instead.
-    void addIndex(IndexT* index);
+    virtual void addIndex(IndexT* index);
 
     /// Remove an index that is managed by ourselves.
     /// This will flush all pending work on that index, and then shut
@@ -52,17 +52,17 @@ class ThreadedIndex : public IndexT {
     }
 
     /// Returns the i-th sub-index
-    IndexT* at(int i) {
+    IndexT* at(size_t i) {
         return indices_[i].first;
     }
 
     /// Returns the i-th sub-index (const version)
-    const IndexT* at(int i) const {
+    const IndexT* at(size_t i) const {
         return indices_[i].first;
     }
 
     /// Whether or not we are responsible for deleting our contained indices
-    bool own_fields;
+    bool own_indices = false;
 
    protected:
     /// Called just after an index is added

@@ -67,13 +67,7 @@ int sgelsd_(
 
 namespace faiss {
 
-ResidualQuantizer::ResidualQuantizer()
-        : train_type(Train_progressive_dim),
-          niter_codebook_refine(5),
-          max_beam_size(5),
-          use_beam_LUT(0),
-          approx_topk_mode(ApproxTopK_mode_t::EXACT_TOPK),
-          assign_index_factory(nullptr) {
+ResidualQuantizer::ResidualQuantizer() {
     d = 0;
     M = 0;
     verbose = false;

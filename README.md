@@ -74,6 +74,8 @@ For public discussion of Faiss or for questions, there is a Facebook group at ht
 We monitor the [issues page](http://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.
 
-## License
+## Legal
 
-Faiss is MIT-licensed.
+Faiss is MIT-licensed, refer to the [LICENSE file](https://github.com/facebookresearch/faiss/blob/main/LICENSE) in the top level directory.
+
+Copyright © Meta Platforms, Inc. See the [Terms of Use](https://opensource.fb.com/legal/terms/) and [Privacy Policy](https://opensource.fb.com/legal/privacy/) for this project.

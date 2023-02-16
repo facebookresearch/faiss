@@ -310,3 +310,39 @@ class DatasetMusic100(Dataset):
             assert k <= 100
             gt = gt[:, :k]
         return gt
+
+
+
+def dataset_from_name(dataset='deep1M', download=False):
+    """ converts a string describing a dataset to a Dataset object
+    Supports sift1M, bigann1M..bigann1B, deep1M..deep1B, music-100 and glove
+    """
+
+    if dataset == 'sift1M':
+        return DatasetSIFT1M()
+
+    elif dataset.startswith('bigann'):
+        dbsize = 1000 if dataset == "bigann1B" else int(dataset[6:-1])
+        return DatasetBigANN(nb_M=dbsize)
+
+    elif dataset.startswith("deep"):
+
+        szsuf = dataset[4:]
+        if szsuf[-1] == 'M':
+            dbsize = 10 ** 6 * int(szsuf[:-1])
+        elif szsuf == '1B':
+            dbsize = 10 ** 9
+        elif szsuf[-1] == 'k':
+            dbsize = 1000 * int(szsuf[:-1])
+        else:
+            assert False, "did not recognize suffix " + szsuf
+        return DatasetDeep1B(nb=dbsize)
+
+    elif dataset == "music-100":
+        return DatasetMusic100()
+
+    elif dataset == "glove":
+        return DatasetGlove(download=download)
+
+    else:
+        raise RuntimeError("unknown dataset " + dataset)

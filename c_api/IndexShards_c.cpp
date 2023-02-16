@@ -14,8 +14,8 @@ using faiss::IndexShards;
 
 DEFINE_DESTRUCTOR(IndexShards)
 
-DEFINE_GETTER(IndexShards, int, own_fields)
-DEFINE_SETTER(IndexShards, int, own_fields)
+DEFINE_GETTER(IndexShards, int, own_indices)
+DEFINE_SETTER(IndexShards, int, own_indices)
 
 DEFINE_GETTER(IndexShards, int, successive_ids)
 DEFINE_SETTER(IndexShards, int, successive_ids)

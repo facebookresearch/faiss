@@ -7,7 +7,6 @@
 set(FAISS_GPU_SRC
   GpuAutoTune.cpp
   GpuCloner.cpp
-  GpuClonerOptions.cpp
   GpuDistance.cu
   GpuIcmEncoder.cu
   GpuIndex.cu

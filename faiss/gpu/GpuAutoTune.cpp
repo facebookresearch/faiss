@@ -11,6 +11,8 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
+
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
@@ -33,7 +35,12 @@ using namespace ::faiss;
 
 void GpuParameterSpace::initialize(const Index* index) {
     if (DC(IndexPreTransform)) {
-        index = ix->index;
+        initialize(ix->index);
+        return;
+    }
+    if (DC(IndexShardsIVF)) {
+        ParameterSpace::initialize(index);
+        return;
     }
     if (DC(IndexReplicas)) {
         if (ix->count() == 0)

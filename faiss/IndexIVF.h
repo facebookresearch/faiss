@@ -83,6 +83,74 @@ struct InvertedListScanner;
 struct IndexIVFStats;
 struct CodePacker;
 
+struct IndexIVFInterface : Level1Quantizer {
+    size_t nprobe = 1;    ///< number of probes at query time
+    size_t max_codes = 0; ///< max nb of codes to visit to do a query
+
+    explicit IndexIVFInterface(Index* quantizer = nullptr, size_t nlist = 0)
+            : Level1Quantizer(quantizer, nlist) {}
+
+    /** search a set of vectors, that are pre-quantized by the IVF
+     *  quantizer. Fill in the corresponding heaps with the query
+     *  results. The default implementation uses InvertedListScanners
+     *  to do the search.
+     *
+     * @param n      nb of vectors to query
+     * @param x      query vectors, size nx * d
+     * @param assign coarse quantization indices, size nx * nprobe
+     * @param centroid_dis
+     *               distances to coarse centroids, size nx * nprobe
+     * @param distance
+     *               output distances, size n * k
+     * @param labels output labels, size n * k
+     * @param store_pairs store inv list index + inv list offset
+     *                     instead in upper/lower 32 bit of result,
+     *                     instead of ids (used for reranking).
+     * @param params used to override the object's search parameters
+     * @param stats  search stats to be updated (can be null)
+     */
+    virtual void search_preassigned(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
+            float* distances,
+            idx_t* labels,
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const = 0;
+
+    /** Range search a set of vectors, that are pre-quantized by the IVF
+     *  quantizer. Fill in the RangeSearchResults results. The default
+     * implementation uses InvertedListScanners to do the search.
+     *
+     * @param n      nb of vectors to query
+     * @param x      query vectors, size nx * d
+     * @param assign coarse quantization indices, size nx * nprobe
+     * @param centroid_dis
+     *               distances to coarse centroids, size nx * nprobe
+     * @param result Output results
+     * @param store_pairs store inv list index + inv list offset
+     *                     instead in upper/lower 32 bit of result,
+     *                     instead of ids (used for reranking).
+     * @param params used to override the object's search parameters
+     * @param stats  search stats to be updated (can be null)
+     */
+    virtual void range_search_preassigned(
+            idx_t nx,
+            const float* x,
+            float radius,
+            const idx_t* keys,
+            const float* coarse_dis,
+            RangeSearchResult* result,
+            bool store_pairs = false,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const = 0;
+
+    virtual ~IndexIVFInterface() {}
+};
+
 /** Index based on a inverted file (IVF)
  *
  * In the inverted file, the quantizer (an Index instance) provides a
@@ -103,15 +171,12 @@ struct CodePacker;
  * Sub-classes implement a post-filtering of the index that refines
  * the distance estimation from the query to databse vectors.
  */
-struct IndexIVF : Index, Level1Quantizer {
+struct IndexIVF : Index, IndexIVFInterface {
     /// Access to the actual data
     InvertedLists* invlists = nullptr;
     bool own_invlists = false;
 
     size_t code_size = 0; ///< code size per vector in bytes
-    size_t nprobe = 1;    ///< number of probes at query time
-    size_t max_codes = 0; ///< max nb of codes to visit to do a query
-
     /** Parallel mode determines how queries are parallelized with OpenMP
      *
      * 0 (default): split over queries
@@ -191,26 +256,7 @@ struct IndexIVF : Index, Level1Quantizer {
     /// does nothing by default
     virtual void train_residual(idx_t n, const float* x);
 
-    /** search a set of vectors, that are pre-quantized by the IVF
-     *  quantizer. Fill in the corresponding heaps with the query
-     *  results. The default implementation uses InvertedListScanners
-     *  to do the search.
-     *
-     * @param n      nb of vectors to query
-     * @param x      query vectors, size nx * d
-     * @param assign coarse quantization indices, size nx * nprobe
-     * @param centroid_dis
-     *               distances to coarse centroids, size nx * nprobe
-     * @param distance
-     *               output distances, size n * k
-     * @param labels output labels, size n * k
-     * @param store_pairs store inv list index + inv list offset
-     *                     instead in upper/lower 32 bit of result,
-     *                     instead of ids (used for reranking).
-     * @param params used to override the object's search parameters
-     * @param stats  search stats to be updated (can be null)
-     */
-    virtual void search_preassigned(
+    void search_preassigned(
             idx_t n,
             const float* x,
             idx_t k,
@@ -220,7 +266,18 @@ struct IndexIVF : Index, Level1Quantizer {
             idx_t* labels,
             bool store_pairs,
             const IVFSearchParameters* params = nullptr,
-            IndexIVFStats* stats = nullptr) const;
+            IndexIVFStats* stats = nullptr) const override;
+
+    void range_search_preassigned(
+            idx_t nx,
+            const float* x,
+            float radius,
+            const idx_t* keys,
+            const float* coarse_dis,
+            RangeSearchResult* result,
+            bool store_pairs = false,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
 
     /** assign the vectors, then call search_preassign */
     void search(
@@ -237,17 +294,6 @@ struct IndexIVF : Index, Level1Quantizer {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
-
-    void range_search_preassigned(
-            idx_t nx,
-            const float* x,
-            float radius,
-            const idx_t* keys,
-            const float* coarse_dis,
-            RangeSearchResult* result,
-            bool store_pairs = false,
-            const IVFSearchParameters* params = nullptr,
-            IndexIVFStats* stats = nullptr) const;
 
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
