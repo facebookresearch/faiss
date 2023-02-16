@@ -275,5 +275,4 @@ void IndexShardsTemplate<IndexT>::search(
 template struct IndexShardsTemplate<Index>;
 template struct IndexShardsTemplate<IndexBinary>;
 
-
 } // namespace faiss

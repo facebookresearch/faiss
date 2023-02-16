@@ -117,7 +117,6 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
 
-
    protected:
     /// From either the current set nprobe or the SearchParameters if available,
     /// return the nprobe that we should use for the current search
