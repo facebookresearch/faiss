@@ -26,29 +26,28 @@
 namespace faiss {
 namespace gpu {
 
-DistanceType faiss_to_raft(MetricType metric, bool exactDistance) {
+raft::distance::DistanceType faiss_to_raft(MetricType metric, bool exactDistance) {
    switch(metric) {
 
        case MetricType::METRIC_INNER_PRODUCT:
-           return DistanceType::InnerProduct;
+           return raft::distance::DistanceType::InnerProduct;
        case MetricType::METRIC_L2:
-           return exactDistance ? DistanceType::L2Unexpanded : DistanceType::L2Expanded;
+           return exactDistance ? raft::distance::DistanceType::L2Unexpanded : raft::distance::DistanceType::L2Expanded;
        case MetricType::METRIC_L1:
-           return DistanceType::L1;
+           return raft::distance::DistanceType::L1;
        case MetricType::METRIC_Linf:
-           return DistanceType::Linf;
+           return raft::distance::DistanceType::Linf;
        case MetricType::METRIC_Lp:
-           return DistanceType::LpUnexpanded;
+           return raft::distance::DistanceType::LpUnexpanded;
        case MetricType::METRIC_Canberra:
-           return DistanceType::Canberra;
+           return raft::distance::DistanceType::Canberra;
        case MetricType::METRIC_BrayCurtis:
-           return DistanceType::BrayCurtis;
+           return raft::distance::DistanceType::BrayCurtis;
        case MetricType::METRIC_JensenShannon:
-           return DistanceType::JensenShannon;
+           return raft::distance::DistanceType::JensenShannon;
        default:
            RAFT_FAIL("Distance type not supported");
    }
-}
 }
 } // namespace gpu
 } // namespace faiss

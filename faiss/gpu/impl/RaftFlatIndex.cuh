@@ -54,6 +54,16 @@ class RaftFlatIndex : public FlatIndex {
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance) override;
+
+
+    void query(
+            Tensor<half, 2, true>& vecs,
+            int k,
+            faiss::MetricType metric,
+            float metricArg,
+            Tensor<float, 2, true>& outDistances,
+            Tensor<idx_t, 2, true>& outIndices,
+            bool exactDistance) override;
 };
 
 } // namespace gpu

@@ -23,10 +23,13 @@
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <vector>
 
+#include <raft/core/logger.hpp>
 #include <faiss/gpu/impl/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/distance/distance_types.hpp>
 #include <raft/neighbors/brute_force.cuh>
+
+#define RAFT_NAME "raft"
 
 namespace faiss {
 namespace gpu {
@@ -68,10 +71,26 @@ void RaftFlatIndex::query(
 
     // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
     if (k <= 64 && metric == MetricType::METRIC_L2 && vectors_.getSize(0) > 0) {
+        RAFT_LOG_INFO("Invoking flat fused_l2_knn");
         brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
     } else {
-        brute_force::knn(handle, index_vec, search, inds, dists, k, distance);
+        RAFT_LOG_INFO("Invoking flat bfknn");
+        brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metricArg);
     }
 }
+
+void RaftFlatIndex::query(
+        Tensor<half, 2, true>& vecs,
+        int k,
+        faiss::MetricType metric,
+        float metricArg,
+        Tensor<float, 2, true>& outDistances,
+        Tensor<idx_t, 2, true>& outIndices,
+        bool exactDistance) {
+
+    // FIXME: ref https://github.com/rapidsai/raft/issues/1280
+    FlatIndex::query(vecs, k, metric, metricArg, outDistances, outIndices, exactDistance);
+}
+
 } // namespace gpu
 } // namespace faiss

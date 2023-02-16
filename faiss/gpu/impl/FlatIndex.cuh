@@ -53,7 +53,7 @@ class FlatIndex {
             Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance);
 
-    void query(
+    virtual void query(
             Tensor<half, 2, true>& vecs,
             int k,
             faiss::MetricType metric,

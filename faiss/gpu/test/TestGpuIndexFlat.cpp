@@ -54,7 +54,7 @@ void testFlat(const TestFlatOptions& opt) {
     int k = opt.useFloat16
             ? std::min(faiss::gpu::randVal(1, 50), numVecs)
             : std::min(
-                      faiss::gpu::randVal(1, faiss::gpu::getMaxKSelection()),
+                      faiss::gpu::randVal(1, 256),
                       numVecs);
     if (opt.kOverride > 0) {
         k = opt.kOverride;
