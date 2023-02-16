@@ -97,11 +97,32 @@ float fvec_inner_product_ref(const float* x, const float* y, size_t d) {
     return res;
 }
 
+float fvec_inner_product(const float* x, const float* y, size_t d) {
+    float res = 0.F;
+    for (size_t i = 0; i != d; ++i) {
+#pragma float_control(precise, off)
+        res += x[i] * y[i];
+    }
+    return res;
+}
+
 float fvec_norm_L2sqr_ref(const float* x, size_t d) {
     size_t i;
     double res = 0;
     for (i = 0; i < d; i++)
         res += x[i] * x[i];
+    return res;
+}
+
+float fvec_norm_L2sqr(const float* x, size_t d) {
+    // the double in the _ref is suspected to be a typo. Some of the manual
+    // implementations this replaces used float.
+    float res = 0;
+    for (size_t i = 0; i != d; ++i) {
+#pragma float_control(precise, off)
+        res += x[i] * x[i];
+    }
+
     return res;
 }
 
@@ -227,25 +248,6 @@ static inline __m128 masked_read(int d, const float* x) {
     }
     return _mm_load_ps(buf);
     // cannot use AVX2 _mm_mask_set1_epi32
-}
-
-float fvec_norm_L2sqr(const float* x, size_t d) {
-    __m128 mx;
-    __m128 msum1 = _mm_setzero_ps();
-
-    while (d >= 4) {
-        mx = _mm_loadu_ps(x);
-        x += 4;
-        msum1 = _mm_add_ps(msum1, _mm_mul_ps(mx, mx));
-        d -= 4;
-    }
-
-    mx = masked_read(d, x);
-    msum1 = _mm_add_ps(msum1, _mm_mul_ps(mx, mx));
-
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    return _mm_cvtss_f32(msum1);
 }
 
 namespace {
@@ -1018,41 +1020,6 @@ static inline __m256 masked_read_8(int d, const float* x) {
     }
 }
 
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    __m256 msum1 = _mm256_setzero_ps();
-
-    while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps(x);
-        x += 8;
-        __m256 my = _mm256_loadu_ps(y);
-        y += 8;
-        msum1 = _mm256_add_ps(msum1, _mm256_mul_ps(mx, my));
-        d -= 8;
-    }
-
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 = _mm_add_ps(msum2, _mm256_extractf128_ps(msum1, 0));
-
-    if (d >= 4) {
-        __m128 mx = _mm_loadu_ps(x);
-        x += 4;
-        __m128 my = _mm_loadu_ps(y);
-        y += 4;
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(mx, my));
-        d -= 4;
-    }
-
-    if (d > 0) {
-        __m128 mx = masked_read(d, x);
-        __m128 my = masked_read(d, y);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(mx, my));
-    }
-
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    return _mm_cvtss_f32(msum2);
-}
-
 float fvec_L2sqr(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
 
@@ -1207,31 +1174,6 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
     return _mm_cvtss_f32(msum1);
 }
 
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    __m128 mx, my;
-    __m128 msum1 = _mm_setzero_ps();
-
-    while (d >= 4) {
-        mx = _mm_loadu_ps(x);
-        x += 4;
-        my = _mm_loadu_ps(y);
-        y += 4;
-        msum1 = _mm_add_ps(msum1, _mm_mul_ps(mx, my));
-        d -= 4;
-    }
-
-    // add the last 1, 2, or 3 values
-    mx = masked_read(d, x);
-    my = masked_read(d, y);
-    __m128 prod = _mm_mul_ps(mx, my);
-
-    msum1 = _mm_add_ps(msum1, prod);
-
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    return _mm_cvtss_f32(msum1);
-}
-
 #elif defined(__aarch64__)
 
 float fvec_L2sqr(const float* x, const float* y, size_t d) {
@@ -1250,40 +1192,6 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
         float32_t yi = y[i];
         float32_t sq = xi - yi;
         accux1 += sq * sq;
-    }
-    return accux1;
-}
-
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    float32x4_t accux4 = vdupq_n_f32(0);
-    const size_t d_simd = d - (d & 3);
-    size_t i;
-    for (i = 0; i < d_simd; i += 4) {
-        float32x4_t xi = vld1q_f32(x + i);
-        float32x4_t yi = vld1q_f32(y + i);
-        accux4 = vfmaq_f32(accux4, xi, yi);
-    }
-    float32_t accux1 = vaddvq_f32(accux4);
-    for (; i < d; ++i) {
-        float32_t xi = x[i];
-        float32_t yi = y[i];
-        accux1 += xi * yi;
-    }
-    return accux1;
-}
-
-float fvec_norm_L2sqr(const float* x, size_t d) {
-    float32x4_t accux4 = vdupq_n_f32(0);
-    const size_t d_simd = d - (d & 3);
-    size_t i;
-    for (i = 0; i < d_simd; i += 4) {
-        float32x4_t xi = vld1q_f32(x + i);
-        accux4 = vfmaq_f32(accux4, xi, xi);
-    }
-    float32_t accux1 = vaddvq_f32(accux4);
-    for (; i < d; ++i) {
-        float32_t xi = x[i];
-        accux1 += xi * xi;
     }
     return accux1;
 }
@@ -1360,14 +1268,6 @@ float fvec_L1(const float* x, const float* y, size_t d) {
 
 float fvec_Linf(const float* x, const float* y, size_t d) {
     return fvec_Linf_ref(x, y, d);
-}
-
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    return fvec_inner_product_ref(x, y, d);
-}
-
-float fvec_norm_L2sqr(const float* x, size_t d) {
-    return fvec_norm_L2sqr_ref(x, d);
 }
 
 void fvec_L2sqr_ny(
