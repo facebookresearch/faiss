@@ -8,6 +8,7 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
+#include <faiss/MetricType.h>
 #include <faiss/utils/distances.h>
 #include <type_traits>
 
@@ -22,7 +23,7 @@ struct VectorDistance {
 
     // heap template to use for this type of metric
     using C = typename std::conditional<
-            mt == METRIC_INNER_PRODUCT,
+            is_dissimilairty_metric(mt),
             CMin<float, int64_t>,
             CMax<float, int64_t>>::type;
 };

@@ -40,7 +40,7 @@ using idx_t = int64_t;
 
 /// this function is used to distinguish between min and max indexes since
 /// we need to support similarity and dis-similarity metrics in a flexible way
-inline bool is_dissimilairty_metric(MetricType metric_type) {
+constexpr bool is_dissimilairty_metric(MetricType metric_type) {
     return metric_type == METRIC_INNER_PRODUCT;
 }
 
