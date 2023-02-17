@@ -254,9 +254,9 @@ struct JensenShannonDistance {
 struct JaccardSimilarity {
     __host__ __device__ JaccardSimilarity() : numerator(0), denominator(0) {}
 
-    static constexpr bool kDirection = false; // minimize
+    static constexpr bool kDirection = true; // maximize
     static constexpr float kIdentityData = 0;
-    static constexpr float kMaxDistance = std::numeric_limits<float>::max();
+    static constexpr float kMaxDistance = -std::numeric_limits<float>::max();
 
     __host__ __device__ void handle(float a, float b) {
         numerator += fmin(a, b);

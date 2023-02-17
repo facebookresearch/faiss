@@ -57,7 +57,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 } // namespace
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (is_dissimilairty_metric(storage->metric_type)) {
+    if (is_similairty_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();

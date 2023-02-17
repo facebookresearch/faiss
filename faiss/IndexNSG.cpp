@@ -112,7 +112,7 @@ void IndexNSG::search(
         InterruptCallback::check();
     }
 
-    if (is_dissimilairty_metric(METRIC_INNER_PRODUCT)) {
+    if (is_similairty_metric(metric_type)) {
         // we need to revert the negated distances
         for (size_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];

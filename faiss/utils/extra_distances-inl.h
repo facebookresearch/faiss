@@ -23,7 +23,7 @@ struct VectorDistance {
 
     // heap template to use for this type of metric
     using C = typename std::conditional<
-            is_dissimilairty_metric(mt),
+            is_similairty_metric(mt),
             CMin<float, int64_t>,
             CMax<float, int64_t>>::type;
 };

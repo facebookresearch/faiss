@@ -372,7 +372,7 @@ void Clustering::train_encoded(
     std::unique_ptr<float[]> dis(new float[nx]);
 
     // remember best iteration for redo
-    bool lower_is_better = !is_dissimilairty_metric(index.metric_type);
+    bool lower_is_better = !is_similairty_metric(index.metric_type);
     float best_obj = lower_is_better ? HUGE_VALF : -HUGE_VALF;
     std::vector<ClusteringIterationStats> best_iteration_stats;
     std::vector<float> best_centroids;
