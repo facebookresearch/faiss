@@ -97,32 +97,11 @@ float fvec_inner_product_ref(const float* x, const float* y, size_t d) {
     return res;
 }
 
-float fvec_inner_product(const float* x, const float* y, size_t d) {
-    float res = 0.F;
-    for (size_t i = 0; i != d; ++i) {
-#pragma float_control(precise, off)
-        res += x[i] * y[i];
-    }
-    return res;
-}
-
 float fvec_norm_L2sqr_ref(const float* x, size_t d) {
     size_t i;
     double res = 0;
     for (i = 0; i < d; i++)
         res += x[i] * x[i];
-    return res;
-}
-
-float fvec_norm_L2sqr(const float* x, size_t d) {
-    // the double in the _ref is suspected to be a typo. Some of the manual
-    // implementations this replaces used float.
-    float res = 0;
-    for (size_t i = 0; i != d; ++i) {
-#pragma float_control(precise, off)
-        res += x[i] * x[i];
-    }
-
     return res;
 }
 
@@ -226,6 +205,33 @@ void fvec_inner_products_ny_ref(
         ip[i] = fvec_inner_product(x, y, d);
         y += d;
     }
+}
+
+/*********************************************************
+ * Autovectorized implementations
+ */
+
+FAISS_PRAGMA_IMPRECISE_FUNCTION
+float fvec_inner_product(const float* x, const float* y, size_t d) {
+    float res = 0.F;
+    for (size_t i = 0; i != d; ++i) {
+        FAISS_PRAGMA_IMPRECISE_OP
+        res += x[i] * y[i];
+    }
+    return res;
+}
+
+FAISS_PRAGMA_IMPRECISE_FUNCTION
+float fvec_norm_L2sqr(const float* x, size_t d) {
+    // the double in the _ref is suspected to be a typo. Some of the manual
+    // implementations this replaces used float.
+    float res = 0;
+    for (size_t i = 0; i != d; ++i) {
+        FAISS_PRAGMA_IMPRECISE_OP
+        res += x[i] * x[i];
+    }
+
+    return res;
 }
 
 /*********************************************************
