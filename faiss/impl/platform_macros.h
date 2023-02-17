@@ -101,3 +101,14 @@ inline int __builtin_clzll(uint64_t x) {
 #else
 #define FAISS_DEPRECATED(msg)
 #endif // GCC or Clang
+
+// Localized enablement of imprecise floating point operations
+// You need to use both macros to cover all compilers.
+#ifndef __GCC__
+#define FAISS_PRAGMA_IMPRECISE_OP _Pragma("float_control(precise, off)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION
+#else
+#define FAISS_PRAGMA_IMPRECISE_OP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION \
+    GCC optimize("-funroll-loops -fassociative-math -fno-signed-zeros")
+#endif
