@@ -114,6 +114,10 @@ void testTransposition(
     args.outIndices = gpuIndices.data();
     args.device = device;
 
+#if defined USE_NVIDIA_RAFT
+    args.use_raft = true;
+#endif
+
     bfKnn(&res, args);
 
     std::stringstream str;

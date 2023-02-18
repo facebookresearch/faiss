@@ -14,8 +14,23 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftUtils.h>
+#include <raft/core/device_resources.hpp>
+#include <raft/core/device_mdspan.hpp>
+#include <raft/neighbors/brute_force.cuh>
+#include <raft/core/error.hpp>
+#include <raft/core/mdspan_types.hpp>
+#define RAFT_NAME "raft"
+#endif
+
 namespace faiss {
 namespace gpu {
+
+#if defined USE_NVIDIA_RAFT
+using namespace raft::distance;
+using namespace raft::neighbors;
+#endif
 
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
@@ -192,13 +207,77 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 or F16");
 
-    if (args.vectorType == DistanceDataType::F32) {
-        bfKnnConvert<float>(res, args);
-    } else if (args.vectorType == DistanceDataType::F16) {
-        bfKnnConvert<half>(res, args);
+#if defined USE_NVIDIA_RAFT
+    // Note: For now, RAFT bfknn requires queries and vectors to be same layout
+    if(args.should_use_raft() && args.queriesRowMajor == args.vectorsRowMajor) {
+
+        DistanceType distance = faiss_to_raft(args.metric, false);
+
+        auto resImpl = res->getResources();
+        auto res_impl = resImpl.get();
+        raft::handle_t& handle = res_impl->getRaftHandleCurrentDevice();
+
+        idx_t dims = args.dims;
+        idx_t num_vectors = args.numVectors;
+        const float *vectors = reinterpret_cast<const float*>(args.vectors);
+        const float *queries = reinterpret_cast<const float*>(args.queries);
+        idx_t num_queries = args.numQueries;
+        int k = args.k;
+        float metric_arg = args.metricArg;
+        idx_t *out_indices = reinterpret_cast<idx_t*>(args.outIndices);
+        float *out_distances = reinterpret_cast<float*>(args.outDistances);
+
+        //args.queriesRowMajor ? raft::row_major : raft::col_major;
+
+
+        auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
+                out_indices, num_queries, k);
+        auto dists = raft::make_device_matrix_view<float, idx_t>(
+                out_distances,
+                num_queries,
+                k);
+
+
+        if(args.queriesRowMajor) {
+            auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(vectors, num_vectors, dims);
+            auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(queries, num_queries, dims);
+
+            std::vector<raft::device_matrix_view<const float, idx_t, raft::row_major>> index_vec = {index};
+            // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
+            if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
+                RAFT_LOG_INFO("Invoking flat fused_l2_knn");
+                brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
+            } else {
+                RAFT_LOG_INFO("Invoking flat bfknn");
+                brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
+            }
+        } else {
+            auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(vectors, num_vectors, dims);
+            auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(queries, num_queries, dims);
+
+            std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
+            // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
+            if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
+                RAFT_LOG_INFO("Invoking flat fused_l2_knn");
+                brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
+            } else {
+                RAFT_LOG_INFO("Invoking flat bfknn");
+                brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
+            }
+        }
     } else {
-        FAISS_THROW_MSG("unknown vectorType");
+#else
+        if (args.vectorType == DistanceDataType::F32) {
+            bfKnnConvert<float>(res, args);
+        } else if (args.vectorType == DistanceDataType::F16) {
+            bfKnnConvert<half>(res, args);
+        } else {
+            FAISS_THROW_MSG("unknown vectorType");
+        }
+#endif
+#if defined USE_NVIDIA_RAFT
     }
+#endif
 }
 
 // legacy version

@@ -26,6 +26,15 @@ struct GpuIndexConfig {
 
     /// Should the index dispatch down to RAFT?
     bool use_raft = false;
+
+    bool should_use_raft() {
+#if defined USE_NVIDIA_RAFT
+        return use_raft;
+#else
+        FAISS_THROW_IF_NOT_MSG(!use_raft, "RAFT has not been compiled into the current version so it cannot be used.");
+#endif
+    }
+
 };
 
 class GpuIndex : public faiss::Index {
