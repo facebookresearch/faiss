@@ -37,7 +37,8 @@ void testTransposition(
     std::vector<float> vecs = randVecs(numVecs, dim);
     std::vector<float> queries = randVecs(numQuery, dim);
 
-    if (metric == faiss::MetricType::METRIC_JensenShannon) {
+    if ((metric == faiss::MetricType::METRIC_JensenShannon) ||
+        (metric == faiss::MetricType::METRIC_Jaccard)) {
         // make values positive
         for (auto& v : vecs) {
             v = std::abs(v);

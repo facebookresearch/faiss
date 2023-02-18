@@ -31,8 +31,9 @@ enum MetricType {
     METRIC_Canberra = 20,
     METRIC_BrayCurtis,
     METRIC_JensenShannon,
-    METRIC_Jaccard, ///< defined as: sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i))
-                    ///< where a_i, b_i > 0
+    METRIC_Jaccard, ///< defined as:
+                    /// 1 - (sum_i(min(a_i, b_i)) / sum_i(max(a_i, < b_i)))
+                    /// where a_i, b_i > 0
 };
 
 /// all vector indices are this type
@@ -40,9 +41,8 @@ using idx_t = int64_t;
 
 /// this function is used to distinguish between min and max indexes since
 /// we need to support similarity and dis-similarity metrics in a flexible way
-constexpr bool is_similairty_metric(MetricType metric_type) {
-    return ((metric_type == METRIC_INNER_PRODUCT) ||
-            (metric_type == METRIC_Jaccard));
+constexpr bool is_similarity_metric(MetricType metric_type) {
+    return metric_type == METRIC_INNER_PRODUCT;
 }
 
 } // namespace faiss

@@ -23,7 +23,7 @@ struct VectorDistance {
 
     // heap template to use for this type of metric
     using C = typename std::conditional<
-            is_similairty_metric(mt),
+            is_similarity_metric(mt),
             CMin<float, int64_t>,
             CMax<float, int64_t>>::type;
 };
@@ -126,7 +126,7 @@ inline float VectorDistance<METRIC_Jaccard>::operator()(
         accu_num += fmin(x[i], y[i]);
         accu_den += fmax(x[i], y[i]);
     }
-    return accu_num / accu_den;
+    return 1 - (accu_num / accu_den);
 }
 
 } // namespace faiss
