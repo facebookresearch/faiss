@@ -299,7 +299,7 @@ class TestQuantizerClone(unittest.TestCase):
         np.testing.assert_array_equal(codes, codes2)
 
 
-class TestIVFSpectralHashOwnerhsip(unittest.TestCase):
+class TestIVFSpectralHashOwnership(unittest.TestCase):
 
     def test_constructor(self):
         index = faiss.IndexIVFSpectralHash(faiss.IndexFlat(10), 10, 20, 10, 1)
