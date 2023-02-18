@@ -103,12 +103,19 @@ inline int __builtin_clzll(uint64_t x) {
 #endif // GCC or Clang
 
 // Localized enablement of imprecise floating point operations
-// You need to use both macros to cover all compilers.
-#ifndef __GCC__
-#define FAISS_PRAGMA_IMPRECISE_OP _Pragma("float_control(precise, off)")
-#define FAISS_PRAGMA_IMPRECISE_FUNCTION
-#else
+// You need to use all 3 macros to cover all compilers.
+#if defined(_MSC_VER)
 #define FAISS_PRAGMA_IMPRECISE_OP
-#define FAISS_PRAGMA_IMPRECISE_FUNCTION \
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    __pragma(float_control(precise, off, push))
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
+#elif defined(_GCC_)
+#define FAISS_PRAGMA_IMPRECISE_OP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
     GCC optimize("-funroll-loops -fassociative-math -fno-signed-zeros")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#else
+#define FAISS_PRAGMA_IMPRECISE_OP _Pragma("float_control(precise, off)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #endif
