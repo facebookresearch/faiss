@@ -32,8 +32,8 @@ enum MetricType {
     METRIC_BrayCurtis,
     METRIC_JensenShannon,
     METRIC_Jaccard, ///< defined as:
-                    /// 1 - (sum_i(min(a_i, b_i)) / sum_i(max(a_i, < b_i)))
-                    /// where a_i, b_i > 0
+                    ///< 1 - (sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)))
+                    ///< where a_i, b_i > 0
 };
 
 /// all vector indices are this type
