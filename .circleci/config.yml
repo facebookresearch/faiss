@@ -49,7 +49,7 @@ jobs:
           command: |
             apt update
             apt install -y cmake g++ wget 
-            apt install python3-dev swig python3-numpy
+            apt install -y python3-dev swig python3-numpy python3-scipy python3-pip
             (cd /tmp; wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19138/l_onemkl_p_2023.0.0.25398_offline.sh; )
             bash /tmp/l_onemkl_p_2023.0.0.25398_offline.sh -a -s --eula accept
             MKLROOT=/opt/intel/oneapi/mkl/latest/lib/intel64 cmake \
