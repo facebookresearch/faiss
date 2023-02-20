@@ -78,6 +78,11 @@ set(FAISS_GPU_SRC
   utils/warpselect/WarpSelectFloatT2048.cu
 )
 
+if (USE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+  message($FAISS_GPU_SRC)
+endif()
+
 set(FAISS_GPU_HEADERS
   GpuAutoTune.h
   GpuCloner.h
@@ -177,8 +182,11 @@ foreach(header ${FAISS_GPU_HEADERS})
   )
 endforeach()
 
-if (EXISTS /opt/rocm)
+if (USE_ROCM)
   find_package(HIP REQUIRED)
+  find_package(hipBLAS REQUIRED)
+  target_link_libraries(faiss PRIVATE hip::host roc::hipblas)
+  target_link_libraries(faiss_avx2 PRIVATE hip::host roc::hipblas)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
