@@ -36,7 +36,7 @@ jobs:
         type: string
         default: medium
     docker:
-      - image: beauby/faiss-circleci:cpu
+      - image: ubuntu:jammy-20230126
     resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
