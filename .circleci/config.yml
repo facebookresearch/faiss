@@ -47,10 +47,16 @@ jobs:
           name: Build faiss library
           no_output_timeout: 30m
           command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON \
-                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
+            apt update
+            apt install -y cmake g++ wget 
+            apt install python3-dev swig python3-numpy
+            (cd /tmp; wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19138/l_onemkl_p_2023.0.0.25398_offline.sh; )
+            bash /tmp/l_onemkl_p_2023.0.0.25398_offline.sh -a -s --eula accept
+            MKLROOT=/opt/intel/oneapi/mkl/latest/lib/intel64 cmake \
+               -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+               -DFAISS_OPT_LEVEL=avx2 -DFAISS_ENABLE_C_API=ON \
+               -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn \
+               -DPYTHON_EXECUTABLE=$(which python3) .         
             make -k -C build -j$(nproc) faiss
       - when:
           condition:
