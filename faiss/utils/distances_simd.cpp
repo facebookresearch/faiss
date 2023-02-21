@@ -214,8 +214,8 @@ void fvec_inner_products_ny_ref(
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 float fvec_inner_product(const float* x, const float* y, size_t d) {
     float res = 0.F;
+    FAISS_PRAGMA_IMPRECISE_LOOP
     for (size_t i = 0; i != d; ++i) {
-        FAISS_PRAGMA_IMPRECISE_OP
         res += x[i] * y[i];
     }
     return res;
@@ -227,8 +227,8 @@ float fvec_norm_L2sqr(const float* x, size_t d) {
     // the double in the _ref is suspected to be a typo. Some of the manual
     // implementations this replaces used float.
     float res = 0;
+    FAISS_PRAGMA_IMPRECISE_LOOP
     for (size_t i = 0; i != d; ++i) {
-        FAISS_PRAGMA_IMPRECISE_OP
         res += x[i] * x[i];
     }
 
