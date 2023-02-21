@@ -89,22 +89,6 @@ float fvec_Linf_ref(const float* x, const float* y, size_t d) {
     return res;
 }
 
-float fvec_inner_product_ref(const float* x, const float* y, size_t d) {
-    size_t i;
-    float res = 0;
-    for (i = 0; i < d; i++)
-        res += x[i] * y[i];
-    return res;
-}
-
-float fvec_norm_L2sqr_ref(const float* x, size_t d) {
-    size_t i;
-    double res = 0;
-    for (i = 0; i < d; i++)
-        res += x[i] * x[i];
-    return res;
-}
-
 void fvec_L2sqr_ny_ref(
         float* dis,
         const float* x,
