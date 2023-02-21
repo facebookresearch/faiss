@@ -21,25 +21,48 @@ do
     for src in $(find ./gpu -name "*.$ext")
     do
         dst=$(echo $src | sed 's@./gpu@./gpu-rocm@')
-        echo "$src -> $dst"
-        hipify-perl -o=$dst $src &
+        hipify-perl -o=$dst.tmp $src &
     done
 done
 wait
 
 # rename all hipified *.cu files to *.hip
-for src in $(find ./gpu-rocm -name "*.cu")
+for src in $(find ./gpu-rocm -name "*.cu.tmp")
 do
-    dst=${src%.cu}.hip
+    dst=${src%.cu.tmp}.hip.tmp
     mv $src $dst
 done
 
 # replace header include statements "<faiss/gpu/" with "<faiss/gpu-rocm"
 for ext in hip cuh h cpp
 do
-    for src in $(find ./gpu-rocm -name "*.$ext")
+    for src in $(find ./gpu-rocm -name "*.$ext.tmp")
     do
         sed -i 's@#include <faiss/gpu/@#include <faiss/gpu-rocm/@' $src
+    done
+done
+
+# hipify was run in parallel above
+# don't copy the tmp file if it is unchanged
+for ext in hip cuh h cpp
+do
+    for src in $(find ./gpu-rocm -name "*.$ext.tmp")
+    do
+        dst=${src%.tmp}
+        if test -f $dst
+        then
+            if diff -q $src $dst >& /dev/null
+            then
+                echo "$dst [unchanged]"
+                rm $src
+            else
+                echo "$dst"
+                mv $src $dst
+            fi
+        else
+            echo "$dst"
+            mv $src $dst
+        fi
     done
 done
 
@@ -47,6 +70,17 @@ done
 for src in $(find ./gpu -name "CMakeLists.txt")
 do
     dst=$(echo $src | sed 's@./gpu@./gpu-rocm@')
-    echo "$src -> $dst"
-    cp $src $dst
+    if test -f $dst
+    then
+        if diff -q $src $dst >& /dev/null
+        then
+            echo "$dst [unchanged]"
+        else
+            echo "$dst"
+            cp $src $dst
+        fi
+    else
+        echo "$dst"
+        cp $src $dst
+    fi
 done

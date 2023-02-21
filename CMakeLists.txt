@@ -14,7 +14,7 @@ project(faiss
   LANGUAGES CXX)
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -29,6 +29,7 @@ if(FAISS_ENABLE_GPU)
   if (EXISTS /opt/rocm)
     set(USE_ROCM TRUE)
     enable_language(HIP)
+    add_definitions(-DUSE_ROCM)
   else ()
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
     enable_language(CUDA)
