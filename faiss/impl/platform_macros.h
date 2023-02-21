@@ -105,17 +105,22 @@ inline int __builtin_clzll(uint64_t x) {
 // Localized enablement of imprecise floating point operations
 // You need to use all 3 macros to cover all compilers.
 #if defined(_MSC_VER)
-#define FAISS_PRAGMA_IMPRECISE_OP
+#define FAISS_PRAGMA_IMPRECISE_LOOP
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
     __pragma(float_control(precise, off, push))
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
 #elif defined(_GCC_)
-#define FAISS_PRAGMA_IMPRECISE_OP
+#define FAISS_PRAGMA_IMPRECISE_LOOP
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
-    GCC optimize("-funroll-loops -fassociative-math -fno-signed-zeros")
+    _Pragma(" GCC optimize (\"unroll-loops,associative-math,no-signed-zeros\")")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+#elif defined(__clang__)
+#define FAISS_PRAGMA_IMPRECISE_LOOP \
+    _Pragma("clang loop vectorize(enable) interleave(enable)")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #else
-#define FAISS_PRAGMA_IMPRECISE_OP _Pragma("float_control(precise, off)")
+#define FAISS_PRAGMA_IMPRECISE_LOOP
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #endif
