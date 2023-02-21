@@ -60,16 +60,6 @@ namespace faiss {
  * Reference implementations
  */
 
-float fvec_L2sqr_ref(const float* x, const float* y, size_t d) {
-    size_t i;
-    float res = 0;
-    for (i = 0; i < d; i++) {
-        const float tmp = x[i] - y[i];
-        res += tmp * tmp;
-    }
-    return res;
-}
-
 float fvec_L1_ref(const float* x, const float* y, size_t d) {
     size_t i;
     float res = 0;
@@ -216,6 +206,19 @@ float fvec_norm_L2sqr(const float* x, size_t d) {
         res += x[i] * x[i];
     }
 
+    return res;
+}
+FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+float fvec_L2sqr(const float* x, const float* y, size_t d) {
+    size_t i;
+    float res = 0;
+    FAISS_PRAGMA_IMPRECISE_LOOP
+    for (i = 0; i < d; i++) {
+        const float tmp = x[i] - y[i];
+        res += tmp * tmp;
+    }
     return res;
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
@@ -1012,44 +1015,6 @@ static inline __m256 masked_read_8(int d, const float* x) {
     }
 }
 
-float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    __m256 msum1 = _mm256_setzero_ps();
-
-    while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps(x);
-        x += 8;
-        __m256 my = _mm256_loadu_ps(y);
-        y += 8;
-        const __m256 a_m_b1 = _mm256_sub_ps(mx, my);
-        msum1 = _mm256_add_ps(msum1, _mm256_mul_ps(a_m_b1, a_m_b1));
-        d -= 8;
-    }
-
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 = _mm_add_ps(msum2, _mm256_extractf128_ps(msum1, 0));
-
-    if (d >= 4) {
-        __m128 mx = _mm_loadu_ps(x);
-        x += 4;
-        __m128 my = _mm_loadu_ps(y);
-        y += 4;
-        const __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
-        d -= 4;
-    }
-
-    if (d > 0) {
-        __m128 mx = masked_read(d, x);
-        __m128 my = masked_read(d, y);
-        __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum2 = _mm_add_ps(msum2, _mm_mul_ps(a_m_b1, a_m_b1));
-    }
-
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    msum2 = _mm_hadd_ps(msum2, msum2);
-    return _mm_cvtss_f32(msum2);
-}
-
 float fvec_L1(const float* x, const float* y, size_t d) {
     __m256 msum1 = _mm256_setzero_ps();
     __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffffUL));
@@ -1140,53 +1105,7 @@ float fvec_Linf(const float* x, const float* y, size_t d) {
     return fvec_Linf_ref(x, y, d);
 }
 
-float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    __m128 msum1 = _mm_setzero_ps();
-
-    while (d >= 4) {
-        __m128 mx = _mm_loadu_ps(x);
-        x += 4;
-        __m128 my = _mm_loadu_ps(y);
-        y += 4;
-        const __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum1 = _mm_add_ps(msum1, _mm_mul_ps(a_m_b1, a_m_b1));
-        d -= 4;
-    }
-
-    if (d > 0) {
-        // add the last 1, 2 or 3 values
-        __m128 mx = masked_read(d, x);
-        __m128 my = masked_read(d, y);
-        __m128 a_m_b1 = _mm_sub_ps(mx, my);
-        msum1 = _mm_add_ps(msum1, _mm_mul_ps(a_m_b1, a_m_b1));
-    }
-
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    msum1 = _mm_hadd_ps(msum1, msum1);
-    return _mm_cvtss_f32(msum1);
-}
-
 #elif defined(__aarch64__)
-
-float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    float32x4_t accux4 = vdupq_n_f32(0);
-    const size_t d_simd = d - (d & 3);
-    size_t i;
-    for (i = 0; i < d_simd; i += 4) {
-        float32x4_t xi = vld1q_f32(x + i);
-        float32x4_t yi = vld1q_f32(y + i);
-        float32x4_t sq = vsubq_f32(xi, yi);
-        accux4 = vfmaq_f32(accux4, sq, sq);
-    }
-    float32_t accux1 = vaddvq_f32(accux4);
-    for (; i < d; ++i) {
-        float32_t xi = x[i];
-        float32_t yi = y[i];
-        float32_t sq = xi - yi;
-        accux1 += sq * sq;
-    }
-    return accux1;
-}
 
 // not optimized for ARM
 void fvec_L2sqr_ny(
@@ -1249,10 +1168,6 @@ void fvec_inner_products_ny(
 
 #else
 // scalar implementation
-
-float fvec_L2sqr(const float* x, const float* y, size_t d) {
-    return fvec_L2sqr_ref(x, y, d);
-}
 
 float fvec_L1(const float* x, const float* y, size_t d) {
     return fvec_L1_ref(x, y, d);
