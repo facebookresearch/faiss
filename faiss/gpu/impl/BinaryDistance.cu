@@ -201,23 +201,23 @@ void runBinaryDistanceAnySize(
     if (k == 1) {
         binaryDistanceAnySize<1, 1, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 32) {
-        binaryDistanceAnySize<32, 2, BinaryType>
+    } else if (k <= kWarpSize) {
+        binaryDistanceAnySize<kWarpSize, 2, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 64) {
-        binaryDistanceAnySize<64, 3, BinaryType>
+    } else if (k <= kWarpSize*2) {
+        binaryDistanceAnySize<kWarpSize*2, 3, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 128) {
-        binaryDistanceAnySize<128, 3, BinaryType>
+    } else if (k <= kWarpSize*4) {
+        binaryDistanceAnySize<kWarpSize*4, 3, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 256) {
-        binaryDistanceAnySize<256, 4, BinaryType>
+    } else if (k <= kWarpSize*8) {
+        binaryDistanceAnySize<kWarpSize*8, 4, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 512) {
-        binaryDistanceAnySize<512, 8, BinaryType>
+    } else if (k <= kWarpSize*16) {
+        binaryDistanceAnySize<kWarpSize*16, 8, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 1024) {
-        binaryDistanceAnySize<1024, 8, BinaryType>
+    } else if (k <= kWarpSize*32) {
+        binaryDistanceAnySize<kWarpSize*32, 8, BinaryType>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
     }
 #if GPU_MAX_SELECTION_K >= 2048
@@ -242,23 +242,23 @@ void runBinaryDistanceLimitSize(
     if (k == 1) {
         binaryDistanceLimitSize<1, 1, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 32) {
-        binaryDistanceLimitSize<32, 2, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize) {
+        binaryDistanceLimitSize<kWarpSize, 2, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 64) {
-        binaryDistanceLimitSize<64, 3, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize*2) {
+        binaryDistanceLimitSize<kWarpSize*2, 3, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 128) {
-        binaryDistanceLimitSize<128, 3, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize*4) {
+        binaryDistanceLimitSize<kWarpSize*4, 3, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 256) {
-        binaryDistanceLimitSize<256, 4, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize*8) {
+        binaryDistanceLimitSize<kWarpSize*8, 4, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 512) {
-        binaryDistanceLimitSize<512, 8, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize*16) {
+        binaryDistanceLimitSize<kWarpSize*16, 8, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
-    } else if (k <= 1024) {
-        binaryDistanceLimitSize<1024, 8, BinaryType, ReductionLimit>
+    } else if (k <= kWarpSize*32) {
+        binaryDistanceLimitSize<kWarpSize*32, 8, BinaryType, ReductionLimit>
                 <<<grid, block, 0, stream>>>(vecs, query, outK, outV, k);
     }
 #if GPU_MAX_SELECTION_K >= 2048
