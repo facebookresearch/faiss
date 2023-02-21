@@ -83,6 +83,7 @@ class TestSearch(unittest.TestCase):
         pqfs_t = t1 - t0
         print('PQ16x4fs search time:', pqfs_t)
         self.assertLess(pqfs_t * 5, pq_t)
+        self.fail("Want this to fail")
 
 
 class TestRounding(unittest.TestCase):
