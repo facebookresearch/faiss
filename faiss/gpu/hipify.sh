@@ -34,11 +34,13 @@ do
 done
 
 # replace header include statements "<faiss/gpu/" with "<faiss/gpu-rocm"
+# replace thrust::cuda::par with thrust::hip::par
 for ext in hip cuh h cpp
 do
     for src in $(find ./gpu-rocm -name "*.$ext.tmp")
     do
         sed -i 's@#include <faiss/gpu/@#include <faiss/gpu-rocm/@' $src
+        sed -i 's@thrust::cuda::par@thrust::hip::par@' $src
     done
 done
 
