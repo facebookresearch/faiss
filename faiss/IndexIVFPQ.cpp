@@ -1261,14 +1261,9 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
 
     float distance_to_code(const uint8_t* code) const override {
         assert(precompute_mode == 2);
-        float dis = this->dis0;
-        const float* tab = this->sim_table;
-        PQDecoder decoder(code, this->pq.nbits);
-
-        for (size_t m = 0; m < this->pq.M; m++) {
-            dis += tab[decoder.decode()];
-            tab += this->pq.ksub;
-        }
+        float dis = this->dis0 +
+                distance_single_code<PQDecoder>(
+                            this->pq, this->sim_table, code);
         return dis;
     }
 
