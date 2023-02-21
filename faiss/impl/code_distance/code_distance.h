@@ -26,7 +26,7 @@
 
 #ifdef __AVX2__
 
-#include <faiss/impl/ivfpq/code_distance-avx2.h>
+#include <faiss/impl/code_distance/code_distance-avx2.h>
 
 namespace faiss {
 
@@ -74,7 +74,7 @@ inline void distance_four_codes(
 
 #else
 
-#include <faiss/impl/ivfpq/code_distance-generic.h>
+#include <faiss/impl/code_distance/code_distance-generic.h>
 
 namespace faiss {
 

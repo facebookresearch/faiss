@@ -33,7 +33,7 @@
 
 #include <faiss/impl/ProductQuantizer.h>
 
-#include <faiss/impl/ivfpq/code_distance.h>
+#include <faiss/impl/code_distance/code_distance.h>
 
 namespace faiss {
 
