@@ -19,6 +19,8 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
+#include <faiss/impl/code_distance/code_distance.h>
+
 namespace faiss {
 
 /*********************************************************
@@ -81,15 +83,11 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     size_t ndis;
 
     float distance_to_code(const uint8_t* code) final {
-        const float* dt = precomputed_table.data();
-        PQDecoder decoder(code, pq.nbits);
-        float accu = 0;
-        for (int j = 0; j < pq.M; j++) {
-            accu += dt[decoder.decode()];
-            dt += 1 << decoder.nbits;
-        }
         ndis++;
-        return accu;
+
+        float dis = distance_single_code<PQDecoder>(
+                pq, precomputed_table.data(), code);
+        return dis;
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
