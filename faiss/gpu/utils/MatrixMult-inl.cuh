@@ -48,6 +48,29 @@ cublasStatus_t rawGemm(
     auto cAT = GetCudaType<AT>::Type;
     auto cBT = GetCudaType<BT>::Type;
 
+#ifdef USE_ROCM
+    return hipblasGemmEx(
+            handle,
+            transa,
+            transb,
+            m,
+            n,
+            k,
+            &fAlpha,
+            A,
+            cAT,
+            lda,
+            B,
+            cBT,
+            ldb,
+            &fBeta,
+            C,
+            HIPBLAS_R_32F,
+            ldc,
+            HIPBLAS_R_32F,
+            HIPBLAS_GEMM_DEFAULT);
+#else
+
     // FIXME: some weird CUDA 11 bug? where cublasSgemmEx on
     // f16 (8, 64) x f16 (64, 64)' = f32 (8, 64) returns "not supported".
     // cublasGemmEx using CUBLAS_COMPUTE_32F also fails, but
@@ -99,6 +122,7 @@ cublasStatus_t rawGemm(
             C,
             CUDA_R_32F,
             ldc);
+#endif // USE_ROCM
 }
 
 template <typename AT, typename BT>
