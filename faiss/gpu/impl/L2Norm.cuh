@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <cuda_fp16.h>
 
 namespace faiss {
 namespace gpu {
