@@ -14,7 +14,11 @@ namespace gpu {
 
 #ifdef USE_ROCM
 
+#if __AMDGCN_WAVEFRONT_SIZE == 32u
+constexpr int kWarpSize = 32;
+#else
 constexpr int kWarpSize = 64;
+#endif
 
 // This is a memory barrier for intra-warp writes to shared memory.
 __forceinline__ __device__ void warpFence() {

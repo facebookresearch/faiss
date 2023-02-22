@@ -10,7 +10,13 @@
 namespace faiss {
 namespace gpu {
 
+#if defined(USE_ROCM)
+#if __AMDGCN_WAVEFRONT_SIZE == 32u
 IVF_INTERLEAVED_IMPL(128, 32, 2)
+#endif
+#else
+IVF_INTERLEAVED_IMPL(128, 32, 2)
+#endif
 
 }
 } // namespace faiss
