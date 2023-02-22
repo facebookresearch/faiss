@@ -706,8 +706,8 @@ size_t fvec_L2sqr_ny_nearest_D4(
         const __m256i indices_increment = _mm256_set1_epi32(8);
 
         //
-        _mm_prefetch(y, _MM_HINT_NTA);
-        _mm_prefetch(y + 16, _MM_HINT_NTA);
+        //_mm_prefetch(y, _MM_HINT_NTA);
+        //_mm_prefetch(y + 16, _MM_HINT_NTA);
 
         // m0 = (x[0], x[0], x[0], x[0], x[0], x[0], x[0], x[0])
         const __m256 m0 = _mm256_set1_ps(x[0]);
@@ -722,21 +722,20 @@ size_t fvec_L2sqr_ny_nearest_D4(
                 _mm256_setr_epi32(0, 16, 32, 48, 64, 80, 96, 112);
 
         for (; i < ny8 * 8; i += 8) {
-            _mm_prefetch(y + 32, _MM_HINT_NTA);
-            _mm_prefetch(y + 48, _MM_HINT_NTA);
+            __m256 v0;
+            __m256 v1;
+            __m256 v2;
+            __m256 v3;
 
-            // collect dim 0 for 8 D4-vectors.
-            // v0 = (y[(i * 8 + 0) * 4 + 0], ..., y[(i * 8 + 7) * 4 + 0])
-            const __m256 v0 = _mm256_i32gather_ps(y, indices0, 1);
-            // collect dim 1 for 8 D4-vectors.
-            // v1 = (y[(i * 8 + 0) * 4 + 1], ..., y[(i * 8 + 7) * 4 + 1])
-            const __m256 v1 = _mm256_i32gather_ps(y + 1, indices0, 1);
-            // collect dim 2 for 8 D4-vectors.
-            // v2 = (y[(i * 8 + 0) * 4 + 2], ..., y[(i * 8 + 7) * 4 + 2])
-            const __m256 v2 = _mm256_i32gather_ps(y + 2, indices0, 1);
-            // collect dim 3 for 8 D4-vectors.
-            // v3 = (y[(i * 8 + 0) * 4 + 3], ..., y[(i * 8 + 7) * 4 + 3])
-            const __m256 v3 = _mm256_i32gather_ps(y + 3, indices0, 1);
+            transpose_8x4(
+                    _mm256_loadu_ps(y + 0 * 8),
+                    _mm256_loadu_ps(y + 1 * 8),
+                    _mm256_loadu_ps(y + 2 * 8),
+                    _mm256_loadu_ps(y + 3 * 8),
+                    v0,
+                    v1,
+                    v2,
+                    v3);
 
             // compute differences
             const __m256 d0 = _mm256_sub_ps(m0, v0);
