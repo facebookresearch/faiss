@@ -50,6 +50,156 @@ inline __device__ unsigned int getByte(uint64_t v, int pos, int width) {
 template <int NumSubQuantizers>
 struct LoadCode32 {};
 
+#ifdef USE_ROCM
+
+// TODO
+
+template <>
+struct LoadCode32<1> {
+    static inline __device__ void load(
+            unsigned int code32[1],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<2> {
+    static inline __device__ void load(
+            unsigned int code32[1],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<3> {
+    static inline __device__ void load(
+            unsigned int code32[1],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<4> {
+    static inline __device__ void load(
+            unsigned int code32[1],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<8> {
+    static inline __device__ void load(
+            unsigned int code32[2],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<12> {
+    static inline __device__ void load(
+            unsigned int code32[3],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<16> {
+    static inline __device__ void load(
+            unsigned int code32[4],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<20> {
+    static inline __device__ void load(
+            unsigned int code32[5],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<24> {
+    static inline __device__ void load(
+            unsigned int code32[6],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<28> {
+    static inline __device__ void load(
+            unsigned int code32[7],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<32> {
+    static inline __device__ void load(
+            unsigned int code32[8],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<40> {
+    static inline __device__ void load(
+            unsigned int code32[10],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<48> {
+    static inline __device__ void load(
+            unsigned int code32[12],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<56> {
+    static inline __device__ void load(
+            unsigned int code32[14],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<64> {
+    static inline __device__ void load(
+            unsigned int code32[16],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+template <>
+struct LoadCode32<96> {
+    static inline __device__ void load(
+            unsigned int code32[24],
+            uint8_t* p,
+            int offset) {
+    }
+};
+
+#else // USE_ROCM
+
 template <>
 struct LoadCode32<1> {
     static inline __device__ void load(
@@ -377,6 +527,8 @@ struct LoadCode32<96> {
             : "l"(p));
     }
 };
+
+#endif // USE_ROCM
 
 } // namespace gpu
 } // namespace faiss
