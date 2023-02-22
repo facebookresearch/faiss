@@ -16,10 +16,49 @@
 #include <sstream>
 #include <vector>
 
+
+void evaluate_bfknn(faiss::gpu::GpuDistanceParams &args,
+                    faiss::gpu::GpuResourcesProvider *res,
+                    std::vector<float> &cpuDistance,
+                    std::vector<faiss::idx_t> &cpuIndices,
+                    std::vector<float> &gpuDistance,
+                    std::vector<faiss::idx_t> &gpuIndices,
+                    int numQuery,
+                    int k,
+                    bool colMajorVecs,
+                    bool colMajorQueries,
+                    faiss::MetricType metric) {
+
+    using namespace faiss::gpu;
+
+    bfKnn(res, args);
+
+    std::stringstream str;
+    str << "using raft " << args.use_raft << "metric " << metric <<
+            " colMajorVecs " << colMajorVecs << " colMajorQueries " <<
+            colMajorQueries;
+
+    compareLists(
+            cpuDistance.data(),
+            cpuIndices.data(),
+            gpuDistance.data(),
+            gpuIndices.data(),
+            numQuery,
+            k,
+            str.str(),
+            false,
+            false,
+            true,
+            6e-3f,
+            0.1f,
+            0.015f);
+}
+
 void testTransposition(
         bool colMajorVecs,
         bool colMajorQueries,
         faiss::MetricType metric,
+        bool use_raft = false,
         float metricArg = 0) {
     using namespace faiss::gpu;
 
@@ -114,30 +153,17 @@ void testTransposition(
     args.outIndices = gpuIndices.data();
     args.device = device;
 
+//    evaluate_bfknn(args, &res,cpuDistance, cpuIndices,
+//               gpuDistance, gpuIndices, numQuery,
+//               k, colMajorVecs, colMajorQueries, metric);
+
 #if defined USE_NVIDIA_RAFT
     args.use_raft = true;
+    evaluate_bfknn(args, &res, cpuDistance, cpuIndices,
+               gpuDistance, gpuIndices, numQuery,
+               k, colMajorVecs, colMajorQueries, metric);
 #endif
 
-    bfKnn(&res, args);
-
-    std::stringstream str;
-    str << "metric " << metric << " colMajorVecs " << colMajorVecs
-        << " colMajorQueries " << colMajorQueries;
-
-    compareLists(
-            cpuDistance.data(),
-            cpuIndices.data(),
-            gpuDistance.data(),
-            gpuIndices.data(),
-            numQuery,
-            k,
-            str.str(),
-            false,
-            false,
-            true,
-            6e-3f,
-            0.1f,
-            0.015f);
 }
 
 // Test different memory layouts for brute-force k-NN

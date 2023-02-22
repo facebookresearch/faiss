@@ -209,7 +209,7 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
 
 #if defined USE_NVIDIA_RAFT
     // Note: For now, RAFT bfknn requires queries and vectors to be same layout
-    if(args.should_use_raft() && args.queriesRowMajor == args.vectorsRowMajor) {
+    if(args.use_raft && args.queriesRowMajor == args.vectorsRowMajor) {
 
         DistanceType distance = faiss_to_raft(args.metric, false);
 
@@ -227,9 +227,6 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
         idx_t *out_indices = reinterpret_cast<idx_t*>(args.outIndices);
         float *out_distances = reinterpret_cast<float*>(args.outDistances);
 
-        //args.queriesRowMajor ? raft::row_major : raft::col_major;
-
-
         auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
                 out_indices, num_queries, k);
         auto dists = raft::make_device_matrix_view<float, idx_t>(
@@ -237,8 +234,8 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
                 num_queries,
                 k);
 
-
         if(args.queriesRowMajor) {
+            printf("Row major\n");
             auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(vectors, num_vectors, dims);
             auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(queries, num_queries, dims);
 
@@ -252,6 +249,7 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
                 brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
             }
         } else {
+            printf("Col major\n");
             auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(vectors, num_vectors, dims);
             auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(queries, num_queries, dims);
 
@@ -265,19 +263,21 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
                 brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
             }
         }
-    } else {
+
+        handle.sync_stream();
+    } else
 #else
-        if (args.vectorType == DistanceDataType::F32) {
-            bfKnnConvert<float>(res, args);
-        } else if (args.vectorType == DistanceDataType::F16) {
-            bfKnnConvert<half>(res, args);
-        } else {
-            FAISS_THROW_MSG("unknown vectorType");
-        }
+    if(args.use_raft) {
+        FAISS_THROW_IF_NOT_MSG(!args.use_raft, "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
 #endif
-#if defined USE_NVIDIA_RAFT
+    if (args.vectorType == DistanceDataType::F32) {
+        bfKnnConvert<float>(res, args);
+    } else if (args.vectorType == DistanceDataType::F16) {
+        bfKnnConvert<half>(res, args);
+    } else {
+        FAISS_THROW_MSG("unknown vectorType");
     }
-#endif
 }
 
 // legacy version
