@@ -214,8 +214,8 @@ class GpuResources {
 #if defined USE_NVIDIA_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    virtual raft::handle_t& getRaftHandle(int device) = 0;
-    raft::handle_t& getRaftHandleCurrentDevice();
+    virtual raft::device_resources& getRaftHandle(int device) = 0;
+    raft::device_resources& getRaftHandleCurrentDevice();
 #endif
 
     /// Overrides the default stream for a device to the user-supplied stream.

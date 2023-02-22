@@ -169,7 +169,7 @@ cudaStream_t GpuResources::getDefaultStreamCurrentDevice() {
 }
 
 #if defined USE_NVIDIA_RAFT
-raft::handle_t& GpuResources::getRaftHandleCurrentDevice() {
+raft::device_resources& GpuResources::getRaftHandleCurrentDevice() {
     return getRaftHandle(getCurrentDevice());
 }
 #endif

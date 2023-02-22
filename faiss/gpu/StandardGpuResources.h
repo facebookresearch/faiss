@@ -23,7 +23,7 @@
 #pragma once
 
 #if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
+#include <raft/core/device_resources.hpp>
 #endif
 
 #include <faiss/gpu/GpuResources.h>
@@ -80,7 +80,7 @@ class StandardGpuResourcesImpl : public GpuResources {
 #if defined USE_NVIDIA_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    raft::handle_t& getRaftHandle(int device) override;
+    raft::device_resources& getRaftHandle(int device) override;
 #endif
 
     /// Called to change the work ordering streams to the null stream
@@ -151,7 +151,7 @@ class StandardGpuResourcesImpl : public GpuResources {
 
 #if defined USE_NVIDIA_RAFT
     /// raft handle for each device
-    std::unordered_map<int, raft::handle_t> raftHandles_;
+    std::unordered_map<int, raft::device_resources> raftHandles_;
 #endif
 
     /// Pinned memory allocation for use with this GPU
@@ -219,7 +219,7 @@ class StandardGpuResources : public GpuResourcesProvider {
 #if defined USE_NVIDIA_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    raft::handle_t& getRaftHandle(int device);
+    raft::device_resources& getRaftHandle(int device);
 #endif
 
     /// Returns the current amount of temp memory available

@@ -7,6 +7,10 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuDistance.h>
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/RmmGpuResources.h>
+#endif
+
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -64,7 +68,11 @@ void testTransposition(
 
     int device = randVal(0, getNumDevices() - 1);
 
+#if defined USE_NVIDIA_RAFT
+    RmmGpuResources res;
+#else
     StandardGpuResources res;
+#endif
     res.noTempMemory();
 
     int dim = randVal(20, 150);
@@ -153,9 +161,9 @@ void testTransposition(
     args.outIndices = gpuIndices.data();
     args.device = device;
 
-//    evaluate_bfknn(args, &res,cpuDistance, cpuIndices,
-//               gpuDistance, gpuIndices, numQuery,
-//               k, colMajorVecs, colMajorQueries, metric);
+    evaluate_bfknn(args, &res,cpuDistance, cpuIndices,
+               gpuDistance, gpuIndices, numQuery,
+               k, colMajorVecs, colMajorQueries, metric);
 
 #if defined USE_NVIDIA_RAFT
     args.use_raft = true;

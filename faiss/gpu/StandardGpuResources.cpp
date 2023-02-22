@@ -21,7 +21,7 @@
  */
 
 #if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
+#include <raft/core/device_resources.hpp>
 #endif
 
 #include <faiss/gpu/StandardGpuResources.h>
@@ -398,7 +398,7 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
 }
 
 #if defined USE_NVIDIA_RAFT
-raft::handle_t& StandardGpuResourcesImpl::getRaftHandle(int device) {
+raft::device_resources& StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
 
     // Otherwise, our base default handle
@@ -632,7 +632,7 @@ cudaStream_t StandardGpuResources::getDefaultStream(int device) {
 }
 
 #if defined USE_NVIDIA_RAFT
-raft::handle_t& StandardGpuResources::getRaftHandle(int device) {
+raft::device_resources& StandardGpuResources::getRaftHandle(int device) {
     return res_->getRaftHandle(device);
 }
 #endif

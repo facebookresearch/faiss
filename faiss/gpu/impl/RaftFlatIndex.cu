@@ -52,7 +52,7 @@ void RaftFlatIndex::query(
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
-    raft::handle_t& handle = resources_->getRaftHandleCurrentDevice();
+    raft::device_resources& handle = resources_->getRaftHandleCurrentDevice();
 
     auto index = raft::make_device_matrix_view<const float, idx_t>(
             vectors_.data(), vectors_.getSize(0), vectors_.getSize(1));

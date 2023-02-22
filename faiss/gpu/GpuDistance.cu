@@ -215,7 +215,7 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
 
         auto resImpl = res->getResources();
         auto res_impl = resImpl.get();
-        raft::handle_t& handle = res_impl->getRaftHandleCurrentDevice();
+        raft::device_resources& handle = res_impl->getRaftHandleCurrentDevice();
 
         idx_t dims = args.dims;
         idx_t num_vectors = args.numVectors;
@@ -229,6 +229,7 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
 
         auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
                 out_indices, num_queries, k);
+
         auto dists = raft::make_device_matrix_view<float, idx_t>(
                 out_distances,
                 num_queries,
@@ -239,12 +240,12 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
             auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(vectors, num_vectors, dims);
             auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(queries, num_queries, dims);
 
-            std::vector<raft::device_matrix_view<const float, idx_t, raft::row_major>> index_vec = {index};
             // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
             if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
                 RAFT_LOG_INFO("Invoking flat fused_l2_knn");
                 brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
             } else {
+                std::vector<raft::device_matrix_view<const float, idx_t, raft::row_major>> index_vec = {index};
                 RAFT_LOG_INFO("Invoking flat bfknn");
                 brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
             }
@@ -253,12 +254,12 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
             auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(vectors, num_vectors, dims);
             auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(queries, num_queries, dims);
 
-            std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
             // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
             if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
                 RAFT_LOG_INFO("Invoking flat fused_l2_knn");
                 brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
             } else {
+                std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
                 RAFT_LOG_INFO("Invoking flat bfknn");
                 brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
             }
