@@ -216,23 +216,23 @@ void runL2SelectMin(
     } while (0)
 
         // block size 128 for everything <= 1024
-        if (k <= 32) {
-            RUN_L2_SELECT(128, 32, 2);
-        } else if (k <= 64) {
-            RUN_L2_SELECT(128, 64, 3);
-        } else if (k <= 128) {
-            RUN_L2_SELECT(128, 128, 3);
-        } else if (k <= 256) {
-            RUN_L2_SELECT(128, 256, 4);
-        } else if (k <= 512) {
-            RUN_L2_SELECT(128, 512, 8);
-        } else if (k <= 1024) {
-            RUN_L2_SELECT(128, 1024, 8);
+        if (k <= kWarpSize) {
+            RUN_L2_SELECT(128, kWarpSize, 2);
+        } else if (k <= kWarpSize*2) {
+            RUN_L2_SELECT(128, kWarpSize*2, 3);
+        } else if (k <= kWarpSize*4) {
+            RUN_L2_SELECT(128, kWarpSize*4, 3);
+        } else if (k <= kWarpSize*8) {
+            RUN_L2_SELECT(128, kWarpSize*8, 4);
+        } else if (k <= kWarpSize*16) {
+            RUN_L2_SELECT(128, kWarpSize*16, 8);
+        } else if (k <= kWarpSize*32) {
+            RUN_L2_SELECT(128, kWarpSize*32, 8);
 
 #if GPU_MAX_SELECTION_K >= 2048
-        } else if (k <= 2048) {
+        } else if (k <= kWarpSize*64) {
             // smaller block for less shared memory
-            RUN_L2_SELECT(64, 2048, 8);
+            RUN_L2_SELECT(64, kWarpSize*64, 8);
 #endif
 
         } else {
