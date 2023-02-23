@@ -532,7 +532,7 @@ def handle_Index(the_class):
         Returns
         -------
         lims: array_like
-            Startring index of the results for each query vector, size n+1.
+            Starting index of the results for each query vector, size n+1.
         D : array_like
             Distances of the nearest neighbors, shape `lims[n]`. The distances for
             query i are in `D[lims[i]:lims[i+1]]`.
