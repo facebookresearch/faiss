@@ -86,3 +86,12 @@ do
         cp $src $dst
     fi
 done
+
+# run hipify-perl against python/swigfaiss.swig
+# replace header include statements "<faiss/gpu/" with "<faiss/gpu-rocm" in python
+for src in ./python/swigfaiss.swig
+do
+    hipify-perl -inplace $src
+    sed -i 's@#include <faiss/gpu/@#include <faiss/gpu-rocm/@' $src
+    sed -i 's@thrust::cuda::par@thrust::hip::par@' $src
+done

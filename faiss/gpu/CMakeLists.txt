@@ -80,7 +80,6 @@ set(FAISS_GPU_SRC
 
 if (USE_ROCM)
   list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
-  message($FAISS_GPU_SRC)
 endif()
 
 set(FAISS_GPU_HEADERS

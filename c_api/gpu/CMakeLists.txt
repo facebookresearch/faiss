@@ -15,7 +15,10 @@ target_sources(faiss_c PRIVATE
 file(GLOB FAISS_C_API_GPU_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.h")
 faiss_install_headers("${FAISS_C_API_GPU_HEADERS}" c_api/gpu)
 
-if (EXISTS /opt/rocm)
+if (USE_ROCM)
+  find_package(HIP REQUIRED)
+  find_package(hipBLAS REQUIRED)
+  target_link_libraries(faiss_c PUBLIC hip::host roc::hipblas)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_c PUBLIC CUDA::cudart CUDA::cublas)

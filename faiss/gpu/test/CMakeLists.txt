@@ -23,13 +23,22 @@ faiss_gpu_test(TestGpuIndexBinaryFlat.cpp)
 faiss_gpu_test(TestGpuMemoryException.cpp)
 faiss_gpu_test(TestGpuIndexIVFPQ.cpp)
 faiss_gpu_test(TestGpuIndexIVFScalarQuantizer.cpp)
+if(USE_ROCM)
+faiss_gpu_test(TestGpuDistance.hip)
+faiss_gpu_test(TestGpuSelect.hip)
+else()
 faiss_gpu_test(TestGpuDistance.cu)
 faiss_gpu_test(TestGpuSelect.cu)
+endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL
   demo_ivfpq_indexing_gpu.cpp)
 
-if (EXISTS /opt/rocm)
+if (USE_ROCM)
+  find_package(HIP REQUIRED)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
+  target_link_libraries(demo_ivfpq_indexing_gpu
+    PRIVATE faiss gtest_main hip::host)
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart)
