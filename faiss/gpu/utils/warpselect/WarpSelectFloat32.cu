@@ -14,6 +14,9 @@ namespace gpu {
 #if __AMDGCN_WAVEFRONT_SIZE == 32u
 WARP_SELECT_IMPL(float, true, 32, 2);
 WARP_SELECT_IMPL(float, false, 32, 2);
+#else
+WARP_SELECT_IMPL_DUMMY(float, true, 32, 2);
+WARP_SELECT_IMPL_DUMMY(float, false, 32, 2);
 #endif
 #else
 WARP_SELECT_IMPL(float, true, 32, 2);

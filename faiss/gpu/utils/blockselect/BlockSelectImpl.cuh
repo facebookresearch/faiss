@@ -28,6 +28,26 @@
             int k,                                               \
             cudaStream_t stream)
 
+#define BLOCK_SELECT_IMPL_DUMMY(TYPE, DIR, WARP_Q, THREAD_Q)                   \
+    void runBlockSelect_##TYPE##_##DIR##_##WARP_Q##_(                          \
+            Tensor<TYPE, 2, true>& in,                                         \
+            Tensor<TYPE, 2, true>& outK,                                       \
+            Tensor<int, 2, true>& outV,                                        \
+            bool dir,                                                          \
+            int k,                                                             \
+            hipStream_t stream) {                                             \
+    }                                                                          \
+                                                                               \
+    void runBlockSelectPair_##TYPE##_##DIR##_##WARP_Q##_(                      \
+            Tensor<TYPE, 2, true>& inK,                                        \
+            Tensor<int, 2, true>& inV,                                         \
+            Tensor<TYPE, 2, true>& outK,                                       \
+            Tensor<int, 2, true>& outV,                                        \
+            bool dir,                                                          \
+            int k,                                                             \
+            hipStream_t stream) {                                             \
+    }
+
 #define BLOCK_SELECT_IMPL(TYPE, DIR, WARP_Q, THREAD_Q)                         \
     void runBlockSelect_##TYPE##_##DIR##_##WARP_Q##_(                          \
             Tensor<TYPE, 2, true>& in,                                         \

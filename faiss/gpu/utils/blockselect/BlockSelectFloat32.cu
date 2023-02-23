@@ -14,6 +14,9 @@ namespace gpu {
 #if __AMDGCN_WAVEFRONT_SIZE == 32u
 BLOCK_SELECT_IMPL(float, true, 32, 2);
 BLOCK_SELECT_IMPL(float, false, 32, 2);
+#else
+BLOCK_SELECT_IMPL_DUMMY(float, true, 32, 2);
+BLOCK_SELECT_IMPL_DUMMY(float, false, 32, 2);
 #endif
 #else
 BLOCK_SELECT_IMPL(float, true, 32, 2);

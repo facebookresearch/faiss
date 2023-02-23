@@ -11,6 +11,25 @@
 #include <faiss/gpu/utils/DeviceDefs.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 
+#define IVF_INTERLEAVED_IMPL_DUMMY(THREADS, WARP_Q, THREAD_Q) \
+                                                        \
+    void ivfInterleavedScanImpl_##WARP_Q##_(            \
+            Tensor<float, 2, true>& queries,            \
+            Tensor<idx_t, 2, true>& listIds,            \
+            DeviceVector<void*>& listData,              \
+            DeviceVector<void*>& listIndices,           \
+            IndicesOptions indicesOptions,              \
+            DeviceVector<int>& listLengths,             \
+            int k,                                      \
+            faiss::MetricType metric,                   \
+            bool useResidual,                           \
+            Tensor<float, 3, true>& residualBase,       \
+            GpuScalarQuantizer* scalarQ,                \
+            Tensor<float, 2, true>& outDistances,       \
+            Tensor<idx_t, 2, true>& outIndices,         \
+            GpuResources* res) {                        \
+    }
+
 #define IVF_INTERLEAVED_IMPL(THREADS, WARP_Q, THREAD_Q) \
                                                         \
     void ivfInterleavedScanImpl_##WARP_Q##_(            \

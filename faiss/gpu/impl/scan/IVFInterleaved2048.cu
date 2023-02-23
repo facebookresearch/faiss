@@ -11,7 +11,7 @@ namespace faiss {
 namespace gpu {
 
 #if GPU_MAX_SELECTION_K >= 2048
-IVF_INTERLEAVED_IMPL(64, 2048, 8)
+IVF_INTERLEAVED_IMPL(64, KWARPSIZEx64, 8)
 #endif
 
 } // namespace gpu

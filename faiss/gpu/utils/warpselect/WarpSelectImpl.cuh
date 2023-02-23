@@ -17,6 +17,16 @@
             int k,                                          \
             cudaStream_t stream)
 
+#define WARP_SELECT_IMPL_DUMMY(TYPE, DIR, WARP_Q, THREAD_Q)                    \
+    void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_(                           \
+            Tensor<TYPE, 2, true>& in,                                         \
+            Tensor<TYPE, 2, true>& outK,                                       \
+            Tensor<int, 2, true>& outV,                                        \
+            bool dir,                                                          \
+            int k,                                                             \
+            cudaStream_t stream) {                                             \
+    }
+
 #define WARP_SELECT_IMPL(TYPE, DIR, WARP_Q, THREAD_Q)                          \
     void runWarpSelect_##TYPE##_##DIR##_##WARP_Q##_(                           \
             Tensor<TYPE, 2, true>& in,                                         \
