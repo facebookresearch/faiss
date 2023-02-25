@@ -13,7 +13,7 @@
 
 #include <type_traits>
 
-#include <faiss/impl/ivfpq/code_distance-generic.h>
+#include <faiss/impl/code_distance/code_distance-generic.h>
 
 namespace {
 
