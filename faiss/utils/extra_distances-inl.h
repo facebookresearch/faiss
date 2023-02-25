@@ -18,6 +18,7 @@ template <MetricType mt>
 struct VectorDistance {
     size_t d;
     float metric_arg;
+    static constexpr bool is_similarity = is_similarity_metric(mt);
 
     inline float operator()(const float* x, const float* y) const;
 
@@ -126,7 +127,7 @@ inline float VectorDistance<METRIC_Jaccard>::operator()(
         accu_num += fmin(x[i], y[i]);
         accu_den += fmax(x[i], y[i]);
     }
-    return 1 - (accu_num / accu_den);
+    return accu_num / accu_den;
 }
 
 } // namespace faiss

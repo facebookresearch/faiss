@@ -85,7 +85,10 @@ class TestExtraDistances(unittest.TestCase):
     def test_jaccard(self):
         xq, yb = self.make_example()
         ref_dis = np.array([
-            [1 - (np.min([x, y], axis=0).sum() / np.max([x, y], axis=0).sum()) for y in yb]
+            [
+                (np.min([x, y], axis=0).sum() / np.max([x, y], axis=0).sum())
+                for y in yb
+            ]
             for x in xq
         ])
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_Jaccard)

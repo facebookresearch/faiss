@@ -31,8 +31,7 @@ enum MetricType {
     METRIC_Canberra = 20,
     METRIC_BrayCurtis,
     METRIC_JensenShannon,
-    METRIC_Jaccard, ///< defined as:
-                    ///< 1 - (sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)))
+    METRIC_Jaccard, ///< defined as: sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i))
                     ///< where a_i, b_i > 0
 };
 
