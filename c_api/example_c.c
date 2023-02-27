@@ -17,9 +17,9 @@
 #include "Index_c.h"
 #include "clone_index_c.h"
 #include "error_c.h"
+#include "impl/AuxIndexStructures_c.h"
 #include "index_factory_c.h"
 #include "index_io_c.h"
-#include "impl/AuxIndexStructures_c.h"
 
 #define FAISS_TRY(C)                                       \
     {                                                      \
@@ -100,8 +100,8 @@ int main() {
         FAISS_TRY(faiss_IDSelectorRange_new(&sel, 50, 100));
         FaissSearchParameters* params = NULL;
         FAISS_TRY(faiss_SearchParameters_new(&params, sel));
-        FAISS_TRY(faiss_Index_search_with_params(
-            index, nq, xq, k, params, D, I));
+        FAISS_TRY(
+                faiss_Index_search_with_params(index, nq, xq, k, params, D, I));
         printf("Searching w/ IDSelectorRange [50,100]\n");
         printf("I=\n");
         for (int i = 0; i < 5; i++) {

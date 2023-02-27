@@ -24,11 +24,11 @@ FAISS_DECLARE_DESTRUCTOR(SearchParametersIVF)
 FAISS_DECLARE_SEARCH_PARAMETERS_DOWNCAST(SearchParametersIVF)
 
 int faiss_SearchParametersIVF_new(
-        FaissSearchParametersIVF** p_sp, FaissSearchParameters* bsp);
+        FaissSearchParametersIVF** p_sp,
+        FaissSearchParameters* bsp);
 
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, nprobe)
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, max_codes)
-
 
 /** Index based on a inverted file (IVF)
  *
