@@ -93,14 +93,16 @@ int main() {
         free(I);
         free(D);
     }
-    { // search xb first 5 but only with search parameters of id range [50, 100]
+    { // search xb first 5 but search parameters of id range [50, 100]
         idx_t* I = malloc(k * nq * sizeof(idx_t));
         float* D = malloc(k * nq * sizeof(float));
         FaissIDSelectorRange* sel = NULL;
         FAISS_TRY(faiss_IDSelectorRange_new(&sel, 50, 100));
         FaissSearchParameters* params = NULL;
         FAISS_TRY(faiss_SearchParameters_new(&params, sel));
-        FAISS_TRY(faiss_Index_search_with_params(index, nq, xq, k, params, D, I));
+        FAISS_TRY(faiss_Index_search_with_params(
+            index, nq, xq, k, params, D, I));
+        printf("Searching w/ IDSelectorRange [50,100]\n");
         printf("I=\n");
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < k; j++)

@@ -17,7 +17,8 @@ extern "C" {
 
 DEFINE_DESTRUCTOR(SearchParameters)
 
-int faiss_SearchParameters_new(FaissSearchParameters** p_sp, FaissIDSelector* sel) {
+int faiss_SearchParameters_new(
+    FaissSearchParameters** p_sp, FaissIDSelector* sel) {
     try {
         faiss::SearchParameters* params = new faiss::SearchParameters;
         params->sel = reinterpret_cast<faiss::IDSelector*>(sel);
@@ -89,7 +90,12 @@ int faiss_Index_search_with_params(
         idx_t* labels) {
     try {
         reinterpret_cast<const faiss::Index*>(index)->search(
-                n, x, k, distances, labels, reinterpret_cast<const faiss::SearchParameters*>(params));
+                n, 
+                x, 
+                k, 
+                distances, 
+                labels, 
+                reinterpret_cast<const faiss::SearchParameters*>(params));
     }
     CATCH_AND_HANDLE
 }

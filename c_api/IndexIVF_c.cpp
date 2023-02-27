@@ -23,7 +23,8 @@ using faiss::IndexIVFStats;
 DEFINE_DESTRUCTOR(SearchParametersIVF)
 DEFINE_SEARCH_PARAMETERS_DOWNCAST(SearchParametersIVF)
 
-int faiss_SearchParametersIVF_new(FaissSearchParametersIVF** p_sp, FaissSearchParameters* bsp) {
+int faiss_SearchParametersIVF_new(
+    FaissSearchParametersIVF** p_sp, FaissSearchParameters* bsp) {
     try {
         SearchParametersIVF* sp = new SearchParametersIVF;
         sp->sel = reinterpret_cast<faiss::SearchParameters*>(bsp)->sel;

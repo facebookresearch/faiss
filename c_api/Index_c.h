@@ -42,7 +42,8 @@ typedef enum FaissMetricType {
 FAISS_DECLARE_CLASS(SearchParameters)
 FAISS_DECLARE_DESTRUCTOR(SearchParameters)
 
-int faiss_SearchParameters_new(FaissSearchParameters** p_sp, FaissIDSelector* sel);
+int faiss_SearchParameters_new(
+        FaissSearchParameters** p_sp, FaissIDSelector* sel);
 
 /// Opaque type for referencing to an index object
 FAISS_DECLARE_CLASS(Index)
