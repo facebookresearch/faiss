@@ -318,6 +318,21 @@
 <span id="_CPPv3N5faiss10MetricType20METRIC_JensenShannonE"></span><span id="_CPPv2N5faiss10MetricType20METRIC_JensenShannonE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca0ed6b1105d1f075fb996657320bed012"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_JensenShannon</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType20METRIC_JensenShannonE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10MetricType14METRIC_JaccardE">
+<span id="_CPPv3N5faiss10MetricType14METRIC_JaccardE"></span><span id="_CPPv2N5faiss10MetricType14METRIC_JaccardE"></span><span class="target" id="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_Jaccard</span></span></span><a class="headerlink" href="#_CPPv4N5faiss10MetricType14METRIC_JaccardE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>defined as: sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i &gt; 0 </p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20is_similarity_metricE10MetricType">
+<span id="_CPPv3N5faiss20is_similarity_metricE10MetricType"></span><span id="_CPPv2N5faiss20is_similarity_metricE10MetricType"></span><span id="faiss::is_similarity_metric__MetricTypeCE"></span><span class="target" id="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_similarity_metric</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5faiss10MetricTypeE" title="faiss::MetricType"><span class="n"><span class="pre">MetricType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">metric_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss20is_similarity_metricE10MetricType" title="Permalink to this definition"></a><br /></dt>
+<dd><p>this function is used to distinguish between min and max indexes since we need to support similarity and dis-similarity metrics in a flexible way </p>
 </dd></dl>
 
 </div>
