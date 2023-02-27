@@ -109,6 +109,8 @@ int main() {
         }
         free(I);
         free(D);
+        free(sel);
+        free(params);
     }
 
     printf("Saving index to disk...\n");
