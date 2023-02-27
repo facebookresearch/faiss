@@ -5,6 +5,7 @@
     <includes local="no">faiss/impl/platform_macros.h</includes>
     <includedby refid="Index_8h" local="no">faiss/Index.h</includedby>
     <includedby refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includedby>
+    <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/impl/platform_macros.h</label>
@@ -127,6 +128,12 @@
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -388,6 +395,8 @@
         </childnode>
         <childnode refid="59" relation="include">
         </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
       </node>
       <node id="46">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
@@ -515,14 +524,23 @@
 <codeline lineno="31" refid="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a" kindref="member">METRIC_Canberra</ref><sp/>=<sp/>20,</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>METRIC_BrayCurtis,</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>METRIC_JensenShannon,</highlight></codeline>
-<codeline lineno="34"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="36"><highlight class="comment">///<sp/>all<sp/>vector<sp/>indices<sp/>are<sp/>this<sp/>type</highlight></codeline>
-<codeline lineno="37" refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>=<sp/>int64_t;</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"></highlight></codeline>
-<codeline lineno="39"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kindref="member">METRIC_Jaccard</ref>,<sp/></highlight><highlight class="comment">///&lt;<sp/>defined<sp/>as:<sp/>sum_i(min(a_i,<sp/>b_i))<sp/>/<sp/>sum_i(max(a_i,<sp/>b_i))</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35" refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" refkind="member"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///&lt;<sp/>where<sp/>a_i,<sp/>b_i<sp/>&gt;<sp/>0</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"></highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="38"><highlight class="comment">///<sp/>all<sp/>vector<sp/>indices<sp/>are<sp/>this<sp/>type</highlight></codeline>
+<codeline lineno="39" refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>=<sp/>int64_t;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="41"><highlight class="comment">///<sp/>this<sp/>function<sp/>is<sp/>used<sp/>to<sp/>distinguish<sp/>between<sp/>min<sp/>and<sp/>max<sp/>indexes<sp/>since</highlight></codeline>
+<codeline lineno="42"><highlight class="comment">///<sp/>we<sp/>need<sp/>to<sp/>support<sp/>similarity<sp/>and<sp/>dis-similarity<sp/>metrics<sp/>in<sp/>a<sp/>flexible<sp/>way</highlight></codeline>
+<codeline lineno="43" refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" refkind="member"><highlight class="comment"></highlight><highlight class="normal">constexpr<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(<ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type)<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>((metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref>)<sp/>||</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kindref="member">METRIC_Jaccard</ref>));</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/MetricType.h"/>
   </compounddef>

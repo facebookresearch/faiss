@@ -247,6 +247,14 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" prot="public">
+          <name>METRIC_Jaccard</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>defined as: sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i &gt; 0 </para>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -255,7 +263,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="34"/>
+        <location file="faiss/MetricType.h" line="22" column="1" bodyfile="faiss/MetricType.h" bodystart="22" bodyend="36"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
@@ -401,7 +409,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="37" column="1" bodyfile="faiss/MetricType.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/MetricType.h" line="39" column="1" bodyfile="faiss/MetricType.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -1540,6 +1548,24 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/invlists/DirectMap.h" line="31" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="31" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::is_similarity_metric</definition>
+        <argsstring>(MetricType metric_type)</argsstring>
+        <name>is_similarity_metric</name>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>this function is used to distinguish between min and max indexes since we need to support similarity and dis-similarity metrics in a flexible way </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MetricType.h" line="43" column="16" bodyfile="faiss/MetricType.h" bodystart="43" bodyend="46"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -3306,10 +3332,15 @@
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="23" column="6" declfile="faiss/utils/extra_distances.h" declline="23" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a82b72341bc9020feaffe1420ab8eba63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void faiss::knn_extra_metrics</definition>
-        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, float_maxheap_array_t *res)</argsstring>
+        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, HeapArray&lt; C &gt; *res)</argsstring>
         <name>knn_extra_metrics</name>
         <param>
           <type>const float *</type>
@@ -3340,7 +3371,7 @@
           <declname>metric_arg</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref> *</type>
+          <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; C &gt; *</type>
           <declname>res</declname>
         </param>
         <briefdescription>
@@ -3349,7 +3380,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="36" column="6" declfile="faiss/utils/extra_distances.h" declline="36" declcolumn="6"/>
+        <location file="faiss/utils/extra_distances.h" line="37" column="6" declfile="faiss/utils/extra_distances.h" declline="37" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>FlatCodesDistanceComputer *</type>
@@ -3383,7 +3414,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="48" column="27" declfile="faiss/utils/extra_distances.h" declline="48" declcolumn="27"/>
+        <location file="faiss/utils/extra_distances.h" line="49" column="27" declfile="faiss/utils/extra_distances.h" declline="49" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint16_t</type>

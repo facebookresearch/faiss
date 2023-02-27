@@ -6514,9 +6514,10 @@
     <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" kind="function"><name>clone_IndexIVF</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorDistance" kind="struct"><name>faiss::VectorDistance</name>
-    <member refid="structfaiss_1_1VectorDistance_1a85d19dd7d7c2e1d9039c172fd1490ea2" kind="typedef"><name>C</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a61c9d5400239ae177d94be5e119c3fe0" kind="typedef"><name>C</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ab79751e034e79559d9585cf68af061a3" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1ad9bd4b2e4a39ce28f9c3ba0f1308410e" kind="variable"><name>is_similarity</name></member>
     <member refid="structfaiss_1_1VectorDistance_1aaf62cc689beb7e6fb78a27ff2a8ed598" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a407dedbd401cfd90eb673fcc39e82b9d" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a896326422abd4f2c051a1acdd2609cce" kind="function"><name>operator()</name></member>
@@ -6526,6 +6527,7 @@
     <member refid="structfaiss_1_1VectorDistance_1a61f5efc242a32963a943474513ba949d" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ab49171beb2af4d96617a22f507381518" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ac839930aa4b3c1db70146b54212385d6" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1abcb39e66cd757963c21107996bad3dad" kind="function"><name>operator()</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorTransform" kind="struct"><name>faiss::VectorTransform</name>
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
@@ -6600,6 +6602,7 @@
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752caf4e931a0d14ac0d0acd8cc74504df12a" kind="enumvalue"><name>METRIC_Canberra</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752caeaa8e44a2c8ecdc7a84a9d052da8b9ea" kind="enumvalue"><name>METRIC_BrayCurtis</name></member>
     <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca0ed6b1105d1f075fb996657320bed012" kind="enumvalue"><name>METRIC_JensenShannon</name></member>
+    <member refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca9d87c6d698adfbe153eba955b64f0034" kind="enumvalue"><name>METRIC_Jaccard</name></member>
     <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
     <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
     <member refid="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" kind="typedef"><name>IndexIDMap2</name></member>
@@ -6673,6 +6676,7 @@
     <member refid="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" kind="function"><name>lo_build</name></member>
     <member refid="namespacefaiss_1afe521d71f2a4dd6a99b0a5d9fbe19787" kind="function"><name>lo_listno</name></member>
     <member refid="namespacefaiss_1a31e62b2521dd1eeb8632005add40ecbd" kind="function"><name>lo_offset</name></member>
+    <member refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kind="function"><name>is_similarity_metric</name></member>
     <member refid="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" kind="function"><name>is_aligned_pointer</name></member>
     <member refid="namespacefaiss_1a7466bd32de31640860393a701eaac5ad" kind="function"><name>fvec_L2sqr</name></member>
     <member refid="namespacefaiss_1af6490f0d832462623e19a96481daeef5" kind="function"><name>fvec_inner_product</name></member>
@@ -6707,7 +6711,7 @@
     <member refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kind="function"><name>compute_PQ_dis_tables_dsub2</name></member>
     <member refid="namespacefaiss_1a8a1d1234d7f3f6fbcf277c2f6316760f" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
-    <member refid="namespacefaiss_1a5accc87f00bcb41b304aa6695767f176" kind="function"><name>knn_extra_metrics</name></member>
+    <member refid="namespacefaiss_1a82b72341bc9020feaffe1420ab8eba63" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kind="function"><name>get_extra_distance_computer</name></member>
     <member refid="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" kind="function"><name>encode_fp16</name></member>
     <member refid="namespacefaiss_1ac3f112424a7957effd27187654d90986" kind="function"><name>decode_fp16</name></member>
