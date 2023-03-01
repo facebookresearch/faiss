@@ -12,6 +12,7 @@
 #include <faiss/IndexIVF.h>
 #include "Clustering_c.h"
 #include "Index_c.h"
+#include "impl/AuxIndexStructures_c.h"
 #include "macros_impl.h"
 
 using faiss::IndexIVF;
@@ -23,16 +24,30 @@ using faiss::SearchParametersIVF;
 DEFINE_DESTRUCTOR(SearchParametersIVF)
 DEFINE_SEARCH_PARAMETERS_DOWNCAST(SearchParametersIVF)
 
-int faiss_SearchParametersIVF_new(
-        FaissSearchParametersIVF** p_sp,
-        FaissSearchParameters* bsp) {
+int faiss_SearchParametersIVF_new(FaissSearchParametersIVF** p_sp) {
     try {
         SearchParametersIVF* sp = new SearchParametersIVF;
-        sp->sel = reinterpret_cast<faiss::SearchParameters*>(bsp)->sel;
         *p_sp = reinterpret_cast<FaissSearchParametersIVF*>(sp);
     }
     CATCH_AND_HANDLE
 }
+
+int faiss_SearchParametersIVF_new_with(
+        FaissSearchParametersIVF** p_sp,
+        FaissIDSelector* sel,
+        size_t nprobe,
+        size_t max_codes) {
+    try {
+        SearchParametersIVF* sp = new SearchParametersIVF;
+        sp->sel = reinterpret_cast<faiss::IDSelector*>(sel);
+        sp->nprobe = nprobe;
+        sp->max_codes = max_codes;
+        *p_sp = reinterpret_cast<FaissSearchParametersIVF*>(sp);
+    }
+    CATCH_AND_HANDLE
+}
+
+DEFINE_GETTER_PERMISSIVE(SearchParametersIVF, const FaissIDSelector*, sel)
 
 DEFINE_GETTER(SearchParametersIVF, size_t, nprobe)
 DEFINE_SETTER(SearchParametersIVF, size_t, nprobe)

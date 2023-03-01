@@ -14,6 +14,7 @@
 #include "Clustering_c.h"
 #include "Index_c.h"
 #include "faiss_c.h"
+#include "impl/AuxIndexStructures_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,10 +24,14 @@ FAISS_DECLARE_CLASS_INHERITED(SearchParametersIVF, SearchParameters)
 FAISS_DECLARE_DESTRUCTOR(SearchParametersIVF)
 FAISS_DECLARE_SEARCH_PARAMETERS_DOWNCAST(SearchParametersIVF)
 
-int faiss_SearchParametersIVF_new(
+int faiss_SearchParametersIVF_new(FaissSearchParametersIVF** p_sp);
+int faiss_SearchParametersIVF_new_with(
         FaissSearchParametersIVF** p_sp,
-        FaissSearchParameters* bsp);
+        FaissIDSelector* sel,
+        size_t nprobe,
+        size_t max_codes);
 
+FAISS_DECLARE_GETTER(SearchParametersIVF, const FaissIDSelector*, sel)
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, nprobe)
 FAISS_DECLARE_GETTER_SETTER(SearchParametersIVF, size_t, max_codes)
 
