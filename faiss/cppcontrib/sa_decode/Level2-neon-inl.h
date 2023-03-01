@@ -1946,9 +1946,13 @@ struct Index2LevelDecoderImpl<
 } // namespace
 
 // Suitable for IVF256,PQ[1]x8
+// Subtable for IVF256,PQ[1]x10 (such as IVF256,PQ16x10np)
+// Suitable for IVF256,PQ[1]x16 (such as IVF256,PQ16x16np)
 // Suitable for Residual[1]x8,PQ[2]x8
-// Suitable for IVF[9-16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
-// Suitable for Residual1x[9-16 bit],PQ[1]x8 (such as Residual1x9,PQ8)
+// Suitable for IVF[2^9-2^16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
+// Suitable for IVF[2^9-2^16 bit],PQ[1]x10 (such as IVF1024,PQ16x10np)
+// Suitable for IVF[2^9-2^16 bit],PQ[1]x16 (such as IVF1024,PQ16x16np)
+// Suitable for Residual[1]x[9-16 bit],PQ[2]x[3] (such as Residual2x9,PQ8)
 template <
         intptr_t DIM,
         intptr_t COARSE_SIZE,

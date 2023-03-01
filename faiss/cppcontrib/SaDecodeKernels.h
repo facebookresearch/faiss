@@ -27,8 +27,10 @@
 //   * * (use with COARSE_BITS=16)
 //   * PQ[1]x10
 //   * PQ[1]x16
-// Unfortunately, currently Faiss does not support something like
-//   IVF256,PQ16x10np
+//   * IVF256,PQ[1]x10 (such as IVF256,PQ16x10np)
+//   * IVF256,PQ[1]x16 (such as IVF256,PQ16x16np)
+//   * IVF[2^9-2^16 bit],PQ[1]x10 (such as IVF1024,PQ16x10np)
+//   * IVF[2^9-2^16 bit],PQ[1]x16 (such as IVF1024,PQ16x16np)
 //
 // The goal was to achieve the maximum performance, so the template version it
 // is. The provided index families share the same code for sa_decode.
@@ -62,6 +64,10 @@
 //   decoder.
 // For example, "Residual4x10,PQ16x10np" for 256-dim data translates into
 //   Index2LevelDecoder<256,64,16,10,10>
+// For example, "IVF1024,PQ16x10np" for 256-dim data translates into
+//   Index2LevelDecoder<256,256,16,10,10>. But as there are only 1 coarse code
+//   element, Index2LevelDecoder<256,256,16,16,10> can be used as a faster
+//   decoder.
 //
 // Additional supported values for COARSE_BITS and FINE_BITS may be added later.
 //
