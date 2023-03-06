@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace faiss::nndescent &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/namespace/namespacefaiss_1_1nndescent.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Namespace faiss::nsg" href="namespacefaiss_1_1nsg.html" />
+    <link rel="prev" title="Namespace faiss::lsq" href="namespacefaiss_1_1lsq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d133.html">Namespace faiss::&#64;133</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d143.html">Namespace faiss::&#64;143</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d144.html">Namespace faiss::&#64;144</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d145.html">Namespace faiss::&#64;145</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib.html">Namespace faiss::cppcontrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d10.html">Namespace faiss::cppcontrib::&#64;10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d12.html">Namespace faiss::cppcontrib::&#64;12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d5.html">Namespace faiss::cppcontrib::&#64;5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d7.html">Namespace faiss::cppcontrib::&#64;7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail.html">Namespace faiss::cppcontrib::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail_1_1_0d4.html">Namespace faiss::cppcontrib::detail::&#64;4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail.html">Namespace faiss::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1lsq.html">Namespace faiss::lsq</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::nndescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nsg.html">Namespace faiss::nsg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1quantize__lut.html">Namespace faiss::quantize_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers.html">Namespace faiss::simd_result_handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers_1_1_0d70.html">Namespace faiss::simd_result_handlers::&#64;70</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacestd.html">Namespace std</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../namespacelist.html">Namespace list</a></li>
+      <li class="breadcrumb-item active">Namespace faiss::nndescent</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1nndescent.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-faiss-nndescent">
+<h1>Namespace faiss::nndescent<a class="headerlink" href="#namespace-faiss-nndescent" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescentE">
+<span id="_CPPv3N5faiss9nndescentE"></span><span id="_CPPv2N5faiss9nndescentE"></span><span id="faiss::nndescent"></span><span class="target" id="namespacefaiss_1_1nndescent"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nndescent</span></span></span><br /></dt>
+<dd><dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8NeighborE">
+<span id="_CPPv3N5faiss9nndescent8NeighborE"></span><span id="_CPPv2N5faiss9nndescent8NeighborE"></span><span id="faiss::nndescent::Neighbor"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Neighbor</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8Neighbor8NeighborEv">
+<span id="_CPPv3N5faiss9nndescent8Neighbor8NeighborEv"></span><span id="_CPPv2N5faiss9nndescent8Neighbor8NeighborEv"></span><span id="faiss::nndescent::Neighbor::Neighbor"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1aa1069f2718f4448195722a75229ffe2d"></span><span class="sig-name descname"><span class="n"><span class="pre">Neighbor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8Neighbor8NeighborEifb">
+<span id="_CPPv3N5faiss9nndescent8Neighbor8NeighborEifb"></span><span id="_CPPv2N5faiss9nndescent8Neighbor8NeighborEifb"></span><span id="faiss::nndescent::Neighbor::Neighbor__i.float.b"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1ae8eebc31a0e887c4c1602d47b030e13d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Neighbor</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">distance</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss9nndescent8NeighborltERK8Neighbor">
+<span id="_CPPv3NK5faiss9nndescent8NeighborltERK8Neighbor"></span><span id="_CPPv2NK5faiss9nndescent8NeighborltERK8Neighbor"></span><span id="faiss::nndescent::Neighbor::lt-operator__NeighborCRC"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1ab301a8fcf14ebf8ef5d1597bc17c0595"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4N5faiss9nndescent8NeighborE" title="faiss::nndescent::Neighbor"><span class="n"><span class="pre">Neighbor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8Neighbor2idE">
+<span id="_CPPv3N5faiss9nndescent8Neighbor2idE"></span><span id="_CPPv2N5faiss9nndescent8Neighbor2idE"></span><span id="faiss::nndescent::Neighbor::id__i"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1adce5680f1e46d4aab85d672fd8bb2d3c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8Neighbor8distanceE">
+<span id="_CPPv3N5faiss9nndescent8Neighbor8distanceE"></span><span id="_CPPv2N5faiss9nndescent8Neighbor8distanceE"></span><span id="faiss::nndescent::Neighbor::distance__float"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1af0ff46e796209339051874343b117ed4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">distance</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent8Neighbor4flagE">
+<span id="_CPPv3N5faiss9nndescent8Neighbor4flagE"></span><span id="_CPPv2N5faiss9nndescent8Neighbor4flagE"></span><span id="faiss::nndescent::Neighbor::flag__b"></span><span class="target" id="structfaiss_1_1nndescent_1_1Neighbor_1aa55f5f7a0e06cd7f24622be770c68a0c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flag</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5NhoodE">
+<span id="_CPPv3N5faiss9nndescent5NhoodE"></span><span id="_CPPv2N5faiss9nndescent5NhoodE"></span><span id="faiss::nndescent::Nhood"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Nhood</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood5NhoodEv">
+<span id="_CPPv3N5faiss9nndescent5Nhood5NhoodEv"></span><span id="_CPPv2N5faiss9nndescent5Nhood5NhoodEv"></span><span id="faiss::nndescent::Nhood::Nhood"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a6bd44d45baf06138e690c85e43897a22"></span><span class="sig-name descname"><span class="n"><span class="pre">Nhood</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood5NhoodEiiRNSt7mt19937Ei">
+<span id="_CPPv3N5faiss9nndescent5Nhood5NhoodEiiRNSt7mt19937Ei"></span><span id="_CPPv2N5faiss9nndescent5Nhood5NhoodEiiRNSt7mt19937Ei"></span><span id="faiss::nndescent::Nhood::Nhood__i.i.std::mt19937R.i"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1ae19d8b75f09c614f43d4647b29098529"></span><span class="sig-name descname"><span class="n"><span class="pre">Nhood</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">l</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mt19937</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rng</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5NhoodaSERK5Nhood">
+<span id="_CPPv3N5faiss9nndescent5NhoodaSERK5Nhood"></span><span id="_CPPv2N5faiss9nndescent5NhoodaSERK5Nhood"></span><span id="faiss::nndescent::Nhood::assign-operator__NhoodCR"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1aadf14d4e0de459c6de2b05cc0a42afbb"></span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4N5faiss9nndescent5NhoodE" title="faiss::nndescent::Nhood"><span class="n"><span class="pre">Nhood</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4N5faiss9nndescent5NhoodE" title="faiss::nndescent::Nhood"><span class="n"><span class="pre">Nhood</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood5NhoodERK5Nhood">
+<span id="_CPPv3N5faiss9nndescent5Nhood5NhoodERK5Nhood"></span><span id="_CPPv2N5faiss9nndescent5Nhood5NhoodERK5Nhood"></span><span id="faiss::nndescent::Nhood::Nhood__NhoodCR"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a2ad158e93c93eb3b887c05a3cccaabe4"></span><span class="sig-name descname"><span class="n"><span class="pre">Nhood</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4N5faiss9nndescent5Nhood5NhoodERK5Nhood" title="faiss::nndescent::Nhood::Nhood"><span class="n"><span class="pre">Nhood</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood6insertEif">
+<span id="_CPPv3N5faiss9nndescent5Nhood6insertEif"></span><span id="_CPPv2N5faiss9nndescent5Nhood6insertEif"></span><span id="faiss::nndescent::Nhood::insert__i.float"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dist</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK5faiss9nndescent5Nhood4joinEv1C">
+<span id="_CPPv3I0ENK5faiss9nndescent5Nhood4joinE1C"></span><span id="_CPPv2I0ENK5faiss9nndescent5Nhood4joinE1C"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">join</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4I0ENK5faiss9nndescent5Nhood4joinEv1C" title="faiss::nndescent::Nhood::join::C"><span class="n"><span class="pre">C</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">callback</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood4lockE">
+<span id="_CPPv3N5faiss9nndescent5Nhood4lockE"></span><span id="_CPPv2N5faiss9nndescent5Nhood4lockE"></span><span id="faiss::nndescent::Nhood::lock__std::mutex"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a930a8e4426ce3f306d7b8b94156ee243"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lock</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood4poolE">
+<span id="_CPPv3N5faiss9nndescent5Nhood4poolE"></span><span id="_CPPv2N5faiss9nndescent5Nhood4poolE"></span><span id="faiss::nndescent::Nhood::pool__std::vector:Neighbor:"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a7e221908bd84f4f9b80bbba0384386d4"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/NNDescent_8h.html#_CPPv4N5faiss9nndescent8NeighborE" title="faiss::nndescent::Neighbor"><span class="n"><span class="pre">Neighbor</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pool</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood1ME">
+<span id="_CPPv3N5faiss9nndescent5Nhood1ME"></span><span id="_CPPv2N5faiss9nndescent5Nhood1ME"></span><span id="faiss::nndescent::Nhood::M__i"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a642951010d9acdc98765048d6f8bf1fb"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood6nn_oldE">
+<span id="_CPPv3N5faiss9nndescent5Nhood6nn_oldE"></span><span id="_CPPv2N5faiss9nndescent5Nhood6nn_oldE"></span><span id="faiss::nndescent::Nhood::nn_old__std::vector:i:"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a7a5e4ddebc3bc2eba4fcaf7f1727ce94"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nn_old</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood6nn_newE">
+<span id="_CPPv3N5faiss9nndescent5Nhood6nn_newE"></span><span id="_CPPv2N5faiss9nndescent5Nhood6nn_newE"></span><span id="faiss::nndescent::Nhood::nn_new__std::vector:i:"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1ad23cfc33113aedfd69c907c1b8ff2b3d"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nn_new</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood7rnn_oldE">
+<span id="_CPPv3N5faiss9nndescent5Nhood7rnn_oldE"></span><span id="_CPPv2N5faiss9nndescent5Nhood7rnn_oldE"></span><span id="faiss::nndescent::Nhood::rnn_old__std::vector:i:"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1ae9919f8927036ecff233b51f0c798a3f"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rnn_old</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss9nndescent5Nhood7rnn_newE">
+<span id="_CPPv3N5faiss9nndescent5Nhood7rnn_newE"></span><span id="_CPPv2N5faiss9nndescent5Nhood7rnn_newE"></span><span id="faiss::nndescent::Nhood::rnn_new__std::vector:i:"></span><span class="target" id="structfaiss_1_1nndescent_1_1Nhood_1a6bf28c2bc165a3fa57220d3ebc08e0c9"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rnn_new</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespacefaiss_1_1lsq.html" class="btn btn-neutral float-left" title="Namespace faiss::lsq" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespacefaiss_1_1nsg.html" class="btn btn-neutral float-right" title="Namespace faiss::nsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

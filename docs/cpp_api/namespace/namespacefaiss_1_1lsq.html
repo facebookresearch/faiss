@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace faiss::lsq &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/namespace/namespacefaiss_1_1lsq.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Namespace faiss::nndescent" href="namespacefaiss_1_1nndescent.html" />
+    <link rel="prev" title="Namespace faiss::ivflib" href="namespacefaiss_1_1ivflib.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d133.html">Namespace faiss::&#64;133</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d143.html">Namespace faiss::&#64;143</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d144.html">Namespace faiss::&#64;144</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d145.html">Namespace faiss::&#64;145</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib.html">Namespace faiss::cppcontrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d10.html">Namespace faiss::cppcontrib::&#64;10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d12.html">Namespace faiss::cppcontrib::&#64;12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d5.html">Namespace faiss::cppcontrib::&#64;5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d7.html">Namespace faiss::cppcontrib::&#64;7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail.html">Namespace faiss::cppcontrib::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail_1_1_0d4.html">Namespace faiss::cppcontrib::detail::&#64;4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail.html">Namespace faiss::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::lsq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nndescent.html">Namespace faiss::nndescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nsg.html">Namespace faiss::nsg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1quantize__lut.html">Namespace faiss::quantize_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers.html">Namespace faiss::simd_result_handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers_1_1_0d70.html">Namespace faiss::simd_result_handlers::&#64;70</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacestd.html">Namespace std</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../namespacelist.html">Namespace list</a></li>
+      <li class="breadcrumb-item active">Namespace faiss::lsq</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1lsq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-faiss-lsq">
+<h1>Namespace faiss::lsq<a class="headerlink" href="#namespace-faiss-lsq" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsqE">
+<span id="_CPPv3N5faiss3lsqE"></span><span id="_CPPv2N5faiss3lsqE"></span><span id="faiss::lsq"></span><span class="target" id="namespacefaiss_1_1lsq"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lsq</span></span></span><br /></dt>
+<dd><dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoderE">
+<span id="_CPPv3N5faiss3lsq10IcmEncoderE"></span><span id="_CPPv2N5faiss3lsq10IcmEncoderE"></span><span id="faiss::lsq::IcmEncoder"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IcmEncoder</span></span></span><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="namespacefaiss_1_1gpu.html#classfaiss_1_1gpu_1_1GpuIcmEncoder"><span class="std std-ref">faiss::gpu::GpuIcmEncoder</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoder10IcmEncoderEPK20LocalSearchQuantizer">
+<span id="_CPPv3N5faiss3lsq10IcmEncoder10IcmEncoderEPK20LocalSearchQuantizer"></span><span id="_CPPv2N5faiss3lsq10IcmEncoder10IcmEncoderEPK20LocalSearchQuantizer"></span><span id="faiss::lsq::IcmEncoder::IcmEncoder__LocalSearchQuantizerCP"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1a566132de4caf47303c8679ff6ad42274"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IcmEncoder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss20LocalSearchQuantizerE" title="faiss::LocalSearchQuantizer"><span class="n"><span class="pre">LocalSearchQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lsq</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoderD0Ev">
+<span id="_CPPv3N5faiss3lsq10IcmEncoderD0Ev"></span><span id="_CPPv2N5faiss3lsq10IcmEncoderD0Ev"></span><span id="faiss::lsq::IcmEncoder::~IcmEncoder"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1abbcb3169a86739bfe07018a268c2bcd6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IcmEncoder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>compute binary terms </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoder15set_binary_termEv">
+<span id="_CPPv3N5faiss3lsq10IcmEncoder15set_binary_termEv"></span><span id="_CPPv2N5faiss3lsq10IcmEncoder15set_binary_termEv"></span><span id="faiss::lsq::IcmEncoder::set_binary_term"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1a57779540fe668c896421373f1b4bca8a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_binary_term</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss3lsq10IcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t">
+<span id="_CPPv3NK5faiss3lsq10IcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t"></span><span id="_CPPv2NK5faiss3lsq10IcmEncoder6encodeEP7int32_tPKfRNSt7mt19937E6size_t6size_t"></span><span id="faiss::lsq::IcmEncoder::encode__int32_tP.floatCP.std::mt19937R.s.sC"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1a407107690ecb6d9d86250fcba0f7b13d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">codes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mt19937</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">gen</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ils_iters</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Encode vectors given codebooks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>codes</strong> – output codes, size n * M </p></li>
+<li><p><strong>x</strong> – vectors to encode, size n * d </p></li>
+<li><p><strong>gen</strong> – random generator </p></li>
+<li><p><strong>n</strong> – number of vectors </p></li>
+<li><p><strong>ils_iters</strong> – number of iterations of iterative local search </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoder8binariesE">
+<span id="_CPPv3N5faiss3lsq10IcmEncoder8binariesE"></span><span id="_CPPv2N5faiss3lsq10IcmEncoder8binariesE"></span><span id="faiss::lsq::IcmEncoder::binaries__std::vector:float:"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1a310d4c8b7e58157e3e764a88c5bfc4ff"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">binaries</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoder7verboseE">
+<span id="_CPPv3N5faiss3lsq10IcmEncoder7verboseE"></span><span id="_CPPv2N5faiss3lsq10IcmEncoder7verboseE"></span><span id="faiss::lsq::IcmEncoder::verbose__b"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1aff2b33803e7f54ebb62c0447a3b8468b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verbose</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq10IcmEncoder3lsqE">
+<span id="_CPPv3N5faiss3lsq10IcmEncoder3lsqE"></span><span id="_CPPv2N5faiss3lsq10IcmEncoder3lsqE"></span><span id="faiss::lsq::IcmEncoder::lsq__LocalSearchQuantizerCP"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoder_1a32af51fa49941c4a4faf228f0fd72352"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss20LocalSearchQuantizerE" title="faiss::LocalSearchQuantizer"><span class="n"><span class="pre">LocalSearchQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">lsq</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq17IcmEncoderFactoryE">
+<span id="_CPPv3N5faiss3lsq17IcmEncoderFactoryE"></span><span id="_CPPv2N5faiss3lsq17IcmEncoderFactoryE"></span><span id="faiss::lsq::IcmEncoderFactory"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoderFactory"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IcmEncoderFactory</span></span></span><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="../struct/structfaiss_1_1gpu_1_1GpuIcmEncoderFactory.html#structfaiss_1_1gpu_1_1GpuIcmEncoderFactory"><span class="std std-ref">faiss::gpu::GpuIcmEncoderFactory</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq17IcmEncoderFactory3getEPK20LocalSearchQuantizer">
+<span id="_CPPv3N5faiss3lsq17IcmEncoderFactory3getEPK20LocalSearchQuantizer"></span><span id="_CPPv2N5faiss3lsq17IcmEncoderFactory3getEPK20LocalSearchQuantizer"></span><span id="faiss::lsq::IcmEncoderFactory::get__LocalSearchQuantizerCP"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ad2545f0c0f25da85519e613ac6de7b28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss3lsq10IcmEncoderE" title="faiss::lsq::IcmEncoder"><span class="n"><span class="pre">IcmEncoder</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss20LocalSearchQuantizerE" title="faiss::LocalSearchQuantizer"><span class="n"><span class="pre">LocalSearchQuantizer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lsq</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq17IcmEncoderFactoryD0Ev">
+<span id="_CPPv3N5faiss3lsq17IcmEncoderFactoryD0Ev"></span><span id="_CPPv2N5faiss3lsq17IcmEncoderFactoryD0Ev"></span><span id="faiss::lsq::IcmEncoderFactory::~IcmEncoderFactory"></span><span class="target" id="structfaiss_1_1lsq_1_1IcmEncoderFactory_1ab8351263070c0817f97dabf036fa98c3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IcmEncoderFactory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimerE">
+<span id="_CPPv3N5faiss3lsq8LSQTimerE"></span><span id="_CPPv2N5faiss3lsq8LSQTimerE"></span><span id="faiss::lsq::LSQTimer"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LSQTimer</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;LocalSearchQuantizer.h&gt;</em></div>
+<p>A helper struct to count consuming time during training. It is NOT thread-safe. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimer8LSQTimerEv">
+<span id="_CPPv3N5faiss3lsq8LSQTimer8LSQTimerEv"></span><span id="_CPPv2N5faiss3lsq8LSQTimer8LSQTimerEv"></span><span id="faiss::lsq::LSQTimer::LSQTimer"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer_1aad61fada38201a6dcbeef214f86a1327"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LSQTimer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimer3getERKNSt6stringE">
+<span id="_CPPv3N5faiss3lsq8LSQTimer3getERKNSt6stringE"></span><span id="_CPPv2N5faiss3lsq8LSQTimer3getERKNSt6stringE"></span><span id="faiss::lsq::LSQTimer::get__ssCR"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer_1aa246a4d284cd0cbd5ed2e6fbfb369ff1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimer3addERKNSt6stringEd">
+<span id="_CPPv3N5faiss3lsq8LSQTimer3addERKNSt6stringEd"></span><span id="_CPPv2N5faiss3lsq8LSQTimer3addERKNSt6stringEd"></span><span id="faiss::lsq::LSQTimer::add__ssCR.double"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer_1adf52230b2f5c9ecbe02f138abba5fe95"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delta</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimer5resetEv">
+<span id="_CPPv3N5faiss3lsq8LSQTimer5resetEv"></span><span id="_CPPv2N5faiss3lsq8LSQTimer5resetEv"></span><span id="faiss::lsq::LSQTimer::reset"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer_1ada50954c2101dcdd7b804fb1ee5881ec"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq8LSQTimer1tE">
+<span id="_CPPv3N5faiss3lsq8LSQTimer1tE"></span><span id="_CPPv2N5faiss3lsq8LSQTimer1tE"></span><span id="faiss::lsq::LSQTimer::t__std::unordered_map:ss.double:"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimer_1a6a2b77bdbac4ace2ceef5c93fa968868"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScopeE">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScopeE"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScopeE"></span><span id="faiss::lsq::LSQTimerScope"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LSQTimerScope</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope13LSQTimerScopeEP8LSQTimerNSt6stringE">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope13LSQTimerScopeEP8LSQTimerNSt6stringE"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope13LSQTimerScopeEP8LSQTimerNSt6stringE"></span><span id="faiss::lsq::LSQTimerScope::LSQTimerScope__LSQTimerP.ss"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a7a0e9b9135e826f1ededad5d9aad259e"></span><span class="sig-name descname"><span class="n"><span class="pre">LSQTimerScope</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss3lsq8LSQTimerE" title="faiss::lsq::LSQTimer"><span class="n"><span class="pre">LSQTimer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">timer</span></span>, <a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope6finishEv">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope6finishEv"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope6finishEv"></span><span id="faiss::lsq::LSQTimerScope::finish"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1aa375b60ea8e0f38438f2ddf0de59a85c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finish</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScopeD0Ev">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScopeD0Ev"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScopeD0Ev"></span><span id="faiss::lsq::LSQTimerScope::~LSQTimerScope"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a345116cdee742a029d366fbfd2d835bb"></span><span class="sig-name descname"><span class="n"><span class="pre">~LSQTimerScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope2t0E">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope2t0E"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope2t0E"></span><span id="faiss::lsq::LSQTimerScope::t0__double"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1ab067542f64fe9a0edf5f370dc6481460"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope5timerE">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope5timerE"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope5timerE"></span><span id="faiss::lsq::LSQTimerScope::timer__LSQTimerP"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1ac3bbb2e2f5a1c83c6f0910bb0fce0068"></span><a class="reference internal" href="../file/LocalSearchQuantizer_8h.html#_CPPv4N5faiss3lsq8LSQTimerE" title="faiss::lsq::LSQTimer"><span class="n"><span class="pre">LSQTimer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">timer</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope4nameE">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope4nameE"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope4nameE"></span><span id="faiss::lsq::LSQTimerScope::name__ss"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a5f4a49eb8a576d73935041ab0e44a506"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3lsq13LSQTimerScope8finishedE">
+<span id="_CPPv3N5faiss3lsq13LSQTimerScope8finishedE"></span><span id="_CPPv2N5faiss3lsq13LSQTimerScope8finishedE"></span><span id="faiss::lsq::LSQTimerScope::finished__b"></span><span class="target" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a386bb2f25ef45872372e97660239e239"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finished</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespacefaiss_1_1ivflib.html" class="btn btn-neutral float-left" title="Namespace faiss::ivflib" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespacefaiss_1_1nndescent.html" class="btn btn-neutral float-right" title="Namespace faiss::nndescent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

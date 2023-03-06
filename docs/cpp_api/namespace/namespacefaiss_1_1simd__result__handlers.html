@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace faiss::simd_result_handlers &mdash; Faiss  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+    <link rel="canonical" href="https://faiss.ai/cpp_api/namespace/namespacefaiss_1_1simd__result__handlers.html" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Namespace faiss::simd_result_handlers::@70" href="namespacefaiss_1_1simd__result__handlers_1_1_0d70.html" />
+    <link rel="prev" title="Namespace faiss::quantize_lut" href="namespacefaiss_1_1quantize__lut.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Faiss
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/facebookresearch/faiss/wiki">Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">C++ API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../classlist.html">Class list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss.html">Namespace faiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d133.html">Namespace faiss::&#64;133</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d143.html">Namespace faiss::&#64;143</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d144.html">Namespace faiss::&#64;144</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1_0d145.html">Namespace faiss::&#64;145</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib.html">Namespace faiss::cppcontrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d10.html">Namespace faiss::cppcontrib::&#64;10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d12.html">Namespace faiss::cppcontrib::&#64;12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d5.html">Namespace faiss::cppcontrib::&#64;5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1_0d7.html">Namespace faiss::cppcontrib::&#64;7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail.html">Namespace faiss::cppcontrib::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1cppcontrib_1_1detail_1_1_0d4.html">Namespace faiss::cppcontrib::detail::&#64;4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail.html">Namespace faiss::detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1detail_1_1simdlib.html">Namespace faiss::detail::simdlib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu.html">Namespace faiss::gpu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1gpu_1_1utils.html">Namespace faiss::gpu::utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1ivflib.html">Namespace faiss::ivflib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1lsq.html">Namespace faiss::lsq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nndescent.html">Namespace faiss::nndescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1nsg.html">Namespace faiss::nsg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1quantize__lut.html">Namespace faiss::quantize_lut</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Namespace faiss::simd_result_handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacefaiss_1_1simd__result__handlers_1_1_0d70.html">Namespace faiss::simd_result_handlers::&#64;70</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespacestd.html">Namespace std</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faiss</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../namespacelist.html">Namespace list</a></li>
+      <li class="breadcrumb-item active">Namespace faiss::simd_result_handlers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/cpp_api/namespace/namespacefaiss_1_1simd__result__handlers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-faiss-simd-result-handlers">
+<h1>Namespace faiss::simd_result_handlers<a class="headerlink" href="#namespace-faiss-simd-result-handlers" title="Permalink to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlersE">
+<span id="_CPPv3N5faiss20simd_result_handlersE"></span><span id="_CPPv2N5faiss20simd_result_handlersE"></span><span id="faiss::simd_result_handlers"></span><span class="target" id="namespacefaiss_1_1simd__result__handlers"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">simd_result_handlers</span></span></span><br /></dt>
+<dd><dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18DummyResultHandlerE">
+<span id="_CPPv3N5faiss20simd_result_handlers18DummyResultHandlerE"></span><span id="_CPPv2N5faiss20simd_result_handlers18DummyResultHandlerE"></span><span id="faiss::simd_result_handlers::DummyResultHandler"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DummyResultHandler</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>Dummy structure that just computes a checksum on results (to avoid the computation to be optimized away) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18DummyResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers18DummyResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers18DummyResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::DummyResultHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1adddd7015556bedc97612f6bb76a0e1fb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18DummyResultHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers18DummyResultHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers18DummyResultHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::DummyResultHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a20ec639d6eff5f224fbbb43e8bae64d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18DummyResultHandler2csE">
+<span id="_CPPv3N5faiss20simd_result_handlers18DummyResultHandler2csE"></span><span id="_CPPv2N5faiss20simd_result_handlers18DummyResultHandler2csE"></span><span id="faiss::simd_result_handlers::DummyResultHandler::cs__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a9f8b05f7ba29eec7bd46a2d112339dfe"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandlerE">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandlerE"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandlerE"></span><span id="faiss::simd_result_handlers::StoreResultHandler"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreResultHandler</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>memorize results in a nq-by-nb matrix.</p>
+<p>j0 is the current upper-left block of the matrix </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler18StoreResultHandlerEP8uint16_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler18StoreResultHandlerEP8uint16_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler18StoreResultHandlerEP8uint16_t6size_t"></span><span id="faiss::simd_result_handlers::StoreResultHandler::StoreResultHandler__uint16_tP.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3b64e8061ed3d37d9c1d456709299824"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ld</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::StoreResultHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1afb11f0d74a627fe4d9e100e5a41072d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::StoreResultHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aaa5cf567373cdbe5f00aa927627974af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler4dataE">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler4dataE"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler4dataE"></span><span id="faiss::simd_result_handlers::StoreResultHandler::data__uint16_tP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a38a1e3ad217eac339f4a49040de22747"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler2ldE">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler2ldE"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler2ldE"></span><span id="faiss::simd_result_handlers::StoreResultHandler::ld__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1ab1d44a3b7d0ebe4c7ac127c0047186ea"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ld</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler2i0E"></span><span id="faiss::simd_result_handlers::StoreResultHandler::i0__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3cd8c19a91caaa7f77848dfca52e701e"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers18StoreResultHandler2j0E">
+<span id="_CPPv3N5faiss20simd_result_handlers18StoreResultHandler2j0E"></span><span id="_CPPv2N5faiss20simd_result_handlers18StoreResultHandler2j0E"></span><span id="faiss::simd_result_handlers::StoreResultHandler::j0__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a1e9dabad5a45552c7ce7740604d0bcc7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_i_iEN5faiss20simd_result_handlers19FixedStorageHandlerE">
+<span id="_CPPv3I_i_iEN5faiss20simd_result_handlers19FixedStorageHandlerE"></span><span id="_CPPv2I_i_iEN5faiss20simd_result_handlers19FixedStorageHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NQ</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BB</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FixedStorageHandler</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>stores results in fixed-size matrix. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19FixedStorageHandler6handleEii12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers19FixedStorageHandler6handleEii12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers19FixedStorageHandler6handleEii12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::FixedStorageHandler::handle__i.i.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a40bf222bea1ddba3454e07c9a4298995"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19FixedStorageHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers19FixedStorageHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers19FixedStorageHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::FixedStorageHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ab0abb992487f720ef958ee8f6210fa3a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK5faiss20simd_result_handlers19FixedStorageHandler16to_other_handlerEvR18OtherResultHandler">
+<span id="_CPPv3I0ENK5faiss20simd_result_handlers19FixedStorageHandler16to_other_handlerER18OtherResultHandler"></span><span id="_CPPv2I0ENK5faiss20simd_result_handlers19FixedStorageHandler16to_other_handlerER18OtherResultHandler"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherResultHandler</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a0c466901ad10190f156b680a2611e2d2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_other_handler</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0ENK5faiss20simd_result_handlers19FixedStorageHandler16to_other_handlerEvR18OtherResultHandler" title="faiss::simd_result_handlers::FixedStorageHandler::to_other_handler::OtherResultHandler"><span class="n"><span class="pre">OtherResultHandler</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19FixedStorageHandler3disE">
+<span id="_CPPv3N5faiss20simd_result_handlers19FixedStorageHandler3disE"></span><span id="_CPPv2N5faiss20simd_result_handlers19FixedStorageHandler3disE"></span><span id="faiss::simd_result_handlers::FixedStorageHandler::dis__simd16uint16AA"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ad0e9987bf1e7eca3084c795b0418424c"></span><a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dis</span></span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I_i_iEN5faiss20simd_result_handlers19FixedStorageHandlerE" title="faiss::simd_result_handlers::FixedStorageHandler::NQ"><span class="n"><span class="pre">NQ</span></span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I_i_iEN5faiss20simd_result_handlers19FixedStorageHandlerE" title="faiss::simd_result_handlers::FixedStorageHandler::BB"><span class="n"><span class="pre">BB</span></span></a><span class="p"><span class="pre">]</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19FixedStorageHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers19FixedStorageHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers19FixedStorageHandler2i0E"></span><span id="faiss::simd_result_handlers::FixedStorageHandler::i0__i"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae9a4140b96289ff6918416abc1a93fd0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE">
+<span id="_CPPv3I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE"></span><span id="_CPPv2I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">with_id_map</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIMDResultHandler</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>Record origin of current block </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler2TIE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler2TIE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler2TIE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1adf5cdef24b24ce417afd792ce9e84577"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE" title="faiss::simd_result_handlers::SIMDResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler17SIMDResultHandlerE6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler17SIMDResultHandlerE6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler17SIMDResultHandlerE6size_t"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::SIMDResultHandler__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a826599a28cdb21613809bffd223128d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIMDResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ntotal</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::adjust_with_origin__sR.simd16uint16R.simd16uint16R"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_with_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">q</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler9adjust_idE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler9adjust_idE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler9adjust_idE6size_t6size_t"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::adjust_id__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_id</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::get_lt_mask__uint16_t.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_lt_mask</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler14to_flat_arraysEPfP7int64_tPKf">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::to_flat_arrays__floatP.int64_tP.floatCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a6ef5a0962eeaa97d44ea33030c0398ff"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_flat_arrays</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">normalizers</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandlerD0Ev">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandlerD0Ev"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandlerD0Ev"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::~SIMDResultHandler"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a3013f33b7c7136c55ad001ed7d420226"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SIMDResultHandler</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler7disableE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler7disableE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler7disableE"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::disable__b"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler2i0E"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::i0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler2j0E">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler2j0E"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler2j0E"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::j0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler6ntotalE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler6ntotalE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler6ntotalE"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::ntotal__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler6id_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler6id_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler6id_mapE"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::id_map__TICP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler2TIE" title="faiss::simd_result_handlers::SIMDResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">id_map</span></span></span><br /></dt>
+<dd><p>these fields are used mainly for the IVF variants (with_id_map=true) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler5q_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler5q_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler5q_mapE"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::q_map__iCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">q_map</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers17SIMDResultHandler5dbiasE">
+<span id="_CPPv3N5faiss20simd_result_handlers17SIMDResultHandler5dbiasE"></span><span id="_CPPv2N5faiss20simd_result_handlers17SIMDResultHandler5dbiasE"></span><span id="faiss::simd_result_handlers::SIMDResultHandler::dbias__uint16_tCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dbias</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE">
+<span id="_CPPv3I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE"></span><span id="_CPPv2I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">with_id_map</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlersE" title="faiss::simd_result_handlers"><span class="n"><span class="pre">simd_result_handlers</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE" title="faiss::simd_result_handlers::SIMDResultHandler"><span class="n"><span class="pre">SIMDResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE" title="faiss::simd_result_handlers::SingleResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>Special version for k=1 </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler1TE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler1TE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler1TE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1abdc4c03d70ac73e57d80e86920cb78b1"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE" title="faiss::simd_result_handlers::SingleResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler2TIE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler2TIE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler2TIE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1aff267a89d3096497cc2f3a82bdbc4a13"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers19SingleResultHandlerE" title="faiss::simd_result_handlers::SingleResultHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler19SingleResultHandlerE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler19SingleResultHandlerE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler19SingleResultHandlerE6size_t6size_t"></span><span id="faiss::simd_result_handlers::SingleResultHandler::SingleResultHandler__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a6420072970f6b0bc1354fd324e794646"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SingleResultHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nq</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ntotal</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::SingleResultHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a07c3dddd613025d73c1b0d2c0936087d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler14to_flat_arraysEPfP7int64_tPKf">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="faiss::simd_result_handlers::SingleResultHandler::to_flat_arrays__floatP.int64_tP.floatCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a93e46f10cd5484e54dcc6044cbb5276f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_flat_arrays</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">normalizers</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::SingleResultHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="faiss::simd_result_handlers::SingleResultHandler::adjust_with_origin__sR.simd16uint16R.simd16uint16R"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_with_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">q</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler9adjust_idE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler9adjust_idE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler9adjust_idE6size_t6size_t"></span><span id="faiss::simd_result_handlers::SingleResultHandler::adjust_id__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_id</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::SingleResultHandler::get_lt_mask__uint16_t.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_lt_mask</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler7resultsE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler7resultsE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler7resultsE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::results__std::vector:Result:"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1ac55915dbba82196c51d4c4070c0954b9"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6ResultE" title="faiss::simd_result_handlers::SingleResultHandler::Result"><span class="n"><span class="pre">Result</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">results</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler7disableE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler7disableE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler7disableE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::disable__b"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler2i0E"></span><span id="faiss::simd_result_handlers::SingleResultHandler::i0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler2j0E">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler2j0E"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler2j0E"></span><span id="faiss::simd_result_handlers::SingleResultHandler::j0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6ntotalE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6ntotalE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6ntotalE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::ntotal__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6id_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6id_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6id_mapE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::id_map__TICP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers19SingleResultHandler2TIE" title="faiss::simd_result_handlers::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">id_map</span></span></span><br /></dt>
+<dd><p>these fields are used mainly for the IVF variants (with_id_map=true) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler5q_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler5q_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler5q_mapE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::q_map__iCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">q_map</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler5dbiasE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler5dbiasE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler5dbiasE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::dbias__uint16_tCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dbias</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6ResultE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6ResultE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6ResultE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::Result"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6Result3valE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6Result3valE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6Result3valE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::Result::val__T"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result_1a3d3334778d23483591d57227cb1ee5e2"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers19SingleResultHandler1TE" title="faiss::simd_result_handlers::SingleResultHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">val</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers19SingleResultHandler6Result2idE">
+<span id="_CPPv3N5faiss20simd_result_handlers19SingleResultHandler6Result2idE"></span><span id="_CPPv2N5faiss20simd_result_handlers19SingleResultHandler6Result2idE"></span><span id="faiss::simd_result_handlers::SingleResultHandler::Result::id__TI"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result_1a266d541cfc372d11ea488ea428ce5b92"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers19SingleResultHandler2TIE" title="faiss::simd_result_handlers::SingleResultHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_bEN5faiss20simd_result_handlers11HeapHandlerE">
+<span id="_CPPv3I0_bEN5faiss20simd_result_handlers11HeapHandlerE"></span><span id="_CPPv2I0_bEN5faiss20simd_result_handlers11HeapHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">with_id_map</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeapHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlersE" title="faiss::simd_result_handlers"><span class="n"><span class="pre">simd_result_handlers</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE" title="faiss::simd_result_handlers::SIMDResultHandler"><span class="n"><span class="pre">SIMDResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers11HeapHandlerE" title="faiss::simd_result_handlers::HeapHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>Structure that collects results in a min- or max-heap </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler1TE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler1TE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler1TE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a85e527b03ac85f7f45a73b9453433a5c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers11HeapHandlerE" title="faiss::simd_result_handlers::HeapHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler2TIE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler2TIE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler2TIE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a23abc38e0c0857182c02f20ee97d269e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers11HeapHandlerE" title="faiss::simd_result_handlers::HeapHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler11HeapHandlerEiP1TP2TI6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler11HeapHandlerEiP1TP2TI6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler11HeapHandlerEiP1TP2TI6size_t6size_t"></span><span id="faiss::simd_result_handlers::HeapHandler::HeapHandler__i.TP.TIP.s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1aebd97e6c76eed4bad95eb6424d543dea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeapHandler</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nq</span></span>, <a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers11HeapHandler1TE" title="faiss::simd_result_handlers::HeapHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_dis_tab</span></span>, <a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers11HeapHandler2TIE" title="faiss::simd_result_handlers::HeapHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">heap_ids_tab</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ntotal</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::HeapHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a620040a758885b805334c89fd0f33f08"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler14to_flat_arraysEPfP7int64_tPKf">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="faiss::simd_result_handlers::HeapHandler::to_flat_arrays__floatP.int64_tP.floatCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1ac0f70c6234e6d861d5e7aa7ff043a740"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_flat_arrays</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">normalizers</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::HeapHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="faiss::simd_result_handlers::HeapHandler::adjust_with_origin__sR.simd16uint16R.simd16uint16R"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_with_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">q</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler9adjust_idE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler9adjust_idE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler9adjust_idE6size_t6size_t"></span><span id="faiss::simd_result_handlers::HeapHandler::adjust_id__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_id</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::HeapHandler::get_lt_mask__uint16_t.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_lt_mask</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler2nqE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler2nqE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler2nqE"></span><span id="faiss::simd_result_handlers::HeapHandler::nq__i"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a41a837ec51ed5f4e5e7a3695a8fd03cb"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nq</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler12heap_dis_tabE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler12heap_dis_tabE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler12heap_dis_tabE"></span><span id="faiss::simd_result_handlers::HeapHandler::heap_dis_tab__TP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a6c0a6c39eff55c31f0e0e882c84fdb0a"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers11HeapHandler1TE" title="faiss::simd_result_handlers::HeapHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_dis_tab</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler12heap_ids_tabE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler12heap_ids_tabE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler12heap_ids_tabE"></span><span id="faiss::simd_result_handlers::HeapHandler::heap_ids_tab__TIP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1afd344c39e61eb568ed9edb3248f19006"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers11HeapHandler2TIE" title="faiss::simd_result_handlers::HeapHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">heap_ids_tab</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler1kE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler1kE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler1kE"></span><span id="faiss::simd_result_handlers::HeapHandler::k__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a9cb644fb54f264900f9b12a73a2081db"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler7disableE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler7disableE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler7disableE"></span><span id="faiss::simd_result_handlers::HeapHandler::disable__b"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler2i0E"></span><span id="faiss::simd_result_handlers::HeapHandler::i0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler2j0E">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler2j0E"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler2j0E"></span><span id="faiss::simd_result_handlers::HeapHandler::j0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler6ntotalE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler6ntotalE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler6ntotalE"></span><span id="faiss::simd_result_handlers::HeapHandler::ntotal__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler6id_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler6id_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler6id_mapE"></span><span id="faiss::simd_result_handlers::HeapHandler::id_map__TICP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers11HeapHandler2TIE" title="faiss::simd_result_handlers::HeapHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">id_map</span></span></span><br /></dt>
+<dd><p>these fields are used mainly for the IVF variants (with_id_map=true) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler5q_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler5q_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler5q_mapE"></span><span id="faiss::simd_result_handlers::HeapHandler::q_map__iCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">q_map</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers11HeapHandler5dbiasE">
+<span id="_CPPv3N5faiss20simd_result_handlers11HeapHandler5dbiasE"></span><span id="_CPPv2N5faiss20simd_result_handlers11HeapHandler5dbiasE"></span><span id="faiss::simd_result_handlers::HeapHandler::dbias__uint16_tCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dbias</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5faiss20simd_result_handlers13ReservoirTopNE">
+<span id="_CPPv3I0EN5faiss20simd_result_handlers13ReservoirTopNE"></span><span id="_CPPv2I0EN5faiss20simd_result_handlers13ReservoirTopNE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirTopN</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1TE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN1TE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN1TE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a30c09dc4ebc3764ffd9aec3f5627d1ee"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0EN5faiss20simd_result_handlers13ReservoirTopNE" title="faiss::simd_result_handlers::ReservoirTopN::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN2TIE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN2TIE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN2TIE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1acd536bd1566a4b586ab38d6ae1312235"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0EN5faiss20simd_result_handlers13ReservoirTopNE" title="faiss::simd_result_handlers::ReservoirTopN::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN13ReservoirTopNE6size_t6size_tP1TP2TI">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN13ReservoirTopNE6size_t6size_tP1TP2TI"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN13ReservoirTopNE6size_t6size_tP1TP2TI"></span><span id="faiss::simd_result_handlers::ReservoirTopN::ReservoirTopN__s.s.TP.TIP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a53e2bbfb71cd67102ece41c9fa774183"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirTopN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">capacity</span></span>, <a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1TE" title="faiss::simd_result_handlers::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vals</span></span>, <a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN2TIE" title="faiss::simd_result_handlers::ReservoirTopN::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ids</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN3addE1T2TI">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN3addE1T2TI"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN3addE1T2TI"></span><span id="faiss::simd_result_handlers::ReservoirTopN::add__T.TI"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1ad29c312e2298ca56d946a7cccc9b46ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1TE" title="faiss::simd_result_handlers::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN2TIE" title="faiss::simd_result_handlers::ReservoirTopN::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN9shrink_xxEv">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN9shrink_xxEv"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN9shrink_xxEv"></span><span id="faiss::simd_result_handlers::ReservoirTopN::shrink_xx"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1ae183d88c097297ba527f31afc3293e11"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink_xx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>shrink number of stored elements to n </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN6shrinkEv">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN6shrinkEv"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN6shrinkEv"></span><span id="faiss::simd_result_handlers::ReservoirTopN::shrink"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a0e772fcc260b999527c9b77139e8c7f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN12shrink_fuzzyEv">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN12shrink_fuzzyEv"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN12shrink_fuzzyEv"></span><span id="faiss::simd_result_handlers::ReservoirTopN::shrink_fuzzy"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a21512fcbd8113c912c3c0d7d8aa1625c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shrink_fuzzy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN4valsE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN4valsE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN4valsE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::vals__TP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a3fa4497885755852dd28963ebaee0a13"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1TE" title="faiss::simd_result_handlers::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">vals</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN3idsE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN3idsE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN3idsE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::ids__TIP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a0ef614a9804bc6742bbdd6d7c40dc3db"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN2TIE" title="faiss::simd_result_handlers::ReservoirTopN::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ids</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1iE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN1iE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN1iE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::i__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1aec2edb91d84ef62fa78b656b4f65881c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1nE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN1nE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN1nE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::n__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a7df003dc8831b564cbfa18a70895883e"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN8capacityE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN8capacityE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN8capacityE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::capacity__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a79547ae282977a5786168e1f30d327bf"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN6cyclesE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN6cyclesE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN6cyclesE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::cycles__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a661d0418aaf65e309fa14e491f1e2e22"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cycles</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers13ReservoirTopN9thresholdE">
+<span id="_CPPv3N5faiss20simd_result_handlers13ReservoirTopN9thresholdE"></span><span id="_CPPv2N5faiss20simd_result_handlers13ReservoirTopN9thresholdE"></span><span id="faiss::simd_result_handlers::ReservoirTopN::threshold__T"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN_1a2ce26d1d08a751f9981afcc1027029b9"></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers13ReservoirTopN1TE" title="faiss::simd_result_handlers::ReservoirTopN::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threshold</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE">
+<span id="_CPPv3I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE"></span><span id="_CPPv2I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">with_id_map</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirHandler</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlersE" title="faiss::simd_result_handlers"><span class="n"><span class="pre">simd_result_handlers</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers17SIMDResultHandlerE" title="faiss::simd_result_handlers::SIMDResultHandler"><span class="n"><span class="pre">SIMDResultHandler</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE" title="faiss::simd_result_handlers::ReservoirHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;simd_result_handlers.h&gt;</em></div>
+<p>Handler built from several <a class="reference internal" href="../struct/structfaiss_1_1simd__result__handlers_1_1ReservoirTopN.html#structfaiss_1_1simd__result__handlers_1_1ReservoirTopN"><span class="std std-ref">ReservoirTopN</span></a> (one per query) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler1TE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler1TE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler1TE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1af9e6d615a4db258600af3951cb557bd0"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE" title="faiss::simd_result_handlers::ReservoirHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">T</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler2TIE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler2TIE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler2TIE"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a952c02f0a27adf4c4e22b677c66a9100"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE" title="faiss::simd_result_handlers::ReservoirHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TI</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler16ReservoirHandlerE6size_t6size_t6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler16ReservoirHandlerE6size_t6size_t6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler16ReservoirHandlerE6size_t6size_t6size_t6size_t"></span><span id="faiss::simd_result_handlers::ReservoirHandler::ReservoirHandler__s.s.s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1ad136f3a43541d2b04583d85f288e885f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReservoirHandler</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nq</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ntotal</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">capacity_in</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler6handleE6size_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler6handleE6size_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::ReservoirHandler::handle__s.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a795767a8ccf821c981f455e0cdd28db4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler14to_flat_arraysEPfP7int64_tPKf">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler14to_flat_arraysEPfP7int64_tPKf"></span><span id="faiss::simd_result_handlers::ReservoirHandler::to_flat_arrays__floatP.int64_tP.floatCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a824aa28ca00ee6b43b1c06e34a590cc1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_flat_arrays</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">labels</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">normalizers</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler16set_block_originE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler16set_block_originE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler16set_block_originE6size_t6size_t"></span><span id="faiss::simd_result_handlers::ReservoirHandler::set_block_origin__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_block_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i0</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j0</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler18adjust_with_originER6size_tR12simd16uint16R12simd16uint16"></span><span id="faiss::simd_result_handlers::ReservoirHandler::adjust_with_origin__sR.simd16uint16R.simd16uint16R"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_with_origin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">q</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler9adjust_idE6size_t6size_t">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler9adjust_idE6size_t6size_t"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler9adjust_idE6size_t6size_t"></span><span id="faiss::simd_result_handlers::ReservoirHandler::adjust_id__s.s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjust_id</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler11get_lt_maskE8uint16_t6size_t12simd16uint1612simd16uint16"></span><span id="faiss::simd_result_handlers::ReservoirHandler::get_lt_mask__uint16_t.s.simd16uint16.simd16uint16"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_lt_mask</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d0</span></span>, <a class="reference internal" href="../file/simdlib__avx2_8h.html#_CPPv4N5faiss12simd16uint16E" title="faiss::simd16uint16"><span class="n"><span class="pre">simd16uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d1</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler8capacityE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler8capacityE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler8capacityE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::capacity__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a2ccf6dd06cba9575e980d583a8b3ca95"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">capacity</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler7all_idsE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler7all_idsE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler7all_idsE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::all_ids__std::vector:TI:"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1add0f7b8289b99891acd3aa918c4f986c"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers16ReservoirHandler2TIE" title="faiss::simd_result_handlers::ReservoirHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">all_ids</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler8all_valsE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler8all_valsE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler8all_valsE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::all_vals__AlignedTable:T:"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1af6cc0ee6c847843d71509b6370088d5c"></span><a class="reference internal" href="../file/AlignedTable_8h.html#_CPPv4I0_iEN5faiss12AlignedTableE" title="faiss::AlignedTable"><span class="n"><span class="pre">AlignedTable</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers16ReservoirHandler1TE" title="faiss::simd_result_handlers::ReservoirHandler::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">all_vals</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler10reservoirsE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler10reservoirsE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler10reservoirsE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::reservoirs__std::vector:ReservoirTopN:C::"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1abf40bf6e6bbef180f91500ebaa1ace25"></span><a class="reference internal" href="namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0EN5faiss20simd_result_handlers13ReservoirTopNE" title="faiss::simd_result_handlers::ReservoirTopN"><span class="n"><span class="pre">ReservoirTopN</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4I0_bEN5faiss20simd_result_handlers16ReservoirHandlerE" title="faiss::simd_result_handlers::ReservoirHandler::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reservoirs</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler5timesE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler5timesE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler5timesE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::times__uint64_tA"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1ac0a3e8e8a53c572a3647a99ab672325b"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">times</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler7disableE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler7disableE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler7disableE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::disable__b"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disable</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler2i0E">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler2i0E"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler2i0E"></span><span id="faiss::simd_result_handlers::ReservoirHandler::i0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">i0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler2j0E">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler2j0E"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler2j0E"></span><span id="faiss::simd_result_handlers::ReservoirHandler::j0__int64_t"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">j0</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler6ntotalE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler6ntotalE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler6ntotalE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::ntotal__s"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ntotal</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler6id_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler6id_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler6id_mapE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::id_map__TICP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/simd__result__handlers_8h.html#_CPPv4N5faiss20simd_result_handlers16ReservoirHandler2TIE" title="faiss::simd_result_handlers::ReservoirHandler::TI"><span class="n"><span class="pre">TI</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">id_map</span></span></span><br /></dt>
+<dd><p>these fields are used mainly for the IVF variants (with_id_map=true) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler5q_mapE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler5q_mapE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler5q_mapE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::q_map__iCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">q_map</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss20simd_result_handlers16ReservoirHandler5dbiasE">
+<span id="_CPPv3N5faiss20simd_result_handlers16ReservoirHandler5dbiasE"></span><span id="_CPPv2N5faiss20simd_result_handlers16ReservoirHandler5dbiasE"></span><span id="faiss::simd_result_handlers::ReservoirHandler::dbias__uint16_tCP"></span><span class="target" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">dbias</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespacefaiss_1_1quantize__lut.html" class="btn btn-neutral float-left" title="Namespace faiss::quantize_lut" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespacefaiss_1_1simd__result__handlers_1_1_0d70.html" class="btn btn-neutral float-right" title="Namespace faiss::simd_result_handlers::@70" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Facebook, Inc. and its affiliates..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
