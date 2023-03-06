@@ -131,36 +131,43 @@ struct IDSelectorAll : IDSelector {
     virtual ~IDSelectorAll() {}
 };
 
-/// represents the different logical operators we could use to evaulate
-/// different combinations of selectors.
-enum LogicalOperator {
-    Operator_OR = 0,
-    Operator_AND = 1,
-    Operator_XOR = 2,
-};
-
-/// combines two IDSelectors with a LogicalOperator
-struct IDSelectorCombination : IDSelector {
+/// does an AND operation on the the two given IDSelector's is_membership
+/// results.
+struct IDSelectorAnd : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    const LogicalOperator op;
-    IDSelectorCombination(
-            const IDSelector* lhs,
-            const IDSelector* rhs,
-            LogicalOperator op)
-            : lhs(lhs), rhs(rhs), op(op) {}
+    IDSelectorAnd(const IDSelector* lhs, const IDSelector* rhs)
+            : lhs(lhs), rhs(rhs) {}
     bool is_member(idx_t id) const final {
-        if (op == Operator_OR) {
-            return lhs->is_member(id) || rhs->is_member(id);
-        } else if (op == Operator_AND) {
-            return lhs->is_member(id) && rhs->is_member(id);
-        } else if (op == Operator_XOR) {
-            return lhs->is_member(id) ^ rhs->is_member(id);
-        }
+        return lhs->is_member(id) && rhs->is_member(id);
+    };
+    virtual ~IDSelectorAnd() {}
+};
 
-        return false;
-    }
-    virtual ~IDSelectorCombination() {}
+/// does an OR operation on the the two given IDSelector's is_membership
+/// results.
+struct IDSelectorOr : IDSelector {
+    const IDSelector* lhs;
+    const IDSelector* rhs;
+    IDSelectorOr(const IDSelector* lhs, const IDSelector* rhs)
+            : lhs(lhs), rhs(rhs) {}
+    bool is_member(idx_t id) const final {
+        return lhs->is_member(id) || rhs->is_member(id);
+    };
+    virtual ~IDSelectorOr() {}
+};
+
+/// does an XOR operation on the the two given IDSelector's is_membership
+/// results.
+struct IDSelectorXOr : IDSelector {
+    const IDSelector* lhs;
+    const IDSelector* rhs;
+    IDSelectorXOr(const IDSelector* lhs, const IDSelector* rhs)
+            : lhs(lhs), rhs(rhs) {}
+    bool is_member(idx_t id) const final {
+        return lhs->is_member(id) ^ rhs->is_member(id);
+    };
+    virtual ~IDSelectorXOr() {}
 };
 
 } // namespace faiss
