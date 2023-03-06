@@ -111,8 +111,8 @@ int main() {
         }
         free(I);
         free(D);
-        free(sel);
-        free(params);
+        faiss_SearchParameters_free(params);
+        faiss_IDSelectorRange_free(sel);
     }
 
     printf("Saving index to disk...\n");
