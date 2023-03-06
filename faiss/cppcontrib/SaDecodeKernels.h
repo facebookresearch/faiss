@@ -16,20 +16,31 @@
 //   * PQ[1]x8
 // Additionally, AVX2 and ARM versions support
 //   * Residual[1]x8,PQ[2]x10
+//   * Residual[1]x8,PQ[2]x12
 //   * Residual[1]x8,PQ[2]x16
 //   * Residual[1]x10,PQ[2]x10
+//   * Residual[1]x10,PQ[2]x12
 //   * Residual[1]x10,PQ[2]x16
+//   * Residual[1]x12,PQ[2]x10
+//   * Residual[1]x12,PQ[2]x12
+//   * Residual[1]x12,PQ[2]x16
 //   * Residual[1]x16,PQ[2]x10
+//   * Residual[1]x16,PQ[2]x12
 //   * Residual[1]x16,PQ[2]x16
 //   * Residual1x[9-16 bit],PQ[1]x10 (such as Residual1x9,PQ16x10)
+//   * * (use with COARSE_BITS=16)
+//   * Residual1x[9-16 bit],PQ[1]x12 (such as Residual1x9,PQ16x12)
 //   * * (use with COARSE_BITS=16)
 //   * Residual1x[9-16 bit],PQ[1]x16 (such as Residual1x9,PQ16x16)
 //   * * (use with COARSE_BITS=16)
 //   * PQ[1]x10
+//   * PQ[1]x12
 //   * PQ[1]x16
 //   * IVF256,PQ[1]x10 (such as IVF256,PQ16x10np)
+//   * IVF256,PQ[1]x12 (such as IVF256,PQ16x12np)
 //   * IVF256,PQ[1]x16 (such as IVF256,PQ16x16np)
 //   * IVF[2^9-2^16 bit],PQ[1]x10 (such as IVF1024,PQ16x10np)
+//   * IVF[2^9-2^16 bit],PQ[1]x12 (such as IVF1024,PQ16x12np)
 //   * IVF[2^9-2^16 bit],PQ[1]x16 (such as IVF1024,PQ16x16np)
 //
 // The goal was to achieve the maximum performance, so the template version it

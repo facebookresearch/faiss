@@ -1858,10 +1858,12 @@ struct Index2LevelDecoderImpl<
 
 // Suitable for IVF256,PQ[1]x8
 // Subtable for IVF256,PQ[1]x10 (such as IVF256,PQ16x10np)
+// Subtable for IVF256,PQ[1]x12 (such as IVF256,PQ16x12np)
 // Suitable for IVF256,PQ[1]x16 (such as IVF256,PQ16x16np)
 // Suitable for Residual[1]x8,PQ[2]x8
 // Suitable for IVF[2^9-2^16 bit],PQ[1]x8 (such as IVF1024,PQ16np)
 // Suitable for IVF[2^9-2^16 bit],PQ[1]x10 (such as IVF1024,PQ16x10np)
+// Suitable for IVF[2^9-2^16 bit],PQ[1]x12 (such as IVF1024,PQ16x12np)
 // Suitable for IVF[2^9-2^16 bit],PQ[1]x16 (such as IVF1024,PQ16x16np)
 // Suitable for Residual[1]x[9-16 bit],PQ[2]x[3] (such as Residual2x9,PQ8)
 template <
@@ -1872,11 +1874,13 @@ template <
         intptr_t FINE_BITS = 8>
 struct Index2LevelDecoder {
     static_assert(
-            COARSE_BITS == 8 || COARSE_BITS == 10 || COARSE_BITS == 16,
-            "Only 8, 10 or 16 bits are currently supported for COARSE_BITS");
+            COARSE_BITS == 8 || COARSE_BITS == 10 || COARSE_BITS == 12 ||
+                    COARSE_BITS == 16,
+            "Only 8, 10, 12 or 16 bits are currently supported for COARSE_BITS");
     static_assert(
-            FINE_BITS == 8 || FINE_BITS == 10 || FINE_BITS == 16,
-            "Only 8, 10 or 16 bits are currently supported for FINE_BITS");
+            FINE_BITS == 8 || FINE_BITS == 10 || FINE_BITS == 12 ||
+                    FINE_BITS == 16,
+            "Only 8, 10, 12 or 16 bits are currently supported for FINE_BITS");
 
     static constexpr intptr_t dim = DIM;
     static constexpr intptr_t coarseSize = COARSE_SIZE;
