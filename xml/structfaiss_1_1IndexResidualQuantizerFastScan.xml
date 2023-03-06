@@ -6,7 +6,7 @@
     <includes refid="IndexAdditiveQuantizerFastScan_8h" local="no">IndexAdditiveQuantizerFastScan.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" prot="public" static="no" mutable="no">
-        <type>ResidualQuantizer</type>
+        <type><ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref></type>
         <definition>ResidualQuantizer faiss::IndexResidualQuantizerFastScan::rq</definition>
         <argsstring></argsstring>
         <name>rq</name>
@@ -20,7 +20,7 @@
         <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="93" column="23" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" static="no" mutable="no">
-        <type>AdditiveQuantizer *</type>
+        <type><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref> *</type>
         <definition>AdditiveQuantizer* faiss::IndexAdditiveQuantizerFastScan::aq</definition>
         <argsstring></argsstring>
         <name>aq</name>
@@ -349,9 +349,9 @@
           <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
         </param>
         <param>
-          <type>Search_type_t</type>
+          <type><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref></type>
           <declname>search_type</declname>
-          <defval>AdditiveQuantizer::ST_norm_rq2x4</defval>
+          <defval><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kindref="member">AdditiveQuantizer::ST_norm_rq2x4</ref></defval>
         </param>
         <param>
           <type>int</type>
@@ -428,7 +428,7 @@
         <argsstring>(AdditiveQuantizer *aq, MetricType metric=METRIC_L2, int bbs=32)</argsstring>
         <name>init</name>
         <param>
-          <type>AdditiveQuantizer *</type>
+          <type><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref> *</type>
           <declname>aq</declname>
         </param>
         <param>
@@ -1032,7 +1032,7 @@
         <name>remove_ids</name>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -1045,7 +1045,7 @@
         <location file="faiss/IndexFastScan.h" line="129" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a258779c8cd073c2e9a2b3c01301cf272" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>CodePacker *</type>
+        <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>CodePacker* faiss::IndexFastScan::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
@@ -1166,7 +1166,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1533,7 +1533,7 @@
         <location file="faiss/Index.h" line="235" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -1543,8 +1543,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1638,7 +1638,7 @@
       </sectiondef>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a793239b07a69169a69156a3304612cdc" prot="public" static="no">
-        <type>AdditiveQuantizer::Search_type_t</type>
+        <type><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">AdditiveQuantizer::Search_type_t</ref></type>
         <definition>using faiss::IndexAdditiveQuantizerFastScan::Search_type_t =  AdditiveQuantizer::Search_type_t</definition>
         <argsstring></argsstring>
         <name>Search_type_t</name>
@@ -1707,9 +1707,47 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="13">
+        <label>faiss::ProgressiveDimClusteringParameters</label>
+        <link refid="structfaiss_1_1ProgressiveDimClusteringParameters"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="5">
         <label>faiss::AlignedTable&lt; uint8_t &gt;</label>
         <link refid="structfaiss_1_1AlignedTable"/>
+      </node>
+      <node id="12">
+        <label>faiss::ResidualQuantizer</label>
+        <link refid="structfaiss_1_1ResidualQuantizer"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>assign_index_factory</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss::ProgressiveDimIndexFactory</label>
+        <link refid="structfaiss_1_1ProgressiveDimIndexFactory"/>
+      </node>
+      <node id="14">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="10">
+        <label>faiss::IndexFlat</label>
+        <link refid="structfaiss_1_1IndexFlat"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss::IndexFlat1D</label>
+        <link refid="structfaiss_1_1IndexFlat1D"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss::IndexFastScan</label>
@@ -1725,6 +1763,15 @@
         <link refid="structfaiss_1_1IndexResidualQuantizerFastScan"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>rq</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::IndexFlatL2</label>
+        <link refid="structfaiss_1_1IndexFlatL2"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="4">
         <label>faiss::Index</label>
@@ -1734,6 +1781,28 @@
         <label>faiss::IndexAdditiveQuantizerFastScan</label>
         <link refid="structfaiss_1_1IndexAdditiveQuantizerFastScan"/>
         <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>aq</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>qnorm</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="11">
+        <label>faiss::IndexFlatCodes</label>
+        <link refid="structfaiss_1_1IndexFlatCodes"/>
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

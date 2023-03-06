@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ZnSphereSearch" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ZnSphereSearch</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1ZnSphereCodec" prot="public" virt="non-virtual">faiss::ZnSphereCodec</derivedcompoundref>
+    <includes refid="lattice__Zn_8h" local="no">lattice_Zn.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereSearch_1a33cd49702699f73c9874523100cdfb4b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereSearch::dimS</definition>
+        <argsstring></argsstring>
+        <name>dimS</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="26" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereSearch_1adabda2cbab5856c0195a83133e48486d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereSearch::r2</definition>
+        <argsstring></argsstring>
+        <name>r2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="26" column="14" bodyfile="faiss/impl/lattice_Zn.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereSearch_1a4616ccfd6403081036eb0e33dcebe867" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereSearch::natom</definition>
+        <argsstring></argsstring>
+        <name>natom</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="27" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereSearch_1a77143a72b6a5048df0fa79b7134740d8" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::ZnSphereSearch::voc</definition>
+        <argsstring></argsstring>
+        <name>voc</name>
+        <briefdescription>
+<para>size dim * ntatom </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="30" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1ad5e5d02aa8ee21ab17f01f53e9d4f0cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ZnSphereSearch::ZnSphereSearch</definition>
+        <argsstring>(int dim, int r2)</argsstring>
+        <name>ZnSphereSearch</name>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1adc8a713b54cc6be8c348c6e4545479d8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::ZnSphereSearch::search</definition>
+        <argsstring>(const float *x, float *c) const</argsstring>
+        <name>search</name>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+<para>find nearest centroid. x does not need to be normalized </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="35" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::ZnSphereSearch::search</definition>
+        <argsstring>(const float *x, float *c, float *tmp, int *tmp_int, int *ibest_out=nullptr) const</argsstring>
+        <name>search</name>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>tmp</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>tmp_int</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>ibest_out</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>full call. Requires externally-allocated temp space </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="38" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ZnSphereSearch::search_multi</definition>
+        <argsstring>(int n, const float *x, float *c_out, float *dp_out)</argsstring>
+        <name>search_multi</name>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c_out</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>dp_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="46" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>returns the nearest vertex in the sphere to a query. Returns only the coordinates, not an id.</para>
+<para>Algorithm: all points are derived from a one atom vector up to a permutation and sign changes. The search function finds the most appropriate atom and transformation. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>faiss::ZnSphereCodecAlt</label>
+        <link refid="structfaiss_1_1ZnSphereCodecAlt"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ZnSphereCodec</label>
+        <link refid="structfaiss_1_1ZnSphereCodec"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::ZnSphereSearch</label>
+        <link refid="structfaiss_1_1ZnSphereSearch"/>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/lattice_Zn.h" line="25" column="1" bodyfile="faiss/impl/lattice_Zn.h" bodystart="25" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a33cd49702699f73c9874523100cdfb4b" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>dimS</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a4616ccfd6403081036eb0e33dcebe867" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>natom</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1adabda2cbab5856c0195a83133e48486d" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>r2</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1adc8a713b54cc6be8c348c6e4545479d8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>search</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>search</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>search_multi</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a77143a72b6a5048df0fa79b7134740d8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>voc</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1ad5e5d02aa8ee21ab17f01f53e9d4f0cc" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>ZnSphereSearch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

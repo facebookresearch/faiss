@@ -3,27 +3,35 @@
   <compounddef id="hamming_8h" kind="file" language="C++">
     <compoundname>hamming.h</compoundname>
     <includes local="no">stdint.h</includes>
-    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includes refid="hamming-inl_8h" local="no">faiss/utils/hamming-inl.h</includes>
     <incdepgraph>
-      <node id="12">
+      <node id="13">
         <label>faiss/utils/hamming-inl.h</label>
         <link refid="hamming-inl_8h_source"/>
       </node>
-      <node id="10">
+      <node id="11">
         <label>limits</label>
       </node>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
       </node>
       <node id="2">
         <label>stdint.h</label>
       </node>
-      <node id="6">
+      <node id="8">
         <label>cmath</label>
       </node>
-      <node id="8">
+      <node id="10">
         <label>cassert</label>
       </node>
       <node id="1">
@@ -33,48 +41,48 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>cstdio</label>
-      </node>
-      <node id="4">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+      </node>
+      <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
+      <node id="7">
         <label>climits</label>
       </node>
-      <node id="7">
+      <node id="9">
         <label>cstring</label>
       </node>
     </incdepgraph>
@@ -278,7 +286,7 @@
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ncodes,</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RangeSearchResult*<sp/>result);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result);</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Counting<sp/>the<sp/>number<sp/>of<sp/>matches<sp/>or<sp/>of<sp/>cross-matches<sp/>(without<sp/>returning<sp/>them)</highlight></codeline>
 <codeline lineno="179"><highlight class="comment"><sp/><sp/><sp/>For<sp/>use<sp/>with<sp/>function<sp/>that<sp/>assume<sp/>pre-allocated<sp/>memory<sp/>*/</highlight><highlight class="normal"></highlight></codeline>

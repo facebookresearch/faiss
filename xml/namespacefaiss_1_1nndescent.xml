@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1nndescent" kind="namespace" language="C++">
+    <compoundname>faiss::nndescent</compoundname>
+    <innerclass refid="structfaiss_1_1nndescent_1_1Neighbor" prot="public">faiss::nndescent::Neighbor</innerclass>
+    <innerclass refid="structfaiss_1_1nndescent_1_1Nhood" prot="public">faiss::nndescent::Nhood</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/NNDescent.h" line="49" column="1"/>
+  </compounddef>
+</doxygen>

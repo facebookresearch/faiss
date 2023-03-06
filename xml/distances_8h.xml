@@ -3,7 +3,7 @@
   <compounddef id="distances_8h" kind="file" language="C++">
     <compoundname>distances.h</compoundname>
     <includes local="no">stdint.h</includes>
-    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
     <incdepgraph>
@@ -14,61 +14,69 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>limits</label>
       </node>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
       </node>
       <node id="2">
         <label>stdint.h</label>
       </node>
-      <node id="6">
+      <node id="8">
         <label>cmath</label>
       </node>
-      <node id="8">
+      <node id="10">
         <label>cassert</label>
       </node>
-      <node id="9">
+      <node id="5">
         <label>cstdio</label>
       </node>
-      <node id="4">
+      <node id="6">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
+      <node id="7">
         <label>climits</label>
       </node>
-      <node id="7">
+      <node id="9">
         <label>cstring</label>
       </node>
     </incdepgraph>
@@ -345,7 +353,7 @@
 <codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
 <codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
 <codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_minheap_array_t</ref>*<sp/>res,</highlight></codeline>
-<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="251"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="252"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="253"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>inner<sp/>product<sp/>metric.</highlight></codeline>
@@ -364,7 +372,7 @@
 <codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,</highlight></codeline>
 <codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
 <codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>indexes,</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="270"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="271"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="272"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>L2<sp/>distance</highlight></codeline>
@@ -382,7 +390,7 @@
 <codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
 <codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HeapArray" kindref="compound">float_maxheap_array_t</ref>*<sp/>res,</highlight></codeline>
 <codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y_norm2<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="288"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="289"><highlight class="comment">/**<sp/><sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="290"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>L2<sp/>distance</highlight></codeline>
@@ -404,7 +412,7 @@
 <codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>distances,</highlight></codeline>
 <codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>indexes,</highlight></codeline>
 <codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>y_norm2<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="310"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="311"><highlight class="comment">/**<sp/>Find<sp/>the<sp/>max<sp/>inner<sp/>product<sp/>neighbors<sp/>for<sp/>nx<sp/>queries<sp/>in<sp/>a<sp/>set<sp/>of<sp/>ny<sp/>vectors</highlight></codeline>
 <codeline lineno="312"><highlight class="comment"><sp/>*<sp/>indexed<sp/>by<sp/>ids.<sp/>May<sp/>be<sp/>useful<sp/>for<sp/>re-ranking<sp/>a<sp/>pre-selected<sp/>vector<sp/>list</highlight></codeline>
@@ -455,7 +463,7 @@
 <codeline lineno="357"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="358"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="359"><highlight class="comment">///<sp/>Forward<sp/>declaration,<sp/>see<sp/>AuxIndexStructures.h</highlight></codeline>
-<codeline lineno="360"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">RangeSearchResult;</highlight></codeline>
+<codeline lineno="360"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>;</highlight></codeline>
 <codeline lineno="361"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="362"><highlight class="comment">/**<sp/>Return<sp/>the<sp/>k<sp/>nearest<sp/>neighors<sp/>of<sp/>each<sp/>of<sp/>the<sp/>nx<sp/>vectors<sp/>x<sp/>among<sp/>the<sp/>ny</highlight></codeline>
 <codeline lineno="363"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>w.r.t<sp/>to<sp/>max<sp/>inner<sp/>product</highlight></codeline>
@@ -472,8 +480,8 @@
 <codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
 <codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
 <codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RangeSearchResult*<sp/>result,</highlight></codeline>
-<codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="379"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="380"><highlight class="comment">///<sp/>same<sp/>as<sp/>range_search_L2sqr<sp/>for<sp/>the<sp/>inner<sp/>product<sp/>similarity</highlight></codeline>
 <codeline lineno="381" refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kindref="member">range_search_inner_product</ref>(</highlight></codeline>
@@ -483,8 +491,8 @@
 <codeline lineno="385"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nx,</highlight></codeline>
 <codeline lineno="386"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ny,</highlight></codeline>
 <codeline lineno="387"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="388"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RangeSearchResult*<sp/>result,</highlight></codeline>
-<codeline lineno="389"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="388"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
+<codeline lineno="389"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/>sel<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="390"><highlight class="normal"></highlight></codeline>
 <codeline lineno="391"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
 <codeline lineno="392"><highlight class="comment"><sp/>*<sp/>PQ<sp/>tables<sp/>computations</highlight></codeline>

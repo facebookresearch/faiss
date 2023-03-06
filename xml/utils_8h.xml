@@ -4,68 +4,77 @@
     <compoundname>utils.h</compoundname>
     <includes local="no">stdint.h</includes>
     <includes local="no">string</includes>
-    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
+    <includedby refid="LocalSearchQuantizer_8h" local="no">faiss/impl/LocalSearchQuantizer.h</includedby>
     <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <includedby refid="IndexNNDescent_8h" local="no">faiss/IndexNNDescent.h</includedby>
     <includedby refid="IndexNSG_8h" local="no">faiss/IndexNSG.h</includedby>
     <incdepgraph>
-      <node id="11">
+      <node id="12">
         <label>limits</label>
       </node>
       <node id="4">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
       </node>
       <node id="2">
         <label>stdint.h</label>
       </node>
-      <node id="7">
+      <node id="9">
         <label>cmath</label>
       </node>
-      <node id="9">
+      <node id="11">
         <label>cassert</label>
       </node>
       <node id="3">
         <label>string</label>
       </node>
-      <node id="10">
+      <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="5">
+      <node id="7">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
+      <node id="8">
         <label>climits</label>
       </node>
-      <node id="8">
+      <node id="10">
         <label>cstring</label>
       </node>
       <node id="1">
@@ -77,40 +86,90 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
       <node id="5">
+        <label>faiss/IndexAdditiveQuantizer.h</label>
+        <link refid="IndexAdditiveQuantizer_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
+        <link refid="ProductAdditiveQuantizer_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
-      <node id="2">
+      <node id="9">
         <label>faiss/IndexBinaryHNSW.h</label>
         <link refid="IndexBinaryHNSW_8h_source"/>
       </node>
-      <node id="3">
+      <node id="10">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="1">
-        <label>faiss/utils/utils.h</label>
-        <link refid="utils_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
+      <node id="2">
+        <label>faiss/impl/LocalSearchQuantizer.h</label>
+        <link refid="LocalSearchQuantizer_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="7">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/gpu/GpuIcmEncoder.h</label>
+        <link refid="GpuIcmEncoder_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/utils/utils.h</label>
+        <link refid="utils_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss/IndexNNDescent.h</label>
         <link refid="IndexNNDescent_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

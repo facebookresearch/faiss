@@ -1,0 +1,369 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="PolysemousTraining_8h" kind="file" language="C++">
+    <compoundname>PolysemousTraining.h</compoundname>
+    <includes refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includes>
+    <includedby refid="IndexPQ_8h" local="no">faiss/IndexPQ.h</includedby>
+    <incdepgraph>
+      <node id="20">
+        <label>limits</label>
+      </node>
+      <node id="8">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="1">
+        <label>faiss/impl/PolysemousTraining.h</label>
+        <link refid="PolysemousTraining_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>cmath</label>
+      </node>
+      <node id="19">
+        <label>cassert</label>
+      </node>
+      <node id="12">
+        <label>string</label>
+      </node>
+      <node id="22">
+        <label>faiss/impl/ProductQuantizer-inl.h</label>
+        <link refid="ProductQuantizer-inl_8h_source"/>
+      </node>
+      <node id="14">
+        <label>faiss/impl/Quantizer.h</label>
+        <link refid="Quantizer_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>typeinfo</label>
+      </node>
+      <node id="10">
+        <label>cstdio</label>
+      </node>
+      <node id="4">
+        <label>vector</label>
+      </node>
+      <node id="11">
+        <label>sstream</label>
+      </node>
+      <node id="15">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>climits</label>
+      </node>
+      <node id="6">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/impl/ProductQuantizer.h</label>
+        <link refid="ProductQuantizer_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>cstring</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="5">
+        <label>faiss/IndexIVFPQ.h</label>
+        <link refid="IndexIVFPQ_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/IndexNSG.h</label>
+        <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/IndexPQ.h</label>
+        <link refid="IndexPQ_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/PolysemousTraining.h</label>
+        <link refid="PolysemousTraining_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/IndexHNSW.h</label>
+        <link refid="IndexHNSW_8h_source"/>
+      </node>
+      <node id="9">
+        <label>faiss/IndexPQFastScan.h</label>
+        <link refid="IndexPQFastScan_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/Index2Layer.h</label>
+        <link refid="Index2Layer_8h_source"/>
+      </node>
+      <node id="7">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structfaiss_1_1SimulatedAnnealingParameters" prot="public">faiss::SimulatedAnnealingParameters</innerclass>
+    <innerclass refid="structfaiss_1_1PermutationObjective" prot="public">faiss::PermutationObjective</innerclass>
+    <innerclass refid="structfaiss_1_1ReproduceDistancesObjective" prot="public">faiss::ReproduceDistancesObjective</innerclass>
+    <innerclass refid="structfaiss_1_1SimulatedAnnealingOptimizer" prot="public">faiss::SimulatedAnnealingOptimizer</innerclass>
+    <innerclass refid="structfaiss_1_1PolysemousTraining" prot="public">faiss::PolysemousTraining</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>-*-<sp/>c++<sp/>-*-</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>FAISS_POLYSEMOUS_TRAINING_INCLUDED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_POLYSEMOUS_TRAINING_INCLUDED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/ProductQuantizer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="17"><highlight class="comment">///<sp/>parameters<sp/>used<sp/>for<sp/>the<sp/>simulated<sp/>annealing<sp/>method</highlight></codeline>
+<codeline lineno="18" refid="structfaiss_1_1SimulatedAnnealingParameters" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>optimization<sp/>parameters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>init_temperature<sp/>=<sp/>0.7;<sp/></highlight><highlight class="comment">//<sp/>init<sp/>probability<sp/>of<sp/>accepting<sp/>a<sp/>bad<sp/>swap</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>at<sp/>each<sp/>iteration<sp/>the<sp/>temp<sp/>is<sp/>multiplied<sp/>by<sp/>this</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>temperature_decay<sp/>=<sp/>0.9997893011688015;<sp/></highlight><highlight class="comment">//<sp/>=<sp/>0.9^(1/500)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n_iter<sp/>=<sp/>500000;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>nb<sp/>of<sp/>iterations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n_redo<sp/>=<sp/>2;<sp/></highlight><highlight class="comment">//<sp/>nb<sp/>of<sp/>runs<sp/>of<sp/>the<sp/>simulation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed<sp/>=<sp/>123;<sp/></highlight><highlight class="comment">//<sp/>random<sp/>seed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>verbose<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>only_bit_flips<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>restrict<sp/>permutation<sp/>changes<sp/>to<sp/>bit<sp/>flips</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>init_random<sp/>=</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>initialize<sp/>with<sp/>a<sp/>random<sp/>permutation<sp/>(not<sp/>identity)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>reasonable<sp/>defaults</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>abstract<sp/>class<sp/>for<sp/>the<sp/>loss<sp/>function</highlight></codeline>
+<codeline lineno="36" refid="structfaiss_1_1PermutationObjective" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>compute_cost(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>what<sp/>would<sp/>the<sp/>cost<sp/>update<sp/>be<sp/>if<sp/>iw<sp/>and<sp/>jw<sp/>were<sp/>swapped?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>default<sp/>implementation<sp/>just<sp/>computes<sp/>both<sp/>and<sp/>computes<sp/>the<sp/>difference</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>cost_update(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>iw,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jw)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="structfaiss_1_1ReproduceDistancesObjective" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref><sp/>:<sp/><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref><sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dis_weight_factor;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sqr(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>x<sp/>*<sp/>x;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>weighting<sp/>of<sp/>distances:<sp/>it<sp/>is<sp/>more<sp/>important<sp/>to<sp/>reproduce<sp/>small</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>distances<sp/>well</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dis_weight(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="structfaiss_1_1ReproduceDistancesObjective_1a6681846eb7751b32a907d075fff6770b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="structfaiss_1_1ReproduceDistancesObjective_1a6681846eb7751b32a907d075fff6770b" kindref="member">source_dis</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>&quot;real&quot;<sp/>corrected<sp/>distances<sp/>(size<sp/>n^2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="structfaiss_1_1ReproduceDistancesObjective_1ac99d739f81e13e841ba7d81d90629aef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1ReproduceDistancesObjective_1ac99d739f81e13e841ba7d81d90629aef" kindref="member">target_dis</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>wanted<sp/>distances<sp/>(size<sp/>n^2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="structfaiss_1_1ReproduceDistancesObjective_1a982332b44ff32b9ae9694e374acd0aff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="structfaiss_1_1ReproduceDistancesObjective_1a982332b44ff32b9ae9694e374acd0aff" kindref="member">weights</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>weights<sp/>for<sp/>each<sp/>distance<sp/>(size<sp/>n^2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>get_source_dis(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>cost<sp/>=<sp/>quadratic<sp/>difference<sp/>between<sp/>actual<sp/>distance<sp/>and<sp/>Hamming<sp/>distance</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>compute_cost(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>what<sp/>would<sp/>the<sp/>cost<sp/>update<sp/>be<sp/>if<sp/>iw<sp/>and<sp/>jw<sp/>were<sp/>swapped?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>computed<sp/>in<sp/>O(n)<sp/>instead<sp/>of<sp/>O(n^2)<sp/>for<sp/>the<sp/>full<sp/>re-computation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>cost_update(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>iw,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jw)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref>(</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>source_dis_in,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>target_dis_in,</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dis_weight_factor);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_mean_stdev(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>tab,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n2,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>mean_out,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>stddev_out);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_affine_target_dis(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>source_dis_in);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structfaiss_1_1ReproduceDistancesObjective" kindref="compound">ReproduceDistancesObjective</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">RandomGenerator;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="91"><highlight class="comment">///<sp/>Simulated<sp/>annealing<sp/>optimization<sp/>algorithm<sp/>for<sp/>permutations.</highlight></codeline>
+<codeline lineno="92" refid="structfaiss_1_1SimulatedAnnealingOptimizer" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SimulatedAnnealingOptimizer" kindref="compound">SimulatedAnnealingOptimizer</ref><sp/>:<sp/><ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref><sp/>{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref>*<sp/>obj;</highlight></codeline>
+<codeline lineno="94" refid="structfaiss_1_1SimulatedAnnealingOptimizer_1a90edfc401372aa1a2a832b403e26bfd1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SimulatedAnnealingOptimizer_1a90edfc401372aa1a2a832b403e26bfd1" kindref="member">n</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>size<sp/>of<sp/>the<sp/>permutation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>FILE*<sp/>logfile;<sp/></highlight><highlight class="comment">///<sp/>logs<sp/>values<sp/>of<sp/>the<sp/>cost<sp/>function</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1SimulatedAnnealingOptimizer_1ab258eaf892742e37dd2c3bfd3b1c39e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SimulatedAnnealingOptimizer_1ab258eaf892742e37dd2c3bfd3b1c39e1" kindref="member">SimulatedAnnealingOptimizer</ref>(</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref>*<sp/>obj,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref>&amp;<sp/>p);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RandomGenerator" kindref="compound">RandomGenerator</ref>*<sp/>rnd;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="102"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>remember<sp/>initial<sp/>cost<sp/>of<sp/>optimization</highlight></codeline>
+<codeline lineno="103" refid="structfaiss_1_1SimulatedAnnealingOptimizer_1aa8ff19f97482c6213b2a8ff3b190412b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SimulatedAnnealingOptimizer_1aa8ff19f97482c6213b2a8ff3b190412b" kindref="member">init_cost</ref>;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>main<sp/>entry<sp/>point.<sp/>Perform<sp/>the<sp/>optimization<sp/>loop,<sp/>starting<sp/>from</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>and<sp/>modifying<sp/>permutation<sp/>in-place</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>optimize(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>perm);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>run<sp/>the<sp/>optimization<sp/>and<sp/>return<sp/>the<sp/>best<sp/>result<sp/>in<sp/>best_perm</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>run_optimization(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>best_perm);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1SimulatedAnnealingOptimizer" kindref="compound">SimulatedAnnealingOptimizer</ref>();</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="115"><highlight class="comment">///<sp/>optimizes<sp/>the<sp/>order<sp/>of<sp/>indices<sp/>in<sp/>a<sp/>ProductQuantizer</highlight></codeline>
+<codeline lineno="116" refid="structfaiss_1_1PolysemousTraining" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1PolysemousTraining" kindref="compound">PolysemousTraining</ref><sp/>:<sp/><ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref><sp/>{</highlight></codeline>
+<codeline lineno="117" refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" kindref="member">Optimization_type_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>OT_None,</highlight></codeline>
+<codeline lineno="119" refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa4f1f59a0027c1662a7aaf66f2a78fb23" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa4f1f59a0027c1662a7aaf66f2a78fb23" kindref="member">OT_ReproduceDistances_affine</ref>,<sp/></highlight><highlight class="comment">///&lt;<sp/>default</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa514d33b85a240091cdd7b8efaf66a0b5" kindref="member">OT_Ranking_weighted_diff</ref><sp/></highlight><highlight class="comment">///&lt;<sp/>same<sp/>as<sp/>_2,<sp/>but<sp/>use<sp/>rank<sp/>of<sp/>y+<sp/>-<sp/>rank<sp/>of</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>///&lt;<sp/>y-</highlight></codeline>
+<codeline lineno="122" refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa514d33b85a240091cdd7b8efaf66a0b5" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" kindref="member">Optimization_type_t</ref><sp/>optimization_type;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>use<sp/>1/4<sp/>of<sp/>the<sp/>training<sp/>points<sp/>for<sp/>the<sp/>optimization,<sp/>with</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>max.<sp/>ntrain_permutation.<sp/>If<sp/>ntrain_permutation<sp/>==<sp/>0:<sp/>train<sp/>on</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>centroids<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="structfaiss_1_1PolysemousTraining_1a71013b1d05ce60b41159c753715af50e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1a71013b1d05ce60b41159c753715af50e" kindref="member">ntrain_permutation</ref>;</highlight></codeline>
+<codeline lineno="129" refid="structfaiss_1_1PolysemousTraining_1a45724bac8ffec6453e2dd01294e605d7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1a45724bac8ffec6453e2dd01294e605d7" kindref="member">dis_weight_factor</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>decay<sp/>of<sp/>exp<sp/>that<sp/>weights<sp/>distance<sp/>loss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>refuse<sp/>to<sp/>train<sp/>if<sp/>it<sp/>would<sp/>require<sp/>more<sp/>than<sp/>that<sp/>amount<sp/>of<sp/>RAM</highlight></codeline>
+<codeline lineno="132" refid="structfaiss_1_1PolysemousTraining_1acebf83040fcf2a110a3a2fc25348661a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1acebf83040fcf2a110a3a2fc25348661a" kindref="member">max_memory</ref>;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>filename<sp/>pattern<sp/>for<sp/>the<sp/>logging<sp/>of<sp/>iterations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>log_pattern;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>sets<sp/>default<sp/>values</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PolysemousTraining" kindref="compound">PolysemousTraining</ref>();</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reorder<sp/>the<sp/>centroids<sp/>so<sp/>that<sp/>the<sp/>Hamming<sp/>distance<sp/>becomes<sp/>a</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>good<sp/>approximation<sp/>of<sp/>the<sp/>SDC<sp/>distance<sp/>(called<sp/>by<sp/>train)</highlight></codeline>
+<codeline lineno="142" refid="structfaiss_1_1PolysemousTraining_1a32b0a5d6cde2c01ebde5a0c02532a94a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1a32b0a5d6cde2c01ebde5a0c02532a94a" kindref="member">optimize_pq_for_hamming</ref>(<ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>optimize_pq_for_hamming</highlight></codeline>
+<codeline lineno="146" refid="structfaiss_1_1PolysemousTraining_1a139c5ad603fb0624a9f8453a93207742" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1a139c5ad603fb0624a9f8453a93207742" kindref="member">optimize_ranking</ref>(<ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>called<sp/>by<sp/>optimize_pq_for_hamming</highlight></codeline>
+<codeline lineno="148" refid="structfaiss_1_1PolysemousTraining_1af88810697a594be25ce20ca90faa65f9" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1af88810697a594be25ce20ca90faa65f9" kindref="member">optimize_reproduce_distances</ref>(<ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>make<sp/>sure<sp/>we<sp/>don&apos;t<sp/>blow<sp/>up<sp/>the<sp/>memory</highlight></codeline>
+<codeline lineno="151" refid="structfaiss_1_1PolysemousTraining_1acee2e7d023fa03f5acf2c3a295e1c377" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1PolysemousTraining_1acee2e7d023fa03f5acf2c3a295e1c377" kindref="member">memory_usage_per_thread</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>&amp;<sp/>pq)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/PolysemousTraining.h"/>
+  </compounddef>
+</doxygen>

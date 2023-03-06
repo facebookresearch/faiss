@@ -89,7 +89,7 @@
         <location file="faiss/VectorTransform.h" line="240" column="10" bodyfile="faiss/VectorTransform.h" bodystart="240" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" prot="public" static="no" mutable="no">
-        <type>ProductQuantizer *</type>
+        <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> *</type>
         <definition>ProductQuantizer* faiss::OPQMatrix::pq</definition>
         <argsstring></argsstring>
         <name>pq</name>
@@ -489,10 +489,37 @@
         <label>faiss::VectorTransform</label>
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
+      <node id="7">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="6">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
       <node id="1">
         <label>faiss::OPQMatrix</label>
         <link refid="structfaiss_1_1OPQMatrix"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="4">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>cp</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

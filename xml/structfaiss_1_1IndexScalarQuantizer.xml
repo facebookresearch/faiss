@@ -6,7 +6,7 @@
     <includes refid="IndexScalarQuantizer_8h" local="no">IndexScalarQuantizer.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexScalarQuantizer_1a71381f74754d8a54812e80af46a2a83a" prot="public" static="no" mutable="no">
-        <type>ScalarQuantizer</type>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">ScalarQuantizer</ref></type>
         <definition>ScalarQuantizer faiss::IndexScalarQuantizer::sq</definition>
         <argsstring></argsstring>
         <name>sq</name>
@@ -142,7 +142,7 @@
           <declname>d</declname>
         </param>
         <param>
-          <type>ScalarQuantizer::QuantizerType</type>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
           <declname>qtype</declname>
         </param>
         <param>
@@ -307,7 +307,7 @@
         <location file="faiss/IndexScalarQuantizer.h" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexScalarQuantizer_1a6d92cd004fadda1a24389febd145f919" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>FlatCodesDistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
         <definition>FlatCodesDistanceComputer* faiss::IndexScalarQuantizer::get_FlatCodesDistanceComputer</definition>
         <argsstring>() const override</argsstring>
         <name>get_FlatCodesDistanceComputer</name>
@@ -315,7 +315,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>a FlatCodesDistanceComputer offers a distance_to_code method </para>
+<para>a <ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> offers a distance_to_code method </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -555,7 +555,7 @@
         <name>remove_ids</name>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -568,7 +568,7 @@
         <location file="faiss/IndexFlatCodes.h" line="47" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>DistanceComputer* faiss::IndexFlatCodes::get_distance_computer</definition>
         <argsstring>() const override</argsstring>
         <name>get_distance_computer</name>
@@ -576,15 +576,15 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="52" column="22" bodyfile="faiss/IndexFlatCodes.h" bodystart="52" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>CodePacker *</type>
+        <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>CodePacker* faiss::IndexFlatCodes::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
@@ -705,7 +705,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1084,15 +1084,28 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="4">
+        <label>faiss::ScalarQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sq</edgelabel>
+        </childnode>
       </node>
       <node id="3">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="5">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
       </node>
       <node id="2">
         <label>faiss::IndexFlatCodes</label>

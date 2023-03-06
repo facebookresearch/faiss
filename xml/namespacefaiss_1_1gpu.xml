@@ -179,7 +179,7 @@
           <name>Quantizer</name>
           <initializer>= 3</initializer>
           <briefdescription>
-<para>Quantizer (PQ, SQ) dictionary information. </para>
+<para><ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref> (PQ, SQ) dictionary information. </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>
@@ -190,7 +190,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, &quot;precomputed codes&quot; for more efficient PQ lookup require the use of possibly large tables. These are marked separately from Quantizer as these can frequently be 100s - 1000s of MiB in size </para>
+<para>For <ref refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kindref="compound">GpuIndexIVFPQ</ref>, &quot;precomputed codes&quot; for more efficient PQ lookup require the use of possibly large tables. These are marked separately from <ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref> as these can frequently be 100s - 1000s of MiB in size </para>
           </detaileddescription>
         </enumvalue>
         <enumvalue id="GpuResources_8h_1a7038aea27b7026c4b0b4a7afeb1ba437a6da735df4e3424ba16ed6877129cf52b" prot="public">
@@ -355,7 +355,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest neighbor searches on an externally-provided region of memory (e.g., from a pytorch tensor). The data (vectors, queries, outDistances, outIndices) can be resident on the GPU or the CPU, but all calculations are performed on the GPU. If the result buffers are on the CPU, results will be copied back when done.</para>
+<para>A wrapper for <ref refid="Distance_8cuh_source" kindref="compound">gpu/impl/Distance.cuh</ref> to expose direct brute-force k-nearest neighbor searches on an externally-provided region of memory (e.g., from a pytorch tensor). The data (vectors, queries, outDistances, outIndices) can be resident on the GPU or the CPU, but all calculations are performed on the GPU. If the result buffers are on the CPU, results will be copied back when done.</para>
 <para>All GPU computation is performed on the current CUDA device, and ordered with respect to resources-&gt;getDefaultStreamCurrentDevice().</para>
 <para>For each vector in <computeroutput>queries</computeroutput>, searches all of <computeroutput>vectors</computeroutput> to find its k nearest neighbors with respect to the given metric </para>
         </detaileddescription>
@@ -584,6 +584,205 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/GpuResources.h" line="124" column="11" declfile="faiss/gpu/GpuResources.h" declline="124" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="IndexUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::gpu::getMaxKSelection</definition>
+        <argsstring>()</argsstring>
+        <name>getMaxKSelection</name>
+        <briefdescription>
+<para>A collection of various utility functions for index implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the maximum k-selection value supported based on the CUDA SDK that we were compiled with. .cu files can use <ref refid="DeviceDefs_8cuh_source" kindref="compound">DeviceDefs.cuh</ref>, but this is for non-CUDA files </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/IndexUtils.h" line="20" column="5" declfile="faiss/gpu/impl/IndexUtils.h" declline="20" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="IndexUtils_8h_1ad2df4aca9cbd2dcfe0a721ce9dbacfae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::validateKSelect</definition>
+        <argsstring>(int k)</argsstring>
+        <name>validateKSelect</name>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/IndexUtils.h" line="23" column="6" declfile="faiss/gpu/impl/IndexUtils.h" declline="23" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="IndexUtils_8h_1a31363ef889dec438a8d7fb99096900b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::validateNProbe</definition>
+        <argsstring>(size_t nprobe)</argsstring>
+        <name>validateNProbe</name>
+        <param>
+          <type>size_t</type>
+          <declname>nprobe</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/IndexUtils.h" line="26" column="6" declfile="faiss/gpu/impl/IndexUtils.h" declline="26" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="InterleavedCodes_8h_1a6fa800d7de6859fa719c43184a021775" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::unpackNonInterleaved</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
+        <name>unpackNonInterleaved</name>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numVecs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerCode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/InterleavedCodes.h" line="23" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="23" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="InterleavedCodes_8h_1aaf252105b63cae024ead79790da77591" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::unpackInterleaved</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
+        <name>unpackInterleaved</name>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numVecs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerCode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/InterleavedCodes.h" line="34" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="34" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="InterleavedCodes_8h_1aa5fbf46e73968e7535eb83ef86cbcd16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::packNonInterleaved</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
+        <name>packNonInterleaved</name>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numVecs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerCode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/InterleavedCodes.h" line="42" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="42" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="InterleavedCodes_8h_1ac7600011e96df9221930dcdfa0c790f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::packInterleaved</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; data, int numVecs, int dims, int bitsPerCode)</argsstring>
+        <name>packInterleaved</name>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numVecs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bitsPerCode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/InterleavedCodes.h" line="50" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="50" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::ivfOffsetToUserIndex</definition>
+        <argsstring>(idx_t *indices, idx_t numLists, idx_t queries, int k, const std::vector&lt; std::vector&lt; idx_t &gt;&gt; &amp;listOffsetToUserIndex)</argsstring>
+        <name>ivfOffsetToUserIndex</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>indices</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>numLists</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>queries</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;&gt; &amp;</type>
+          <declname>listOffsetToUserIndex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Utility function to translate (list id, offset) to a user index on the CPU. In a cpp in order to use OpenMP. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/RemapIndices.h" line="18" column="6" declfile="faiss/gpu/impl/RemapIndices.h" declline="18" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

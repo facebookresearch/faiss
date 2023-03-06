@@ -6,7 +6,7 @@
     <includes refid="GpuIndexIVFScalarQuantizer_8h" local="no">GpuIndexIVFScalarQuantizer.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1aa692a5a002bf93908018535d6a1cdf26" prot="public" static="no" mutable="no">
-        <type>faiss::ScalarQuantizer</type>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer" kindref="compound">faiss::ScalarQuantizer</ref></type>
         <definition>faiss::ScalarQuantizer faiss::gpu::GpuIndexIVFScalarQuantizer::sq</definition>
         <argsstring></argsstring>
         <name>sq</name>
@@ -397,7 +397,7 @@
           <declname>nlist</declname>
         </param>
         <param>
-          <type>faiss::ScalarQuantizer::QuantizerType</type>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">faiss::ScalarQuantizer::QuantizerType</ref></type>
           <declname>qtype</declname>
         </param>
         <param>
@@ -446,7 +446,7 @@
           <declname>nlist</declname>
         </param>
         <param>
-          <type>faiss::ScalarQuantizer::QuantizerType</type>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">faiss::ScalarQuantizer::QuantizerType</ref></type>
           <declname>qtype</declname>
         </param>
         <param>
@@ -874,7 +874,7 @@
           <declname>coarse_dis</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1276,7 +1276,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1332,7 +1332,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1aabe4bb3b249f15af977c954f36e81147">remove_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5781db5439f1d0f06cb3bf4c71ac0563">remove_ids</reimplementedby>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -1491,7 +1491,7 @@
         <location file="faiss/Index.h" line="189" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -1501,8 +1501,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -2080,6 +2080,9 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
         <childnode refid="11" relation="usage">
+          <edgelabel>sq</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
           <edgelabel>ivfSQConfig_</edgelabel>
         </childnode>
       </node>
@@ -2090,6 +2093,12 @@
         </childnode>
         <childnode refid="5" relation="usage">
           <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::ScalarQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer"/>
+        <childnode refid="12" relation="public-inheritance">
         </childnode>
       </node>
       <node id="7">
@@ -2135,6 +2144,10 @@
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
+      <node id="12">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
       <node id="10">
         <label>faiss::gpu::GpuIndexFlatConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig"/>
@@ -2147,7 +2160,7 @@
         <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="13">
         <label>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</label>
         <link refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig"/>
         <childnode refid="9" relation="public-inheritance">

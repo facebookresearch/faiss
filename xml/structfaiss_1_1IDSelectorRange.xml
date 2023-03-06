@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDSelectorRange" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IDSelectorRange</compoundname>
+    <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorRange_1aa4cddf0414474683df6e5ab2d6cc0207" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::IDSelectorRange::imin</definition>
+        <argsstring></argsstring>
+        <name>imin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="28" column="11" bodyfile="faiss/impl/IDSelector.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorRange_1aab666bc5c1da07eaf42bbf8aa7dfef2a" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::IDSelectorRange::imax</definition>
+        <argsstring></argsstring>
+        <name>imax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="28" column="16" bodyfile="faiss/impl/IDSelector.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorRange_1a178a5c60b1b2ec6308b111f047567523" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IDSelectorRange::assume_sorted</definition>
+        <argsstring></argsstring>
+        <name>assume_sorted</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Assume that the ids to handle are sorted. In some cases this can speed up processing </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="32" column="10" bodyfile="faiss/impl/IDSelector.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorRange_1a2c4802dba65c2714c193d4da9433eae4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IDSelectorRange::IDSelectorRange</definition>
+        <argsstring>(idx_t imin, idx_t imax, bool assume_sorted=false)</argsstring>
+        <name>IDSelectorRange</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>imin</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>imax</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>assume_sorted</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="34" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::IDSelectorRange::is_member</definition>
+        <argsstring>(idx_t id) const final</argsstring>
+        <name>is_member</name>
+        <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="36" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorRange_1a0bdbd8cca09fa9edc00813c48cdead4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IDSelectorRange::find_sorted_ids_bounds</definition>
+        <argsstring>(size_t list_size, const idx_t *ids, size_t *jmin, size_t *jmax) const</argsstring>
+        <name>find_sorted_ids_bounds</name>
+        <param>
+          <type>size_t</type>
+          <declname>list_size</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>jmin</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>jmax</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>for sorted ids, find the range of list indices where the valid ids are stored </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="40" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorRange_1a59148da9375ea066f83788ed1d890465" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IDSelectorRange::~IDSelectorRange</definition>
+        <argsstring>() override</argsstring>
+        <name>~IDSelectorRange</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="46" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="46" bodyend="46"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>ids between [imin, imax) </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelectorRange</label>
+        <link refid="structfaiss_1_1IDSelectorRange"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelectorRange</label>
+        <link refid="structfaiss_1_1IDSelectorRange"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/IDSelector.h" line="27" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="27" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDSelectorRange_1a178a5c60b1b2ec6308b111f047567523" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>assume_sorted</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1a0bdbd8cca09fa9edc00813c48cdead4c" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>find_sorted_ids_bounds</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1a2c4802dba65c2714c193d4da9433eae4" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>IDSelectorRange</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1aab666bc5c1da07eaf42bbf8aa7dfef2a" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>imax</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1aa4cddf0414474683df6e5ab2d6cc0207" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>imin</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4" prot="public" virt="virtual"><scope>faiss::IDSelectorRange</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" virt="virtual"><scope>faiss::IDSelectorRange</scope><name>~IDSelector</name></member>
+      <member refid="structfaiss_1_1IDSelectorRange_1a59148da9375ea066f83788ed1d890465" prot="public" virt="non-virtual"><scope>faiss::IDSelectorRange</scope><name>~IDSelectorRange</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

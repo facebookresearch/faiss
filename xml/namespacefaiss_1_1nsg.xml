@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1nsg" kind="namespace" language="C++">
+    <compoundname>faiss::nsg</compoundname>
+    <innerclass refid="structfaiss_1_1nsg_1_1Graph" prot="public">faiss::nsg::Graph</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="NSG_8h_1a491ec45b49c9c454d16fe800c5df9184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
+        <definition>DistanceComputer* faiss::nsg::storage_distance_computer</definition>
+        <argsstring>(const Index *storage)</argsstring>
+        <name>storage_distance_computer</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="95" column="18" declfile="faiss/impl/NSG.h" declline="95" declcolumn="18"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/NSG.h" line="46" column="1"/>
+  </compounddef>
+</doxygen>

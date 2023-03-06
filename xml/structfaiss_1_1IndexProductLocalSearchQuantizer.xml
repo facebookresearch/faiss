@@ -6,7 +6,7 @@
     <includes refid="IndexAdditiveQuantizer_8h" local="no">IndexAdditiveQuantizer.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexProductLocalSearchQuantizer_1a788e98e0397daf023ff34acf5ec5d7ff" prot="public" static="no" mutable="no">
-        <type>ProductLocalSearchQuantizer</type>
+        <type><ref refid="structfaiss_1_1ProductLocalSearchQuantizer" kindref="compound">ProductLocalSearchQuantizer</ref></type>
         <definition>ProductLocalSearchQuantizer faiss::IndexProductLocalSearchQuantizer::plsq</definition>
         <argsstring></argsstring>
         <name>plsq</name>
@@ -20,7 +20,7 @@
         <location file="faiss/IndexAdditiveQuantizer.h" line="135" column="33" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="135" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizer_1a6f271fd02746d5c94c18f6d408d3d783" prot="public" static="no" mutable="no">
-        <type>AdditiveQuantizer *</type>
+        <type><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref> *</type>
         <definition>AdditiveQuantizer* faiss::IndexAdditiveQuantizer::aq</definition>
         <argsstring></argsstring>
         <name>aq</name>
@@ -180,9 +180,9 @@
           <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
         </param>
         <param>
-          <type>Search_type_t</type>
+          <type><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref></type>
           <declname>search_type</declname>
-          <defval>AdditiveQuantizer::ST_decompress</defval>
+          <defval><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daad867ba8b63c1a5e9a1ece814a0115ff" kindref="member">AdditiveQuantizer::ST_decompress</ref></defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -455,7 +455,7 @@
         <location file="faiss/IndexAdditiveQuantizer.h" line="47" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>FlatCodesDistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
         <definition>FlatCodesDistanceComputer* faiss::IndexAdditiveQuantizer::get_FlatCodesDistanceComputer</definition>
         <argsstring>() const override</argsstring>
         <name>get_FlatCodesDistanceComputer</name>
@@ -463,7 +463,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>a FlatCodesDistanceComputer offers a distance_to_code method </para>
+<para>a <ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> offers a distance_to_code method </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -597,7 +597,7 @@
         <name>remove_ids</name>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -610,7 +610,7 @@
         <location file="faiss/IndexFlatCodes.h" line="47" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1ab8d0293ab8e1cf28eaa5c612e7ea0516" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>DistanceComputer* faiss::IndexFlatCodes::get_distance_computer</definition>
         <argsstring>() const override</argsstring>
         <name>get_distance_computer</name>
@@ -618,15 +618,15 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="52" column="22" bodyfile="faiss/IndexFlatCodes.h" bodystart="52" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>CodePacker *</type>
+        <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>CodePacker* faiss::IndexFlatCodes::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
@@ -747,7 +747,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1076,7 +1076,7 @@
       </sectiondef>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexAdditiveQuantizer_1a1432509b1f127e2b84a67ee3de2a290d" prot="public" static="no">
-        <type>AdditiveQuantizer::Search_type_t</type>
+        <type><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">AdditiveQuantizer::Search_type_t</ref></type>
         <definition>using faiss::IndexAdditiveQuantizer::Search_type_t =  AdditiveQuantizer::Search_type_t</definition>
         <argsstring></argsstring>
         <name>Search_type_t</name>
@@ -1145,15 +1145,61 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="11">
+        <label>faiss::ProductAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss::ProductLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::IndexFlat</label>
+        <link refid="structfaiss_1_1IndexFlat"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::IndexFlat1D</label>
+        <link refid="structfaiss_1_1IndexFlat1D"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>faiss::IndexAdditiveQuantizer</label>
         <link refid="structfaiss_1_1IndexAdditiveQuantizer"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>aq</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss::IndexFlatL2</label>
+        <link refid="structfaiss_1_1IndexFlatL2"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
       </node>
       <node id="4">
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="5">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>qnorm</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
       </node>
       <node id="3">
         <label>faiss::IndexFlatCodes</label>
@@ -1165,6 +1211,9 @@
         <label>faiss::IndexProductLocalSearchQuantizer</label>
         <link refid="structfaiss_1_1IndexProductLocalSearchQuantizer"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>plsq</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

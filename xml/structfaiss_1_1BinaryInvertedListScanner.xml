@@ -171,7 +171,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeQueryResult &amp;</type>
+          <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> &amp;</type>
           <declname>result</declname>
         </param>
         <briefdescription>

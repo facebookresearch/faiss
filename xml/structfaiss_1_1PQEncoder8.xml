@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PQEncoder8" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PQEncoder8</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1PQEncoder8_1ab2e5085880e3fd16babe53b8b7d89828" prot="public" static="no" mutable="no">
+        <type>uint8_t *</type>
+        <definition>uint8_t* faiss::PQEncoder8::code</definition>
+        <argsstring></argsstring>
+        <name>code</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="206" column="13" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1PQEncoder8_1a76eaa13bd8f3aa0f840a01844bd18165" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PQEncoder8::PQEncoder8</definition>
+        <argsstring>(uint8_t *code, int nbits)</argsstring>
+        <name>PQEncoder8</name>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nbits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="207" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="46" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PQEncoder8_1aaddee6a2dd50b29ff6539f8c5e5e230a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PQEncoder8::encode</definition>
+        <argsstring>(uint64_t x)</argsstring>
+        <name>encode</name>
+        <param>
+          <type>uint64_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="208" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="50" bodyend="52"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/ProductQuantizer.h" line="205" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="205" bodyend="209"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PQEncoder8_1ab2e5085880e3fd16babe53b8b7d89828" prot="public" virt="non-virtual"><scope>faiss::PQEncoder8</scope><name>code</name></member>
+      <member refid="structfaiss_1_1PQEncoder8_1aaddee6a2dd50b29ff6539f8c5e5e230a" prot="public" virt="non-virtual"><scope>faiss::PQEncoder8</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1PQEncoder8_1a76eaa13bd8f3aa0f840a01844bd18165" prot="public" virt="non-virtual"><scope>faiss::PQEncoder8</scope><name>PQEncoder8</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

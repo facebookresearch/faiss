@@ -6,7 +6,7 @@
     <includes refid="IndexPQFastScan_8h" local="no">IndexPQFastScan.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexPQFastScan_1a70691701e6ea9a56c30cd4a325da8191" prot="public" static="no" mutable="no">
-        <type>ProductQuantizer</type>
+        <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref></type>
         <definition>ProductQuantizer faiss::IndexPQFastScan::pq</definition>
         <argsstring></argsstring>
         <name>pq</name>
@@ -897,7 +897,7 @@
         <name>remove_ids</name>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -910,7 +910,7 @@
         <location file="faiss/IndexFastScan.h" line="129" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a258779c8cd073c2e9a2b3c01301cf272" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>CodePacker *</type>
+        <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>CodePacker* faiss::IndexFastScan::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
@@ -1031,7 +1031,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1398,7 +1398,7 @@
         <location file="faiss/Index.h" line="235" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -1408,8 +1408,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1559,6 +1559,10 @@
         <label>faiss::AlignedTable&lt; uint8_t &gt;</label>
         <link refid="structfaiss_1_1AlignedTable"/>
       </node>
+      <node id="7">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
       <node id="2">
         <label>faiss::IndexFastScan</label>
         <link refid="structfaiss_1_1IndexFastScan"/>
@@ -1572,10 +1576,29 @@
         <label>faiss::Index</label>
         <link refid="structfaiss_1_1Index"/>
       </node>
+      <node id="6">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
       <node id="1">
         <label>faiss::IndexPQFastScan</label>
         <link refid="structfaiss_1_1IndexPQFastScan"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>cp</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

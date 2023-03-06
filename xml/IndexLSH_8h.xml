@@ -6,48 +6,59 @@
     <includes refid="IndexFlatCodes_8h" local="no">faiss/IndexFlatCodes.h</includes>
     <includes refid="VectorTransform_8h" local="no">faiss/VectorTransform.h</includes>
     <incdepgraph>
-      <node id="6">
-        <label>faiss/impl/platform_macros.h</label>
-      </node>
       <node id="3">
         <label>faiss/IndexFlatCodes.h</label>
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>faiss/impl/DistanceComputer.h</label>
+      <node id="7">
+        <label>cstdint</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>stdint.h</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>string</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>typeinfo</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>cstdio</label>
+      </node>
+      <node id="12">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>vector</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>sstream</label>
       </node>
       <node id="4">
@@ -55,13 +66,13 @@
         <link refid="Index_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -77,7 +88,7 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
     </incdepgraph>

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1simd__result__handlers" kind="namespace" language="C++">
+    <compoundname>faiss::simd_result_handlers</compoundname>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" prot="public">faiss::simd_result_handlers::DummyResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler" prot="public">faiss::simd_result_handlers::StoreResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" prot="public">faiss::simd_result_handlers::FixedStorageHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler" prot="public">faiss::simd_result_handlers::SIMDResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" prot="public">faiss::simd_result_handlers::SingleResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler" prot="public">faiss::simd_result_handlers::HeapHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1ReservoirTopN" prot="public">faiss::simd_result_handlers::ReservoirTopN</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler" prot="public">faiss::simd_result_handlers::ReservoirHandler</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/simd_result_handlers.h" line="32" column="1"/>
+  </compounddef>
+</doxygen>

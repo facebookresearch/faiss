@@ -48,7 +48,7 @@
       </sectiondef>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexNNDescent_1abbb67095a45de116b553cd4be872440f" prot="public" static="no" mutable="no">
-        <type>NNDescent</type>
+        <type><ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref></type>
         <definition>NNDescent faiss::IndexNNDescent::nndescent</definition>
         <argsstring></argsstring>
         <name>nndescent</name>
@@ -454,7 +454,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -560,7 +560,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1aabe4bb3b249f15af977c954f36e81147">remove_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5781db5439f1d0f06cb3bf4c71ac0563">remove_ids</reimplementedby>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -845,7 +845,7 @@
         <location file="faiss/Index.h" line="235" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -855,8 +855,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1072,7 +1072,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>The NNDescent index is a normal random-access index with an NNDescent link structure built on top </para>
+<para>The <ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref> index is a normal random-access index with an <ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref> link structure built on top </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">
@@ -1093,6 +1093,10 @@
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="3">
+        <label>faiss::NNDescent</label>
+        <link refid="structfaiss_1_1NNDescent"/>
+      </node>
       <node id="1">
         <label>faiss::IndexNNDescent</label>
         <link refid="structfaiss_1_1IndexNNDescent"/>
@@ -1100,6 +1104,9 @@
         </childnode>
         <childnode refid="2" relation="usage">
           <edgelabel>storage</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>nndescent</edgelabel>
         </childnode>
       </node>
       <node id="2">

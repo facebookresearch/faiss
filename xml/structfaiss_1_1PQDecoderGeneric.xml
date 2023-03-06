@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PQDecoderGeneric" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PQDecoderGeneric</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a2b481e4c69dc2950a41ed7e4afd249d8" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::PQDecoderGeneric::code</definition>
+        <argsstring></argsstring>
+        <name>code</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="218" column="19" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a4deb4aaea4d11c52f54c24a0cd0febca" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::PQDecoderGeneric::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="219" column="13" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a09d3cd43f5d2c6a33cb95e9b0cd821e8" prot="public" static="no" mutable="no">
+        <type>const int</type>
+        <definition>const int faiss::PQDecoderGeneric::nbits</definition>
+        <argsstring></argsstring>
+        <name>nbits</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="220" column="15" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a418b73666419b9f4a503caf046e3a4e4" prot="public" static="no" mutable="no">
+        <type>const uint64_t</type>
+        <definition>const uint64_t faiss::PQDecoderGeneric::mask</definition>
+        <argsstring></argsstring>
+        <name>mask</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="221" column="20" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PQDecoderGeneric_1a45efeff5d38aba4c19e401cfeeecf171" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::PQDecoderGeneric::reg</definition>
+        <argsstring></argsstring>
+        <name>reg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="222" column="13" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="222" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1PQDecoderGeneric_1a00b9756b944961e40fbaed51407b9efd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PQDecoderGeneric::PQDecoderGeneric</definition>
+        <argsstring>(const uint8_t *code, int nbits)</argsstring>
+        <name>PQDecoderGeneric</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nbits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="223" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="63" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PQDecoderGeneric_1ae926ee1fb5832d5a302132ef6d1a496f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::PQDecoderGeneric::decode</definition>
+        <argsstring>()</argsstring>
+        <name>decode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ProductQuantizer.h" line="224" column="14" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="72" bodyend="97"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/ProductQuantizer.h" line="217" column="1" bodyfile="faiss/impl/ProductQuantizer.h" bodystart="217" bodyend="225"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a2b481e4c69dc2950a41ed7e4afd249d8" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>code</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1ae926ee1fb5832d5a302132ef6d1a496f" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a418b73666419b9f4a503caf046e3a4e4" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>mask</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a09d3cd43f5d2c6a33cb95e9b0cd821e8" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>nbits</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a4deb4aaea4d11c52f54c24a0cd0febca" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>offset</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a00b9756b944961e40fbaed51407b9efd" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>PQDecoderGeneric</name></member>
+      <member refid="structfaiss_1_1PQDecoderGeneric_1a45efeff5d38aba4c19e401cfeeecf171" prot="public" virt="non-virtual"><scope>faiss::PQDecoderGeneric</scope><name>reg</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

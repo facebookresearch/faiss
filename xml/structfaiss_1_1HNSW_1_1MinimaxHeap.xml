@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSW_1_1MinimaxHeap" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HNSW::MinimaxHeap</compoundname>
+    <includes refid="HNSW_8h" local="no">HNSW.h</includes>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1aa84f4b0590b40f2db7cd414f03e09163" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1CMax" kindref="compound">faiss::CMax</ref>&lt; float, <ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref> &gt;</type>
+        <definition>typedef faiss::CMax&lt;float, storage_idx_t&gt; faiss::HNSW::MinimaxHeap::HC</definition>
+        <argsstring></argsstring>
+        <name>HC</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="68" column="29" bodyfile="faiss/impl/HNSW.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae3eac58ea390ae96a00f6fc6e8e04591" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="62" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a41574372117595d8829816367d56ca02" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="63" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a28f52e6beb031179d2fd3f7c7176db76" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::nvalid</definition>
+        <argsstring></argsstring>
+        <name>nvalid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="64" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a872c880f3f90af4e666dce2be4dab87c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref> &gt;</type>
+        <definition>std::vector&lt;storage_idx_t&gt; faiss::HNSW::MinimaxHeap::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="66" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a38fa78ac21419dade4efdf69e4852450" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::HNSW::MinimaxHeap::dis</definition>
+        <argsstring></argsstring>
+        <name>dis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="67" column="21" bodyfile="faiss/impl/HNSW.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a139d799f393c94dd160922791f6d926c" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HNSW::MinimaxHeap::MinimaxHeap</definition>
+        <argsstring>(int n)</argsstring>
+        <name>MinimaxHeap</name>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="70" column="18" bodyfile="faiss/impl/HNSW.h" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a5bb98fe6de052c6f966d25b4c7fff738" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HNSW::MinimaxHeap::push</definition>
+        <argsstring>(storage_idx_t i, float v)</argsstring>
+        <name>push</name>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="72" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a87b25c78cf810c5a7249d171e4d2d7fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::HNSW::MinimaxHeap::max</definition>
+        <argsstring>() const</argsstring>
+        <name>max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="74" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1adc87106d3cf52c898c5b1d6af78d0918" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="76" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1adad4c4a475a29ab0d02cce9dcb069f8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HNSW::MinimaxHeap::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="78" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1acd09edf2f36ccaf094b1df6acd51612b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::pop_min</definition>
+        <argsstring>(float *vmin_out=nullptr)</argsstring>
+        <name>pop_min</name>
+        <param>
+          <type>float *</type>
+          <declname>vmin_out</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="80" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1MinimaxHeap_1a94d529d139fb46034abf26f1bd6a9f14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HNSW::MinimaxHeap::count_below</definition>
+        <argsstring>(float thresh)</argsstring>
+        <name>count_below</name>
+        <param>
+          <type>float</type>
+          <declname>thresh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="82" column="13"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Heap structure that allows fast </para>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="61" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="61" bodyend="83"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adad4c4a475a29ab0d02cce9dcb069f8a" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a94d529d139fb46034abf26f1bd6a9f14" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>count_below</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a38fa78ac21419dade4efdf69e4852450" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1aa84f4b0590b40f2db7cd414f03e09163" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>HC</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a872c880f3f90af4e666dce2be4dab87c" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a41574372117595d8829816367d56ca02" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>k</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a87b25c78cf810c5a7249d171e4d2d7fa" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>max</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a139d799f393c94dd160922791f6d926c" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>MinimaxHeap</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae3eac58ea390ae96a00f6fc6e8e04591" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>n</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a28f52e6beb031179d2fd3f7c7176db76" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>nvalid</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1acd09edf2f36ccaf094b1df6acd51612b" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>pop_min</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a5bb98fe6de052c6f966d25b4c7fff738" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>push</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adc87106d3cf52c898c5b1d6af78d0918" prot="public" virt="non-virtual"><scope>faiss::HNSW::MinimaxHeap</scope><name>size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

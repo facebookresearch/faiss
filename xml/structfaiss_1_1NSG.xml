@@ -1,0 +1,546 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1NSG" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::NSG</compoundname>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1NSG_1a4a60736c534e8753071308fdb0e6eeab" prot="public" static="no">
+        <type>int32_t</type>
+        <definition>using faiss::NSG::storage_idx_t =  int32_t</definition>
+        <argsstring></argsstring>
+        <name>storage_idx_t</name>
+        <briefdescription>
+<para>internal storage of vectors (32 bits: this is expensive) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="101" column="5" bodyfile="faiss/impl/NSG.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a59ba6c8149371bba021032b85ef4c05f" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>nb of nodes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="103" column="9" bodyfile="faiss/impl/NSG.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a6ea9e9a2f92a3b4750cb2dbdb0fe3ef6" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::R</definition>
+        <argsstring></argsstring>
+        <name>R</name>
+        <briefdescription>
+<para>nb of neighbors per node </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="106" column="9" bodyfile="faiss/impl/NSG.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1af354918b4f15cfee52b475d1c49164ad" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::L</definition>
+        <argsstring></argsstring>
+        <name>L</name>
+        <briefdescription>
+<para>length of the search path at construction time </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="107" column="9" bodyfile="faiss/impl/NSG.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a578bc868281b0c3105ddf91e6485b57b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::C</definition>
+        <argsstring></argsstring>
+        <name>C</name>
+        <briefdescription>
+<para>candidate pool size at construction time </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="108" column="9" bodyfile="faiss/impl/NSG.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a13564167f1050b9d23b650bc70f23a36" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::search_L</definition>
+        <argsstring></argsstring>
+        <name>search_L</name>
+        <initializer>= 16</initializer>
+        <briefdescription>
+<para>length of the search path </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="111" column="9" bodyfile="faiss/impl/NSG.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1aed2653f3cc0681c175536a4090dfc4ca" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NSG::enterpoint</definition>
+        <argsstring></argsstring>
+        <name>enterpoint</name>
+        <briefdescription>
+<para>enterpoint </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="113" column="9" bodyfile="faiss/impl/NSG.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1ac227b99a8b240ce87cde46f9fbcd2cb8" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; int &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;nsg::Graph&lt;int&gt; &gt; faiss::NSG::final_graph</definition>
+        <argsstring></argsstring>
+        <name>final_graph</name>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> graph structure. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="115" column="21" bodyfile="faiss/impl/NSG.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a4d059cd0ef5c9722c082c77da13fea7a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::NSG::is_built</definition>
+        <argsstring></argsstring>
+        <name>is_built</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> is built or not. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="117" column="10" bodyfile="faiss/impl/NSG.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NSG_1a9c6c2f501206e39318527d3470e7abfe" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1RandomGenerator" kindref="compound">RandomGenerator</ref></type>
+        <definition>RandomGenerator faiss::NSG::rng</definition>
+        <argsstring></argsstring>
+        <name>rng</name>
+        <briefdescription>
+<para>random generator </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="119" column="21" bodyfile="faiss/impl/NSG.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a2d1f59aa68aee326953b222c8a460805" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::NSG::NSG</definition>
+        <argsstring>(int R=32)</argsstring>
+        <name>NSG</name>
+        <param>
+          <type>int</type>
+          <declname>R</declname>
+          <defval>32</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="121" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a16d6141f4bfd7c5bc4938ce3a50db82a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::build</definition>
+        <argsstring>(Index *storage, idx_t n, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, bool verbose)</argsstring>
+        <name>build</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &amp;</type>
+          <declname>knn_graph</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="124" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1ab5e9bada55b3bed8f40a8fc7ed8f362f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="131" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a2f640fcafc79cb8ab9a7fd3bb7cdb905" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::search</definition>
+        <argsstring>(DistanceComputer &amp;dis, int k, idx_t *I, float *D, VisitedTable &amp;vt) const</argsstring>
+        <name>search</name>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>I</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>D</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="134" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a652771b88316d0a78b325dfb46688913" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::init_graph</definition>
+        <argsstring>(Index *storage, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph)</argsstring>
+        <name>init_graph</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &amp;</type>
+          <declname>knn_graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="142" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1acf8b3870baf026695103d9970e6099f3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>bool</type>
+            <declname>collect_fullset</declname>
+            <defname>collect_fullset</defname>
+          </param>
+          <param>
+            <type>class index_t</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::NSG::search_on_graph</definition>
+        <argsstring>(const nsg::Graph&lt; index_t &gt; &amp;graph, DistanceComputer &amp;dis, VisitedTable &amp;vt, int ep, int pool_size, std::vector&lt; Neighbor &gt; &amp;retset, std::vector&lt; Node &gt; &amp;fullset) const</argsstring>
+        <name>search_on_graph</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; index_t &gt; &amp;</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>ep</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>pool_size</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; Neighbor &gt; &amp;</type>
+          <declname>retset</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; Node &gt; &amp;</type>
+          <declname>fullset</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="148" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a004e6dc0dfdc9b555e6359c3cc29a5e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::add_reverse_links</definition>
+        <argsstring>(int q, std::vector&lt; std::mutex &gt; &amp;locks, DistanceComputer &amp;dis, nsg::Graph&lt; Node &gt; &amp;graph)</argsstring>
+        <name>add_reverse_links</name>
+        <param>
+          <type>int</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::mutex &gt; &amp;</type>
+          <declname>locks</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; Node &gt; &amp;</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="158" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1ab8c281f94af7dd15bddf2be306d2d3d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::sync_prune</definition>
+        <argsstring>(int q, std::vector&lt; Node &gt; &amp;pool, DistanceComputer &amp;dis, VisitedTable &amp;vt, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, nsg::Graph&lt; Node &gt; &amp;graph)</argsstring>
+        <name>sync_prune</name>
+        <param>
+          <type>int</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; Node &gt; &amp;</type>
+          <declname>pool</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &amp;</type>
+          <declname>knn_graph</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; Node &gt; &amp;</type>
+          <declname>graph</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="164" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1ad9457a55a32a74dc00b416940debe014" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::link</definition>
+        <argsstring>(Index *storage, const nsg::Graph&lt; idx_t &gt; &amp;knn_graph, nsg::Graph&lt; Node &gt; &amp;graph, bool verbose)</argsstring>
+        <name>link</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt; &amp;</type>
+          <declname>knn_graph</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1nsg_1_1Graph" kindref="compound">nsg::Graph</ref>&lt; Node &gt; &amp;</type>
+          <declname>graph</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>verbose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="172" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a4ead1603e1f9b7ebc36946cb305d53b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NSG::tree_grow</definition>
+        <argsstring>(Index *storage, std::vector&lt; int &gt; &amp;degrees)</argsstring>
+        <name>tree_grow</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int &gt; &amp;</type>
+          <declname>degrees</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="179" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a5d1c5e21b5e16d903501a388794f87aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NSG::dfs</definition>
+        <argsstring>(VisitedTable &amp;vt, int root, int cnt) const</argsstring>
+        <name>dfs</name>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>root</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cnt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="183" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a6af6cbeaf591c68bd69fb2a7a47d5e59" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NSG::attach_unlinked</definition>
+        <argsstring>(Index *storage, VisitedTable &amp;vt, VisitedTable &amp;vt2, std::vector&lt; int &gt; &amp;degrees)</argsstring>
+        <name>attach_unlinked</name>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>storage</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt2</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int &gt; &amp;</type>
+          <declname>degrees</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="186" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NSG_1a23c2d8bf90da8cfc619b4f67d6c5fff4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::NSG::check_graph</definition>
+        <argsstring>() const</argsstring>
+        <name>check_graph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NSG.h" line="193" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::RandomGenerator</label>
+        <link refid="structfaiss_1_1RandomGenerator"/>
+      </node>
+      <node id="1">
+        <label>faiss::NSG</label>
+        <link refid="structfaiss_1_1NSG"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>rng</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/NSG.h" line="99" column="1" bodyfile="faiss/impl/NSG.h" bodystart="99" bodyend="194"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1NSG_1a004e6dc0dfdc9b555e6359c3cc29a5e6" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>add_reverse_links</name></member>
+      <member refid="structfaiss_1_1NSG_1a6af6cbeaf591c68bd69fb2a7a47d5e59" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>attach_unlinked</name></member>
+      <member refid="structfaiss_1_1NSG_1a16d6141f4bfd7c5bc4938ce3a50db82a" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>build</name></member>
+      <member refid="structfaiss_1_1NSG_1a578bc868281b0c3105ddf91e6485b57b" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>C</name></member>
+      <member refid="structfaiss_1_1NSG_1a23c2d8bf90da8cfc619b4f67d6c5fff4" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>check_graph</name></member>
+      <member refid="structfaiss_1_1NSG_1a5d1c5e21b5e16d903501a388794f87aa" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>dfs</name></member>
+      <member refid="structfaiss_1_1NSG_1aed2653f3cc0681c175536a4090dfc4ca" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>enterpoint</name></member>
+      <member refid="structfaiss_1_1NSG_1ac227b99a8b240ce87cde46f9fbcd2cb8" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>final_graph</name></member>
+      <member refid="structfaiss_1_1NSG_1a652771b88316d0a78b325dfb46688913" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>init_graph</name></member>
+      <member refid="structfaiss_1_1NSG_1a4d059cd0ef5c9722c082c77da13fea7a" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>is_built</name></member>
+      <member refid="structfaiss_1_1NSG_1af354918b4f15cfee52b475d1c49164ad" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>L</name></member>
+      <member refid="structfaiss_1_1NSG_1ad9457a55a32a74dc00b416940debe014" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>link</name></member>
+      <member refid="structfaiss_1_1NSG_1a2d1f59aa68aee326953b222c8a460805" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>NSG</name></member>
+      <member refid="structfaiss_1_1NSG_1a59ba6c8149371bba021032b85ef4c05f" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1NSG_1a6ea9e9a2f92a3b4750cb2dbdb0fe3ef6" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>R</name></member>
+      <member refid="structfaiss_1_1NSG_1ab5e9bada55b3bed8f40a8fc7ed8f362f" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1NSG_1a9c6c2f501206e39318527d3470e7abfe" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>rng</name></member>
+      <member refid="structfaiss_1_1NSG_1a2f640fcafc79cb8ab9a7fd3bb7cdb905" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>search</name></member>
+      <member refid="structfaiss_1_1NSG_1a13564167f1050b9d23b650bc70f23a36" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>search_L</name></member>
+      <member refid="structfaiss_1_1NSG_1acf8b3870baf026695103d9970e6099f3" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>search_on_graph</name></member>
+      <member refid="structfaiss_1_1NSG_1a4a60736c534e8753071308fdb0e6eeab" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>storage_idx_t</name></member>
+      <member refid="structfaiss_1_1NSG_1ab8c281f94af7dd15bddf2be306d2d3d2" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>sync_prune</name></member>
+      <member refid="structfaiss_1_1NSG_1a4ead1603e1f9b7ebc36946cb305d53b3" prot="public" virt="non-virtual"><scope>faiss::NSG</scope><name>tree_grow</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

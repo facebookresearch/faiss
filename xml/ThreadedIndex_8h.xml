@@ -1,0 +1,302 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="ThreadedIndex_8h" kind="file" language="C++">
+    <compoundname>ThreadedIndex.h</compoundname>
+    <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includes>
+    <includes refid="WorkerThread_8h" local="no">faiss/utils/WorkerThread.h</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">vector</includes>
+    <includes refid="ThreadedIndex-inl_8h" local="no">faiss/impl/ThreadedIndex-inl.h</includes>
+    <includedby refid="IndexReplicas_8h" local="no">faiss/IndexReplicas.h</includedby>
+    <includedby refid="IndexShards_8h" local="no">faiss/IndexShards.h</includedby>
+    <incdepgraph>
+      <node id="12">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
+      <node id="18">
+        <label>condition_variable</label>
+      </node>
+      <node id="9">
+        <label>typeinfo</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="20">
+        <label>future</label>
+      </node>
+      <node id="15">
+        <label>vector</label>
+      </node>
+      <node id="14">
+        <label>utility</label>
+      </node>
+      <node id="7">
+        <label>sstream</label>
+      </node>
+      <node id="17">
+        <label>faiss/utils/WorkerThread.h</label>
+        <link refid="WorkerThread_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>cstdlib</label>
+      </node>
+      <node id="10">
+        <label>faiss/IndexBinary.h</label>
+        <link refid="IndexBinary_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iostream</label>
+      </node>
+      <node id="19">
+        <label>deque</label>
+      </node>
+      <node id="2">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>thread</label>
+      </node>
+      <node id="1">
+        <label>faiss/impl/ThreadedIndex.h</label>
+        <link refid="ThreadedIndex_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>faiss/impl/ThreadedIndex-inl.h</label>
+        <link refid="ThreadedIndex-inl_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>memory</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="5">
+        <label>faiss/IndexShards.h</label>
+        <link refid="IndexShards_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/MetaIndexes.h</label>
+        <link refid="MetaIndexes_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/gpu/perf/IndexWrapper.h</label>
+        <link refid="IndexWrapper_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/IndexShardsIVF.h</label>
+        <link refid="IndexShardsIVF_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/ThreadedIndex.h</label>
+        <link refid="ThreadedIndex_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexReplicas.h</label>
+        <link refid="IndexReplicas_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classfaiss_1_1ThreadedIndex" prot="public">faiss::ThreadedIndex</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Facebook,<sp/>Inc.<sp/>and<sp/>its<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/IndexBinary.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/WorkerThread.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="18"><highlight class="comment">///<sp/>A<sp/>holder<sp/>of<sp/>indices<sp/>in<sp/>a<sp/>collection<sp/>of<sp/>threads</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">///<sp/>The<sp/>interface<sp/>to<sp/>this<sp/>class<sp/>itself<sp/>is<sp/>not<sp/>thread<sp/>safe</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>IndexT&gt;</highlight></codeline>
+<codeline lineno="21" refid="classfaiss_1_1ThreadedIndex" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classfaiss_1_1ThreadedIndex" kindref="compound">ThreadedIndex</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>IndexT<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex" kindref="compound">ThreadedIndex</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex" kindref="compound">ThreadedIndex</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>threaded);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classfaiss_1_1ThreadedIndex" kindref="compound">ThreadedIndex</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>override<sp/>an<sp/>index<sp/>that<sp/>is<sp/>managed<sp/>by<sp/>ourselves.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>WARNING:<sp/>once<sp/>an<sp/>index<sp/>is<sp/>added,<sp/>it<sp/>becomes<sp/>unsafe<sp/>to<sp/>touch<sp/>it<sp/>from<sp/>any</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>other<sp/>thread<sp/>than<sp/>that<sp/>on<sp/>which<sp/>is<sp/>managing<sp/>it,<sp/>until<sp/>we<sp/>are<sp/>shut</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>down.<sp/>Use<sp/>runOnIndex<sp/>to<sp/>perform<sp/>work<sp/>on<sp/>it<sp/>instead.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a9a11a672369d48f45cf1dd1bfe0dad87" kindref="member">addIndex</ref>(IndexT*<sp/>index);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Remove<sp/>an<sp/>index<sp/>that<sp/>is<sp/>managed<sp/>by<sp/>ourselves.</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>will<sp/>flush<sp/>all<sp/>pending<sp/>work<sp/>on<sp/>that<sp/>index,<sp/>and<sp/>then<sp/>shut</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>down<sp/>its<sp/>managing<sp/>thread,<sp/>and<sp/>will<sp/>remove<sp/>the<sp/>index.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" kindref="member">removeIndex</ref>(IndexT*<sp/>index);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Run<sp/>a<sp/>function<sp/>on<sp/>all<sp/>indices,<sp/>in<sp/>the<sp/>thread<sp/>that<sp/>the<sp/>index<sp/>is</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>managed<sp/>in.</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Function<sp/>arguments<sp/>are<sp/>(index<sp/>in<sp/>collection,<sp/>index<sp/>pointer)</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a30ade89dc4e571868cf121e5592d6687" kindref="member">runOnIndex</ref>(std::function&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">,<sp/>IndexT*)&gt;<sp/>f);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a30ade89dc4e571868cf121e5592d6687" kindref="member">runOnIndex</ref>(std::function&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexT*)&gt;<sp/>f)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>faiss::Index<sp/>API</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>All<sp/>indices<sp/>receive<sp/>the<sp/>same<sp/>call</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a4536f6e7a8cce1f79bebc420ae1e909b" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>number<sp/>of<sp/>sub-indices</highlight></codeline>
+<codeline lineno="50" refid="classfaiss_1_1ThreadedIndex_1a2f9cadbcb9335c0833f61259230429a7" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a2f9cadbcb9335c0833f61259230429a7" kindref="member">count</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" kindref="member">indices_</ref>.size();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>i-th<sp/>sub-index</highlight></codeline>
+<codeline lineno="55" refid="classfaiss_1_1ThreadedIndex_1af4d21ab1540ed9445f26d236666c224f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>IndexT*<sp/><ref refid="classfaiss_1_1ThreadedIndex_1af4d21ab1540ed9445f26d236666c224f" kindref="member">at</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" kindref="member">indices_</ref>[i].first;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>i-th<sp/>sub-index<sp/>(const<sp/>version)</highlight></codeline>
+<codeline lineno="60" refid="classfaiss_1_1ThreadedIndex_1a79489c10d41a74d0b29a236e720adc90" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IndexT*<sp/><ref refid="classfaiss_1_1ThreadedIndex_1a79489c10d41a74d0b29a236e720adc90" kindref="member">at</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" kindref="member">indices_</ref>[i].first;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Whether<sp/>or<sp/>not<sp/>we<sp/>are<sp/>responsible<sp/>for<sp/>deleting<sp/>our<sp/>contained<sp/>indices</highlight></codeline>
+<codeline lineno="65" refid="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" kindref="member">own_indices</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>added</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1abdcae15f8589c53d4fa648fb2d5ab625" kindref="member">onAfterAddIndex</ref>(IndexT*<sp/>index);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Called<sp/>just<sp/>after<sp/>an<sp/>index<sp/>is<sp/>removed</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a3bfc1a3002a150d850b20dc40c5d31fe" kindref="member">onAfterRemoveIndex</ref>(IndexT*<sp/>index);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>waitAndHandleFutures(std::vector&lt;std::future&lt;bool&gt;&gt;&amp;<sp/>v);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="77"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Collection<sp/>of<sp/>Index<sp/>instances,<sp/>with<sp/>their<sp/>managing<sp/>worker<sp/>thread<sp/>if<sp/>any</highlight></codeline>
+<codeline lineno="78" refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::pair&lt;IndexT*,<sp/>std::unique_ptr&lt;WorkerThread&gt;&gt;&gt;<sp/><ref refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" kindref="member">indices_</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Is<sp/>this<sp/>index<sp/>multi-threaded?</highlight></codeline>
+<codeline lineno="81" refid="classfaiss_1_1ThreadedIndex_1a1031b2c900e9ba53573e617539b3c488" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classfaiss_1_1ThreadedIndex_1a1031b2c900e9ba53573e617539b3c488" kindref="member">isThreaded_</ref>;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/ThreadedIndex-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/ThreadedIndex.h"/>
+  </compounddef>
+</doxygen>

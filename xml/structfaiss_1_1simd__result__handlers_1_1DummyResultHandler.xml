@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::DummyResultHandler</compoundname>
+    <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a9f8b05f7ba29eec7bd46a2d112339dfe" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::simd_result_handlers::DummyResultHandler::cs</definition>
+        <argsstring></argsstring>
+        <name>cs</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="37" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1adddd7015556bedc97612f6bb76a0e1fb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::DummyResultHandler::handle</definition>
+        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>handle</name>
+        <param>
+          <type>size_t</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="39" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a20ec639d6eff5f224fbbb43e8bae64d9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::DummyResultHandler::set_block_origin</definition>
+        <argsstring>(size_t, size_t)</argsstring>
+        <name>set_block_origin</name>
+        <param>
+          <type>size_t</type>
+        </param>
+        <param>
+          <type>size_t</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="43" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Dummy structure that just computes a checksum on results (to avoid the computation to be optimized away) </para>
+    </detaileddescription>
+    <location file="faiss/impl/simd_result_handlers.h" line="36" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="36" bodyend="44"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a9f8b05f7ba29eec7bd46a2d112339dfe" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::DummyResultHandler</scope><name>cs</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1adddd7015556bedc97612f6bb76a0e1fb" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::DummyResultHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler_1a20ec639d6eff5f224fbbb43e8bae64d9" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::DummyResultHandler</scope><name>set_block_origin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

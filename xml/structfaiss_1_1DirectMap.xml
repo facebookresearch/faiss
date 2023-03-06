@@ -219,7 +219,7 @@
         <argsstring>(const IDSelector &amp;sel, InvertedLists *invlists)</argsstring>
         <name>remove_ids</name>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <param>

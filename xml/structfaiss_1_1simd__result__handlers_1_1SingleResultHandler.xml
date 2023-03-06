@@ -1,0 +1,382 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::SingleResultHandler</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler" prot="public" virt="non-virtual">faiss::simd_result_handlers::SIMDResultHandler&lt; C, false &gt;</basecompoundref>
+    <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result" prot="public">faiss::simd_result_handlers::SingleResultHandler::Result</innerclass>
+    <templateparamlist>
+      <param>
+        <type>class C</type>
+      </param>
+      <param>
+        <type>bool</type>
+        <declname>with_id_map</declname>
+        <defname>with_id_map</defname>
+        <defval>false</defval>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1abdc4c03d70ac73e57d80e86920cb78b1" prot="public" static="no">
+        <type>typename C::T</type>
+        <definition>using faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::T =  typename C::T</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="186" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1aff267a89d3096497cc2f3a82bdbc4a13" prot="public" static="no">
+        <type>typename C::TI</type>
+        <definition>using faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::TI =  typename C::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="187" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1ac55915dbba82196c51d4c4070c0954b9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1_1Result" kindref="compound">Result</ref> &gt;</type>
+        <definition>std::vector&lt;Result&gt; faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::results</definition>
+        <argsstring></argsstring>
+        <name>results</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="193" column="17" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::disable</definition>
+        <argsstring></argsstring>
+        <name>disable</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="101" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="103" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::j0</definition>
+        <argsstring></argsstring>
+        <name>j0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="104" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="105" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab" prot="public" static="no" mutable="no">
+        <type>const TI *</type>
+        <definition>const TI* faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::id_map</definition>
+        <argsstring></argsstring>
+        <name>id_map</name>
+        <briefdescription>
+<para>these fields are used mainly for the IVF variants (with_id_map=true) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="108" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048" prot="public" static="no" mutable="no">
+        <type>const int *</type>
+        <definition>const int* faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::q_map</definition>
+        <argsstring></argsstring>
+        <name>q_map</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="109" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b" prot="public" static="no" mutable="no">
+        <type>const uint16_t *</type>
+        <definition>const uint16_t* faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::dbias</definition>
+        <argsstring></argsstring>
+        <name>dbias</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="110" column="20" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a6420072970f6b0bc1354fd324e794646" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::SingleResultHandler</definition>
+        <argsstring>(size_t nq, size_t ntotal)</argsstring>
+        <name>SingleResultHandler</name>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="195" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="195" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a07c3dddd613025d73c1b0d2c0936087d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::handle</definition>
+        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>handle</name>
+        <param>
+          <type>size_t</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="203" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="203" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a93e46f10cd5484e54dcc6044cbb5276f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;::to_flat_arrays</definition>
+        <argsstring>(float *distances, int64_t *labels, const float *normalizers=nullptr) override</argsstring>
+        <name>to_flat_arrays</name>
+        <reimplements refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a6ef5a0962eeaa97d44ea33030c0398ff">to_flat_arrays</reimplements>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>normalizers</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="232" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="232" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::set_block_origin</definition>
+        <argsstring>(size_t i0, size_t j0)</argsstring>
+        <name>set_block_origin</name>
+        <param>
+          <type>size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="115" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="115" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::adjust_with_origin</definition>
+        <argsstring>(size_t &amp;q, simd16uint16 &amp;d0, simd16uint16 &amp;d1)</argsstring>
+        <name>adjust_with_origin</name>
+        <param>
+          <type>size_t &amp;</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="121" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="121" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::adjust_id</definition>
+        <argsstring>(size_t b, size_t j)</argsstring>
+        <name>adjust_id</name>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="136" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="136" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd_result_handlers::SIMDResultHandler&lt; C, with_id_map &gt;::get_lt_mask</definition>
+        <argsstring>(uint16_t thr, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>get_lt_mask</name>
+        <param>
+          <type>uint16_t</type>
+          <declname>thr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="146" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="146" bodyend="173"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Special version for k=1 </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::simd_result_handlers::SIMDResultHandler&lt; C, false &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler"/>
+      </node>
+      <node id="1">
+        <label>faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::simd_result_handlers::SIMDResultHandler&lt; C, false &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler"/>
+      </node>
+      <node id="1">
+        <label>faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/simd_result_handlers.h" line="185" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="185" bodyend="247"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a0291967a32bfe5fd8c94fa9b603ef8d6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>adjust_id</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1afe0eeae1df6f7f6e49098930579b8ac6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>adjust_with_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a2d7b0e5943fb421bc6de7fa2731a266b" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>dbias</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ab649d42c2191c6d00b51023bc8a5e12f" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>disable</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ad18cf2a8b69cd1f760e3af6b9ef296ee" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>get_lt_mask</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a07c3dddd613025d73c1b0d2c0936087d" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a86927dd4deef8d916f9ecbcfe7e9ffa2" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ae66d2d2290c018b377f50898b2323dab" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>id_map</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a92990ca2f1b17dc08291928c6c8500d8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>j0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1ac2bd6d06d7bb0a7dfc8b4cf286ce8ee7" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a45d6be4e851264371325bf032a147048" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>q_map</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1ac55915dbba82196c51d4c4070c0954b9" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>results</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a9e3e93cdfcbf7e3316e99bf6bd877615" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a826599a28cdb21613809bffd223128d8" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>SIMDResultHandler</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a6420072970f6b0bc1354fd324e794646" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>SingleResultHandler</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1abdc4c03d70ac73e57d80e86920cb78b1" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>T</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1aff267a89d3096497cc2f3a82bdbc4a13" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a93e46f10cd5484e54dcc6044cbb5276f" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>to_flat_arrays</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1SIMDResultHandler_1a3013f33b7c7136c55ad001ed7d420226" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::SingleResultHandler</scope><name>~SIMDResultHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

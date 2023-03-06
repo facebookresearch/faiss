@@ -55,7 +55,7 @@
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="structfaiss_1_1Cloner" kindref="compound">Cloner</ref>()<sp/>{}</highlight></codeline>
 <codeline lineno="32"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal">Quantizer*<sp/>clone_Quantizer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Quantizer*<sp/>quant);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>*<sp/>clone_Quantizer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>*<sp/>quant);</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
 <codeline lineno="36"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>

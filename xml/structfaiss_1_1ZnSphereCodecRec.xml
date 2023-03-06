@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ZnSphereCodecRec" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ZnSphereCodecRec</compoundname>
+    <basecompoundref refid="structfaiss_1_1EnumeratedVectors" prot="public" virt="non-virtual">faiss::EnumeratedVectors</basecompoundref>
+    <includes refid="lattice__Zn_8h" local="no">lattice_Zn.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1aeb070d73e66534ba8e33bb93fcf24805" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereCodecRec::r2</definition>
+        <argsstring></argsstring>
+        <name>r2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="144" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1a8066ba08843e3a567d1a24ca5c424b3c" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereCodecRec::log2_dim</definition>
+        <argsstring></argsstring>
+        <name>log2_dim</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="146" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1a02007bbfe3ce17302448ffee60e70f27" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereCodecRec::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="147" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1a81ad14ec0af58d07a1b098ac27fc4692" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint64_t &gt;</type>
+        <definition>std::vector&lt;uint64_t&gt; faiss::ZnSphereCodecRec::all_nv</definition>
+        <argsstring></argsstring>
+        <name>all_nv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="159" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1ad11e5f6c59cc032e40a73ebcf0d47b0c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint64_t &gt;</type>
+        <definition>std::vector&lt;uint64_t&gt; faiss::ZnSphereCodecRec::all_nv_cum</definition>
+        <argsstring></argsstring>
+        <name>all_nv_cum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="160" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1abc75142a4566bbb1fbb18ac0cc2f7be8" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereCodecRec::decode_cache_ld</definition>
+        <argsstring></argsstring>
+        <name>decode_cache_ld</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="162" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodecRec_1a362241ff96dbb829cf79ba6ff2c10b28" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::vector&lt; float &gt; &gt;</type>
+        <definition>std::vector&lt;std::vector&lt;float&gt; &gt; faiss::ZnSphereCodecRec::decode_cache</definition>
+        <argsstring></argsstring>
+        <name>decode_cache</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="163" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1EnumeratedVectors_1ad6da4ac4aeb407f84c2471a38a876878" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::EnumeratedVectors::nv</definition>
+        <argsstring></argsstring>
+        <name>nv</name>
+        <briefdescription>
+<para>size of the collection </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="57" column="14" bodyfile="faiss/impl/lattice_Zn.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1EnumeratedVectors_1af35904a18c8ab0a8df9946822588d8a8" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::EnumeratedVectors::dim</definition>
+        <argsstring></argsstring>
+        <name>dim</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="58" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a176b3216c6391c42a91730d1ea397387" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ZnSphereCodecRec::ZnSphereCodecRec</definition>
+        <argsstring>(int dim, int r2)</argsstring>
+        <name>ZnSphereCodecRec</name>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="149" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a108afcfa71736366f3ee894b0b7dd9ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ZnSphereCodecRec::encode_centroid</definition>
+        <argsstring>(const float *c) const</argsstring>
+        <name>encode_centroid</name>
+        <param>
+          <type>const float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="151" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1af2ebdaff73ca68e6f26dd72f3f80373d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::ZnSphereCodecRec::decode</definition>
+        <argsstring>(uint64_t code, float *c) const override</argsstring>
+        <name>decode</name>
+        <reimplements refid="structfaiss_1_1EnumeratedVectors_1af11d64142e0f8ef62599077bdd6b7f88">decode</reimplements>
+        <param>
+          <type>uint64_t</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+<para>decode it </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="153" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a271ab5ec4c8447b634d93f6c03a3a07b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ZnSphereCodecRec::encode</definition>
+        <argsstring>(const float *x) const override</argsstring>
+        <name>encode</name>
+        <reimplements refid="structfaiss_1_1EnumeratedVectors_1a2ed0bdef51f569a62da6ca194143c2e5">encode</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>vectors need to be centroids (does not work on arbitrary vectors) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="157" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a2f4f57c0ba47e9b93464e908a607d698" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ZnSphereCodecRec::get_nv</definition>
+        <argsstring>(int ld, int r2a) const</argsstring>
+        <name>get_nv</name>
+        <param>
+          <type>int</type>
+          <declname>ld</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2a</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="166" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1ae3987cf9ded10a13bcda427000e0724d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ZnSphereCodecRec::get_nv_cum</definition>
+        <argsstring>(int ld, int r2t, int r2a) const</argsstring>
+        <name>get_nv_cum</name>
+        <param>
+          <type>int</type>
+          <declname>ld</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2t</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2a</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="169" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a71ef1cc971166217acdeed4898fdad9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ZnSphereCodecRec::set_nv_cum</definition>
+        <argsstring>(int ld, int r2t, int r2a, uint64_t v)</argsstring>
+        <name>set_nv_cum</name>
+        <param>
+          <type>int</type>
+          <declname>ld</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2t</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>r2a</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="170" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1EnumeratedVectors_1a4e75f2b3864128c1d1d3228f470d9e4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::EnumeratedVectors::encode_multi</definition>
+        <argsstring>(size_t nc, const float *c, uint64_t *codes) const</argsstring>
+        <name>encode_multi</name>
+        <param>
+          <type>size_t</type>
+          <declname>nc</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>c</declname>
+        </param>
+        <param>
+          <type>uint64_t *</type>
+          <declname>codes</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="69" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1EnumeratedVectors_1abdc3248bff9338da2ca6863799274d8b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::EnumeratedVectors::decode_multi</definition>
+        <argsstring>(size_t nc, const uint64_t *codes, float *c) const</argsstring>
+        <name>decode_multi</name>
+        <param>
+          <type>size_t</type>
+          <declname>nc</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="72" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1EnumeratedVectors_1a80c0f4e4cf5394b7fd2e7b91fab16538" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::EnumeratedVectors::find_nn</definition>
+        <argsstring>(size_t n, const uint64_t *codes, size_t nq, const float *xq, int64_t *idx, float *dis)</argsstring>
+        <name>find_nn</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint64_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>xq</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>dis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="76" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>recursive sphere codec</para>
+<para>Uses a recursive decomposition on the dimensions to encode centroids found by the <ref refid="structfaiss_1_1ZnSphereSearch" kindref="compound">ZnSphereSearch</ref>. The codes are <emphasis>not</emphasis> compatible with the ones of ZnSpehreCodec </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::ZnSphereCodecRec</label>
+        <link refid="structfaiss_1_1ZnSphereCodecRec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::EnumeratedVectors</label>
+        <link refid="structfaiss_1_1EnumeratedVectors"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::ZnSphereCodecRec</label>
+        <link refid="structfaiss_1_1ZnSphereCodecRec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::EnumeratedVectors</label>
+        <link refid="structfaiss_1_1EnumeratedVectors"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/lattice_Zn.h" line="143" column="1" bodyfile="faiss/impl/lattice_Zn.h" bodystart="143" bodyend="171"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a81ad14ec0af58d07a1b098ac27fc4692" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>all_nv</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1ad11e5f6c59cc032e40a73ebcf0d47b0c" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>all_nv_cum</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a02007bbfe3ce17302448ffee60e70f27" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1af2ebdaff73ca68e6f26dd72f3f80373d" prot="public" virt="virtual"><scope>faiss::ZnSphereCodecRec</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a362241ff96dbb829cf79ba6ff2c10b28" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>decode_cache</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1abc75142a4566bbb1fbb18ac0cc2f7be8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>decode_cache_ld</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1abdc3248bff9338da2ca6863799274d8b" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>decode_multi</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1af35904a18c8ab0a8df9946822588d8a8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>dim</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a271ab5ec4c8447b634d93f6c03a3a07b" prot="public" virt="virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a108afcfa71736366f3ee894b0b7dd9ab" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode_centroid</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a4e75f2b3864128c1d1d3228f470d9e4e" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode_multi</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a11dbfb16f72980d69c4e40dc84e64258" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>EnumeratedVectors</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a80c0f4e4cf5394b7fd2e7b91fab16538" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>find_nn</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a2f4f57c0ba47e9b93464e908a607d698" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>get_nv</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1ae3987cf9ded10a13bcda427000e0724d" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>get_nv_cum</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a8066ba08843e3a567d1a24ca5c424b3c" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>log2_dim</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1ad6da4ac4aeb407f84c2471a38a876878" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>nv</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1aeb070d73e66534ba8e33bb93fcf24805" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>r2</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a71ef1cc971166217acdeed4898fdad9f" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>set_nv_cum</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a176b3216c6391c42a91730d1ea397387" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>ZnSphereCodecRec</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a849f82c1f0e1335eaf5385ebe3434af4" prot="public" virt="virtual"><scope>faiss::ZnSphereCodecRec</scope><name>~EnumeratedVectors</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

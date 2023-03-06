@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir">
+    <compoundname>faiss/impl</compoundname>
+    <innerdir refid="dir_df06d869ac375e073b830f0b1d0f2164">faiss/impl/code_distance</innerdir>
+    <innerfile refid="AdditiveQuantizer_8h">AdditiveQuantizer.h</innerfile>
+    <innerfile refid="AuxIndexStructures_8h">AuxIndexStructures.h</innerfile>
+    <innerfile refid="CodePacker_8h">CodePacker.h</innerfile>
+    <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
+    <innerfile refid="FaissAssert_8h">FaissAssert.h</innerfile>
+    <innerfile refid="FaissException_8h">FaissException.h</innerfile>
+    <innerfile refid="HNSW_8h">HNSW.h</innerfile>
+    <innerfile refid="IDSelector_8h">IDSelector.h</innerfile>
+    <innerfile refid="io_8h">io.h</innerfile>
+    <innerfile refid="io__macros_8h">io_macros.h</innerfile>
+    <innerfile refid="kmeans1d_8h">kmeans1d.h</innerfile>
+    <innerfile refid="lattice__Zn_8h">lattice_Zn.h</innerfile>
+    <innerfile refid="LocalSearchQuantizer_8h">LocalSearchQuantizer.h</innerfile>
+    <innerfile refid="LookupTableScaler_8h">LookupTableScaler.h</innerfile>
+    <innerfile refid="NNDescent_8h">NNDescent.h</innerfile>
+    <innerfile refid="NSG_8h">NSG.h</innerfile>
+    <innerfile refid="platform__macros_8h">platform_macros.h</innerfile>
+    <innerfile refid="PolysemousTraining_8h">PolysemousTraining.h</innerfile>
+    <innerfile refid="pq4__fast__scan_8h">pq4_fast_scan.h</innerfile>
+    <innerfile refid="ProductAdditiveQuantizer_8h">ProductAdditiveQuantizer.h</innerfile>
+    <innerfile refid="ProductQuantizer-inl_8h">ProductQuantizer-inl.h</innerfile>
+    <innerfile refid="ProductQuantizer_8h">ProductQuantizer.h</innerfile>
+    <innerfile refid="Quantizer_8h">Quantizer.h</innerfile>
+    <innerfile refid="ResidualQuantizer_8h">ResidualQuantizer.h</innerfile>
+    <innerfile refid="ResultHandler_8h">ResultHandler.h</innerfile>
+    <innerfile refid="ScalarQuantizer_8h">ScalarQuantizer.h</innerfile>
+    <innerfile refid="simd__result__handlers_8h">simd_result_handlers.h</innerfile>
+    <innerfile refid="ThreadedIndex-inl_8h">ThreadedIndex-inl.h</innerfile>
+    <innerfile refid="ThreadedIndex_8h">ThreadedIndex.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/"/>
+  </compounddef>
+</doxygen>

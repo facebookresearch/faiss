@@ -4,7 +4,7 @@
     <compoundname>faiss::ReconstructFromNeighbors</compoundname>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1ReconstructFromNeighbors_1a799355a749bf0e6632e7d2deeb0e7a0f" prot="public" static="no">
-        <type>HNSW::storage_idx_t</type>
+        <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref></type>
         <definition>typedef HNSW::storage_idx_t faiss::ReconstructFromNeighbors::storage_idx_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
@@ -346,6 +346,10 @@
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
+      <node id="5">
+        <label>faiss::RandomGenerator</label>
+        <link refid="structfaiss_1_1RandomGenerator"/>
+      </node>
       <node id="1">
         <label>faiss::ReconstructFromNeighbors</label>
         <link refid="structfaiss_1_1ReconstructFromNeighbors"/>
@@ -362,11 +366,21 @@
         <link refid="structfaiss_1_1IndexHNSW"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>hnsw</edgelabel>
+        </childnode>
         <childnode refid="1" relation="usage">
           <edgelabel>reconstruct_from_neighbors</edgelabel>
         </childnode>
         <childnode refid="3" relation="usage">
           <edgelabel>storage</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::HNSW</label>
+        <link refid="structfaiss_1_1HNSW"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>rng</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

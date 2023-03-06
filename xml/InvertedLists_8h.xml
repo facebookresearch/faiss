@@ -13,16 +13,27 @@
     <incdepgraph>
       <node id="3">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
       </node>
       <node id="1">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
+        <label>cstdio</label>
+      </node>
+      <node id="6">
         <label>vector</label>
       </node>
       <node id="2">

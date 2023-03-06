@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::ScalarQuantizer::SQuantizer</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::SQuantizer::encode_vector</definition>
+        <argsstring>(const float *x, uint8_t *code) const =0</argsstring>
+        <name>encode_vector</name>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="97" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ScalarQuantizer::SQuantizer::decode_vector</definition>
+        <argsstring>(const uint8_t *code, float *x) const =0</argsstring>
+        <name>decode_vector</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="98" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::ScalarQuantizer::SQuantizer::~SQuantizer</definition>
+        <argsstring>()</argsstring>
+        <name>~SQuantizer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ScalarQuantizer.h" line="100" column="17" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="100" bodyend="100"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/ScalarQuantizer.h" line="95" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="95" bodyend="101"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1aa24632f6310a5047efee966cdb3301e4" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQuantizer</scope><name>decode_vector</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQuantizer</scope><name>encode_vector</name></member>
+      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQuantizer</scope><name>~SQuantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

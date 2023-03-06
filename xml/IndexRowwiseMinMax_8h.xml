@@ -5,10 +5,15 @@
     <includes local="no">cstdint</includes>
     <includes local="no">vector</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
-    <includes local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <incdepgraph>
       <node id="6">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>cstdint</label>

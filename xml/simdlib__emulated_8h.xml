@@ -34,6 +34,14 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="3">
+        <label>faiss/impl/LookupTableScaler.h</label>
+        <link refid="LookupTableScaler_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h"/>
@@ -43,6 +51,10 @@
       <node id="2">
         <label>faiss/utils/simdlib.h</label>
         <link refid="simdlib_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>

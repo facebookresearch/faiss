@@ -5,11 +5,19 @@
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes local="no">vector</includes>
     <incdepgraph>
-      <node id="23">
+      <node id="25">
         <label>limits</label>
       </node>
       <node id="10">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
       </node>
       <node id="7">
         <label>faiss/Clustering.h</label>
@@ -37,18 +45,18 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="19">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="9" relation="include">
@@ -56,64 +64,74 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="22">
         <label>cmath</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>cassert</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>string</label>
       </node>
-      <node id="15">
-        <label>faiss/impl/IDSelector.h</label>
+      <node id="17">
+        <label>unordered_set</label>
       </node>
-      <node id="14">
+      <node id="16">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
         <label>typeinfo</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>cstdio</label>
       </node>
       <node id="6">
         <label>vector</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>sstream</label>
       </node>
-      <node id="18">
+      <node id="20">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
       </node>
-      <node id="24">
+      <node id="26">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
       <node id="5">
         <label>unordered_map</label>
       </node>
-      <node id="19">
+      <node id="21">
         <label>climits</label>
       </node>
       <node id="8">
@@ -121,13 +139,13 @@
         <link refid="Index_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -136,15 +154,15 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="23">
         <label>cstring</label>
       </node>
       <node id="4">
@@ -310,7 +328,7 @@
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>radius,</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RangeSearchResult*<sp/>result,</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref>*<sp/>result,</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref>*<sp/>params,</highlight></codeline>
 <codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>nb_dis<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>ms_per_stage<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
@@ -319,7 +337,7 @@
 <codeline lineno="150"><highlight class="comment"><sp/>*<sp/>nlevel<sp/>first<sp/>components<sp/>as<sp/>coarse<sp/>quantizer<sp/>and<sp/>the<sp/>rest<sp/>as<sp/>codes<sp/>in<sp/>invlists</highlight></codeline>
 <codeline lineno="151"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="152"><highlight class="normal"><ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref>*<sp/>ivf_residual_from_quantizer(</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ResidualQuantizer&amp;,</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref>&amp;,</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nlevel);</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="156"><highlight class="comment">/**<sp/>add<sp/>from<sp/>codes.<sp/>NB<sp/>that<sp/>the<sp/>norm<sp/>component<sp/>is<sp/>not<sp/>used,<sp/>so<sp/>the<sp/>code_size<sp/>can</highlight></codeline>

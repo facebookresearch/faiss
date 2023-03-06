@@ -342,7 +342,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -374,7 +374,7 @@
         <argsstring>(const ResidualQuantizer &amp;, int nlevel)</argsstring>
         <name>ivf_residual_from_quantizer</name>
         <param>
-          <type>const ResidualQuantizer &amp;</type>
+          <type>const <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref> &amp;</type>
         </param>
         <param>
           <type>int</type>
@@ -383,7 +383,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Build an <ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref> from an ResidualQuantizer, using the nlevel first components as coarse quantizer and the rest as codes in invlists </para>
+<para>Build an <ref refid="structfaiss_1_1IndexIVFResidualQuantizer" kindref="compound">IndexIVFResidualQuantizer</ref> from an <ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref>, using the nlevel first components as coarse quantizer and the rest as codes in invlists </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

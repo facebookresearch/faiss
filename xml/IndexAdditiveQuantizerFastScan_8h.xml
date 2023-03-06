@@ -4,8 +4,8 @@
     <compoundname>IndexAdditiveQuantizerFastScan.h</compoundname>
     <includes refid="IndexAdditiveQuantizer_8h" local="no">faiss/IndexAdditiveQuantizer.h</includes>
     <includes refid="IndexFastScan_8h" local="no">faiss/IndexFastScan.h</includes>
-    <includes local="no">faiss/impl/AdditiveQuantizer.h</includes>
-    <includes local="no">faiss/impl/ProductAdditiveQuantizer.h</includes>
+    <includes refid="AdditiveQuantizer_8h" local="no">faiss/impl/AdditiveQuantizer.h</includes>
+    <includes refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includes>
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <incdepgraph>
       <node id="2">
@@ -13,67 +13,170 @@
         <link refid="IndexAdditiveQuantizer_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="29">
+        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
+        <link refid="ProductAdditiveQuantizer_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="9">
-        <label>faiss/impl/platform_macros.h</label>
+      <node id="27">
+        <label>limits</label>
       </node>
-      <node id="6">
+      <node id="15">
         <label>faiss/IndexFlatCodes.h</label>
         <link refid="IndexFlatCodes_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/impl/LocalSearchQuantizer.h</label>
-      </node>
-      <node id="4">
-        <label>cstdint</label>
       </node>
       <node id="14">
-        <label>faiss/impl/DistanceComputer.h</label>
+        <label>faiss/IndexFlat.h</label>
+        <link refid="IndexFlat_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
-      <node id="20">
+      <node id="9">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="33">
+        <label>faiss/utils/approx_topk/generic.h</label>
+        <link refid="generic_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>cmath</label>
+      </node>
+      <node id="26">
         <label>cassert</label>
       </node>
       <node id="12">
         <label>string</label>
       </node>
-      <node id="3">
-        <label>faiss/impl/AdditiveQuantizer.h</label>
+      <node id="32">
+        <label>faiss/utils/approx_topk/approx_topk.h</label>
+        <link refid="approx__topk_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>faiss/impl/LocalSearchQuantizer.h</label>
+        <link refid="LocalSearchQuantizer_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/Quantizer.h</label>
+        <link refid="Quantizer_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>exception</label>
+      </node>
+      <node id="20">
+        <label>random</label>
       </node>
       <node id="13">
         <label>typeinfo</label>
@@ -81,14 +184,73 @@
       <node id="10">
         <label>cstdio</label>
       </node>
-      <node id="5">
+      <node id="16">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
         <label>vector</label>
+      </node>
+      <node id="35">
+        <label>utility</label>
       </node>
       <node id="11">
         <label>sstream</label>
       </node>
-      <node id="21">
+      <node id="23">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>faiss/impl/ResidualQuantizer.h</label>
+        <link refid="ResidualQuantizer_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
         <label>cstdlib</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="24">
+        <label>climits</label>
       </node>
       <node id="7">
         <label>faiss/Index.h</label>
@@ -104,12 +266,28 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="40">
         <label>faiss/IndexFastScan.h</label>
         <link refid="IndexFastScan_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/impl/AdditiveQuantizer.h</label>
+        <link refid="AdditiveQuantizer_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="8">
@@ -123,26 +301,46 @@
         <link refid="IndexAdditiveQuantizerFastScan_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
       </node>
-      <node id="16">
-        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
-      </node>
-      <node id="17">
-        <label>faiss/impl/ResidualQuantizer.h</label>
-      </node>
-      <node id="23">
+      <node id="34">
         <label>algorithm</label>
       </node>
-      <node id="22">
+      <node id="25">
         <label>cstring</label>
+      </node>
+      <node id="22">
+        <label>faiss/utils/utils.h</label>
+        <link refid="utils_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" prot="public">faiss::IndexAdditiveQuantizerFastScan</innerclass>
@@ -186,8 +384,8 @@
 <codeline lineno="28"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight></codeline>
 <codeline lineno="30" refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexFastScan" kindref="compound">IndexFastScan</ref><sp/>{</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>AdditiveQuantizer*<sp/>aq;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>Search_type_t<sp/>=<sp/>AdditiveQuantizer::Search_type_t;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref>*<sp/>aq;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref><sp/>=<sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">AdditiveQuantizer::Search_type_t</ref>;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>rescale_norm<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>norm_scale<sp/>=<sp/>1;</highlight></codeline>
@@ -196,12 +394,12 @@
 <codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>max_train_points<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref>(</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AdditiveQuantizer*<sp/>aq,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref>*<sp/>aq,</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>init(</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AdditiveQuantizer*<sp/>aq,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref>*<sp/>aq,</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight></codeline>
@@ -248,7 +446,7 @@
 <codeline lineno="90"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="91" refid="structfaiss_1_1IndexResidualQuantizerFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexResidualQuantizerFastScan" kindref="compound">IndexResidualQuantizerFastScan</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>residual<sp/>quantizer<sp/>used<sp/>to<sp/>encode<sp/>the<sp/>vectors</highlight></codeline>
-<codeline lineno="93" refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>ResidualQuantizer<sp/><ref refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" kindref="member">rq</ref>;</highlight></codeline>
+<codeline lineno="93" refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResidualQuantizer" kindref="compound">ResidualQuantizer</ref><sp/><ref refid="structfaiss_1_1IndexResidualQuantizerFastScan_1a0642d6f78ac3c65eda5510f570573d89" kindref="member">rq</ref>;</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Constructor.</highlight></codeline>
 <codeline lineno="96"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
@@ -263,7 +461,7 @@
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>subquantizers</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbits,<sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>bit<sp/>per<sp/>subvector<sp/>index</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Search_type_t<sp/>search_type<sp/>=<sp/>AdditiveQuantizer::ST_norm_rq2x4,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref><sp/>search_type<sp/>=<sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kindref="member">AdditiveQuantizer::ST_norm_rq2x4</ref>,</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"></highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexResidualQuantizerFastScan" kindref="compound">IndexResidualQuantizerFastScan</ref>();</highlight></codeline>
@@ -274,7 +472,7 @@
 <codeline lineno="116"><highlight class="comment"><sp/>*<sp/>Can<sp/>also<sp/>be<sp/>used<sp/>as<sp/>a<sp/>codec</highlight></codeline>
 <codeline lineno="117"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="118" refid="structfaiss_1_1IndexLocalSearchQuantizerFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexLocalSearchQuantizerFastScan" kindref="compound">IndexLocalSearchQuantizerFastScan</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref><sp/>{</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>LocalSearchQuantizer<sp/>lsq;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref><sp/>lsq;</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="121"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Constructor.</highlight></codeline>
 <codeline lineno="122"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
@@ -289,7 +487,7 @@
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>subquantizers</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbits,<sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>bit<sp/>per<sp/>subvector<sp/>index</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Search_type_t<sp/>search_type<sp/>=<sp/>AdditiveQuantizer::ST_norm_lsq2x4,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref><sp/>search_type<sp/>=<sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kindref="member">AdditiveQuantizer::ST_norm_lsq2x4</ref>,</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"></highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexLocalSearchQuantizerFastScan" kindref="compound">IndexLocalSearchQuantizerFastScan</ref>();</highlight></codeline>
@@ -301,7 +499,7 @@
 <codeline lineno="143"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="144" refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" kindref="compound">IndexProductResidualQuantizerFastScan</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>product<sp/>residual<sp/>quantizer<sp/>used<sp/>to<sp/>encode<sp/>the<sp/>vectors</highlight></codeline>
-<codeline lineno="146" refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>ProductResidualQuantizer<sp/><ref refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" kindref="member">prq</ref>;</highlight></codeline>
+<codeline lineno="146" refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductResidualQuantizer" kindref="compound">ProductResidualQuantizer</ref><sp/><ref refid="structfaiss_1_1IndexProductResidualQuantizerFastScan_1aa6c8b7faedb94d0dd02a102794ea477c" kindref="member">prq</ref>;</highlight></codeline>
 <codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Constructor.</highlight></codeline>
 <codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
@@ -318,7 +516,7 @@
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Msub,<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>subquantizers<sp/>per<sp/>RQ</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbits,<sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>bit<sp/>per<sp/>subvector<sp/>index</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Search_type_t<sp/>search_type<sp/>=<sp/>AdditiveQuantizer::ST_norm_rq2x4,</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref><sp/>search_type<sp/>=<sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kindref="member">AdditiveQuantizer::ST_norm_rq2x4</ref>,</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"></highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" kindref="compound">IndexProductResidualQuantizerFastScan</ref>();</highlight></codeline>
@@ -331,7 +529,7 @@
 <codeline lineno="173" refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" kindref="compound">IndexProductLocalSearchQuantizerFastScan</ref></highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1IndexAdditiveQuantizerFastScan" kindref="compound">IndexAdditiveQuantizerFastScan</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="175"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>product<sp/>local<sp/>search<sp/>quantizer<sp/>used<sp/>to<sp/>encode<sp/>the<sp/>vectors</highlight></codeline>
-<codeline lineno="176" refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan_1a889529e57e602a2302e2f68a161a1cf2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>ProductLocalSearchQuantizer<sp/><ref refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan_1a889529e57e602a2302e2f68a161a1cf2" kindref="member">plsq</ref>;</highlight></codeline>
+<codeline lineno="176" refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan_1a889529e57e602a2302e2f68a161a1cf2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductLocalSearchQuantizer" kindref="compound">ProductLocalSearchQuantizer</ref><sp/><ref refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan_1a889529e57e602a2302e2f68a161a1cf2" kindref="member">plsq</ref>;</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="178"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Constructor.</highlight></codeline>
 <codeline lineno="179"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
@@ -348,7 +546,7 @@
 <codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>Msub,<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>subquantizers<sp/>per<sp/>LSQ</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nbits,<sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>number<sp/>of<sp/>bit<sp/>per<sp/>subvector<sp/>index</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>,</highlight></codeline>
-<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Search_type_t<sp/>search_type<sp/>=<sp/>AdditiveQuantizer::ST_norm_rq2x4,</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" kindref="member">Search_type_t</ref><sp/>search_type<sp/>=<sp/><ref refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kindref="member">AdditiveQuantizer::ST_norm_rq2x4</ref>,</highlight></codeline>
 <codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs<sp/>=<sp/>32);</highlight></codeline>
 <codeline lineno="195"><highlight class="normal"></highlight></codeline>
 <codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexProductLocalSearchQuantizerFastScan" kindref="compound">IndexProductLocalSearchQuantizerFastScan</ref>();</highlight></codeline>

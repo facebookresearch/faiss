@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1Repeats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::Repeats</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment" prot="public" virt="non-virtual">faiss::ZnSphereCodec::CodeSegment</derivedcompoundref>
+    <includes refid="lattice__Zn_8h" local="no">lattice_Zn.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::Repeats::dim</definition>
+        <argsstring></argsstring>
+        <name>dim</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="97" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1Repeat" kindref="compound">Repeat</ref> &gt;</type>
+        <definition>std::vector&lt;Repeat&gt; faiss::Repeats::repeats</definition>
+        <argsstring></argsstring>
+        <name>repeats</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="98" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::Repeats::Repeats</definition>
+        <argsstring>(int dim=0, const float *c=nullptr)</argsstring>
+        <name>Repeats</name>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>c</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="101" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a0fdeed4472bef35acf324537441e2f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::Repeats::count</definition>
+        <argsstring>() const</argsstring>
+        <name>count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="104" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::Repeats::encode</definition>
+        <argsstring>(const float *c) const</argsstring>
+        <name>encode</name>
+        <param>
+          <type>const float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="106" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Repeats::decode</definition>
+        <argsstring>(uint64_t code, float *c) const</argsstring>
+        <name>decode</name>
+        <param>
+          <type>uint64_t</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="108" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="structfaiss_1_1Repeats" kindref="compound">Repeats</ref>: used to encode a vector that has n occurrences of val. Encodes the signs and permutation of the vector. Useful for atoms. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::ZnSphereCodec::CodeSegment</label>
+        <link refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::Repeats</label>
+        <link refid="structfaiss_1_1Repeats"/>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/lattice_Zn.h" line="96" column="1" bodyfile="faiss/impl/lattice_Zn.h" bodystart="96" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1Repeats_1a0fdeed4472bef35acf324537441e2f24" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>count</name></member>
+      <member refid="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>dim</name></member>
+      <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>repeats</name></member>
+      <member refid="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>Repeats</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

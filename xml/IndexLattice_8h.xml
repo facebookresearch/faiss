@@ -4,13 +4,21 @@
     <compoundname>IndexLattice.h</compoundname>
     <includes local="no">vector</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
-    <includes local="no">faiss/impl/lattice_Zn.h</includes>
+    <includes refid="lattice__Zn_8h" local="no">faiss/impl/lattice_Zn.h</includes>
     <incdepgraph>
-      <node id="23">
+      <node id="25">
         <label>limits</label>
       </node>
       <node id="10">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
       </node>
       <node id="7">
         <label>faiss/Clustering.h</label>
@@ -38,18 +46,18 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
       </node>
-      <node id="17">
+      <node id="19">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="9" relation="include">
@@ -57,17 +65,30 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="22">
         <label>cmath</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>cassert</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>string</label>
       </node>
-      <node id="15">
+      <node id="17">
+        <label>unordered_set</label>
+      </node>
+      <node id="28">
+        <label>stddef.h</label>
+      </node>
+      <node id="16">
         <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/IndexLattice.h</label>
@@ -76,58 +97,55 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>typeinfo</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>cstdio</label>
       </node>
       <node id="2">
         <label>vector</label>
       </node>
-      <node id="25">
-        <label>faiss/impl/lattice_Zn.h</label>
-      </node>
-      <node id="12">
+      <node id="13">
         <label>sstream</label>
       </node>
-      <node id="18">
+      <node id="20">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
       </node>
-      <node id="24">
+      <node id="26">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
       <node id="6">
         <label>unordered_map</label>
       </node>
-      <node id="19">
+      <node id="21">
         <label>climits</label>
       </node>
       <node id="8">
@@ -135,13 +153,13 @@
         <link refid="Index_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -150,19 +168,29 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="23">
         <label>cstring</label>
       </node>
       <node id="5">
         <label>memory</label>
+      </node>
+      <node id="27">
+        <label>faiss/impl/lattice_Zn.h</label>
+        <link refid="lattice__Zn_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1IndexLattice" prot="public">faiss::IndexLattice</innerclass>
@@ -200,7 +228,7 @@
 <codeline lineno="26" refid="structfaiss_1_1IndexLattice_1ac02440b4d1e666d9105d376852076f73" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexLattice_1ac02440b4d1e666d9105d376852076f73" kindref="member">dsq</ref>;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>lattice<sp/>quantizer</highlight></codeline>
-<codeline lineno="29" refid="structfaiss_1_1IndexLattice_1adbe914419dc51e46b598d2c654a16f6a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>ZnSphereCodecAlt<sp/><ref refid="structfaiss_1_1IndexLattice_1adbe914419dc51e46b598d2c654a16f6a" kindref="member">zn_sphere_codec</ref>;</highlight></codeline>
+<codeline lineno="29" refid="structfaiss_1_1IndexLattice_1adbe914419dc51e46b598d2c654a16f6a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ZnSphereCodecAlt" kindref="compound">ZnSphereCodecAlt</ref><sp/><ref refid="structfaiss_1_1IndexLattice_1adbe914419dc51e46b598d2c654a16f6a" kindref="member">zn_sphere_codec</ref>;</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nb<sp/>bits<sp/>used<sp/>to<sp/>encode<sp/>the<sp/>scale,<sp/>per<sp/>subvector</highlight></codeline>
 <codeline lineno="32" refid="structfaiss_1_1IndexLattice_1aacf53ac36d93567b1e68505ea122e9bc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexLattice_1aacf53ac36d93567b1e68505ea122e9bc" kindref="member">scale_nbit</ref>,<sp/>lattice_nbit;</highlight><highlight class="comment"></highlight></codeline>

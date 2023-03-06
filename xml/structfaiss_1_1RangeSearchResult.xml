@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RangeSearchResult" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RangeSearchResult</compoundname>
+    <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1a29269b98c33af874d379ca4f62408b90" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::RangeSearchResult::nq</definition>
+        <argsstring></argsstring>
+        <name>nq</name>
+        <briefdescription>
+<para>nb of queries </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="31" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1aef57f9db99ca470c01bcdce0366cb6ff" prot="public" static="no" mutable="no">
+        <type>size_t *</type>
+        <definition>size_t* faiss::RangeSearchResult::lims</definition>
+        <argsstring></argsstring>
+        <name>lims</name>
+        <briefdescription>
+<para>size (nq + 1) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="32" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1aa8ff848474a4cc16c5464cc4ec187824" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+        <definition>idx_t* faiss::RangeSearchResult::labels</definition>
+        <argsstring></argsstring>
+        <name>labels</name>
+        <briefdescription>
+<para>result for query i is labels[lims[i]:lims[i+1]] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="34" column="11" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1a944a93aecc7b51d8f9f35444280aa919" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::RangeSearchResult::distances</definition>
+        <argsstring></argsstring>
+        <name>distances</name>
+        <briefdescription>
+<para>corresponding distances (not sorted) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="35" column="11" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RangeSearchResult_1a39342ad2e9ad8b90f6e95dafd3287f49" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::RangeSearchResult::buffer_size</definition>
+        <argsstring></argsstring>
+        <name>buffer_size</name>
+        <briefdescription>
+<para>size of the result buffers used </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="37" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1a56dca2b151bcf16f5d488aff321b9501" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RangeSearchResult::RangeSearchResult</definition>
+        <argsstring>(idx_t nq, bool alloc_lims=true)</argsstring>
+        <name>RangeSearchResult</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>alloc_lims</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>lims must be allocated on input to range_search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="40" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::RangeSearchResult::do_allocation</definition>
+        <argsstring>()</argsstring>
+        <name>do_allocation</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>called when lims contains the nb of elements result entries for each query </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="45" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1af0ef9dac0132325da1fb60ff2a7b8e6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::RangeSearchResult::~RangeSearchResult</definition>
+        <argsstring>()</argsstring>
+        <name>~RangeSearchResult</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="47" column="13"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>The objective is to have a simple result structure while minimizing the number of mem copies in the result. The method do_allocation can be overloaded to allocate the result tables in the matrix type of a scripting language like Lua or Python. </para>
+    </detaileddescription>
+    <location file="faiss/impl/AuxIndexStructures.h" line="30" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="30" bodyend="48"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RangeSearchResult_1a39342ad2e9ad8b90f6e95dafd3287f49" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>buffer_size</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1a944a93aecc7b51d8f9f35444280aa919" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>distances</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" prot="public" virt="virtual"><scope>faiss::RangeSearchResult</scope><name>do_allocation</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1aa8ff848474a4cc16c5464cc4ec187824" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>labels</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1aef57f9db99ca470c01bcdce0366cb6ff" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>lims</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1a29269b98c33af874d379ca4f62408b90" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>nq</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1a56dca2b151bcf16f5d488aff321b9501" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>RangeSearchResult</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1af0ef9dac0132325da1fb60ff2a7b8e6d" prot="public" virt="virtual"><scope>faiss::RangeSearchResult</scope><name>~RangeSearchResult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

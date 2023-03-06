@@ -6,7 +6,7 @@
     <includes refid="IndexIVFPQR_8h" local="no">IndexIVFPQR.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQR_1a4a80540e7cdfb3e43712ffb93e083a7c" prot="public" static="no" mutable="no">
-        <type>ProductQuantizer</type>
+        <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref></type>
         <definition>ProductQuantizer faiss::IndexIVFPQR::refine_pq</definition>
         <argsstring></argsstring>
         <name>refine_pq</name>
@@ -62,7 +62,7 @@
         <location file="faiss/IndexIVFPQ.h" line="35" column="10" bodyfile="faiss/IndexIVFPQ.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a007303be116c8da65b6d058e3fc77d16" prot="public" static="no" mutable="no">
-        <type>ProductQuantizer</type>
+        <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref></type>
         <definition>ProductQuantizer faiss::IndexIVFPQ::pq</definition>
         <argsstring></argsstring>
         <name>pq</name>
@@ -90,7 +90,7 @@
         <location file="faiss/IndexIVFPQ.h" line="39" column="10" bodyfile="faiss/IndexIVFPQ.h" bodystart="39" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFPQ_1a2b14cbb5acb3fc28a4df8fde3f5567cd" prot="public" static="no" mutable="no">
-        <type>PolysemousTraining *</type>
+        <type><ref refid="structfaiss_1_1PolysemousTraining" kindref="compound">PolysemousTraining</ref> *</type>
         <definition>PolysemousTraining* faiss::IndexIVFPQ::polysemous_training</definition>
         <argsstring></argsstring>
         <name>polysemous_training</name>
@@ -516,7 +516,7 @@
         <name>remove_ids</name>
         <reimplements refid="structfaiss_1_1IndexIVF_1a7f4d5e3d38ed2db026780522ffb85b9d">remove_ids</reimplements>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -1170,7 +1170,7 @@
           <declname>store_pairs</declname>
         </param>
         <param>
-          <type>const IDSelector *</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -1315,7 +1315,7 @@
           <declname>coarse_dis</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1471,7 +1471,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -1721,7 +1721,7 @@
         <location file="faiss/IndexIVF.h" line="365" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a6ff71cfae0e05e03c40749741760cb33" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>CodePacker *</type>
+        <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>virtual CodePacker* faiss::IndexIVF::get_CodePacker</definition>
         <argsstring>() const</argsstring>
         <name>get_CodePacker</name>
@@ -2158,7 +2158,7 @@
         <location file="faiss/Index.h" line="235" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>virtual DistanceComputer* faiss::Index::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -2168,8 +2168,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Get a DistanceComputer (defined in AuxIndexStructures) object for this kind of index.</para>
-<para>DistanceComputer is implemented for indexes that support random access of their vectors. </para>
+<para>Get a <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> (defined in AuxIndexStructures) object for this kind of index.</para>
+<para><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> is implemented for indexes that support random access of their vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -2367,8 +2367,18 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
         <childnode refid="10" relation="usage">
+          <edgelabel>polysemous_training</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
           <edgelabel>precomputed_table</edgelabel>
         </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
       </node>
       <node id="4">
         <label>faiss::Index</label>
@@ -2379,19 +2389,44 @@
         <link refid="structfaiss_1_1DirectMap"/>
       </node>
       <node id="10">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
         <label>faiss::AlignedTable&lt; float &gt;</label>
         <link refid="structfaiss_1_1AlignedTable"/>
+      </node>
+      <node id="14">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
       </node>
       <node id="1">
         <label>faiss::IndexIVFPQR</label>
         <link refid="structfaiss_1_1IndexIVFPQR"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>refine_pq</edgelabel>
+        </childnode>
       </node>
       <node id="5">
         <label>faiss::IndexIVFInterface</label>
         <link refid="structfaiss_1_1IndexIVFInterface"/>
         <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>cp</edgelabel>
         </childnode>
       </node>
     </collaborationgraph>

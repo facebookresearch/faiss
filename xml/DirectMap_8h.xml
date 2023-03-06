@@ -8,19 +8,30 @@
     <incdepgraph>
       <node id="4">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
       </node>
       <node id="2">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
         <label>vector</label>
       </node>
-      <node id="6">
+      <node id="8">
         <label>unordered_map</label>
       </node>
       <node id="3">
@@ -34,7 +45,7 @@
         <link refid="DirectMap_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -270,7 +281,7 @@
 <codeline lineno="78"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="80"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>remove<sp/>ids<sp/>from<sp/>the<sp/>InvertedLists,<sp/>possibly<sp/>using<sp/>the<sp/>direct<sp/>map</highlight></codeline>
-<codeline lineno="81" refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" kindref="member">remove_ids</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector&amp;<sp/>sel,<sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref>*<sp/>invlists);</highlight></codeline>
+<codeline lineno="81" refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMap_1abe74c8ce6beb15af58c26da044274e2f" kindref="member">remove_ids</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>&amp;<sp/>sel,<sp/><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref>*<sp/>invlists);</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="83"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>update<sp/>entries,<sp/>using<sp/>the<sp/>direct<sp/>map</highlight></codeline>
 <codeline lineno="84" refid="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DirectMap_1a0426251cccf9f756d82d1b40229b9391" kindref="member">update_codes</ref>(</highlight></codeline>

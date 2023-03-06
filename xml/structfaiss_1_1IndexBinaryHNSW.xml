@@ -6,7 +6,7 @@
     <includes refid="IndexBinaryHNSW_8h" local="no">IndexBinaryHNSW.h</includes>
       <sectiondef kind="public-type">
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" prot="public" static="no">
-        <type>HNSW::storage_idx_t</type>
+        <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref></type>
         <definition>typedef HNSW::storage_idx_t faiss::IndexBinaryHNSW::storage_idx_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
@@ -47,7 +47,7 @@
       </sectiondef>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryHNSW_1a85919341ea47e6dec7968e29d09cbb1e" prot="public" static="no" mutable="no">
-        <type>HNSW</type>
+        <type><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref></type>
         <definition>HNSW faiss::IndexBinaryHNSW::hnsw</definition>
         <argsstring></argsstring>
         <name>hnsw</name>
@@ -242,7 +242,7 @@
         <location file="faiss/IndexBinaryHNSW.h" line="35" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryHNSW_1adad69b14eb53f23609883a8e28d40747" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>DistanceComputer *</type>
+        <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
         <definition>DistanceComputer* faiss::IndexBinaryHNSW::get_distance_computer</definition>
         <argsstring>() const</argsstring>
         <name>get_distance_computer</name>
@@ -467,7 +467,7 @@
           <declname>radius</declname>
         </param>
         <param>
-          <type>RangeSearchResult *</type>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
           <declname>result</declname>
         </param>
         <param>
@@ -479,7 +479,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the RangeSearchResult structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</para>
+<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory). The distances are converted to float to reuse the <ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> structure, but they are integer. By convention, only distances &lt; radius (strict comparison) are returned, ie. radius = 0 does not return any result and 1 returns only exact same vectors.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
@@ -568,7 +568,7 @@
         <reimplementedby refid="structfaiss_1_1IndexBinaryFlat_1ae5127fb557880bf5996531714f32b3d6">remove_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexBinaryIVF_1ad05e4e6f3ce7bb54f88ece7fe645447b">remove_ids</reimplementedby>
         <param>
-          <type>const IDSelector &amp;</type>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
         </param>
         <briefdescription>
@@ -733,7 +733,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>The HNSW index is a normal random-access index with a HNSW link structure built on top </para>
+<para>The <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> index is a normal random-access index with a <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> link structure built on top </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">
@@ -753,8 +753,22 @@
         <link refid="structfaiss_1_1IndexBinaryHNSW"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>hnsw</edgelabel>
+        </childnode>
         <childnode refid="2" relation="usage">
           <edgelabel>storage</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::RandomGenerator</label>
+        <link refid="structfaiss_1_1RandomGenerator"/>
+      </node>
+      <node id="3">
+        <label>faiss::HNSW</label>
+        <link refid="structfaiss_1_1HNSW"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>rng</edgelabel>
         </childnode>
       </node>
       <node id="2">

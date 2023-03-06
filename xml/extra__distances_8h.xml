@@ -7,21 +7,18 @@
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includes refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includes>
     <incdepgraph>
-      <node id="18">
+      <node id="19">
         <label>faiss/utils/distances.h</label>
         <link refid="distances_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>limits</label>
-      </node>
-      <node id="5">
-        <label>faiss/impl/platform_macros.h</label>
       </node>
       <node id="1">
         <label>faiss/utils/extra_distances.h</label>
@@ -30,73 +27,84 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="5">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>cstdint</label>
+      </node>
+      <node id="18">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>stdint.h</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>cmath</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>cassert</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>string</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>typeinfo</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>cstdio</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>sstream</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="16">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
+      <node id="12">
         <label>climits</label>
       </node>
       <node id="3">
@@ -104,13 +112,13 @@
         <link refid="Index_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -119,10 +127,10 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>type_traits</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>cstring</label>
       </node>
     </incdepgraph>
@@ -180,7 +188,7 @@
 <codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="47"><highlight class="comment">/**<sp/>get<sp/>a<sp/>DistanceComputer<sp/>that<sp/>refers<sp/>to<sp/>this<sp/>type<sp/>of<sp/>distance<sp/>and</highlight></codeline>
 <codeline lineno="48"><highlight class="comment"><sp/>*<sp/><sp/>indexes<sp/>a<sp/>flat<sp/>array<sp/>of<sp/>size<sp/>nb<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49" refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" refkind="member"><highlight class="normal">FlatCodesDistanceComputer*<sp/><ref refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kindref="member">get_extra_distance_computer</ref>(</highlight></codeline>
+<codeline lineno="49" refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" refkind="member"><highlight class="normal"><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref>*<sp/><ref refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kindref="member">get_extra_distance_computer</ref>(</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>mt,</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metric_arg,</highlight></codeline>

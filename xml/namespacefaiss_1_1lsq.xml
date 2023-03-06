@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1lsq" kind="namespace" language="C++">
+    <compoundname>faiss::lsq</compoundname>
+    <innerclass refid="structfaiss_1_1lsq_1_1IcmEncoder" prot="public">faiss::lsq::IcmEncoder</innerclass>
+    <innerclass refid="structfaiss_1_1lsq_1_1IcmEncoderFactory" prot="public">faiss::lsq::IcmEncoderFactory</innerclass>
+    <innerclass refid="structfaiss_1_1lsq_1_1LSQTimer" prot="public">faiss::lsq::LSQTimer</innerclass>
+    <innerclass refid="structfaiss_1_1lsq_1_1LSQTimerScope" prot="public">faiss::lsq::LSQTimerScope</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/LocalSearchQuantizer.h" line="23" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::StoreResultHandler</compoundname>
+    <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a38a1e3ad217eac339f4a49040de22747" prot="public" static="no" mutable="no">
+        <type>uint16_t *</type>
+        <definition>uint16_t* faiss::simd_result_handlers::StoreResultHandler::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="51" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1ab1d44a3b7d0ebe4c7ac127c0047186ea" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::simd_result_handlers::StoreResultHandler::ld</definition>
+        <argsstring></argsstring>
+        <name>ld</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="52" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3cd8c19a91caaa7f77848dfca52e701e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::simd_result_handlers::StoreResultHandler::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="53" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a1e9dabad5a45552c7ce7740604d0bcc7" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::simd_result_handlers::StoreResultHandler::j0</definition>
+        <argsstring></argsstring>
+        <name>j0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="54" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3b64e8061ed3d37d9c1d456709299824" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd_result_handlers::StoreResultHandler::StoreResultHandler</definition>
+        <argsstring>(uint16_t *data, size_t ld)</argsstring>
+        <name>StoreResultHandler</name>
+        <param>
+          <type>uint16_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ld</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="56" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1afb11f0d74a627fe4d9e100e5a41072d6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::StoreResultHandler::handle</definition>
+        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>handle</name>
+        <param>
+          <type>size_t</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="58" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="58" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aaa5cf567373cdbe5f00aa927627974af" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::StoreResultHandler::set_block_origin</definition>
+        <argsstring>(size_t i0, size_t j0)</argsstring>
+        <name>set_block_origin</name>
+        <param>
+          <type>size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="64" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="64" bodyend="67"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>memorize results in a nq-by-nb matrix.</para>
+<para>j0 is the current upper-left block of the matrix </para>
+    </detaileddescription>
+    <location file="faiss/impl/simd_result_handlers.h" line="50" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="50" bodyend="68"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a38a1e3ad217eac339f4a49040de22747" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>data</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1afb11f0d74a627fe4d9e100e5a41072d6" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3cd8c19a91caaa7f77848dfca52e701e" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a1e9dabad5a45552c7ce7740604d0bcc7" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>j0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1ab1d44a3b7d0ebe4c7ac127c0047186ea" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>ld</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aaa5cf567373cdbe5f00aa927627974af" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3b64e8061ed3d37d9c1d456709299824" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>StoreResultHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classfaiss_1_1FaissException" kind="class" language="C++" prot="public">
+    <compoundname>faiss::FaissException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::exception</basecompoundref>
+    <includes refid="FaissException_8h" local="no">FaissException.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfaiss_1_1FaissException_1a1b84d206c53a24cd8126dbfa30f5523e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string faiss::FaissException::msg</definition>
+        <argsstring></argsstring>
+        <name>msg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="34" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfaiss_1_1FaissException_1a666519cae8a1ab155907e91e80e2ea59" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FaissException::FaissException</definition>
+        <argsstring>(const std::string &amp;msg)</argsstring>
+        <name>FaissException</name>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>msg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="23" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1FaissException_1aad3c1ede6afd588191567fa9f1a60ed0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FaissException::FaissException</definition>
+        <argsstring>(const std::string &amp;msg, const char *funcName, const char *file, int line)</argsstring>
+        <name>FaissException</name>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>msg</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>funcName</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>line</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="25" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1FaissException_1a1993286a39f14787d8441f2f2344612a" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* faiss::FaissException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <briefdescription>
+<para>from std::exception </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="32" column="16"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Base class for Faiss exceptions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::FaissException</label>
+        <link refid="classfaiss_1_1FaissException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FaissException</label>
+        <link refid="classfaiss_1_1FaissException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/FaissException.h" line="21" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="21" bodyend="35"/>
+    <listofallmembers>
+      <member refid="classfaiss_1_1FaissException_1a666519cae8a1ab155907e91e80e2ea59" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>FaissException</name></member>
+      <member refid="classfaiss_1_1FaissException_1aad3c1ede6afd588191567fa9f1a60ed0" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>FaissException</name></member>
+      <member refid="classfaiss_1_1FaissException_1a1b84d206c53a24cd8126dbfa30f5523e" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>msg</name></member>
+      <member refid="classfaiss_1_1FaissException_1a1993286a39f14787d8441f2f2344612a" prot="public" virt="non-virtual"><scope>faiss::FaissException</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

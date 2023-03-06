@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1HNSW_1_1NodeDistCloser" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HNSW::NodeDistCloser</compoundname>
+    <includes refid="HNSW_8h" local="no">HNSW.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistCloser_1aab7d9f3f9986d9a7cad80f9662ce35d8" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::HNSW::NodeDistCloser::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="87" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistCloser_1a020d36b86bf6ba24b5defe228e4d1431" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::HNSW::NodeDistCloser::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="88" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistCloser_1af4d7f59dc5da71bdc9623ec3569b0a8a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HNSW::NodeDistCloser::NodeDistCloser</definition>
+        <argsstring>(float d, int id)</argsstring>
+        <name>NodeDistCloser</name>
+        <param>
+          <type>float</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="89" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistCloser_1a138d38cec71e97c3d8cc2a6c0d842a3d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::HNSW::NodeDistCloser::operator&lt;</definition>
+        <argsstring>(const NodeDistCloser &amp;obj1) const</argsstring>
+        <name>operator&lt;</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref> &amp;</type>
+          <declname>obj1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="90" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="90" bodyend="92"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>to sort pairs of (id, distance) from nearest to fathest or the reverse </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/HNSW.h" line="86" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="86" bodyend="93"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1aab7d9f3f9986d9a7cad80f9662ce35d8" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistCloser</scope><name>d</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a020d36b86bf6ba24b5defe228e4d1431" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistCloser</scope><name>id</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1af4d7f59dc5da71bdc9623ec3569b0a8a" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistCloser</scope><name>NodeDistCloser</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a138d38cec71e97c3d8cc2a6c0d842a3d" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistCloser</scope><name>operator&lt;</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

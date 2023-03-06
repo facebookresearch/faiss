@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1Quantizer" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::Quantizer</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1AdditiveQuantizer" prot="public" virt="non-virtual">faiss::AdditiveQuantizer</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1ProductQuantizer" prot="public" virt="non-virtual">faiss::ProductQuantizer</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1ScalarQuantizer" prot="public" virt="non-virtual">faiss::ScalarQuantizer</derivedcompoundref>
+    <includes refid="Quantizer_8h" local="no">Quantizer.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Quantizer::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+<para>size of the input vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="16" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Quantizer::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <briefdescription>
+<para>bytes per indexed vector </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="17" column="12" bodyfile="faiss/impl/Quantizer.h" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::Quantizer::Quantizer</definition>
+        <argsstring>(size_t d=0, size_t code_size=0)</argsstring>
+        <name>Quantizer</name>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="19" column="14" bodyfile="faiss/impl/Quantizer.h" bodystart="19" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Quantizer::train</definition>
+        <argsstring>(size_t n, const float *x)=0</argsstring>
+        <name>train</name>
+        <reimplementedby refid="structfaiss_1_1LocalSearchQuantizer_1ac4a39a1bbe850d28db3a4dffc7e6dd1b">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a3d066376adf471dd936c251f9f5706c3">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ResidualQuantizer_1a0985eadd777003e6faca9b2247d3b30b">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1a7cc2c64ef7cde9e5d319378d7afd986e">train</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Train the quantizer</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>training vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="26" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Quantizer::compute_codes</definition>
+        <argsstring>(const float *x, uint8_t *codes, size_t n) const =0</argsstring>
+        <name>compute_codes</name>
+        <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1aa75999838c16331a2a2b437cc6283291">compute_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ProductQuantizer_1a4cf7deeb4d4454e2b79876458ada36bc">compute_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1abfd07a93dca7826709b5d3ab7767f5da">compute_codes</reimplementedby>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Quantize a set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output codes, size n * code_size </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="33" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1a71b20a9a5f98f9e8889bb22cfb7f9fac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::Quantizer::decode</definition>
+        <argsstring>(const uint8_t *code, float *x, size_t n) const =0</argsstring>
+        <name>decode</name>
+        <reimplementedby refid="structfaiss_1_1ProductQuantizer_1ad8c4cd19b05301ef3afca0589d16a199">decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ScalarQuantizer_1af605deafd19bab5777d29e035ed5e510">decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1AdditiveQuantizer_1a851fda9f520d3a358abbf0bffe34135f">decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ProductAdditiveQuantizer_1a1cbf18c081882301bc41d447f3845295">decode</reimplementedby>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Decode a set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input codes, size n * code_size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="41" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::Quantizer::~Quantizer</definition>
+        <argsstring>()</argsstring>
+        <name>~Quantizer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Quantizer.h" line="43" column="13" bodyfile="faiss/impl/Quantizer.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Product <ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref>. Implemented only for METRIC_L2 </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="7">
+        <label>faiss::ResidualQuantizer</label>
+        <link refid="structfaiss_1_1ResidualQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::ScalarQuantizer</label>
+        <link refid="structfaiss_1_1ScalarQuantizer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::ProductAdditiveQuantizer</label>
+        <link refid="structfaiss_1_1ProductAdditiveQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::LocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1LocalSearchQuantizer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::ProductLocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1ProductLocalSearchQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::ProductResidualQuantizer</label>
+        <link refid="structfaiss_1_1ProductResidualQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="8">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/Quantizer.h" line="15" column="1" bodyfile="faiss/impl/Quantizer.h" bodystart="15" bodyend="44"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>compute_codes</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a71b20a9a5f98f9e8889bb22cfb7f9fac" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::Quantizer</scope><name>~Quantizer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

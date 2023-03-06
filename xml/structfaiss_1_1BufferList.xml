@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1BufferList" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::BufferList</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1RangeSearchPartialResult" prot="public" virt="non-virtual">faiss::RangeSearchPartialResult</derivedcompoundref>
+    <includes refid="AuxIndexStructures_8h" local="no">AuxIndexStructures.h</includes>
+    <innerclass refid="structfaiss_1_1BufferList_1_1Buffer" prot="public">faiss::BufferList::Buffer</innerclass>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1BufferList_1a5eb5086d4b0f3904a6e4ad7a3b93d96a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BufferList::buffer_size</definition>
+        <argsstring></argsstring>
+        <name>buffer_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="64" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BufferList_1abf92e38d902aabae3c6267e36e55f932" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1BufferList_1_1Buffer" kindref="compound">Buffer</ref> &gt;</type>
+        <definition>std::vector&lt;Buffer&gt; faiss::BufferList::buffers</definition>
+        <argsstring></argsstring>
+        <name>buffers</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="71" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::BufferList::wp</definition>
+        <argsstring></argsstring>
+        <name>wp</name>
+        <briefdescription>
+<para>write pointer in the last buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="72" column="12" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1BufferList_1a84f9e430297d10b693a7d0abbec20b9d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::BufferList::BufferList</definition>
+        <argsstring>(size_t buffer_size)</argsstring>
+        <name>BufferList</name>
+        <param>
+          <type>size_t</type>
+          <declname>buffer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="74" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BufferList_1acba91c9c50ac08d663bb6ed3223489c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::BufferList::~BufferList</definition>
+        <argsstring>()</argsstring>
+        <name>~BufferList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="76" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::BufferList::append_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>append_buffer</name>
+        <briefdescription>
+<para>create a new buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="79" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::BufferList::add</definition>
+        <argsstring>(idx_t id, float dis)</argsstring>
+        <name>add</name>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dis</declname>
+        </param>
+        <briefdescription>
+<para>add one result, possibly appending a new buffer if needed </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="82" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::BufferList::copy_range</definition>
+        <argsstring>(size_t ofs, size_t n, idx_t *dest_ids, float *dest_dis)</argsstring>
+        <name>copy_range</name>
+        <param>
+          <type>size_t</type>
+          <declname>ofs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>dest_ids</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>dest_dis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to tables dest_ids, dest_dis </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="86" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>List of temporary buffers used to store results before they are copied to the <ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> object. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::BufferList</label>
+        <link refid="structfaiss_1_1BufferList"/>
+      </node>
+      <node id="2">
+        <label>faiss::RangeSearchPartialResult</label>
+        <link refid="structfaiss_1_1RangeSearchPartialResult"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/AuxIndexStructures.h" line="62" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="62" bodyend="87"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>add</name></member>
+      <member refid="structfaiss_1_1BufferList_1aa124ff3a7e6a98960e12a8b32bdaec42" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>append_buffer</name></member>
+      <member refid="structfaiss_1_1BufferList_1a5eb5086d4b0f3904a6e4ad7a3b93d96a" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>buffer_size</name></member>
+      <member refid="structfaiss_1_1BufferList_1a84f9e430297d10b693a7d0abbec20b9d" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>BufferList</name></member>
+      <member refid="structfaiss_1_1BufferList_1abf92e38d902aabae3c6267e36e55f932" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>buffers</name></member>
+      <member refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>copy_range</name></member>
+      <member refid="structfaiss_1_1BufferList_1af4d7ddcd77f328a12a7da89d8febe5d9" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>wp</name></member>
+      <member refid="structfaiss_1_1BufferList_1acba91c9c50ac08d663bb6ed3223489c3" prot="public" virt="non-virtual"><scope>faiss::BufferList</scope><name>~BufferList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

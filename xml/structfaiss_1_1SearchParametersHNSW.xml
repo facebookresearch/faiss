@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SearchParametersHNSW" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SearchParametersHNSW</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersHNSW_1a97ab6982ca3de6f8420d8e445e925196" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SearchParametersHNSW::efSearch</definition>
+        <argsstring></argsstring>
+        <name>efSearch</name>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="47" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersHNSW_1ae3b677b9eb7554502912e60797dc5c2f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SearchParametersHNSW::check_relative_distance</definition>
+        <argsstring></argsstring>
+        <name>check_relative_distance</name>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="48" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="54" column="16" bodyfile="faiss/Index.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1SearchParametersHNSW_1a3b7ae6bc1c8c9ba88632177ee5915aa7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SearchParametersHNSW::~SearchParametersHNSW</definition>
+        <argsstring>()</argsstring>
+        <name>~SearchParametersHNSW</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="50" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="50" bodyend="50"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersHNSW</label>
+        <link refid="structfaiss_1_1SearchParametersHNSW"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersHNSW</label>
+        <link refid="structfaiss_1_1SearchParametersHNSW"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/HNSW.h" line="46" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="46" bodyend="51"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SearchParametersHNSW_1ae3b677b9eb7554502912e60797dc5c2f" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>check_relative_distance</name></member>
+      <member refid="structfaiss_1_1SearchParametersHNSW_1a97ab6982ca3de6f8420d8e445e925196" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>efSearch</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParametersHNSW</scope><name>~SearchParameters</name></member>
+      <member refid="structfaiss_1_1SearchParametersHNSW_1a3b7ae6bc1c8c9ba88632177ee5915aa7" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>~SearchParametersHNSW</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

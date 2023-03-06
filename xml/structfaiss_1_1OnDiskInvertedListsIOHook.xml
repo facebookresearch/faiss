@@ -28,11 +28,11 @@
           <declname>ils</declname>
         </param>
         <param>
-          <type>IOWriter *</type>
+          <type><ref refid="structfaiss_1_1IOWriter" kindref="compound">IOWriter</ref> *</type>
           <declname>f</declname>
         </param>
         <briefdescription>
-<para>write the index to the IOWriter (including the fourcc) </para>
+<para>write the index to the <ref refid="structfaiss_1_1IOWriter" kindref="compound">IOWriter</ref> (including the fourcc) </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -47,7 +47,7 @@
         <name>read</name>
         <reimplements refid="structfaiss_1_1InvertedListsIOHook_1a6a3164e33b638f4a9b0103bb19f5bd08">read</reimplements>
         <param>
-          <type>IOReader *</type>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
           <declname>f</declname>
         </param>
         <param>
@@ -70,7 +70,7 @@
         <name>read_ArrayInvertedLists</name>
         <reimplements refid="structfaiss_1_1InvertedListsIOHook_1ae4fdbb6eff8075eddda3d3273a0ccd31">read_ArrayInvertedLists</reimplements>
         <param>
-          <type>IOReader *</type>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
           <declname>f</declname>
         </param>
         <param>

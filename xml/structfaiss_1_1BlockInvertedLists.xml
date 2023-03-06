@@ -34,7 +34,7 @@
         <location file="faiss/invlists/BlockInvertedLists.h" line="34" column="12" bodyfile="faiss/invlists/BlockInvertedLists.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1BlockInvertedLists_1ac593830ce46210c96c5821f06462fcc3" prot="public" static="no" mutable="no">
-        <type>const CodePacker *</type>
+        <type>const <ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
         <definition>const CodePacker* faiss::BlockInvertedLists::packer</definition>
         <argsstring></argsstring>
         <name>packer</name>
@@ -151,7 +151,7 @@
           <declname>nlist</declname>
         </param>
         <param>
-          <type>const CodePacker *</type>
+          <type>const <ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
           <declname>packer</declname>
         </param>
         <briefdescription>
@@ -780,6 +780,13 @@
         <link refid="structfaiss_1_1BlockInvertedLists"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>packer</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::CodePacker</label>
+        <link refid="structfaiss_1_1CodePacker"/>
       </node>
     </collaborationgraph>
     <location file="faiss/invlists/BlockInvertedLists.h" line="32" column="1" bodyfile="faiss/invlists/BlockInvertedLists.h" bodystart="32" bodyend="72"/>

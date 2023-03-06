@@ -3,6 +3,8 @@
   <compounddef id="simdlib_8h" kind="file" language="C++">
     <compoundname>simdlib.h</compoundname>
     <includes refid="simdlib__emulated_8h" local="no">faiss/utils/simdlib_emulated.h</includes>
+    <includedby refid="LookupTableScaler_8h" local="no">faiss/impl/LookupTableScaler.h</includedby>
+    <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <incdepgraph>
       <node id="4">
         <label>cstdint</label>
@@ -35,6 +37,24 @@
         <label>cstring</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/LookupTableScaler.h</label>
+        <link refid="LookupTableScaler_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/utils/simdlib.h</label>
+        <link refid="simdlib_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

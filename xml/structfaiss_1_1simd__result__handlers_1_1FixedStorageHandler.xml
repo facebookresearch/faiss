@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd_result_handlers::FixedStorageHandler</compoundname>
+    <includes refid="simd__result__handlers_8h" local="no">simd_result_handlers.h</includes>
+    <templateparamlist>
+      <param>
+        <type>int</type>
+        <declname>NQ</declname>
+        <defname>NQ</defname>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>BB</declname>
+        <defname>BB</defname>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ad0e9987bf1e7eca3084c795b0418424c" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;::dis[NQ][BB]</definition>
+        <argsstring>[NQ][BB]</argsstring>
+        <name>dis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="73" column="18" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae9a4140b96289ff6918416abc1a93fd0" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="74" column="9" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a40bf222bea1ddba3454e07c9a4298995" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;::handle</definition>
+        <argsstring>(int q, int b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>handle</name>
+        <param>
+          <type>int</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="76" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="76" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ab0abb992487f720ef958ee8f6210fa3a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;::set_block_origin</definition>
+        <argsstring>(size_t i0, size_t j0)</argsstring>
+        <name>set_block_origin</name>
+        <param>
+          <type>size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="81" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="81" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a0c466901ad10190f156b680a2611e2d2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class OtherResultHandler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;::to_other_handler</definition>
+        <argsstring>(OtherResultHandler &amp;other) const</argsstring>
+        <name>to_other_handler</name>
+        <param>
+          <type>OtherResultHandler &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="87" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="87" bodyend="93"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>stores results in fixed-size matrix. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::simd_result_handlers::FixedStorageHandler&lt; NQ, BB &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>dis</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::simd256bit</label>
+        <link refid="structfaiss_1_1simd256bit"/>
+      </node>
+      <node id="2">
+        <label>faiss::simd16uint16</label>
+        <link refid="structfaiss_1_1simd16uint16"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/simd_result_handlers.h" line="72" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="72" bodyend="94"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ad0e9987bf1e7eca3084c795b0418424c" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a40bf222bea1ddba3454e07c9a4298995" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ae9a4140b96289ff6918416abc1a93fd0" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1ab0abb992487f720ef958ee8f6210fa3a" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler_1a0c466901ad10190f156b680a2611e2d2" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::FixedStorageHandler</scope><name>to_other_handler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IOReader" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::IOReader</compoundname>
+    <derivedcompoundref refid="structPyCallbackIOReader" prot="public" virt="non-virtual">PyCallbackIOReader</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1BufferedIOReader" prot="public" virt="non-virtual">faiss::BufferedIOReader</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1FileIOReader" prot="public" virt="non-virtual">faiss::FileIOReader</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1VectorIOReader" prot="public" virt="non-virtual">faiss::VectorIOReader</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string faiss::IOReader::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io.h" line="29" column="17" bodyfile="faiss/impl/io.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>size_t</type>
+        <definition>virtual size_t faiss::IOReader::operator()</definition>
+        <argsstring>(void *ptr, size_t size, size_t nitems)=0</argsstring>
+        <name>operator()</name>
+        <reimplementedby refid="structfaiss_1_1VectorIOReader_1a7eb8ab296df82e601420c5073f19fa43">operator()</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1FileIOReader_1a7b255677a3b90783243ca666d2613a06">operator()</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1BufferedIOReader_1aaa0d9fcd666e0b6f8f4b9751f78228da">operator()</reimplementedby>
+        <reimplementedby refid="structPyCallbackIOReader_1a4224ba74d895e3026d40ecf4a13d2c3d">operator()</reimplementedby>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nitems</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io.h" line="32" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>virtual int faiss::IOReader::fileno</definition>
+        <argsstring>()</argsstring>
+        <name>fileno</name>
+        <reimplementedby refid="structfaiss_1_1FileIOReader_1aa8e9ff5e954992f963fa6876d682d4f4">fileno</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io.h" line="35" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::IOReader::~IOReader</definition>
+        <argsstring>()</argsstring>
+        <name>~IOReader</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io.h" line="37" column="13" bodyfile="faiss/impl/io.h" bodystart="37" bodyend="37"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>faiss::FileIOReader</label>
+        <link refid="structfaiss_1_1FileIOReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::BufferedIOReader</label>
+        <link refid="structfaiss_1_1BufferedIOReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::VectorIOReader</label>
+        <link refid="structfaiss_1_1VectorIOReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>PyCallbackIOReader</label>
+        <link refid="structPyCallbackIOReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/io.h" line="27" column="1" bodyfile="faiss/impl/io.h" bodystart="27" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IOReader_1a6890eedef4aa5a67e84bdda5279ce372" prot="public" virt="virtual"><scope>faiss::IOReader</scope><name>fileno</name></member>
+      <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" prot="public" virt="non-virtual"><scope>faiss::IOReader</scope><name>name</name></member>
+      <member refid="structfaiss_1_1IOReader_1a6fa10ab7638729e93a9e47b51de55f5a" prot="public" virt="pure-virtual"><scope>faiss::IOReader</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" prot="public" virt="virtual"><scope>faiss::IOReader</scope><name>~IOReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

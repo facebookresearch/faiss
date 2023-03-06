@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1InterruptCallback" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::InterruptCallback</compoundname>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1InterruptCallback_1a2b7c49b103b71e89086cbb1a0a30a6eb" prot="public" static="yes" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex faiss::InterruptCallback::lock</definition>
+        <argsstring></argsstring>
+        <name>lock</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="141" column="23" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1InterruptCallback_1acf135176cd744921e4981390c6a7a929" prot="public" static="yes" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1InterruptCallback" kindref="compound">InterruptCallback</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;InterruptCallback&gt; faiss::InterruptCallback::instance</definition>
+        <argsstring></argsstring>
+        <name>instance</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="143" column="28" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="143" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1ae063094b9c16eeb0710246daf45e0061" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::InterruptCallback::want_interrupt</definition>
+        <argsstring>()=0</argsstring>
+        <name>want_interrupt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="137" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1a1a769b856f1219696ffca215dddca755" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::InterruptCallback::~InterruptCallback</definition>
+        <argsstring>()</argsstring>
+        <name>~InterruptCallback</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="138" column="13" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="138" bodyend="138"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1a9a881ae6d76470f2f801013b694a4569" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::InterruptCallback::clear_instance</definition>
+        <argsstring>()</argsstring>
+        <name>clear_instance</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="145" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::InterruptCallback::check</definition>
+        <argsstring>()</argsstring>
+        <name>check</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>check if:<itemizedlist>
+<listitem><para>an interrupt callback is set</para>
+</listitem><listitem><para>the callback returns true if this is the case, then throw an exception. Should not be called from multiple threads. </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="153" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool faiss::InterruptCallback::is_interrupted</definition>
+        <argsstring>()</argsstring>
+        <name>is_interrupted</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>same as <ref refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" kindref="member">check()</ref> but return true if is interrupted instead of throwing. Can be called from multiple threads. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="157" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>static size_t faiss::InterruptCallback::get_period_hint</definition>
+        <argsstring>(size_t flops)</argsstring>
+        <name>get_period_hint</name>
+        <param>
+          <type>size_t</type>
+          <declname>flops</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>assuming each iteration takes a certain number of flops, what is a reasonable interval to check for interrupts? </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/AuxIndexStructures.h" line="162" column="19"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/AuxIndexStructures.h" line="136" column="1" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="136" bodyend="163"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1InterruptCallback_1a0b71f32f4503e74a0907badffd9964f2" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>check</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1a9a881ae6d76470f2f801013b694a4569" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>clear_instance</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1a38a05519f9953b0ebb3e20fb9eff79a5" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>get_period_hint</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1acf135176cd744921e4981390c6a7a929" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>instance</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1abb97e38ad1cdef1f908b0bfa86c3f68d" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>is_interrupted</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1a2b7c49b103b71e89086cbb1a0a30a6eb" prot="public" virt="non-virtual"><scope>faiss::InterruptCallback</scope><name>lock</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1ae063094b9c16eeb0710246daf45e0061" prot="public" virt="pure-virtual"><scope>faiss::InterruptCallback</scope><name>want_interrupt</name></member>
+      <member refid="structfaiss_1_1InterruptCallback_1a1a769b856f1219696ffca215dddca755" prot="public" virt="virtual"><scope>faiss::InterruptCallback</scope><name>~InterruptCallback</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

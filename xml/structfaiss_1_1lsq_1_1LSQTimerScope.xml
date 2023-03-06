@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1lsq_1_1LSQTimerScope" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::lsq::LSQTimerScope</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1LSQTimerScope_1ab067542f64fe9a0edf5f370dc6481460" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::lsq::LSQTimerScope::t0</definition>
+        <argsstring></argsstring>
+        <name>t0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="234" column="12" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1LSQTimerScope_1ac3bbb2e2f5a1c83c6f0910bb0fce0068" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1lsq_1_1LSQTimer" kindref="compound">LSQTimer</ref> *</type>
+        <definition>LSQTimer* faiss::lsq::LSQTimerScope::timer</definition>
+        <argsstring></argsstring>
+        <name>timer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="235" column="14" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a5f4a49eb8a576d73935041ab0e44a506" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string faiss::lsq::LSQTimerScope::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="236" column="17" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a386bb2f25ef45872372e97660239e239" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::lsq::LSQTimerScope::finished</definition>
+        <argsstring></argsstring>
+        <name>finished</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="237" column="10" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="237" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a7a0e9b9135e826f1ededad5d9aad259e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::lsq::LSQTimerScope::LSQTimerScope</definition>
+        <argsstring>(LSQTimer *timer, std::string name)</argsstring>
+        <name>LSQTimerScope</name>
+        <param>
+          <type><ref refid="structfaiss_1_1lsq_1_1LSQTimer" kindref="compound">LSQTimer</ref> *</type>
+          <declname>timer</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="239" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1LSQTimerScope_1aa375b60ea8e0f38438f2ddf0de59a85c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::lsq::LSQTimerScope::finish</definition>
+        <argsstring>()</argsstring>
+        <name>finish</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="241" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1LSQTimerScope_1a345116cdee742a029d366fbfd2d835bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::lsq::LSQTimerScope::~LSQTimerScope</definition>
+        <argsstring>()</argsstring>
+        <name>~LSQTimerScope</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="243" column="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::lsq::LSQTimerScope</label>
+        <link refid="structfaiss_1_1lsq_1_1LSQTimerScope"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>timer</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::lsq::LSQTimer</label>
+        <link refid="structfaiss_1_1lsq_1_1LSQTimer"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/LocalSearchQuantizer.h" line="233" column="1" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="233" bodyend="244"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1aa375b60ea8e0f38438f2ddf0de59a85c" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>finish</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1a386bb2f25ef45872372e97660239e239" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>finished</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1a7a0e9b9135e826f1ededad5d9aad259e" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>LSQTimerScope</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1a5f4a49eb8a576d73935041ab0e44a506" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>name</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1ab067542f64fe9a0edf5f370dc6481460" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>t0</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1ac3bbb2e2f5a1c83c6f0910bb0fce0068" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>timer</name></member>
+      <member refid="structfaiss_1_1lsq_1_1LSQTimerScope_1a345116cdee742a029d366fbfd2d835bb" prot="public" virt="non-virtual"><scope>faiss::lsq::LSQTimerScope</scope><name>~LSQTimerScope</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

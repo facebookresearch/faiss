@@ -4,15 +4,15 @@
     <compoundname>IndexPQFastScan.h</compoundname>
     <includes refid="IndexFastScan_8h" local="no">faiss/IndexFastScan.h</includes>
     <includes refid="IndexPQ_8h" local="no">faiss/IndexPQ.h</includes>
-    <includes local="no">faiss/impl/ProductQuantizer.h</includes>
+    <includes refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includes>
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <incdepgraph>
-      <node id="10">
+      <node id="11">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -23,8 +23,8 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss/impl/platform_macros.h</label>
+      <node id="28">
+        <label>limits</label>
       </node>
       <node id="19">
         <label>faiss/IndexFlatCodes.h</label>
@@ -36,11 +36,16 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>cstdint</label>
+      <node id="5">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
-      <node id="20">
-        <label>faiss/impl/DistanceComputer.h</label>
+      <node id="6">
+        <label>cstdint</label>
       </node>
       <node id="16">
         <label>faiss/IndexPQ.h</label>
@@ -58,23 +63,53 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
+      <node id="23">
+        <label>faiss/Clustering.h</label>
+        <link refid="Clustering_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
       <node id="17">
         <label>stdint.h</label>
       </node>
-      <node id="11">
-        <label>cassert</label>
-      </node>
       <node id="21">
         <label>faiss/impl/PolysemousTraining.h</label>
+        <link refid="PolysemousTraining_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
-      <node id="8">
-        <label>string</label>
+      <node id="27">
+        <label>cmath</label>
+      </node>
+      <node id="12">
+        <label>cassert</label>
       </node>
       <node id="9">
+        <label>string</label>
+      </node>
+      <node id="30">
+        <label>faiss/impl/ProductQuantizer-inl.h</label>
+        <link refid="ProductQuantizer-inl_8h_source"/>
+      </node>
+      <node id="24">
+        <label>faiss/impl/Quantizer.h</label>
+        <link refid="Quantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
         <label>typeinfo</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>cstdio</label>
+      </node>
+      <node id="20">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="18">
         <label>vector</label>
@@ -88,24 +123,52 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>sstream</label>
       </node>
-      <node id="22">
-        <label>faiss/impl/ProductQuantizer.h</label>
+      <node id="25">
+        <label>faiss/utils/Heap.h</label>
+        <link refid="Heap_8h_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
       </node>
       <node id="13">
         <label>cstdlib</label>
+      </node>
+      <node id="26">
+        <label>climits</label>
       </node>
       <node id="3">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
         <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -113,19 +176,39 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexFastScan.h</label>
         <link refid="IndexFastScan_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="4">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
         <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>faiss/impl/ProductQuantizer.h</label>
+        <link refid="ProductQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -171,7 +254,7 @@
 <codeline lineno="27"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29" refid="structfaiss_1_1IndexPQFastScan" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexPQFastScan" kindref="compound">IndexPQFastScan</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexFastScan" kindref="compound">IndexFastScan</ref><sp/>{</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>ProductQuantizer<sp/>pq;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref><sp/>pq;</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexPQFastScan" kindref="compound">IndexPQFastScan</ref>(</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kindref="member">d</ref>,</highlight></codeline>

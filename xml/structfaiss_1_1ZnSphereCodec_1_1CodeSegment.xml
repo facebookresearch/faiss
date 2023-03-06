@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ZnSphereCodec::CodeSegment</compoundname>
+    <basecompoundref refid="structfaiss_1_1Repeats" prot="public" virt="non-virtual">faiss::Repeats</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a98c8cbbed7f69604fb281e48937daf56" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ZnSphereCodec::CodeSegment::c0</definition>
+        <argsstring></argsstring>
+        <name>c0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="119" column="18" bodyfile="faiss/impl/lattice_Zn.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a64bd45d95202fc8b15cfcdc0a044bc8e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::ZnSphereCodec::CodeSegment::signbits</definition>
+        <argsstring></argsstring>
+        <name>signbits</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="120" column="13" bodyfile="faiss/impl/lattice_Zn.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::Repeats::dim</definition>
+        <argsstring></argsstring>
+        <name>dim</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="97" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1Repeat" kindref="compound">Repeat</ref> &gt;</type>
+        <definition>std::vector&lt;Repeat&gt; faiss::Repeats::repeats</definition>
+        <argsstring></argsstring>
+        <name>repeats</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="98" column="17" bodyfile="faiss/impl/lattice_Zn.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1aa18b0015ec6a160634a610cdc99b3459" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ZnSphereCodec::CodeSegment::CodeSegment</definition>
+        <argsstring>(const Repeats &amp;r)</argsstring>
+        <name>CodeSegment</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Repeats" kindref="compound">Repeats</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="118" column="18" bodyfile="faiss/impl/lattice_Zn.h" bodystart="118" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a0fdeed4472bef35acf324537441e2f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::Repeats::count</definition>
+        <argsstring>() const</argsstring>
+        <name>count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="104" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::Repeats::encode</definition>
+        <argsstring>(const float *c) const</argsstring>
+        <name>encode</name>
+        <param>
+          <type>const float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="106" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Repeats::decode</definition>
+        <argsstring>(uint64_t code, float *c) const</argsstring>
+        <name>decode</name>
+        <param>
+          <type>uint64_t</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="108" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::ZnSphereCodec::CodeSegment</label>
+        <link refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::Repeats</label>
+        <link refid="structfaiss_1_1Repeats"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::ZnSphereCodec::CodeSegment</label>
+        <link refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::Repeats</label>
+        <link refid="structfaiss_1_1Repeats"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/lattice_Zn.h" line="117" column="5" bodyfile="faiss/impl/lattice_Zn.h" bodystart="117" bodyend="121"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a98c8cbbed7f69604fb281e48937daf56" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>c0</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1aa18b0015ec6a160634a610cdc99b3459" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>CodeSegment</name></member>
+      <member refid="structfaiss_1_1Repeats_1a0fdeed4472bef35acf324537441e2f24" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>count</name></member>
+      <member refid="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>decode</name></member>
+      <member refid="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>dim</name></member>
+      <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>repeats</name></member>
+      <member refid="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>Repeats</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a64bd45d95202fc8b15cfcdc0a044bc8e" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>signbits</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

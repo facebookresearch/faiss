@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1CodePackerFlat" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::CodePackerFlat</compoundname>
+    <basecompoundref refid="structfaiss_1_1CodePacker" prot="public" virt="non-virtual">faiss::CodePacker</basecompoundref>
+    <includes refid="CodePacker_8h" local="no">CodePacker.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1CodePackerFlat_1abccee3f957430c8569811a16efa9989b" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::CodePackerFlat::CodePackerFlat</definition>
+        <argsstring>(size_t code_size)</argsstring>
+        <name>CodePackerFlat</name>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="60" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CodePackerFlat_1a728656b0b175b69b77dcaadda13cfac9" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::CodePackerFlat::pack_1</definition>
+        <argsstring>(const uint8_t *flat_code, size_t offset, uint8_t *block) const final</argsstring>
+        <name>pack_1</name>
+        <reimplements refid="structfaiss_1_1CodePacker_1a94a4b3147227cc8a115a3ce5bec3cdf1">pack_1</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>flat_code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="62" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CodePackerFlat_1a91f4886146f06de9dfe0aa1c2c5e1436" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::CodePackerFlat::unpack_1</definition>
+        <argsstring>(const uint8_t *block, size_t offset, uint8_t *flat_code) const final</argsstring>
+        <name>unpack_1</name>
+        <reimplements refid="structfaiss_1_1CodePacker_1a0b4468e9cb66b388e275412ced878f30">unpack_1</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>flat_code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="64" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CodePackerFlat_1ae59ad6a701aae0f810f6aa3e9aa1acfa" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::CodePackerFlat::pack_all</definition>
+        <argsstring>(const uint8_t *flat_codes, uint8_t *block) const final</argsstring>
+        <name>pack_all</name>
+        <reimplements refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7">pack_all</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>flat_codes</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="67" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CodePackerFlat_1ab2ef89a0154f83d8b7b2124e970b2895" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::CodePackerFlat::unpack_all</definition>
+        <argsstring>(const uint8_t *block, uint8_t *flat_codes) const final</argsstring>
+        <name>unpack_all</name>
+        <reimplements refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793">unpack_all</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>flat_codes</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="68" column="10"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CodePacker::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="21" column="12" bodyfile="faiss/impl/CodePacker.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CodePacker::nvec</definition>
+        <argsstring></argsstring>
+        <name>nvec</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="22" column="12" bodyfile="faiss/impl/CodePacker.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CodePacker::block_size</definition>
+        <argsstring></argsstring>
+        <name>block_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePacker.h" line="23" column="12" bodyfile="faiss/impl/CodePacker.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Trivial code packer where codes are stored one by one </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::CodePacker</label>
+        <link refid="structfaiss_1_1CodePacker"/>
+      </node>
+      <node id="1">
+        <label>faiss::CodePackerFlat</label>
+        <link refid="structfaiss_1_1CodePackerFlat"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::CodePacker</label>
+        <link refid="structfaiss_1_1CodePacker"/>
+      </node>
+      <node id="1">
+        <label>faiss::CodePackerFlat</label>
+        <link refid="structfaiss_1_1CodePackerFlat"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/CodePacker.h" line="59" column="1" bodyfile="faiss/impl/CodePacker.h" bodystart="59" bodyend="69"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" prot="public" virt="non-virtual"><scope>faiss::CodePackerFlat</scope><name>block_size</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" prot="public" virt="non-virtual"><scope>faiss::CodePackerFlat</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1CodePackerFlat_1abccee3f957430c8569811a16efa9989b" prot="public" virt="non-virtual"><scope>faiss::CodePackerFlat</scope><name>CodePackerFlat</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" prot="public" virt="non-virtual"><scope>faiss::CodePackerFlat</scope><name>nvec</name></member>
+      <member refid="structfaiss_1_1CodePackerFlat_1a728656b0b175b69b77dcaadda13cfac9" prot="public" virt="virtual"><scope>faiss::CodePackerFlat</scope><name>pack_1</name></member>
+      <member refid="structfaiss_1_1CodePackerFlat_1ae59ad6a701aae0f810f6aa3e9aa1acfa" prot="public" virt="virtual"><scope>faiss::CodePackerFlat</scope><name>pack_all</name></member>
+      <member refid="structfaiss_1_1CodePackerFlat_1a91f4886146f06de9dfe0aa1c2c5e1436" prot="public" virt="virtual"><scope>faiss::CodePackerFlat</scope><name>unpack_1</name></member>
+      <member refid="structfaiss_1_1CodePackerFlat_1ab2ef89a0154f83d8b7b2124e970b2895" prot="public" virt="virtual"><scope>faiss::CodePackerFlat</scope><name>unpack_all</name></member>
+      <member refid="structfaiss_1_1CodePacker_1aa075e61d5471f43ca8983e45790326cc" prot="public" virt="virtual"><scope>faiss::CodePackerFlat</scope><name>~CodePacker</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

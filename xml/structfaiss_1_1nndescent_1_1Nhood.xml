@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1nndescent_1_1Nhood" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::nndescent::Nhood</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1a930a8e4426ce3f306d7b8b94156ee243" prot="public" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex faiss::nndescent::Nhood::lock</definition>
+        <argsstring></argsstring>
+        <name>lock</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="66" column="16" bodyfile="faiss/impl/NNDescent.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1a7e221908bd84f4f9b80bbba0384386d4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1nndescent_1_1Neighbor" kindref="compound">Neighbor</ref> &gt;</type>
+        <definition>std::vector&lt;Neighbor&gt; faiss::nndescent::Nhood::pool</definition>
+        <argsstring></argsstring>
+        <name>pool</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="67" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1a642951010d9acdc98765048d6f8bf1fb" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::nndescent::Nhood::M</definition>
+        <argsstring></argsstring>
+        <name>M</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="68" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1a7a5e4ddebc3bc2eba4fcaf7f1727ce94" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::nndescent::Nhood::nn_old</definition>
+        <argsstring></argsstring>
+        <name>nn_old</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="70" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1ad23cfc33113aedfd69c907c1b8ff2b3d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::nndescent::Nhood::nn_new</definition>
+        <argsstring></argsstring>
+        <name>nn_new</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="71" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1ae9919f8927036ecff233b51f0c798a3f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::nndescent::Nhood::rnn_old</definition>
+        <argsstring></argsstring>
+        <name>rnn_old</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="72" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1nndescent_1_1Nhood_1a6bf28c2bc165a3fa57220d3ebc08e0c9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; faiss::nndescent::Nhood::rnn_new</definition>
+        <argsstring></argsstring>
+        <name>rnn_new</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="73" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1a6bd44d45baf06138e690c85e43897a22" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nndescent::Nhood::Nhood</definition>
+        <argsstring>()=default</argsstring>
+        <name>Nhood</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="75" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1ae19d8b75f09c614f43d4647b29098529" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nndescent::Nhood::Nhood</definition>
+        <argsstring>(int l, int s, std::mt19937 &amp;rng, int N)</argsstring>
+        <name>Nhood</name>
+        <param>
+          <type>int</type>
+          <declname>l</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>std::mt19937 &amp;</type>
+          <declname>rng</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>N</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="77" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1aadf14d4e0de459c6de2b05cc0a42afbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;</type>
+        <definition>Nhood&amp; faiss::nndescent::Nhood::operator=</definition>
+        <argsstring>(const Nhood &amp;other)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="79" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1a2ad158e93c93eb3b887c05a3cccaabe4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nndescent::Nhood::Nhood</definition>
+        <argsstring>(const Nhood &amp;other)</argsstring>
+        <name>Nhood</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="81" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::nndescent::Nhood::insert</definition>
+        <argsstring>(int id, float dist)</argsstring>
+        <name>insert</name>
+        <param>
+          <type>int</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="83" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::nndescent::Nhood::join</definition>
+        <argsstring>(C callback) const</argsstring>
+        <name>join</name>
+        <param>
+          <type>C</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="86" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/NNDescent.h" line="65" column="1" bodyfile="faiss/impl/NNDescent.h" bodystart="65" bodyend="87"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>insert</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>join</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a930a8e4426ce3f306d7b8b94156ee243" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>lock</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a642951010d9acdc98765048d6f8bf1fb" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>M</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a6bd44d45baf06138e690c85e43897a22" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae19d8b75f09c614f43d4647b29098529" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a2ad158e93c93eb3b887c05a3cccaabe4" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1ad23cfc33113aedfd69c907c1b8ff2b3d" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>nn_new</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a7a5e4ddebc3bc2eba4fcaf7f1727ce94" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>nn_old</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1aadf14d4e0de459c6de2b05cc0a42afbb" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a7e221908bd84f4f9b80bbba0384386d4" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>pool</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a6bf28c2bc165a3fa57220d3ebc08e0c9" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>rnn_new</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae9919f8927036ecff233b51f0c798a3f" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>rnn_old</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

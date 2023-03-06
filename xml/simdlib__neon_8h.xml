@@ -9,10 +9,30 @@
     <includes local="no">string</includes>
     <includes local="no">type_traits</includes>
     <includes local="no">arm_neon.h</includes>
-    <includes local="no">faiss/impl/FaissAssert.h</includes>
+    <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <incdepgraph>
+      <node id="10">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
       <node id="8">
         <label>arm_neon.h</label>
+      </node>
+      <node id="14">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="4">
         <label>cstdint</label>
@@ -20,8 +40,8 @@
       <node id="6">
         <label>string</label>
       </node>
-      <node id="9">
-        <label>faiss/impl/FaissAssert.h</label>
+      <node id="11">
+        <label>exception</label>
       </node>
       <node id="1">
         <label>faiss/utils/simdlib_neon.h</label>
@@ -43,6 +63,18 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
+      <node id="15">
+        <label>cstdio</label>
+      </node>
+      <node id="13">
+        <label>vector</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="16">
+        <label>cstdlib</label>
+      </node>
       <node id="3">
         <label>cstddef</label>
       </node>
@@ -54,6 +86,20 @@
       </node>
       <node id="5">
         <label>cstring</label>
+      </node>
+      <node id="9">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
     </incdepgraph>
     <innerclass refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" prot="public">faiss::detail::simdlib::is_simd256bit</innerclass>

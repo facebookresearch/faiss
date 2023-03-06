@@ -2,50 +2,103 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="python__callbacks_8h" kind="file" language="C++">
     <compoundname>python_callbacks.h</compoundname>
-    <includes local="no">faiss/impl/IDSelector.h</includes>
-    <includes local="no">faiss/impl/io.h</includes>
+    <includes refid="IDSelector_8h" local="no">faiss/impl/IDSelector.h</includes>
+    <includes refid="io_8h" local="no">faiss/impl/io.h</includes>
     <includes refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includes>
     <includes local="yes">Python.h</includes>
     <incdepgraph>
-      <node id="6">
+      <node id="7">
         <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="8">
+        <label>cstdint</label>
+      </node>
+      <node id="14">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="11">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>unordered_set</label>
       </node>
       <node id="2">
         <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
-      <node id="8">
+      <node id="12">
+        <label>typeinfo</label>
+      </node>
+      <node id="9">
+        <label>cstdio</label>
+      </node>
+      <node id="15">
         <label>Python.h</label>
       </node>
-      <node id="7">
+      <node id="4">
         <label>vector</label>
+      </node>
+      <node id="10">
+        <label>sstream</label>
       </node>
       <node id="1">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/io.h</label>
+        <link refid="io_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss/impl/io.h</label>
-      </node>
       <node id="5">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -77,7 +130,7 @@
 <codeline lineno="18"><highlight class="comment"><sp/>*<sp/>Callbacks<sp/>for<sp/>IO<sp/>reader<sp/>and<sp/>writer</highlight></codeline>
 <codeline lineno="19"><highlight class="comment"><sp/>***********************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight></codeline>
-<codeline lineno="21" refid="structPyCallbackIOWriter" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIOWriter" kindref="compound">PyCallbackIOWriter</ref><sp/>:<sp/>faiss::IOWriter<sp/>{</highlight></codeline>
+<codeline lineno="21" refid="structPyCallbackIOWriter" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIOWriter" kindref="compound">PyCallbackIOWriter</ref><sp/>:<sp/><ref refid="structfaiss_1_1IOWriter" kindref="compound">faiss::IOWriter</ref><sp/>{</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>PyObject*<sp/>callback;</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bs;<sp/></highlight><highlight class="comment">//<sp/>maximum<sp/>write<sp/>size</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -91,7 +144,7 @@
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="structPyCallbackIOWriter" kindref="compound">PyCallbackIOWriter</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35" refid="structPyCallbackIOReader" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIOReader" kindref="compound">PyCallbackIOReader</ref><sp/>:<sp/>faiss::IOReader<sp/>{</highlight></codeline>
+<codeline lineno="35" refid="structPyCallbackIOReader" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIOReader" kindref="compound">PyCallbackIOReader</ref><sp/>:<sp/><ref refid="structfaiss_1_1IOReader" kindref="compound">faiss::IOReader</ref><sp/>{</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>PyObject*<sp/>callback;</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bs;<sp/></highlight><highlight class="comment">//<sp/>maximum<sp/>buffer<sp/>size</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
@@ -108,7 +161,7 @@
 <codeline lineno="49"><highlight class="comment"><sp/>*<sp/>Callbacks<sp/>for<sp/>IDSelector</highlight></codeline>
 <codeline lineno="50"><highlight class="comment"><sp/>***********************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52" refid="structPyCallbackIDSelector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIDSelector" kindref="compound">PyCallbackIDSelector</ref><sp/>:<sp/>faiss::IDSelector<sp/>{</highlight></codeline>
+<codeline lineno="52" refid="structPyCallbackIDSelector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structPyCallbackIDSelector" kindref="compound">PyCallbackIDSelector</ref><sp/>:<sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">faiss::IDSelector</ref><sp/>{</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>PyObject*<sp/>callback;</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"></highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structPyCallbackIDSelector" kindref="compound">PyCallbackIDSelector</ref>(PyObject*<sp/>callback);</highlight></codeline>

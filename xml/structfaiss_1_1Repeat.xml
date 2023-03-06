@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1Repeat" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::Repeat</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1Repeat_1afe826237809d2fe76c9863e4ff8db62e" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::Repeat::val</definition>
+        <argsstring></argsstring>
+        <name>val</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="88" column="11" bodyfile="faiss/impl/lattice_Zn.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Repeat_1afab4e7524120c890c45cb78a0cdeb700" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::Repeat::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/lattice_Zn.h" line="89" column="9" bodyfile="faiss/impl/lattice_Zn.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/lattice_Zn.h" line="87" column="1" bodyfile="faiss/impl/lattice_Zn.h" bodystart="87" bodyend="90"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1Repeat_1afab4e7524120c890c45cb78a0cdeb700" prot="public" virt="non-virtual"><scope>faiss::Repeat</scope><name>n</name></member>
+      <member refid="structfaiss_1_1Repeat_1afe826237809d2fe76c9863e4ff8db62e" prot="public" virt="non-virtual"><scope>faiss::Repeat</scope><name>val</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

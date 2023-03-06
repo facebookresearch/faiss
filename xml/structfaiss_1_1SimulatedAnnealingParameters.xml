@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SimulatedAnnealingParameters" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SimulatedAnnealingParameters</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1PolysemousTraining" prot="public" virt="non-virtual">faiss::PolysemousTraining</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1SimulatedAnnealingOptimizer" prot="public" virt="non-virtual">faiss::SimulatedAnnealingOptimizer</derivedcompoundref>
+    <includes refid="PolysemousTraining_8h" local="no">PolysemousTraining.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a217f2edf539c4c5b7acb9b54129ba024" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::SimulatedAnnealingParameters::init_temperature</definition>
+        <argsstring></argsstring>
+        <name>init_temperature</name>
+        <initializer>= 0.7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="20" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1aa504c46bab0faa2ce816df8294b55ce5" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::SimulatedAnnealingParameters::temperature_decay</definition>
+        <argsstring></argsstring>
+        <name>temperature_decay</name>
+        <initializer>= 0.9997893011688015</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="22" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a782872c517c1a0b8211c6179f60e6d8e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::n_iter</definition>
+        <argsstring></argsstring>
+        <name>n_iter</name>
+        <initializer>= 500000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="23" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1adf0dc7ec9cf5cfb6b043b2610e2beff4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::n_redo</definition>
+        <argsstring></argsstring>
+        <name>n_redo</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="24" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1ae6b87ff7698b724937bc00c0845a71ad" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <initializer>= 123</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="25" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1ae0bbe4df85cb764234d6a700d0db00c4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="26" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a1a92240b3cfe75d58c802dbedf4e4c2e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SimulatedAnnealingParameters::only_bit_flips</definition>
+        <argsstring></argsstring>
+        <name>only_bit_flips</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="27" column="10" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a2a66766c4a8ca802c99a4c1315e197d9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SimulatedAnnealingParameters::init_random</definition>
+        <argsstring></argsstring>
+        <name>init_random</name>
+        <initializer>=
+            false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="28" column="10" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1SimulatedAnnealingParameters_1a28b5f88019d5d5ba8c1bb5be6d5820e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SimulatedAnnealingParameters::SimulatedAnnealingParameters</definition>
+        <argsstring>()</argsstring>
+        <name>SimulatedAnnealingParameters</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="32" column="5" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="32" bodyend="32"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>parameters used for the simulated annealing method </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>faiss::SimulatedAnnealingOptimizer</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingOptimizer"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
+      </node>
+      <node id="2">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/PolysemousTraining.h" line="18" column="1" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="18" bodyend="33"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a2a66766c4a8ca802c99a4c1315e197d9" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>init_random</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a217f2edf539c4c5b7acb9b54129ba024" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>init_temperature</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a782872c517c1a0b8211c6179f60e6d8e" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>n_iter</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1adf0dc7ec9cf5cfb6b043b2610e2beff4" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>n_redo</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a1a92240b3cfe75d58c802dbedf4e4c2e" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>only_bit_flips</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae6b87ff7698b724937bc00c0845a71ad" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>seed</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a28b5f88019d5d5ba8c1bb5be6d5820e7" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>SimulatedAnnealingParameters</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1aa504c46bab0faa2ce816df8294b55ce5" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>temperature_decay</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae0bbe4df85cb764234d6a700d0db00c4" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingParameters</scope><name>verbose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

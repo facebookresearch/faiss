@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1lsq_1_1IcmEncoder" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::lsq::IcmEncoder</compoundname>
+    <derivedcompoundref refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" prot="public" virt="non-virtual">faiss::gpu::GpuIcmEncoder</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1IcmEncoder_1a310d4c8b7e58157e3e764a88c5bfc4ff" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::lsq::IcmEncoder::binaries</definition>
+        <argsstring></argsstring>
+        <name>binaries</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="180" column="17" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1IcmEncoder_1aff2b33803e7f54ebb62c0447a3b8468b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::lsq::IcmEncoder::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="182" column="10" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1lsq_1_1IcmEncoder_1a32af51fa49941c4a4faf228f0fd72352" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref> *</type>
+        <definition>const LocalSearchQuantizer* faiss::lsq::IcmEncoder::lsq</definition>
+        <argsstring></argsstring>
+        <name>lsq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="184" column="32" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoder_1a566132de4caf47303c8679ff6ad42274" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::lsq::IcmEncoder::IcmEncoder</definition>
+        <argsstring>(const LocalSearchQuantizer *lsq)</argsstring>
+        <name>IcmEncoder</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1LocalSearchQuantizer" kindref="compound">LocalSearchQuantizer</ref> *</type>
+          <declname>lsq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="186" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoder_1abbcb3169a86739bfe07018a268c2bcd6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::lsq::IcmEncoder::~IcmEncoder</definition>
+        <argsstring>()</argsstring>
+        <name>~IcmEncoder</name>
+        <briefdescription>
+<para>compute binary terms </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="188" column="13" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoder_1a57779540fe668c896421373f1b4bca8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::lsq::IcmEncoder::set_binary_term</definition>
+        <argsstring>()</argsstring>
+        <name>set_binary_term</name>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1a26bb8e303cbef3b7003212f54eb334c0">set_binary_term</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="191" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1lsq_1_1IcmEncoder_1a407107690ecb6d9d86250fcba0f7b13d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::lsq::IcmEncoder::encode</definition>
+        <argsstring>(int32_t *codes, const float *x, std::mt19937 &amp;gen, size_t n, size_t ils_iters) const</argsstring>
+        <name>encode</name>
+        <reimplementedby refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab5e68099e8b3a973e0ae14d47b03d9cf">encode</reimplementedby>
+        <param>
+          <type>int32_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>std::mt19937 &amp;</type>
+          <declname>gen</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ils_iters</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Encode vectors given codebooks</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output codes, size n * M </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vectors to encode, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>random generator </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ils_iters</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of iterations of iterative local search </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LocalSearchQuantizer.h" line="201" column="18"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::gpu::GpuIcmEncoder</label>
+        <link refid="classfaiss_1_1gpu_1_1GpuIcmEncoder"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::lsq::IcmEncoder</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoder"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="10">
+        <label>faiss::lsq::IcmEncoderFactory</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
+      </node>
+      <node id="2">
+        <label>faiss::LocalSearchQuantizer</label>
+        <link refid="structfaiss_1_1LocalSearchQuantizer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>icm_encoder_factory</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::IndexFlat</label>
+        <link refid="structfaiss_1_1IndexFlat"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::IndexFlat1D</label>
+        <link refid="structfaiss_1_1IndexFlat1D"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::IndexFlatL2</label>
+        <link refid="structfaiss_1_1IndexFlatL2"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="3">
+        <label>faiss::AdditiveQuantizer</label>
+        <link refid="structfaiss_1_1AdditiveQuantizer"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>qnorm</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="8">
+        <label>faiss::IndexFlatCodes</label>
+        <link refid="structfaiss_1_1IndexFlatCodes"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::lsq::IcmEncoder</label>
+        <link refid="structfaiss_1_1lsq_1_1IcmEncoder"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>lsq</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/LocalSearchQuantizer.h" line="179" column="1" bodyfile="faiss/impl/LocalSearchQuantizer.h" bodystart="179" bodyend="207"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a310d4c8b7e58157e3e764a88c5bfc4ff" prot="public" virt="non-virtual"><scope>faiss::lsq::IcmEncoder</scope><name>binaries</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a407107690ecb6d9d86250fcba0f7b13d" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoder</scope><name>encode</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a566132de4caf47303c8679ff6ad42274" prot="public" virt="non-virtual"><scope>faiss::lsq::IcmEncoder</scope><name>IcmEncoder</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a32af51fa49941c4a4faf228f0fd72352" prot="public" virt="non-virtual"><scope>faiss::lsq::IcmEncoder</scope><name>lsq</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1a57779540fe668c896421373f1b4bca8a" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoder</scope><name>set_binary_term</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1aff2b33803e7f54ebb62c0447a3b8468b" prot="public" virt="non-virtual"><scope>faiss::lsq::IcmEncoder</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1lsq_1_1IcmEncoder_1abbcb3169a86739bfe07018a268c2bcd6" prot="public" virt="virtual"><scope>faiss::lsq::IcmEncoder</scope><name>~IcmEncoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

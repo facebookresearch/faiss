@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="dir_c7562a8177f4c7fed0562155251b7d22" kind="dir">
+    <compoundname>faiss/gpu/impl</compoundname>
+    <innerdir refid="dir_7d0d39c4b531e697805e66643e473925">faiss/gpu/impl/scan</innerdir>
+    <innerfile refid="BinaryDistance_8cuh">BinaryDistance.cuh</innerfile>
+    <innerfile refid="BinaryFlatIndex_8cuh">BinaryFlatIndex.cuh</innerfile>
+    <innerfile refid="BroadcastSum_8cuh">BroadcastSum.cuh</innerfile>
+    <innerfile refid="Distance_8cuh">Distance.cuh</innerfile>
+    <innerfile refid="DistanceUtils_8cuh">DistanceUtils.cuh</innerfile>
+    <innerfile refid="FlatIndex_8cuh">FlatIndex.cuh</innerfile>
+    <innerfile refid="GeneralDistance_8cuh">GeneralDistance.cuh</innerfile>
+    <innerfile refid="GpuScalarQuantizer_8cuh">GpuScalarQuantizer.cuh</innerfile>
+    <innerfile refid="IcmEncoder_8cuh">IcmEncoder.cuh</innerfile>
+    <innerfile refid="IndexUtils_8h">IndexUtils.h</innerfile>
+    <innerfile refid="InterleavedCodes_8h">InterleavedCodes.h</innerfile>
+    <innerfile refid="IVFAppend_8cuh">IVFAppend.cuh</innerfile>
+    <innerfile refid="IVFBase_8cuh">IVFBase.cuh</innerfile>
+    <innerfile refid="IVFFlat_8cuh">IVFFlat.cuh</innerfile>
+    <innerfile refid="IVFFlatScan_8cuh">IVFFlatScan.cuh</innerfile>
+    <innerfile refid="IVFInterleaved_8cuh">IVFInterleaved.cuh</innerfile>
+    <innerfile refid="IVFPQ_8cuh">IVFPQ.cuh</innerfile>
+    <innerfile refid="IVFUtils_8cuh">IVFUtils.cuh</innerfile>
+    <innerfile refid="L2Norm_8cuh">L2Norm.cuh</innerfile>
+    <innerfile refid="L2Select_8cuh">L2Select.cuh</innerfile>
+    <innerfile refid="PQCodeDistances-inl_8cuh">PQCodeDistances-inl.cuh</innerfile>
+    <innerfile refid="PQCodeDistances_8cuh">PQCodeDistances.cuh</innerfile>
+    <innerfile refid="PQCodeLoad_8cuh">PQCodeLoad.cuh</innerfile>
+    <innerfile refid="PQScanMultiPassNoPrecomputed-inl_8cuh">PQScanMultiPassNoPrecomputed-inl.cuh</innerfile>
+    <innerfile refid="PQScanMultiPassNoPrecomputed_8cuh">PQScanMultiPassNoPrecomputed.cuh</innerfile>
+    <innerfile refid="PQScanMultiPassPrecomputed_8cuh">PQScanMultiPassPrecomputed.cuh</innerfile>
+    <innerfile refid="RemapIndices_8h">RemapIndices.h</innerfile>
+    <innerfile refid="VectorResidual_8cuh">VectorResidual.cuh</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/impl/"/>
+  </compounddef>
+</doxygen>

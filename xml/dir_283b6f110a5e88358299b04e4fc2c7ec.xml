@@ -4,6 +4,7 @@
     <compoundname>faiss</compoundname>
     <innerdir refid="dir_a72cdb8482385b533c81985f0af53313">faiss/cppcontrib</innerdir>
     <innerdir refid="dir_8904d4d25cfd37481067280c4d4c9f97">faiss/gpu</innerdir>
+    <innerdir refid="dir_dd54f55b8e87373dfa8f730dca1dd7f8">faiss/impl</innerdir>
     <innerdir refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad">faiss/invlists</innerdir>
     <innerdir refid="dir_17d03c0b48df2002720ab53d8fded289">faiss/python</innerdir>
     <innerdir refid="dir_8ad259f5ae9600a74caf331497f5b251">faiss/utils</innerdir>

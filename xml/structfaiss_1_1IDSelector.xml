@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDSelector" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::IDSelector</compoundname>
+    <derivedcompoundref refid="structPyCallbackIDSelector" prot="public" virt="non-virtual">PyCallbackIDSelector</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorAll" prot="public" virt="non-virtual">faiss::IDSelectorAll</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorArray" prot="public" virt="non-virtual">faiss::IDSelectorArray</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorBatch" prot="public" virt="non-virtual">faiss::IDSelectorBatch</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorBitmap" prot="public" virt="non-virtual">faiss::IDSelectorBitmap</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorNot" prot="public" virt="non-virtual">faiss::IDSelectorNot</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IDSelectorRange" prot="public" virt="non-virtual">faiss::IDSelectorRange</derivedcompoundref>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::IDSelector::is_member</definition>
+        <argsstring>(idx_t id) const =0</argsstring>
+        <name>is_member</name>
+        <reimplementedby refid="structPyCallbackIDSelector_1a1551e123110e0b9b485685f8f7a49d74">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorArray_1afe3a7327bf5f0d11bf8f8bf1175caf24">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorBatch_1a78e17b826a9e1947500368ff077c6b12">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorBitmap_1a3c5bdfc7f2377cf569def3bb681b9d0d">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b">is_member</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IDSelectorAll_1a5df9a20a2815f75f4e7fbde75d3eb07a">is_member</reimplementedby>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="22" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::IDSelector::~IDSelector</definition>
+        <argsstring>()</argsstring>
+        <name>~IDSelector</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="23" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="23" bodyend="23"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Encapsulates a set of ids to handle. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="5">
+        <label>faiss::IDSelectorBatch</label>
+        <link refid="structfaiss_1_1IDSelectorBatch"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::IDSelectorNot</label>
+        <link refid="structfaiss_1_1IDSelectorNot"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>PyCallbackIDSelector</label>
+        <link refid="structPyCallbackIDSelector"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="4">
+        <label>faiss::IDSelectorArray</label>
+        <link refid="structfaiss_1_1IDSelectorArray"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss::IDSelectorRange</label>
+        <link refid="structfaiss_1_1IDSelectorRange"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IDSelectorAll</label>
+        <link refid="structfaiss_1_1IDSelectorAll"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::IDSelectorBitmap</label>
+        <link refid="structfaiss_1_1IDSelectorBitmap"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/IDSelector.h" line="21" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="21" bodyend="24"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0" prot="public" virt="pure-virtual"><scope>faiss::IDSelector</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" virt="virtual"><scope>faiss::IDSelector</scope><name>~IDSelector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

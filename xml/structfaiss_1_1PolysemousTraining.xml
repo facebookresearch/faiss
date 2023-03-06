@@ -1,0 +1,385 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PolysemousTraining" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PolysemousTraining</compoundname>
+    <basecompoundref refid="structfaiss_1_1SimulatedAnnealingParameters" prot="public" virt="non-virtual">faiss::SimulatedAnnealingParameters</basecompoundref>
+    <includes refid="PolysemousTraining_8h" local="no">PolysemousTraining.h</includes>
+      <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" prot="public" static="no" strong="no">
+        <type></type>
+        <name>Optimization_type_t</name>
+        <enumvalue id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa1a5ea7330bd57a7dfeb3fa2308eb9ef1" prot="public">
+          <name>OT_None</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa4f1f59a0027c1662a7aaf66f2a78fb23" prot="public">
+          <name>OT_ReproduceDistances_affine</name>
+          <briefdescription>
+<para>default </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa514d33b85a240091cdd7b8efaf66a0b5" prot="public">
+          <name>OT_Ranking_weighted_diff</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>same as _2, but use rank of y+ - rank of y- </para>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="117" column="5" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="117" bodyend="122"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1a46f871a4914a2ac992aa4a4895de79e5" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" kindref="member">Optimization_type_t</ref></type>
+        <definition>Optimization_type_t faiss::PolysemousTraining::optimization_type</definition>
+        <argsstring></argsstring>
+        <name>optimization_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="123" column="25" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1a71013b1d05ce60b41159c753715af50e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::PolysemousTraining::ntrain_permutation</definition>
+        <argsstring></argsstring>
+        <name>ntrain_permutation</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>use 1/4 of the training points for the optimization, with max. ntrain_permutation. If ntrain_permutation == 0: train on centroids </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="128" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1a45724bac8ffec6453e2dd01294e605d7" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::PolysemousTraining::dis_weight_factor</definition>
+        <argsstring></argsstring>
+        <name>dis_weight_factor</name>
+        <briefdescription>
+<para>decay of exp that weights distance loss </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="129" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1acebf83040fcf2a110a3a2fc25348661a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::PolysemousTraining::max_memory</definition>
+        <argsstring></argsstring>
+        <name>max_memory</name>
+        <briefdescription>
+<para>refuse to train if it would require more than that amount of RAM </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="132" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PolysemousTraining_1a0f5d6c6399aebaa3cfccfa5f00b24283" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string faiss::PolysemousTraining::log_pattern</definition>
+        <argsstring></argsstring>
+        <name>log_pattern</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="135" column="17" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a217f2edf539c4c5b7acb9b54129ba024" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::SimulatedAnnealingParameters::init_temperature</definition>
+        <argsstring></argsstring>
+        <name>init_temperature</name>
+        <initializer>= 0.7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="20" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1aa504c46bab0faa2ce816df8294b55ce5" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::SimulatedAnnealingParameters::temperature_decay</definition>
+        <argsstring></argsstring>
+        <name>temperature_decay</name>
+        <initializer>= 0.9997893011688015</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="22" column="12" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a782872c517c1a0b8211c6179f60e6d8e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::n_iter</definition>
+        <argsstring></argsstring>
+        <name>n_iter</name>
+        <initializer>= 500000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="23" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1adf0dc7ec9cf5cfb6b043b2610e2beff4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::n_redo</definition>
+        <argsstring></argsstring>
+        <name>n_redo</name>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="24" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1ae6b87ff7698b724937bc00c0845a71ad" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <initializer>= 123</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="25" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1ae0bbe4df85cb764234d6a700d0db00c4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SimulatedAnnealingParameters::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="26" column="9" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a1a92240b3cfe75d58c802dbedf4e4c2e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SimulatedAnnealingParameters::only_bit_flips</definition>
+        <argsstring></argsstring>
+        <name>only_bit_flips</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="27" column="10" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SimulatedAnnealingParameters_1a2a66766c4a8ca802c99a4c1315e197d9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SimulatedAnnealingParameters::init_random</definition>
+        <argsstring></argsstring>
+        <name>init_random</name>
+        <initializer>=
+            false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="28" column="10" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1a7804711697c63e225d64ac07ce6a8869" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PolysemousTraining::PolysemousTraining</definition>
+        <argsstring>()</argsstring>
+        <name>PolysemousTraining</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="138" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1a32b0a5d6cde2c01ebde5a0c02532a94a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PolysemousTraining::optimize_pq_for_hamming</definition>
+        <argsstring>(ProductQuantizer &amp;pq, size_t n, const float *x) const</argsstring>
+        <name>optimize_pq_for_hamming</name>
+        <param>
+          <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>reorder the centroids so that the Hamming distance becomes a good approximation of the SDC distance (called by train) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="142" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1a139c5ad603fb0624a9f8453a93207742" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PolysemousTraining::optimize_ranking</definition>
+        <argsstring>(ProductQuantizer &amp;pq, size_t n, const float *x) const</argsstring>
+        <name>optimize_ranking</name>
+        <param>
+          <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>called by optimize_pq_for_hamming </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="146" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1af88810697a594be25ce20ca90faa65f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PolysemousTraining::optimize_reproduce_distances</definition>
+        <argsstring>(ProductQuantizer &amp;pq) const</argsstring>
+        <name>optimize_reproduce_distances</name>
+        <param>
+          <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <briefdescription>
+<para>called by optimize_pq_for_hamming </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="148" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PolysemousTraining_1acee2e7d023fa03f5acf2c3a295e1c377" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::PolysemousTraining::memory_usage_per_thread</definition>
+        <argsstring>(const ProductQuantizer &amp;pq) const</argsstring>
+        <name>memory_usage_per_thread</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <briefdescription>
+<para>make sure we don&apos;t blow up the memory </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PolysemousTraining.h" line="151" column="12"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>optimizes the order of indices in a <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/PolysemousTraining.h" line="116" column="1" bodyfile="faiss/impl/PolysemousTraining.h" bodystart="116" bodyend="152"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PolysemousTraining_1a45724bac8ffec6453e2dd01294e605d7" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>dis_weight_factor</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a2a66766c4a8ca802c99a4c1315e197d9" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>init_random</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a217f2edf539c4c5b7acb9b54129ba024" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>init_temperature</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a0f5d6c6399aebaa3cfccfa5f00b24283" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>log_pattern</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1acebf83040fcf2a110a3a2fc25348661a" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>max_memory</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1acee2e7d023fa03f5acf2c3a295e1c377" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>memory_usage_per_thread</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a782872c517c1a0b8211c6179f60e6d8e" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>n_iter</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1adf0dc7ec9cf5cfb6b043b2610e2beff4" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>n_redo</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a71013b1d05ce60b41159c753715af50e" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>ntrain_permutation</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a1a92240b3cfe75d58c802dbedf4e4c2e" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>only_bit_flips</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a46f871a4914a2ac992aa4a4895de79e5" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>optimization_type</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61ef" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>Optimization_type_t</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a32b0a5d6cde2c01ebde5a0c02532a94a" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>optimize_pq_for_hamming</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a139c5ad603fb0624a9f8453a93207742" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>optimize_ranking</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1af88810697a594be25ce20ca90faa65f9" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>optimize_reproduce_distances</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa1a5ea7330bd57a7dfeb3fa2308eb9ef1" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>OT_None</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa514d33b85a240091cdd7b8efaf66a0b5" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>OT_Ranking_weighted_diff</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1aeb5a523056697934972f95fd428f61efa4f1f59a0027c1662a7aaf66f2a78fb23" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>OT_ReproduceDistances_affine</name></member>
+      <member refid="structfaiss_1_1PolysemousTraining_1a7804711697c63e225d64ac07ce6a8869" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>PolysemousTraining</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae6b87ff7698b724937bc00c0845a71ad" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>seed</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a28b5f88019d5d5ba8c1bb5be6d5820e7" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>SimulatedAnnealingParameters</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1aa504c46bab0faa2ce816df8294b55ce5" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>temperature_decay</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae0bbe4df85cb764234d6a700d0db00c4" prot="public" virt="non-virtual"><scope>faiss::PolysemousTraining</scope><name>verbose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

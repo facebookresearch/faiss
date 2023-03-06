@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1DummyScaler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::DummyScaler</compoundname>
+    <includes refid="LookupTableScaler_8h" local="no">LookupTableScaler.h</includes>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1DummyScaler_1a973b155186da752549ed428708d59ed0" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::DummyScaler::nscale</definition>
+        <argsstring></argsstring>
+        <name>nscale</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LookupTableScaler.h" line="24" column="26" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1DummyScaler_1af2b7da16687684fa931767f1711f1f97" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref></type>
+        <definition>simd32uint8 faiss::DummyScaler::lookup</definition>
+        <argsstring>(const simd32uint8 &amp;, const simd32uint8 &amp;) const</argsstring>
+        <name>lookup</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LookupTableScaler.h" line="26" column="24" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="26" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DummyScaler_1ad9009eeed940e0ab8d54618f9001e868" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::DummyScaler::scale_lo</definition>
+        <argsstring>(const simd32uint8 &amp;) const</argsstring>
+        <name>scale_lo</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LookupTableScaler.h" line="31" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="31" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DummyScaler_1ac4deed4d5d2451bb1e6f9e44588233e0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+        <definition>simd16uint16 faiss::DummyScaler::scale_hi</definition>
+        <argsstring>(const simd32uint8 &amp;) const</argsstring>
+        <name>scale_hi</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd32uint8" kindref="compound">simd32uint8</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LookupTableScaler.h" line="36" column="25" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DummyScaler_1a45e9d0604809f99d8ae379772e73e717" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class dist_t</type>
+          </param>
+        </templateparamlist>
+        <type>dist_t</type>
+        <definition>dist_t faiss::DummyScaler::scale_one</definition>
+        <argsstring>(const dist_t &amp;) const</argsstring>
+        <name>scale_one</name>
+        <param>
+          <type>const dist_t &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/LookupTableScaler.h" line="42" column="19" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="42" bodyend="45"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>no-op handler </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/LookupTableScaler.h" line="23" column="1" bodyfile="faiss/impl/LookupTableScaler.h" bodystart="23" bodyend="46"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1DummyScaler_1af2b7da16687684fa931767f1711f1f97" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>lookup</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1a973b155186da752549ed428708d59ed0" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>nscale</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1ac4deed4d5d2451bb1e6f9e44588233e0" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>scale_hi</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1ad9009eeed940e0ab8d54618f9001e868" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>scale_lo</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1a45e9d0604809f99d8ae379772e73e717" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>scale_one</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
