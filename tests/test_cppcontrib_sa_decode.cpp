@@ -1234,14 +1234,29 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x10) {
     testIndexPQDecoder<T>(NSAMPLES * 4, 256, "PQ16x10np");
 }
 
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_PQ16x12) {
+    using T = faiss::cppcontrib::IndexPQDecoder<256, 16, 12>;
+    testIndexPQDecoder<T>(NSAMPLES * 16, 256, "PQ16x12np");
+}
+
 TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x10) {
     using T = faiss::cppcontrib::IndexPQDecoder<160, 8, 10>;
     testIndexPQDecoder<T>(NSAMPLES * 4, 160, "PQ20x10np");
 }
 
+TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x12) {
+    using T = faiss::cppcontrib::IndexPQDecoder<160, 8, 12>;
+    testIndexPQDecoder<T>(NSAMPLES * 16, 160, "PQ20x12np");
+}
+
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "IVF256,PQ16x10np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16x12) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 12>;
+    testIndex2LevelDecoder<T>(NSAMPLES * 16, 256, "IVF256,PQ16x12np");
 }
 
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16x10) {
@@ -1281,6 +1296,11 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual1x9_PQ16x10) {
 TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x10_PQ16x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16, 10, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "Residual4x10,PQ16x10");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_Residual4x12_PQ16x12) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<256, 64, 16, 12, 12>;
+    testIndex2LevelDecoder<T>(NSAMPLES * 16, 256, "Residual4x12,PQ16x12");
 }
 
 #endif
