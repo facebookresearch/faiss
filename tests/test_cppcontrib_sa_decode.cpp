@@ -1239,6 +1239,32 @@ TEST(TEST_CPPCONTRIB_SA_DECODE, D160_PQ20x10) {
     testIndexPQDecoder<T>(NSAMPLES * 4, 160, "PQ20x10np");
 }
 
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_IVF256_PQ16x10) {
+    using T = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 10>;
+    testIndex2LevelDecoder<T>(NSAMPLES * 4, 256, "IVF256,PQ16x10np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF256_PQ16x10) {
+    using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 8, 10>;
+    using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
+    testMinMaxIndex2LevelDecoder<T>(
+            NSAMPLES * 4, 256, "MinMaxFP16,IVF256,PQ16x10np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF1024_PQ16x10) {
+    using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 10, 10>;
+    using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
+    testMinMaxIndex2LevelDecoder<T>(
+            NSAMPLES * 4, 256, "MinMaxFP16,IVF1024,PQ16x10np");
+}
+
+TEST(TEST_CPPCONTRIB_SA_DECODE, D256_MINMAXFP16_IVF1024_PQ16x10_ALTERNATIVE) {
+    using SubT = faiss::cppcontrib::Index2LevelDecoder<256, 256, 16, 16, 10>;
+    using T = faiss::cppcontrib::IndexMinMaxFP16Decoder<SubT>;
+    testMinMaxIndex2LevelDecoder<T>(
+            NSAMPLES * 4, 256, "MinMaxFP16,IVF1024,PQ16x10np");
+}
+
 TEST(TEST_CPPCONTRIB_SA_DECODE, D160_Residual4x8_PQ8x10) {
     using T = faiss::cppcontrib::Index2LevelDecoder<160, 40, 20, 8, 10>;
     testIndex2LevelDecoder<T>(NSAMPLES * 4, 160, "Residual4x8,PQ8x10");
