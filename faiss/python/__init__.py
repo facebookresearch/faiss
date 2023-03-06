@@ -189,6 +189,9 @@ add_ref_in_constructor(BufferedIOWriter, 0)
 add_ref_in_constructor(BufferedIOReader, 0)
 
 add_ref_in_constructor(IDSelectorNot, 0)
+add_ref_in_constructor(IDSelectorAnd, 0)
+add_ref_in_constructor(IDSelectorOr, 0)
+add_ref_in_constructor(IDSelectorXOr, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
