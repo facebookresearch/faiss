@@ -8,6 +8,7 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
+#include <faiss/MetricType.h>
 #include <faiss/utils/distances.h>
 #include <type_traits>
 
@@ -17,12 +18,13 @@ template <MetricType mt>
 struct VectorDistance {
     size_t d;
     float metric_arg;
+    static constexpr bool is_similarity = is_similarity_metric(mt);
 
     inline float operator()(const float* x, const float* y) const;
 
     // heap template to use for this type of metric
     using C = typename std::conditional<
-            mt == METRIC_INNER_PRODUCT,
+            is_similarity_metric(mt),
             CMin<float, int64_t>,
             CMax<float, int64_t>>::type;
 };
@@ -112,6 +114,20 @@ inline float VectorDistance<METRIC_JensenShannon>::operator()(
         accu += kl1 + kl2;
     }
     return 0.5 * accu;
+}
+
+template <>
+inline float VectorDistance<METRIC_Jaccard>::operator()(
+        const float* x,
+        const float* y) const {
+    // WARNING: this distance is defined only for positive input vectors.
+    // Providing vectors with negative values would lead to incorrect results.
+    float accu_num = 0, accu_den = 0;
+    for (size_t i = 0; i < d; i++) {
+        accu_num += fmin(x[i], y[i]);
+        accu_den += fmax(x[i], y[i]);
+    }
+    return accu_num / accu_den;
 }
 
 } // namespace faiss

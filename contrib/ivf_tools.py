@@ -138,7 +138,7 @@ class BigBatchSearcher:
         self.xq = xq
         self.index = index
         self.use_float16 = use_float16
-        keep_max = index.metric_type == faiss.METRIC_INNER_PRODUCT
+        keep_max = faiss.is_similarity_metric(index.metric_type)
         self.rh = faiss.ResultHeap(len(xq), k, keep_max=keep_max)
         self.t_accu = [0] * 5
         self.t_display = self.t0 = time.time()

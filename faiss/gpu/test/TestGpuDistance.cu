@@ -37,7 +37,8 @@ void testTransposition(
     std::vector<float> vecs = randVecs(numVecs, dim);
     std::vector<float> queries = randVecs(numQuery, dim);
 
-    if (metric == faiss::MetricType::METRIC_JensenShannon) {
+    if ((metric == faiss::MetricType::METRIC_JensenShannon) ||
+        (metric == faiss::MetricType::METRIC_Jaccard)) {
         // make values positive
         for (auto& v : vecs) {
             v = std::abs(v);
@@ -190,6 +191,10 @@ TEST(TestGpuDistance, BrayCurtis) {
 
 TEST(TestGpuDistance, JensenShannon) {
     testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon);
+}
+
+TEST(TestGpuDistance, Jaccard) {
+    testTransposition(false, false, faiss::MetricType::METRIC_Jaccard);
 }
 
 int main(int argc, char** argv) {

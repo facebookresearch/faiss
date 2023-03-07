@@ -251,6 +251,35 @@ struct JensenShannonDistance {
     float dist;
 };
 
+struct JaccardSimilarity {
+    __host__ __device__ JaccardSimilarity() : numerator(0), denominator(0) {}
+
+    static constexpr bool kDirection = true; // maximize
+    static constexpr float kIdentityData = 0;
+    static constexpr float kMaxDistance = -std::numeric_limits<float>::max();
+
+    __host__ __device__ void handle(float a, float b) {
+        numerator += fmin(a, b);
+        denominator += fmax(a, b);
+    }
+
+    __host__ __device__ float reduce() {
+        return numerator / denominator;
+    }
+
+    __host__ __device__ void combine(const JaccardSimilarity& v) {
+        numerator += v.numerator;
+        denominator += v.denominator;
+    }
+
+    __host__ __device__ JaccardSimilarity zero() const {
+        return JaccardSimilarity();
+    }
+
+    float numerator;
+    float denominator;
+};
+
 template <typename T, bool InnerContig>
 Tensor<T, 2, InnerContig> sliceCentroids(
         Tensor<T, 2, InnerContig>& centroids,

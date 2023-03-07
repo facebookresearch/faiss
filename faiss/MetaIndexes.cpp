@@ -218,7 +218,7 @@ void IndexRandom::search(
         float dprev = 0;
         for (int j = 0; j < k; j++) {
             float step = rng.rand_float();
-            if (metric_type == METRIC_INNER_PRODUCT) {
+            if (is_similarity_metric(metric_type)) {
                 step = -step;
             }
             dprev += step;
