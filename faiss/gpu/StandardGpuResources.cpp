@@ -22,6 +22,10 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
+#include <rmm/mr/device/cuda_memory_resource.hpp>
+#include <rmm/mr/device/managed_memory_resource.hpp>
+#include <rmm/mr/host/pinned_memory_resource.hpp>
+
 #endif
 
 #include <faiss/gpu/StandardGpuResources.h>
@@ -93,7 +97,13 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl()
                   -1,
                   std::numeric_limits<size_t>::max())),
           pinnedMemSize_(kDefaultPinnedMemoryAllocation),
-          allocLogging_(false) {}
+          allocLogging_(false)
+#if defined USE_NVIDIA_RAFT
+, cmr(new rmm::mr::cuda_memory_resource),
+          mmr(new rmm::mr::managed_memory_resource),
+          pmr(new rmm::mr::pinned_memory_resource)
+#endif
+{}
 
 StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
     // The temporary memory allocator has allocated memory through us, so clean
@@ -148,6 +158,9 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
     }
 
     if (pinnedMemAlloc_) {
+#if defined USE_NVIDIA_RAFT
+        pmr->deallocate(pinnedMemAlloc_, pinnedMemAllocSize_);
+#else
         auto err = cudaFreeHost(pinnedMemAlloc_);
         FAISS_ASSERT_FMT(
                 err == cudaSuccess,
@@ -155,6 +168,7 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
                 pinnedMemAlloc_,
                 (int)err,
                 cudaGetErrorString(err));
+#endif
     }
 }
 
@@ -293,6 +307,15 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     // If this is the first device that we're initializing, create our
     // pinned memory allocation
     if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
+
+#if defined USE_NVIDIA_RAFT
+        // If this is the first device that we're initializing, create our
+        // pinned memory allocation
+        if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
+            pinnedMemAlloc_     = pmr->allocate(pinnedMemSize_);
+            pinnedMemAllocSize_ = pinnedMemSize_;
+        }
+#else
         auto err = cudaHostAlloc(
                 &pinnedMemAlloc_, pinnedMemSize_, cudaHostAllocDefault);
 
@@ -305,6 +328,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
                 cudaGetErrorString(err));
 
         pinnedMemAllocSize_ = pinnedMemSize_;
+#endif
     }
 
     // Make sure that device properties for all devices are cached
@@ -461,6 +485,9 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
         p = tempMemory_[adjReq.device]->allocMemory(adjReq.stream, adjReq.size);
 
     } else if (adjReq.space == MemorySpace::Device) {
+#if defined USE_NVIDIA_RAFT
+        p = cmr->allocate(adjReq.size, adjReq.stream);
+#else
         auto err = cudaMalloc(&p, adjReq.size);
 
         // Throw if we fail to allocate
@@ -482,7 +509,11 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
             FAISS_THROW_IF_NOT_FMT(err == cudaSuccess, "%s", str.c_str());
         }
+#endif
     } else if (adjReq.space == MemorySpace::Unified) {
+#if defined USE_NVIDIA_RAFT
+        p = mmr->allocate(adjReq.size, adjReq.stream);
+#else
         auto err = cudaMallocManaged(&p, adjReq.size);
 
         if (err != cudaSuccess) {
@@ -503,6 +534,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
             FAISS_THROW_IF_NOT_FMT(err == cudaSuccess, "%s", str.c_str());
         }
+#endif
     } else {
         FAISS_ASSERT_FMT(false, "unknown MemorySpace %d", (int)adjReq.space);
     }
@@ -540,6 +572,13 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
     } else if (
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
+#if defined USE_NVIDIA_RAFT
+        if(req.space == MemorySpace::Device) {
+            cmr->deallocate(p, req.size, req.stream);
+        } else if(req.space == MemorySpace::Unified) {
+            mmr->deallocate(p, req.size, req.stream);
+        }
+#else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(
                 err == cudaSuccess,
@@ -547,7 +586,7 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
                 p,
                 (int)err,
                 cudaGetErrorString(err));
-
+#endif
     } else {
         FAISS_ASSERT_FMT(false, "unknown MemorySpace %d", (int)req.space);
     }

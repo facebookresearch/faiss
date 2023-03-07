@@ -7,10 +7,6 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuDistance.h>
-#if defined USE_NVIDIA_RAFT
-#include <faiss/gpu/RmmGpuResources.h>
-#endif
-
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
@@ -68,11 +64,7 @@ void testTransposition(
 
     int device = randVal(0, getNumDevices() - 1);
 
-#if defined USE_NVIDIA_RAFT
-    RmmGpuResources res;
-#else
     StandardGpuResources res;
-#endif
     res.noTempMemory();
 
     int dim = randVal(20, 150);
@@ -161,17 +153,15 @@ void testTransposition(
     args.outIndices = gpuIndices.data();
     args.device = device;
 
+#if defined USE_NVIDIA_RAFT
+    args.use_raft = use_raft;
+#else
+    FAISS_THROW_IF_NOT_MSG(!use_raft, "RAFT has not been compiled into the current version so it cannot be used.");
+#endif
+
     evaluate_bfknn(args, &res,cpuDistance, cpuIndices,
                gpuDistance, gpuIndices, numQuery,
                k, colMajorVecs, colMajorQueries, metric);
-
-#if defined USE_NVIDIA_RAFT
-    args.use_raft = true;
-    evaluate_bfknn(args, &res, cpuDistance, cpuIndices,
-               gpuDistance, gpuIndices, numQuery,
-               k, colMajorVecs, colMajorQueries, metric);
-#endif
-
 }
 
 // Test different memory layouts for brute-force k-NN
@@ -180,17 +170,42 @@ TEST(TestGpuDistance, Transposition_RR) {
     testTransposition(false, false, faiss::MetricType::METRIC_INNER_PRODUCT);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Transposition_RR) {
+    testTransposition(false, false, faiss::MetricType::METRIC_L2, true);
+    testTransposition(false, false, faiss::MetricType::METRIC_INNER_PRODUCT, true);
+}
+#endif
+
 TEST(TestGpuDistance, Transposition_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L2);
 }
+
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Transposition_RC) {
+    testTransposition(false, true, faiss::MetricType::METRIC_L2, true);
+}
+#endif
 
 TEST(TestGpuDistance, Transposition_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L2);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Transposition_CR) {
+    testTransposition(true, false, faiss::MetricType::METRIC_L2, true);
+}
+#endif
+
 TEST(TestGpuDistance, Transposition_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L2);
 }
+
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Transposition_CC) {
+    testTransposition(true, true, faiss::MetricType::METRIC_L2, true);
+}
+#endif
 
 TEST(TestGpuDistance, L1) {
     testTransposition(false, false, faiss::MetricType::METRIC_L1);

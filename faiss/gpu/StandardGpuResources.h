@@ -24,6 +24,9 @@
 
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
+#include <rmm/mr/device/cuda_memory_resource.hpp>
+#include <rmm/mr/device/managed_memory_resource.hpp>
+#include <rmm/mr/host/pinned_memory_resource.hpp>
 #endif
 
 #include <faiss/gpu/GpuResources.h>
@@ -152,6 +155,25 @@ class StandardGpuResourcesImpl : public GpuResources {
 #if defined USE_NVIDIA_RAFT
     /// raft handle for each device
     std::unordered_map<int, raft::device_resources> raftHandles_;
+
+    /**
+     * FIXME: Integrating these in a separate code path for now. Ultimately,
+     * it would be nice if we use a simple memory resource abstraction
+     * in FAISS so we could plug in whether to use RMM's memory resources
+     * or the default.
+     *
+     * There's enough duplicated logic that it doesn't *seem* to make sense
+     * to create a subclass only for the RMM memory resources.
+     */
+
+    // cuda_memory_resource
+    std::unique_ptr<rmm::mr::device_memory_resource> cmr;
+
+    // managed_memory_resource
+    std::unique_ptr<rmm::mr::device_memory_resource> mmr;
+
+    // pinned_memory_resource
+    std::unique_ptr<rmm::mr::host_memory_resource> pmr;
 #endif
 
     /// Pinned memory allocation for use with this GPU
@@ -167,6 +189,8 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     /// Whether or not we log every GPU memory allocation and deallocation
     bool allocLogging_;
+
+
 };
 
 /// Default implementation of GpuResources that allocates a cuBLAS

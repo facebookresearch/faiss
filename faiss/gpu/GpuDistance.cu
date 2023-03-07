@@ -200,7 +200,7 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     fromDevice<float, 2>(tOutDistances, args.outDistances, stream);
 }
 
-void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
+void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     // For now, both vectors and queries must be of the same data type
     FAISS_THROW_IF_NOT_MSG(
             args.vectorType == args.queryType,
@@ -213,32 +213,80 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
 
         DistanceType distance = faiss_to_raft(args.metric, false);
 
-        auto resImpl = res->getResources();
-        auto res_impl = resImpl.get();
-        raft::device_resources& handle = res_impl->getRaftHandleCurrentDevice();
+        auto resImpl = prov->getResources();
+        auto res = resImpl.get();
+        raft::device_resources& handle = res->getRaftHandleCurrentDevice();
+        auto stream = res->getDefaultStreamCurrentDevice();
 
         idx_t dims = args.dims;
         idx_t num_vectors = args.numVectors;
-        const float *vectors = reinterpret_cast<const float*>(args.vectors);
-        const float *queries = reinterpret_cast<const float*>(args.queries);
         idx_t num_queries = args.numQueries;
         int k = args.k;
         float metric_arg = args.metricArg;
-        idx_t *out_indices = reinterpret_cast<idx_t*>(args.outIndices);
-        float *out_distances = reinterpret_cast<float*>(args.outDistances);
+
+        // TODO: The lines below will be removed once RAFT has a proper
+        // function Read-only and Read-Write h2d for temporary memory
+
+        // If the user specified a device, then ensure that it is currently set
+        int device = -1;
+        if (args.device == -1) {
+            // Original behavior if no device is specified, use the current CUDA
+            // thread local device
+            device = getCurrentDevice();
+        } else {
+            // Otherwise, use the device specified in `args`
+            device = args.device;
+
+            FAISS_THROW_IF_NOT_FMT(
+                    device >= 0 && device < getNumDevices(),
+                    "bfKnn: device specified must be -1 (current CUDA thread local device) "
+                    "or within the range [0, %d)",
+                    getNumDevices());
+        }
+
+        DeviceScope scope(device);
+
+        auto tVectors = toDeviceTemporary<float, 2>(
+                res,
+                device,
+                const_cast<float*>(reinterpret_cast<const float*>(args.vectors)),
+                stream,
+                {args.vectorsRowMajor ? args.numVectors : args.dims,
+                 args.vectorsRowMajor ? args.dims : args.numVectors});
+        auto tQueries = toDeviceTemporary<float, 2>(
+                res,
+                device,
+                const_cast<float*>(reinterpret_cast<const float*>(args.queries)),
+                stream,
+                {args.queriesRowMajor ? args.numQueries : args.dims,
+                 args.queriesRowMajor ? args.dims : args.numQueries});
+
+        auto tOutDistances = toDeviceTemporary<float, 2>(
+                res,
+                device,
+                args.outDistances,
+                stream,
+                {args.numQueries, args.k == -1 ? args.numVectors : args.k});
+
+        auto tOutIndices = toDeviceTemporary<idx_t, 2>(
+                res,
+                device,
+                (idx_t*)args.outIndices,
+                stream,
+                {args.numQueries, args.k});
 
         auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
-                out_indices, num_queries, k);
+                tOutIndices.data(), num_queries, k);
 
         auto dists = raft::make_device_matrix_view<float, idx_t>(
-                out_distances,
+                tOutDistances.data(),
                 num_queries,
                 k);
 
         if(args.queriesRowMajor) {
             printf("Row major\n");
-            auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(vectors, num_vectors, dims);
-            auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(queries, num_queries, dims);
+            auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(tVectors.data(), num_vectors, dims);
+            auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(tQueries.data(), num_queries, dims);
 
             // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
             if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
@@ -251,21 +299,22 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
             }
         } else {
             printf("Col major\n");
-            auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(vectors, num_vectors, dims);
-            auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(queries, num_queries, dims);
+            auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(tVectors.data(), num_vectors, dims);
+            auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(tQueries.data(), num_queries, dims);
 
-            // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
-            if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
-                RAFT_LOG_INFO("Invoking flat fused_l2_knn");
-                brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
-            } else {
-                std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
-                RAFT_LOG_INFO("Invoking flat bfknn");
-                brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
-            }
+            std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
+            RAFT_LOG_INFO("Invoking flat bfknn");
+            brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
         }
 
+        RAFT_LOG_INFO("Done.");
+        // Copy distances back if necessary
+        fromDevice<idx_t, 2>(tOutIndices, (idx_t*)args.outIndices, stream);
+        fromDevice<float, 2>(tOutDistances, args.outDistances, stream);
+
+        handle.sync_stream(stream);
         handle.sync_stream();
+        RAFT_LOG_INFO("All synced.");
     } else
 #else
     if(args.use_raft) {
@@ -273,9 +322,9 @@ void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
     } else
 #endif
     if (args.vectorType == DistanceDataType::F32) {
-        bfKnnConvert<float>(res, args);
+        bfKnnConvert<float>(prov, args);
     } else if (args.vectorType == DistanceDataType::F16) {
-        bfKnnConvert<half>(res, args);
+        bfKnnConvert<half>(prov, args);
     } else {
         FAISS_THROW_MSG("unknown vectorType");
     }

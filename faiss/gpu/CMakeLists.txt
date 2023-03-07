@@ -166,10 +166,8 @@ set(FAISS_GPU_HEADERS
 
 if(FAISS_ENABLE_RAFT)
   list(APPEND FAISS_GPU_HEADERS
-          RmmGpuResources.h
           impl/RaftFlatIndex.cuh)
   list(APPEND FAISS_GPU_SRC
-          RmmGpuResources.cpp
           impl/RaftFlatIndex.cu)
 
   target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
