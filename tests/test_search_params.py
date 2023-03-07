@@ -100,17 +100,20 @@ class TestSelector(unittest.TestCase):
             ]).astype('int64')
             sel = faiss.IDSelectorNot(faiss.IDSelectorBatch(inverse_subset))
         elif id_selector_type == "or":
-            lhs_sel = faiss.IDSelectorBatch(lhs_subset)
-            rhs_sel = faiss.IDSelectorBatch(rhs_subset)
-            sel = faiss.IDSelectorOr(lhs_sel, rhs_sel)
+            sel = faiss.IDSelectorOr(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
         elif id_selector_type == "and":
-            lhs_sel = faiss.IDSelectorBatch(lhs_subset)
-            rhs_sel = faiss.IDSelectorBatch(rhs_subset)
-            sel = faiss.IDSelectorAnd(lhs_sel, rhs_sel)
+            sel = faiss.IDSelectorAnd(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
         elif id_selector_type == "xor":
-            lhs_sel = faiss.IDSelectorBatch(lhs_subset)
-            rhs_sel = faiss.IDSelectorBatch(rhs_subset)
-            sel = faiss.IDSelectorXOr(lhs_sel, rhs_sel)
+            sel = faiss.IDSelectorXOr(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
         else:
             sel = faiss.IDSelectorBatch(subset)
 
