@@ -264,3 +264,125 @@ def test_ref_range_results(lims_ref, Dref, Iref,
             (Ii_new, Di_new) = sort_by_ids(Ii_new, Di_new)
             np.testing.assert_array_equal(Ii_ref, Ii_new)
         np.testing.assert_array_almost_equal(Di_ref, Di_new, decimal=5)
+
+
+###############################################################
+# OperatingPoints functions
+# this is the Python version of the AutoTune object in C++
+
+class OperatingPoints:
+    """
+    Manages a set of search parameters with associated performance and time.
+    Keeps the Pareto optimal points.
+    """
+
+    def __init__(self):
+        # list of (key, perf, t)
+        self.operating_points = [
+            #  (self.do_nothing_key(), 0.0, 0.0)
+        ]
+        self.suboptimal_points = []
+
+    def compare_keys(self, k1, k2):
+        """ return -1 if k1 > k2, 1 if k2 > k1, 0 otherwise """
+        raise NotImplemented
+
+    def do_nothing_key(self):
+        """ parameters to say we do noting, takes 0 time and has 0 performance"""
+        raise NotImplemented
+
+    def is_pareto_optimal(self, perf_new, t_new):
+        for _, perf, t in self.operating_points:
+            if perf >= perf_new and t <= t_new:
+                return False
+        return True
+
+    def predict_bounds(self, key):
+        """ predicts the bound on time and performance """
+        min_time = 0.0
+        max_perf = 1.0
+        for key2, perf, t in self.operating_points + self.suboptimal_points:
+            cmp = self.compare_keys(key, key2)
+            if cmp > 0: # key2 > key
+                if t > min_time:
+                    min_time = t
+            if cmp < 0: # key2 < key
+                if perf < max_perf:
+                    max_perf = perf
+        return max_perf, min_time
+
+    def should_run_experiment(self, key):
+        (max_perf, min_time) = self.predict_bounds(key)
+        return self.is_pareto_optimal(max_perf, min_time)
+
+    def add_operating_point(self, key, perf, t):
+        if self.is_pareto_optimal(perf, t):
+            i = 0
+            # maybe it shadows some other operating point completely?
+            while i < len(self.operating_points):
+                op_Ls, perf2, t2 = self.operating_points[i]
+                if perf >= perf2 and t < t2:
+                    self.suboptimal_points.append(
+                        self.operating_points.pop(i))
+                else:
+                    i += 1
+            self.operating_points.append((key, perf, t))
+            return True
+        else:
+            self.suboptimal_points.append((key, perf, t))
+            return False
+
+
+class OperatingPointsWithRanges(OperatingPoints):
+    """
+    Set of parameters that are each picked from a discrete range of values.
+    An increase of each parameter is assumed to make the operation slower
+    and more accurate.
+    A key = int array of indices in the ordered set of parameters.
+    """
+
+    def __init__(self):
+        OperatingPoints.__init__(self)
+        # list of (name, values)
+        self.ranges = []
+
+    def add_range(self, name, values):
+        self.ranges.append((name, values))
+
+    def compare_keys(self, k1, k2):
+        if np.all(k1 >= k2):
+            return 1
+        if np.all(k2 >= k1):
+            return -1
+        return 0
+
+    def do_nothing_key(self):
+        return np.zeros(len(self.ranges), dtype=int)
+
+    def num_experiments(self):
+        return np.prod([len(values) for name, values in self.ranges])
+
+    def cno_to_key(self, cno):
+        """Convert a sequential experiment number to a key"""
+        k = np.zeros(len(self.ranges), dtype=int)
+        for i, (name, values) in enumerate(self.ranges):
+            k[i] = cno % len(values)
+            cno //= len(values)
+        assert cno == 0
+        return k
+
+    def get_parameters(self, k):
+        """Convert a key to a dictionary with parameter values"""
+        return {
+            name: values[k[i]]
+            for i, (name, values) in enumerate(self.ranges)
+        }
+
+    def restrict_range(self, name, max_val):
+        """ remove too large values from a range"""
+        for name2, values in self.ranges:
+            if name == name2:
+                val2 = [v for v in values if v < max_val]
+                values[:] = val2
+                return
+        raise RuntimeError(f"parameter {name} not found")

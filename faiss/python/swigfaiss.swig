@@ -90,6 +90,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
@@ -484,6 +485,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexShards.h>
 %template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
 %template(IndexBinaryShards) faiss::IndexShardsTemplate<faiss::IndexBinary>;
+%include  <faiss/IndexShardsIVF.h>
 
 %include  <faiss/IndexReplicas.h>
 %template(IndexReplicas) faiss::IndexReplicasTemplate<faiss::Index>;
@@ -578,6 +580,7 @@ void gpu_sync_all_devices()
 %typemap(out) faiss::Index * {
     DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )

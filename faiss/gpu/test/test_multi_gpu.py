@@ -8,8 +8,11 @@ import unittest
 import numpy as np
 import faiss
 
+from faiss.contrib.datasets import SyntheticDataset
+
 
 class TestShardedFlat(unittest.TestCase):
+
     @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
     def test_sharded(self):
         d = 32
@@ -48,6 +51,52 @@ class TestShardedFlat(unittest.TestCase):
             pass
         else:
             raise AssertionError("errpr: call should fail but isn't failing")
+
+    @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
+    def do_test_sharded_ivf(self, index_key):
+        ds = SyntheticDataset(32, 8000, 10000, 100)
+        index = faiss.index_factory(ds.d, index_key)
+        if 'HNSW' in index_key:
+            # make a bit more reproducible...
+            faiss.ParameterSpace().set_index_parameter(
+                index, 'quantizer_efSearch', 40)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        index.nprobe = 8
+        Dref8, Iref8 = index.search(ds.get_queries(), 10)
+        index.nprobe = 1
+        print("REF checksum", faiss.checksum(Iref))
+
+        co = faiss.GpuMultipleClonerOptions()
+        co.shard = True
+        co.common_ivf_quantizer = True
+        index = faiss.index_cpu_to_all_gpus(index, co, ngpu=2)
+
+        index.quantizer  # make sure there is indeed a quantizer
+        print("QUANT", faiss.downcast_index(index.quantizer))
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=4)
+
+        # the nprobe is taken from the sub-indexes
+        faiss.GpuParameterSpace().set_index_parameter(index, 'nprobe', 8)
+        Dnew8, Inew8 = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Iref8, Inew8)
+        np.testing.assert_array_almost_equal(Dref8, Dnew8, decimal=4)
+
+        index.reset()
+        index.add(ds.get_database())
+
+        Dnew8, Inew8 = index.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Iref8, Inew8)
+        np.testing.assert_array_almost_equal(Dref8, Dnew8, decimal=4)
+
+    def test_sharded_IVFSQ(self):
+        self.do_test_sharded_ivf("IVF128,SQ8")
+
+    def test_sharded_IVF_HNSW(self):
+        self.do_test_sharded_ivf("IVF1000_HNSW,Flat")
 
 
 # This class also has a multi-GPU test within

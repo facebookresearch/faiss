@@ -20,7 +20,7 @@ def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
     LOG.info("knn_ground_truth queries size %s k=%d" % (xq.shape, k))
     t0 = time.time()
     nq, d = xq.shape
-    keep_max = metric_type == faiss.METRIC_INNER_PRODUCT
+    keep_max = faiss.is_similarity_metric(metric_type)
     rh = faiss.ResultHeap(nq, k, keep_max=keep_max)
 
     index = faiss.IndexFlat(d, metric_type)
@@ -265,7 +265,7 @@ def range_search_max_results(index, query_iterator, radius,
                      (totres, max_results))
             radius, totres = apply_maxres(
                 res_batches, min_results,
-                keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+                keep_max=faiss.is_similarity_metric(index.metric_type)
             )
         t2 = time.time()
         t_search += t1 - t0
@@ -281,7 +281,7 @@ def range_search_max_results(index, query_iterator, radius,
     if clip_to_min and totres > min_results:
         radius, totres = apply_maxres(
             res_batches, min_results,
-            keep_max=index.metric_type == faiss.METRIC_INNER_PRODUCT
+            keep_max=faiss.is_similarity_metric(index.metric_type)
         )
 
     nres = np.hstack([nres_i for nres_i, dis_i, ids_i in res_batches])

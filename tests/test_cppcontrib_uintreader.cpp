@@ -105,6 +105,10 @@ TEST(TEST_CPPCONTRIB_UINTREADER, Test10bit) {
     TestUintReaderBits<10>();
 }
 
+TEST(TEST_CPPCONTRIB_UINTREADER, Test12bit) {
+    TestUintReaderBits<12>();
+}
+
 TEST(TEST_CPPCONTRIB_UINTREADER, Test16bit) {
     TestUintReaderBits<16>();
 }
