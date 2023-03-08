@@ -334,7 +334,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;IDSelector.h&gt;</em></div>
 <p>Encapsulates a set of ids to handle. </p>
-<p>Subclassed by <a class="reference internal" href="../struct/structPyCallbackIDSelector.html#structPyCallbackIDSelector"><span class="std std-ref">PyCallbackIDSelector</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorAll.html#structfaiss_1_1IDSelectorAll"><span class="std std-ref">faiss::IDSelectorAll</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorArray.html#structfaiss_1_1IDSelectorArray"><span class="std std-ref">faiss::IDSelectorArray</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorBatch.html#structfaiss_1_1IDSelectorBatch"><span class="std std-ref">faiss::IDSelectorBatch</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorBitmap.html#structfaiss_1_1IDSelectorBitmap"><span class="std std-ref">faiss::IDSelectorBitmap</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorNot.html#structfaiss_1_1IDSelectorNot"><span class="std std-ref">faiss::IDSelectorNot</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorRange.html#structfaiss_1_1IDSelectorRange"><span class="std std-ref">faiss::IDSelectorRange</span></a></p>
+<p>Subclassed by <a class="reference internal" href="../struct/structPyCallbackIDSelector.html#structPyCallbackIDSelector"><span class="std std-ref">PyCallbackIDSelector</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorAll.html#structfaiss_1_1IDSelectorAll"><span class="std std-ref">faiss::IDSelectorAll</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorAnd.html#structfaiss_1_1IDSelectorAnd"><span class="std std-ref">faiss::IDSelectorAnd</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorArray.html#structfaiss_1_1IDSelectorArray"><span class="std std-ref">faiss::IDSelectorArray</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorBatch.html#structfaiss_1_1IDSelectorBatch"><span class="std std-ref">faiss::IDSelectorBatch</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorBitmap.html#structfaiss_1_1IDSelectorBitmap"><span class="std std-ref">faiss::IDSelectorBitmap</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorNot.html#structfaiss_1_1IDSelectorNot"><span class="std std-ref">faiss::IDSelectorNot</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorOr.html#structfaiss_1_1IDSelectorOr"><span class="std std-ref">faiss::IDSelectorOr</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorRange.html#structfaiss_1_1IDSelectorRange"><span class="std std-ref">faiss::IDSelectorRange</span></a>, <a class="reference internal" href="../struct/structfaiss_1_1IDSelectorXOr.html#structfaiss_1_1IDSelectorXOr"><span class="std std-ref">faiss::IDSelectorXOr</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -608,6 +608,123 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAllD0Ev">
 <span id="_CPPv3N5faiss13IDSelectorAllD0Ev"></span><span id="_CPPv2N5faiss13IDSelectorAllD0Ev"></span><span id="faiss::IDSelectorAll::~IDSelectorAll"></span><span class="target" id="structfaiss_1_1IDSelectorAll_1a493fdbb141bd8aa41e97476c8863ecd4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IDSelectorAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAllD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAndE">
+<span id="_CPPv3N5faiss13IDSelectorAndE"></span><span id="_CPPv2N5faiss13IDSelectorAndE"></span><span id="faiss::IDSelectorAnd"></span><span class="target" id="structfaiss_1_1IDSelectorAnd"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorAnd</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAndE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IDSelector.h&gt;</em></div>
+<p>does an AND operation on the the two given <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a>’s is_membership results. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAnd13IDSelectorAndEPK10IDSelectorPK10IDSelector">
+<span id="_CPPv3N5faiss13IDSelectorAnd13IDSelectorAndEPK10IDSelectorPK10IDSelector"></span><span id="_CPPv2N5faiss13IDSelectorAnd13IDSelectorAndEPK10IDSelectorPK10IDSelector"></span><span id="faiss::IDSelectorAnd::IDSelectorAnd__IDSelectorCP.IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorAnd_1a29761cbdaca7b740363302e1115afc66"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorAnd</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAnd13IDSelectorAndEPK10IDSelectorPK10IDSelector" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13IDSelectorAnd9is_memberE5idx_t">
+<span id="_CPPv3NK5faiss13IDSelectorAnd9is_memberE5idx_t"></span><span id="_CPPv2NK5faiss13IDSelectorAnd9is_memberE5idx_t"></span><span id="faiss::IDSelectorAnd::is_member__idx_tC"></span><span class="target" id="structfaiss_1_1IDSelectorAnd_1ad4e5d9d8081d268b5f75e38d4bbaac8b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_member</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4NK5faiss13IDSelectorAnd9is_memberE5idx_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAndD0Ev">
+<span id="_CPPv3N5faiss13IDSelectorAndD0Ev"></span><span id="_CPPv2N5faiss13IDSelectorAndD0Ev"></span><span id="faiss::IDSelectorAnd::~IDSelectorAnd"></span><span class="target" id="structfaiss_1_1IDSelectorAnd_1a15d03b66b97fd0e772eabea71a419b40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IDSelectorAnd</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAndD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAnd3lhsE">
+<span id="_CPPv3N5faiss13IDSelectorAnd3lhsE"></span><span id="_CPPv2N5faiss13IDSelectorAnd3lhsE"></span><span id="faiss::IDSelectorAnd::lhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorAnd_1af172563e73021fbdac4579d20be34300"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">lhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAnd3lhsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorAnd3rhsE">
+<span id="_CPPv3N5faiss13IDSelectorAnd3rhsE"></span><span id="_CPPv2N5faiss13IDSelectorAnd3rhsE"></span><span id="faiss::IDSelectorAnd::rhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorAnd_1af10ef76e10e0d1f16c90ce65b897f9f7"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">rhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorAnd3rhsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IDSelectorOrE">
+<span id="_CPPv3N5faiss12IDSelectorOrE"></span><span id="_CPPv2N5faiss12IDSelectorOrE"></span><span id="faiss::IDSelectorOr"></span><span class="target" id="structfaiss_1_1IDSelectorOr"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorOr</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><a class="headerlink" href="#_CPPv4N5faiss12IDSelectorOrE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IDSelector.h&gt;</em></div>
+<p>does an OR operation on the the two given <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a>’s is_membership results. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IDSelectorOr12IDSelectorOrEPK10IDSelectorPK10IDSelector">
+<span id="_CPPv3N5faiss12IDSelectorOr12IDSelectorOrEPK10IDSelectorPK10IDSelector"></span><span id="_CPPv2N5faiss12IDSelectorOr12IDSelectorOrEPK10IDSelectorPK10IDSelector"></span><span id="faiss::IDSelectorOr::IDSelectorOr__IDSelectorCP.IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorOr_1aaae6b2b1b0bcb747b828e39b7ee100ce"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorOr</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12IDSelectorOr12IDSelectorOrEPK10IDSelectorPK10IDSelector" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss12IDSelectorOr9is_memberE5idx_t">
+<span id="_CPPv3NK5faiss12IDSelectorOr9is_memberE5idx_t"></span><span id="_CPPv2NK5faiss12IDSelectorOr9is_memberE5idx_t"></span><span id="faiss::IDSelectorOr::is_member__idx_tC"></span><span class="target" id="structfaiss_1_1IDSelectorOr_1a15f05fe8206da5e1a4aa85e41e02d092"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_member</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4NK5faiss12IDSelectorOr9is_memberE5idx_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IDSelectorOrD0Ev">
+<span id="_CPPv3N5faiss12IDSelectorOrD0Ev"></span><span id="_CPPv2N5faiss12IDSelectorOrD0Ev"></span><span id="faiss::IDSelectorOr::~IDSelectorOr"></span><span class="target" id="structfaiss_1_1IDSelectorOr_1a40b7f3fd70c6958fe1e0c6c8d47dcc2f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IDSelectorOr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss12IDSelectorOrD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IDSelectorOr3lhsE">
+<span id="_CPPv3N5faiss12IDSelectorOr3lhsE"></span><span id="_CPPv2N5faiss12IDSelectorOr3lhsE"></span><span id="faiss::IDSelectorOr::lhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorOr_1a22cf01ad73c87c51c0118456a05d9792"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">lhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12IDSelectorOr3lhsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss12IDSelectorOr3rhsE">
+<span id="_CPPv3N5faiss12IDSelectorOr3rhsE"></span><span id="_CPPv2N5faiss12IDSelectorOr3rhsE"></span><span id="faiss::IDSelectorOr::rhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorOr_1aa5044c52e3feff061c5dd8747e3ca1ae"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">rhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss12IDSelectorOr3rhsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorXOrE">
+<span id="_CPPv3N5faiss13IDSelectorXOrE"></span><span id="_CPPv2N5faiss13IDSelectorXOrE"></span><span id="faiss::IDSelectorXOr"></span><span class="target" id="structfaiss_1_1IDSelectorXOr"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorXOr</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="AdditiveQuantizer_8h.html#_CPPv45faiss" title="faiss"><span class="n"><span class="pre">faiss</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorXOrE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IDSelector.h&gt;</em></div>
+<p>does an XOR operation on the the two given <a class="reference internal" href="../struct/structfaiss_1_1IDSelector.html#structfaiss_1_1IDSelector"><span class="std std-ref">IDSelector</span></a>’s is_membership results. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorXOr13IDSelectorXOrEPK10IDSelectorPK10IDSelector">
+<span id="_CPPv3N5faiss13IDSelectorXOr13IDSelectorXOrEPK10IDSelectorPK10IDSelector"></span><span id="_CPPv2N5faiss13IDSelectorXOr13IDSelectorXOrEPK10IDSelectorPK10IDSelector"></span><span id="faiss::IDSelectorXOr::IDSelectorXOr__IDSelectorCP.IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorXOr_1ab10075cffa633bfc8c15aafb0c2bbfd9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDSelectorXOr</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorXOr13IDSelectorXOrEPK10IDSelectorPK10IDSelector" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss13IDSelectorXOr9is_memberE5idx_t">
+<span id="_CPPv3NK5faiss13IDSelectorXOr9is_memberE5idx_t"></span><span id="_CPPv2NK5faiss13IDSelectorXOr9is_memberE5idx_t"></span><span id="faiss::IDSelectorXOr::is_member__idx_tC"></span><span class="target" id="structfaiss_1_1IDSelectorXOr_1ac3d059203fdd296721ddb4c2917828ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_member</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4NK5faiss13IDSelectorXOr9is_memberE5idx_t" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorXOrD0Ev">
+<span id="_CPPv3N5faiss13IDSelectorXOrD0Ev"></span><span id="_CPPv2N5faiss13IDSelectorXOrD0Ev"></span><span id="faiss::IDSelectorXOr::~IDSelectorXOr"></span><span class="target" id="structfaiss_1_1IDSelectorXOr_1a426459cd74b004ba235310c28044a1c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~IDSelectorXOr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorXOrD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorXOr3lhsE">
+<span id="_CPPv3N5faiss13IDSelectorXOr3lhsE"></span><span id="_CPPv2N5faiss13IDSelectorXOr3lhsE"></span><span id="faiss::IDSelectorXOr::lhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">lhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorXOr3lhsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13IDSelectorXOr3rhsE">
+<span id="_CPPv3N5faiss13IDSelectorXOr3rhsE"></span><span id="_CPPv2N5faiss13IDSelectorXOr3rhsE"></span><span id="faiss::IDSelectorXOr::rhs__IDSelectorCP"></span><span class="target" id="structfaiss_1_1IDSelectorXOr_1a87ede6785fbe4f5b7e63cdde0e4bb68e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5faiss10IDSelectorE" title="faiss::IDSelector"><span class="n"><span class="pre">IDSelector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">rhs</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13IDSelectorXOr3rhsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
