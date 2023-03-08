@@ -305,7 +305,8 @@ class TestAllPairwiseDistance(unittest.TestCase):
             faiss.METRIC_Linf,
             faiss.METRIC_Canberra,
             faiss.METRIC_BrayCurtis,
-            faiss.METRIC_JensenShannon
+            faiss.METRIC_JensenShannon,
+            faiss.METRIC_Jaccard
         ]
 
         for metric in metrics:
@@ -349,7 +350,7 @@ class TestAllPairwiseDistance(unittest.TestCase):
 
             # INNER_PRODUCT is in descending order, make sure it is the same
             # order
-            if metric == faiss.METRIC_INNER_PRODUCT:
+            if faiss.is_similarity_metric(metric):
                 ref_d = np.sort(ref_d, axis=1)
 
             print('f32', np.abs(ref_d - out_d).max())
@@ -382,7 +383,7 @@ class TestAllPairwiseDistance(unittest.TestCase):
 
             # INNER_PRODUCT is in descending order, make sure it is the same
             # order
-            if metric == faiss.METRIC_INNER_PRODUCT:
+            if faiss.is_similarity_metric(metric):
                 ref_d_f16 = np.sort(ref_d_f16, axis=1)
 
             print('f16', np.abs(ref_d_f16 - out_d_f16).max())

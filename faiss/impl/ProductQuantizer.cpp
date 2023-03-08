@@ -421,15 +421,28 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    size_t m;
-
-    for (m = 0; m < M; m++) {
-        fvec_L2sqr_ny(
-                dis_table + m * ksub,
-                x + m * dsub,
-                get_centroids(m, 0),
-                dsub,
-                ksub);
+    if (transposed_centroids.empty()) {
+        // use regular version
+        for (size_t m = 0; m < M; m++) {
+            fvec_L2sqr_ny(
+                    dis_table + m * ksub,
+                    x + m * dsub,
+                    get_centroids(m, 0),
+                    dsub,
+                    ksub);
+        }
+    } else {
+        // transposed centroids are available, use'em
+        for (size_t m = 0; m < M; m++) {
+            fvec_L2sqr_ny_transposed(
+                    dis_table + m * ksub,
+                    x + m * dsub,
+                    transposed_centroids.data() + m * ksub,
+                    centroids_sq_lengths.data() + m * ksub,
+                    dsub,
+                    M * ksub,
+                    ksub);
+        }
     }
 }
 

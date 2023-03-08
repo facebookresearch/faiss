@@ -128,6 +128,72 @@ struct Uint10Reader {
 };
 
 // reduces the number of read operations from RAM
+///////////////////////////////////////////////
+// 76543210 76543210 76543210 76543210 76543210 76543210
+// 00000000 0000
+//              1111 11111111
+//                            22222222 2222
+//                                         3333 33333333
+template <intptr_t N_ELEMENTS, intptr_t CPOS>
+struct Uint12Reader {
+    static_assert(CPOS < N_ELEMENTS, "CPOS should be less than N_ELEMENTS");
+
+    static intptr_t get(const uint8_t* const __restrict codes) {
+        // Read using 4-bytes or 2-bytes.
+
+        constexpr intptr_t ELEMENT_TO_READ = CPOS / 4;
+        constexpr intptr_t SUB_ELEMENT = CPOS % 4;
+
+        switch (SUB_ELEMENT) {
+            case 0: {
+                if (N_ELEMENTS > CPOS + 2) {
+                    const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
+                            codes + ELEMENT_TO_READ * 6);
+                    return (code32 & 0b0000111111111111);
+                } else {
+                    const uint16_t code16 = *reinterpret_cast<const uint16_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 0);
+                    return (code16 & 0b0000111111111111);
+                }
+            }
+            case 1: {
+                if (N_ELEMENTS > CPOS + 1) {
+                    const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
+                            codes + ELEMENT_TO_READ * 6);
+                    return (code32 & 0b111111111111000000000000) >> 12;
+                } else {
+                    const uint16_t code16 = *reinterpret_cast<const uint16_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 1);
+                    return (code16 & 0b1111111111110000) >> 4;
+                }
+            }
+            case 2: {
+                if (N_ELEMENTS > CPOS + 1) {
+                    const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 2);
+                    return (code32 & 0b000011111111111100000000) >> 8;
+                } else {
+                    const uint16_t code16 = *reinterpret_cast<const uint16_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 3);
+                    return (code16 & 0b0000111111111111);
+                }
+            }
+            case 3: {
+                if (N_ELEMENTS > CPOS) {
+                    const uint32_t code32 = *reinterpret_cast<const uint32_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 2);
+                    return (code32 & 0b11111111111100000000000000000000) >> 20;
+                } else {
+                    const uint16_t code16 = *reinterpret_cast<const uint16_t*>(
+                            codes + ELEMENT_TO_READ * 6 + 4);
+                    return (code16 & 0b1111111111110000) >> 4;
+                }
+            }
+        }
+    }
+};
+
+// reduces the number of read operations from RAM
 template <intptr_t N_ELEMENTS, intptr_t CPOS>
 struct Uint16Reader {
     static_assert(CPOS < N_ELEMENTS, "CPOS should be less than N_ELEMENTS");
@@ -178,6 +244,11 @@ struct UintReaderImplType<N_ELEMENTS, 8, CPOS> {
 template <intptr_t N_ELEMENTS, intptr_t CPOS>
 struct UintReaderImplType<N_ELEMENTS, 10, CPOS> {
     using reader_type = Uint10Reader<N_ELEMENTS, CPOS>;
+};
+
+template <intptr_t N_ELEMENTS, intptr_t CPOS>
+struct UintReaderImplType<N_ELEMENTS, 12, CPOS> {
+    using reader_type = Uint12Reader<N_ELEMENTS, CPOS>;
 };
 
 template <intptr_t N_ELEMENTS, intptr_t CPOS>

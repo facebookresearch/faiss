@@ -23,7 +23,7 @@ class TestSelector(unittest.TestCase):
     def do_test_id_selector(self, index_key, id_selector_type="batch", mt=faiss.METRIC_L2):
         """ Verify that the id selector returns the subset of results that are
         members according to the IDSelector.
-        Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "not"
+        Supports id_selector_type="batch", "bitmap", "range", "range_sorted", "and", "or", "xor"
         """
         ds = datasets.SyntheticDataset(32, 1000, 100, 20)
         index = faiss.index_factory(ds.d, index_key, mt)
@@ -33,6 +33,24 @@ class TestSelector(unittest.TestCase):
         # reference result
         if "range" in id_selector_type:
             subset = np.arange(30, 80).astype('int64')
+        elif id_selector_type == "or":
+            lhs_rs = np.random.RandomState(123)
+            lhs_subset = lhs_rs.choice(ds.nb, 50, replace=False).astype("int64")
+            rhs_rs = np.random.RandomState(456)
+            rhs_subset = rhs_rs.choice(ds.nb, 20, replace=False).astype("int64")
+            subset = np.union1d(lhs_subset, rhs_subset)
+        elif id_selector_type == "and":
+            lhs_rs = np.random.RandomState(123)
+            lhs_subset = lhs_rs.choice(ds.nb, 50, replace=False).astype("int64")
+            rhs_rs = np.random.RandomState(456)
+            rhs_subset = rhs_rs.choice(ds.nb, 10, replace=False).astype("int64")
+            subset = np.intersect1d(lhs_subset, rhs_subset)
+        elif id_selector_type == "xor":
+            lhs_rs = np.random.RandomState(123)
+            lhs_subset = lhs_rs.choice(ds.nb, 50, replace=False).astype("int64")
+            rhs_rs = np.random.RandomState(456)
+            rhs_subset = rhs_rs.choice(ds.nb, 40, replace=False).astype("int64")
+            subset = np.setxor1d(lhs_subset, rhs_subset)
         else:
             rs = np.random.RandomState(123)
             subset = rs.choice(ds.nb, 50, replace=False).astype("int64")
@@ -81,6 +99,21 @@ class TestSelector(unittest.TestCase):
                 if i not in ssubset
             ]).astype('int64')
             sel = faiss.IDSelectorNot(faiss.IDSelectorBatch(inverse_subset))
+        elif id_selector_type == "or":
+            sel = faiss.IDSelectorOr(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
+        elif id_selector_type == "and":
+            sel = faiss.IDSelectorAnd(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
+        elif id_selector_type == "xor":
+            sel = faiss.IDSelectorXOr(
+                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(rhs_subset)
+            )
         else:
             sel = faiss.IDSelectorBatch(subset)
 
@@ -148,6 +181,9 @@ class TestSelector(unittest.TestCase):
 
     def test_Flat_id_not(self):
         self.do_test_id_selector("Flat", id_selector_type="not")
+    
+    def test_Flat_id_or(self):
+        self.do_test_id_selector("Flat", id_selector_type="or")
 
     # not implemented
 
