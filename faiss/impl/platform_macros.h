@@ -109,7 +109,7 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
     __pragma(float_control(precise, off, push))
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
-#elif defined(_GCC_)
+#elif defined(__GNUC__) && !defined(__clang__)
 #define FAISS_PRAGMA_IMPRECISE_LOOP
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
     _Pragma(" GCC optimize (\"unroll-loops,associative-math,no-signed-zeros\")")
