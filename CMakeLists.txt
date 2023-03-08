@@ -53,6 +53,7 @@ endif()
 if(FAISS_ENABLE_RAFT)
   rapids_cpm_init()
   include(cmake/thirdparty/get_raft.cmake)
+  include(cmake/thirdparty/get_cutlass.cmake)
 endif()
 
 add_subdirectory(faiss)
