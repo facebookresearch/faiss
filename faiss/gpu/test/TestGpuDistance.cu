@@ -211,39 +211,99 @@ TEST(TestGpuDistance, L1) {
     testTransposition(false, false, faiss::MetricType::METRIC_L1);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, L1) {
+    testTransposition(false, false, faiss::MetricType::METRIC_L1, true);
+}
+#endif
+
+
 // Test other transpositions with the general distance kernel
 TEST(TestGpuDistance, L1_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L1);
 }
 
+#if defined USE_NVIDIA_RAFT
+// Test other transpositions with the general distance kernel
+TEST(TestRaftGpuDistance, L1_RC) {
+    testTransposition(false, true, faiss::MetricType::METRIC_L1, true);
+}
+#endif
+
+
 TEST(TestGpuDistance, L1_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L1);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, L1_CR) {
+    testTransposition(true, false, faiss::MetricType::METRIC_L1, true);
+}
+#endif
+
 TEST(TestGpuDistance, L1_CC) {
     testTransposition(true, true, faiss::MetricType::METRIC_L1);
 }
+
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, L1_CC) {
+    testTransposition(true, true, faiss::MetricType::METRIC_L1, true);
+}
+#endif
 
 // Test remainder of metric types
 TEST(TestGpuDistance, Linf) {
     testTransposition(false, false, faiss::MetricType::METRIC_Linf);
 }
 
-TEST(TestGpuDistance, Lp) {
-    testTransposition(false, false, faiss::MetricType::METRIC_Lp, 3);
+#if defined USE_NVIDIA_RAFT
+// Test remainder of metric types
+TEST(TestRaftGpuDistance, Linf) {
+    testTransposition(false, false, faiss::MetricType::METRIC_Linf, true);
 }
+#endif
+
+TEST(TestGpuDistance, Lp) {
+    testTransposition(false, false, faiss::MetricType::METRIC_Lp, false, 3);
+}
+
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Lp) {
+    testTransposition(false, false, faiss::MetricType::METRIC_Lp, true, 3);
+}
+#endif
 
 TEST(TestGpuDistance, Canberra) {
     testTransposition(false, false, faiss::MetricType::METRIC_Canberra);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, Canberra) {
+    testTransposition(false, false, faiss::MetricType::METRIC_Canberra, true);
+}
+#endif
+
 TEST(TestGpuDistance, BrayCurtis) {
     testTransposition(false, false, faiss::MetricType::METRIC_BrayCurtis);
 }
 
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, BrayCurtis) {
+    testTransposition(false, false, faiss::MetricType::METRIC_BrayCurtis, true);
+}
+#endif
+
+
 TEST(TestGpuDistance, JensenShannon) {
     testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon);
 }
+
+#if defined USE_NVIDIA_RAFT
+TEST(TestRaftGpuDistance, JensenShannon) {
+    testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon, true);
+}
+#endif
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
