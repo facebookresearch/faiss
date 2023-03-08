@@ -41,6 +41,9 @@
     <innerclass refid="structfaiss_1_1IDSelectorBitmap" prot="public">faiss::IDSelectorBitmap</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorNot" prot="public">faiss::IDSelectorNot</innerclass>
     <innerclass refid="structfaiss_1_1IDSelectorAll" prot="public">faiss::IDSelectorAll</innerclass>
+    <innerclass refid="structfaiss_1_1IDSelectorAnd" prot="public">faiss::IDSelectorAnd</innerclass>
+    <innerclass refid="structfaiss_1_1IDSelectorOr" prot="public">faiss::IDSelectorOr</innerclass>
+    <innerclass refid="structfaiss_1_1IDSelectorXOr" prot="public">faiss::IDSelectorXOr</innerclass>
     <innerclass refid="structfaiss_1_1IOReader" prot="public">faiss::IOReader</innerclass>
     <innerclass refid="structfaiss_1_1IOWriter" prot="public">faiss::IOWriter</innerclass>
     <innerclass refid="structfaiss_1_1VectorIOReader" prot="public">faiss::VectorIOReader</innerclass>

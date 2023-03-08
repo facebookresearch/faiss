@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1IDSelectorXOr" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IDSelectorXOr</compoundname>
+    <basecompoundref refid="structfaiss_1_1IDSelector" prot="public" virt="non-virtual">faiss::IDSelector</basecompoundref>
+    <includes refid="IDSelector_8h" local="no">IDSelector.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::IDSelectorXOr::lhs</definition>
+        <argsstring></argsstring>
+        <name>lhs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="163" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IDSelectorXOr_1a87ede6785fbe4f5b7e63cdde0e4bb68e" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::IDSelectorXOr::rhs</definition>
+        <argsstring></argsstring>
+        <name>rhs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="164" column="22" bodyfile="faiss/impl/IDSelector.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorXOr_1ab10075cffa633bfc8c15aafb0c2bbfd9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IDSelectorXOr::IDSelectorXOr</definition>
+        <argsstring>(const IDSelector *lhs, const IDSelector *rhs)</argsstring>
+        <name>IDSelectorXOr</name>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="165" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="165" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorXOr_1ac3d059203fdd296721ddb4c2917828ed" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::IDSelectorXOr::is_member</definition>
+        <argsstring>(idx_t id) const final</argsstring>
+        <name>is_member</name>
+        <reimplements refid="structfaiss_1_1IDSelector_1a57119188b2d81dcdeee8db5a08348fc0">is_member</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="167" column="10" bodyfile="faiss/impl/IDSelector.h" bodystart="167" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorXOr_1a426459cd74b004ba235310c28044a1c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::IDSelectorXOr::~IDSelectorXOr</definition>
+        <argsstring>()</argsstring>
+        <name>~IDSelectorXOr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/IDSelector.h" line="170" column="13" bodyfile="faiss/impl/IDSelector.h" bodystart="170" bodyend="170"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>does an XOR operation on the the two given <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>&apos;s is_membership results. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::IDSelectorXOr</label>
+        <link refid="structfaiss_1_1IDSelectorXOr"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::IDSelectorXOr</label>
+        <link refid="structfaiss_1_1IDSelectorXOr"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>lhs</edgelabel>
+          <edgelabel>rhs</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/IDSelector.h" line="162" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="162" bodyend="171"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1IDSelectorXOr_1ab10075cffa633bfc8c15aafb0c2bbfd9" prot="public" virt="non-virtual"><scope>faiss::IDSelectorXOr</scope><name>IDSelectorXOr</name></member>
+      <member refid="structfaiss_1_1IDSelectorXOr_1ac3d059203fdd296721ddb4c2917828ed" prot="public" virt="virtual"><scope>faiss::IDSelectorXOr</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf" prot="public" virt="non-virtual"><scope>faiss::IDSelectorXOr</scope><name>lhs</name></member>
+      <member refid="structfaiss_1_1IDSelectorXOr_1a87ede6785fbe4f5b7e63cdde0e4bb68e" prot="public" virt="non-virtual"><scope>faiss::IDSelectorXOr</scope><name>rhs</name></member>
+      <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" virt="virtual"><scope>faiss::IDSelectorXOr</scope><name>~IDSelector</name></member>
+      <member refid="structfaiss_1_1IDSelectorXOr_1a426459cd74b004ba235310c28044a1c6" prot="public" virt="virtual"><scope>faiss::IDSelectorXOr</scope><name>~IDSelectorXOr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

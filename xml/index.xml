@@ -1648,6 +1648,13 @@
     <member refid="structfaiss_1_1IDSelectorAll_1a5df9a20a2815f75f4e7fbde75d3eb07a" kind="function"><name>is_member</name></member>
     <member refid="structfaiss_1_1IDSelectorAll_1a493fdbb141bd8aa41e97476c8863ecd4" kind="function"><name>~IDSelectorAll</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IDSelectorAnd" kind="struct"><name>faiss::IDSelectorAnd</name>
+    <member refid="structfaiss_1_1IDSelectorAnd_1af172563e73021fbdac4579d20be34300" kind="variable"><name>lhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorAnd_1af10ef76e10e0d1f16c90ce65b897f9f7" kind="variable"><name>rhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorAnd_1a29761cbdaca7b740363302e1115afc66" kind="function"><name>IDSelectorAnd</name></member>
+    <member refid="structfaiss_1_1IDSelectorAnd_1ad4e5d9d8081d268b5f75e38d4bbaac8b" kind="function"><name>is_member</name></member>
+    <member refid="structfaiss_1_1IDSelectorAnd_1a15d03b66b97fd0e772eabea71a419b40" kind="function"><name>~IDSelectorAnd</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IDSelectorArray" kind="struct"><name>faiss::IDSelectorArray</name>
     <member refid="structfaiss_1_1IDSelectorArray_1a108a883417f17e357aa40e568968eb0e" kind="variable"><name>n</name></member>
     <member refid="structfaiss_1_1IDSelectorArray_1a5a04142311f2044177bd82a5cd5c0a13" kind="variable"><name>ids</name></member>
@@ -1677,6 +1684,13 @@
     <member refid="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b" kind="function"><name>is_member</name></member>
     <member refid="structfaiss_1_1IDSelectorNot_1a6d330a83ea4183f8f6e94321f970c67e" kind="function"><name>~IDSelectorNot</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IDSelectorOr" kind="struct"><name>faiss::IDSelectorOr</name>
+    <member refid="structfaiss_1_1IDSelectorOr_1a22cf01ad73c87c51c0118456a05d9792" kind="variable"><name>lhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorOr_1aa5044c52e3feff061c5dd8747e3ca1ae" kind="variable"><name>rhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorOr_1aaae6b2b1b0bcb747b828e39b7ee100ce" kind="function"><name>IDSelectorOr</name></member>
+    <member refid="structfaiss_1_1IDSelectorOr_1a15f05fe8206da5e1a4aa85e41e02d092" kind="function"><name>is_member</name></member>
+    <member refid="structfaiss_1_1IDSelectorOr_1a40b7f3fd70c6958fe1e0c6c8d47dcc2f" kind="function"><name>~IDSelectorOr</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IDSelectorRange" kind="struct"><name>faiss::IDSelectorRange</name>
     <member refid="structfaiss_1_1IDSelectorRange_1aa4cddf0414474683df6e5ab2d6cc0207" kind="variable"><name>imin</name></member>
     <member refid="structfaiss_1_1IDSelectorRange_1aab666bc5c1da07eaf42bbf8aa7dfef2a" kind="variable"><name>imax</name></member>
@@ -1685,6 +1699,13 @@
     <member refid="structfaiss_1_1IDSelectorRange_1ad1104c56c1a1266366f677d0c19cbdb4" kind="function"><name>is_member</name></member>
     <member refid="structfaiss_1_1IDSelectorRange_1a0bdbd8cca09fa9edc00813c48cdead4c" kind="function"><name>find_sorted_ids_bounds</name></member>
     <member refid="structfaiss_1_1IDSelectorRange_1a59148da9375ea066f83788ed1d890465" kind="function"><name>~IDSelectorRange</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1IDSelectorXOr" kind="struct"><name>faiss::IDSelectorXOr</name>
+    <member refid="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf" kind="variable"><name>lhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorXOr_1a87ede6785fbe4f5b7e63cdde0e4bb68e" kind="variable"><name>rhs</name></member>
+    <member refid="structfaiss_1_1IDSelectorXOr_1ab10075cffa633bfc8c15aafb0c2bbfd9" kind="function"><name>IDSelectorXOr</name></member>
+    <member refid="structfaiss_1_1IDSelectorXOr_1ac3d059203fdd296721ddb4c2917828ed" kind="function"><name>is_member</name></member>
+    <member refid="structfaiss_1_1IDSelectorXOr_1a426459cd74b004ba235310c28044a1c6" kind="function"><name>~IDSelectorXOr</name></member>
   </compound>
   <compound refid="structfaiss_1_1Index" kind="struct"><name>faiss::Index</name>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
