@@ -95,13 +95,13 @@ int faiss_IDSelectorAnd_new(
 
 FAISS_DECLARE_CLASS(IDSelectorOr)
 int faiss_IDSelectorOr_new(
-        FaissIDSelectorAnd** p_sel,
+        FaissIDSelectorOr** p_sel,
         const FaissIDSelector* lhs_sel,
         const FaissIDSelector* rhs_sel);
 
 FAISS_DECLARE_CLASS(IDSelectorXOr)
 int faiss_IDSelectorXOr_new(
-        FaissIDSelectorAnd** p_sel,
+        FaissIDSelectorXOr** p_sel,
         const FaissIDSelector* lhs_sel,
         const FaissIDSelector* rhs_sel);
 

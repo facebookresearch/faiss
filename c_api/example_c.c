@@ -151,7 +151,7 @@ int main() {
         FAISS_TRY(faiss_IDSelectorRange_new(&lhs_sel, 20, 40));
         FaissIDSelectorRange* rhs_sel = NULL;
         FAISS_TRY(faiss_IDSelectorRange_new(&rhs_sel, 15, 35));
-        FaissIDSelectorOr* sel = NULL;
+        FaissIDSelectorAnd* sel = NULL;
         FAISS_TRY(faiss_IDSelectorAnd_new(&sel, lhs_sel, rhs_sel));
         FaissSearchParameters* params = NULL;
         FAISS_TRY(faiss_SearchParameters_new(&params, sel));
