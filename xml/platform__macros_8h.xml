@@ -1045,7 +1045,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="135" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="135" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="145" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="145" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a0d4be9896374a3068094c050b1fdcb07" prot="public" static="no">
         <name>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</name>
@@ -1055,7 +1055,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="136" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="136" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="146" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a67c757ea9f8ddbedbacd421c993b5582" prot="public" static="no">
         <name>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</name>
@@ -1065,7 +1065,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="137" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="137" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="147" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -1184,33 +1184,45 @@
 <codeline lineno="109"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
 <codeline lineno="110"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>__pragma(float_control(precise,<sp/>off,<sp/>push))</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="111"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>__pragma(float_control(pop))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(_GCC_)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="115"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;<sp/>GCC<sp/>optimize<sp/>(\&quot;unroll-loops,associative-math,no-signed-zeros\&quot;)&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
-<codeline lineno="119"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize(enable)<sp/>interleave(enable)&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>following<sp/>ifdef<sp/>is<sp/>needed,<sp/>because<sp/>old<sp/>versions<sp/>of<sp/>clang<sp/>(prior<sp/>to<sp/>14)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="122"><highlight class="normal"></highlight><highlight class="comment">//<sp/>do<sp/>not<sp/>generate<sp/>FMAs<sp/>on<sp/>x86<sp/>unless<sp/>this<sp/>pragma<sp/>is<sp/>used.<sp/>On<sp/>the<sp/>other<sp/>hand,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ARM<sp/>does<sp/>not<sp/>support<sp/>the<sp/>following<sp/>pragma<sp/>flag.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO:<sp/>find<sp/>out<sp/>how<sp/>to<sp/>enable<sp/>FMAs<sp/>on<sp/>clang<sp/>10<sp/>and<sp/>earlier.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__x86_64__)<sp/>&amp;&amp;<sp/>(defined(__clang_major__)<sp/>&amp;&amp;<sp/>(__clang_major__<sp/>&gt;<sp/>10))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="126"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="127"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
+<codeline lineno="114"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize(enable)<sp/>interleave(enable)&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>following<sp/>ifdef<sp/>is<sp/>needed,<sp/>because<sp/>old<sp/>versions<sp/>of<sp/>clang<sp/>(prior<sp/>to<sp/>14)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment">//<sp/>do<sp/>not<sp/>generate<sp/>FMAs<sp/>on<sp/>x86<sp/>unless<sp/>this<sp/>pragma<sp/>is<sp/>used.<sp/>On<sp/>the<sp/>other<sp/>hand,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ARM<sp/>does<sp/>not<sp/>support<sp/>the<sp/>following<sp/>pragma<sp/>flag.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO:<sp/>find<sp/>out<sp/>how<sp/>to<sp/>enable<sp/>FMAs<sp/>on<sp/>clang<sp/>10<sp/>and<sp/>earlier.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__x86_64__)<sp/>&amp;&amp;<sp/>(defined(__clang_major__)<sp/>&amp;&amp;<sp/>(__clang_major__<sp/>&gt;<sp/>10))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="124"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__GNUC__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unfortunately,<sp/>GCC<sp/>does<sp/>not<sp/>provide<sp/>a<sp/>pragma<sp/>for<sp/>detecting<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>we<sp/>have<sp/>to<sp/>stick<sp/>to<sp/>GNUC,<sp/>which<sp/>is<sp/>defined<sp/>by<sp/>MANY<sp/>compilers.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>why<sp/>clang/icc<sp/>needs<sp/>to<sp/>be<sp/>checked<sp/>first.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_COMPILER<sp/>check<sp/>for<sp/>the<sp/>classic<sp/>ICC</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_LLVM_COMPILER<sp/>for<sp/>ICX</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="140"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>push_options&quot;</highlight><highlight class="normal">)<sp/>\</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>optimize<sp/>(\&quot;unroll-loops,associative-math,no-signed-zeros\&quot;)&quot;)</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>\</highlight></codeline>
+<codeline lineno="143"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>pop_options&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>on</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/platform_macros.h"/>
   </compounddef>
