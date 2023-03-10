@@ -66,7 +66,7 @@ void RaftFlatIndex::query(
         auto inputHalf = convertTensorTemporary<float, half, 2>(
                 resources_, stream, input);
 
-        query(inputHalf,
+        FlatIndex::query(inputHalf,
               k,
               metric,
               metricArg,
@@ -100,6 +100,13 @@ void RaftFlatIndex::query(
             RAFT_LOG_INFO("Invoking flat bfknn");
             brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metricArg);
         }
+
+        if(metric == MetricType::METRIC_Lp) {
+            raft::linalg::unary_op(handle, raft::make_const_mdspan(dists), dists, [metricArg] __device__ (const float&  a) { return powf(a, metricArg); });
+        } else if(metric == MetricType::METRIC_JensenShannon) {
+            raft::linalg::unary_op(handle, raft::make_const_mdspan(dists), dists, [] __device__ (const float&  a) { return powf(a, 2); });
+        }
+
     }
 }
 

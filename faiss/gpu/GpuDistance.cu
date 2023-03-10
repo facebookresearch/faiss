@@ -21,6 +21,9 @@
 #include <raft/neighbors/brute_force.cuh>
 #include <raft/core/error.hpp>
 #include <raft/core/mdspan_types.hpp>
+#include <raft/core/temporary_device_buffer.hpp>
+#include <raft/linalg/unary_op.cuh>
+#include <raft/core/operators.hpp>
 #define RAFT_NAME "raft"
 #endif
 
@@ -224,95 +227,49 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         int k = args.k;
         float metric_arg = args.metricArg;
 
-        // TODO: The lines below will be removed once RAFT has a proper
-        // function Read-only and Read-Write h2d for temporary memory
-
-        // If the user specified a device, then ensure that it is currently set
-        int device = -1;
-        if (args.device == -1) {
-            // Original behavior if no device is specified, use the current CUDA
-            // thread local device
-            device = getCurrentDevice();
-        } else {
-            // Otherwise, use the device specified in `args`
-            device = args.device;
-
-            FAISS_THROW_IF_NOT_FMT(
-                    device >= 0 && device < getNumDevices(),
-                    "bfKnn: device specified must be -1 (current CUDA thread local device) "
-                    "or within the range [0, %d)",
-                    getNumDevices());
-        }
-
-        DeviceScope scope(device);
-
-        auto tVectors = toDeviceTemporary<float, 2>(
-                res,
-                device,
-                const_cast<float*>(reinterpret_cast<const float*>(args.vectors)),
-                stream,
-                {args.vectorsRowMajor ? args.numVectors : args.dims,
-                 args.vectorsRowMajor ? args.dims : args.numVectors});
-        auto tQueries = toDeviceTemporary<float, 2>(
-                res,
-                device,
-                const_cast<float*>(reinterpret_cast<const float*>(args.queries)),
-                stream,
-                {args.queriesRowMajor ? args.numQueries : args.dims,
-                 args.queriesRowMajor ? args.dims : args.numQueries});
-
-        auto tOutDistances = toDeviceTemporary<float, 2>(
-                res,
-                device,
-                args.outDistances,
-                stream,
-                {args.numQueries, args.k == -1 ? args.numVectors : args.k});
-
-        auto tOutIndices = toDeviceTemporary<idx_t, 2>(
-                res,
-                device,
-                (idx_t*)args.outIndices,
-                stream,
-                {args.numQueries, args.k});
-
-        auto inds = raft::make_device_matrix_view<idx_t, idx_t>(
-                tOutIndices.data(), num_queries, k);
-
-        auto dists = raft::make_device_matrix_view<float, idx_t>(
-                tOutDistances.data(),
-                num_queries,
-                k);
+        auto inds = raft::make_writeback_temporary_device_buffer<idx_t, idx_t>(handle, reinterpret_cast<idx_t*>(args.outIndices),
+                                                                               raft::matrix_extent<idx_t>(num_queries, (idx_t)k));
+        auto dists = raft::make_writeback_temporary_device_buffer<float, idx_t>(handle, reinterpret_cast<float*>(args.outDistances),
+                                                                                raft::matrix_extent<idx_t>(num_queries, (idx_t)k));
 
         if(args.queriesRowMajor) {
-            printf("Row major\n");
-            auto index = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(tVectors.data(), num_vectors, dims);
-            auto search = raft::make_device_matrix_view<const float, idx_t, raft::row_major>(tQueries.data(), num_queries, dims);
+
+            auto index = raft::make_readonly_temporary_device_buffer<const float, idx_t, raft::row_major>(
+                handle, const_cast<float*>(reinterpret_cast<const float*>(args.vectors)), raft::matrix_extent<idx_t>(num_vectors, dims));
+
+            auto search = raft::make_readonly_temporary_device_buffer<const float, idx_t, raft::row_major>(
+                    handle, const_cast<float*>(reinterpret_cast<const float*>(args.queries)), raft::matrix_extent<idx_t>(num_queries, dims));
 
             // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
             if (args.k <= 64 && args.metric == MetricType::METRIC_L2 && args.numVectors > 0) {
                 RAFT_LOG_INFO("Invoking flat fused_l2_knn");
-                brute_force::fused_l2_knn(handle, index, search, inds, dists, distance);
+                brute_force::fused_l2_knn(handle, index.view(), search.view(), inds.view(), dists.view(), distance);
             } else {
-                std::vector<raft::device_matrix_view<const float, idx_t, raft::row_major>> index_vec = {index};
+                std::vector<raft::device_matrix_view<const float, idx_t, raft::row_major>> index_vec = {index.view()};
                 RAFT_LOG_INFO("Invoking flat bfknn");
-                brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
+                brute_force::knn(handle, index_vec, search.view(), inds.view(), dists.view(), k, distance, metric_arg);
             }
         } else {
-            printf("Col major\n");
-            auto index = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(tVectors.data(), num_vectors, dims);
-            auto search = raft::make_device_matrix_view<const float, idx_t, raft::col_major>(tQueries.data(), num_queries, dims);
 
-            std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index};
+            auto index = raft::make_readonly_temporary_device_buffer<const float, idx_t, raft::col_major>(
+                    handle, const_cast<float*>(reinterpret_cast<const float*>(args.vectors)), raft::matrix_extent<idx_t>(num_vectors, dims));
+
+            auto search = raft::make_readonly_temporary_device_buffer<const float, idx_t, raft::col_major>(
+                    handle, const_cast<float*>(reinterpret_cast<const float*>(args.queries)), raft::matrix_extent<idx_t>(num_queries, dims));
+
+            std::vector<raft::device_matrix_view<const float, idx_t, raft::col_major>> index_vec = {index.view()};
             RAFT_LOG_INFO("Invoking flat bfknn");
-            brute_force::knn(handle, index_vec, search, inds, dists, k, distance, metric_arg);
+            brute_force::knn(handle, index_vec, search.view(), inds.view(), dists.view(), k, distance, metric_arg);
+        }
+
+        if(args.metric == MetricType::METRIC_Lp) {
+            raft::linalg::unary_op(handle, raft::make_const_mdspan(dists.view()), dists.view(), [metric_arg] __device__ (const float&  a) { return powf(a, metric_arg); });
+        } else if(args.metric == MetricType::METRIC_JensenShannon) {
+            raft::linalg::unary_op(handle, raft::make_const_mdspan(dists.view()), dists.view(), [] __device__ (const float&  a) { return powf(a, 2); });
         }
 
         RAFT_LOG_INFO("Done.");
-        // Copy distances back if necessary
-        fromDevice<idx_t, 2>(tOutIndices, (idx_t*)args.outIndices, stream);
-        fromDevice<float, 2>(tOutDistances, args.outDistances, stream);
 
-        handle.sync_stream(stream);
         handle.sync_stream();
         RAFT_LOG_INFO("All synced.");
     } else

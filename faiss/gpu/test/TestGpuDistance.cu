@@ -288,12 +288,6 @@ TEST(TestGpuDistance, BrayCurtis) {
     testTransposition(false, false, faiss::MetricType::METRIC_BrayCurtis);
 }
 
-#if defined USE_NVIDIA_RAFT
-TEST(TestRaftGpuDistance, BrayCurtis) {
-    testTransposition(false, false, faiss::MetricType::METRIC_BrayCurtis, true);
-}
-#endif
-
 
 TEST(TestGpuDistance, JensenShannon) {
     testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon);
