@@ -708,3 +708,18 @@ class TestPAQFastScan(unittest.TestCase):
     def test_io(self):
         self.subtest_io('PLSQ2x3x4fs_Nlsq2x4')
         self.subtest_io('PRQ2x3x4fs_Nrq2x4')
+
+
+class TestBlockDecode(unittest.TestCase):
+
+    def test_issue_2739(self):
+        ds = datasets.SyntheticDataset(960, 200, 1, 0)
+        M = 32
+        index = faiss.index_factory(ds.d, f"PQ{M}x4fs")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        np.testing.assert_array_equal(
+            index.pq.decode(index.pq.compute_codes(ds.get_database()))[0, ::100],
+            index.reconstruct(0)[::100]
+        )
