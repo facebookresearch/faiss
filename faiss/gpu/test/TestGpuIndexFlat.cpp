@@ -515,7 +515,7 @@ TEST(TestGpuIndexFlat, LargeIndex) {
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, LargeIndex) {
-        testLargeIndex(false);
+        testLargeIndex(true);
 }
 #endif
 
@@ -570,7 +570,7 @@ TEST(TestGpuIndexFlat, Residual) {
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, Residual) {
-        testResidual(false);
+        testResidual(true);
 }
 #endif
 
@@ -685,6 +685,7 @@ void testSearchAndReconstruct(bool use_raft) {
 
     faiss::gpu::GpuIndexFlatConfig config;
     config.device = device;
+    config.use_raft = use_raft;
     faiss::gpu::GpuIndexFlatL2 gpuIndex(&res, dim, config);
 
     cpuIndex.add(nb, xb.data());

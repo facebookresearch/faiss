@@ -119,6 +119,8 @@ void RaftFlatIndex::query(
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance) {
 
+    FAISS_ASSERT(useFloat16_);
+
     // FIXME: ref https://github.com/rapidsai/raft/issues/1280
     FlatIndex::query(vecs, k, metric, metricArg, outDistances, outIndices, exactDistance);
 }
