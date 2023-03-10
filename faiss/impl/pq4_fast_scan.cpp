@@ -127,7 +127,7 @@ namespace {
 // get the specific address of the vector inside a block
 // shift is used for determine the if the saved in bits 0..3 (false) or
 // bits 4..7 (true)
-uint8_t get_vector_specific_address(
+size_t get_vector_specific_address(
         size_t bbs,
         size_t vector_id,
         size_t sq,
