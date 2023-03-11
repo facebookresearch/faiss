@@ -32,7 +32,7 @@
 
 
 #if defined USE_NVIDIA_RAFT
-#include <raft/core/handle.hpp>
+#include <raft/core/device_resources.hpp>
 #endif
 
 namespace faiss {

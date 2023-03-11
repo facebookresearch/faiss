@@ -21,15 +21,15 @@
  */
 
 #include <faiss/gpu/impl/RaftFlatIndex.cuh>
+#include <faiss/gpu/impl/RaftUtils.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
+
 #include <vector>
 
-#include <raft/core/logger.hpp>
-#include <faiss/gpu/impl/RaftUtils.h>
 #include <raft/core/device_mdspan.hpp>
+#include <raft/core/logger.hpp>
 #include <raft/distance/distance_types.hpp>
 #include <raft/neighbors/brute_force.cuh>
-
-#include <faiss/gpu/utils/ConversionOperators.cuh>
 
 #define RAFT_NAME "raft"
 

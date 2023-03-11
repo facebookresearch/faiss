@@ -356,9 +356,6 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
 
     defaultStreams_[device] = defaultStream;
 
-#if defined USE_NVIDIA_RAFT
-    raftHandles_.emplace(std::make_pair(device, defaultStream));
-#endif
     cudaStream_t asyncCopyStream = 0;
     CUDA_VERIFY(
             cudaStreamCreateWithFlags(&asyncCopyStream, cudaStreamNonBlocking));
@@ -424,6 +421,13 @@ cudaStream_t StandardGpuResourcesImpl::getDefaultStream(int device) {
 #if defined USE_NVIDIA_RAFT
 raft::device_resources& StandardGpuResourcesImpl::getRaftHandle(int device) {
     initializeForDevice(device);
+
+    auto it = raftHandles_.find(device);
+    if (it == raftHandles_.end()) {
+        // Make sure we are using the stream the user may have already assigned
+        // to the current GpuResources
+        raftHandles_.emplace(std::make_pair(device, getDefaultStream(device)));
+    }
 
     // Otherwise, our base default handle
     return raftHandles_[device];
