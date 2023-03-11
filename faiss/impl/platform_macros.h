@@ -109,14 +109,11 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
     __pragma(float_control(precise, off, push))
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END __pragma(float_control(pop))
-#elif defined(_GCC_)
-#define FAISS_PRAGMA_IMPRECISE_LOOP
-#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
-    _Pragma(" GCC optimize (\"unroll-loops,associative-math,no-signed-zeros\")")
-#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #elif defined(__clang__)
 #define FAISS_PRAGMA_IMPRECISE_LOOP \
     _Pragma("clang loop vectorize(enable) interleave(enable)")
+
+// clang-format off
 
 // the following ifdef is needed, because old versions of clang (prior to 14)
 // do not generate FMAs on x86 unless this pragma is used. On the other hand,
@@ -130,9 +127,24 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #endif
+#elif defined(__GNUC__)
+// Unfortunately, GCC does not provide a pragma for detecting it.
+// So, we have to stick to GNUC, which is defined by MANY compilers.
+// This is why clang/icc needs to be checked first.
 
+// todo: add __INTEL_COMPILER check for the classic ICC
+// todo: add __INTEL_LLVM_COMPILER for ICX
+
+#define FAISS_PRAGMA_IMPRECISE_LOOP
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN \
+    _Pragma("GCC push_options") \
+    _Pragma("GCC optimize (\"unroll-loops,associative-math,no-signed-zeros\")")
+#define FAISS_PRAGMA_IMPRECISE_FUNCTION_END \
+    _Pragma("GCC pop_options")
 #else
 #define FAISS_PRAGMA_IMPRECISE_LOOP
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 #define FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 #endif
+
+// clang-format on

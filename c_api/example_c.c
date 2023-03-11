@@ -17,6 +17,7 @@
 #include "Index_c.h"
 #include "clone_index_c.h"
 #include "error_c.h"
+#include "impl/AuxIndexStructures_c.h"
 #include "index_factory_c.h"
 #include "index_io_c.h"
 
@@ -91,6 +92,27 @@ int main() {
         }
         free(I);
         free(D);
+    }
+    { // search xb first 5 but search parameters of id range [50, 100]
+        idx_t* I = malloc(k * nq * sizeof(idx_t));
+        float* D = malloc(k * nq * sizeof(float));
+        FaissIDSelectorRange* sel = NULL;
+        FAISS_TRY(faiss_IDSelectorRange_new(&sel, 50, 100));
+        FaissSearchParameters* params = NULL;
+        FAISS_TRY(faiss_SearchParameters_new(&params, sel));
+        FAISS_TRY(
+                faiss_Index_search_with_params(index, nq, xq, k, params, D, I));
+        printf("Searching w/ IDSelectorRange [50,100]\n");
+        printf("I=\n");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5lld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+            printf("\n");
+        }
+        free(I);
+        free(D);
+        faiss_SearchParameters_free(params);
+        faiss_IDSelectorRange_free(sel);
     }
 
     printf("Saving index to disk...\n");
