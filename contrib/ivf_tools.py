@@ -4,6 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 import time
+import pickle
+import os
 from multiprocessing.pool import ThreadPool
 import threading
 
@@ -241,6 +243,28 @@ class BigBatchSearcher:
         self.rh.add_result_subset(q_subset, D, I)
         self.t_accu[3] += time.time() - t0
 
+    def sizes_in_checkpoint(self):
+        return (self.xq.shape, self.index.nprobe, self.index.nlist)
+
+    def write_checkpoint(self, fname, cur_list_no):
+        # write to temp file then move to final file
+        tmpname = fname + ".tmp"
+        pickle.dump(
+            {
+                "sizes": self.sizes_in_checkpoint(),
+                "cur_list_no": cur_list_no,
+                "rh": (self.rh.D, self.rh.I),
+            }, open(tmpname, "wb"), -1
+        )
+        os.rename(tmpname, fname)
+
+    def read_checkpoint(self, fname):
+        ckp = pickle.load(open(fname, "rb"))
+        assert ckp["sizes"] == self.sizes_in_checkpoint()
+        self.rh.D[:] = ckp["rh"][0]
+        self.rh.I[:] = ckp["rh"][1]
+        return ckp["cur_list_no"]
+
 
 class BlockComputer:
     """ computation within one bucket """
@@ -308,7 +332,13 @@ def big_batch_search(
         use_float16=False,
         prefetch_threads=8,
         computation_threads=0,
-        q_assign=None):
+        q_assign=None,
+        checkpoint=None,
+        checkpoint_freq=64,
+        start_list=0,
+        end_list=None,
+        crash_at=-1
+        ):
     """
     Search queries xq in the IVF index, with a search function that collects
     batches of query vectors per inverted list. This can be faster than the
@@ -336,7 +366,13 @@ def big_batch_search(
 
     use_float16: convert all matrices to float16 (faster for GPU gemm)
 
-    q_assign: override coarse assignment
+    q_assign: override coarse assignment, should be a matrix of size nq * nprobe
+
+    checkpointing (only for threaded > 1):
+    checkpoint: file where the checkpoints are stored
+    checkpoint_freq: when to perform checkpoinging. Should be a multiple of threaded
+
+    start_list, end_list: process only a subset of invlists
     """
     nprobe = index.nprobe
 
@@ -377,10 +413,22 @@ def big_batch_search(
         bbs.q_assign = q_assign
     bbs.reorder_assign()
 
+    if end_list is None:
+        end_list = index.nlist
+
+    if checkpoint is not None:
+        assert (start_list, end_list) == (0, index.nlist)
+        if os.path.exists(checkpoint):
+            print("recovering checkpoint", checkpoint)
+            start_list = bbs.read_checkpoint(checkpoint)
+            print("   start at list", start_list)
+        else:
+            print("no checkpoint: starting from scratch")
+
     if threaded == 0:
         # simple sequential version
 
-        for l in range(index.nlist):
+        for l in range(start_list, end_list):
             bbs.report(l)
             q_subset, xq_l, list_ids, xb_l = bbs.prepare_bucket(l)
             t0i = time.time()
@@ -400,11 +448,11 @@ def big_batch_search(
             if l < index.nlist:
                 return bbs.prepare_bucket(l)
 
-        prefetched_bucket = bbs.prepare_bucket(0)
+        prefetched_bucket = bbs.prepare_bucket(start_list)
         to_add = None
         pool = ThreadPool(1)
 
-        for l in range(index.nlist):
+        for l in range(start_list, end_list):
             bbs.report(l)
             prefetched_bucket_a = pool.apply_async(
                 add_results_and_prefetch, (to_add, l + 1))
@@ -422,6 +470,7 @@ def big_batch_search(
     else:
         # run by batches with parallel prefetch and parallel comp
         list_step = threaded
+        assert start_list % list_step == 0
 
         if prefetch_threads == 0:
             prefetch_map = map
@@ -462,13 +511,13 @@ def big_batch_search(
             D, I = comp.block_search(xq_l, xb_l, list_ids, k, thread_id=tid)
             return q_subset, D, list_ids, I
 
-        prefetched_buckets = add_results_and_prefetch_batch([], 0)
+        prefetched_buckets = add_results_and_prefetch_batch([], start_list)
         to_add = []
         pool = ThreadPool(1)
         prefetched_buckets_a = None
 
         # loop over inverted lists
-        for l in range(0, index.nlist, list_step):
+        for l in range(start_list, end_list, list_step):
             bbs.report(l)
             buckets = prefetched_buckets
             prefetched_buckets_a = pool.apply_async(
@@ -486,9 +535,18 @@ def big_batch_search(
 
             bbs.stop_t_accu(2)
 
+            # to test checkpointing
+            if l == crash_at:
+                1 / 0
+
             bbs.start_t_accu()
             prefetched_buckets = prefetched_buckets_a.get()
             bbs.stop_t_accu(4)
+
+            if checkpoint is not None:
+                if (l // list_step) % checkpoint_freq == 0:
+                    print("writing checkpoint %s" % l)
+                    bbs.write_checkpoint(checkpoint, l)
 
         # flush add
         for ta in to_add:
