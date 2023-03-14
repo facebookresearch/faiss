@@ -209,6 +209,44 @@ struct simd16uint16 {
 
     explicit simd16uint16(const uint16x8x2_t& v) : data{v} {}
 
+    explicit simd16uint16(
+            uint16_t u0,
+            uint16_t u1,
+            uint16_t u2,
+            uint16_t u3,
+            uint16_t u4,
+            uint16_t u5,
+            uint16_t u6,
+            uint16_t u7,
+            uint16_t u8,
+            uint16_t u9,
+            uint16_t u10,
+            uint16_t u11,
+            uint16_t u12,
+            uint16_t u13,
+            uint16_t u14,
+            uint16_t u15) {
+        uint16_t temp[16] = {
+                u0,
+                u1,
+                u2,
+                u3,
+                u4,
+                u5,
+                u6,
+                u7,
+                u8,
+                u9,
+                u10,
+                u11,
+                u12,
+                u13,
+                u14,
+                u15};
+        data.val[0] = vld1q_u16(temp);
+        data.val[1] = vld1q_u16(temp + 8);
+    }
+
     template <
             typename T,
             typename std::enable_if<
@@ -427,6 +465,18 @@ struct simd16uint16 {
                 detail::simdlib::binary_func(data, other.data, &vceqq_u16)};
     }
 
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd16uint16 other) const {
+        const bool equal0 =
+                (vminvq_u16(vceqq_u16(data.val[0], other.data.val[0])) ==
+                 0xffffffff);
+        const bool equal1 =
+                (vminvq_u16(vceqq_u16(data.val[1], other.data.val[1])) ==
+                 0xffffffff);
+
+        return equal0 && equal1;
+    }
+
     simd16uint16 operator~() const {
         return simd16uint16{detail::simdlib::unary_func(data, &vmvnq_u16)};
     }
@@ -515,6 +565,56 @@ inline uint32_t cmp_le32(
         const simd16uint16& d1,
         const simd16uint16& thr) {
     return detail::simdlib::cmp_xe32<&vcleq_u16>(d0.data, d1.data, thr.data);
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// max indices evaluation is inaccurate in case of equal values,
+// but it saves instructions.
+inline void cmplt_min_max_fast(
+        const simd16uint16 candidateValues,
+        const simd16uint16 candidateIndices,
+        const simd16uint16 currentValues,
+        const simd16uint16 currentIndices,
+        simd16uint16& minValues,
+        simd16uint16& minIndices,
+        simd16uint16& maxValues,
+        simd16uint16& maxIndices) {
+    const uint16x8x2_t comparison = uint16x8x2_t{
+            vcltq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
+            vcltq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+
+    minValues.data = uint16x8x2_t{
+            vminq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
+            vminq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+    minIndices.data = uint16x8x2_t{
+            vbslq_u16(
+                    comparison.val[0],
+                    candidateIndices.data.val[0],
+                    currentIndices.data.val[0]),
+            vbslq_u16(
+                    comparison.val[1],
+                    candidateIndices.data.val[1],
+                    currentIndices.data.val[1])};
+
+    maxValues.data = uint16x8x2_t{
+            vmaxq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
+            vmaxq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxIndices.data = uint16x8x2_t{
+            vbslq_u16(
+                    comparison.val[0],
+                    currentIndices.data.val[0],
+                    candidateIndices.data.val[0]),
+            vbslq_u16(
+                    comparison.val[1],
+                    currentIndices.data.val[1],
+                    candidateIndices.data.val[1])};
 }
 
 // vector of 32 unsigned 8-bit integers
@@ -620,6 +720,18 @@ struct simd32uint8 {
         vst1q_u8(tab, data.val[high]);
         return tab[i - high * 16];
     }
+
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd32uint8 other) const {
+        const bool equal0 =
+                (vminvq_u8(vceqq_u8(data.val[0], other.data.val[0])) ==
+                 0xffffffff);
+        const bool equal1 =
+                (vminvq_u8(vceqq_u8(data.val[1], other.data.val[1])) ==
+                 0xffffffff);
+
+        return equal0 && equal1;
+    }
 };
 
 // convert with saturation
@@ -699,7 +811,14 @@ struct simd8uint32 {
                 vsubq_u32(data.val[1], other.data.val[1])}};
     }
 
-    bool operator==(simd8uint32 other) const {
+    simd8uint32& operator+=(const simd8uint32& other) {
+        data.val[0] = vaddq_u32(data.val[0], other.data.val[0]);
+        data.val[1] = vaddq_u32(data.val[1], other.data.val[1]);
+        return *this;
+    }
+
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd8uint32 other) const {
         const bool equal0 =
                 (vminvq_u32(vceqq_u32(data.val[0], other.data.val[0])) ==
                  0xffffffff);
@@ -708,10 +827,6 @@ struct simd8uint32 {
                  0xffffffff);
 
         return equal0 && equal1;
-    }
-
-    bool operator!=(simd8uint32 other) const {
-        return !(*this == other);
     }
 
     void clear() {
@@ -756,6 +871,56 @@ struct simd8uint32 {
         detail::simdlib::set1(data, &vdupq_n_u32, x);
     }
 };
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// max indices evaluation is inaccurate in case of equal values,
+// but it saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8uint32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8uint32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8uint32& minValues,
+        simd8uint32& minIndices,
+        simd8uint32& maxValues,
+        simd8uint32& maxIndices) {
+    const uint32x4x2_t comparison = uint32x4x2_t{
+            vcltq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vcltq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+
+    minValues.data = uint32x4x2_t{
+            vminq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vminq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+    minIndices.data = uint32x4x2_t{
+            vbslq_u32(
+                    comparison.val[0],
+                    candidateIndices.data.val[0],
+                    currentIndices.data.val[0]),
+            vbslq_u32(
+                    comparison.val[1],
+                    candidateIndices.data.val[1],
+                    currentIndices.data.val[1])};
+
+    maxValues.data = uint32x4x2_t{
+            vmaxq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vmaxq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxIndices.data = uint32x4x2_t{
+            vbslq_u32(
+                    comparison.val[0],
+                    currentIndices.data.val[0],
+                    candidateIndices.data.val[0]),
+            vbslq_u32(
+                    comparison.val[1],
+                    currentIndices.data.val[1],
+                    candidateIndices.data.val[1])};
+}
 
 struct simd8float32 {
     float32x4x2_t data;
@@ -838,7 +1003,8 @@ struct simd8float32 {
         return *this;
     }
 
-    bool operator==(simd8float32 other) const {
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd8float32 other) const {
         const bool equal0 =
                 (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==
                  0xffffffff);
@@ -847,10 +1013,6 @@ struct simd8float32 {
                  0xffffffff);
 
         return equal0 && equal1;
-    }
-
-    bool operator!=(simd8float32 other) const {
-        return !(*this == other);
     }
 
     std::string tostring() const {
@@ -920,19 +1082,13 @@ inline void cmplt_and_blend_inplace(
         const simd8uint32 candidateIndices,
         simd8float32& lowestValues,
         simd8uint32& lowestIndices) {
-    uint32x4x2_t comparison = uint32x4x2_t{
+    const uint32x4x2_t comparison = uint32x4x2_t{
             vcltq_f32(candidateValues.data.val[0], lowestValues.data.val[0]),
             vcltq_f32(candidateValues.data.val[1], lowestValues.data.val[1])};
 
     lowestValues.data = float32x4x2_t{
-            vbslq_f32(
-                    comparison.val[0],
-                    candidateValues.data.val[0],
-                    lowestValues.data.val[0]),
-            vbslq_f32(
-                    comparison.val[1],
-                    candidateValues.data.val[1],
-                    lowestValues.data.val[1])};
+            vminq_f32(candidateValues.data.val[0], lowestValues.data.val[0]),
+            vminq_f32(candidateValues.data.val[1], lowestValues.data.val[1])};
     lowestIndices.data = uint32x4x2_t{
             vbslq_u32(
                     comparison.val[0],
@@ -942,6 +1098,56 @@ inline void cmplt_and_blend_inplace(
                     comparison.val[1],
                     candidateIndices.data.val[1],
                     lowestIndices.data.val[1])};
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// max indices evaluation is inaccurate in case of equal values,
+// but it saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8float32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8float32& minValues,
+        simd8uint32& minIndices,
+        simd8float32& maxValues,
+        simd8uint32& maxIndices) {
+    const uint32x4x2_t comparison = uint32x4x2_t{
+            vcltq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vcltq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+
+    minValues.data = float32x4x2_t{
+            vminq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vminq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+    minIndices.data = uint32x4x2_t{
+            vbslq_u32(
+                    comparison.val[0],
+                    candidateIndices.data.val[0],
+                    currentIndices.data.val[0]),
+            vbslq_u32(
+                    comparison.val[1],
+                    candidateIndices.data.val[1],
+                    currentIndices.data.val[1])};
+
+    maxValues.data = float32x4x2_t{
+            vmaxq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
+            vmaxq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxIndices.data = uint32x4x2_t{
+            vbslq_u32(
+                    comparison.val[0],
+                    currentIndices.data.val[0],
+                    candidateIndices.data.val[0]),
+            vbslq_u32(
+                    comparison.val[1],
+                    currentIndices.data.val[1],
+                    candidateIndices.data.val[1])};
 }
 
 namespace {
