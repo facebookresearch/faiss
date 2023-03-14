@@ -744,15 +744,13 @@ struct simd8uint32 {
     }
 
     simd8uint32 operator+(simd8uint32 other) const {
-        return simd8uint32{uint32x4x2_t{
-                vaddq_u32(data.val[0], other.data.val[0]),
-                vaddq_u32(data.val[1], other.data.val[1])}};
+        return simd8uint32{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vaddq_u32>()};
     }
 
     simd8uint32 operator-(simd8uint32 other) const {
-        return simd8uint32{uint32x4x2_t{
-                vsubq_u32(data.val[0], other.data.val[0]),
-                vsubq_u32(data.val[1], other.data.val[1])}};
+        return simd8uint32{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vsubq_u32>()};
     }
 
     bool operator==(simd8uint32 other) const {
@@ -890,6 +888,8 @@ struct simd8float32 {
     }
 
     simd8float32& operator+=(const simd8float32& other) {
+        // In this context, it is more compiler friendly to write intrinsics
+        // directly instead of using binary_func
         data.val[0] = vaddq_f32(data.val[0], other.data.val[0]);
         data.val[1] = vaddq_f32(data.val[1], other.data.val[1]);
         return *this;
