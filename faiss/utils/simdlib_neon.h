@@ -754,14 +754,10 @@ struct simd8uint32 {
     }
 
     bool operator==(simd8uint32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_u32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_u32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equals = detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
+        return vminvq_u32(equal) == 0xffffffff;
     }
 
     bool operator!=(simd8uint32 other) const {
@@ -896,14 +892,10 @@ struct simd8float32 {
     }
 
     bool operator==(simd8float32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_f32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equal0 = vceqq_f32(data.val[0], other.data.val[0]);
+        const auto equal1 = vceqq_f32(data.val[1], other.data.val[1]);
+        const auto equal = vandq_u32(equal0, equal1);
+        return vminvq_u32(equal) == 0xffffffff;
     }
 
     bool operator!=(simd8float32 other) const {
