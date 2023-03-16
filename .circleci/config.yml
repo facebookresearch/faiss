@@ -207,7 +207,7 @@ jobs:
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu:jammy-20230126
+      image: nvidia/cuda:12.1.0-devel-ubuntu22.04
       docker_layer_caching: true
     steps:
       - checkout
