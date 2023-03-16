@@ -207,7 +207,7 @@ jobs:
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
+      image: ubuntu:jammy-20230126
       docker_layer_caching: true
     steps:
       - checkout
@@ -215,6 +215,7 @@ jobs:
           name: Build/test
           command: |
             docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
+            false # intentionally crash
             docker run --gpus all faiss make -C build test
             docker run --gpus all faiss sh -c '(pwd; find)'
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
