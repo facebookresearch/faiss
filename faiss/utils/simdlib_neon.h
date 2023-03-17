@@ -90,6 +90,23 @@ static inline float32x4x2_t reinterpret_f32(const float32x4x2_t& v) {
     return v;
 }
 
+// Surprisingly, vdupq_n_u16 has the type of
+// uint16x8_t (std::uint32_t) , and vdupq_n_u8 also has
+// uint8x16_t (std::uint32_t) on **some environments**.
+// We want argument type as same as the type of element
+// of result vector type (std::uint16_t for uint16x8_t,
+// and std::uint8_t for uint8x16_t) instead of
+// std::uint32_t due to using set1 function templates,
+// so let's fix the argument type here and use these
+// overload below.
+static inline ::uint16x8_t vdupq_n_u16(std::uint16_t v) {
+    return ::vdupq_n_u16(v);
+}
+
+static inline ::uint8x16_t vdupq_n_u8(std::uint8_t v) {
+    return ::vdupq_n_u8(v);
+}
+
 template <
         typename T,
         typename U = decltype(reinterpret_u8(std::declval<T>().data))>
@@ -259,7 +276,7 @@ struct simd16uint16 {
 
     void clear() {
         detail::simdlib::set1(data, static_cast<uint16_t>(0))
-                .call<&vdupq_n_u16>();
+                .call<&detail::simdlib::vdupq_n_u16>();
     }
 
     void storeu(uint16_t* ptr) const {
@@ -297,7 +314,7 @@ struct simd16uint16 {
     }
 
     void set1(uint16_t x) {
-        detail::simdlib::set1(data, x).call<&vdupq_n_u16>();
+        detail::simdlib::set1(data, x).call<&detail::simdlib::vdupq_n_u16>();
     }
 
     simd16uint16 operator*(const simd16uint16& other) const {
@@ -595,7 +612,7 @@ struct simd32uint8 {
 
     void clear() {
         detail::simdlib::set1(data, static_cast<uint8_t>(0))
-                .call<&vdupq_n_u8>();
+                .call<&detail::simdlib::vdupq_n_u8>();
     }
 
     void storeu(uint8_t* ptr) const {
@@ -638,7 +655,7 @@ struct simd32uint8 {
     }
 
     void set1(uint8_t x) {
-        detail::simdlib::set1(data, x).call<&vdupq_n_u8>();
+        detail::simdlib::set1(data, x).call<&detail::simdlib::vdupq_n_u8>();
     }
 
     template <
