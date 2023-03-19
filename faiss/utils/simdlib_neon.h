@@ -175,11 +175,12 @@ static inline std::string elements_to_string(const char* fmt, const S& simd) {
     return std::string(res);
 }
 
-template <typename T>
+template <typename T, typename U>
 struct unary_func_impl {
-    const T& a;
+    const U& a;
     using Telem = remove_cv_ref_t<decltype(std::declval<T>().val[0])>;
-    template <Telem (*F)(Telem)>
+    using Uelem = remove_cv_ref_t<decltype(std::declval<U>().val[0])>;
+    template <Telem (*F)(Uelem)>
     inline T call() {
         T t;
         t.val[0] = F(a.val[0]);
@@ -189,16 +190,24 @@ struct unary_func_impl {
 };
 
 template <typename T>
-static inline unary_func_impl<remove_cv_ref_t<T>> unary_func(const T& a) {
+static inline unary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<T>> unary_func(
+        const T& a) {
     return {a};
 }
 
-template <typename T>
+template <typename T, typename U>
+static inline unary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<U>> unary_func(
+        const U& a) {
+    return {a};
+}
+
+template <typename T, typename U>
 struct binary_func_impl {
-    const T& a;
-    const T& b;
+    const U& a;
+    const U& b;
     using Telem = remove_cv_ref_t<decltype(std::declval<T>().val[0])>;
-    template <Telem (*F)(Telem, Telem)>
+    using Uelem = remove_cv_ref_t<decltype(std::declval<U>().val[0])>;
+    template <Telem (*F)(Uelem, Uelem)>
     inline T call() {
         T t;
         t.val[0] = F(a.val[0], b.val[0]);
@@ -208,9 +217,14 @@ struct binary_func_impl {
 };
 
 template <typename T>
-static inline binary_func_impl<remove_cv_ref_t<T>> binary_func(
-        const T& a,
-        const T& b) {
+static inline binary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<T>>
+binary_func(const T& a, const T& b) {
+    return {a, b};
+}
+
+template <typename T, typename U>
+static inline binary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<U>>
+binary_func(const U& a, const U& b) {
     return {a, b};
 }
 
@@ -909,9 +923,10 @@ struct simd8float32 {
     }
 
     bool operator==(simd8float32 other) const {
-        const auto equal0 = vceqq_f32(data.val[0], other.data.val[0]);
-        const auto equal1 = vceqq_f32(data.val[1], other.data.val[1]);
-        const auto equal = vandq_u32(equal0, equal1);
+        const auto equals =
+                detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
+                        .call<&vceqq_f32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
         return vminvq_u32(equal) == 0xffffffff;
     }
 
@@ -986,9 +1001,9 @@ inline void cmplt_and_blend_inplace(
         const simd8uint32 candidateIndices,
         simd8float32& lowestValues,
         simd8uint32& lowestIndices) {
-    uint32x4x2_t comparison = uint32x4x2_t{
-            vcltq_f32(candidateValues.data.val[0], lowestValues.data.val[0]),
-            vcltq_f32(candidateValues.data.val[1], lowestValues.data.val[1])};
+    const auto comparison = detail::simdlib::binary_func<::uint32x4x2_t>(
+                                    candidateValues.data, lowestValues.data)
+                                    .call<&vcltq_f32>();
 
     lowestValues.data = float32x4x2_t{
             vbslq_f32(
