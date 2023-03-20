@@ -143,6 +143,7 @@ jobs:
       - run:
           name: Build          
           command: |
+            . $HOME/miniconda/etc/profile.d/conda.sh
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_C_API=ON \
                -DPython_EXECUTABLE=$(which python)
@@ -150,11 +151,13 @@ jobs:
       - run:
           name: Build and run C++ tests 
           command: |
+             . $HOME/miniconda/etc/profile.d/conda.sh
              make -C build -j faiss_test
              make -C build test
       - run:
           name: Build and run Python tests 
           command: |
+            . $HOME/miniconda/etc/profile.d/conda.sh
             make -C build -j swigfaiss
             (cd build/faiss/python; python3 setup.py build) 
             (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
