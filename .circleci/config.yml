@@ -140,7 +140,7 @@ jobs:
             bash miniconda.sh -b -p $HOME/miniconda
             . $HOME/miniconda/etc/profile.d/conda.sh
             export PATH=$HOME/miniconda/bin:$PATH
-            conda install -q -y python numpy swig cmake 
+            conda install -q -y python numpy swig cmake scipy
       - run:
           name: Build          
           command: |
@@ -159,6 +159,7 @@ jobs:
           name: Build and run Python tests 
           command: |
             export PATH=$HOME/miniconda/bin:$PATH
+            conda install pytorch -c pytroch
             make -C build -j swigfaiss
             (cd build/faiss/python; python3 setup.py build) 
             (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
