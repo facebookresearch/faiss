@@ -345,8 +345,9 @@ workflows:
           name: Linux (conda)
       - build_linux_gpu:
           name: Linux GPU
-          requires:
-            - Linux
+          # remove dependency during build 
+          # requires:
+          #  - Linux
       - build_osx:
           name: OSX
       - build_windows:
