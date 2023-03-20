@@ -124,6 +124,32 @@ jobs:
             cd conda
             conda build faiss --python 3.8 -c pytorch
 
+  build_osx_arm:
+    macos:
+      xcode: 14.2.0 # indicate your selected version of Xcode
+    resource_class: macos.m1.large.gen1
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.pkg --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build
+      - run:
+          name: Install MacOSX10.9 SDK
+          command: |
+            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
+      - run:
+          name: Build/test
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --python 3.8 -c pytorch
+
+
   build_windows:
     executor:
       name: win/default
