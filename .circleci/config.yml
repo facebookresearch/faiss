@@ -367,6 +367,8 @@ workflows:
             - Linux
       - build_osx:
           name: OSX
+      - build_osx_arm:
+          name: OSX on ARM 
       - build_windows:
           name: Windows
       - build_arm:
