@@ -159,7 +159,7 @@ jobs:
           name: Build and run Python tests 
           command: |
             export PATH=$HOME/miniconda/bin:$PATH
-            conda install pytorch -c pytroch
+            conda install -q -y pytorch -c pytorch
             make -C build -j swigfaiss
             (cd build/faiss/python; python3 setup.py build) 
             (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
