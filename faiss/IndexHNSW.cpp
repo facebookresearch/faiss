@@ -98,7 +98,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 };
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (storage->metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();
@@ -346,7 +346,7 @@ void IndexHNSW::search(
         InterruptCallback::check();
     }
 
-    if (metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(metric_type)) {
         // we need to revert the negated distances
         for (size_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];

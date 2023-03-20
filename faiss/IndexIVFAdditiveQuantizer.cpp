@@ -145,7 +145,7 @@ struct AQInvertedListScanner : InvertedListScanner {
             : ia(ia), aq(*ia.aq) {
         this->store_pairs = store_pairs;
         this->code_size = ia.code_size;
-        keep_max = ia.metric_type == METRIC_INNER_PRODUCT;
+        keep_max = is_similarity_metric(ia.metric_type);
         tmp.resize(ia.d);
     }
 

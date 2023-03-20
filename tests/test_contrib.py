@@ -7,6 +7,7 @@ import faiss
 import unittest
 import numpy as np
 import platform
+import os
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -514,3 +515,40 @@ class TestBigBatchSearch(unittest.TestCase):
 
     def test_SQ(self):
         self.do_test("IVF64,SQ8")
+
+    def test_checkpoint(self):
+        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        k = 10
+        index = faiss.index_factory(ds.d, "IVF64,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        Dref, Iref = index.search(ds.get_queries(), k)
+
+        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % np.random.randint(int(1e16))
+        try:
+            # First big batch search
+            try:
+                Dnew, Inew = ivf_tools.big_batch_search(
+                    index, ds.get_queries(),
+                    k, method="knn_function",
+                    threaded=4,
+                    checkpoint=checkpoint, checkpoint_freq=4,
+                    crash_at=20
+                )
+            except ZeroDivisionError:
+                pass
+            else:
+                self.assertFalse("should have crashed")
+            # Second big batch search
+            Dnew, Inew = ivf_tools.big_batch_search(
+                index, ds.get_queries(),
+                k, method="knn_function",
+                threaded=4,
+                checkpoint=checkpoint, checkpoint_freq=4
+            )
+            self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
+            np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
+        finally:
+            if os.path.exists(checkpoint):
+                os.unlink(checkpoint)
