@@ -137,18 +137,23 @@ jobs:
           command: |
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.pkg --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build
+            . $HOME/miniconda/etc/profile.d/conda.sh
+            conda install -y python numpy swig cmake 
       - run:
-          name: Install MacOSX10.9 SDK
+          name: Build          
           command: |
-            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
+            make -k -C build -j faiss
       - run:
-          name: Build/test
+          name: Build and run C++ tests 
           command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --python 3.8 -c pytorch
-
+             make -C build -j faiss_test
+             make -C build test
+      - run:
+          name: Build and run Python tests 
+          command: |
+            make -C build -j swigfaiss
+            (cd build/faiss/python; python3 setup.py build) 
+            (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
 
   build_windows:
     executor:
