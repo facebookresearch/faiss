@@ -8,6 +8,7 @@ import unittest
 import numpy as np
 import platform
 import os
+import random
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -525,7 +526,8 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
-        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % np.random.randint(int(1e16))
+        r = random.randrange(1<<60)
+        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
         try:
             # First big batch search
             try:
