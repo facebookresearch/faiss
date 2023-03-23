@@ -232,7 +232,7 @@ jobs:
                -DFAISS_OPT_LEVEL=avx2 -DFAISS_ENABLE_C_API=ON \
                -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn \
                -DPYTHON_EXECUTABLE=/usr/bin/python3 .
-            make -C -j build test
+            make -k -C build -j build test
           no_output_timeout: 60m
   deploy_linux:
     parameters:
