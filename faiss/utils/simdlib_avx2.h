@@ -152,8 +152,8 @@ struct simd16uint16 : simd256bit {
     }
 
     // returns binary masks
-    simd16uint16 operator==(simd256bit other) const {
-        return simd16uint16(_mm256_cmpeq_epi16(i, other.i));
+    friend simd16uint16 operator==(const simd256bit lhs, const simd256bit rhs) {
+        return simd16uint16(_mm256_cmpeq_epi16(lhs.i, rhs.i));
     }
 
     simd16uint16 operator~() const {

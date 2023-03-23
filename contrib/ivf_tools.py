@@ -256,7 +256,7 @@ class BigBatchSearcher:
                 "rh": (self.rh.D, self.rh.I),
             }, open(tmpname, "wb"), -1
         )
-        os.rename(tmpname, fname)
+        os.replace(tmpname, fname)
 
     def read_checkpoint(self, fname):
         ckp = pickle.load(open(fname, "rb"))
