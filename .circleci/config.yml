@@ -214,9 +214,9 @@ jobs:
       - run:
           name: Build 
           command: |
-            apt update
-            apt install -y cmake g++ wget 
-            apt install -y python3-dev swig python3-numpy python3-scipy python3-pip 
+            sudo apt update
+            sudo apt install -y g++ wget 
+            sudo apt install -y python3-dev swig python3-numpy python3-scipy python3-pip 
             # install MKL 
             (cd /tmp; wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19138/l_onemkl_p_2023.0.0.25398_offline.sh; )
             bash /tmp/l_onemkl_p_2023.0.0.25398_offline.sh -a -s --eula accept
