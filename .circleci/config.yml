@@ -214,8 +214,8 @@ jobs:
       - run:
           name: Build/test
           command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
             false # intentionally crash
+            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
             docker run --gpus all faiss make -C build test
             docker run --gpus all faiss sh -c '(pwd; find)'
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
