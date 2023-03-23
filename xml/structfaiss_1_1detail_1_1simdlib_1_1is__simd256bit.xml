@@ -38,7 +38,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_neon.h" line="96" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="96" bodyend="96"/>
+    <location file="faiss/utils/simdlib_neon.h" line="113" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="113" bodyend="113"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

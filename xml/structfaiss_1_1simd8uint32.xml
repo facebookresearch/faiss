@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="658" column="18" bodyfile="faiss/utils/simdlib_neon.h" bodystart="658" bodyend="-1"/>
+        <location file="faiss/utils/simdlib_neon.h" line="745" column="18" bodyfile="faiss/utils/simdlib_neon.h" bodystart="745" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" prot="public" static="no" mutable="no">
         <type>__m256i</type>
@@ -627,7 +627,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="660" column="5"/>
+        <location file="faiss/utils/simdlib_neon.h" line="747" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -644,7 +644,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="662" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="662" bodyend="662"/>
+        <location file="faiss/utils/simdlib_neon.h" line="749" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="749" bodyend="749"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a4afdab340dd761c338ae8ba062eea447" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -661,7 +661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="664" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="664" bodyend="664"/>
+        <location file="faiss/utils/simdlib_neon.h" line="751" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="751" bodyend="751"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1ad3a20f7237b6cbd6539335f864ff604b" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -687,7 +687,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="671" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="671" bodyend="672"/>
+        <location file="faiss/utils/simdlib_neon.h" line="758" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="758" bodyend="759"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a0086499229d095b39be4c682881a1835" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -704,7 +704,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="674" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="674" bodyend="674"/>
+        <location file="faiss/utils/simdlib_neon.h" line="761" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="761" bodyend="761"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1abad7a46ee1136b0a655dbb3b6bd6d9b6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
@@ -749,7 +749,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="676" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="676" bodyend="688"/>
+        <location file="faiss/utils/simdlib_neon.h" line="763" column="14" bodyfile="faiss/utils/simdlib_neon.h" bodystart="763" bodyend="775"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a4756233503cf4b2836ae01b6660fb791" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd8uint32" kindref="compound">simd8uint32</ref></type>
@@ -766,7 +766,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="690" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="690" bodyend="694"/>
+        <location file="faiss/utils/simdlib_neon.h" line="777" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="777" bodyend="780"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1afb84e4e97f2a310e2d3da4aa95a8afa9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd8uint32" kindref="compound">simd8uint32</ref></type>
@@ -783,7 +783,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="696" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="696" bodyend="700"/>
+        <location file="faiss/utils/simdlib_neon.h" line="782" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="782" bodyend="785"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1af2e3b1671b5bccbe8a97f6b93b939166" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -800,7 +800,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="702" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="702" bodyend="711"/>
+        <location file="faiss/utils/simdlib_neon.h" line="787" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="787" bodyend="792"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a9c44b96149faa651a584c643ebb68c38" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -817,7 +817,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="713" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="713" bodyend="715"/>
+        <location file="faiss/utils/simdlib_neon.h" line="794" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="794" bodyend="796"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1ac7c7f6d24de40a0775ec4eabf105a87f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -830,7 +830,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="717" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="717" bodyend="719"/>
+        <location file="faiss/utils/simdlib_neon.h" line="798" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="798" bodyend="801"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1ad9640b0b2bf719d75099690cac845f39" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -847,7 +847,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="721" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="721" bodyend="724"/>
+        <location file="faiss/utils/simdlib_neon.h" line="803" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="803" bodyend="806"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a522eb3e5f8f2b08a4fa60d0a166a7b66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -864,7 +864,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="726" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="726" bodyend="729"/>
+        <location file="faiss/utils/simdlib_neon.h" line="808" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="808" bodyend="811"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a2a0698c637a32a56f2bf61922a522fa3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -881,7 +881,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="731" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="731" bodyend="733"/>
+        <location file="faiss/utils/simdlib_neon.h" line="813" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="813" bodyend="815"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a106f0835ce8804af4e71eb8f65b3860c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -899,7 +899,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="735" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="735" bodyend="737"/>
+        <location file="faiss/utils/simdlib_neon.h" line="817" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="817" bodyend="819"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1aec657e75ce56fa6427d9b3971758e9d8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -912,7 +912,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="739" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="739" bodyend="741"/>
+        <location file="faiss/utils/simdlib_neon.h" line="821" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="821" bodyend="823"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a6bd39771259f83652ead2bd46591d20c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -929,7 +929,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="743" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="743" bodyend="745"/>
+        <location file="faiss/utils/simdlib_neon.h" line="825" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="825" bodyend="827"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -942,7 +942,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="747" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="747" bodyend="749"/>
+        <location file="faiss/utils/simdlib_neon.h" line="829" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="829" bodyend="831"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -955,7 +955,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="751" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="751" bodyend="753"/>
+        <location file="faiss/utils/simdlib_neon.h" line="833" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="833" bodyend="835"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -972,7 +972,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="755" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="755" bodyend="757"/>
+        <location file="faiss/utils/simdlib_neon.h" line="837" column="10" bodyfile="faiss/utils/simdlib_neon.h" bodystart="837" bodyend="839"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>

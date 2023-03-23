@@ -190,6 +190,13 @@
     <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1aa072c959d1cd882af33c7a570ac25f55" kind="function"><name>~AutoTuneCriterion</name></member>
   </compound>
+  <compound refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kind="struct"><name>faiss::detail::simdlib::binary_func_impl</name>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1a6180a6deaf9be9dec43180b1e0fb2c79" kind="typedef"><name>Telem</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1aace4f2f06cc6d165c442682afb1d5450" kind="typedef"><name>Uelem</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1a76605953abcadda239b0d9b7a1f5bc85" kind="variable"><name>a</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1ac774ac506e549ccb2bf852c66c93a3e0" kind="variable"><name>b</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1a642a9eb2a758ddec8c863fb103745607" kind="function"><name>call</name></member>
+  </compound>
   <compound refid="structfaiss_1_1BinaryInvertedListScanner" kind="struct"><name>faiss::BinaryInvertedListScanner</name>
     <member refid="structfaiss_1_1BinaryInvertedListScanner_1a22bf6ac0128e4e45768f91b4de58fdb6" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1BinaryInvertedListScanner_1ae28e1381cb4c16ff9941c909fe9c4122" kind="function"><name>set_list</name></member>
@@ -7181,6 +7188,11 @@
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
     <member refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1ac0b4d3b2ce2e0873b3d2c52632df0040" kind="function"><name>~SearchParametersResidualCoarseQuantizer</name></member>
   </compound>
+  <compound refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl" kind="struct"><name>faiss::detail::simdlib::set1_impl</name>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1af1a9398a5409c0cc3cfeaa1a4394db92" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1a1714576893bd9af3ef80b24f15c7057c" kind="variable"><name>t</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1ab16f359e65e60c8419ce65507aa2f3e2" kind="function"><name>call</name></member>
+  </compound>
   <compound refid="structfaiss_1_1simd16uint16" kind="struct"><name>faiss::simd16uint16</name>
     <member refid="structfaiss_1_1simd16uint16_1ab55c9dbcc50e95d98bdde9ca6820570b" kind="variable"><name>data</name></member>
     <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
@@ -7889,6 +7901,12 @@
     <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" kind="function"><name>clone_VectorTransform</name></member>
     <member refid="structfaiss_1_1Cloner_1a900cc361b28631b47359b1df41fda0cf" kind="function"><name>clone_IndexIVF</name></member>
   </compound>
+  <compound refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl" kind="struct"><name>faiss::detail::simdlib::unary_func_impl</name>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1a0845a998aad6e2984f59e280e7300597" kind="typedef"><name>Telem</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1adb0f3d38b568e8bbcad8496de2017bc5" kind="typedef"><name>Uelem</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1a8e3723f3559820bcfb4253d55934a167" kind="variable"><name>a</name></member>
+    <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1af55381b36dd0844ac3438fd8798221e9" kind="function"><name>call</name></member>
+  </compound>
   <compound refid="structfaiss_1_1VectorDistance" kind="struct"><name>faiss::VectorDistance</name>
     <member refid="structfaiss_1_1VectorDistance_1a61c9d5400239ae177d94be5e119c3fe0" kind="typedef"><name>C</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" kind="variable"><name>d</name></member>
@@ -8357,6 +8375,7 @@
   <compound refid="namespacefaiss_1_1detail" kind="namespace"><name>faiss::detail</name>
   </compound>
   <compound refid="namespacefaiss_1_1detail_1_1simdlib" kind="namespace"><name>faiss::detail::simdlib</name>
+    <member refid="simdlib__neon_8h_1afc331a48c5bd48bef46e092ea2fc317f" kind="typedef"><name>remove_cv_ref_t</name></member>
     <member refid="simdlib__neon_8h_1a21ac13492c3a23c090d5847c49e95094" kind="function"><name>reinterpret_u8</name></member>
     <member refid="simdlib__neon_8h_1a03045fdaeb4fc92c954add5db6909b4c" kind="function"><name>reinterpret_u8</name></member>
     <member refid="simdlib__neon_8h_1afc0b6b13ac7030afb50e0b68d83c9bbf" kind="function"><name>reinterpret_u8</name></member>
@@ -8373,13 +8392,17 @@
     <member refid="simdlib__neon_8h_1a7360e9c8b5355ddbcd2e2fd6f19aaa6e" kind="function"><name>reinterpret_f32</name></member>
     <member refid="simdlib__neon_8h_1a905ff7784ec0f823daefd36fe92063e6" kind="function"><name>reinterpret_f32</name></member>
     <member refid="simdlib__neon_8h_1abde69fbe04959f420b18f69affa69958" kind="function"><name>reinterpret_f32</name></member>
+    <member refid="simdlib__neon_8h_1a04c81b23f49e7463e37cf3cfa2d14ff5" kind="function"><name>vdupq_n_u16</name></member>
+    <member refid="simdlib__neon_8h_1a8b999e9fc4260759b799a20ad6dbbd48" kind="function"><name>vdupq_n_u8</name></member>
     <member refid="simdlib__neon_8h_1ad58dc5826346d30ee3accbb74f45b79e" kind="function"><name>bin</name></member>
     <member refid="simdlib__neon_8h_1a0bdbadf03a4024405ab47ba9f47ac4ed" kind="function"><name>bin</name></member>
     <member refid="simdlib__neon_8h_1acae57755eecf9ec8eb851e4820fd663e" kind="function"><name>bin</name></member>
-    <member refid="simdlib__neon_8h_1a4ba93329f5aadce629de02019c0e1b2f" kind="function"><name>set1</name></member>
+    <member refid="simdlib__neon_8h_1af2559e02e6a4a3f8a017ed58e7ab95f0" kind="function"><name>set1</name></member>
     <member refid="simdlib__neon_8h_1a4449840079783da5bed6cd04bd6cf752" kind="function"><name>elements_to_string</name></member>
-    <member refid="simdlib__neon_8h_1ab6a3808fc65861d1af5a02e2c59e1c27" kind="function"><name>unary_func</name></member>
-    <member refid="simdlib__neon_8h_1abb45baa820a1cc05c130c552a73b470f" kind="function"><name>binary_func</name></member>
+    <member refid="simdlib__neon_8h_1aa0be8b4e221edd1ff80fa4738d5443cb" kind="function"><name>unary_func</name></member>
+    <member refid="simdlib__neon_8h_1a2b152c681a0c65bcb625d116504c3d85" kind="function"><name>unary_func</name></member>
+    <member refid="simdlib__neon_8h_1a789d6dd375a36ce8364a8af7e14c574c" kind="function"><name>binary_func</name></member>
+    <member refid="simdlib__neon_8h_1a4b198ddcd74e3ccbbef497f11583b507" kind="function"><name>binary_func</name></member>
     <member refid="simdlib__neon_8h_1ad026e84d722ca1800cbcd1e62a7bd1ce" kind="function"><name>vmovmask_u8</name></member>
     <member refid="simdlib__neon_8h_1a50f928e67de705ccbe14bd1f77a79ac5" kind="function"><name>cmp_xe32</name></member>
     <member refid="simdlib__neon_8h_1a67d40155ddbd045cec3a5e1a4b4978af" kind="function"><name>vshlq</name></member>
