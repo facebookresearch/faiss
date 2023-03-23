@@ -212,16 +212,28 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build/test
+          name: Build 
           command: |
-            false # intentionally crash
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+            apt update
+            apt install -y cmake g++ wget 
+            apt install -y python3-dev swig python3-numpy python3-scipy python3-pip 
+            # install MKL 
+            (cd /tmp; wget https://registrationcenter-download.intel.com/akdlm/irc_nas/19138/l_onemkl_p_2023.0.0.25398_offline.sh; )
+            bash /tmp/l_onemkl_p_2023.0.0.25398_offline.sh -a -s --eula accept
+            # install recent cmake 
+            (cd /tmp; wget https://github.com/Kitware/CMake/releases/download/v3.26.0/cmake-3.26.0-linux-x86_64.sh) 
+            mkdir /tmp/cmake 
+            bash /tmp/cmake-3.26.0-linux-x86_64.sh --skip-license --prefix=/tmp/cmake
+            # /usr/bin as first path element otherwise numpy dev not found...
+            PATH=/usr/bin:/usr/local/cuda/bin:$PATH \
+            MKLROOT=/home/circleci/intel/oneapi/mkl/2023.0.0 \
+            /tmp/cmake/bin/cmake \
+               -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=ON \
+               -DFAISS_OPT_LEVEL=avx2 -DFAISS_ENABLE_C_API=ON \
+               -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn \
+               -DPYTHON_EXECUTABLE=/usr/bin/python3 .
+            make -C -j build test
           no_output_timeout: 60m
-
   deploy_linux:
     parameters:
       label:
