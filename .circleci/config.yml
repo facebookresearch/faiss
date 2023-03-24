@@ -98,11 +98,11 @@ jobs:
           command: |
             conda install -y -q conda-build
             cd conda
-            conda build faiss --python 3.7 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_osx:
     macos:
-      xcode: 14.0.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
+      xcode: 11.7.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
     environment:
       OMP_NUM_THREADS: 10
     steps:
@@ -114,15 +114,11 @@ jobs:
             bash miniconda.sh -b -p $HOME/miniconda
             $HOME/miniconda/bin/conda install -y -q conda-build
       - run:
-          name: Install MacOSX10.9 SDK
-          command: |
-            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
-      - run:
           name: Build/test
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.8 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_osx_arm:
     macos:
@@ -164,6 +160,27 @@ jobs:
             (cd build/faiss/python; python3 setup.py build) 
             (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
 
+  build_osx_arm_conda:
+    macos:
+      xcode: 14.2.0 # indicate your selected version of Xcode
+    resource_class: macos.m1.large.gen1
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build
+      - run:
+          name: Build packages
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --python 3.9 -c pytorch
+
   build_windows:
     executor:
       name: win/default
@@ -176,7 +193,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.8 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_arm:
     machine:
@@ -314,7 +331,7 @@ jobs:
         type: string
         default: main
     macos:
-      xcode: 14.0.0
+      xcode: 11.7.0
     steps:
       - checkout
       - run:
@@ -325,9 +342,33 @@ jobs:
             $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
             $HOME/miniconda/bin/conda config --set anaconda_upload yes
       - run:
-          name: Install MacOSX10.9 SDK
+          name: Build packages
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
           command: |
-            curl -L -o - https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | sudo tar xJf - -C /opt
+            export PATH=~/miniconda/bin:$PATH
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+
+  deploy_osx_arm:
+    parameters:
+      label:
+        type: string
+        default: main
+    macos:
+      xcode: 14.2.0 # indicate your selected version of Xcode
+    resource_class: macos.m1.large.gen1
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
+            $HOME/miniconda/bin/conda config --set anaconda_upload yes
       - run:
           name: Build packages
           environment:
@@ -383,6 +424,8 @@ workflows:
           name: OSX
       - build_osx_arm:
           name: OSX (ARM)
+      - build_osx_arm_conda:
+          name: OSX (ARM, conda)
       - build_windows:
           name: Windows
       - build_arm:
@@ -458,4 +501,7 @@ workflows:
           label: nightly
       - deploy_osx:
           name: OSX nightlies
+          label: nightly
+      - deploy_osx_arm:
+          name: OSX (ARM) nightlies
           label: nightly

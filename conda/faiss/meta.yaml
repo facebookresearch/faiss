@@ -26,7 +26,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh   # [not win]
+    script: build-lib.sh   # [not win and not arm64]
+    script: build-lib-arm64.sh # [arm64]
     script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
@@ -38,9 +39,10 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.17
         - make  # [not win]
-        - mkl-devel =2021
+        - mkl-devel =2021 # [not arm64]
+        - openblas # [arm64]
       host:
-        - mkl =2021
+        - mkl =2021 # [not arm64]
       run:
         - mkl >=2021  # [win]
     test:
@@ -48,12 +50,13 @@ outputs:
         - conda-build
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
-        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-cpu
-    script: build-pkg.sh   # [not win]
+    script: build-pkg.sh   # [not win and not arm64]
+    script: build-pkg-arm64.sh # [arm64]
     script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
@@ -65,11 +68,11 @@ outputs:
         - make  # [not win]
       host:
         - python {{ python }}
-        - numpy =1.16
+        - numpy >=1.16,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - python {{ python }}
-        - numpy >=1.11,<2
+        - numpy >=1.16,<2
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
