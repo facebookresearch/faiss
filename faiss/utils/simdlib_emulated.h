@@ -169,6 +169,13 @@ struct simd16uint16 : simd256bit {
                 });
     }
 
+    simd16uint16 operator^(const simd256bit& other) const {
+        return binary_func(
+                *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
+                    return a ^ b;
+                });
+    }
+
     // returns binary masks
     simd16uint16 operator==(const simd16uint16& other) const {
         return binary_func(*this, other, [](uint16_t a, uint16_t b) {
@@ -288,6 +295,30 @@ inline uint32_t cmp_le32(
     return gem;
 }
 
+// hadd does not cross lanes
+inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
+    simd16uint16 c;
+    c.u16[0] = a.u16[0] + a.u16[1];
+    c.u16[1] = a.u16[2] + a.u16[3];
+    c.u16[2] = a.u16[4] + a.u16[5];
+    c.u16[3] = a.u16[6] + a.u16[7];
+    c.u16[4] = b.u16[0] + b.u16[1];
+    c.u16[5] = b.u16[2] + b.u16[3];
+    c.u16[6] = b.u16[4] + b.u16[5];
+    c.u16[7] = b.u16[6] + b.u16[7];
+
+    c.u16[8] = a.u16[8] + a.u16[9];
+    c.u16[9] = a.u16[10] + a.u16[11];
+    c.u16[10] = a.u16[12] + a.u16[13];
+    c.u16[11] = a.u16[14] + a.u16[15];
+    c.u16[12] = b.u16[8] + b.u16[9];
+    c.u16[13] = b.u16[10] + b.u16[11];
+    c.u16[14] = b.u16[12] + b.u16[13];
+    c.u16[15] = b.u16[14] + b.u16[15];
+
+    return c;
+}
+
 // vector of 32 unsigned 8-bit integers
 struct simd32uint8 : simd256bit {
     simd32uint8() {}
@@ -298,6 +329,75 @@ struct simd32uint8 : simd256bit {
 
     explicit simd32uint8(uint8_t x) {
         set1(x);
+    }
+    template <
+            uint8_t _0,
+            uint8_t _1,
+            uint8_t _2,
+            uint8_t _3,
+            uint8_t _4,
+            uint8_t _5,
+            uint8_t _6,
+            uint8_t _7,
+            uint8_t _8,
+            uint8_t _9,
+            uint8_t _10,
+            uint8_t _11,
+            uint8_t _12,
+            uint8_t _13,
+            uint8_t _14,
+            uint8_t _15,
+            uint8_t _16,
+            uint8_t _17,
+            uint8_t _18,
+            uint8_t _19,
+            uint8_t _20,
+            uint8_t _21,
+            uint8_t _22,
+            uint8_t _23,
+            uint8_t _24,
+            uint8_t _25,
+            uint8_t _26,
+            uint8_t _27,
+            uint8_t _28,
+            uint8_t _29,
+            uint8_t _30,
+            uint8_t _31>
+    static simd32uint8 create() {
+        simd32uint8 ret;
+        ret.u8[0] = _0;
+        ret.u8[1] = _1;
+        ret.u8[2] = _2;
+        ret.u8[3] = _3;
+        ret.u8[4] = _4;
+        ret.u8[5] = _5;
+        ret.u8[6] = _6;
+        ret.u8[7] = _7;
+        ret.u8[8] = _8;
+        ret.u8[9] = _9;
+        ret.u8[10] = _10;
+        ret.u8[11] = _11;
+        ret.u8[12] = _12;
+        ret.u8[13] = _13;
+        ret.u8[14] = _14;
+        ret.u8[15] = _15;
+        ret.u8[16] = _16;
+        ret.u8[17] = _17;
+        ret.u8[18] = _18;
+        ret.u8[19] = _19;
+        ret.u8[20] = _20;
+        ret.u8[21] = _21;
+        ret.u8[22] = _22;
+        ret.u8[23] = _23;
+        ret.u8[24] = _24;
+        ret.u8[25] = _25;
+        ret.u8[26] = _26;
+        ret.u8[27] = _27;
+        ret.u8[28] = _28;
+        ret.u8[29] = _29;
+        ret.u8[30] = _30;
+        ret.u8[31] = _31;
+        return ret;
     }
 
     explicit simd32uint8(const simd256bit& x) : simd256bit(x) {}
@@ -511,6 +611,12 @@ struct simd8uint32 : simd256bit {
         for (int i = 0; i < 8; i++) {
             u32[i] = x;
         }
+    }
+
+    simd8uint32 unzip() const {
+        const uint32_t ret[] = {
+                u32[0], u32[2], u32[4], u32[6], u32[1], u32[3], u32[5], u32[7]};
+        return simd8uint32{ret};
     }
 };
 
