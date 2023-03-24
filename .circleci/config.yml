@@ -369,7 +369,7 @@ jobs:
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
             $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
-            $HOME/miniconda/bin/conda config --set anaconda_upload no
+            $HOME/miniconda/bin/conda config --set anaconda_upload yes
       - run:
           name: Build packages
           environment:
