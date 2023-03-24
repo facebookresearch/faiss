@@ -32,27 +32,36 @@ struct BinaryInvertedListScanner;
  */
 struct IndexBinaryIVF : IndexBinary {
     /// Access to the actual data
-    InvertedLists* invlists;
-    bool own_invlists;
+    InvertedLists* invlists = nullptr;
+    bool own_invlists = true;
 
-    size_t nprobe;    ///< number of probes at query time
-    size_t max_codes; ///< max nb of codes to visit to do a query
+    size_t nprobe = 1;    ///< number of probes at query time
+    size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
     /** Select between using a heap or counting to select the k smallest values
      * when scanning inverted lists.
      */
     bool use_heap = true;
 
+    /** collect computations per batch */
+    bool per_invlist_search = false;
+
     /// map for direct access to the elements. Enables reconstruct().
     DirectMap direct_map;
 
-    IndexBinary* quantizer; ///< quantizer that maps vectors to inverted lists
-    size_t nlist;           ///< number of possible key values
+    /// quantizer that maps vectors to inverted lists
+    IndexBinary* quantizer = nullptr;
 
-    bool own_fields; ///< whether object owns the quantizer
+    /// number of possible key values
+    size_t nlist = 0;
+
+    /// whether object owns the quantizer
+    bool own_fields = false;
 
     ClusteringParameters cp; ///< to override default clustering params
-    Index* clustering_index; ///< to override index used during clustering
+
+    /// to override index used during clustering
+    Index* clustering_index = nullptr;
 
     /** The Inverted file takes a quantizer (an IndexBinary) on input,
      * which implements the function mapping a vector to a list
