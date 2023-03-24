@@ -98,7 +98,7 @@ jobs:
           command: |
             conda install -y -q conda-build
             cd conda
-            conda build faiss --python 3.10 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_osx:
     macos:
@@ -118,7 +118,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.10 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_osx_arm:
     macos:
@@ -172,7 +172,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.10 -c pytorch
+            conda build faiss --python 3.9 -c pytorch
 
   build_arm:
     machine:
@@ -444,6 +444,8 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - deploy_osx_arm:
+          name: OSX (ARM) nightlies
 
   nightly:
     triggers:
@@ -474,4 +476,7 @@ workflows:
           label: nightly
       - deploy_osx:
           name: OSX nightlies
+          label: nightly
+      - deploy_osx_arm:
+          name: OSX (ARM) nightlies
           label: nightly
