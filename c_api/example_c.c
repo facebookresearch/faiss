@@ -115,6 +115,63 @@ int main() {
         faiss_IDSelectorRange_free(sel);
     }
 
+    { // search xb first 5 but search parameters of id range [20,40] OR
+      // [45,60]
+        idx_t* I = malloc(k * nq * sizeof(idx_t));
+        float* D = malloc(k * nq * sizeof(float));
+        FaissIDSelectorRange* lhs_sel = NULL;
+        FAISS_TRY(faiss_IDSelectorRange_new(&lhs_sel, 20, 40));
+        FaissIDSelectorRange* rhs_sel = NULL;
+        FAISS_TRY(faiss_IDSelectorRange_new(&rhs_sel, 45, 60));
+        FaissIDSelectorOr* sel = NULL;
+        FAISS_TRY(faiss_IDSelectorOr_new(&sel, lhs_sel, rhs_sel));
+        FaissSearchParameters* params = NULL;
+        FAISS_TRY(faiss_SearchParameters_new(&params, sel));
+        FAISS_TRY(
+                faiss_Index_search_with_params(index, nq, xq, k, params, D, I));
+        printf("Searching w/ IDSelectorRange [20,40] OR [45,60] \n");
+        printf("I=\n");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5lld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+            printf("\n");
+        }
+        free(I);
+        free(D);
+        faiss_SearchParameters_free(params);
+        faiss_IDSelectorRange_free(lhs_sel);
+        faiss_IDSelectorRange_free(rhs_sel);
+        faiss_IDSelector_free(sel);
+    }
+    { // search xb first 5 but search parameters of id range [20,40] AND
+      // [15,35] = [20,35]
+        idx_t* I = malloc(k * nq * sizeof(idx_t));
+        float* D = malloc(k * nq * sizeof(float));
+        FaissIDSelectorRange* lhs_sel = NULL;
+        FAISS_TRY(faiss_IDSelectorRange_new(&lhs_sel, 20, 40));
+        FaissIDSelectorRange* rhs_sel = NULL;
+        FAISS_TRY(faiss_IDSelectorRange_new(&rhs_sel, 15, 35));
+        FaissIDSelectorAnd* sel = NULL;
+        FAISS_TRY(faiss_IDSelectorAnd_new(&sel, lhs_sel, rhs_sel));
+        FaissSearchParameters* params = NULL;
+        FAISS_TRY(faiss_SearchParameters_new(&params, sel));
+        FAISS_TRY(
+                faiss_Index_search_with_params(index, nq, xq, k, params, D, I));
+        printf("Searching w/ IDSelectorRange [20,40] AND [15,35] = [20,35]\n");
+        printf("I=\n");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < k; j++)
+                printf("%5lld (d=%2.3f)  ", I[i * k + j], D[i * k + j]);
+            printf("\n");
+        }
+        free(I);
+        free(D);
+        faiss_SearchParameters_free(params);
+        faiss_IDSelectorRange_free(lhs_sel);
+        faiss_IDSelectorRange_free(rhs_sel);
+        faiss_IDSelector_free(sel);
+    }
+
     printf("Saving index to disk...\n");
     FAISS_TRY(faiss_write_index_fname(index, "example.index"));
 
