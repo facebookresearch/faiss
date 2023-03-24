@@ -7222,6 +7222,7 @@
     <member refid="structfaiss_1_1simd16uint16_1a6d2d684064a30e4abed588f4e905d269" kind="function"><name>operator-</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a830e428813f3f6ebeaf8cedecd451cd0" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a2b2d70d950af35b865d4689eef341daa" kind="function"><name>operator|</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a20dab27b25c52912996007e9034bab14" kind="function"><name>operator^</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ae67c5d5d9daf09fa311013b44b7d2dbe" kind="function"><name>get_scalar_0</name></member>
     <member refid="structfaiss_1_1simd16uint16_1aef7875d3071703dc6f2b0f3f3d6f798f" kind="function"><name>ge_mask</name></member>
@@ -7249,6 +7250,7 @@
     <member refid="structfaiss_1_1simd16uint16_1a470f320e55778f486022f6e008185688" kind="function"><name>operator-</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a33fedf9d21e4ec8e6a485beca34552ac" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a6470ee981689f2fcead27d04374dc808" kind="function"><name>operator|</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a43fc30ceefeb427ffd6f0fe2369f9cbd" kind="function"><name>operator^</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a0aab312de981155c15109710467deb40" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ae67c5d5d9daf09fa311013b44b7d2dbe" kind="function"><name>get_scalar_0</name></member>
@@ -7284,6 +7286,7 @@
     <member refid="structfaiss_1_1simd16uint16_1a470f320e55778f486022f6e008185688" kind="function"><name>operator-</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a61142f0593f587b24d619eb39ab176b2" kind="function"><name>operator&amp;</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a54c5f346d14aa28f54183a3cafc370aa" kind="function"><name>operator|</name></member>
+    <member refid="structfaiss_1_1simd16uint16_1a5881afa34d3cf8aff5c83a3d85a1ad6e" kind="function"><name>operator^</name></member>
     <member refid="structfaiss_1_1simd16uint16_1a0aab312de981155c15109710467deb40" kind="function"><name>operator==</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ac50c11751c0043f3a8232855a85982c5" kind="function"><name>operator~</name></member>
     <member refid="structfaiss_1_1simd16uint16_1ae67c5d5d9daf09fa311013b44b7d2dbe" kind="function"><name>get_scalar_0</name></member>
@@ -7394,7 +7397,10 @@
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a4097e79961731ff6c18503f062fbd9ca" kind="function"><name>create</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a4097e79961731ff6c18503f062fbd9ca" kind="function"><name>create</name></member>
     <member refid="structfaiss_1_1simd32uint8_1adbc2039e6054117950fbf9dfbd220678" kind="function"><name>binary_func</name></member>
+    <member refid="structfaiss_1_1simd32uint8_1a4097e79961731ff6c18503f062fbd9ca" kind="function"><name>create</name></member>
   </compound>
   <compound refid="structfaiss_1_1simd8float32" kind="struct"><name>faiss::simd8float32</name>
     <member refid="structfaiss_1_1simd8float32_1ab83d945254427a5965b2d063a9933689" kind="variable"><name>data</name></member>
@@ -7480,6 +7486,7 @@
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a03cf5716cd47da6c12f62ac8003c6636" kind="function"><name>unzip</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a89da3bccd3b703777fe4127f5fc764a7" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a9583099d313bf8ecdbfcc7c6486cc002" kind="function"><name>simd8uint32</name></member>
@@ -7493,6 +7500,7 @@
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a03cf5716cd47da6c12f62ac8003c6636" kind="function"><name>unzip</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a91007d2e6b4014a04af520fb2613563b" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1abe0ad93df6ae31c49b471a2390148861" kind="function"><name>simd8uint32</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a4afdab340dd761c338ae8ba062eea447" kind="function"><name>simd8uint32</name></member>
@@ -7513,6 +7521,7 @@
     <member refid="structfaiss_1_1simd8uint32_1a9129b145e1f1fbf18b0d7612a54c5bbb" kind="function"><name>hex</name></member>
     <member refid="structfaiss_1_1simd8uint32_1a916170f79c2616d3f22f557b2a17a4df" kind="function"><name>dec</name></member>
     <member refid="structfaiss_1_1simd8uint32_1af9641584823aaa3118998b3a63bbd97b" kind="function"><name>set1</name></member>
+    <member refid="structfaiss_1_1simd8uint32_1a03cf5716cd47da6c12f62ac8003c6636" kind="function"><name>unzip</name></member>
     <member refid="structfaiss_1_1simd256bit_1a46f3f3e576ad528e64505c73980c903f" kind="function"><name>storeu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" kind="function"><name>loadu</name></member>
     <member refid="structfaiss_1_1simd256bit_1a9cd7429e3408e78181b1810221664c0f" kind="function"><name>store</name></member>
@@ -8302,6 +8311,7 @@
     <member refid="namespacefaiss_1a44550e642ff438af2de805eeaf7cda23" kind="function"><name>combine2x2</name></member>
     <member refid="namespacefaiss_1a12cfacbde86018137e809d6f5a058d7b" kind="function"><name>cmp_ge32</name></member>
     <member refid="namespacefaiss_1ab3ce07e3be6ce83bbc1a0bf229c707c5" kind="function"><name>cmp_le32</name></member>
+    <member refid="namespacefaiss_1a79f085f2057b20c36dc9cf8405f8e9f7" kind="function"><name>hadd</name></member>
     <member refid="namespacefaiss_1afdc84fda618656633753330c92ad070e" kind="function"><name>uint16_to_uint8_saturate</name></member>
     <member refid="namespacefaiss_1a1a1ef7dc74c5b448482e503fb435400f" kind="function"><name>get_MSBs</name></member>
     <member refid="namespacefaiss_1a376a50b76efda66b8e55b8deb5ad8dc2" kind="function"><name>blendv</name></member>
