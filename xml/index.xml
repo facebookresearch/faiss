@@ -2077,6 +2077,7 @@
     <member refid="structfaiss_1_1IndexBinaryIVF_1ae9890e0946f3aba99ccad6b637df0c8b" kind="variable"><name>nprobe</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a18ffc5dbf15b4a86a8c868ca845ea4c9" kind="variable"><name>max_codes</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1abcab702ebe1814ff432401bfd39df492" kind="variable"><name>use_heap</name></member>
+    <member refid="structfaiss_1_1IndexBinaryIVF_1aa940f61fbab22b32b63180e413e1ac04" kind="variable"><name>per_invlist_search</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1abbea7b7b4feb17fb09ef82d6e6f46b66" kind="variable"><name>direct_map</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a5c08ac8e6c1444e61b9f357cfba34e2e" kind="variable"><name>quantizer</name></member>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a9eb4370bcc95994822c3a81c290fa919" kind="variable"><name>nlist</name></member>
@@ -8336,6 +8337,7 @@
     <member refid="namespacefaiss_1a0e967dd8492dc074a7d6950d437e53a2" kind="function"><name>fvec_argsort_parallel</name></member>
     <member refid="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" kind="function"><name>bucket_sort</name></member>
     <member refid="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" kind="function"><name>matrix_bucket_sort_inplace</name></member>
+    <member refid="namespacefaiss_1a5374d7faee70e3977c0293ee0997b964" kind="function"><name>matrix_bucket_sort_inplace</name></member>
     <member refid="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" kind="function"><name>get_compile_options</name></member>
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
     <member refid="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" kind="function"><name>get_mem_usage_kb</name></member>

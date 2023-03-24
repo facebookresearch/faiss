@@ -7921,6 +7921,45 @@
         </inbodydescription>
         <location file="faiss/utils/sorting.h" line="54" column="6" declfile="faiss/utils/sorting.h" declline="54" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a5374d7faee70e3977c0293ee0997b964" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::matrix_bucket_sort_inplace</definition>
+        <argsstring>(size_t nrow, size_t ncol, int64_t *vals, int64_t nbucket, int64_t *lims, int nt=0)</argsstring>
+        <name>matrix_bucket_sort_inplace</name>
+        <param>
+          <type>size_t</type>
+          <declname>nrow</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ncol</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>nbucket</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>lims</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nt</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>same with int64 elements </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="63" column="6" declfile="faiss/utils/sorting.h" declline="63" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>std::string faiss::get_compile_options</definition>
