@@ -40,7 +40,7 @@ outputs:
         - cmake >=3.17
         - make  # [not win]
         - mkl-devel =2021 # [not arm64]
-        - openblas
+        - openblas # [arm64]
       host:
         - mkl =2021 # [not arm64]
       run:
