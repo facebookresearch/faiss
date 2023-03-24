@@ -90,6 +90,23 @@ static inline float32x4x2_t reinterpret_f32(const float32x4x2_t& v) {
     return v;
 }
 
+// Surprisingly, vdupq_n_u16 has the type of
+// uint16x8_t (std::uint32_t) , and vdupq_n_u8 also has
+// uint8x16_t (std::uint32_t) on **some environments**.
+// We want argument type as same as the type of element
+// of result vector type (std::uint16_t for uint16x8_t,
+// and std::uint8_t for uint8x16_t) instead of
+// std::uint32_t due to using set1 function templates,
+// so let's fix the argument type here and use these
+// overload below.
+static inline ::uint16x8_t vdupq_n_u16(std::uint16_t v) {
+    return ::vdupq_n_u16(v);
+}
+
+static inline ::uint8x16_t vdupq_n_u8(std::uint8_t v) {
+    return ::vdupq_n_u8(v);
+}
+
 template <
         typename T,
         typename U = decltype(reinterpret_u8(std::declval<T>().data))>
@@ -121,11 +138,25 @@ static inline std::string bin(const S& simd) {
     return std::string(bits);
 }
 
-template <typename D, typename F, typename T>
-static inline void set1(D& d, F&& f, T t) {
-    const auto v = f(t);
-    d.val[0] = v;
-    d.val[1] = v;
+template <typename T>
+using remove_cv_ref_t =
+        typename std::remove_reference<typename std::remove_cv<T>::type>::type;
+
+template <typename D, typename T>
+struct set1_impl {
+    D& d;
+    T t;
+    template <remove_cv_ref_t<decltype(std::declval<D>().val[0])> (*F)(T)>
+    inline void call() {
+        const auto v = F(t);
+        d.val[0] = v;
+        d.val[1] = v;
+    }
+};
+
+template <typename D, typename T>
+static inline set1_impl<remove_cv_ref_t<D>, T> set1(D& d, T t) {
+    return {d, t};
 }
 
 template <typename T, size_t N, typename S>
@@ -144,20 +175,57 @@ static inline std::string elements_to_string(const char* fmt, const S& simd) {
     return std::string(res);
 }
 
-template <typename T, typename F>
-static inline T unary_func(const T& a, F&& f) {
-    T t;
-    t.val[0] = f(a.val[0]);
-    t.val[1] = f(a.val[1]);
-    return t;
+template <typename T, typename U>
+struct unary_func_impl {
+    const U& a;
+    using Telem = remove_cv_ref_t<decltype(std::declval<T>().val[0])>;
+    using Uelem = remove_cv_ref_t<decltype(std::declval<U>().val[0])>;
+    template <Telem (*F)(Uelem)>
+    inline T call() {
+        T t;
+        t.val[0] = F(a.val[0]);
+        t.val[1] = F(a.val[1]);
+        return t;
+    }
+};
+
+template <typename T>
+static inline unary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<T>> unary_func(
+        const T& a) {
+    return {a};
 }
 
-template <typename T, typename F>
-static inline T binary_func(const T& a, const T& b, F&& f) {
-    T t;
-    t.val[0] = f(a.val[0], b.val[0]);
-    t.val[1] = f(a.val[1], b.val[1]);
-    return t;
+template <typename T, typename U>
+static inline unary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<U>> unary_func(
+        const U& a) {
+    return {a};
+}
+
+template <typename T, typename U>
+struct binary_func_impl {
+    const U& a;
+    const U& b;
+    using Telem = remove_cv_ref_t<decltype(std::declval<T>().val[0])>;
+    using Uelem = remove_cv_ref_t<decltype(std::declval<U>().val[0])>;
+    template <Telem (*F)(Uelem, Uelem)>
+    inline T call() {
+        T t;
+        t.val[0] = F(a.val[0], b.val[0]);
+        t.val[1] = F(a.val[1], b.val[1]);
+        return t;
+    }
+};
+
+template <typename T>
+static inline binary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<T>>
+binary_func(const T& a, const T& b) {
+    return {a, b};
+}
+
+template <typename T, typename U>
+static inline binary_func_impl<remove_cv_ref_t<T>, remove_cv_ref_t<U>>
+binary_func(const U& a, const U& b) {
+    return {a, b};
 }
 
 static inline uint16_t vmovmask_u8(const uint8x16_t& v) {
@@ -174,8 +242,8 @@ static inline uint32_t cmp_xe32(
         const uint16x8x2_t& d0,
         const uint16x8x2_t& d1,
         const uint16x8x2_t& thr) {
-    const auto d0_thr = detail::simdlib::binary_func(d0, thr, F);
-    const auto d1_thr = detail::simdlib::binary_func(d1, thr, F);
+    const auto d0_thr = detail::simdlib::binary_func(d0, thr).call<F>();
+    const auto d1_thr = detail::simdlib::binary_func(d1, thr).call<F>();
     const auto d0_mask = vmovmask_u8(
             vmovn_high_u16(vmovn_u16(d0_thr.val[0]), d0_thr.val[1]));
     const auto d1_mask = vmovmask_u8(
@@ -221,7 +289,8 @@ struct simd16uint16 {
             : data{vld1q_u16(x), vld1q_u16(x + 8)} {}
 
     void clear() {
-        detail::simdlib::set1(data, &vdupq_n_u16, static_cast<uint16_t>(0));
+        detail::simdlib::set1(data, static_cast<uint16_t>(0))
+                .call<&detail::simdlib::vdupq_n_u16>();
     }
 
     void storeu(uint16_t* ptr) const {
@@ -259,12 +328,12 @@ struct simd16uint16 {
     }
 
     void set1(uint16_t x) {
-        detail::simdlib::set1(data, &vdupq_n_u16, x);
+        detail::simdlib::set1(data, x).call<&detail::simdlib::vdupq_n_u16>();
     }
 
     simd16uint16 operator*(const simd16uint16& other) const {
-        return simd16uint16{
-                detail::simdlib::binary_func(data, other.data, &vmulq_u16)};
+        return simd16uint16{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vmulq_u16>()};
     }
 
     // shift must be known at compile time
@@ -273,50 +342,56 @@ struct simd16uint16 {
             case 0:
                 return *this;
             case 1:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<1>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<1>>()};
             case 2:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<2>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<2>>()};
             case 3:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<3>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<3>>()};
             case 4:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<4>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<4>>()};
             case 5:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<5>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<5>>()};
             case 6:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<6>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<6>>()};
             case 7:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<7>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<7>>()};
             case 8:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<8>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<8>>()};
             case 9:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<9>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshrq<9>>()};
             case 10:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<10>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<10>>()};
             case 11:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<11>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<11>>()};
             case 12:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<12>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<12>>()};
             case 13:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<13>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<13>>()};
             case 14:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<14>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<14>>()};
             case 15:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshrq<15>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshrq<15>>()};
             default:
                 FAISS_THROW_FMT("Invalid shift %d", shift);
         }
@@ -328,50 +403,56 @@ struct simd16uint16 {
             case 0:
                 return *this;
             case 1:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<1>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<1>>()};
             case 2:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<2>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<2>>()};
             case 3:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<3>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<3>>()};
             case 4:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<4>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<4>>()};
             case 5:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<5>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<5>>()};
             case 6:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<6>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<6>>()};
             case 7:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<7>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<7>>()};
             case 8:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<8>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<8>>()};
             case 9:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<9>)};
+                return simd16uint16{detail::simdlib::unary_func(data)
+                                            .call<detail::simdlib::vshlq<9>>()};
             case 10:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<10>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<10>>()};
             case 11:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<11>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<11>>()};
             case 12:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<12>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<12>>()};
             case 13:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<13>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<13>>()};
             case 14:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<14>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<14>>()};
             case 15:
-                return simd16uint16{detail::simdlib::unary_func(
-                        data, detail::simdlib::vshlq<15>)};
+                return simd16uint16{
+                        detail::simdlib::unary_func(data)
+                                .call<detail::simdlib::vshlq<15>>()};
             default:
                 FAISS_THROW_FMT("Invalid shift %d", shift);
         }
@@ -388,13 +469,13 @@ struct simd16uint16 {
     }
 
     simd16uint16 operator+(const simd16uint16& other) const {
-        return simd16uint16{
-                detail::simdlib::binary_func(data, other.data, &vaddq_u16)};
+        return simd16uint16{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vaddq_u16>()};
     }
 
     simd16uint16 operator-(const simd16uint16& other) const {
-        return simd16uint16{
-                detail::simdlib::binary_func(data, other.data, &vsubq_u16)};
+        return simd16uint16{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vsubq_u16>()};
     }
 
     template <
@@ -403,10 +484,10 @@ struct simd16uint16 {
                     detail::simdlib::is_simd256bit<T>::value,
                     std::nullptr_t>::type = nullptr>
     simd16uint16 operator&(const T& other) const {
-        return simd16uint16{detail::simdlib::binary_func(
-                data,
-                detail::simdlib::reinterpret_u16(other.data),
-                &vandq_u16)};
+        return simd16uint16{
+                detail::simdlib::binary_func(
+                        data, detail::simdlib::reinterpret_u16(other.data))
+                        .template call<&vandq_u16>()};
     }
 
     template <
@@ -415,20 +496,21 @@ struct simd16uint16 {
                     detail::simdlib::is_simd256bit<T>::value,
                     std::nullptr_t>::type = nullptr>
     simd16uint16 operator|(const T& other) const {
-        return simd16uint16{detail::simdlib::binary_func(
-                data,
-                detail::simdlib::reinterpret_u16(other.data),
-                &vorrq_u16)};
+        return simd16uint16{
+                detail::simdlib::binary_func(
+                        data, detail::simdlib::reinterpret_u16(other.data))
+                        .template call<&vorrq_u16>()};
     }
 
     // returns binary masks
     simd16uint16 operator==(const simd16uint16& other) const {
-        return simd16uint16{
-                detail::simdlib::binary_func(data, other.data, &vceqq_u16)};
+        return simd16uint16{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u16>()};
     }
 
     simd16uint16 operator~() const {
-        return simd16uint16{detail::simdlib::unary_func(data, &vmvnq_u16)};
+        return simd16uint16{
+                detail::simdlib::unary_func(data).call<&vmvnq_u16>()};
     }
 
     // get scalar at index 0
@@ -439,8 +521,8 @@ struct simd16uint16 {
     // mask of elements where this >= thresh
     // 2 bit per component: 16 * 2 = 32 bit
     uint32_t ge_mask(const simd16uint16& thresh) const {
-        const auto input =
-                detail::simdlib::binary_func(data, thresh.data, &vcgeq_u16);
+        const auto input = detail::simdlib::binary_func(data, thresh.data)
+                                   .call<&vcgeq_u16>();
         const auto vmovmask_u16 = [](uint16x8_t v) -> uint16_t {
             uint16_t d[8];
             const auto v2 = vreinterpretq_u32_u16(vshrq_n_u16(v, 14));
@@ -473,23 +555,25 @@ struct simd16uint16 {
     }
 
     void accu_min(const simd16uint16& incoming) {
-        data = detail::simdlib::binary_func(incoming.data, data, &vminq_u16);
+        data = detail::simdlib::binary_func(incoming.data, data)
+                       .call<&vminq_u16>();
     }
 
     void accu_max(const simd16uint16& incoming) {
-        data = detail::simdlib::binary_func(incoming.data, data, &vmaxq_u16);
+        data = detail::simdlib::binary_func(incoming.data, data)
+                       .call<&vmaxq_u16>();
     }
 };
 
 // not really a std::min because it returns an elementwise min
 inline simd16uint16 min(const simd16uint16& av, const simd16uint16& bv) {
     return simd16uint16{
-            detail::simdlib::binary_func(av.data, bv.data, &vminq_u16)};
+            detail::simdlib::binary_func(av.data, bv.data).call<&vminq_u16>()};
 }
 
 inline simd16uint16 max(const simd16uint16& av, const simd16uint16& bv) {
     return simd16uint16{
-            detail::simdlib::binary_func(av.data, bv.data, &vmaxq_u16)};
+            detail::simdlib::binary_func(av.data, bv.data).call<&vmaxq_u16>()};
 }
 
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
@@ -541,7 +625,8 @@ struct simd32uint8 {
             : data{vld1q_u8(x), vld1q_u8(x + 16)} {}
 
     void clear() {
-        detail::simdlib::set1(data, &vdupq_n_u8, static_cast<uint8_t>(0));
+        detail::simdlib::set1(data, static_cast<uint8_t>(0))
+                .call<&detail::simdlib::vdupq_n_u8>();
     }
 
     void storeu(uint8_t* ptr) const {
@@ -584,7 +669,7 @@ struct simd32uint8 {
     }
 
     void set1(uint8_t x) {
-        detail::simdlib::set1(data, &vdupq_n_u8, x);
+        detail::simdlib::set1(data, x).call<&detail::simdlib::vdupq_n_u8>();
     }
 
     template <
@@ -593,19 +678,21 @@ struct simd32uint8 {
                     detail::simdlib::is_simd256bit<T>::value,
                     std::nullptr_t>::type = nullptr>
     simd32uint8 operator&(const T& other) const {
-        return simd32uint8{detail::simdlib::binary_func(
-                data, detail::simdlib::reinterpret_u8(other.data), &vandq_u8)};
+        return simd32uint8{
+                detail::simdlib::binary_func(
+                        data, detail::simdlib::reinterpret_u8(other.data))
+                        .template call<&vandq_u8>()};
     }
 
     simd32uint8 operator+(const simd32uint8& other) const {
-        return simd32uint8{
-                detail::simdlib::binary_func(data, other.data, &vaddq_u8)};
+        return simd32uint8{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vaddq_u8>()};
     }
 
     // The very important operation that everything relies on
     simd32uint8 lookup_2_lanes(const simd32uint8& idx) const {
-        return simd32uint8{
-                detail::simdlib::binary_func(data, idx.data, &vqtbl1q_u8)};
+        return simd32uint8{detail::simdlib::binary_func(data, idx.data)
+                                   .call<&vqtbl1q_u8>()};
     }
 
     simd32uint8 operator+=(const simd32uint8& other) {
@@ -688,26 +775,20 @@ struct simd8uint32 {
     }
 
     simd8uint32 operator+(simd8uint32 other) const {
-        return simd8uint32{uint32x4x2_t{
-                vaddq_u32(data.val[0], other.data.val[0]),
-                vaddq_u32(data.val[1], other.data.val[1])}};
+        return simd8uint32{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vaddq_u32>()};
     }
 
     simd8uint32 operator-(simd8uint32 other) const {
-        return simd8uint32{uint32x4x2_t{
-                vsubq_u32(data.val[0], other.data.val[0]),
-                vsubq_u32(data.val[1], other.data.val[1])}};
+        return simd8uint32{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vsubq_u32>()};
     }
 
     bool operator==(simd8uint32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_u32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_u32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equals = detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
+        return vminvq_u32(equal) == 0xffffffff;
     }
 
     bool operator!=(simd8uint32 other) const {
@@ -715,7 +796,8 @@ struct simd8uint32 {
     }
 
     void clear() {
-        detail::simdlib::set1(data, &vdupq_n_u32, static_cast<uint32_t>(0));
+        detail::simdlib::set1(data, static_cast<uint32_t>(0))
+                .call<&vdupq_n_u32>();
     }
 
     void storeu(uint32_t* ptr) const {
@@ -753,7 +835,7 @@ struct simd8uint32 {
     }
 
     void set1(uint32_t x) {
-        detail::simdlib::set1(data, &vdupq_n_u32, x);
+        detail::simdlib::set1(data, x).call<&vdupq_n_u32>();
     }
 };
 
@@ -792,7 +874,7 @@ struct simd8float32 {
     }
 
     void clear() {
-        detail::simdlib::set1(data, &vdupq_n_f32, 0.f);
+        detail::simdlib::set1(data, 0.f).call<&vdupq_n_f32>();
     }
 
     void storeu(float* ptr) const {
@@ -818,35 +900,34 @@ struct simd8float32 {
     }
 
     simd8float32 operator*(const simd8float32& other) const {
-        return simd8float32{
-                detail::simdlib::binary_func(data, other.data, &vmulq_f32)};
+        return simd8float32{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vmulq_f32>()};
     }
 
     simd8float32 operator+(const simd8float32& other) const {
-        return simd8float32{
-                detail::simdlib::binary_func(data, other.data, &vaddq_f32)};
+        return simd8float32{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vaddq_f32>()};
     }
 
     simd8float32 operator-(const simd8float32& other) const {
-        return simd8float32{
-                detail::simdlib::binary_func(data, other.data, &vsubq_f32)};
+        return simd8float32{detail::simdlib::binary_func(data, other.data)
+                                    .call<&vsubq_f32>()};
     }
 
     simd8float32& operator+=(const simd8float32& other) {
+        // In this context, it is more compiler friendly to write intrinsics
+        // directly instead of using binary_func
         data.val[0] = vaddq_f32(data.val[0], other.data.val[0]);
         data.val[1] = vaddq_f32(data.val[1], other.data.val[1]);
         return *this;
     }
 
     bool operator==(simd8float32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_f32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equals =
+                detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
+                        .call<&vceqq_f32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
+        return vminvq_u32(equal) == 0xffffffff;
     }
 
     bool operator!=(simd8float32 other) const {
@@ -861,17 +942,17 @@ struct simd8float32 {
 // hadd does not cross lanes
 inline simd8float32 hadd(const simd8float32& a, const simd8float32& b) {
     return simd8float32{
-            detail::simdlib::binary_func(a.data, b.data, &vpaddq_f32)};
+            detail::simdlib::binary_func(a.data, b.data).call<&vpaddq_f32>()};
 }
 
 inline simd8float32 unpacklo(const simd8float32& a, const simd8float32& b) {
     return simd8float32{
-            detail::simdlib::binary_func(a.data, b.data, &vzip1q_f32)};
+            detail::simdlib::binary_func(a.data, b.data).call<&vzip1q_f32>()};
 }
 
 inline simd8float32 unpackhi(const simd8float32& a, const simd8float32& b) {
     return simd8float32{
-            detail::simdlib::binary_func(a.data, b.data, &vzip2q_f32)};
+            detail::simdlib::binary_func(a.data, b.data).call<&vzip2q_f32>()};
 }
 
 // compute a * b + c
@@ -920,9 +1001,9 @@ inline void cmplt_and_blend_inplace(
         const simd8uint32 candidateIndices,
         simd8float32& lowestValues,
         simd8uint32& lowestIndices) {
-    uint32x4x2_t comparison = uint32x4x2_t{
-            vcltq_f32(candidateValues.data.val[0], lowestValues.data.val[0]),
-            vcltq_f32(candidateValues.data.val[1], lowestValues.data.val[1])};
+    const auto comparison = detail::simdlib::binary_func<::uint32x4x2_t>(
+                                    candidateValues.data, lowestValues.data)
+                                    .call<&vcltq_f32>();
 
     lowestValues.data = float32x4x2_t{
             vbslq_f32(
@@ -948,16 +1029,14 @@ namespace {
 
 // get even float32's of a and b, interleaved
 simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{float32x4x2_t{
-            vuzp1q_f32(a.data.val[0], b.data.val[0]),
-            vuzp1q_f32(a.data.val[1], b.data.val[1])}};
+    return simd8float32{
+            detail::simdlib::binary_func(a.data, b.data).call<&vuzp1q_f32>()};
 }
 
 // get odd float32's of a and b, interleaved
 simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{float32x4x2_t{
-            vuzp2q_f32(a.data.val[0], b.data.val[0]),
-            vuzp2q_f32(a.data.val[1], b.data.val[1])}};
+    return simd8float32{
+            detail::simdlib::binary_func(a.data, b.data).call<&vuzp2q_f32>()};
 }
 
 // 3 cycles

@@ -8,11 +8,15 @@ Compilation instructions
 
 The full contents of the pure C API are in the ["c_api"](c_api/) folder.
 Please be sure to follow the instructions on [building the main C++ library](../INSTALL.md#step-1-compiling-the-c-faiss) first.
-Then, enter the [c_api](c_api/) directory and run
+Include `-DFAISS_ENABLE_C_API=ON` to the cmake command.
 
-  `make`
+`make -C build`
 
-This builds the dynamic library "faiss_c", containing the full implementation of Faiss and the necessary wrappers for the C interface. It does not depend on libfaiss.a or the C++ standard library. It will also build an example program `bin/example_c`.
+
+This builds the dynamic library "faiss_c", containing the full implementation of Faiss and the necessary wrappers for the C interface. It does not depend on libfaiss.a or the C++ standard library. 
+
+To build the example program, you should run `make -C build example_c` at the top level of
+the faiss repo. The example program will be in `build/c_api/example_c` .
 
 Using the API
 -------------

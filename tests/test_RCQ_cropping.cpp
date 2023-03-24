@@ -10,6 +10,9 @@
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
 
+/* This test creates a 3-level RCQ and performs a search on it.
+ * Then it crops the RCQ to just the 2 first levels and verifies that
+ * the 3-level vectors are in a subtree that was visited in the 2-level RCQ. */
 TEST(RCQ_cropping, test_cropping) {
     size_t nq = 10, nt = 2000, nb = 1000, d = 32;
 
@@ -63,6 +66,7 @@ TEST(RCQ_cropping, test_cropping) {
                 idx_t coarse = Inew[q * nprobe + j];
                 if ((fine & mask) == coarse) {
                     found = true;
+                    break;
                 }
             }
             EXPECT_TRUE(found);
