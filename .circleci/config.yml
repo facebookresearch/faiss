@@ -330,6 +330,10 @@ jobs:
             conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
 
   deploy_osx_arm:
+    parameters:
+      label:
+        type: string
+        default: main
     macos:
       xcode: 14.2.0 # indicate your selected version of Xcode
     resource_class: macos.m1.large.gen1
