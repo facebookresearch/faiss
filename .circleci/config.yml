@@ -377,6 +377,7 @@ jobs:
             export PATH=~/miniconda/bin:$PATH
             cd conda
             conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+          no_output_timeout: 30m
 
   deploy_windows:
     parameters:
