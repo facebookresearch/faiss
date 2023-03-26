@@ -253,8 +253,12 @@ namespace std {
 #endif // !SWIGWIN
 
 #ifdef GPU_WRAPPER
+#ifdef USE_ROCM
+%template(GpuResourcesVector) std::vector<faiss::gpu-rocm::GpuResourcesProvider*>;
+#else
 %template(GpuResourcesVector) std::vector<faiss::gpu::GpuResourcesProvider*>;
-#endif
+#endif // USE_ROCM
+#endif // GPU_WRAPPER
 
 // produces an error on the Mac
 %ignore faiss::hamming;
@@ -283,7 +287,77 @@ void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
+#ifdef USE_ROCM
+%shared_ptr(faiss::gpu-rocm::GpuResources);
+%shared_ptr(faiss::gpu-rocm::StandardGpuResourcesImpl);
 
+%{
+
+#include <faiss/gpu-rocm/StandardGpuResources.h>
+#include <faiss/gpu-rocm/GpuIndicesOptions.h>
+#include <faiss/gpu-rocm/GpuClonerOptions.h>
+#include <faiss/gpu-rocm/GpuIndex.h>
+#include <faiss/gpu-rocm/GpuIndexFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVF.h>
+#include <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+#include <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+#include <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+#include <faiss/gpu-rocm/GpuAutoTune.h>
+#include <faiss/gpu-rocm/GpuCloner.h>
+#include <faiss/gpu-rocm/GpuDistance.h>
+#include <faiss/gpu-rocm/GpuIcmEncoder.h>
+
+int get_num_gpus()
+{
+    return faiss::gpu-rocm::getNumDevices();
+}
+
+void gpu_profiler_start()
+{
+    return faiss::gpu-rocm::profilerStart();
+}
+
+void gpu_profiler_stop()
+{
+    return faiss::gpu-rocm::profilerStop();
+}
+
+void gpu_sync_all_devices()
+{
+    return faiss::gpu-rocm::synchronizeAllDevices();
+}
+
+%}
+
+%template() std::pair<int, uint64_t>;
+%template() std::map<std::string, std::pair<int, uint64_t> >;
+%template() std::map<int, std::map<std::string, std::pair<int, uint64_t> > >;
+
+// causes weird wrapper bug
+%ignore *::allocMemoryHandle;
+%ignore faiss::gpu-rocm::GpuMemoryReservation;
+%ignore faiss::gpu-rocm::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
+%ignore faiss::gpu-rocm::AllocType;
+
+%include  <faiss/gpu-rocm/GpuResources.h>
+%include  <faiss/gpu-rocm/StandardGpuResources.h>
+
+typedef CUstream_st* hipStream_t;
+
+%inline %{
+
+// interop between pytorch exposed cudaStream_t and faiss
+cudaStream_t cast_integer_to_cudastream_t(int64_t x) { // Hubert: don't change API name for ease of use.
+  return (hipStream_t) x;
+}
+
+int64_t cast_cudastream_t_to_integer(hipStream_t x) { // Hubert: don't change API name for ease of use.
+  return (int64_t) x;
+}
+
+%}
+#else // USE_ROCM
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
 
@@ -353,8 +427,9 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 }
 
 %}
+#endif // USE_ROCM
 
-#else
+#else // GPU_WRAPPER
 
 %{
 int get_num_gpus()
@@ -376,7 +451,7 @@ void gpu_sync_all_devices()
 %}
 
 
-#endif
+#endif // GPU_WRAPPER
 
 // order matters because includes are not recursive
 
@@ -512,7 +587,22 @@ void gpu_sync_all_devices()
 %include <faiss/utils/approx_topk/approx_topk.h>
 
 #ifdef GPU_WRAPPER
+#ifdef USE_ROCM
+// quiet SWIG warnings
+%ignore faiss::gpu-rocm::GpuIndexIVF::GpuIndexIVF;
 
+%include  <faiss/gpu-rocm/GpuIndicesOptions.h>
+%include  <faiss/gpu-rocm/GpuClonerOptions.h>
+%include  <faiss/gpu-rocm/GpuIndex.h>
+%include  <faiss/gpu-rocm/GpuIndexFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVF.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFPQ.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFFlat.h>
+%include  <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
+%include  <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
+%include  <faiss/gpu-rocm/GpuDistance.h>
+%include  <faiss/gpu-rocm/GpuIcmEncoder.h>
+#else // USE_ROCM
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
 
@@ -527,9 +617,9 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndexBinaryFlat.h>
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
+#endif // USE_ROCM
 
-
-#endif
+#endif // GPU_WRAPPER
 
 
 
@@ -756,7 +846,15 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 
 #ifdef GPU_WRAPPER
+#ifdef USE_ROCM
+%include  <faiss/gpu-rocm/GpuAutoTune.h>
 
+%newobject index_gpu_to_cpu;
+%newobject index_cpu_to_gpu;
+%newobject index_cpu_to_gpu_multiple;
+
+%include  <faiss/gpu-rocm/GpuCloner.h>
+#else // USE_ROCM
 %include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -764,8 +862,8 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 %newobject index_cpu_to_gpu_multiple;
 
 %include  <faiss/gpu/GpuCloner.h>
-
-#endif
+#endif // USE_ROCM
+#endif // GPU_WRAPPER
 
 
 
