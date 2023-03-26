@@ -37,7 +37,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - llvm-openmp  # [osx]
-        - cmake >=3.17
+        - cmake >=3.18
         - make  # [not win]
         - mkl-devel =2021 # [not arm64]
         - openblas # [arm64]
@@ -78,8 +78,7 @@ outputs:
       requires:
         - numpy
         - scipy
-        - pytorch  # [not osx]
-        - pytorch <1.12.0  # [osx]
+        - pytorch
       commands:
         - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
