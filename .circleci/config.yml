@@ -21,7 +21,8 @@ jobs:
           name: Set up environment
           command: |
             apt update
-            apt install -y build-essential cmake intel-mkl swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
+            apt install -y build-essential cmake swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
+            yes yes | apt install -y intel-mkl
       - run:
           name: Build faiss library
           no_output_timeout: 30m
