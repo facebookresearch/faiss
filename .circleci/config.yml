@@ -7,20 +7,20 @@ executors:
   lin_x86:
     docker:
       - image: ubuntu:22.04
-    resource_class: medium+
-    environment:
-      CONDA_ARCH: Linux-x86_64
+        environment:
+          CONDA_ARCH: Linux-x86_64
+      resource_class: medium+
   mac_x86:
     macos:
       xcode: 11.7.0  # max supported for conda build, https://circleci.com/docs/using-macos#supported-xcode-versions
-    environment:
-      CONDA_ARCH: MacOSX-x86_64
+      environment:
+        CONDA_ARCH: MacOSX-x86_64
   mac_m1:
     macos:
       xcode: 14.2.0 # minimum supported for M1
-    resource_class: macos.m1.large.gen1
-    environment:
-      CONDA_ARCH: MacOSX-arm64
+      environment:
+        CONDA_ARCH: MacOSX-arm64
+      resource_class: macos.m1.large.gen1
 
 jobs:
   format:
