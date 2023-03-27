@@ -38,6 +38,12 @@ macro(configure_swigfaiss source)
     set_source_files_properties(${source} PROPERTIES
       COMPILE_DEFINITIONS GPU_WRAPPER
     )
+    if (USE_ROCM)
+      message(USE_ROCM="${USE_ROCM}")
+      set_source_files_properties(${source} PROPERTIES
+        SWIG_FLAGS -DUSE_ROCM
+      )
+    endif()
   endif()
 endmacro()
 
