@@ -6,7 +6,7 @@ orbs:
 executors:
   lin_x86:
     environment:
-      ENV_INIT: apt update && apt install -y curl
+      ENV_INIT: apt update && apt install -y curl git
       CONDA_ARCH: Linux-x86_64
     docker:
       - image: ubuntu:22.04
