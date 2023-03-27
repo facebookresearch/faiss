@@ -3,6 +3,25 @@ version: 2.1
 orbs:
   win: circleci/windows@4.1.1
 
+executors:
+  lin_x86:
+    docker:
+      - image: ubuntu:22.04
+    resource_class: medium+
+    environment:
+      CONDA_ARCH: Linux-x86_64
+  mac_x86:
+    macos:
+      xcode: 11.7.0  # max supported for conda build, https://circleci.com/docs/using-macos#supported-xcode-versions
+    environment:
+      CONDA_ARCH: MacOSX-x86_64
+  mac_m1:
+    macos:
+      xcode: 14.2.0 # minimum supported for M1
+    resource_class: macos.m1.large.gen1
+    environment:
+      CONDA_ARCH: MacOSX-arm64
+
 jobs:
   format:
     docker:
@@ -26,6 +45,43 @@ jobs:
                git --no-pager diff --color
                exit 1
              fi
+
+  build_conda:
+    parameters:
+      exec:
+        type: executor
+    executor: << parameters.exec >>
+    environment:
+      OMP_NUM_THREADS: 10
+    steps:
+      - checkout
+      - run:
+          name: Install conda
+          command: |
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-$(CONDA_ARCH).sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+      - run:
+          name: Conda build
+          no_output_timeout: 30m
+          command: |
+            export PATH=~/miniconda/bin:$PATH
+            conda install -y -q conda-build
+            cd conda
+            conda build faiss --python 3.9 -c pytorch
+
+  build_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            conda update conda
+            conda install conda-build
+            cd conda
+            conda build faiss --python 3.9 -c pytorch
 
   build_linux:
     parameters:
@@ -92,115 +148,6 @@ jobs:
           command: |
             make -k -C build -j faiss_c
 
-  build_linux_conda:
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium+
-    steps:
-      - checkout
-      - run:
-          name: Conda build
-          no_output_timeout: 30m
-          command: |
-            conda install -y -q conda-build
-            cd conda
-            conda build faiss --python 3.9 -c pytorch
-
-  build_osx:
-    macos:
-      xcode: 11.7.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build
-      - run:
-          name: Build/test
-          command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --python 3.9 -c pytorch
-
-  build_osx_arm:
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
-            # we link against miniconda but don't use the conda build system
-            bash miniconda.sh -b -p $HOME/miniconda
-            . $HOME/miniconda/etc/profile.d/conda.sh
-            export PATH=$HOME/miniconda/bin:$PATH
-            conda install -q -y python numpy swig cmake scipy
-      - run:
-          name: Build          
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-               -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_C_API=ON \
-               -DPython_EXECUTABLE=$(which python)
-            make -k -C build -j faiss
-      - run:
-          name: Build and run C++ tests 
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            make -C build -j faiss_test
-            make -C build test
-      - run:
-          name: Build and run Python tests 
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            conda install -q -y pytorch -c pytorch
-            make -C build -j swigfaiss
-            (cd build/faiss/python; python3 setup.py build) 
-            (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
-
-  build_osx_arm_conda:
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build
-      - run:
-          name: Build packages
-          command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --python 3.9 -c pytorch
-
-  build_windows:
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
-            conda update conda
-            conda install conda-build
-            cd conda
-            conda build faiss --python 3.9 -c pytorch
-
   build_arm:
     machine:
       image: ubuntu-2004:202101-01
@@ -261,9 +208,9 @@ jobs:
             make -k -C build -j faiss_c
 
   build_linux_gpu:
-    resource_class: gpu.nvidia.medium
-    docker:
-      - image: nvidia/cuda:11.8.0-devel-ubuntu22.04
+    machine:
+      resource_class: gpu.nvidia.medium
+      image: ubuntu-2004-cuda-11.4:202110-01
     environment:
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
@@ -272,9 +219,9 @@ jobs:
       - run: 
           name: Set up environment
           command: |
-            apt update
+            sudo apt update
             cat .circleci/mkl_debconf_selections | debconf-set-selections
-            apt install -y build-essential intel-mkl cmake swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
+            sudo apt install -y build-essential intel-mkl cmake swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
       - run:
           name: Build faiss library
           no_output_timeout: 60m
@@ -316,7 +263,6 @@ jobs:
           name: Build C API
           command: |
             make -k -C build -j faiss_c
-
 
   deploy_linux:
     parameters:
@@ -461,18 +407,19 @@ workflows:
           name: Linux (AVX2)
           opt_level: "avx2"
           resource_class: "medium+"
-      - build_linux_conda:
+      - build_conda:
           name: Linux (conda)
+          exec: lin_x86
       - build_linux_gpu:
           name: Linux GPU
-          requires:
-            - Linux
-      - build_osx:
+          # requires:
+            # - Linux
+      - build_conda:
           name: OSX
-      - build_osx_arm:
+          exec: mac_x86
+      - build_conda:
           name: OSX (ARM)
-      - build_osx_arm_conda:
-          name: OSX (ARM, conda)
+          exec: mac_m1
       - build_windows:
           name: Windows
       - build_arm:
