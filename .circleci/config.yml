@@ -5,11 +5,8 @@ orbs:
 
 executors:
   lin_x86:
-    environment:
-      ENV_INIT: apt update && apt install -y curl git
-      CONDA_ARCH: Linux-x86_64
     docker:
-      - image: ubuntu:22.04
+      - image: continuumio/miniconda3
     resource_class: medium+
   mac_x86:
     environment:
@@ -22,6 +19,10 @@ executors:
     macos:
       xcode: 14.2.0 # minimum supported for M1
     resource_class: macos.m1.large.gen1
+  win:
+    executor:
+      name: win/default
+      shell: bash.exe
 
 jobs:
   format:
@@ -56,32 +57,21 @@ jobs:
       OMP_NUM_THREADS: 10
     steps:
       - checkout
-      - run:
-          name: Install conda
-          command: |
-            echo ${ENV_INIT} | sh
+      - run
+        name: Install conda
+        command: |
+          if [[ -v ${CONDA_ARCH} ]]
+          then
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
+            export PATH=~/miniconda/bin:$PATH
+          fi
       - run:
           name: Conda build
           no_output_timeout: 30m
           command: |
-            export PATH=~/miniconda/bin:$PATH
-            conda install -y -q conda-build
-            cd conda
-            conda build faiss --python 3.9 -c pytorch
-
-  build_windows:
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
             conda update conda
-            conda install conda-build
+            conda install -y -q conda-build
             cd conda
             conda build faiss --python 3.9 -c pytorch
 
@@ -422,8 +412,9 @@ workflows:
       - build_conda:
           name: OSX (ARM)
           exec: mac_m1
-      - build_windows:
+      - build_conda:
           name: Windows
+          exec: win
       - build_arm:
           name: ARM64
       - deploy_linux:
