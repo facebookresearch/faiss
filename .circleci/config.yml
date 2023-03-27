@@ -10,7 +10,7 @@ jobs:
         type: string
         default: medium
     docker:
-      image: cimg/base:current
+      - image: cimg/base:current
     resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
