@@ -98,7 +98,7 @@ jobs:
           command: |
             conda install -y -q conda-build
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.10 -c pytorch
 
   build_osx:
     macos:
@@ -118,7 +118,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.10 -c pytorch
 
   build_osx_arm:
     macos:
@@ -138,7 +138,7 @@ jobs:
             export PATH=$HOME/miniconda/bin:$PATH
             conda install -q -y python numpy swig cmake scipy
       - run:
-          name: Build          
+          name: Build
           command: |
             export PATH=$HOME/miniconda/bin:$PATH
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
@@ -146,18 +146,18 @@ jobs:
                -DPython_EXECUTABLE=$(which python)
             make -k -C build -j faiss
       - run:
-          name: Build and run C++ tests 
+          name: Build and run C++ tests
           command: |
             export PATH=$HOME/miniconda/bin:$PATH
             make -C build -j faiss_test
             make -C build test
       - run:
-          name: Build and run Python tests 
+          name: Build and run Python tests
           command: |
             export PATH=$HOME/miniconda/bin:$PATH
             conda install -q -y pytorch -c pytorch
             make -C build -j swigfaiss
-            (cd build/faiss/python; python3 setup.py build) 
+            (cd build/faiss/python; python3 setup.py build)
             (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
 
   build_osx_arm_conda:
@@ -179,7 +179,7 @@ jobs:
           command: |
             export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.10 -c pytorch
 
   build_windows:
     executor:
@@ -193,7 +193,7 @@ jobs:
             conda update conda
             conda install conda-build
             cd conda
-            conda build faiss --python 3.9 -c pytorch
+            conda build faiss --python 3.10 -c pytorch
 
   build_arm:
     machine:
