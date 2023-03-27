@@ -71,8 +71,7 @@ jobs:
             cd conda
             conda build faiss --python 3.9 -c pytorch
 
-
-build_windows:
+  build_windows:
     executor:
       name: win/default
       shell: bash.exe
