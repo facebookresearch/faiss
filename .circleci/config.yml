@@ -20,9 +20,8 @@ executors:
       xcode: 14.2.0 # minimum supported for M1
     resource_class: macos.m1.large.gen1
   win:
-    executor:
-      name: win/default
-      shell: bash.exe
+    name: win/default
+    shell: bash.exe
 
 jobs:
   format:
