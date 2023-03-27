@@ -57,7 +57,7 @@ jobs:
       OMP_NUM_THREADS: 10
     steps:
       - checkout
-      - run
+      - run:
         name: Install conda
         command: |
           if [[ -v ${CONDA_ARCH} ]]
