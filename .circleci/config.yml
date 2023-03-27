@@ -19,9 +19,6 @@ executors:
     macos:
       xcode: 14.2.0 # minimum supported for M1
     resource_class: macos.m1.large.gen1
-  win_x86:
-    executor: win/default
-    shell: bash.exe
 
 jobs:
   format:
@@ -413,7 +410,7 @@ workflows:
           exec: mac_m1
       - build_conda:
           name: Windows
-          exec: win_x86
+          exec: win/default
       - build_arm:
           name: ARM64
       - deploy_linux:
