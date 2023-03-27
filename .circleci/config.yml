@@ -71,6 +71,20 @@ jobs:
             cd conda
             conda build faiss --python 3.9 -c pytorch
 
+build_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            conda update conda
+            conda install conda-build
+            cd conda
+            conda build faiss --python 3.10 -c pytorch
+
   build_linux:
     parameters:
       opt_level:
@@ -408,9 +422,8 @@ workflows:
       - build_conda:
           name: OSX (ARM)
           exec: mac_m1
-      - build_conda:
+      - build_windows:
           name: Windows
-          exec: win/default
       - build_arm:
           name: ARM64
       - deploy_linux:
