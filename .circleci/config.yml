@@ -6,6 +6,7 @@ orbs:
 executors:
   lin_x86:
     environment:
+      ENV_INIT: apt update && apt install -y curl
       CONDA_ARCH: Linux-x86_64
     docker:
       - image: ubuntu:22.04
@@ -58,6 +59,7 @@ jobs:
       - run:
           name: Install conda
           command: |
+            ${ENV_INIT}
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
       - run:
