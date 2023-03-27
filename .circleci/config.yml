@@ -58,8 +58,8 @@ jobs:
           command: |
             pip3 install torch --extra-index-url https://download.pytorch.org/whl/cpu
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+            pytest-3 --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest-3 --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
       - run:
