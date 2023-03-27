@@ -9,8 +9,8 @@ jobs:
       resource_class:
         type: string
         default: medium
-    machine:
-      image: ubuntu-2204:current
+    docker:
+      image: cimg/base:current
     resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
