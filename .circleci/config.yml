@@ -71,6 +71,7 @@ jobs:
             cd conda
             conda build faiss --python 3.9 -c pytorch
 
+
 build_windows:
     executor:
       name: win/default
