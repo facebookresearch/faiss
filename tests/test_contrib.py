@@ -456,7 +456,7 @@ class TestClustering(unittest.TestCase):
         km_ref.train(xt)
         err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
 
-        centroids2, _ = clustering.two_level_clustering(xt, 10, 10)
+        centroids2, _ = clustering.two_level_clustering(xt, 10, 100)
         err2 = faiss.knn(xt, centroids2, 1)[0].sum()
 
         self.assertLess(err2, err * 1.1)
@@ -473,7 +473,7 @@ class TestClustering(unittest.TestCase):
         index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
         faiss.extract_index_ivf(index).nprobe = 10
         clustering.train_ivf_index_with_2level(
-            index, ds.get_train(), verbose=True)
+            index, ds.get_train(), verbose=True, rebalance=False)
         index.add(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), 1)
 
