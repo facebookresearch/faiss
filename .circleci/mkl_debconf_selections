@@ -1,0 +1,4 @@
+libmkl-dev:amd64       libmkl-rt/use-as-default-blas-lapack    boolean true
+libmkl-rt:amd64        libmkl-rt/use-as-default-blas-lapack    boolean true
+libmkl-dev:amd64       libmkl-rt/exact-so-3-selections multiselect     libblas.so.3, liblapack.so.3, libblas64.so.3, liblapack64.so.3,
+libmkl-rt:amd64        libmkl-rt/exact-so-3-selections multiselect     libblas.so.3, liblapack.so.3, libblas64.so.3, liblapack64.so.3,

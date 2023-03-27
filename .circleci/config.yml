@@ -6,7 +6,7 @@ orbs:
 jobs:
   format:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:22.04
     steps:
       - checkout
       - run:
@@ -36,20 +36,26 @@ jobs:
         type: string
         default: medium
     docker:
-      - image: beauby/faiss-circleci:cpu
+      - image: ubuntu:22.04
     resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
     steps:
       - checkout
+      - run: 
+          name: Set up environment
+          command: |
+            apt update
+            cat .circleci/mkl_debconf_selections | debconf-set-selections
+            apt install -y build-essential intel-mkl cmake swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
       - run:
           name: Build faiss library
           no_output_timeout: 30m
           command: |
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON \
+                  -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
                   -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -k -C build -j$(nproc) faiss
       - when:
@@ -75,10 +81,10 @@ jobs:
       - run:
           name: Test python extension
           command: |
-            pip3 install pytest
+            pip3 install torch --extra-index-url https://download.pytorch.org/whl/cpu
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+            pytest-3 --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest-3 --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - store_test_results:
           path: test-results
       - run:
@@ -255,21 +261,62 @@ jobs:
             make -k -C build -j faiss_c
 
   build_linux_gpu:
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
+    resource_class: gpu.nvidia.medium
+    docker:
+      - image: nvidia/cuda:11.8.0-devel-ubuntu22.04
+    environment:
+      OMP_NUM_THREADS: 10
+      MKL_THREADING_LAYER: GNU
     steps:
       - checkout
-      - run:
-          name: Build/test
+      - run: 
+          name: Set up environment
           command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+            apt update
+            cat .circleci/mkl_debconf_selections | debconf-set-selections
+            apt install -y build-essential intel-mkl cmake swig python3-dev python3-numpy python3-scipy python3-pip python3-pytest
+      - run:
+          name: Build faiss library
           no_output_timeout: 60m
+          command: |
+            cmake -B build \
+                  -DFAISS_ENABLE_GPU=ON \
+                  -DFAISS_ENABLE_C_API=ON \
+                  -DFAISS_ENABLE_PYTHON=ON \
+                  -DBUILD_TESTING=ON \
+                  -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" -DPYTHON_EXECUTABLE=$(which python3)\
+                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn \
+                  .
+            make -k -C build -j$(nproc) faiss
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j$(nproc) faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j$(nproc) swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+            python3 setup.py install
+      - run:
+          name: Test python extension
+          command: |
+            pip3 install torch --extra-index-url https://download.pytorch.org/whl/cpu
+            cp tests/common_faiss_tests.py faiss/gpu/test
+            python3 -m unittest discover -s faiss/gpu/test -p "test_*"
+            python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"
+            pytest-3 --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest-3 --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -k -C build -j faiss_c
+
 
   deploy_linux:
     parameters:
