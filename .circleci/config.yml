@@ -58,7 +58,7 @@ jobs:
       - run:
           name: Install conda
           command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-$(CONDA_ARCH).sh --output miniconda.sh
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
       - run:
           name: Conda build
