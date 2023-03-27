@@ -10,7 +10,7 @@ jobs:
         type: string
         default: medium
     docker:
-      - image: ubuntu:latest 
+      - image: ubuntu:22.04 
     resource_class: << parameters.resource_class >>
     environment:
       OMP_NUM_THREADS: 10
