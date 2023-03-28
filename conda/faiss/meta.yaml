@@ -82,8 +82,8 @@ outputs:
       commands:
         - python -X faulthandler -m unittest discover -v -s tests -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests -p "torch_*"
-        - sh test_cpu_dispatch.sh  # [linux]
+        - sh test_cpu_dispatch.sh  # [linux64]
       files:
-        - test_cpu_dispatch.sh  # [linux]
+        - test_cpu_dispatch.sh  # [linux64]
       source_files:
         - tests/

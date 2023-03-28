@@ -40,6 +40,7 @@ outputs:
         - cmake >=3.18
         - make  # [not win]
         - mkl-devel =2021
+        - cuda-compiler {{ cudatoolkit }}
       host:
         - mkl =2021
         - cudatoolkit {{ cudatoolkit }}

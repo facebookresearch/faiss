@@ -155,7 +155,7 @@ jobs:
           command: |
             cd conda
             conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch
+                --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
 
   build_linux:
     parameters:
@@ -388,8 +388,8 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.3)
-          cuda: "11.3"
+          name: Linux GPU nightlies (CUDA 11.7)
+          cuda: "11.7.0"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
