@@ -204,6 +204,10 @@ set(FAISS_HEADERS
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h
   utils/transpose/transpose-avx2-inl.h
+  utils/hamming_distance/common.h
+  utils/hamming_distance/generic-inl.h
+  utils/hamming_distance/hamdis-inl.h
+  utils/hamming_distance/neon-inl.h
 )
 
 if(NOT WIN32)
