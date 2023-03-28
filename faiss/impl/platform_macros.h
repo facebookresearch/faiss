@@ -56,12 +56,44 @@ inline int __builtin_ctz(unsigned long x) {
 #endif
 
 inline int __builtin_clzll(uint64_t x) {
-    return (int)__lzcnt64(x);
+    int d;
+#if defined(_M_X64)
+    d = (int)__lzcnt64(n);
+#elif defined(_M_ARM64)
+    unsigned long index;
+    d = sizeof(uint64_t) * 8; //CHAR_BIT;
+    if (_BitScanReverse64(&index, x)) {
+        d = d - 1 - index;
+    }
+#else
+    if ((n >> 32) != 0) {
+        d = __lzcnt((unsigned int)(n >> 32));
+    }
+#endif
+    return d;
 }
 
+#if defined(_M_ARM64)
+// if using neon, could use 
+// CNT instruction, see: https://github.com/barakmich/go-popcount
+
+#ifndef __popcnt64
+static __inline uint64_t __popcnt64(uint64_t x) {
+    int c = 0;
+    for (; x; c++)
+        x &= x - 1;
+    return c;
+}
+#endif
+static __inline unsigned int __popcnt(unsigned int x) {
+    int c = 0;
+    for (; x; c++)
+        x &= x - 1;
+    return c;
+}
+#endif
 #define __builtin_popcount __popcnt
 #define __builtin_popcountl __popcnt64
-
 // MSVC does not define __SSEx__, and _M_IX86_FP is only defined on 32-bit
 // processors cf.
 // https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros

@@ -13,7 +13,12 @@
 
 #include <stdlib.h>
 
+#if defined(_MSC_VER) && !defined(__cplusplus)
+typedef long long int64_t;
+#endif
+
 #ifdef __cplusplus
+#include <cstdint>
 extern "C" {
 #endif
 

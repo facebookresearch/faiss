@@ -42,8 +42,10 @@ if(FAISS_ENABLE_C_API)
   add_subdirectory(c_api)
 endif()
 
-add_subdirectory(demos)
-add_subdirectory(benchs)
+if (NOT WIN32 )
+    add_subdirectory(demos)
+    add_subdirectory(benchs)
+endif ()
 add_subdirectory(tutorial/cpp)
 
 # CTest must be included in the top level to enable `make test` target.
