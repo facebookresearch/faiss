@@ -130,7 +130,7 @@ jobs:
         type: string
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
+      image: linux-cuda-11:2023.02.1
     steps:
       - checkout
       - run:
