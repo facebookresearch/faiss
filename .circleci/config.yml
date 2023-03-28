@@ -190,7 +190,7 @@ jobs:
           no_output_timeout: 30m
           command: |
             set
-            source .bashrc
+            source ~/.bashrc
             set
             conda activate
             set
