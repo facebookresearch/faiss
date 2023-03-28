@@ -277,6 +277,23 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx2.h" line="68" column="17" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="68" bodyend="72"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit_1a69f933068df260aa8c0f3ac7686e1417" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd256bit::is_same_as</definition>
+        <argsstring>(simd256bit other) const</argsstring>
+        <name>is_same_as</name>
+        <param>
+          <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_avx2.h" line="75" column="10" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="75" bodyend="79"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd256bit_1a7c98ba53fe0ec7eca4deb7ce4e47f20a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::simd256bit::simd256bit</definition>
@@ -402,6 +419,23 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_emulated.h" line="55" column="17" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="55" bodyend="59"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit_1a69f933068df260aa8c0f3ac7686e1417" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd256bit::is_same_as</definition>
+        <argsstring>(simd256bit other) const</argsstring>
+        <name>is_same_as</name>
+        <param>
+          <type><ref refid="structfaiss_1_1simd256bit" kindref="compound">simd256bit</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_emulated.h" line="62" column="10" bodyfile="faiss/utils/simdlib_emulated.h" bodystart="62" bodyend="70"/>
+      </memberdef>
       </sectiondef>
     <briefdescription>
 <para>256-bit representation without interpretation as a vector </para>
@@ -448,7 +482,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/utils/simdlib_avx2.h" line="28" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="28" bodyend="73"/>
+    <location file="faiss/utils/simdlib_avx2.h" line="28" column="1" bodyfile="faiss/utils/simdlib_avx2.h" bodystart="28" bodyend="80"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd256bit_1abf510b705af0bdf0886d04828e9a3edb" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>bin</name></member>
       <member refid="structfaiss_1_1simd256bit_1a1f396e66d2f55e0f4f3a42fa0157d403" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>bin</name></member>
@@ -459,6 +493,8 @@
       <member refid="structfaiss_1_1simd256bit_1a745d258c489056abcb18de77d04dc7da" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>f</name></member>
       <member refid="structfaiss_1_1simd256bit_1a73b7c0cc868d44cc02c58688977ba4a7" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>f32</name></member>
       <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>i</name></member>
+      <member refid="structfaiss_1_1simd256bit_1a69f933068df260aa8c0f3ac7686e1417" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>is_same_as</name></member>
+      <member refid="structfaiss_1_1simd256bit_1a69f933068df260aa8c0f3ac7686e1417" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>is_same_as</name></member>
       <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>loadu</name></member>
       <member refid="structfaiss_1_1simd256bit_1a44b57fcfb969954b9fc42f7dfee6bdf2" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>loadu</name></member>
       <member refid="structfaiss_1_1simd256bit_1a7c98ba53fe0ec7eca4deb7ce4e47f20a" prot="public" virt="non-virtual"><scope>faiss::simd256bit</scope><name>simd256bit</name></member>
