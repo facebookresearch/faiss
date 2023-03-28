@@ -300,7 +300,7 @@ workflows:
           exec: macosx-x86_64-cpu
       - build_conda:
           name: OSX (ARM)
-          exec: macosx-arm64-cpu:
+          exec: macosx-arm64-cpu
       - build_conda:
           name: Windows
           exec: windows-x86_64-cpu
@@ -352,7 +352,7 @@ workflows:
 #              ignore: /.*/
       - deploy_conda:
           name: OSX (ARM) packages
-          exec: macosx-arm64-cpu:
+          exec: macosx-arm64-cpu
 #          filters:
 #            tags:
 #              only: /^v.*/
@@ -394,5 +394,5 @@ workflows:
           label: nightly
       - deploy_conda:
           name: OSX (ARM) nightlies
-          exec: macosx-arm64-cpu:
+          exec: macosx-arm64-cpu
           label: nightly
