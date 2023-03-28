@@ -231,19 +231,39 @@ jobs:
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
+      image: linux-cuda-11:2023.02.1
     steps:
       - checkout
       - run:
-          name: Build/test
+          name: Install conda
           command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
+            bash miniconda.sh -b -p $HOME/miniconda
+            ~/miniconda/bin/conda init
+      - run: 
+          name: Set up environment
+          command: |
+            conda update -y -q conda
+            # conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
+            conda install -y -q pytorch -c pytorch
+      - run:
+          name: Build
           no_output_timeout: 60m
+          command: |
+            source ~/.bashrc
+            cmake -B build \
+                    -DFAISS_ENABLE_GPU=ON \
+                    -DFAISS_ENABLE_C_API=ON \
+                    -DFAISS_ENABLE_PYTHON=ON \
+                    -DBUILD_TESTING=ON \
+                    -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+                    .
+            make -C build -j8
+      - run:
+          name: Test
+            make -C build test
+            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
+            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
 
 workflows:
   version: 2
