@@ -305,7 +305,7 @@ void NNDescent::generate_eval_set(
     for (int i = 0; i < c.size(); i++) {
         std::vector<Neighbor> tmp;
         for (int j = 0; j < N; j++) {
-            if (i == j)
+            if (c[i] == j)
                 continue; // skip itself
             float dist = qdis.symmetric_dis(c[i], j);
             tmp.push_back(Neighbor(j, dist, true));
