@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@4.1.1
+  win: circleci/windows@5.0.0
 
 executors:
   lin_x86:
@@ -331,8 +331,11 @@ workflows:
       - build_conda:
           name: OSX (ARM)
           exec: mac_arm64
-      - build_windows:
+      - build_conda:
           name: Windows
+          exec:
+            name: win/default
+            shell: bash.exe
       - build_arm:
           name: ARM64
       - deploy_conda:
