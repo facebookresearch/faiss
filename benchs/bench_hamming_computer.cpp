@@ -9,6 +9,8 @@
 #include <cstdio>
 #include <vector>
 
+#include <inttypes.h>
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -28,6 +30,114 @@ void hamming_cpt_test(
         rst[i] = computer.hamming(data2);
         data2 += code_size;
     }
+}
+
+template <int CODE_SIZE_IN_BITS>
+void hamming_func_test(
+        const uint8_t* const x1,
+        const uint8_t* const x2,
+        const size_t n1,
+        const size_t n2,
+        uint64_t& sumv,
+        uint64_t& xorv) {
+    constexpr size_t CODE_SIZE_IN_BYTES = CODE_SIZE_IN_BITS / 8;
+
+    double t0 = faiss::getmillisecs();
+
+    uint64_t sumx = 0;
+    uint64_t xorx = 0;
+
+    const size_t nruns = 10;
+    for (size_t irun = 0; irun < 10; irun++) {
+#pragma omp parallel reduction(+ : sumx, xorx)
+        {
+#pragma omp for
+            for (size_t i = 0; i < n1; i++) {
+                uint64_t local_sum = 0;
+                uint64_t local_xor = 0;
+
+                const uint64_t* data1_ptr =
+                        (const uint64_t*)(x1 + i * CODE_SIZE_IN_BYTES);
+
+                for (size_t j = 0; j < n2; j++) {
+                    const uint64_t* data2_ptr =
+                            (const uint64_t*)(x2 + j * CODE_SIZE_IN_BYTES);
+
+                    uint64_t code = faiss::hamming<CODE_SIZE_IN_BITS>(
+                            data1_ptr, data2_ptr);
+                    local_sum += code;
+                    local_xor ^= code;
+                }
+
+                sumx += local_sum;
+                xorx ^= local_xor;
+            }
+        }
+    }
+
+    sumv = sumx;
+    xorv = xorx;
+
+    double t1 = faiss::getmillisecs();
+    printf("hamming<%d>: %.3f msec, %" PRIX64 ", %" PRIX64 "\n",
+           CODE_SIZE_IN_BITS,
+           (t1 - t0) / nruns,
+           sumx,
+           xorx);
+}
+
+template <typename HammingComputerT, int CODE_SIZE_IN_BITS>
+void hamming_computer_test(
+        const uint8_t* const x1,
+        const uint8_t* const x2,
+        const size_t n1,
+        const size_t n2,
+        uint64_t& sumv,
+        uint64_t& xorv) {
+    constexpr size_t CODE_SIZE_IN_BYTES = CODE_SIZE_IN_BITS / 8;
+
+    double t0 = faiss::getmillisecs();
+
+    uint64_t sumx = 0;
+    uint64_t xorx = 0;
+
+    const size_t nruns = 10;
+    for (size_t irun = 0; irun < nruns; irun++) {
+        sumx = 0;
+        xorx = 0;
+
+#pragma omp parallel reduction(+ : sumx, xorx)
+        {
+#pragma omp for
+            for (size_t i = 0; i < n1; i++) {
+                uint64_t local_sum = 0;
+                uint64_t local_xor = 0;
+
+                const uint8_t* data1_ptr = x1 + i * CODE_SIZE_IN_BYTES;
+                HammingComputerT hc(data1_ptr, CODE_SIZE_IN_BYTES);
+
+                for (size_t j = 0; j < n2; j++) {
+                    const uint8_t* data2_ptr = x2 + j * CODE_SIZE_IN_BYTES;
+                    uint64_t code = hc.hamming(data2_ptr);
+                    local_sum += code;
+                    local_xor ^= code;
+                }
+
+                sumx += local_sum;
+                xorx ^= local_xor;
+            }
+        }
+    }
+
+    sumv = sumx;
+    xorv = xorx;
+
+    double t1 = faiss::getmillisecs();
+    printf("HammingComputer<%zd>: %.3f msec, %" PRIX64 ", %" PRIX64 "\n",
+           CODE_SIZE_IN_BYTES,
+           (t1 - t0) / nruns,
+           sumx,
+           xorx);
 }
 
 int main() {
@@ -89,5 +199,48 @@ int main() {
         printf("Hamming_M8   implem: %.3f ms\n", tot_t2 / nrun);
         printf("Hamming_M4   implem: %.3f ms\n", tot_t3 / nrun);
     }
+
+    // evaluate various hamming<>() function calls
+    const size_t MAX_HAMMING_FUNC_CODE_SIZE = 512;
+
+    const size_t n1 = 65536;
+    const size_t n2 = 16384;
+
+    std::vector<uint8_t> x1(n1 * MAX_HAMMING_FUNC_CODE_SIZE / 8);
+    std::vector<uint8_t> x2(n2 * MAX_HAMMING_FUNC_CODE_SIZE / 8);
+    byte_rand(x1.data(), x1.size(), 12345);
+    byte_rand(x2.data(), x2.size(), 23456);
+
+    // These two values serve as a kind of CRC.
+    uint64_t sumx = 0;
+    uint64_t xorx = 0;
+    hamming_func_test<64>(x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_func_test<128>(x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_func_test<256>(x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_func_test<384>(x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_func_test<512>(x1.data(), x2.data(), n1, n2, sumx, xorx);
+
+    // evaluate various HammingComputerXX
+    hamming_computer_test<faiss::HammingComputer4, 32>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::HammingComputer8, 64>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::HammingComputer16, 128>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::HammingComputer20, 160>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::HammingComputer32, 256>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::HammingComputer64, 512>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+
+    // evaluate various HammingDistanceComputerXX
+    hamming_computer_test<faiss::GenHammingComputer8, 64>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::GenHammingComputer16, 128>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::GenHammingComputer32, 256>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+
     return 0;
 }
