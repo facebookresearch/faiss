@@ -6,8 +6,10 @@ executors:
       - image: continuumio/miniconda3
     resource_class: medium+
   linux-arm64-cpu:
-    docker:
-      - image: continuumio/miniconda3
+    environment:
+      CONDA_ARCH: Linux-aarch64
+    machine:
+      image: ubuntu-2004:current
     resource_class: arm.medium
   macosx-x86_64-cpu:
     environment:
@@ -338,8 +340,8 @@ workflows:
 #            branches:
 #              ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.4)
-          cuda: "11.4"
+          name: Linux GPU packages (CUDA 11.3)
+          cuda: "11.3"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
 #          filters:
@@ -386,8 +388,8 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.4)
-          cuda: "11.4"
+          name: Linux GPU nightlies (CUDA 11.3)
+          cuda: "11.3"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
