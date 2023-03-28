@@ -14,6 +14,8 @@
 
 #include <faiss/IndexBinary.h>
 
+#include <faiss/utils/approx_topk/mode.h>
+
 namespace faiss {
 
 /** Index that stores the full vectors and performs exhaustive search. */
@@ -27,6 +29,8 @@ struct IndexBinaryFlat : IndexBinary {
     bool use_heap = true;
 
     size_t query_batch_size = 32;
+
+    ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK;
 
     explicit IndexBinaryFlat(idx_t d);
 
