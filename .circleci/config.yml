@@ -54,7 +54,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install conda
+          name: Conda build
+          no_output_timeout: 30m
           command: |
             if [ -n "${CONDA_ARCH}" ]
             then
@@ -62,10 +63,6 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               export PATH=~/miniconda/bin:$PATH
             fi
-      - run:
-          name: Conda build
-          no_output_timeout: 30m
-          command: |
             conda update -y conda
             conda install -y -q conda-build
             cd conda
