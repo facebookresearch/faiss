@@ -32,6 +32,233 @@ TEST(TEST_SIMDLIB, TestCmpltAndBlendInplace) {
 
     simd8float32 expectedValues(0, 1, 2, 3, 4, 5, 5, 5);
     simd8uint32 expectedIndices(0, 1, 2, 3, 4, 5, 16, 17);
-    ASSERT_EQ(lowestValues, expectedValues);
-    ASSERT_EQ(lowestIndices, expectedIndices);
+    ASSERT_TRUE(lowestValues.is_same_as(expectedValues));
+    ASSERT_TRUE(lowestIndices.is_same_as(expectedIndices));
+}
+
+TEST(TEST_SIMDLIB, TestCmpltMinMaxFloat) {
+    simd8float32 minValues(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8uint32 minIndices(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8float32 maxValues(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8uint32 maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
+
+    simd8float32 candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
+    simd8uint32 candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
+    simd8float32 currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
+    simd8uint32 currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
+
+    cmplt_min_max_fast(
+            candidateValues0,
+            candidateIndices0,
+            currentValues0,
+            currentIndices0,
+            minValues,
+            minIndices,
+            maxValues,
+            maxIndices);
+
+    simd8float32 expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
+    simd8uint32 expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
+    ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
+    ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
+
+    simd8float32 expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
+    // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
+    simd8uint32 expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
+    ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
+    ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
+}
+
+TEST(TEST_SIMDLIB, TestCmpltMinMaxInt) {
+    simd8uint32 minValues(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8uint32 minIndices(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8uint32 maxValues(0, 0, 0, 0, 0, 0, 0, 0);
+    simd8uint32 maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
+
+    simd8uint32 candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
+    simd8uint32 candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
+    simd8uint32 currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
+    simd8uint32 currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
+
+    cmplt_min_max_fast(
+            candidateValues0,
+            candidateIndices0,
+            currentValues0,
+            currentIndices0,
+            minValues,
+            minIndices,
+            maxValues,
+            maxIndices);
+
+    simd8uint32 expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
+    simd8uint32 expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
+    ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
+    ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
+
+    simd8uint32 expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
+    // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
+    simd8uint32 expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
+    ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
+    ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
+}
+
+TEST(TEST_SIMDLIB, TestCmpltMinMaxInt16) {
+    simd16uint16 minValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    simd16uint16 minIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    simd16uint16 maxValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    simd16uint16 maxIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    simd16uint16 candidateValues0(
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005);
+    simd16uint16 candidateIndices0(
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            1010,
+            1011,
+            1012,
+            1013,
+            1014,
+            1015,
+            1016,
+            1017);
+    simd16uint16 currentValues0(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            1000,
+            1001,
+            1002,
+            1003,
+            1004,
+            1005,
+            1006,
+            1007);
+    simd16uint16 currentIndices0(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            1000,
+            1001,
+            1002,
+            1003,
+            1004,
+            1005,
+            1006,
+            1007);
+
+    cmplt_min_max_fast(
+            candidateValues0,
+            candidateIndices0,
+            currentValues0,
+            currentIndices0,
+            minValues,
+            minIndices,
+            maxValues,
+            maxIndices);
+
+    simd16uint16 expectedMinValues(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            5,
+            5,
+            1000,
+            1001,
+            1002,
+            1003,
+            1004,
+            1005,
+            1005,
+            1005);
+    simd16uint16 expectedMinIndices(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            16,
+            17,
+            1000,
+            1001,
+            1002,
+            1003,
+            1004,
+            1005,
+            1016,
+            1017);
+    ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
+    ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
+
+    simd16uint16 expectedMaxValues(
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            6,
+            7,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005,
+            1005,
+            1006,
+            1007);
+    // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
+    simd16uint16 expectedMaxIndices(
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            6,
+            7,
+            1010,
+            1011,
+            1012,
+            1013,
+            1014,
+            1015,
+            1006,
+            1007);
+    ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
+    ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
 }
