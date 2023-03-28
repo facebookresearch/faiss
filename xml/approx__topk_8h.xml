@@ -3,22 +3,22 @@
   <compounddef id="approx__topk_8h" kind="file" language="C++">
     <compoundname>approx_topk.h</compoundname>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="mode_8h" local="no">faiss/utils/approx_topk/mode.h</includes>
     <includes refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includes>
-    <includedby refid="ResidualQuantizer_8h" local="no">faiss/impl/ResidualQuantizer.h</includedby>
     <incdepgraph>
-      <node id="10">
+      <node id="11">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>limits</label>
       </node>
       <node id="2">
@@ -32,30 +32,30 @@
       <node id="3">
         <label>cstdint</label>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/utils/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>stdint.h</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>cmath</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>cassert</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>string</label>
       </node>
       <node id="1">
@@ -65,24 +65,28 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>exception</label>
+      </node>
+      <node id="5">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
       </node>
       <node id="4">
         <label>cstdio</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>vector</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>utility</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="16" relation="include">
-        </childnode>
         <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
@@ -91,159 +95,52 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="16" relation="include">
-        </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>cstdlib</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>climits</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>algorithm</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>cstring</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/impl/FaissAssert.h</label>
         <link refid="FaissAssert_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="4">
-        <label>faiss/IndexAdditiveQuantizer.h</label>
-        <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
-        <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss/utils/approx_topk/approx_topk.h</label>
-        <link refid="approx__topk_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/impl/ResidualQuantizer.h</label>
-        <link refid="ResidualQuantizer_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
-        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-      <node id="7">
-        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-    </invincdepgraph>
-      <sectiondef kind="enum">
-      <memberdef kind="enum" id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299" prot="public" static="no" strong="no">
-        <type>int</type>
-        <name>ApproxTopK_mode_t</name>
-        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" prot="public">
-          <name>EXACT_TOPK</name>
-          <initializer>= 0</initializer>
-          <briefdescription>
-          </briefdescription>
-          <detaileddescription>
-          </detaileddescription>
-        </enumvalue>
-        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" prot="public">
-          <name>APPROX_TOPK_BUCKETS_B32_D2</name>
-          <initializer>= 1</initializer>
-          <briefdescription>
-          </briefdescription>
-          <detaileddescription>
-          </detaileddescription>
-        </enumvalue>
-        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" prot="public">
-          <name>APPROX_TOPK_BUCKETS_B8_D3</name>
-          <initializer>= 2</initializer>
-          <briefdescription>
-          </briefdescription>
-          <detaileddescription>
-          </detaileddescription>
-        </enumvalue>
-        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" prot="public">
-          <name>APPROX_TOPK_BUCKETS_B16_D2</name>
-          <initializer>= 3</initializer>
-          <briefdescription>
-          </briefdescription>
-          <detaileddescription>
-          </detaileddescription>
-        </enumvalue>
-        <enumvalue id="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" prot="public">
-          <name>APPROX_TOPK_BUCKETS_B8_D2</name>
-          <initializer>= 4</initializer>
-          <briefdescription>
-          </briefdescription>
-          <detaileddescription>
-          </detaileddescription>
-        </enumvalue>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Copyright (c) Facebook, Inc. and its affiliates.</para>
-<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</para>
-<para>B represents the number of buckets. D is the number of min-k elements to track within every bucket.</para>
-<para>Default option is EXACT_TOPK. APPROX_TOPK_BUCKETS_B16_D2 is worth starting from, if you&apos;d like to experiment a bit.</para>
-<para>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so ones were not introduced.</para>
-<para>TODO: Consider d-ary SIMD heap. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/approx_topk/approx_topk.h" line="95" column="1" bodyfile="faiss/utils/approx_topk/approx_topk.h" bodystart="95" bodyend="101"/>
-      </memberdef>
-      </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -324,38 +221,15 @@
 <codeline lineno="73"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="77"><highlight class="comment">///<sp/>Represents<sp/>the<sp/>mode<sp/>of<sp/>use<sp/>of<sp/>approximate<sp/>top-k<sp/>computations</highlight></codeline>
-<codeline lineno="78"><highlight class="comment">///<sp/>that<sp/>allows<sp/>to<sp/>trade<sp/>accuracy<sp/>vs<sp/>speed.<sp/>So,<sp/>every<sp/>options</highlight></codeline>
-<codeline lineno="79"><highlight class="comment">///<sp/>besides<sp/>EXACT_TOPK<sp/>increases<sp/>the<sp/>speed.</highlight></codeline>
-<codeline lineno="80"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="81"><highlight class="comment">///<sp/>B<sp/>represents<sp/>the<sp/>number<sp/>of<sp/>buckets.</highlight></codeline>
-<codeline lineno="82"><highlight class="comment">///<sp/>D<sp/>is<sp/>the<sp/>number<sp/>of<sp/>min-k<sp/>elements<sp/>to<sp/>track<sp/>within<sp/>every<sp/>bucket.</highlight></codeline>
-<codeline lineno="83"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="84"><highlight class="comment">///<sp/>Default<sp/>option<sp/>is<sp/>EXACT_TOPK.</highlight></codeline>
-<codeline lineno="85"><highlight class="comment">///<sp/>APPROX_TOPK_BUCKETS_B16_D2<sp/>is<sp/>worth<sp/>starting<sp/>from,<sp/>if<sp/>you&apos;d<sp/>like</highlight></codeline>
-<codeline lineno="86"><highlight class="comment">///<sp/>to<sp/>experiment<sp/>a<sp/>bit.</highlight></codeline>
-<codeline lineno="87"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="88"><highlight class="comment">///<sp/>It<sp/>seems<sp/>that<sp/>only<sp/>the<sp/>limited<sp/>number<sp/>of<sp/>combinations<sp/>are</highlight></codeline>
-<codeline lineno="89"><highlight class="comment">///<sp/>meaningful,<sp/>because<sp/>of<sp/>the<sp/>limited<sp/>supply<sp/>of<sp/>SIMD<sp/>registers.</highlight></codeline>
-<codeline lineno="90"><highlight class="comment">///<sp/>Also,<sp/>certain<sp/>combinations,<sp/>such<sp/>as<sp/>B32_D1<sp/>and<sp/>B16_D1,<sp/>were<sp/>concluded</highlight></codeline>
-<codeline lineno="91"><highlight class="comment">///<sp/>to<sp/>be<sp/>not<sp/>very<sp/>precise<sp/>in<sp/>benchmarks,<sp/>so<sp/>ones<sp/>were<sp/>not<sp/>introduced.</highlight></codeline>
-<codeline lineno="92"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="93"><highlight class="comment">///<sp/>TODO:<sp/>Consider<sp/>d-ary<sp/>SIMD<sp/>heap.</highlight></codeline>
-<codeline lineno="94"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>ApproxTopK_mode_t<sp/>:<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>EXACT_TOPK<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B32_D2<sp/>=<sp/>1,</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B8_D3<sp/>=<sp/>2,</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B16_D2<sp/>=<sp/>3,</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>APPROX_TOPK_BUCKETS_B8_D2<sp/>=<sp/>4,</highlight></codeline>
-<codeline lineno="101"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"></highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="106"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/generic.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>list<sp/>of<sp/>available<sp/>modes<sp/>is<sp/>in<sp/>the<sp/>following<sp/>file</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/mode.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__AVX2__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/avx2-inl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/generic.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/utils/approx_topk/approx_topk.h"/>
   </compounddef>

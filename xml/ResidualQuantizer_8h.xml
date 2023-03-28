@@ -6,26 +6,11 @@
     <includes local="no">vector</includes>
     <includes refid="Clustering_8h" local="no">faiss/Clustering.h</includes>
     <includes refid="AdditiveQuantizer_8h" local="no">faiss/impl/AdditiveQuantizer.h</includes>
-    <includes refid="approx__topk_8h" local="no">faiss/utils/approx_topk/approx_topk.h</includes>
+    <includes refid="mode_8h" local="no">faiss/utils/approx_topk/mode.h</includes>
     <includedby refid="ProductAdditiveQuantizer_8h" local="no">faiss/impl/ProductAdditiveQuantizer.h</includedby>
     <includedby refid="IndexAdditiveQuantizer_8h" local="no">faiss/IndexAdditiveQuantizer.h</includedby>
     <includedby refid="IndexIVFAdditiveQuantizer_8h" local="no">faiss/IndexIVFAdditiveQuantizer.h</includedby>
     <incdepgraph>
-      <node id="25">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>limits</label>
-      </node>
       <node id="15">
         <label>faiss/IndexFlatCodes.h</label>
         <link refid="IndexFlatCodes_8h_source"/>
@@ -55,20 +40,6 @@
       <node id="2">
         <label>cstdint</label>
       </node>
-      <node id="20">
-        <label>faiss/utils/approx_topk/generic.h</label>
-        <link refid="generic_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-      </node>
       <node id="4">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
@@ -83,19 +54,8 @@
       <node id="13">
         <label>cmath</label>
       </node>
-      <node id="31">
-        <label>cassert</label>
-      </node>
       <node id="10">
         <label>string</label>
-      </node>
-      <node id="19">
-        <label>faiss/utils/approx_topk/approx_topk.h</label>
-        <link refid="approx__topk_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
       </node>
       <node id="17">
         <label>faiss/impl/Quantizer.h</label>
@@ -103,8 +63,9 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="26">
-        <label>exception</label>
+      <node id="19">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
       </node>
       <node id="11">
         <label>typeinfo</label>
@@ -121,41 +82,8 @@
       <node id="3">
         <label>vector</label>
       </node>
-      <node id="23">
-        <label>utility</label>
-      </node>
       <node id="9">
         <label>sstream</label>
-      </node>
-      <node id="28">
-        <label>faiss/utils/Heap.h</label>
-        <link refid="Heap_8h_source"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
-      </node>
-      <node id="32">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/ResidualQuantizer.h</label>
@@ -170,12 +98,6 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-      </node>
-      <node id="27">
-        <label>cstdlib</label>
-      </node>
-      <node id="29">
-        <label>climits</label>
       </node>
       <node id="5">
         <label>faiss/Index.h</label>
@@ -211,26 +133,6 @@
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
         <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>algorithm</label>
-      </node>
-      <node id="30">
-        <label>cstring</label>
-      </node>
-      <node id="24">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -300,7 +202,7 @@
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Clustering.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/AdditiveQuantizer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/approx_topk.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/approx_topk/mode.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>

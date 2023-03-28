@@ -28,18 +28,6 @@
         <childnode refid="36" relation="include">
         </childnode>
       </node>
-      <node id="42">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
       <node id="30">
         <label>limits</label>
       </node>
@@ -71,20 +59,6 @@
       </node>
       <node id="4">
         <label>cstdint</label>
-      </node>
-      <node id="38">
-        <label>faiss/utils/approx_topk/generic.h</label>
-        <link refid="generic_8h_source"/>
-        <childnode refid="39" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
       </node>
       <node id="21">
         <label>faiss/Clustering.h</label>
@@ -140,14 +114,6 @@
       <node id="11">
         <label>string</label>
       </node>
-      <node id="37">
-        <label>faiss/utils/approx_topk/approx_topk.h</label>
-        <link refid="approx__topk_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="38" relation="include">
-        </childnode>
-      </node>
       <node id="23">
         <label>unordered_set</label>
       </node>
@@ -177,9 +143,6 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="43">
-        <label>exception</label>
-      </node>
       <node id="22">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
@@ -192,6 +155,10 @@
       </node>
       <node id="33">
         <label>random</label>
+      </node>
+      <node id="37">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
       </node>
       <node id="12">
         <label>typeinfo</label>
@@ -207,9 +174,6 @@
       </node>
       <node id="5">
         <label>vector</label>
-      </node>
-      <node id="40">
-        <label>utility</label>
       </node>
       <node id="10">
         <label>sstream</label>
@@ -257,9 +221,6 @@
         </childnode>
         <childnode refid="37" relation="include">
         </childnode>
-      </node>
-      <node id="44">
-        <label>cstdlib</label>
       </node>
       <node id="1">
         <label>faiss/IndexIVFAdditiveQuantizer.h</label>
@@ -331,9 +292,6 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="39">
-        <label>algorithm</label>
-      </node>
       <node id="28">
         <label>cstring</label>
       </node>
@@ -347,20 +305,6 @@
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
-        </childnode>
-      </node>
-      <node id="41">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="19">

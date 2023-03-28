@@ -8380,13 +8380,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d133" kind="namespace"><name>faiss::@133</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d147" kind="namespace"><name>faiss::@147</name>
+  <compound refid="namespacefaiss_1_1_0d134" kind="namespace"><name>faiss::@134</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d148" kind="namespace"><name>faiss::@148</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d149" kind="namespace"><name>faiss::@149</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d150" kind="namespace"><name>faiss::@150</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -8972,16 +8972,18 @@
   <compound refid="AlignedTable_8h" kind="file"><name>AlignedTable.h</name>
   </compound>
   <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299" kind="enum"><name>ApproxTopK_mode_t</name></member>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" kind="enumvalue"><name>EXACT_TOPK</name></member>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B32_D2</name></member>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D3</name></member>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
-    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
   </compound>
   <compound refid="avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
   </compound>
   <compound refid="generic_8h" kind="file"><name>generic.h</name>
+  </compound>
+  <compound refid="mode_8h" kind="file"><name>mode.h</name>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299" kind="enum"><name>ApproxTopK_mode_t</name></member>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" kind="enumvalue"><name>EXACT_TOPK</name></member>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B32_D2</name></member>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D3</name></member>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
+    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
   </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>
