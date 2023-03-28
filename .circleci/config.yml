@@ -183,7 +183,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y conda
-            conda install -y cmake swig intel-mkl numpy scipy pytest pytorch cxx-compiler -c pytorch -c conda-forge
+            conda install -y cmake swig mkl numpy scipy pytest pytorch cxx-compiler -c pytorch -c conda-forge
       - run:
           name: Build faiss library
           no_output_timeout: 30m
@@ -191,7 +191,7 @@ jobs:
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
-                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
+                  -DCMAKE_BUILD_TYPE=Release .
             make -k -C build -j$(nproc) faiss
       - when:
           condition:
@@ -226,65 +226,6 @@ jobs:
           command: |
             make -k -C build -j faiss_c
 
-  build_arm:
-    machine:
-      image: ubuntu-2004:202101-01
-    resource_class: arm.medium
-    parameters:
-      opt_level:
-        type: string
-        default: generic
-    environment:
-      OMP_NUM_THREADS: 10
-      CONDA_HOME: /home/circleci/miniconda3
-      PYTHON: /home/circleci/miniconda3/bin/python
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install -y swig
-            wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-aarch64.sh
-            bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
-            pip3 install cmake
-            $CONDA_HOME/bin/conda install -y numpy scipy
-            $CONDA_HOME/bin/conda install -y pytorch cpuonly -c pytorch
-            $CONDA_HOME/bin/pip install pytest
-      - run:
-          name: Build faiss library
-          command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON \
-                  -DCMAKE_BUILD_TYPE=Release \
-                  -DPython_EXECUTABLE=$PYTHON .
-            make -k -C build -j$(nproc) faiss
-      - run:
-          name: Test faiss library
-          command: |
-            make -C build -j$(nproc) faiss_test
-            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
-      - run:
-          name: Build python extension
-          command: |
-            make -C build -j$(nproc) swigfaiss
-            cd build/faiss/python
-            $PYTHON setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            $PYTHON -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
-            $PYTHON -m pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            $PYTHON -m pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-      - store_test_results:
-          path: test-results
-      - run:
-          name: Build C API
-          command: |
-            make -k -C build -j faiss_c
-
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
@@ -309,35 +250,36 @@ workflows:
       - format:
           name: Format
       - build_cmake:
-          name: Linux
+          name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
       - build_cmake:
-          name: Linux (AVX2)
+          name: linux x86_64 w/ AVX2 (cmake)
           exec: linux-x86_64-cpu
           opt_level: "avx2"
+      - build_cmake:
+          name: Linux arm64 (cmake)
+          exec: linux-arm64-cpu
       - build_conda:
-          name: Linux (conda)
+          name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
       - build_linux_gpu:
           name: Linux GPU
           requires:
             - Linux
       - build_conda:
-          name: OSX
+          name: OSX x86_64 (conda)
           exec: macosx-x86_64-cpu
       - build_conda:
-          name: OSX (ARM)
+          name: OSX arm64 (conda)
           exec: macosx-arm64-cpu
       - build_conda:
-          name: Windows
+          name: Windows (conda)
           exec: windows-x86_64-cpu
-      - build_arm:
-          name: ARM64
       - build_conda:
-          name: ARM64 (conda)
+          name: Linux arm64 (conda)
           exec: linux-arm64-cpu
       - deploy_conda:
-          name: Linux packages
+          name: Linux x86_64 packages
           exec: linux-x86_64-cpu
           filters:
             tags:
@@ -345,8 +287,8 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.3)
-          cuda: "11.3"
+          name: Linux GPU packages (CUDA 11.7)
+          cuda: "11.7"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
 #          filters:
@@ -363,7 +305,7 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_conda:
-          name: OSX packages
+          name: OSX x86_64 packages
           exec: macosx-x86_64-cpu
           filters:
             tags:
@@ -371,8 +313,16 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_conda:
-          name: OSX (ARM) packages
+          name: OSX arm64 packages
           exec: macosx-arm64-cpu
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_conda:
+          name: Linux arm64 packages
+          exec: linux-arm64-cpu
           filters:
             tags:
               only: /^v.*/
@@ -389,7 +339,7 @@ workflows:
                 - main
     jobs:
       - deploy_conda:
-          name: Linux nightlies
+          name: Linux x86_64 nightlies
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
@@ -403,10 +353,14 @@ workflows:
           exec: windows-x86_64-cpu
           label: nightly
       - deploy_conda:
-          name: OSX nightlies
+          name: OSX x86_64 nightlies
           exec: macosx-x86_64-cpu
           label: nightly
       - deploy_conda:
-          name: OSX (ARM) nightlies
+          name: OSX arm64 nightlies
           exec: macosx-arm64-cpu
+          label: nightly
+      - deploy_conda:
+          name: Linux arm64 nightlies
+          exec: linux-arm64-cpu
           label: nightly
