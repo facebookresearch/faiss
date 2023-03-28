@@ -203,6 +203,7 @@ set(FAISS_HEADERS
   utils/approx_topk/approx_topk.h
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h
+  utils/approx_topk/mode.h
   utils/transpose/transpose-avx2-inl.h
   utils/hamming_distance/common.h
   utils/hamming_distance/generic-inl.h
