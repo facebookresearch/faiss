@@ -195,6 +195,26 @@ jobs:
             cd conda
             conda build faiss --python 3.10 -c pytorch
 
+  build_windows_arm:
+    executor:
+      name: win/default
+      shell: cmd.exe
+    steps:
+      - checkout
+      - run:
+          name: Build OpenBLAS
+          command: |
+            git clone https://github.com/xianyi/OpenBLAS.git
+            cd OpenBLAS
+            mkdir build
+            cmake .. -DCMAKE_INSTALL_PREFIX=./install
+            cmake --build . --config Release --target INSTALL
+      - run:
+          name: Build faiss
+          command: |
+            build.bat arm64 OpenBLAS\build\install
+
+
   build_arm:
     machine:
       image: ubuntu-2004:202101-01
