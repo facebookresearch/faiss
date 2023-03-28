@@ -27,7 +27,7 @@ source:
 outputs:
   - name: libfaiss
     script: build-lib.sh   # [x86_64 and not win]
-    script: build-lib-arm64.sh # [arm64 or aarch64]
+    script: build-lib-arm64.sh # [not x86_64]
     script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
@@ -39,10 +39,10 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake >=3.18
         - make  # [not win]
-        - mkl-devel =2021 # [not arm64]
-        - openblas # [arm64]
+        - mkl-devel =2021 # [x86_64]
+        - openblas # [not x86_64]
       host:
-        - mkl =2021 # [not arm64]
+        - mkl =2021 # [x86_64]
       run:
         - mkl >=2021  # [win]
     test:
@@ -56,7 +56,7 @@ outputs:
 
   - name: faiss-cpu
     script: build-pkg.sh   # [x86_64 and not win]
-    script: build-pkg-arm64.sh # [arm64 or aarch64]
+    script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
