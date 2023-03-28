@@ -68,7 +68,7 @@ jobs:
             then
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
-              echo 'export PATH=~/miniconda/bin:"$PATH"' >> "$BASH_ENV"
+              ~/miniconda/bin/conda init
             fi
       - run:
           name: Install conda build tools
@@ -99,7 +99,7 @@ jobs:
             then
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
-              echo 'export PATH=~/miniconda/bin:"$PATH"' >> "$BASH_ENV"
+              ~/miniconda/bin/conda init
             fi
       - run:
           name: Install conda build tools
@@ -131,7 +131,6 @@ jobs:
     machine:
       resource_class: gpu.nvidia.medium
       image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
     steps:
       - checkout
       - run:
@@ -152,6 +151,7 @@ jobs:
           no_output_timeout: 60m
           environment:
             PACKAGE_TYPE: <<parameters.label>>
+            CUDA_ARCHS: <<parameters.cuda_archs>>
           command: |
             cd conda
             conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
