@@ -244,7 +244,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            # conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
+            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
             conda install -y -q pytorch -c pytorch
       - run:
           name: Build
@@ -307,8 +307,8 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.8)
-          cuda: "11.8"
+          name: Linux GPU packages (CUDA 11.7)
+          cuda: "11.7"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
 #          filters:
@@ -363,8 +363,8 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux x86_64 GPU nightlies (CUDA 11.8)
-          cuda: "11.8"
+          name: Linux x86_64 GPU nightlies (CUDA 11.7)
+          cuda: "11.7"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
