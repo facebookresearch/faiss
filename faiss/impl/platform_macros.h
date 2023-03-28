@@ -8,9 +8,9 @@
 #pragma once
 
 // basic int types and size_t
+#include <climits>
 #include <cstdint>
 #include <cstdio>
-#include <climits>
 
 #ifdef _MSC_VER
 
@@ -76,7 +76,6 @@ inline int __builtin_clzll(uint64_t n) {
 
 #if defined(_M_ARM64)
 #ifndef __popcnt64
-// if using neon, could use CNT instruction, see: https://github.com/barakmich/go-popcount
 static __inline uint64_t __popcnt64(uint64_t x) {
     int c = 0;
     for (; x; c++)
