@@ -13,7 +13,7 @@ executors:
       CONDA_ARCH: MacOSX-x86_64
     macos:
       xcode: 11.7.0  # max supported for conda build, https://circleci.com/docs/using-macos#supported-xcode-versions
-  mac_m1:
+  mac_arm64:
     environment:
       CONDA_ARCH: MacOSX-arm64
     macos:
@@ -81,6 +81,59 @@ jobs:
             conda install conda-build
             cd conda
             conda build faiss --python 3.10 -c pytorch
+
+  deploy_conda:
+    parameters:
+      label:
+        type: string
+        default: main
+      exec:
+        type: executor
+    executor: << parameters.exec >>
+    steps:
+      - checkout
+      - run:
+          name: Conda build
+          no_output_timeout: 30m
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
+          command: |
+            if [ -n "${CONDA_ARCH}" ]
+            then
+              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
+              bash miniconda.sh -b -p $HOME/miniconda
+              export PATH=~/miniconda/bin:$PATH
+            fi
+            conda update -y conda
+            conda install -y -q conda-build 
+            # anaconda-client
+            # conda config --set anaconda_upload yes
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+
+  deploy_windows:
+    parameters:
+      label:
+        type: string
+        default: main
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Install conda-build/anaconda-client
+          command: |
+            conda update conda
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
+      - run:
+          name: Build packages
+          environment:
+            PACKAGE_TYPE: <<parameters.label>>
+          command: |
+            cd conda
+            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
 
   build_linux:
     parameters:
@@ -223,30 +276,6 @@ jobs:
             docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
           no_output_timeout: 60m
 
-  deploy_linux:
-    parameters:
-      label:
-        type: string
-        default: main
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium+
-    steps:
-      - checkout
-      - run:
-          name: Install conda-build/anaconda-client
-          command: |
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
-      - run:
-          name: Build packages
-          no_output_timeout: 30m
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
   deploy_linux_gpu:
     parameters:
       label:
@@ -277,83 +306,6 @@ jobs:
                 --user pytorch --label <<parameters.label>> -c pytorch
           no_output_timeout: 60m
 
-  deploy_osx:
-    parameters:
-      label:
-        type: string
-        default: main
-    macos:
-      xcode: 11.7.0
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
-            $HOME/miniconda/bin/conda config --set anaconda_upload yes
-      - run:
-          name: Build packages
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
-  deploy_osx_arm:
-    parameters:
-      label:
-        type: string
-        default: main
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
-            $HOME/miniconda/bin/conda config --set anaconda_upload yes
-      - run:
-          name: Build packages
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
-  deploy_windows:
-    parameters:
-      label:
-        type: string
-        default: main
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
-      - run:
-          name: Install conda-build/anaconda-client
-          command: |
-            conda update conda
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
-      - run:
-          name: Build packages
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
 workflows:
   version: 2
   build:
@@ -378,18 +330,19 @@ workflows:
           exec: mac_x86
       - build_conda:
           name: OSX (ARM)
-          exec: mac_m1
+          exec: mac_arm64
       - build_windows:
           name: Windows
       - build_arm:
           name: ARM64
-      - deploy_linux:
+      - deploy_conda:
           name: Linux packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          exec: lin_x86
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
       - deploy_linux_gpu:
           name: Linux GPU packages (CUDA 10.2)
           cuda: "10.2"
@@ -417,13 +370,22 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_osx:
+      - deploy_conda:
           name: OSX packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          exec: mac_x86
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
+      - deploy_conda:
+          name: OSX (ARM) packages
+          exec: mac_arm64
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
 
   nightly:
     triggers:
@@ -434,8 +396,9 @@ workflows:
               only:
                 - main
     jobs:
-      - deploy_linux:
+      - deploy_conda:
           name: Linux nightlies
+          exec: lin_x86
           label: nightly
       - deploy_linux_gpu:
           name: Linux GPU nightlies (CUDA 10.2)
@@ -452,9 +415,11 @@ workflows:
       - deploy_windows:
           name: Windows nightlies
           label: nightly
-      - deploy_osx:
+      - deploy_conda:
           name: OSX nightlies
+          exec: mac_x86
           label: nightly
-      - deploy_osx_arm:
+      - deploy_conda:
           name: OSX (ARM) nightlies
+          exec: mac_arm64
           label: nightly
