@@ -184,7 +184,7 @@ jobs:
           command: |
             conda update -y -q conda
             conda install -y -q cmake swig mkl numpy scipy pytest
-            conda install -y -q cxx_compiler -c conda-forge
+            conda install -y -q cxx-compiler -c conda-forge
             conda install -y -q pytorch -c pytorch
       - run:
           name: Build faiss library
