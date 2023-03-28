@@ -138,7 +138,7 @@ jobs:
           command: |
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
-            echo 'export PATH=~/miniconda/bin:"$PATH"' >> "$BASH_ENV"
+            ~/miniconda/bin/conda init
       - run:
           name: Install conda build tools
           command: |
@@ -189,6 +189,9 @@ jobs:
           name: Build faiss library
           no_output_timeout: 30m
           command: |
+            set
+            conda activate
+            set
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
