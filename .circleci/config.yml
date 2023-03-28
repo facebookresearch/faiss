@@ -189,11 +189,7 @@ jobs:
           name: Build faiss library
           no_output_timeout: 30m
           command: |
-            set
             source ~/.bashrc
-            set
-            conda activate
-            set
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
@@ -263,7 +259,7 @@ workflows:
           exec: linux-x86_64-cpu
           opt_level: "avx2"
       - build_linux_gpu:
-          name: Linux GPU
+          name: Linux x86_64 GPU (cmake)
           requires:
             - Linux x86_64 (cmake)
       - build_conda:
@@ -300,7 +296,7 @@ workflows:
 #            branches:
 #              ignore: /.*/
       - deploy_conda:
-          name: Windows packages
+          name: Windows x86_64 packages
           exec: windows-x86_64-cpu
           filters:
             tags:
@@ -352,7 +348,7 @@ workflows:
           compiler_version: "9.3"
           label: nightly
       - deploy_conda:
-          name: Windows nightlies
+          name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
           label: nightly
       - deploy_conda:
