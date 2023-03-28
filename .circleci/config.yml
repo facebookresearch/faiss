@@ -261,6 +261,7 @@ jobs:
             make -C build -j8
       - run:
           name: Test
+          command: |
             make -C build test
             (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
             (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
@@ -306,8 +307,8 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.7)
-          cuda: "11.7"
+          name: Linux GPU packages (CUDA 11.8)
+          cuda: "11.8"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
 #          filters:
@@ -362,8 +363,8 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.7)
-          cuda: "11.7.0"
+          name: Linux x86_64 GPU nightlies (CUDA 11.8)
+          cuda: "11.8"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
