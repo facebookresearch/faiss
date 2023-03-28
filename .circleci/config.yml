@@ -182,8 +182,9 @@ jobs:
       - run: 
           name: Set up environment
           command: |
-            conda update -y conda
-            conda install -y cmake swig mkl numpy scipy pytest pytorch cxx-compiler -c pytorch -c conda-forge
+            conda update -y -q conda
+            conda install -y -q cmake swig mkl numpy scipy pytest
+            conda install -y -q pytorch -c pytorch
       - run:
           name: Build faiss library
           no_output_timeout: 30m
@@ -191,7 +192,7 @@ jobs:
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
-                  -DCMAKE_BUILD_TYPE=Release .
+                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
             make -k -C build -j$(nproc) faiss
       - when:
           condition:
@@ -253,12 +254,9 @@ workflows:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
       - build_cmake:
-          name: linux x86_64 w/ AVX2 (cmake)
+          name: Linux x86_64 w/ AVX2 (cmake)
           exec: linux-x86_64-cpu
           opt_level: "avx2"
-      - build_cmake:
-          name: Linux arm64 (cmake)
-          exec: linux-arm64-cpu
       - build_linux_gpu:
           name: Linux GPU
           requires:
