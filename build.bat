@@ -23,12 +23,12 @@ if [%ARCH%] == [arm64] (
   set EXTRA_ARGS="-DFAISS_OPT_LEVEL=generic"
 )
 
-mkdir build_%ARCH%
-cd build_%ARCH%
 rem Testing is off in https://github.com/facebookresearch/faiss/blob/4012a788ee36132fbd4a454addb7fa2bc134d89e/conda/faiss/build-lib.bat#L12
 rem Instead, remove offending tests
-cmake .. -A %ARCH% ^
 rem needs to copy faiss.dll, gtest*.dll to build_%ARCH%\tests\Release to work with tests. 
+mkdir build_%ARCH%
+cd build_%ARCH%
+cmake .. -A %ARCH% ^
   -DFAISS_ENABLE_GPU=OFF ^
   -DFAISS_ENABLE_PYTHON=OFF ^
   -DBUILD_SHARED_LIBS=ON ^

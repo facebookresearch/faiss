@@ -10,6 +10,7 @@
 // basic int types and size_t
 #include <cstdint>
 #include <cstdio>
+#include <climits>
 
 #ifdef _MSC_VER
 
@@ -55,14 +56,14 @@ inline int __builtin_ctz(unsigned long x) {
 }
 #endif
 
-inline int __builtin_clzll(uint64_t x) {
+inline int __builtin_clzll(uint64_t n) {
     int d;
 #if defined(_M_X64)
     d = (int)__lzcnt64(n);
 #elif defined(_M_ARM64)
     unsigned long index;
-    d = sizeof(uint64_t) * 8; //CHAR_BIT;
-    if (_BitScanReverse64(&index, x)) {
+    d = sizeof(uint64_t) * CHAR_BIT;
+    if (_BitScanReverse64(&index, n)) {
         d = d - 1 - index;
     }
 #else
@@ -74,10 +75,8 @@ inline int __builtin_clzll(uint64_t x) {
 }
 
 #if defined(_M_ARM64)
-// if using neon, could use 
-// CNT instruction, see: https://github.com/barakmich/go-popcount
-
 #ifndef __popcnt64
+// if using neon, could use CNT instruction, see: https://github.com/barakmich/go-popcount
 static __inline uint64_t __popcnt64(uint64_t x) {
     int c = 0;
     for (; x; c++)
