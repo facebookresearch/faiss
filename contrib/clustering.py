@@ -21,11 +21,14 @@ except ImportError:
 def print_nop(*arg, **kwargs):
     pass
 
-def two_level_clustering(xt, nc1, nc2, clustering_niter=25, **args):
+def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **args):
     """
     perform 2-level clustering on a training set xt
     nc1 and nc2 are the number of clusters at each level, the final number of
-    clusters is nc1 * nc2. Additional arguments are passed to the Kmeans object
+    clusters is nc2. Additional arguments are passed to the Kmeans object.
+
+    Rebalance allocates the number of sub-clusters depending on the number of
+    first-level assignment.
     """
     d = xt.shape[1]
 
@@ -33,11 +36,11 @@ def two_level_clustering(xt, nc1, nc2, clustering_niter=25, **args):
 
     log = print if verbose else print_nop
 
-    log(f"2-level clustering of {xt.shape} nb clusters = {nc1}*{nc2} = {nc1*nc2}")
+    log(f"2-level clustering of {xt.shape} nb 1st level clusters = {nc1} total {nc2}")
     log("perform coarse training")
 
     km = faiss.Kmeans(
-        d, nc1, verbose=True, niter=clustering_niter,
+        d, nc1, niter=clustering_niter,
         max_points_per_centroid=2000,
         **args
     )
@@ -57,10 +60,16 @@ def two_level_clustering(xt, nc1, nc2, clustering_niter=25, **args):
     o = assign1.argsort()
     del km
 
-    if type(nc2) == int:
-        all_nc2 = [nc2] * nc1
+    if not rebalance:
+        # make sure the sub-clusters sum up to exactly nc2
+        cc = np.arange(nc1 + 1) * nc2 // nc1
+        all_nc2 = cc[1:] - cc[:-1]
     else:
-        all_nc2 = nc2
+        bc_sum = np.cumsum(bc)
+        all_nc2 = bc_sum * nc2 // bc_sum[-1]
+        all_nc2[1:] -= all_nc2[:-1]
+        assert sum(all_nc2) == nc2
+        log(f"nb 2nd-level centroids {min(all_nc2)}-{max(all_nc2)}")
 
     # train sub-clusters
     i0 = 0
@@ -94,16 +103,16 @@ def train_ivf_index_with_2level(index, xt, **args):
             vt = index.chain.at(i)
             vt.train(xt)
             xt = vt.apply(xt)
-        train_ivf_index_with_2level(index.index, xt)
+        train_ivf_index_with_2level(index.index, xt, **args)
         index.is_trained = True
         return
     assert isinstance(index, faiss.IndexIVF)
     assert index.metric_type == faiss.METRIC_L2
     # now do 2-level clustering
     nc1 = int(np.sqrt(index.nlist))
-    cc = np.arange(nc1 + 1) * index.nlist // nc1
-    all_nc2 = cc[1:] - cc[:-1]
-    centroids, _ = two_level_clustering(xt, nc1, all_nc2, **args)
+    print("REBALANCE=", args)
+
+    centroids, _ = two_level_clustering(xt, nc1, index.nlist, **args)
     index.quantizer.train(centroids)
     index.quantizer.add(centroids)
     # finish training
