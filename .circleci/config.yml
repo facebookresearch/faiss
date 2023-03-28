@@ -190,6 +190,8 @@ jobs:
           no_output_timeout: 30m
           command: |
             set
+            source .bashrc
+            set
             conda activate
             set
             cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
