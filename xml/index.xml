@@ -8141,8 +8141,8 @@
     <member refid="namespacefaiss_1a70eb5be4a6af3b9d948bcb8f949a4e9f" kind="variable"><name>distance_compute_blas_query_bs</name></member>
     <member refid="namespacefaiss_1acbd29d880c5aeaf1caf6266483253953" kind="variable"><name>distance_compute_blas_database_bs</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
-    <member refid="namespacefaiss_1a7d8fdd4c4c76390042cc6916bdbe6b9e" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
+    <member refid="namespacefaiss_1a807d8fdc887adb34ff028c3ccaeb1fe1" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
     <member refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kind="variable"><name>bucket_sort_verbose</name></member>
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>
@@ -8241,26 +8241,11 @@
     <member refid="namespacefaiss_1a1f95adf474dd2af948231ae1991427de" kind="function"><name>get_extra_distance_computer</name></member>
     <member refid="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" kind="function"><name>encode_fp16</name></member>
     <member refid="namespacefaiss_1ac3f112424a7957effd27187654d90986" kind="function"><name>decode_fp16</name></member>
-    <member refid="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" kind="function"><name>hamming</name></member>
-    <member refid="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" kind="function"><name>hamming</name></member>
-    <member refid="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" kind="function"><name>hamming&lt; 64 &gt;</name></member>
-    <member refid="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" kind="function"><name>hamming&lt; 128 &gt;</name></member>
-    <member refid="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" kind="function"><name>hamming&lt; 256 &gt;</name></member>
-    <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
-    <member refid="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" kind="function"><name>SPECIALIZED_HC</name></member>
-    <member refid="namespacefaiss_1a69337e23232a204be3e1464713fee62d" kind="function"><name>generalized_hamming_64</name></member>
-    <member refid="namespacefaiss_1a31146ebd95375313ae7c02ba06209ca0" kind="function"><name>generalized_hammings_knn_hc</name></member>
     <member refid="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" kind="function"><name>bitvec_print</name></member>
     <member refid="namespacefaiss_1a224890519ae5efe7a3c8cdf94bda60e9" kind="function"><name>fvecs2bitvecs</name></member>
     <member refid="namespacefaiss_1ad8f68b3bcb7a897358ab8501ea86b897" kind="function"><name>bitvecs2fvecs</name></member>
     <member refid="namespacefaiss_1afde8c1f96d4c776b101dd67cc0064c3d" kind="function"><name>fvec2bitvec</name></member>
     <member refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" kind="function"><name>bitvec_shuffle</name></member>
-    <member refid="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" kind="function"><name>popcount64</name></member>
     <member refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" kind="function"><name>hammings</name></member>
     <member refid="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477" kind="function"><name>hammings_knn_hc</name></member>
     <member refid="namespacefaiss_1a0c5abbe20058359340d9c7cb635f344b" kind="function"><name>hammings_knn</name></member>
@@ -8269,6 +8254,21 @@
     <member refid="namespacefaiss_1ac713458e556afa5bd612b88944292d65" kind="function"><name>hamming_count_thres</name></member>
     <member refid="namespacefaiss_1ad32229f823f2a0a920f0b62a702a67c5" kind="function"><name>match_hamming_thres</name></member>
     <member refid="namespacefaiss_1a399cfe2b1a7b2e3d722e10654c164ae0" kind="function"><name>crosshamming_count_thres</name></member>
+    <member refid="namespacefaiss_1af860acfd5b9adbb6a50d4b458d0df8b7" kind="function"><name>hamming</name></member>
+    <member refid="namespacefaiss_1a31146ebd95375313ae7c02ba06209ca0" kind="function"><name>generalized_hammings_knn_hc</name></member>
+    <member refid="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" kind="function"><name>popcount64</name></member>
+    <member refid="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" kind="function"><name>hamming</name></member>
+    <member refid="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" kind="function"><name>hamming</name></member>
+    <member refid="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" kind="function"><name>hamming&lt; 64 &gt;</name></member>
+    <member refid="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" kind="function"><name>hamming&lt; 128 &gt;</name></member>
+    <member refid="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" kind="function"><name>hamming&lt; 256 &gt;</name></member>
+    <member refid="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" kind="function"><name>SPECIALIZED_HC</name></member>
+    <member refid="namespacefaiss_1a69337e23232a204be3e1464713fee62d" kind="function"><name>generalized_hamming_64</name></member>
     <member refid="namespacefaiss_1a1d40aec5723474516de576263cc03048" kind="function"><name>heap_pop</name></member>
     <member refid="namespacefaiss_1a2e2264988d2658c0cd467463bc03254c" kind="function"><name>heap_push</name></member>
     <member refid="namespacefaiss_1abedf9900fe8f4b4566801aad585d60c1" kind="function"><name>heap_replace_top</name></member>
@@ -8362,11 +8362,11 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d133" kind="namespace"><name>faiss::@133</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d143" kind="namespace"><name>faiss::@143</name>
+  <compound refid="namespacefaiss_1_1_0d147" kind="namespace"><name>faiss::@147</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d144" kind="namespace"><name>faiss::@144</name>
+  <compound refid="namespacefaiss_1_1_0d148" kind="namespace"><name>faiss::@148</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d145" kind="namespace"><name>faiss::@145</name>
+  <compound refid="namespacefaiss_1_1_0d149" kind="namespace"><name>faiss::@149</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -8982,10 +8982,18 @@
   <compound refid="fp16_8h" kind="file"><name>fp16.h</name>
   </compound>
   <compound refid="hamming-inl_8h" kind="file"><name>hamming-inl.h</name>
-    <member refid="hamming-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>
   </compound>
   <compound refid="hamming_8h" kind="file"><name>hamming.h</name>
-    <member refid="hamming_8h_1adda6c2c1c8de76ca0d91bd9302209db7" kind="typedef"><name>hamdis_t</name></member>
+  </compound>
+  <compound refid="common_8h" kind="file"><name>common.h</name>
+    <member refid="common_8h_1af54d4643f130c0bc719a8d181ca68a2b" kind="typedef"><name>hamdis_t</name></member>
+  </compound>
+  <compound refid="generic-inl_8h" kind="file"><name>generic-inl.h</name>
+    <member refid="generic-inl_8h_1ae5e8ed7808cbabdea77c5ebda1e12bc9" kind="define"><name>SPECIALIZED_HC</name></member>
+  </compound>
+  <compound refid="hamdis-inl_8h" kind="file"><name>hamdis-inl.h</name>
+  </compound>
+  <compound refid="neon-inl_8h" kind="file"><name>neon-inl.h</name>
   </compound>
   <compound refid="Heap_8h" kind="file"><name>Heap.h</name>
   </compound>
@@ -9030,6 +9038,8 @@
   <compound refid="dir_283b6f110a5e88358299b04e4fc2c7ec" kind="dir"><name>faiss</name>
   </compound>
   <compound refid="dir_8904d4d25cfd37481067280c4d4c9f97" kind="dir"><name>faiss/gpu</name>
+  </compound>
+  <compound refid="dir_a990053ab0ed2a0e35fd7924fe582c4e" kind="dir"><name>faiss/utils/hamming_distance</name>
   </compound>
   <compound refid="dir_c7562a8177f4c7fed0562155251b7d22" kind="dir"><name>faiss/gpu/impl</name>
   </compound>
