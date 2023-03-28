@@ -70,6 +70,13 @@ struct simd256bit {
         bin(bits);
         return std::string(bits);
     }
+
+    // Checks whether the other holds exactly the same bytes.
+    bool is_same_as(simd256bit other) const {
+        const __m256i pcmp = _mm256_cmpeq_epi32(i, other.i);
+        unsigned bitmask = _mm256_movemask_epi8(pcmp);
+        return (bitmask == 0xffffffffU);
+    }
 };
 
 /// vector of 16 elements in uint16
@@ -85,6 +92,41 @@ struct simd16uint16 : simd256bit {
     explicit simd16uint16(simd256bit x) : simd256bit(x) {}
 
     explicit simd16uint16(const uint16_t* x) : simd256bit((const void*)x) {}
+
+    explicit simd16uint16(
+            uint16_t u0,
+            uint16_t u1,
+            uint16_t u2,
+            uint16_t u3,
+            uint16_t u4,
+            uint16_t u5,
+            uint16_t u6,
+            uint16_t u7,
+            uint16_t u8,
+            uint16_t u9,
+            uint16_t u10,
+            uint16_t u11,
+            uint16_t u12,
+            uint16_t u13,
+            uint16_t u14,
+            uint16_t u15)
+            : simd256bit(_mm256_setr_epi16(
+                      u0,
+                      u1,
+                      u2,
+                      u3,
+                      u4,
+                      u5,
+                      u6,
+                      u7,
+                      u8,
+                      u9,
+                      u10,
+                      u11,
+                      u12,
+                      u13,
+                      u14,
+                      u15)) {}
 
     std::string elements_to_string(const char* fmt) const {
         uint16_t bytes[16];
@@ -158,6 +200,12 @@ struct simd16uint16 : simd256bit {
     // returns binary masks
     friend simd16uint16 operator==(const simd256bit lhs, const simd256bit rhs) {
         return simd16uint16(_mm256_cmpeq_epi16(lhs.i, rhs.i));
+    }
+
+    bool is_same(simd16uint16 other) const {
+        const __m256i pcmp = _mm256_cmpeq_epi16(i, other.i);
+        unsigned bitmask = _mm256_movemask_epi8(pcmp);
+        return (bitmask == 0xffffffffU);
     }
 
     simd16uint16 operator~() const {
@@ -261,6 +309,41 @@ inline uint32_t cmp_le32(simd16uint16 d0, simd16uint16 d1, simd16uint16 thr) {
 
 inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
     return simd16uint16(_mm256_hadd_epi16(a.i, b.i));
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+//
+// Works in i16 mode in order to save instructions. One may
+// switch from i16 to u16.
+inline void cmplt_min_max_fast(
+        const simd16uint16 candidateValues,
+        const simd16uint16 candidateIndices,
+        const simd16uint16 currentValues,
+        const simd16uint16 currentIndices,
+        simd16uint16& minValues,
+        simd16uint16& minIndices,
+        simd16uint16& maxValues,
+        simd16uint16& maxIndices) {
+    // there's no lt instruction, so we'll need to emulate one
+    __m256i comparison = _mm256_cmpgt_epi16(currentValues.i, candidateValues.i);
+    comparison = _mm256_andnot_si256(comparison, _mm256_set1_epi16(-1));
+
+    minValues.i = _mm256_min_epi16(candidateValues.i, currentValues.i);
+    minIndices.i = _mm256_blendv_epi8(
+            candidateIndices.i, currentIndices.i, comparison);
+    maxValues.i = _mm256_max_epi16(candidateValues.i, currentValues.i);
+    maxIndices.i = _mm256_blendv_epi8(
+            currentIndices.i, candidateIndices.i, comparison);
 }
 
 // vector of 32 unsigned 8-bit integers
@@ -455,6 +538,11 @@ struct simd8uint32 : simd256bit {
         return simd8uint32(_mm256_sub_epi32(i, other.i));
     }
 
+    simd8uint32& operator+=(const simd8uint32& other) {
+        i = _mm256_add_epi32(i, other.i);
+        return *this;
+    }
+
     bool operator==(simd8uint32 other) const {
         const __m256i pcmp = _mm256_cmpeq_epi32(i, other.i);
         unsigned bitmask = _mm256_movemask_epi8(pcmp);
@@ -495,6 +583,42 @@ struct simd8uint32 : simd256bit {
                 i, _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7)));
     }
 };
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8uint32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8uint32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8uint32& minValues,
+        simd8uint32& minIndices,
+        simd8uint32& maxValues,
+        simd8uint32& maxIndices) {
+    // there's no lt instruction, so we'll need to emulate one
+    __m256i comparison = _mm256_cmpgt_epi32(currentValues.i, candidateValues.i);
+    comparison = _mm256_andnot_si256(comparison, _mm256_set1_epi32(-1));
+
+    minValues.i = _mm256_min_epi32(candidateValues.i, currentValues.i);
+    minIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
+            _mm256_castsi256_ps(candidateIndices.i),
+            _mm256_castsi256_ps(currentIndices.i),
+            _mm256_castsi256_ps(comparison)));
+    maxValues.i = _mm256_max_epi32(candidateValues.i, currentValues.i);
+    maxIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
+            _mm256_castsi256_ps(currentIndices.i),
+            _mm256_castsi256_ps(candidateIndices.i),
+            _mm256_castsi256_ps(comparison)));
+}
 
 struct simd8float32 : simd256bit {
     simd8float32() {}
@@ -613,12 +737,46 @@ inline void cmplt_and_blend_inplace(
         const simd8uint32 candidateIndices,
         simd8float32& lowestValues,
         simd8uint32& lowestIndices) {
-    auto comparison =
+    const __m256 comparison =
             _mm256_cmp_ps(lowestValues.f, candidateValues.f, _CMP_LE_OS);
     lowestValues.f = _mm256_min_ps(candidateValues.f, lowestValues.f);
     lowestIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
             _mm256_castsi256_ps(candidateIndices.i),
             _mm256_castsi256_ps(lowestIndices.i),
+            comparison));
+}
+
+// Vectorized version of the following code:
+//   for (size_t i = 0; i < n; i++) {
+//      bool flag = (candidateValues[i] < currentValues[i]);
+//      minValues[i] = flag ? candidateValues[i] : currentValues[i];
+//      minIndices[i] = flag ? candidateIndices[i] : currentIndices[i];
+//      maxValues[i] = !flag ? candidateValues[i] : currentValues[i];
+//      maxIndices[i] = !flag ? candidateIndices[i] : currentIndices[i];
+//   }
+// Max indices evaluation is inaccurate in case of equal values (the index of
+// the last equal value is saved instead of the first one), but this behavior
+// saves instructions.
+inline void cmplt_min_max_fast(
+        const simd8float32 candidateValues,
+        const simd8uint32 candidateIndices,
+        const simd8float32 currentValues,
+        const simd8uint32 currentIndices,
+        simd8float32& minValues,
+        simd8uint32& minIndices,
+        simd8float32& maxValues,
+        simd8uint32& maxIndices) {
+    const __m256 comparison =
+            _mm256_cmp_ps(currentValues.f, candidateValues.f, _CMP_LE_OS);
+    minValues.f = _mm256_min_ps(candidateValues.f, currentValues.f);
+    minIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
+            _mm256_castsi256_ps(candidateIndices.i),
+            _mm256_castsi256_ps(currentIndices.i),
+            comparison));
+    maxValues.f = _mm256_max_ps(candidateValues.f, currentValues.f);
+    maxIndices.i = _mm256_castps_si256(_mm256_blendv_ps(
+            _mm256_castsi256_ps(currentIndices.i),
+            _mm256_castsi256_ps(candidateIndices.i),
             comparison));
 }
 
