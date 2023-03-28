@@ -183,8 +183,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q cmake make swig mkl numpy scipy pytest
-            conda install -y -q cxx-compiler -c conda-forge
+            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
             conda install -y -q pytorch -c pytorch
       - run:
           name: Build faiss library
