@@ -3,6 +3,7 @@
   <compounddef id="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir">
     <compoundname>faiss/utils</compoundname>
     <innerdir refid="dir_c2dc665bb85977007db19edac984ae84">faiss/utils/approx_topk</innerdir>
+    <innerdir refid="dir_e13a2bd573d2812b9a3a73eeae8e330e">faiss/utils/approx_topk_hamming</innerdir>
     <innerdir refid="dir_8024a5c5304a6089dbde2bf6560405dc">faiss/utils/distances_fused</innerdir>
     <innerdir refid="dir_a990053ab0ed2a0e35fd7924fe582c4e">faiss/utils/hamming_distance</innerdir>
     <innerdir refid="dir_6db856fab8a406bb2751df9e12e5655b">faiss/utils/transpose</innerdir>

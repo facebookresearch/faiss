@@ -1555,6 +1555,20 @@
     <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" kind="function"><name>addn</name></member>
     <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" kind="function"><name>bs_addn</name></member>
   </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsForHamming16" kind="struct"><name>faiss::HeapWithBucketsForHamming16</name>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" kind="struct"><name>faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</name>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a87dbcac5de58ba9462410a76a0b76cf8" kind="variable"><name>NBUCKETS_16</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a98e332265502eaa21b24f37bcd74e0cb" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1ae282b1c61a04d586d5d7011ac7211b07" kind="function"><name>bs_addn</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsForHamming32" kind="struct"><name>faiss::HeapWithBucketsForHamming32</name>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" kind="struct"><name>faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</name>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" kind="variable"><name>NBUCKETS_8</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a55d7edca6fba66c8615d4b29f7cf24b4" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1afa7026574eb078b135203d287244fbd4" kind="function"><name>bs_addn</name></member>
+  </compound>
   <compound refid="structfaiss_1_1HNSW" kind="struct"><name>faiss::HNSW</name>
     <member refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1HNSW_1a7354bfe0fedc510d73071ebefd37dcb2" kind="typedef"><name>Node</name></member>
@@ -8380,13 +8394,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d134" kind="namespace"><name>faiss::@134</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d148" kind="namespace"><name>faiss::@148</name>
+  <compound refid="namespacefaiss_1_1_0d135" kind="namespace"><name>faiss::@135</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d149" kind="namespace"><name>faiss::@149</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d150" kind="namespace"><name>faiss::@150</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d151" kind="namespace"><name>faiss::@151</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -8985,6 +8999,8 @@
     <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
     <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
   </compound>
+  <compound refid="approx__topk__hamming_8h" kind="file"><name>approx_topk_hamming.h</name>
+  </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>
   <compound refid="avx512_8h" kind="file"><name>avx512.h</name>
@@ -9047,6 +9063,8 @@
   </compound>
   <compound refid="dir_c2dc665bb85977007db19edac984ae84" kind="dir"><name>faiss/utils/approx_topk</name>
   </compound>
+  <compound refid="dir_e13a2bd573d2812b9a3a73eeae8e330e" kind="dir"><name>faiss/utils/approx_topk_hamming</name>
+  </compound>
   <compound refid="dir_e0bc4e8ba6e534e3fbf335254ee8d911" kind="dir"><name>faiss/gpu/utils/blockselect</name>
   </compound>
   <compound refid="dir_df06d869ac375e073b830f0b1d0f2164" kind="dir"><name>faiss/impl/code_distance</name>
@@ -9081,9 +9099,9 @@
   </compound>
   <compound refid="dir_6db856fab8a406bb2751df9e12e5655b" kind="dir"><name>faiss/utils/transpose</name>
   </compound>
-  <compound refid="dir_42f4926097fe2768058790a30a036468" kind="dir"><name>faiss/gpu/utils</name>
-  </compound>
   <compound refid="dir_8ad259f5ae9600a74caf331497f5b251" kind="dir"><name>faiss/utils</name>
+  </compound>
+  <compound refid="dir_42f4926097fe2768058790a30a036468" kind="dir"><name>faiss/gpu/utils</name>
   </compound>
   <compound refid="dir_ad53beca454033ad93eaf26a4bdf359c" kind="dir"><name>faiss/gpu/utils/warpselect</name>
   </compound>

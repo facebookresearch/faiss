@@ -42,6 +42,10 @@
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
       </node>
+      <node id="5">
+        <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
+        <link refid="approx__topk__hamming_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h"/>
@@ -54,6 +58,8 @@
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
