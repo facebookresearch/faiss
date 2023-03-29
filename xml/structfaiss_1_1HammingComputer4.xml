@@ -91,13 +91,29 @@
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="96" column="16" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="96" bodyend="98"/>
       </memberdef>
       </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int</type>
+        <definition>static constexpr int faiss::HammingComputer4::get_code_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/generic-inl.h" line="100" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="100" bodyend="102"/>
+      </memberdef>
+      </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/generic-inl.h" line="82" column="1" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="82" bodyend="99"/>
+    <location file="faiss/utils/hamming_distance/generic-inl.h" line="82" column="1" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="82" bodyend="103"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputer4_1ad5c8ec402c03b960fc835722e1254cfa" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>a0</name></member>
+      <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>get_code_size</name></member>
       <member refid="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1HammingComputer4_1a371053baf6ea27ab7948387f96ad911e" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>HammingComputer4</name></member>
       <member refid="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" prot="public" virt="non-virtual"><scope>faiss::HammingComputer4</scope><name>HammingComputer4</name></member>

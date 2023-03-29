@@ -612,6 +612,7 @@
     <member refid="structfaiss_1_1GenHammingComputer16_1aaf98f1afee05711fcbc3d7c2fd7740ba" kind="variable"><name>a1</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1a30961932f5bade747453bb9b13fff9df" kind="function"><name>GenHammingComputer16</name></member>
     <member refid="structfaiss_1_1GenHammingComputer16_1ae80aa32faf79439faaa46bf0eb924d5e" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer16_1af4202dd5e8862da856b5c72b3dafd9e3" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer32" kind="struct"><name>faiss::GenHammingComputer32</name>
     <member refid="structfaiss_1_1GenHammingComputer32_1a44491cd17453bcc3609ed0d1ea33697e" kind="variable"><name>a0</name></member>
@@ -620,17 +621,20 @@
     <member refid="structfaiss_1_1GenHammingComputer32_1a2f34e7a27e6c8296adde76b2d276ba8d" kind="variable"><name>a3</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1a6bbcc00bcfab59e6581debc48fe911aa" kind="function"><name>GenHammingComputer32</name></member>
     <member refid="structfaiss_1_1GenHammingComputer32_1afb7d108eadd7adb7ebbc8bc6a45f5f28" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer32_1aec58319f05449977c19ec1caf530c3a7" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputer8" kind="struct"><name>faiss::GenHammingComputer8</name>
     <member refid="structfaiss_1_1GenHammingComputer8_1aced7fedc6ffd9ee99f92d3c59324e256" kind="variable"><name>a0</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1a435b03f06449e1948609f658c2bb0af3" kind="function"><name>GenHammingComputer8</name></member>
     <member refid="structfaiss_1_1GenHammingComputer8_1ab01942dac234ae10c2dbf72782c9de3c" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputer8_1ad96688e4881d5d01b5d9de304fac9bb6" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1GenHammingComputerM8" kind="struct"><name>faiss::GenHammingComputerM8</name>
     <member refid="structfaiss_1_1GenHammingComputerM8_1acc35f4c5d63eb5aa9025c4914c885c3f" kind="variable"><name>a</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a72fd506e611fda59d86cfc5d3f96694f" kind="variable"><name>n</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a05797d27c83ecd0cebdf2069ee86f168" kind="function"><name>GenHammingComputerM8</name></member>
     <member refid="structfaiss_1_1GenHammingComputerM8_1a1e1804d710a046ce82d18a9b1575c82d" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1GenHammingComputerM8_1ada330091412506167d45a78b558f1879" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuClonerOptions" kind="struct"><name>faiss::gpu::GpuClonerOptions</name>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ad960ac51b7cc607fcb1a1b07efc32a9e" kind="variable"><name>indicesOptions</name></member>
@@ -1399,6 +1403,7 @@
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" kind="variable"><name>a8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" kind="variable"><name>quotient8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
@@ -1410,6 +1415,7 @@
     <member refid="structfaiss_1_1HammingComputer16_1a11aefbd5ff66bd895ac6563410622ae4" kind="function"><name>HammingComputer16</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1a22a66f390eddd54563e1255b1a1c0184" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer16_1ab9589c7dfca5ed5993b4b79cebcb3ee0" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer16_1a33ece3f5c55052c67c674958d7847127" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer20" kind="struct"><name>faiss::HammingComputer20</name>
     <member refid="structfaiss_1_1HammingComputer20_1a295014fba5155a1b11334550238a9314" kind="variable"><name>a0</name></member>
@@ -1419,6 +1425,7 @@
     <member refid="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" kind="function"><name>HammingComputer20</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer32" kind="struct"><name>faiss::HammingComputer32</name>
     <member refid="structfaiss_1_1HammingComputer32_1a9e410d8583e796b7d4eff2b88c0d9c30" kind="variable"><name>a0</name></member>
@@ -1429,6 +1436,7 @@
     <member refid="structfaiss_1_1HammingComputer32_1a9019f812a483c0c7efe8dedb5c7c8352" kind="function"><name>HammingComputer32</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a5e121e89d304e9ba6601f8ef4b86c38c" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer32_1a0d92afe4a71725e8dd912ad1bf7fa20f" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer32_1a1e3373d91109d5506ae84db7b21161ae" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer4" kind="struct"><name>faiss::HammingComputer4</name>
     <member refid="structfaiss_1_1HammingComputer4_1ad5c8ec402c03b960fc835722e1254cfa" kind="variable"><name>a0</name></member>
@@ -1436,6 +1444,7 @@
     <member refid="structfaiss_1_1HammingComputer4_1a55b5dec647faca3fa97b0f96dd156267" kind="function"><name>HammingComputer4</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1a727351f6b05e23f443ac5d0750cb9d93" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer4_1aba11f9b8b74d30adf8884205e1e754ac" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer4_1ad5857e33002d2907216f2f2d2f619ba4" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer64" kind="struct"><name>faiss::HammingComputer64</name>
     <member refid="structfaiss_1_1HammingComputer64_1ac6407c0d486b180692f14b99974e6c34" kind="variable"><name>a0</name></member>
@@ -1450,6 +1459,7 @@
     <member refid="structfaiss_1_1HammingComputer64_1a2892834dd399b08bc9ef97ecf64eaa2a" kind="function"><name>HammingComputer64</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1a712b3c2c8aa5e73f7a9d3618afd893c3" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer64_1aff38c89e2d4d7a5a9fd844cbd33c11bd" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer64_1a70628d1411ae9d96d23420842b029c91" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputer8" kind="struct"><name>faiss::HammingComputer8</name>
     <member refid="structfaiss_1_1HammingComputer8_1abe238e7d6aff837b8cb0bdc31e5dd18d" kind="variable"><name>a0</name></member>
@@ -1457,6 +1467,7 @@
     <member refid="structfaiss_1_1HammingComputer8_1a197b240151415fbb113b29f9f9df5853" kind="function"><name>HammingComputer8</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1a0c57fbf4538c57ea27d6fc88de898a90" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputer8_1a1725426ae8afcc13132cea6b49e13058" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputer8_1aa0a046051749d7e4ded2cac67d0ba27f" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerDefault" kind="struct"><name>faiss::HammingComputerDefault</name>
     <member refid="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32" kind="variable"><name>a8</name></member>
@@ -1466,6 +1477,7 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerM4" kind="struct"><name>faiss::HammingComputerM4</name>
     <member refid="structfaiss_1_1HammingComputerM4_1af146cad6476627acd38d195d6a5427e4" kind="variable"><name>a</name></member>
@@ -1474,6 +1486,7 @@
     <member refid="structfaiss_1_1HammingComputerM4_1ad33e45019079424426fdb64c7f7a55f9" kind="function"><name>HammingComputerM4</name></member>
     <member refid="structfaiss_1_1HammingComputerM4_1ae058888cc2117ecd2a3695a43468097c" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerM4_1ae12ba4b1be2bf0458d833a94b86c5adc" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerM4_1aa033f5097b71788523d826ba64a95e60" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HammingComputerM8" kind="struct"><name>faiss::HammingComputerM8</name>
     <member refid="structfaiss_1_1HammingComputerM8_1a30add67883789b4dd0fd39969e01afb9" kind="variable"><name>a</name></member>
@@ -1482,6 +1495,7 @@
     <member refid="structfaiss_1_1HammingComputerM8_1a33e9ebd57c6621f0b777784962a85213" kind="function"><name>HammingComputerM8</name></member>
     <member refid="structfaiss_1_1HammingComputerM8_1a099424f3a1ea7d4da78a6e288376c9ac" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerM8_1a10741cb74d89712eb3217f9740c7ac3b" kind="function"><name>hamming</name></member>
+    <member refid="structfaiss_1_1HammingComputerM8_1a059b12821ac3ca32f6193c82f1db3825" kind="function"><name>get_code_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1HCounterState" kind="struct"><name>faiss::HCounterState</name>
     <member refid="structfaiss_1_1HCounterState_1aba2730ef4714f1ec177994b37402ccfe" kind="variable"><name>counters</name></member>
@@ -1959,6 +1973,7 @@
     <member refid="structfaiss_1_1IndexBinaryFlat_1afc0b5b076b35a1a1889b0012848c795c" kind="variable"><name>xb</name></member>
     <member refid="structfaiss_1_1IndexBinaryFlat_1a9fa80e22a4accee4da0ee152a4910c1b" kind="variable"><name>use_heap</name></member>
     <member refid="structfaiss_1_1IndexBinaryFlat_1a7f0b7f4b7c17add8e4f0106c52f4d889" kind="variable"><name>query_batch_size</name></member>
+    <member refid="structfaiss_1_1IndexBinaryFlat_1a0ca03ea03e068fe9cfb84236d4991df1" kind="variable"><name>approx_topk_mode</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
@@ -8278,7 +8293,7 @@
     <member refid="namespacefaiss_1afde8c1f96d4c776b101dd67cc0064c3d" kind="function"><name>fvec2bitvec</name></member>
     <member refid="namespacefaiss_1a6ea3261fda6f9dc53c401b4cccb90268" kind="function"><name>bitvec_shuffle</name></member>
     <member refid="namespacefaiss_1a0832c5ab58f4d1a340b0bde273c5b501" kind="function"><name>hammings</name></member>
-    <member refid="namespacefaiss_1a111b1ab3b50bcd06d29c588122811477" kind="function"><name>hammings_knn_hc</name></member>
+    <member refid="namespacefaiss_1a82773978ee635588284b8a74135d0b76" kind="function"><name>hammings_knn_hc</name></member>
     <member refid="namespacefaiss_1a0c5abbe20058359340d9c7cb635f344b" kind="function"><name>hammings_knn</name></member>
     <member refid="namespacefaiss_1a7910c770df07bd8b6168ece7f5ff92ca" kind="function"><name>hammings_knn_mc</name></member>
     <member refid="namespacefaiss_1a1032890ca79ab7443c0af4fde09b121c" kind="function"><name>hamming_range_search</name></member>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="22" column="17" bodyfile="faiss/IndexBinaryFlat.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="24" column="17" bodyfile="faiss/IndexBinaryFlat.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryFlat_1a9fa80e22a4accee4da0ee152a4910c1b" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="27" column="10" bodyfile="faiss/IndexBinaryFlat.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="29" column="10" bodyfile="faiss/IndexBinaryFlat.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinaryFlat_1a7f0b7f4b7c17add8e4f0106c52f4d889" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -46,7 +46,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="29" column="12" bodyfile="faiss/IndexBinaryFlat.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/IndexBinaryFlat.h" line="31" column="12" bodyfile="faiss/IndexBinaryFlat.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexBinaryFlat_1a0ca03ea03e068fe9cfb84236d4991df1" prot="public" static="no" mutable="no">
+        <type>ApproxTopK_mode_t</type>
+        <definition>ApproxTopK_mode_t faiss::IndexBinaryFlat::approx_topk_mode</definition>
+        <argsstring></argsstring>
+        <name>approx_topk_mode</name>
+        <initializer>= ApproxTopK_mode_t::EXACT_TOPK</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexBinaryFlat.h" line="33" column="23" bodyfile="faiss/IndexBinaryFlat.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -149,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="31" column="14"/>
+        <location file="faiss/IndexBinaryFlat.h" line="35" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -182,7 +196,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="33" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="37" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -197,7 +211,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="35" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="39" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a7a7812438f41665abe536cf623680341" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -264,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="37" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="41" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1aecebd5a7e9073092343c337857b1e899" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -327,7 +341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="45" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="49" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -368,7 +382,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="52" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="56" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1ae5127fb557880bf5996531714f32b3d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -387,7 +401,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="57" column="12"/>
+        <location file="faiss/IndexBinaryFlat.h" line="61" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1aed44f8312ec3b3190e3d09c180fb8c46" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -400,7 +414,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="59" column="5" bodyfile="faiss/IndexBinaryFlat.h" bodystart="59" bodyend="59"/>
+        <location file="faiss/IndexBinaryFlat.h" line="63" column="5" bodyfile="faiss/IndexBinaryFlat.h" bodystart="63" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -740,10 +754,11 @@
         <link refid="structfaiss_1_1IndexBinary"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryFlat.h" line="20" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="20" bodyend="60"/>
+    <location file="faiss/IndexBinaryFlat.h" line="22" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="22" bodyend="64"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1IndexBinaryFlat_1a0ca03ea03e068fe9cfb84236d4991df1" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>approx_topk_mode</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>assign</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>code_size</name></member>

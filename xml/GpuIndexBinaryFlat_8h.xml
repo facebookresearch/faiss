@@ -19,7 +19,7 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>cublas_v2.h</label>
       </node>
       <node id="11">
@@ -33,7 +33,7 @@
       <node id="12">
         <label>cstdint</label>
       </node>
-      <node id="21">
+      <node id="22">
         <label>cuda_runtime.h</label>
       </node>
       <node id="7">
@@ -47,28 +47,32 @@
         <link refid="GpuIndexBinaryFlat_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>faiss/gpu/GpuResources.h</label>
-        <link refid="GpuResources_8h_source"/>
         <childnode refid="20" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/gpu/GpuResources.h</label>
+        <link refid="GpuResources_8h_source"/>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="18">
+        <label>faiss/utils/approx_topk/mode.h</label>
+        <link refid="mode_8h_source"/>
       </node>
       <node id="8">
         <label>typeinfo</label>
@@ -124,12 +128,12 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/gpu/GpuIndex.h</label>
         <link refid="GpuIndex_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -138,6 +142,8 @@
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="13">
@@ -154,7 +160,7 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>memory</label>
       </node>
     </incdepgraph>
