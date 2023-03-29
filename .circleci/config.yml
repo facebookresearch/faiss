@@ -142,9 +142,8 @@ jobs:
           name: Install conda build tools
           command: |
             conda update -y conda
-            conda install -y -q conda-build
-            # anaconda-client
-            # conda config --set anaconda_upload yes
+            conda install -y -q conda-build anaconda-client
+            conda config --set anaconda_upload yes
       - run:
           name: Build/test/upload
           no_output_timeout: 60m
@@ -226,7 +225,7 @@ jobs:
       - run:
           name: Build C API
           command: |
-            make -k -C build -j faiss_c
+            make -k -C build -j$(nproc) faiss_c
 
   build_linux_gpu:
     machine:
@@ -259,13 +258,19 @@ jobs:
                     -DBUILD_TESTING=ON \
                     -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
                     .
-            make -C build -j8
+            make -C build -j$(nproc)
+            cd build/faiss/python
+            python3 setup.py build
       - run:
           name: Test
           command: |
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
-            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+            cp tests/common_faiss_tests.py faiss/gpu/test
+            pytest --junitxml=test-results/pytest/results.xml faiss/gpu/test/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml faiss/gpu/test/torch_*.py
+      - store_test_results:
+          path: test-results
 
 workflows:
   version: 2
@@ -282,8 +287,8 @@ workflows:
           opt_level: "avx2"
       - build_linux_gpu:
           name: Linux x86_64 GPU (cmake)
-          # requires:
-          #   - Linux x86_64 (cmake)
+          requires:
+            - Linux x86_64 (cmake)
       - build_conda:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
@@ -291,7 +296,7 @@ workflows:
           name: OSX x86_64 (conda)
           exec: macosx-x86_64-cpu
       - build_conda:
-          name: Windows (conda)
+          name: Windows x86_64 (conda)
           exec: windows-x86_64-cpu
       - build_conda:
           name: OSX arm64 (conda)
@@ -312,11 +317,11 @@ workflows:
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - deploy_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu
