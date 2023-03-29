@@ -1,12 +1,37 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@4.1.1
+executors:
+  linux-x86_64-cpu:
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium+
+  linux-arm64-cpu:
+    environment:
+      CONDA_ARCH: Linux-aarch64
+    machine:
+      image: ubuntu-2004:current
+    resource_class: arm.medium
+  macosx-x86_64-cpu:
+    environment:
+      CONDA_ARCH: MacOSX-x86_64
+    macos:
+      xcode: 11.7.0  # max supported for conda build, https://circleci.com/docs/using-macos#supported-xcode-versions
+  macosx-arm64-cpu:
+    environment:
+      CONDA_ARCH: MacOSX-arm64
+    macos:
+      xcode: 14.2.0 # minimum supported for M1
+    resource_class: macos.m1.large.gen1
+  windows-x86_64-cpu:
+    machine:
+      image: windows-server-2019-vs2019:stable
+      resource_class: windows.medium
+      shell: bash.exe
 
 jobs:
   format:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:22.04
     steps:
       - checkout
       - run:
@@ -27,267 +52,63 @@ jobs:
                exit 1
              fi
 
-  build_linux:
+  build_conda:
     parameters:
-      opt_level:
-        type: string
-        default: generic
-      resource_class:
-        type: string
-        default: medium
-    docker:
-      - image: beauby/faiss-circleci:cpu
-    resource_class: << parameters.resource_class >>
+      exec:
+        type: executor
+    executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
-      MKL_THREADING_LAYER: GNU
     steps:
       - checkout
       - run:
-          name: Build faiss library
-          no_output_timeout: 30m
+          name: Install conda
           command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON \
-                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
-            make -k -C build -j$(nproc) faiss
-      - when:
-          condition:
-            equal: [ "avx2", << parameters.opt_level >> ]
-          steps:
-            - run:
-                name: Build faiss_avx2 library
-                no_output_timeout: 30m
-                command: make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
+            if [ -n "${CONDA_ARCH}" ]
+            then
+              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
+              bash miniconda.sh -b -p $HOME/miniconda
+              ~/miniconda/bin/conda init
+            fi
       - run:
-          name: Test faiss library
+          name: Install conda build tools
           command: |
-            make -C build -j$(nproc) faiss_test
-            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
-      - run:
-          name: Build python extension
-          command: |
-            make -C build -j$(nproc) swigfaiss
-            cd build/faiss/python
-            python3 setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            pip3 install pytest
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-      - store_test_results:
-          path: test-results
-      - run:
-          name: Build C API
-          command: |
-            make -k -C build -j faiss_c
-
-  build_linux_conda:
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium+
-    steps:
-      - checkout
-      - run:
-          name: Conda build
-          no_output_timeout: 30m
-          command: |
+            conda update -y conda
             conda install -y -q conda-build
-            cd conda
-            conda build faiss --python 3.10 -c pytorch
-
-  build_osx:
-    macos:
-      xcode: 11.7.0  # https://circleci.com/docs/using-macos#supported-xcode-versions
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build
       - run:
           name: Build/test
+          no_output_timeout: 30m
           command: |
-            export PATH=~/miniconda/bin:$PATH
             cd conda
             conda build faiss --python 3.10 -c pytorch
 
-  build_osx_arm:
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
-            # we link against miniconda but don't use the conda build system
-            bash miniconda.sh -b -p $HOME/miniconda
-            . $HOME/miniconda/etc/profile.d/conda.sh
-            export PATH=$HOME/miniconda/bin:$PATH
-            conda install -q -y python numpy swig cmake scipy
-      - run:
-          name: Build
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-               -DCMAKE_BUILD_TYPE=Release -DFAISS_ENABLE_C_API=ON \
-               -DPython_EXECUTABLE=$(which python)
-            make -k -C build -j faiss
-      - run:
-          name: Build and run C++ tests
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            make -C build -j faiss_test
-            make -C build test
-      - run:
-          name: Build and run Python tests
-          command: |
-            export PATH=$HOME/miniconda/bin:$PATH
-            conda install -q -y pytorch -c pytorch
-            make -C build -j swigfaiss
-            (cd build/faiss/python; python3 setup.py build)
-            (cd tests; PYTHONPATH=../build/faiss/python/build/lib/ python3 -m unittest discover)
-
-  build_osx_arm_conda:
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
-    environment:
-      OMP_NUM_THREADS: 10
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build
-      - run:
-          name: Build packages
-          command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --python 3.10 -c pytorch
-
-  build_windows:
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
-            conda update conda
-            conda install conda-build
-            cd conda
-            conda build faiss --python 3.10 -c pytorch
-
-  build_arm:
-    machine:
-      image: ubuntu-2004:202101-01
-    resource_class: arm.medium
-    parameters:
-      opt_level:
-        type: string
-        default: generic
-    environment:
-      OMP_NUM_THREADS: 10
-      CONDA_HOME: /home/circleci/miniconda3
-      PYTHON: /home/circleci/miniconda3/bin/python
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install -y swig
-            wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-aarch64.sh
-            bash Miniconda3-py39_4.9.2-Linux-aarch64.sh -b -p $CONDA_HOME
-            pip3 install cmake
-            $CONDA_HOME/bin/conda install -y numpy scipy
-            $CONDA_HOME/bin/conda install -y pytorch cpuonly -c pytorch
-            $CONDA_HOME/bin/pip install pytest
-      - run:
-          name: Build faiss library
-          command: |
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
-                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON \
-                  -DCMAKE_BUILD_TYPE=Release \
-                  -DPython_EXECUTABLE=$PYTHON .
-            make -k -C build -j$(nproc) faiss
-      - run:
-          name: Test faiss library
-          command: |
-            make -C build -j$(nproc) faiss_test
-            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
-      - run:
-          name: Build python extension
-          command: |
-            make -C build -j$(nproc) swigfaiss
-            cd build/faiss/python
-            $PYTHON setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            $PYTHON -c "import faiss; assert 'NEON' in faiss.get_compile_options()"
-            $PYTHON -m pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            $PYTHON -m pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
-      - store_test_results:
-          path: test-results
-      - run:
-          name: Build C API
-          command: |
-            make -k -C build -j faiss_c
-
-  build_linux_gpu:
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
-          no_output_timeout: 60m
-
-  deploy_linux:
+  deploy_conda:
     parameters:
       label:
         type: string
         default: main
-    docker:
-      - image: continuumio/miniconda3
-    resource_class: medium+
+      exec:
+        type: executor
+    executor: << parameters.exec >>
     steps:
       - checkout
       - run:
-          name: Install conda-build/anaconda-client
+          name: Install conda
           command: |
+            if [ -n "${CONDA_ARCH}" ]
+            then
+              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
+              bash miniconda.sh -b -p $HOME/miniconda
+              ~/miniconda/bin/conda init
+            fi
+      - run:
+          name: Install conda build tools
+          command: |
+            conda update -y conda
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
       - run:
-          name: Build packages
+          name: Build/test/upload
           no_output_timeout: 30m
           environment:
             PACKAGE_TYPE: <<parameters.label>>
@@ -325,82 +146,171 @@ jobs:
                 --user pytorch --label <<parameters.label>> -c pytorch
           no_output_timeout: 60m
 
-  deploy_osx:
+  deploy_linux_gpu_v2:
     parameters:
       label:
         type: string
         default: main
-    macos:
-      xcode: 11.7.0
+      cuda:
+        type: string
+      cuda_archs:
+        type: string
+      compiler_version:
+        type: string
+    machine:
+      resource_class: gpu.nvidia.medium
+      image: linux-cuda-11:2023.02.1
     steps:
       - checkout
       - run:
           name: Install conda
           command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh --output miniconda.sh
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
-            $HOME/miniconda/bin/conda config --set anaconda_upload yes
+            ~/miniconda/bin/conda init
       - run:
-          name: Build packages
+          name: Install conda build tools
+          command: |
+            conda update -y conda
+            conda install -y -q conda-build 
+            # anaconda-client
+            # conda config --set anaconda_upload yes
+      - run:
+          name: Build/test/upload
+          no_output_timeout: 60m
           environment:
             PACKAGE_TYPE: <<parameters.label>>
+            CUDA_ARCHS: <<parameters.cuda_archs>>
           command: |
-            export PATH=~/miniconda/bin:$PATH
             cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+            conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
 
-  deploy_osx_arm:
+  build_cmake:
     parameters:
-      label:
+      exec:
+        type: executor
+      opt_level:
         type: string
-        default: main
-    macos:
-      xcode: 14.2.0 # indicate your selected version of Xcode
-    resource_class: macos.m1.large.gen1
+        default: generic
+    executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
+      MKL_THREADING_LAYER: GNU
+    steps:
+      - checkout
+      - run: 
+          name: Install conda
+          command: |
+            if [ -n "${CONDA_ARCH}" ]
+            then
+              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
+              bash miniconda.sh -b -p $HOME/miniconda
+              ~/miniconda/bin/conda init
+            fi
+      - run: 
+          name: Set up environment
+          command: |
+            conda update -y -q conda
+            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
+            conda install -y -q pytorch -c pytorch
+      - run:
+          name: Build faiss library
+          no_output_timeout: 30m
+          command: |
+            source ~/.bashrc
+            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
+                  -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
+                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
+            make -k -C build -j$(nproc) faiss
+      - when:
+          condition:
+            equal: [ "avx2", << parameters.opt_level >> ]
+          steps:
+            - run:
+                name: Build faiss_avx2 library
+                no_output_timeout: 30m
+                command: make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
+      - run:
+          name: Test faiss library
+          command: |
+            make -C build -j$(nproc) faiss_test
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j$(nproc) swigfaiss
+            cd build/faiss/python
+            python3 setup.py build
+      - run:
+          name: Test python extension
+          command: |
+            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
+            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Build C API
+          command: |
+            make -k -C build -j faiss_c
+
+  build_linux_gpu:
+    machine:
+      resource_class: gpu.nvidia.medium
+      image: ubuntu-2004-cuda-11.4:202110-01
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Build/test
+          command: |
+            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
+            docker run --gpus all faiss make -C build test
+            docker run --gpus all faiss sh -c '(pwd; find)'
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
+            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
+          no_output_timeout: 60m
+
+  build_linux_gpu_v2:
+    machine:
+      resource_class: gpu.nvidia.medium
+      image: linux-cuda-11:2023.02.1
     steps:
       - checkout
       - run:
           name: Install conda
           command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh --output miniconda.sh
+            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
-            $HOME/miniconda/bin/conda install -y -q conda-build anaconda-client
-            $HOME/miniconda/bin/conda config --set anaconda_upload yes
-      - run:
-          name: Build packages
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
+            ~/miniconda/bin/conda init
+      - run: 
+          name: Set up environment
           command: |
-            export PATH=~/miniconda/bin:$PATH
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
-  deploy_windows:
-    parameters:
-      label:
-        type: string
-        default: main
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
+            conda update -y -q conda
+            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
+            conda install -y -q pytorch -c pytorch
       - run:
-          name: Install conda-build/anaconda-client
+          name: Build
+          no_output_timeout: 60m
           command: |
-            conda update conda
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
+            source ~/.bashrc
+            cmake -B build \
+                    -DFAISS_ENABLE_GPU=ON \
+                    -DFAISS_ENABLE_C_API=ON \
+                    -DFAISS_ENABLE_PYTHON=ON \
+                    -DBUILD_TESTING=ON \
+                    -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+                    .
+            make -C build -j8
       - run:
-          name: Build packages
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
+          name: Test
           command: |
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+            make -C build test
+            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
+            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
 
 workflows:
   version: 2
@@ -408,40 +318,35 @@ workflows:
     jobs:
       - format:
           name: Format
-      - build_linux:
-          name: Linux
-      - build_linux:
-          name: Linux (AVX2)
+      - build_cmake:
+          name: Linux x86_64 (cmake)
+          exec: linux-x86_64-cpu
+      - build_cmake:
+          name: Linux x86_64 w/ AVX2 (cmake)
+          exec: linux-x86_64-cpu
           opt_level: "avx2"
-          resource_class: "medium+"
-      - build_linux_conda:
-          name: Linux (conda)
       - build_linux_gpu:
-          name: Linux GPU
+          name: Linux x86_64 GPU (cmake)
           requires:
-            - Linux
-      - build_osx:
-          name: OSX
-      - build_osx_arm:
-          name: OSX (ARM)
-      - build_osx_arm_conda:
-          name: OSX (ARM, conda)
-      - build_windows:
-          name: Windows
-      - build_arm:
-          name: ARM64
-      - deploy_linux:
-          name: Linux packages
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 10.2)
-          cuda: "10.2"
-          cuda_archs: "35;52;60;61;70;72;75"
-          compiler_version: "8.4"
+            - Linux x86_64 (cmake)
+      - build_conda:
+          name: Linux x86_64 (conda)
+          exec: linux-x86_64-cpu
+      - build_conda:
+          name: OSX x86_64 (conda)
+          exec: macosx-x86_64-cpu
+      - build_conda:
+          name: Windows (conda)
+          exec: windows-x86_64-cpu
+      - build_conda:
+          name: OSX arm64 (conda)
+          exec: macosx-arm64-cpu
+      - build_conda:
+          name: Linux arm64 (conda)
+          exec: linux-arm64-cpu
+      - deploy_conda:
+          name: Linux x86_64 packages
+          exec: linux-x86_64-cpu
           filters:
             tags:
               only: /^v.*/
@@ -457,15 +362,33 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_windows:
-          name: Windows packages
+      - deploy_conda:
+          name: Windows x86_64 packages
+          exec: windows-x86_64-cpu
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_osx:
-          name: OSX packages
+      - deploy_conda:
+          name: OSX x86_64 packages
+          exec: macosx-x86_64-cpu
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_conda:
+          name: OSX arm64 packages
+          exec: macosx-arm64-cpu
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_conda:
+          name: Linux arm64 packages
+          exec: linux-arm64-cpu
           filters:
             tags:
               only: /^v.*/
@@ -481,27 +404,29 @@ workflows:
               only:
                 - main
     jobs:
-      - deploy_linux:
-          name: Linux nightlies
+      - deploy_conda:
+          name: Linux x86_64 nightlies
+          exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 10.2)
-          cuda: "10.2"
-          cuda_archs: "35;52;60;61;70;72;75"
-          compiler_version: "8.4"
-          label: nightly
-      - deploy_linux_gpu:
-          name: Linux GPU nightlies (CUDA 11.3)
+          name: Linux x86_64 GPU nightlies (CUDA 11.3)
           cuda: "11.3"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
-      - deploy_windows:
-          name: Windows nightlies
+      - deploy_conda:
+          name: Windows x86_64 nightlies
+          exec: windows-x86_64-cpu
           label: nightly
-      - deploy_osx:
-          name: OSX nightlies
+      - deploy_conda:
+          name: OSX x86_64 nightlies
+          exec: macosx-x86_64-cpu
           label: nightly
-      - deploy_osx_arm:
-          name: OSX (ARM) nightlies
+      - deploy_conda:
+          name: OSX arm64 nightlies
+          exec: macosx-arm64-cpu
+          label: nightly
+      - deploy_conda:
+          name: Linux arm64 nightlies
+          exec: linux-arm64-cpu
           label: nightly
