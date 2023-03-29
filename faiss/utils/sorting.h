@@ -59,4 +59,13 @@ void matrix_bucket_sort_inplace(
         int64_t* lims,
         int nt = 0);
 
+/// same with int64 elements
+void matrix_bucket_sort_inplace(
+        size_t nrow,
+        size_t ncol,
+        int64_t* vals,
+        int64_t nbucket,
+        int64_t* lims,
+        int nt = 0);
+
 } // namespace faiss

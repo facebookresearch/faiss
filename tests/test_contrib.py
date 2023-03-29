@@ -7,6 +7,8 @@ import faiss
 import unittest
 import numpy as np
 import platform
+import os
+import random
 
 from faiss.contrib import datasets
 from faiss.contrib import inspect_tools
@@ -454,7 +456,7 @@ class TestClustering(unittest.TestCase):
         km_ref.train(xt)
         err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
 
-        centroids2, _ = clustering.two_level_clustering(xt, 10, 10)
+        centroids2, _ = clustering.two_level_clustering(xt, 10, 100)
         err2 = faiss.knn(xt, centroids2, 1)[0].sum()
 
         self.assertLess(err2, err * 1.1)
@@ -471,7 +473,7 @@ class TestClustering(unittest.TestCase):
         index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
         faiss.extract_index_ivf(index).nprobe = 10
         clustering.train_ivf_index_with_2level(
-            index, ds.get_train(), verbose=True)
+            index, ds.get_train(), verbose=True, rebalance=False)
         index.add(ds.get_database())
         Dnew, Inew = index.search(ds.get_queries(), 1)
 
@@ -514,3 +516,41 @@ class TestBigBatchSearch(unittest.TestCase):
 
     def test_SQ(self):
         self.do_test("IVF64,SQ8")
+
+    def test_checkpoint(self):
+        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        k = 10
+        index = faiss.index_factory(ds.d, "IVF64,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        Dref, Iref = index.search(ds.get_queries(), k)
+
+        r = random.randrange(1<<60)
+        checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
+        try:
+            # First big batch search
+            try:
+                Dnew, Inew = ivf_tools.big_batch_search(
+                    index, ds.get_queries(),
+                    k, method="knn_function",
+                    threaded=4,
+                    checkpoint=checkpoint, checkpoint_freq=4,
+                    crash_at=20
+                )
+            except ZeroDivisionError:
+                pass
+            else:
+                self.assertFalse("should have crashed")
+            # Second big batch search
+            Dnew, Inew = ivf_tools.big_batch_search(
+                index, ds.get_queries(),
+                k, method="knn_function",
+                threaded=4,
+                checkpoint=checkpoint, checkpoint_freq=4
+            )
+            self.assertLess((Inew != Iref).sum() / Iref.size, 1e-4)
+            np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
+        finally:
+            if os.path.exists(checkpoint):
+                os.unlink(checkpoint)

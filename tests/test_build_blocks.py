@@ -615,9 +615,10 @@ class TestBucketSort(unittest.TestCase):
         self.do_test_bucket_sort(4)
 
     def do_test_bucket_sort_inplace(
-            self, nt, nrow=500, ncol=20, nbucket=300, repro=False):
+            self, nt, nrow=500, ncol=20, nbucket=300, repro=False,
+            dtype='int32'):
         rs = np.random.RandomState(123)
-        tab = rs.randint(nbucket, size=(nrow, ncol), dtype='int32')
+        tab = rs.randint(nbucket, size=(nrow, ncol), dtype=dtype)
 
         tab2 = tab.copy()
         faiss.cvar.bucket_sort_verbose
@@ -646,6 +647,11 @@ class TestBucketSort(unittest.TestCase):
     def test_bucket_sort_inplace_parallel_fewbucket(self):
         self.do_test_bucket_sort_inplace(4, nbucket=5)
 
+    def test_bucket_sort_inplace_int64(self):
+        self.do_test_bucket_sort_inplace(0, dtype='int64')
+
+    def test_bucket_sort_inplace_parallel_int64(self):
+        self.do_test_bucket_sort_inplace(4, dtype='int64')
 
 class TestMergeKNNResults(unittest.TestCase):
 

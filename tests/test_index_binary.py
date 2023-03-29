@@ -289,6 +289,21 @@ class TestBinaryIVF(unittest.TestCase):
         assert np.all(D == ref_D)
         # assert np.all(I == ref_I)  # id may be different
 
+    def test_search_per_invlist(self):
+        d = self.xq.shape[1] * 8
+
+        quantizer = faiss.IndexBinaryFlat(d)
+        index = faiss.IndexBinaryIVF(quantizer, d, 10)
+        index.cp.min_points_per_centroid = 5    # quiet warning
+        index.train(self.xt)
+        index.add(self.xb)
+        index.nprobe = 3
+
+        Dref, Iref = index.search(self.xq, 10)
+        index.per_invlist_search = True
+        D2, I2 = index.search(self.xq, 10)
+        compare_binary_result_lists(Dref, Iref, D2, I2)
+
 
 class TestHNSW(unittest.TestCase):
 
@@ -335,7 +350,6 @@ class TestHNSW(unittest.TestCase):
         Dbin, Ibin = index_hnsw_bin.search(self.xq, 3)
 
         self.assertTrue((Dref == Dbin).all())
-
 
 
 class TestReplicasAndShards(unittest.TestCase):

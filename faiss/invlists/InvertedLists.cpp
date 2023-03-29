@@ -214,7 +214,9 @@ void InvertedLists::print_stats() const {
     }
     for (size_t i = 0; i < sizes.size(); i++) {
         if (sizes[i]) {
-            printf("list size in < %d: %d instances\n", 1 << i, sizes[i]);
+            printf("list size in < %zu: %d instances\n",
+                   static_cast<size_t>(1) << i,
+                   sizes[i]);
         }
     }
 }
