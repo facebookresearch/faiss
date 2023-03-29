@@ -129,36 +129,6 @@ jobs:
         type: string
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
-    steps:
-      - checkout
-      - run:
-          name: Build packages
-          command: |
-            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
-            docker run --gpus all \
-              -e PACKAGE_TYPE="<<parameters.label>>" \
-              -e CUDA_ARCHS="<<parameters.cuda_archs>>" \
-              -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
-              faiss \
-              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch
-          no_output_timeout: 60m
-
-  deploy_linux_gpu_v2:
-    parameters:
-      label:
-        type: string
-        default: main
-      cuda:
-        type: string
-      cuda_archs:
-        type: string
-      compiler_version:
-        type: string
-    machine:
-      resource_class: gpu.nvidia.medium
       image: linux-cuda-11:2023.02.1
     steps:
       - checkout
@@ -172,7 +142,7 @@ jobs:
           name: Install conda build tools
           command: |
             conda update -y conda
-            conda install -y -q conda-build 
+            conda install -y -q conda-build
             # anaconda-client
             # conda config --set anaconda_upload yes
       - run:
@@ -182,6 +152,7 @@ jobs:
             PACKAGE_TYPE: <<parameters.label>>
             CUDA_ARCHS: <<parameters.cuda_archs>>
           command: |
+            sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
             cd conda
             conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
                 --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
@@ -199,7 +170,7 @@ jobs:
       MKL_THREADING_LAYER: GNU
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install conda
           command: |
             if [ -n "${CONDA_ARCH}" ]
@@ -208,7 +179,7 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
             fi
-      - run: 
+      - run:
           name: Set up environment
           command: |
             conda update -y -q conda
@@ -260,23 +231,6 @@ jobs:
   build_linux_gpu:
     machine:
       resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
-          no_output_timeout: 60m
-
-  build_linux_gpu_v2:
-    machine:
-      resource_class: gpu.nvidia.medium
       image: linux-cuda-11:2023.02.1
     steps:
       - checkout
@@ -286,7 +240,7 @@ jobs:
             curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
             bash miniconda.sh -b -p $HOME/miniconda
             ~/miniconda/bin/conda init
-      - run: 
+      - run:
           name: Set up environment
           command: |
             conda update -y -q conda
@@ -297,6 +251,7 @@ jobs:
           no_output_timeout: 60m
           command: |
             source ~/.bashrc
+            sudo update-alternatives --set cuda /usr/local/cuda-11.4
             cmake -B build \
                     -DFAISS_ENABLE_GPU=ON \
                     -DFAISS_ENABLE_C_API=ON \
@@ -327,8 +282,8 @@ workflows:
           opt_level: "avx2"
       - build_linux_gpu:
           name: Linux x86_64 GPU (cmake)
-          requires:
-            - Linux x86_64 (cmake)
+          # requires:
+          #   - Linux x86_64 (cmake)
       - build_conda:
           name: Linux x86_64 (conda)
           exec: linux-x86_64-cpu
@@ -353,15 +308,15 @@ workflows:
             branches:
               ignore: /.*/
       - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.3)
-          cuda: "11.3"
+          name: Linux GPU packages (CUDA 11.4)
+          cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
       - deploy_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu
@@ -409,8 +364,8 @@ workflows:
           exec: linux-x86_64-cpu
           label: nightly
       - deploy_linux_gpu:
-          name: Linux x86_64 GPU nightlies (CUDA 11.3)
-          cuda: "11.3"
+          name: Linux x86_64 GPU nightlies (CUDA 11.4)
+          cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "9.3"
           label: nightly
