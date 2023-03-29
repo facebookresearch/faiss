@@ -259,6 +259,10 @@ jobs:
                     -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
                     .
             make -C build -j$(nproc)
+      - run:
+          name: Build python extension
+          command: |
+            make -C build -j$(nproc) swigfaiss
             cd build/faiss/python
             python3 setup.py build
       - run:
