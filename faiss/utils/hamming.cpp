@@ -35,6 +35,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
 #include <faiss/utils/utils.h>
 
 static const size_t BLOCKSIZE_QUERY = 8192;
@@ -173,7 +174,8 @@ static void hammings_knn_hc(
         const uint8_t* __restrict bs2,
         size_t n2,
         bool order = true,
-        bool init_heap = true) {
+        bool init_heap = true,
+        ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK) {
     size_t k = ha->k;
     if (init_heap)
         ha->heapify();
@@ -189,13 +191,40 @@ static void hammings_knn_hc(
             hamdis_t dis;
             hamdis_t* __restrict bh_val_ = ha->val + i * k;
             int64_t* __restrict bh_ids_ = ha->ids + i * k;
-            size_t j;
-            for (j = j0; j < j1; j++, bs2_ += bytes_per_code) {
-                dis = hc.hamming(bs2_);
-                if (dis < bh_val_[0]) {
-                    faiss::maxheap_replace_top<hamdis_t>(
-                            k, bh_val_, bh_ids_, dis, j);
-                }
+
+            // if larger number of k is required, then ::bs_addn() needs to be
+            // used instead of ::addn()
+#define HANDLE_APPROX(NB, BD)                                                \
+    case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD:               \
+        FAISS_THROW_IF_NOT_FMT(                                              \
+                k <= NB * BD,                                                \
+                "The chosen mode (%d) of approximate top-k supports "        \
+                "up to %d values, but %zd is requested.",                    \
+                (int)(ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD), \
+                NB * BD,                                                     \
+                k);                                                          \
+        HeapWithBucketsForHamming32<                                         \
+                CMax<hamdis_t, int64_t>,                                     \
+                NB,                                                          \
+                BD,                                                          \
+                HammingComputer>::                                           \
+                addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_);                \
+        break;
+
+            switch (approx_topk_mode) {
+                HANDLE_APPROX(8, 3)
+                HANDLE_APPROX(8, 2)
+                HANDLE_APPROX(16, 2)
+                HANDLE_APPROX(32, 2)
+                default: {
+                    for (size_t j = j0; j < j1; j++, bs2_ += bytes_per_code) {
+                        dis = hc.hamming(bs2_);
+                        if (dis < bh_val_[0]) {
+                            faiss::maxheap_replace_top<hamdis_t>(
+                                    k, bh_val_, bh_ids_, dis, j);
+                        }
+                    }
+                } break;
             }
         }
     }
@@ -406,27 +435,28 @@ void hammings_knn_hc(
         const uint8_t* __restrict b,
         size_t nb,
         size_t ncodes,
-        int order) {
+        int order,
+        ApproxTopK_mode_t approx_topk_mode) {
     switch (ncodes) {
         case 4:
             hammings_knn_hc<faiss::HammingComputer4>(
-                    4, ha, a, b, nb, order, true);
+                    4, ha, a, b, nb, order, true, approx_topk_mode);
             break;
         case 8:
             hammings_knn_hc<faiss::HammingComputer8>(
-                    8, ha, a, b, nb, order, true);
+                    8, ha, a, b, nb, order, true, approx_topk_mode);
             break;
         case 16:
             hammings_knn_hc<faiss::HammingComputer16>(
-                    16, ha, a, b, nb, order, true);
+                    16, ha, a, b, nb, order, true, approx_topk_mode);
             break;
         case 32:
             hammings_knn_hc<faiss::HammingComputer32>(
-                    32, ha, a, b, nb, order, true);
+                    32, ha, a, b, nb, order, true, approx_topk_mode);
             break;
         default:
             hammings_knn_hc<faiss::HammingComputerDefault>(
-                    ncodes, ha, a, b, nb, order, true);
+                    ncodes, ha, a, b, nb, order, true, approx_topk_mode);
             break;
     }
 }
