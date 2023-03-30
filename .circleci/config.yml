@@ -5,6 +5,12 @@ executors:
     docker:
       - image: continuumio/miniconda3
     resource_class: medium+
+  linux-x86_64-gpu:
+    environment:
+      CONDA_ARCH: Linux-x86_64
+    machine:
+      image: linux-cuda-11:2023.02.1
+    resource_class: gpu.nvidia.medium
   linux-arm64-cpu:
     environment:
       CONDA_ARCH: Linux-aarch64
@@ -25,8 +31,8 @@ executors:
   windows-x86_64-cpu:
     machine:
       image: windows-server-2019-vs2019:stable
-      resource_class: windows.medium
       shell: bash.exe
+    resource_class: windows.medium
 
 jobs:
   format:
@@ -54,11 +60,25 @@ jobs:
 
   build_conda:
     parameters:
+      label:
+        type: string
+        default: ""
+      cuda:
+        type: string
+        default: ""
+      cuda_archs:
+        type: string
+        default: ""
+      compiler_version:
+        type: string
+        default: ""
       exec:
         type: executor
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
+      PACKAGE_TYPE: <<parameters.label>>
+      CUDA_ARCHS: <<parameters.cuda_archs>>
     steps:
       - checkout
       - run:
@@ -73,118 +93,52 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda update -y conda
+            conda update -y -q conda
             conda install -y -q conda-build
-      - run:
-          name: Build/test
-          no_output_timeout: 30m
-          command: |
-            cd conda
-            conda build faiss --python 3.10 -c pytorch
-
-  deploy_conda:
-    parameters:
-      label:
-        type: string
-        default: main
-      exec:
-        type: executor
-    executor: << parameters.exec >>
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            if [ -n "${CONDA_ARCH}" ]
-            then
-              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
-              bash miniconda.sh -b -p $HOME/miniconda
-              ~/miniconda/bin/conda init
-            fi
-      - run:
-          name: Install conda build tools
-          command: |
-            conda update -y conda
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
-      - run:
-          name: Build/test/upload
-          no_output_timeout: 30m
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
-  deploy_linux_gpu:
-    parameters:
-      label:
-        type: string
-        default: main
-      cuda:
-        type: string
-      cuda_archs:
-        type: string
-      compiler_version:
-        type: string
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
-    steps:
-      - checkout
-      - run:
-          name: Build packages
-          command: |
-            docker build -t faiss -f conda/Dockerfile.cuda<<parameters.cuda>> .
-            docker run --gpus all \
-              -e PACKAGE_TYPE="<<parameters.label>>" \
-              -e CUDA_ARCHS="<<parameters.cuda_archs>>" \
-              -e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
-              faiss \
-              conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch
-          no_output_timeout: 60m
-
-  deploy_linux_gpu_v2:
-    parameters:
-      label:
-        type: string
-        default: main
-      cuda:
-        type: string
-      cuda_archs:
-        type: string
-      compiler_version:
-        type: string
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: linux-cuda-11:2023.02.1
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            ~/miniconda/bin/conda init
-      - run:
-          name: Install conda build tools
-          command: |
-            conda update -y conda
-            conda install -y -q conda-build 
-            # anaconda-client
-            # conda config --set anaconda_upload yes
-      - run:
-          name: Build/test/upload
-          no_output_timeout: 60m
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-            CUDA_ARCHS: <<parameters.cuda_archs>>
-          command: |
-            cd conda
-            conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
+      - when:
+          condition: << parameters.label >>
+          steps:
+            - run:
+                name: Enable anaconda uploads
+                command: |
+                  conda install -y -q anaconda-client
+                  conda config --set anaconda_upload yes
+      - when:
+          condition:
+              not: << parameters.label >>
+          steps:
+            - run:
+                name: Conda build (CPU)
+                no_output_timeout: 30m
+                command: |
+                  cd conda
+                  conda build faiss --python 3.10 -c pytorch
+      - when:
+          condition:
+            and:
+              - << parameters.label >>
+              - not: << parameters.cuda >>
+          steps:
+            - run:
+                name: Conda build (CPU) w/ anaconda upload
+                no_output_timeout: 30m
+                command: |
+                  cd conda
+                  conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+      - when:
+          condition:
+            and:
+              - << parameters.label >>
+              - << parameters.cuda >>
+          steps:
+            - run:
+                name: Conda build (GPU) w/ anaconda upload
+                no_output_timeout: 60m
+                command: |
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
+                  cd conda
+                  conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
 
   build_cmake:
     parameters:
@@ -193,13 +147,16 @@ jobs:
       opt_level:
         type: string
         default: generic
+      gpu:
+        type: string
+        default: "OFF"
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
       MKL_THREADING_LAYER: GNU
     steps:
       - checkout
-      - run: 
+      - run:
           name: Install conda
           command: |
             if [ -n "${CONDA_ARCH}" ]
@@ -208,109 +165,80 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
             fi
-      - run: 
+      - when:
+          condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Configure CUDA
+                command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
+      - run:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
-            conda install -y -q pytorch -c pytorch
+            conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
-          name: Build faiss library
+          name: Build all targets
           no_output_timeout: 30m
           command: |
-            source ~/.bashrc
-            cmake -B build -DBUILD_TESTING=ON -DFAISS_ENABLE_GPU=OFF \
+            eval "$(conda shell.bash hook)"
+            conda activate
+            cmake -B build \
+                  -DBUILD_TESTING=ON \
+                  -DBUILD_SHARED_LIBS=OFF \
+                  -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
-                  -DFAISS_ENABLE_C_API=ON -DPYTHON_EXECUTABLE=$(which python3)\
-                  -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=Intel10_64_dyn .
-            make -k -C build -j$(nproc) faiss
+                  -DFAISS_ENABLE_C_API=ON \
+                  -DPYTHON_EXECUTABLE=$(which python) \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DBLA_VENDOR=Intel10_64_dyn \
+                  -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
+                  .
+            make -k -C build -j$(nproc)
+      - run:
+          name: C++ tests
+          command: |
+            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
+            make -C build test
+      - run:
+          name: Install Python extension
+          command: |
+            cd build/faiss/python
+            python setup.py install
+      - when:
+          condition:
+            equal: [ "OFF", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Python tests (CPU only)
+                command: |
+                  conda install -y -q pytorch -c pytorch
+                  pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+                  pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - when:
+          condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Python tests (CPU + GPU)
+                command: |
+                  conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
+                  pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+                  pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+                  cp tests/common_faiss_tests.py faiss/gpu/test
+                  pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+                  pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
       - when:
           condition:
             equal: [ "avx2", << parameters.opt_level >> ]
           steps:
             - run:
-                name: Build faiss_avx2 library
-                no_output_timeout: 30m
-                command: make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
-      - run:
-          name: Test faiss library
-          command: |
-            make -C build -j$(nproc) faiss_test
-            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
-      - run:
-          name: Build python extension
-          command: |
-            make -C build -j$(nproc) swigfaiss
-            cd build/faiss/python
-            python3 setup.py build
-      - run:
-          name: Test python extension
-          command: |
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+                name: Test avx2 loading
+                command: |
+                  FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss.so
+                  LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss_avx2.so
       - store_test_results:
           path: test-results
-      - run:
-          name: Build C API
-          command: |
-            make -k -C build -j faiss_c
-
-  build_linux_gpu:
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: ubuntu-2004-cuda-11.4:202110-01
-      docker_layer_caching: true
-    steps:
-      - checkout
-      - run:
-          name: Build/test
-          command: |
-            docker build -t faiss -f .circleci/Dockerfile.faiss_gpu .
-            docker run --gpus all faiss make -C build test
-            docker run --gpus all faiss sh -c '(pwd; find)'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            docker run --gpus all faiss sh -c '(cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
-          no_output_timeout: 60m
-
-  build_linux_gpu_v2:
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: linux-cuda-11:2023.02.1
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            ~/miniconda/bin/conda init
-      - run: 
-          name: Set up environment
-          command: |
-            conda update -y -q conda
-            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
-            conda install -y -q pytorch -c pytorch
-      - run:
-          name: Build
-          no_output_timeout: 60m
-          command: |
-            source ~/.bashrc
-            cmake -B build \
-                    -DFAISS_ENABLE_GPU=ON \
-                    -DFAISS_ENABLE_C_API=ON \
-                    -DFAISS_ENABLE_PYTHON=ON \
-                    -DBUILD_TESTING=ON \
-                    -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
-                    .
-            make -C build -j8
-      - run:
-          name: Test
-          command: |
-            make -C build test
-            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "test_*"'
-            (cd build/faiss/python; python3 setup.py install) && cp tests/common_faiss_tests.py faiss/gpu/test && python3 -m unittest discover -s faiss/gpu/test -p "torch_*.py"'
 
 workflows:
   version: 2
@@ -322,11 +250,13 @@ workflows:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
       - build_cmake:
-          name: Linux x86_64 w/ AVX2 (cmake)
+          name: Linux x86_64 AVX2 (cmake)
           exec: linux-x86_64-cpu
           opt_level: "avx2"
-      - build_linux_gpu:
+      - build_cmake:
           name: Linux x86_64 GPU (cmake)
+          exec: linux-x86_64-gpu
+          gpu: "ON"
           requires:
             - Linux x86_64 (cmake)
       - build_conda:
@@ -336,7 +266,7 @@ workflows:
           name: OSX x86_64 (conda)
           exec: macosx-x86_64-cpu
       - build_conda:
-          name: Windows (conda)
+          name: Windows x86_64 (conda)
           exec: windows-x86_64-cpu
       - build_conda:
           name: OSX arm64 (conda)
@@ -344,51 +274,58 @@ workflows:
       - build_conda:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
-      - deploy_conda:
+      - build_conda:
           name: Linux x86_64 packages
           exec: linux-x86_64-cpu
+          label: main
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_linux_gpu:
-          name: Linux GPU packages (CUDA 11.3)
-          cuda: "11.3"
+      - build_conda:
+          name: Linux x86_64 GPU packages (CUDA 11.4)
+          exec: linux-x86_64-gpu
+          label: main
+          cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
+          compiler_version: "11.2"
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_conda:
+      - build_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu
+          label: main
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_conda:
+      - build_conda:
           name: OSX x86_64 packages
           exec: macosx-x86_64-cpu
+          label: main
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_conda:
+      - build_conda:
           name: OSX arm64 packages
           exec: macosx-arm64-cpu
+          label: main
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy_conda:
+      - build_conda:
           name: Linux arm64 packages
           exec: linux-arm64-cpu
+          label: main
           filters:
             tags:
               only: /^v.*/
@@ -404,29 +341,30 @@ workflows:
               only:
                 - main
     jobs:
-      - deploy_conda:
+      - build_conda:
           name: Linux x86_64 nightlies
           exec: linux-x86_64-cpu
           label: nightly
-      - deploy_linux_gpu:
-          name: Linux x86_64 GPU nightlies (CUDA 11.3)
-          cuda: "11.3"
+      - build_conda:
+          name: Linux x86_64 GPU nightlies (CUDA 11.4)
+          exec: linux-x86_64-gpu
+          cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
+          compiler_version: "11.2"
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: OSX x86_64 nightlies
           exec: macosx-x86_64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: OSX arm64 nightlies
           exec: macosx-arm64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: Linux arm64 nightlies
           exec: linux-arm64-cpu
           label: nightly

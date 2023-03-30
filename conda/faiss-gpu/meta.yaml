@@ -79,9 +79,11 @@ outputs:
         - scipy
         - pytorch
       commands:
-        - python -m unittest discover tests/
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
         - cp tests/common_faiss_tests.py faiss/gpu/test
-        - python -m unittest discover faiss/gpu/test/
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+        - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
         - sh test_cpu_dispatch.sh  # [linux]
       files:
         - test_cpu_dispatch.sh  # [linux]
