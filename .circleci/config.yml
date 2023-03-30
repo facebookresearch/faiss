@@ -185,7 +185,7 @@ jobs:
             source ~/.bashrc
             cmake -B build \
                   -DBUILD_TESTING=ON \
-                  -DBUILD_SHARED_LIBS=ON \
+                  -DBUILD_SHARED_LIBS=OFF \
                   -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
@@ -240,8 +240,8 @@ jobs:
                 name: Test avx2 loading
                 command: |
                   source ~/.bashrc
-                  FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss.so
-                  LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx2.so
+                  FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss.so
+                  LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss_avx2.so
       - store_test_results:
           path: test-results
 
