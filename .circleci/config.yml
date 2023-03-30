@@ -73,7 +73,7 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda update -y conda
+            conda update -y -q conda
             conda install -y -q conda-build
       - run:
           name: Build/test
@@ -104,7 +104,7 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda update -y conda
+            conda update -y -q conda
             conda install -y -q conda-build anaconda-client
             conda config --set anaconda_upload yes
       - run:
@@ -141,9 +141,10 @@ jobs:
       - run:
           name: Install conda build tools
           command: |
-            conda update -y conda
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
+            conda update -y -q conda
+            conda install -y -q conda-build 
+            # anaconda-client
+            # conda config --set anaconda_upload yes
       - run:
           name: Build/test/upload
           no_output_timeout: 60m
@@ -182,8 +183,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
-            conda install -y -q pytorch -c pytorch
+            conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
           name: Build faiss library
           no_output_timeout: 30m
@@ -222,6 +222,7 @@ jobs:
       - run:
           name: Test python extension
           command: |
+            conda install -y -q pytorch -c pytorch
             export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
             pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -248,8 +249,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q cmake make swig mkl numpy scipy pytest gxx_linux-64
-            conda install -y -q pytorch -c pytorch
+            conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
           name: Build
           no_output_timeout: 60m
@@ -275,6 +275,7 @@ jobs:
           command: |
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
+            conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
             cp tests/common_faiss_tests.py faiss/gpu/test
             pytest --junitxml=test-results/pytest/results.xml faiss/gpu/test/test_*.py
             pytest --junitxml=test-results/pytest/results-torch.xml faiss/gpu/test/torch_*.py
@@ -325,12 +326,12 @@ workflows:
           name: Linux GPU packages (CUDA 11.4)
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          compiler_version: "11.2"
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
       - deploy_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu
@@ -381,7 +382,7 @@ workflows:
           name: Linux x86_64 GPU nightlies (CUDA 11.4)
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "9.3"
+          compiler_version: "11.2"
           label: nightly
       - deploy_conda:
           name: Windows x86_64 nightlies
