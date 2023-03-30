@@ -71,7 +71,7 @@ jobs:
         default: ""
       compiler_version:
         type: string
-        default: "" 
+        default: ""
       exec:
         type: executor
     executor: << parameters.exec >>
@@ -108,7 +108,7 @@ jobs:
               not: << parameters.label >>
           steps:
             - run:
-                name: conda build (CPU)
+                name: Conda build (CPU)
                 no_output_timeout: 30m
                 command: |
                   cd conda
@@ -179,7 +179,7 @@ jobs:
             conda update -y -q conda
             conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
-          name: Build faiss library
+          name: Build all targets
           no_output_timeout: 30m
           command: |
             source ~/.bashrc
@@ -193,182 +193,182 @@ jobs:
                   -DBLA_VENDOR=Intel10_64_dyn \
                   -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
                   .
-            make -k -C build -j$(nproc) faiss
-      - when:
-          condition:
-            equal: [ "avx2", << parameters.opt_level >> ]
-          steps:
-            - run:
-                name: Build faiss_avx2 library
-                no_output_timeout: 30m
-                command: |
-                  source ~/.bashrc
-                  make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
+            make -k -C build -j$(nproc)
       - run:
           name: C++ tests
           command: |
             source ~/.bashrc
-            make -C build -j$(nproc) faiss_test
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
-          name: Build and install Python extension
+          name: Install Python extension
           command: |
             source ~/.bashrc
-            make -C build -j$(nproc) swigfaiss
             cd build/faiss/python
             python setup.py install
-      - run:
-          name: Python tests (CPU)
-          command: |
-            source ~/.bashrc
-            conda install -y -q pytorch -c pytorch
-            pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - when:
+          condition:
+            equal: [ "OFF", << parameters.gpu >> ]
+          steps:
+            - run:
+                name: Python tests (CPU only)
+                command: |
+                  source ~/.bashrc
+                  conda install -y -q pytorch -c pytorch
+                  pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+                  pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
       - when:
           condition:
             equal: [ "ON", << parameters.gpu >> ]
           steps:
             - run:
-                name: Python tests (GPU)
+                name: Python tests (CPU + GPU)
                 command: |
                   source ~/.bashrc
+                  conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
+                  pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
+                  pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
                   cp tests/common_faiss_tests.py faiss/gpu/test
                   pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
                   pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
+      - when:
+          condition:
+            equal: [ "avx2", << parameters.opt_level >> ]
+          steps:
+            - run:
+                name: Test avx2 loading
+                command: |
+                  source ~/.bashrc
+                  FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss.so
+                  LD_DEBUG=libs python -c "import faiss" 2>&1 | grep libfaiss_avx2.so
       - store_test_results:
           path: test-results
-      - run:
-          name: Build C API
-          command: |
-            source ~/.bashrc
-            make -k -C build -j$(nproc) faiss_c
 
 workflows:
   version: 2
   build:
     jobs:
-      - format:
-          name: Format
+  #    - format:
+  #        name: Format
       - build_cmake:
           name: Linux x86_64 (cmake)
           exec: linux-x86_64-cpu
       - build_cmake:
-          name: Linux x86_64 w/ AVX2 (cmake)
+          name: Linux x86_64 AVX2 (cmake)
           exec: linux-x86_64-cpu
           opt_level: "avx2"
       - build_cmake:
           name: Linux x86_64 GPU (cmake)
           exec: linux-x86_64-gpu
           gpu: "ON"
-          requires:
-            - Linux x86_64 (cmake)
-      - build_conda:
-          name: Linux x86_64 (conda)
-          exec: linux-x86_64-cpu
-      - build_conda:
-          name: OSX x86_64 (conda)
-          exec: macosx-x86_64-cpu
-      - build_conda:
-          name: Windows x86_64 (conda)
-          exec: windows-x86_64-cpu
-      - build_conda:
-          name: OSX arm64 (conda)
-          exec: macosx-arm64-cpu
-      - build_conda:
-          name: Linux arm64 (conda)
-          exec: linux-arm64-cpu
-      - build_conda:
-          name: Linux x86_64 packages
-          exec: linux-x86_64-cpu
-          label: main
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
-      - build_conda:
-          name: Linux GPU packages (CUDA 11.4)
-          exec: linux-x86_64-gpu
-          label: main
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
-      - build_conda:
-          name: Windows x86_64 packages
-          exec: windows-x86_64-cpu
-          label: main
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
-      - build_conda:
-          name: OSX x86_64 packages
-          exec: macosx-x86_64-cpu
-          label: main
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
-      - build_conda:
-          name: OSX arm64 packages
-          exec: macosx-arm64-cpu
-          label: main
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
-      - build_conda:
-          name: Linux arm64 packages
-          exec: linux-arm64-cpu
-          label: main
-          # filters:
-          #   tags:
-          #     only: /^v.*/
-          #   branches:
-          #     ignore: /.*/
+  #         requires:
+  #           - Linux x86_64 (cmake)
+  #     - build_conda:
+  #         name: Linux x86_64 (conda)
+  #         exec: linux-x86_64-cpu
+  #     - build_conda:
+  #         name: OSX x86_64 (conda)
+  #         exec: macosx-x86_64-cpu
+  #     - build_conda:
+  #         name: Windows x86_64 (conda)
+  #         exec: windows-x86_64-cpu
+  #     - build_conda:
+  #         name: OSX arm64 (conda)
+  #         exec: macosx-arm64-cpu
+  #     - build_conda:
+  #         name: Linux arm64 (conda)
+  #         exec: linux-arm64-cpu
+  #     - build_conda:
+  #         name: Linux x86_64 packages
+  #         exec: linux-x86_64-cpu
+  #         label: main
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
+  #     - build_conda:
+  #         name: Linux x86_64 GPU packages (CUDA 11.4)
+  #         exec: linux-x86_64-gpu
+  #         label: main
+  #         cuda: "11.4"
+  #         cuda_archs: "60;61;70;72;75;80;86"
+  #         compiler_version: "11.2"
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
+  #     - build_conda:
+  #         name: Windows x86_64 packages
+  #         exec: windows-x86_64-cpu
+  #         label: main
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
+  #     - build_conda:
+  #         name: OSX x86_64 packages
+  #         exec: macosx-x86_64-cpu
+  #         label: main
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
+  #     - build_conda:
+  #         name: OSX arm64 packages
+  #         exec: macosx-arm64-cpu
+  #         label: main
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
+  #     - build_conda:
+  #         name: Linux arm64 packages
+  #         exec: linux-arm64-cpu
+  #         label: main
+  #         # filters:
+  #         #   tags:
+  #         #     only: /^v.*/
+  #         #   branches:
+  #         #     ignore: /.*/
 
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - build_conda:
-          name: Linux x86_64 nightlies
-          exec: linux-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux x86_64 GPU nightlies (CUDA 11.4)
-          exec: linux-x86_64-gpu
-          cuda: "11.4"
-          cuda_archs: "60;61;70;72;75;80;86"
-          compiler_version: "11.2"
-          label: nightly
-      - build_conda:
-          name: Windows x86_64 nightlies
-          exec: windows-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX x86_64 nightlies
-          exec: macosx-x86_64-cpu
-          label: nightly
-      - build_conda:
-          name: OSX arm64 nightlies
-          exec: macosx-arm64-cpu
-          label: nightly
-      - build_conda:
-          name: Linux arm64 nightlies
-          exec: linux-arm64-cpu
-          label: nightly
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 0 * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
+  #   jobs:
+  #     - build_conda:
+  #         name: Linux x86_64 nightlies
+  #         exec: linux-x86_64-cpu
+  #         label: nightly
+  #     - build_conda:
+  #         name: Linux x86_64 GPU nightlies (CUDA 11.4)
+  #         exec: linux-x86_64-gpu
+  #         cuda: "11.4"
+  #         cuda_archs: "60;61;70;72;75;80;86"
+  #         compiler_version: "11.2"
+  #         label: nightly
+  #     - build_conda:
+  #         name: Windows x86_64 nightlies
+  #         exec: windows-x86_64-cpu
+  #         label: nightly
+  #     - build_conda:
+  #         name: OSX x86_64 nightlies
+  #         exec: macosx-x86_64-cpu
+  #         label: nightly
+  #     - build_conda:
+  #         name: OSX arm64 nightlies
+  #         exec: macosx-arm64-cpu
+  #         label: nightly
+  #     - build_conda:
+  #         name: Linux arm64 nightlies
+  #         exec: linux-arm64-cpu
+  #         label: nightly
