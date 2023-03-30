@@ -62,12 +62,16 @@ jobs:
     parameters:
       label:
         type: string
+        default: ""
       cuda:
         type: string
+        default: ""
       cuda_archs:
         type: string
+        default: ""
       compiler_version:
         type: string
+        default: "" 
       exec:
         type: executor
     executor: << parameters.exec >>
@@ -165,9 +169,9 @@ jobs:
           condition:
             equal: [ "ON", << parameters.gpu >> ]
           steps:
-            -run:
-              name: Configure CUDA
-              command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
+            - run:
+                name: Configure CUDA
+                command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
       - run:
           name: Set up environment
           command: |
@@ -225,13 +229,13 @@ jobs:
           condition:
             equal: [ "ON", << parameters.gpu >> ]
           steps:
-            -run:
-              name: Python tests (GPU)
-              command: |
-                source ~/.bashrc
-                cp tests/common_faiss_tests.py faiss/gpu/test
-                pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
-                pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
+            - run:
+                name: Python tests (GPU)
+                command: |
+                  source ~/.bashrc
+                  cp tests/common_faiss_tests.py faiss/gpu/test
+                  pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+                  pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
       - store_test_results:
           path: test-results
       - run:
