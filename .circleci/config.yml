@@ -175,14 +175,14 @@ jobs:
       - run:
           name: Set up environment
           command: |
-            source ~/.bashrc
+            which python
             conda update -y -q conda
             conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
           name: Build all targets
           no_output_timeout: 30m
           command: |
-            source ~/.bashrc
+            which python
             cmake -B build \
                   -DBUILD_TESTING=ON \
                   -DBUILD_SHARED_LIBS=OFF \
@@ -198,13 +198,13 @@ jobs:
       - run:
           name: C++ tests
           command: |
-            source ~/.bashrc
+            which python
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
           name: Install Python extension
           command: |
-            source ~/.bashrc
+            which python
             cd build/faiss/python
             python setup.py install
       - when:
@@ -214,7 +214,7 @@ jobs:
             - run:
                 name: Python tests (CPU only)
                 command: |
-                  source ~/.bashrc
+                  which python
                   conda install -y -q pytorch -c pytorch
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -225,7 +225,7 @@ jobs:
             - run:
                 name: Python tests (CPU + GPU)
                 command: |
-                  source ~/.bashrc
+                  which python
                   conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
                   pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
                   pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
@@ -239,7 +239,7 @@ jobs:
             - run:
                 name: Test avx2 loading
                 command: |
-                  source ~/.bashrc
+                  which python
                   FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss.so
                   LD_DEBUG=libs python -c "import faiss" 2>&1 | grep faiss_avx2.so
       - store_test_results:
