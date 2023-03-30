@@ -5,6 +5,12 @@ executors:
     docker:
       - image: continuumio/miniconda3
     resource_class: medium+
+  linux-x86_64-gpu:
+    environment:
+      CONDA_ARCH: Linux-x86_64
+    machine:
+      image: linux-cuda-11:2023.02.1
+    resource_class: gpu.nvidia.medium
   linux-arm64-cpu:
     environment:
       CONDA_ARCH: Linux-aarch64
@@ -25,8 +31,8 @@ executors:
   windows-x86_64-cpu:
     machine:
       image: windows-server-2019-vs2019:stable
-      resource_class: windows.medium
       shell: bash.exe
+    resource_class: windows.medium
 
 jobs:
   format:
@@ -54,11 +60,21 @@ jobs:
 
   build_conda:
     parameters:
+      label:
+        type: string
+      cuda:
+        type: string
+      cuda_archs:
+        type: string
+      compiler_version:
+        type: string
       exec:
         type: executor
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
+      PACKAGE_TYPE: <<parameters.label>>
+      CUDA_ARCHS: <<parameters.cuda_archs>>
     steps:
       - checkout
       - run:
@@ -75,87 +91,50 @@ jobs:
           command: |
             conda update -y -q conda
             conda install -y -q conda-build
-      - run:
-          name: Build/test
-          no_output_timeout: 30m
-          command: |
-            cd conda
-            conda build faiss --python 3.10 -c pytorch
-
-  deploy_conda:
-    parameters:
-      label:
-        type: string
-        default: main
-      exec:
-        type: executor
-    executor: << parameters.exec >>
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            if [ -n "${CONDA_ARCH}" ]
-            then
-              curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
-              bash miniconda.sh -b -p $HOME/miniconda
-              ~/miniconda/bin/conda init
-            fi
-      - run:
-          name: Install conda build tools
-          command: |
-            conda update -y -q conda
-            conda install -y -q conda-build anaconda-client
-            conda config --set anaconda_upload yes
-      - run:
-          name: Build/test/upload
-          no_output_timeout: 30m
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-          command: |
-            cd conda
-            conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
-
-  deploy_linux_gpu:
-    parameters:
-      label:
-        type: string
-        default: main
-      cuda:
-        type: string
-      cuda_archs:
-        type: string
-      compiler_version:
-        type: string
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: linux-cuda-11:2023.02.1
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            ~/miniconda/bin/conda init
-      - run:
-          name: Install conda build tools
-          command: |
-            conda update -y -q conda
-            conda install -y -q conda-build 
-            # anaconda-client
-            # conda config --set anaconda_upload yes
-      - run:
-          name: Build/test/upload
-          no_output_timeout: 60m
-          environment:
-            PACKAGE_TYPE: <<parameters.label>>
-            CUDA_ARCHS: <<parameters.cuda_archs>>
-          command: |
-            sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
-            cd conda
-            conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
+      - when:
+          condition: << parameters.label >>
+          steps:
+            - run:
+                name: Enable anaconda uploads
+                command: |
+                  # conda install -y -q anaconda-client
+                  # conda config --set anaconda_upload yes
+      - when:
+          condition:
+              not: << parameters.label >>
+          steps:
+            - run:
+                name: conda build (CPU)
+                no_output_timeout: 30m
+                command: |
+                  cd conda
+                  conda build faiss --python 3.10 -c pytorch
+      - when:
+          condition:
+            and:
+              - << parameters.label >>
+              - not: << parameters.cuda >>
+          steps:
+            - run:
+                name: Conda build (CPU) w/ anaconda upload
+                no_output_timeout: 30m
+                command: |
+                  cd conda
+                  conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+      - when:
+          condition:
+            and:
+              - << parameters.label >>
+              - << parameters.cuda >>
+          steps:
+            - run:
+                name: Conda build (GPU) w/ anaconda upload
+                no_output_timeout: 60m
+                command: |
+                  sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
+                  cd conda
+                  conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
 
   build_cmake:
     parameters:
@@ -164,6 +143,9 @@ jobs:
       opt_level:
         type: string
         default: generic
+      gpu:
+        type: string
+        default: "OFF"
     executor: << parameters.exec >>
     environment:
       OMP_NUM_THREADS: 10
@@ -179,9 +161,17 @@ jobs:
               bash miniconda.sh -b -p $HOME/miniconda
               ~/miniconda/bin/conda init
             fi
+      - when:
+          condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            -run:
+              name: Configure CUDA
+              command: sudo update-alternatives --set cuda /usr/local/cuda-11.4
       - run:
           name: Set up environment
           command: |
+            source ~/.bashrc
             conda update -y -q conda
             conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
       - run:
@@ -191,12 +181,13 @@ jobs:
             source ~/.bashrc
             cmake -B build \
                   -DBUILD_TESTING=ON \
-                  -DFAISS_ENABLE_GPU=OFF \
+                  -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DPYTHON_EXECUTABLE=$(which python) \
                   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
                   -DBLA_VENDOR=Intel10_64_dyn \
+                  -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
                   .
             make -k -C build -j$(nproc) faiss
       - when:
@@ -206,81 +197,48 @@ jobs:
             - run:
                 name: Build faiss_avx2 library
                 no_output_timeout: 30m
-                command: make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
+                command: |
+                  source ~/.bashrc
+                  make -k -C build -j$(nproc) faiss_avx2 swigfaiss_avx2
       - run:
-          name: Test faiss library
+          name: C++ tests
           command: |
+            source ~/.bashrc
             make -C build -j$(nproc) faiss_test
             export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
             make -C build test
       - run:
-          name: Build python extension
+          name: Build and install Python extension
           command: |
+            source ~/.bashrc
             make -C build -j$(nproc) swigfaiss
             cd build/faiss/python
             python setup.py install
       - run:
-          name: Test python extension
+          name: Python tests (CPU)
           command: |
+            source ~/.bashrc
             conda install -y -q pytorch -c pytorch
-            export PYTHONPATH="$(ls -d ./build/faiss/python/build/lib*/)"
             pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
             pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
+      - when:
+          condition:
+            equal: [ "ON", << parameters.gpu >> ]
+          steps:
+            -run:
+              name: Python tests (GPU)
+              command: |
+                source ~/.bashrc
+                cp tests/common_faiss_tests.py faiss/gpu/test
+                pytest --junitxml=test-results/pytest/results-gpu.xml faiss/gpu/test/test_*.py
+                pytest --junitxml=test-results/pytest/results-gpu-torch.xml faiss/gpu/test/torch_*.py
       - store_test_results:
           path: test-results
       - run:
           name: Build C API
           command: |
-            make -k -C build -j$(nproc) faiss_c
-
-  build_linux_gpu:
-    machine:
-      resource_class: gpu.nvidia.medium
-      image: linux-cuda-11:2023.02.1
-    steps:
-      - checkout
-      - run:
-          name: Install conda
-          command: |
-            curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --output miniconda.sh
-            bash miniconda.sh -b -p $HOME/miniconda
-            ~/miniconda/bin/conda init
-      - run:
-          name: Set up environment
-          command: |
-            conda update -y -q conda
-            conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
-      - run:
-          name: Build
-          no_output_timeout: 60m
-          command: |
             source ~/.bashrc
-            sudo update-alternatives --set cuda /usr/local/cuda-11.4
-            cmake -B build \
-                  -DBUILD_TESTING=ON \
-                  -DFAISS_ENABLE_GPU=ON \
-                  -DFAISS_ENABLE_C_API=ON \
-                  -DPYTHON_EXECUTABLE=$(which python) \
-                  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-                  -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
-                  .
-            make -C build -j$(nproc)
-      - run:
-          name: Build python extension
-          command: |
-            cd build/faiss/python
-            python setup.py install
-      - run:
-          name: Test
-          command: |
-            export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
-            make -C build test
-            conda install -y -q pytorch pytorch-cuda -c pytorch -c nvidia
-            cp tests/common_faiss_tests.py faiss/gpu/test
-            pytest --junitxml=test-results/pytest/results.xml faiss/gpu/test/test_*.py
-            pytest --junitxml=test-results/pytest/results-torch.xml faiss/gpu/test/torch_*.py
-      - store_test_results:
-          path: test-results
+            make -k -C build -j$(nproc) faiss_c
 
 workflows:
   version: 2
@@ -295,8 +253,10 @@ workflows:
           name: Linux x86_64 w/ AVX2 (cmake)
           exec: linux-x86_64-cpu
           opt_level: "avx2"
-      - build_linux_gpu:
+      - build_cmake:
           name: Linux x86_64 GPU (cmake)
+          exec: linux-x86_64-gpu
+          gpu: "ON"
           requires:
             - Linux x86_64 (cmake)
       - build_conda:
@@ -314,16 +274,19 @@ workflows:
       - build_conda:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
-      - deploy_conda:
+      - build_conda:
           name: Linux x86_64 packages
           exec: linux-x86_64-cpu
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_linux_gpu:
+          label: main
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
+      - build_conda:
           name: Linux GPU packages (CUDA 11.4)
+          exec: linux-x86_64-gpu
+          label: main
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
@@ -332,38 +295,42 @@ workflows:
           #     only: /^v.*/
           #   branches:
           #     ignore: /.*/
-      - deploy_conda:
+      - build_conda:
           name: Windows x86_64 packages
           exec: windows-x86_64-cpu
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_conda:
+          label: main
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
+      - build_conda:
           name: OSX x86_64 packages
           exec: macosx-x86_64-cpu
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_conda:
+          label: main
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
+      - build_conda:
           name: OSX arm64 packages
           exec: macosx-arm64-cpu
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - deploy_conda:
+          label: main
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
+      - build_conda:
           name: Linux arm64 packages
           exec: linux-arm64-cpu
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          label: main
+          # filters:
+          #   tags:
+          #     only: /^v.*/
+          #   branches:
+          #     ignore: /.*/
 
   nightly:
     triggers:
@@ -374,29 +341,30 @@ workflows:
               only:
                 - main
     jobs:
-      - deploy_conda:
+      - build_conda:
           name: Linux x86_64 nightlies
           exec: linux-x86_64-cpu
           label: nightly
-      - deploy_linux_gpu:
+      - build_conda:
           name: Linux x86_64 GPU nightlies (CUDA 11.4)
+          exec: linux-x86_64-gpu
           cuda: "11.4"
           cuda_archs: "60;61;70;72;75;80;86"
           compiler_version: "11.2"
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: Windows x86_64 nightlies
           exec: windows-x86_64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: OSX x86_64 nightlies
           exec: macosx-x86_64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: OSX arm64 nightlies
           exec: macosx-arm64-cpu
           label: nightly
-      - deploy_conda:
+      - build_conda:
           name: Linux arm64 nightlies
           exec: linux-arm64-cpu
           label: nightly
