@@ -185,11 +185,12 @@ jobs:
             source ~/.bashrc
             cmake -B build \
                   -DBUILD_TESTING=ON \
+                  -DBUILD_SHARED_LIBS=ON \
                   -DFAISS_ENABLE_GPU=<< parameters.gpu >> \
                   -DFAISS_OPT_LEVEL=<< parameters.opt_level >> \
                   -DFAISS_ENABLE_C_API=ON \
                   -DPYTHON_EXECUTABLE=$(which python) \
-                  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+                  -DCMAKE_BUILD_TYPE=Release \
                   -DBLA_VENDOR=Intel10_64_dyn \
                   -DCMAKE_CUDA_FLAGS="-gencode arch=compute_75,code=sm_75" \
                   .
