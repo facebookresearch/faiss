@@ -88,7 +88,7 @@ jobs:
             then
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
-              # ~/miniconda/bin/conda init
+              ~/miniconda/bin/conda init
             fi
       - run:
           name: Install conda build tools
@@ -163,7 +163,7 @@ jobs:
             then
               curl https://repo.anaconda.com/miniconda/Miniconda3-latest-${CONDA_ARCH}.sh --output miniconda.sh
               bash miniconda.sh -b -p $HOME/miniconda
-              # ~/miniconda/bin/conda init
+              ~/miniconda/bin/conda init
             fi
       - when:
           condition:
