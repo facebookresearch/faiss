@@ -76,13 +76,13 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1a56dca2b151bcf16f5d488aff321b9501" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RangeSearchResult_1ae3c7b49b3cdfdf6322a2c8620f032656" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::RangeSearchResult::RangeSearchResult</definition>
-        <argsstring>(idx_t nq, bool alloc_lims=true)</argsstring>
+        <argsstring>(size_t nq, bool alloc_lims=true)</argsstring>
         <name>RangeSearchResult</name>
         <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <type>size_t</type>
           <declname>nq</declname>
         </param>
         <param>
@@ -140,7 +140,7 @@
       <member refid="structfaiss_1_1RangeSearchResult_1aa8ff848474a4cc16c5464cc4ec187824" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>labels</name></member>
       <member refid="structfaiss_1_1RangeSearchResult_1aef57f9db99ca470c01bcdce0366cb6ff" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>lims</name></member>
       <member refid="structfaiss_1_1RangeSearchResult_1a29269b98c33af874d379ca4f62408b90" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>nq</name></member>
-      <member refid="structfaiss_1_1RangeSearchResult_1a56dca2b151bcf16f5d488aff321b9501" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>RangeSearchResult</name></member>
+      <member refid="structfaiss_1_1RangeSearchResult_1ae3c7b49b3cdfdf6322a2c8620f032656" prot="public" virt="non-virtual"><scope>faiss::RangeSearchResult</scope><name>RangeSearchResult</name></member>
       <member refid="structfaiss_1_1RangeSearchResult_1af0ef9dac0132325da1fb60ff2a7b8e6d" prot="public" virt="virtual"><scope>faiss::RangeSearchResult</scope><name>~RangeSearchResult</name></member>
     </listofallmembers>
   </compounddef>

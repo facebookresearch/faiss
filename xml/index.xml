@@ -6817,7 +6817,7 @@
     <member refid="structfaiss_1_1RangeSearchResult_1aa8ff848474a4cc16c5464cc4ec187824" kind="variable"><name>labels</name></member>
     <member refid="structfaiss_1_1RangeSearchResult_1a944a93aecc7b51d8f9f35444280aa919" kind="variable"><name>distances</name></member>
     <member refid="structfaiss_1_1RangeSearchResult_1a39342ad2e9ad8b90f6e95dafd3287f49" kind="variable"><name>buffer_size</name></member>
-    <member refid="structfaiss_1_1RangeSearchResult_1a56dca2b151bcf16f5d488aff321b9501" kind="function"><name>RangeSearchResult</name></member>
+    <member refid="structfaiss_1_1RangeSearchResult_1ae3c7b49b3cdfdf6322a2c8620f032656" kind="function"><name>RangeSearchResult</name></member>
     <member refid="structfaiss_1_1RangeSearchResult_1aa0b1347c1aea967886201613d4eaf5cf" kind="function"><name>do_allocation</name></member>
     <member refid="structfaiss_1_1RangeSearchResult_1af0ef9dac0132325da1fb60ff2a7b8e6d" kind="function"><name>~RangeSearchResult</name></member>
   </compound>
