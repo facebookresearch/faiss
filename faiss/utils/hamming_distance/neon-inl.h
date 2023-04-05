@@ -149,6 +149,10 @@ struct HammingComputer4 {
     inline int hamming(const uint8_t* b) const {
         return popcount64(*(uint32_t*)b ^ a0);
     }
+
+    inline static constexpr int get_code_size() {
+        return 4;
+    }
 };
 
 struct HammingComputer8 {
@@ -167,6 +171,10 @@ struct HammingComputer8 {
 
     inline int hamming(const uint8_t* b) const {
         return popcount64(*(uint64_t*)b ^ a0);
+    }
+
+    inline static constexpr int get_code_size() {
+        return 8;
     }
 };
 
@@ -191,6 +199,10 @@ struct HammingComputer16 {
         uint8x16_t c0 = vcntq_u8(or0);
         auto dis = vaddvq_u8(c0);
         return dis;
+    }
+
+    inline static constexpr int get_code_size() {
+        return 16;
     }
 };
 
@@ -225,6 +237,10 @@ struct HammingComputer20 {
         const uint32_t* b = (uint32_t*)b8;
         return dis + popcount64(b[4] ^ a2);
     }
+
+    inline static constexpr int get_code_size() {
+        return 20;
+    }
 };
 
 struct HammingComputer32 {
@@ -256,6 +272,10 @@ struct HammingComputer32 {
         auto dis = vaddvq_u8(ca);
         return dis;
     }
+
+    inline static constexpr int get_code_size() {
+        return 32;
+    }
 };
 
 struct HammingComputer64 {
@@ -275,6 +295,10 @@ struct HammingComputer64 {
 
     inline int hamming(const uint8_t* b8) const {
         return hc0.hamming(b8) + hc1.hamming(b8 + 32);
+    }
+
+    inline static constexpr int get_code_size() {
+        return 64;
     }
 };
 
@@ -362,6 +386,10 @@ struct HammingComputerDefault {
 
         return accu;
     }
+
+    inline int get_code_size() const {
+        return quotient8 * 8 + remainder8;
+    }
 };
 
 // more inefficient than HammingComputerDefault (obsolete)
@@ -394,6 +422,10 @@ struct HammingComputerM8 {
             accu += popcount64(a[i] ^ b[i]);
         }
         return accu;
+    }
+
+    inline int get_code_size() const {
+        return n * 8;
     }
 };
 
@@ -429,6 +461,10 @@ struct HammingComputerM4 {
             accu += popcount64(a[i] ^ b[i]);
         }
         return accu;
+    }
+
+    inline int get_code_size() const {
+        return n * 4;
     }
 };
 
@@ -483,6 +519,10 @@ struct GenHammingComputer8 {
     inline int hamming(const uint8_t* b) const {
         return generalized_hamming_64(*(uint64_t*)b ^ a0);
     }
+
+    inline static constexpr int get_code_size() {
+        return 8;
+    }
 };
 
 struct GenHammingComputer16 {
@@ -498,6 +538,10 @@ struct GenHammingComputer16 {
         const uint64_t* b = (uint64_t*)b8;
         return generalized_hamming_64(b[0] ^ a0) +
                 generalized_hamming_64(b[1] ^ a1);
+    }
+
+    inline static constexpr int get_code_size() {
+        return 16;
     }
 };
 
@@ -520,6 +564,10 @@ struct GenHammingComputer32 {
                 generalized_hamming_64(b[2] ^ a2) +
                 generalized_hamming_64(b[3] ^ a3);
     }
+
+    inline static constexpr int get_code_size() {
+        return 32;
+    }
 };
 
 struct GenHammingComputerM8 {
@@ -538,6 +586,10 @@ struct GenHammingComputerM8 {
         for (int i = 0; i < n; i++)
             accu += generalized_hamming_64(a[i] ^ b[i]);
         return accu;
+    }
+
+    inline int get_code_size() {
+        return n * 8;
     }
 };
 
