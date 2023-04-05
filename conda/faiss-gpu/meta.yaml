@@ -37,7 +37,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - llvm-openmp  # [osx]
-        - cmake >=3.18
+        - cmake >=3.24
         - make  # [not win]
         - mkl-devel =2021
       host:
@@ -63,7 +63,7 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - swig
-        - cmake >=3.17
+        - cmake >=3.24
         - make  # [not win]
       host:
         - python {{ python }}
