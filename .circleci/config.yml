@@ -4,7 +4,7 @@ executors:
   linux-x86_64-cpu:
     docker:
       - image: continuumio/miniconda3
-    resource_class: medium+
+    resource_class: large
   linux-x86_64-gpu:
     environment:
       CONDA_ARCH: Linux-x86_64
@@ -112,7 +112,7 @@ jobs:
                 no_output_timeout: 30m
                 command: |
                   cd conda
-                  conda build faiss --python 3.10 -c pytorch
+                  conda build faiss --python 3.10 -c pytorch -c pkgs/main -c conda-forge
       - when:
           condition:
             and:
@@ -124,7 +124,7 @@ jobs:
                 no_output_timeout: 30m
                 command: |
                   cd conda
-                  conda build faiss --user pytorch --label <<parameters.label>> -c pytorch
+                  conda build faiss --user pytorch --label <<parameters.label>> -c pytorch -c pkgs/main -c conda-forge
       - when:
           condition:
             and:
@@ -138,7 +138,7 @@ jobs:
                   sudo update-alternatives --set cuda /usr/local/cuda-<<parameters.cuda>>
                   cd conda
                   conda build faiss-gpu --variants '{ "cudatoolkit": "<<parameters.cuda>>", "c_compiler_version": "<<parameters.compiler_version>>", "cxx_compiler_version": "<<parameters.compiler_version>>" }' \
-                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia
+                      --user pytorch --label <<parameters.label>> -c pytorch -c nvidia -c pkgs/main -c conda-forge
 
   build_cmake:
     parameters:
@@ -176,7 +176,7 @@ jobs:
           name: Set up environment
           command: |
             conda update -y -q conda
-            conda install -y -q cmake make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64
+            conda install -y -q cmake=3.23.1 make swig mkl=2021 mkl-devel=2021 numpy scipy pytest gxx_linux-64 sysroot_linux-64=2.17 -c pkgs/main -c conda-forge
       - run:
           name: Build all targets
           no_output_timeout: 30m
@@ -271,6 +271,8 @@ workflows:
       - build_conda:
           name: OSX arm64 (conda)
           exec: macosx-arm64-cpu
+          requires:
+            - Linux arm64 (conda)
       - build_conda:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
