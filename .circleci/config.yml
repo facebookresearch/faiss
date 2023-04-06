@@ -4,7 +4,7 @@ executors:
   linux-x86_64-cpu:
     docker:
       - image: continuumio/miniconda3
-    resource_class: medium+
+    resource_class: large
   linux-x86_64-gpu:
     environment:
       CONDA_ARCH: Linux-x86_64
