@@ -831,8 +831,10 @@ void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
     if (k == n) {
         if (v >= dis[0])
             return;
+        if (ids[0] != -1) {
+            --nvalid;
+        }
         faiss::heap_pop<HC>(k--, dis.data(), ids.data());
-        --nvalid;
     }
     faiss::heap_push<HC>(++k, dis.data(), ids.data(), v, i);
     ++nvalid;
