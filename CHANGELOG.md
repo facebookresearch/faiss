@@ -9,6 +9,34 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+## [1.7.4] - 2023-04-12
+### Added
+- Added big batch IVF search for conducting efficient search with big batches of queries
+- Checkpointing in big batch search support
+- Precomputed centroids support
+- Range search support
+- Iterable inverted lists support eg.  key value stores
+- 64-bit indexing arithmetic support in FAISS GPU
+- IndexIVFShards now handle IVF indexes with a common quantizer
+- Jaccard distance support
+- CodePacker for non-contiguous code layouts
+- Approximate evaluation of min-k distances via heap
+- Various optimisations: speed up in ProductQuantizer::compute_codes() for certain PQ parameters, Speedup ResidualQuantizer sa_encode() by pooling memory allocations
+- M1 conda support
+- Python 3.10 support
+- CUDA 10 is no longer supported
+- Support for Linux arm64 conda packages
+- No cmake build for Linux or OSX arm64, replaced both with a conda build target only
+- FAISS gpu builds without Docker image
+
+### Fixed
+- Fix HSNW bug which improves the recall rate
+- Faiss GPU IVF large query batch fix 
+- Faiss + Torch fixes, re-enable k = 2048
+- Fix the number of distance computations to match max_codes parameter
+- Fix decoding of large fast_scan blocks
+- Workflows have a consistent naming scheme, `OSX arm64 (conda)`,  `Linux x86_64 (cmake)` etc.
+
 
 ## [1.7.3] - 2022-11-3
 ### Added
@@ -224,7 +252,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.4...HEAD
+[1.7.4]: https://github.com/facebookresearch/faiss/compare/v1.7.3...v1.7.4
 [1.7.3]: https://github.com/facebookresearch/faiss/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1
