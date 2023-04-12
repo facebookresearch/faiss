@@ -41,24 +41,82 @@ struct LoadStore<Half4> {
     static inline __device__ Half4 load(void* p) {
         Half4 out;
         // TODO
+        // 64 bytes containing 4 half (float16) values, Half4 {half2 a, half2 b}
+        // const half* half_ptr = reinterpret_cast<const half*>(p);
+        out.a.x = p[0];
+        out.a.y = p[1];
+        out.b.x = p[2];
+        out.b.y = p[3];
         return out;
     }
 
     static inline __device__ void store(void* p, Half4& v) {
         // TODO
+        p[0] = v.a.x;
+        p[1] = v.a.y;
+        p[2] = v.b.x;
+        p[3] = v.b.y;
     }
 };
+
+template <>
+struct LoadStore<Half4> {
+    static inline __device__ Half4 load(void* p) {
+        Half4 out;
+#if CUDA_VERSION >= 9000
+        asm("ld.global.v2.u32 {%0, %1}, [%2];"
+            : "=r"(__HALF2_TO_UI(out.a)), "=r"(__HALF2_TO_UI(out.b))
+            : "l"(p));
+#else
+        asm("ld.global.v2.u32 {%0, %1}, [%2];"
+            : "=r"(out.a.x), "=r"(out.b.x)
+            : "l"(p));
+#endif
+        return out;
+    }
+
+    static inline __device__ void store(void* p, Half4& v) {
+#if CUDA_VERSION >= 9000
+        asm("st.v2.u32 [%0], {%1, %2};"
+            :
+            : "l"(p), "r"(__HALF2_TO_UI(v.a)), "r"(__HALF2_TO_UI(v.b)));
+#else
+        asm("st.v2.u32 [%0], {%1, %2};" : : "l"(p), "r"(v.a.x), "r"(v.b.x));
+#endif
+    }
+};
+
 
 template <>
 struct LoadStore<Half8> {
     static inline __device__ Half8 load(void* p) {
         Half8 out;
         // TODO
+        // 128 bytes containing 8 half (float16) values, Half8 {Half4 a, Half4 b}
+        // 1st Half4 out.a, 2nd Half4 out.b
+        out.a.a.x = p[0];
+        out.a.a.y = p[1];
+        out.a.b.x = p[2];
+        out.a.b.y = p[3];
+
+        out.b.a.x = p[4];
+        out.b.a.y = p[5];
+        out.b.b.x = p[6];
+        out.b.b.y = p[7];
         return out;
     }
 
     static inline __device__ void store(void* p, Half8& v) {
         // TODO
+        p[0] = v.a.a.x;
+        p[1] = v.a.a.y;
+        p[2] = v.a.b.x;
+        p[3] = v.a.b.y;
+
+        p[4] = v.b.a.x;
+        p[5] = v.b.a.y;
+        p[6] = v.b.b.x;
+        p[7] = v.b.b.y;
     }
 };
 
