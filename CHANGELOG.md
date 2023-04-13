@@ -30,12 +30,11 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 - FAISS gpu builds without Docker image
 
 ### Fixed
-- Fix HSNW bug which improves the recall rate
-- Faiss GPU IVF large query batch fix 
+- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- Faiss GPU IVF large query batch fix
 - Faiss + Torch fixes, re-enable k = 2048
 - Fix the number of distance computations to match max_codes parameter
 - Fix decoding of large fast_scan blocks
-- Workflows have a consistent naming scheme, `OSX arm64 (conda)`,  `Linux x86_64 (cmake)` etc.
 
 
 ## [1.7.3] - 2022-11-3
