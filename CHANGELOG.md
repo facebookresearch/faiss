@@ -19,7 +19,8 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 - IndexIVFShards now handle IVF indexes with a common quantizer
 - Jaccard distance support
 - CodePacker for non-contiguous code layouts
-- Approximate evaluation of min-k distances via heap
+- Approximate evaluation of top-k distances for ResidualQuantizer and IndexBinaryFlat
+- Added support for 12-bit PQ / IVFPQ fine quantizer decoders for standalone vector codecs (faiss/cppcontrib)
 - Conda packages for osx-arm64 (Apple M1) and linux-aarch64 (ARM64) architectures
 - Support for Python 3.10 
 
@@ -28,7 +29,11 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 - Removed Python 3.7 support
 
 ### Changed
-- Various optimisations: speed up in ProductQuantizer::compute_codes() for certain PQ parameters, Speedup ResidualQuantizer sa_encode() by pooling memory allocations
+- Various performance optimizations for PQ / IVFPQ for AVX2 and ARM for training (fused distance+nearest kernel), search (faster kernels for distance_to_code() and scan_list_*()) and vector encoding
+- A magnitude faster CPU code for LSQ/PLSQ training and vector encoding (reworked code)
+- Performance improvements for Hamming Code computations for AVX2 and ARM (reworked code)
+- Improved auto-vectorization support for IP and L2 distance computations (better handling of pragmas)
+- Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
 
 ### Fixed
 - HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
