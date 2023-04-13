@@ -14,19 +14,21 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 - Added big batch IVF search for conducting efficient search with big batches of queries
 - Checkpointing in big batch search support
 - Precomputed centroids support
-- Range search support
 - Support for iterable inverted lists for eg. key value stores
 - 64-bit indexing arithmetic support in FAISS GPU
 - IndexIVFShards now handle IVF indexes with a common quantizer
 - Jaccard distance support
 - CodePacker for non-contiguous code layouts
 - Approximate evaluation of min-k distances via heap
-- Various optimisations: speed up in ProductQuantizer::compute_codes() for certain PQ parameters, Speedup ResidualQuantizer sa_encode() by pooling memory allocations
 - Conda packages for osx-arm64 (Apple M1) and linux-aarch64 (ARM64) architectures
-- Added Python 3.10 and removed Python 3.7 support
+- Support for Python 3.10 
+
+### Removed
 - CUDA 10 is no longer supported
-- No cmake build for Linux or OSX arm64, replaced both with a conda build target only
-- FAISS gpu builds without Docker image
+- Removed Python 3.7 support
+
+### Changed
+- Various optimisations: speed up in ProductQuantizer::compute_codes() for certain PQ parameters, Speedup ResidualQuantizer sa_encode() by pooling memory allocations
 
 ### Fixed
 - HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
