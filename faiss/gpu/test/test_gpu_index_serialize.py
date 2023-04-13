@@ -3,13 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import math
-import time
 import unittest
 import numpy as np
 import faiss
-import tempfile
-import os
 
 def make_t(num, d):
     rs = np.random.RandomState(123)
