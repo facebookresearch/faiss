@@ -28,7 +28,8 @@ struct TestFlatOptions {
               numVecsOverride(-1),
               numQueriesOverride(-1),
               kOverride(-1),
-              dimOverride(-1) {}
+              dimOverride(-1),
+              use_raft(false) {}
 
     faiss::MetricType metric;
     float metricArg;
