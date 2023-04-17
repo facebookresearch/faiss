@@ -5,6 +5,8 @@
 
 import numpy as np
 import unittest
+import time
+import faiss
 
 from multiprocessing.pool import ThreadPool
 
@@ -386,3 +388,70 @@ class OperatingPointsWithRanges(OperatingPoints):
                 values[:] = val2
                 return
         raise RuntimeError(f"parameter {name} not found")
+
+
+###############################################################
+# Timer object
+
+class TimerIter:
+    def __init__(self, timer):
+        self.ts = []
+        self.runs = timer.runs
+        self.timer = timer
+        if timer.nt >= 0:
+            faiss.omp_set_num_threads(timer.nt)
+
+    def __next__(self):
+        timer = self.timer
+        self.runs -= 1
+        self.ts.append(time.time())
+        total_time = self.ts[-1] - self.ts[0] if len(self.ts) >= 2 else 0
+        if self.runs == -1 or total_time > timer.max_secs:
+            if timer.nt >= 0:
+                faiss.omp_set_num_threads(timer.remember_nt)
+            ts = np.array(self.ts)
+            times = ts[1:] - ts[:-1]
+            if len(times) == timer.runs:
+                timer.times = times[timer.warmup :]
+            else:
+                # if timeout, we use all the runs
+                timer.times = times[:]
+            raise StopIteration
+
+class RepeatTimer:
+    """
+    This is yet another timer object. It is adapted to Faiss by
+    taking a number of openmp threads to set on input. It should be called
+    in an explicit loop as:
+
+    timer = RepeatTimer(warmup=1, nt=1, runs=6)
+
+    for _ in timer:
+        # perform operation
+
+    print(f"time={timer.get_ms():.1f} ± {timer.get_ms_std():.1f} ms")
+
+    the same timer can be re-used. In that case it is reset each time it
+    enters a loop. It focuses on ms-scale times because for second scale
+    it's usually less relevant to repeat the operation.
+    """
+    def __init__(self, warmup=0, nt=-1, runs=1, max_secs=np.inf):
+        assert warmup < runs
+        self.warmup = warmup
+        self.nt = nt
+        self.runs = runs
+        self.max_secs = max_secs
+        self.remember_nt = faiss.omp_get_max_threads()
+
+    def __iter__(self):
+        return TimerIter(self)
+
+    def ms(self):
+        return np.mean(self.times) * 1000
+
+    def ms_std(self):
+        return np.std(self.times) * 1000 if len(self.times) > 1 else 0.0
+
+    def nruns(self):
+        """ effective number of runs (may be lower than runs - warmup due to timeout)"""
+        return len(self.times)

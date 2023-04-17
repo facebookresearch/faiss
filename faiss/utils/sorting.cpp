@@ -331,11 +331,12 @@ void bucket_sort_parallel(
  * in-place bucket sort
  */
 
+template <class TI>
 void bucket_sort_inplace_ref(
         size_t nrow,
         size_t ncol,
-        int32_t* vals,
-        int32_t nbucket,
+        TI* vals,
+        TI nbucket,
         int64_t* lims) {
     double t0 = getmillisecs();
     size_t nval = nrow * ncol;
@@ -361,15 +362,15 @@ void bucket_sort_inplace_ref(
     }
 
     // find loops in the permutation and follow them
-    int32_t row = -1;
-    int32_t init_bucket_no = 0, bucket_no = 0;
+    TI row = -1;
+    TI init_bucket_no = 0, bucket_no = 0;
     for (;;) {
         size_t idx = ptrs[bucket_no];
         if (row >= 0) {
             ptrs[bucket_no] += 1;
         }
         assert(idx < lims[bucket_no + 1]);
-        int32_t next_bucket_no = vals[idx];
+        TI next_bucket_no = vals[idx];
         vals[idx] = row;
         if (next_bucket_no != -1) {
             row = idx / ncol;
@@ -399,18 +400,19 @@ void bucket_sort_inplace_ref(
 }
 
 // collects row numbers to write into buckets
+template <class TI>
 struct ToWrite {
-    int32_t nbucket;
-    std::vector<int32_t> buckets;
-    std::vector<int32_t> rows;
+    TI nbucket;
+    std::vector<TI> buckets;
+    std::vector<TI> rows;
     std::vector<size_t> lims;
 
-    explicit ToWrite(int32_t nbucket) : nbucket(nbucket) {
+    explicit ToWrite(TI nbucket) : nbucket(nbucket) {
         lims.resize(nbucket + 1);
     }
 
     /// add one element (row) to write in bucket b
-    void add(int32_t row, int32_t b) {
+    void add(TI row, TI b) {
         assert(b >= 0 && b < nbucket);
         rows.push_back(row);
         buckets.push_back(b);
@@ -432,10 +434,10 @@ struct ToWrite {
         FAISS_THROW_IF_NOT(lims[nbucket] == buckets.size());
 
         // could also do a circular perm...
-        std::vector<int32_t> new_rows(rows.size());
+        std::vector<TI> new_rows(rows.size());
         std::vector<size_t> ptrs = lims;
         for (size_t i = 0; i < buckets.size(); i++) {
-            int32_t b = buckets[i];
+            TI b = buckets[i];
             assert(ptrs[b] < lims[b + 1]);
             new_rows[ptrs[b]++] = rows[i];
         }
@@ -451,16 +453,17 @@ struct ToWrite {
     }
 };
 
+template <class TI>
 void bucket_sort_inplace_parallel(
         size_t nrow,
         size_t ncol,
-        int32_t* vals,
-        int32_t nbucket,
+        TI* vals,
+        TI nbucket,
         int64_t* lims,
         int nt_in) {
     int verbose = bucket_sort_verbose;
     memset(lims, 0, sizeof(*lims) * (nbucket + 1));
-    std::vector<ToWrite> all_to_write;
+    std::vector<ToWrite<TI>> all_to_write;
     size_t nval = nrow * ncol;
     FAISS_THROW_IF_NOT(
             nbucket < nval); // unclear what would happen in this case...
@@ -469,9 +472,7 @@ void bucket_sort_inplace_parallel(
     // but we need at least one element per bucket
     size_t init_to_write = std::max(
             size_t(nbucket),
-            std::min(
-                    nval / 10,
-                    ((size_t)5 << 30) / (sizeof(int32_t) * 3 * nt_in)));
+            std::min(nval / 10, ((size_t)5 << 30) / (sizeof(TI) * 3 * nt_in)));
     if (verbose > 0) {
         printf("init_to_write=%zd\n", init_to_write);
     }
@@ -500,12 +501,12 @@ void bucket_sort_inplace_parallel(
             for (size_t i = 0; i < nbucket; i++) {
                 lims[i + 1] += local_lims[i];
             }
-            all_to_write.push_back(ToWrite(nbucket));
+            all_to_write.push_back(ToWrite<TI>(nbucket));
         }
 
 #pragma omp barrier
         // this thread's things to write
-        ToWrite& to_write = all_to_write[rank];
+        ToWrite<TI>& to_write = all_to_write[rank];
 
 #pragma omp master
         {
@@ -521,7 +522,7 @@ void bucket_sort_inplace_parallel(
             // initial values to write (we write -1s to get the process running)
             // make sure at least one element per bucket
             size_t written = 0;
-            for (int32_t b = 0; b < nbucket; b++) {
+            for (TI b = 0; b < nbucket; b++) {
                 size_t l0 = lims[b], l1 = lims[b + 1];
                 size_t target_to_write = l1 * init_to_write / nval;
                 do {
@@ -549,7 +550,7 @@ void bucket_sort_inplace_parallel(
 #pragma omp barrier
 
             size_t n_to_write = 0;
-            for (const ToWrite& to_write_2 : all_to_write) {
+            for (const ToWrite<TI>& to_write_2 : all_to_write) {
                 n_to_write += to_write_2.lims.back();
             }
 
@@ -565,7 +566,9 @@ void bucket_sort_inplace_parallel(
                     for (size_t b = 0; b < nbucket; b++) {
                         printf("   b=%zd [", b);
                         for (size_t i = lims[b]; i < lims[b + 1]; i++) {
-                            printf(" %s%d", ptrs[b] == i ? ">" : "", vals[i]);
+                            printf(" %s%d",
+                                   ptrs[b] == i ? ">" : "",
+                                   int(vals[i]));
                         }
                         printf(" %s] %s\n",
                                ptrs[b] == lims[b + 1] ? ">" : "",
@@ -575,13 +578,13 @@ void bucket_sort_inplace_parallel(
                     for (size_t b = 0; b < nbucket; b++) {
                         printf("   b=%zd ", b);
                         const char* sep = "[";
-                        for (const ToWrite& to_write_2 : all_to_write) {
+                        for (const ToWrite<TI>& to_write_2 : all_to_write) {
                             printf("%s", sep);
                             sep = " |";
                             size_t l0 = to_write_2.lims[b];
                             size_t l1 = to_write_2.lims[b + 1];
                             for (size_t i = l0; i < l1; i++) {
-                                printf(" %d", to_write_2.rows[i]);
+                                printf(" %d", int(to_write_2.rows[i]));
                             }
                         }
                         printf(" ]\n");
@@ -595,18 +598,18 @@ void bucket_sort_inplace_parallel(
 
 #pragma omp barrier
 
-            ToWrite next_to_write(nbucket);
+            ToWrite<TI> next_to_write(nbucket);
 
             for (size_t b = b0; b < b1; b++) {
-                for (const ToWrite& to_write_2 : all_to_write) {
+                for (const ToWrite<TI>& to_write_2 : all_to_write) {
                     size_t l0 = to_write_2.lims[b];
                     size_t l1 = to_write_2.lims[b + 1];
                     for (size_t i = l0; i < l1; i++) {
-                        int32_t row = to_write_2.rows[i];
+                        TI row = to_write_2.rows[i];
                         size_t idx = ptrs[b];
                         if (verbose > 2) {
                             printf("    bucket %d (rank %d) idx %zd\n",
-                                   row,
+                                   int(row),
                                    rank,
                                    idx);
                         }
@@ -622,10 +625,10 @@ void bucket_sort_inplace_parallel(
 
                         // check if we need to remember the overwritten number
                         if (vals[idx] >= 0) {
-                            int32_t new_row = idx / ncol;
+                            TI new_row = idx / ncol;
                             next_to_write.add(new_row, vals[idx]);
                             if (verbose > 2) {
-                                printf("       new_row=%d\n", new_row);
+                                printf("       new_row=%d\n", int(new_row));
                             }
                         } else {
                             assert(did_wrap[b]);
@@ -663,6 +666,20 @@ void matrix_bucket_sort_inplace(
         size_t ncol,
         int32_t* vals,
         int32_t vmax,
+        int64_t* lims,
+        int nt) {
+    if (nt == 0) {
+        bucket_sort_inplace_ref(nrow, ncol, vals, vmax, lims);
+    } else {
+        bucket_sort_inplace_parallel(nrow, ncol, vals, vmax, lims, nt);
+    }
+}
+
+void matrix_bucket_sort_inplace(
+        size_t nrow,
+        size_t ncol,
+        int64_t* vals,
+        int64_t vmax,
         int64_t* lims,
         int nt) {
     if (nt == 0) {

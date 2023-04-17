@@ -60,7 +60,8 @@ void IndexBinaryFlat::search(
                     xb.data(),
                     ntotal,
                     code_size,
-                    /* ordered = */ true);
+                    /* ordered = */ true,
+                    approx_topk_mode);
         } else {
             hammings_knn_mc(
                     x + s * code_size,

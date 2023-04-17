@@ -401,7 +401,7 @@ def eval_codec(q, xb):
 class TestResidualQuantizer(unittest.TestCase):
 
     def test_with_gpu(self):
-        """ check that we get the same resutls with a GPU quantizer and a CPU quantizer """
+        """ check that we get the same results with a GPU quantizer and a CPU quantizer """
         d = 32
         nt = 3000
         nb = 1000

@@ -198,7 +198,7 @@ def matrix_bucket_sort_inplace(tab, nbucket=None, nt=0):
     lims : array_like
         cumulative sum of bucket sizes (size vmax + 1)
     """
-    assert tab.dtype == 'int32'
+    assert tab.dtype == 'int32' or tab.dtype == 'int64'
     nrow, ncol = tab.shape
     if nbucket is None:
         nbucket = int(tab.max() + 1)
