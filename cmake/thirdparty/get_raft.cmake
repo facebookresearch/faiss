@@ -17,8 +17,8 @@
 # =============================================================================
 
 set(RAFT_VERSION "${RAPIDS_VERSION}")
-set(RAFT_FORK "benfred")
-set(RAFT_PINNED_TAG "bfknn")#"branch-${RAPIDS_VERSION}")
+set(RAFT_FORK "rapidsai")
+set(RAFT_PINNED_TAG "branch-${RAPIDS_VERSION}")
 
 function(find_and_configure_raft)
     set(oneValueArgs VERSION FORK PINNED_TAG)
@@ -38,9 +38,7 @@ function(find_and_configure_raft)
             SOURCE_SUBDIR  cpp
             OPTIONS
             "BUILD_TESTS OFF"
-            "BUILD_BENCH OFF"
-            "RAFT_COMPILE_LIBRARIES OFF"
-            "RAFT_ENABLE_NN_DEPENDENCIES OFF"
+            "RAFT_COMPILE_LIBRARY OFF"
             )
 endfunction()
 
