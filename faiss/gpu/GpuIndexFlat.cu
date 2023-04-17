@@ -100,7 +100,7 @@ void GpuIndexFlat::resetIndex_(int dims) {
     } else
 #else
     if(flatConfig_.use_raft) {
-        FAISS_THROW_IF_NOT_MSG(!args.use_raft, "RAFT has not been compiled into the current version so it cannot be used.");
+        FAISS_THROW_MSG("RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif
     {
