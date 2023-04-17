@@ -824,7 +824,7 @@ void pairwise_indexed_L2sqr(
         const float* y,
         const int64_t* iy,
         float* dis) {
-#pragma omp parallel for
+#pragma omp parallel for if (n > 1)
     for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_L2sqr(x + d * ix[j], y + d * iy[j], d);
@@ -840,7 +840,7 @@ void pairwise_indexed_inner_product(
         const float* y,
         const int64_t* iy,
         float* dis) {
-#pragma omp parallel for
+#pragma omp parallel for if (n > 1)
     for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_inner_product(x + d * ix[j], y + d * iy[j], d);
@@ -941,7 +941,7 @@ void pairwise_L2sqr(
     // store in beginning of distance matrix to avoid malloc
     float* b_norms = dis;
 
-#pragma omp parallel for
+#pragma omp parallel for if (nb > 1)
     for (int64_t i = 0; i < nb; i++)
         b_norms[i] = fvec_norm_L2sqr(xb + i * ldb, d);
 
