@@ -400,7 +400,7 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22HammingComputerDefaultE">
 <span id="_CPPv3N5faiss22HammingComputerDefaultE"></span><span id="_CPPv2N5faiss22HammingComputerDefaultE"></span><span id="faiss::HammingComputerDefault"></span><span class="target" id="structfaiss_1_1HammingComputerDefault"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputerDefault</span></span></span><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="structfaiss_1_1HammingComputer.html#structfaiss_1_1HammingComputer"><span class="std std-ref">faiss::HammingComputer&lt; CODE_SIZE &gt;</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="structfaiss_1_1HammingComputer.html#structfaiss_1_1HammingComputer"><span class="std std-ref">faiss::HammingComputer&lt; CODE_SIZE &gt;</span></a>, <a class="reference internal" href="structfaiss_1_1HammingComputer.html#structfaiss_1_1HammingComputer"><span class="std std-ref">faiss::HammingComputer&lt; CODE_SIZE &gt;</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -428,12 +428,37 @@
 <span id="_CPPv3NK5faiss22HammingComputerDefault13get_code_sizeEv"></span><span id="_CPPv2NK5faiss22HammingComputerDefault13get_code_sizeEv"></span><span id="faiss::HammingComputerDefault::get_code_sizeC"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputerDefault</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HammingComputerDefault</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a8</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a8</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code_size</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hamming</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b8</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_code_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss22HammingComputerDefault2a8E">
-<span id="_CPPv3N5faiss22HammingComputerDefault2a8E"></span><span id="_CPPv2N5faiss22HammingComputerDefault2a8E"></span><span id="faiss::HammingComputerDefault::a8__uint8_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1a5849e85860177e7334aa4273f74c8f32"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">a8</span></span></span><br /></dt>
+<span id="_CPPv3N5faiss22HammingComputerDefault2a8E"></span><span id="_CPPv2N5faiss22HammingComputerDefault2a8E"></span><span id="faiss::HammingComputerDefault::a8__uint8_tCP"></span><span class="target" id="structfaiss_1_1HammingComputerDefault_1af09b17fa400adc6a3bed7acb47f5fff2"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">a8</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
