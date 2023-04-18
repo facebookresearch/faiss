@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
-  <compounddef id="avx2-inl_8h" kind="file" language="C++">
+  <compounddef id="approx__topk_2avx2-inl_8h" kind="file" language="C++">
     <compoundname>avx2-inl.h</compoundname>
     <includes local="no">immintrin.h</includes>
     <includes local="no">limits</includes>
@@ -92,7 +92,7 @@
       </node>
       <node id="1">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
-        <link refid="avx2-inl_8h"/>
+        <link refid="approx__topk_2avx2-inl_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">

@@ -17,7 +17,7 @@
     <includedby refid="NSG_8h" local="no">faiss/impl/NSG.h</includedby>
     <includedby refid="ThreadedIndex-inl_8h" local="no">faiss/impl/ThreadedIndex-inl.h</includedby>
     <includedby refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includedby>
-    <includedby refid="avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
+    <includedby refid="approx__topk_2avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
     <includedby refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includedby>
     <includedby refid="simdlib__neon_8h" local="no">faiss/utils/simdlib_neon.h</includedby>
     <incdepgraph>
@@ -222,7 +222,7 @@
       </node>
       <node id="40">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
-        <link refid="avx2-inl_8h_source"/>
+        <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
       <node id="10">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>

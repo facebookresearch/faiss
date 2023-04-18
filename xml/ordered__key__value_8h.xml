@@ -298,7 +298,7 @@
       </node>
       <node id="42">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
-        <link refid="avx2-inl_8h_source"/>
+        <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
       <node id="38">
         <label>faiss/IndexScalarQuantizer.h</label>

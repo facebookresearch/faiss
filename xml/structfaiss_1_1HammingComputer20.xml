@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="157" column="14" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="159" column="14" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="159" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HammingComputer20_1ad49e5fd538eeb912e82f8c2238332ecf" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="157" column="17" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="159" column="17" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="159" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HammingComputer20_1adac01f724344b881074435ea57d0dd8f" prot="public" static="no" mutable="no">
         <type>uint32_t</type>
@@ -40,10 +40,82 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="158" column="14" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="158" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="160" column="14" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="160" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1abf473d14e68eec988af8cd98dfd42813" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer20::HammingComputer20</definition>
+        <argsstring>()</argsstring>
+        <name>HammingComputer20</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="162" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="162" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::HammingComputer20::HammingComputer20</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>HammingComputer20</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="164" column="5" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="164" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HammingComputer20::set</definition>
+        <argsstring>(const uint8_t *a8, int code_size)</argsstring>
+        <name>set</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a8</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>code_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="168" column="10" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="168" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::HammingComputer20::hamming</definition>
+        <argsstring>(const uint8_t *b8) const</argsstring>
+        <name>hamming</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>b8</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="176" column="16" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="176" bodyend="180"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1abf473d14e68eec988af8cd98dfd42813" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HammingComputer20::HammingComputer20</definition>
@@ -129,6 +201,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="182" column="33" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="182" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int</type>
+        <definition>static constexpr int faiss::HammingComputer20::get_code_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_code_size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
         <location file="faiss/utils/hamming_distance/generic-inl.h" line="180" column="33" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="180" bodyend="182"/>
       </memberdef>
       </sectiondef>
@@ -136,15 +221,20 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/hamming_distance/generic-inl.h" line="156" column="1" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="156" bodyend="183"/>
+    <location file="faiss/utils/hamming_distance/avx2-inl.h" line="158" column="1" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="158" bodyend="185"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HammingComputer20_1a295014fba5155a1b11334550238a9314" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>a0</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1ad49e5fd538eeb912e82f8c2238332ecf" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>a1</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1adac01f724344b881074435ea57d0dd8f" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>a2</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1HammingComputer20_1afd442e4c2f175e12258a91d76feaf097" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>get_code_size</name></member>
+      <member refid="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1a804e63f18ba84f9fa384c5859403f488" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>hamming</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1abf473d14e68eec988af8cd98dfd42813" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>HammingComputer20</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>HammingComputer20</name></member>
+      <member refid="structfaiss_1_1HammingComputer20_1abf473d14e68eec988af8cd98dfd42813" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>HammingComputer20</name></member>
+      <member refid="structfaiss_1_1HammingComputer20_1a7578abb60161cf73536930378917c388" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>HammingComputer20</name></member>
+      <member refid="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>set</name></member>
       <member refid="structfaiss_1_1HammingComputer20_1a678f2a0b38e9a6f95a562b3dc6030998" prot="public" virt="non-virtual"><scope>faiss::HammingComputer20</scope><name>set</name></member>
     </listofallmembers>
   </compounddef>

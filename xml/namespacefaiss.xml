@@ -913,7 +913,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="29" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/utils/hamming_distance/common.h" line="33" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" prot="public" static="no" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PartitionStats" kindref="compound">PartitionStats</ref></type>
@@ -5583,7 +5583,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="63" column="17" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="63" bodyend="72" declfile="faiss/utils/hamming.h" declline="213" declcolumn="10"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="65" column="17" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="65" bodyend="74" declfile="faiss/utils/hamming.h" declline="213" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a31146ebd95375313ae7c02ba06209ca0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -5624,23 +5624,6 @@
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="217" column="6" declfile="faiss/utils/hamming.h" declline="217" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>int</type>
-        <definition>int faiss::popcount64</definition>
-        <argsstring>(uint64_t x)</argsstring>
-        <name>popcount64</name>
-        <param>
-          <type>uint64_t</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="21" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="21" bodyend="23"/>
-      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a6ae1b2a404a4f618609a5b87eecc344b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -5670,7 +5653,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="23" column="10" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="23" bodyend="31"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="25" column="10" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="25" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a866a1991153d86e11e93d22b1567d578" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5698,7 +5681,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="35" column="17" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="35" bodyend="43"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="37" column="17" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="37" bodyend="45"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5721,7 +5704,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="47" column="8" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="47" bodyend="49"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="49" column="8" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="49" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a251cd1d86f57ca5499d939d3f5ae093e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5744,7 +5727,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="52" column="8" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="52" bodyend="54"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="54" column="8" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="54" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8d4176559a9c361225a047c03f62d648" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -5767,7 +5750,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="57" column="8" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="57" bodyend="60"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="59" column="8" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="59" bodyend="62"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3c20def47976af19292a160b2ec551d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5783,7 +5766,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="410" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="410" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="412" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="412" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acb4e4208ec84a403e02dba1b18b29840" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5799,7 +5782,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="411" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="411" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="413" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="413" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a138c0f4e83d2e8b7fdd90ef895f8c6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5815,7 +5798,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="412" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="412" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="414" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="414" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a965aa1292a3957feaaec0f4ed1b54f85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5831,7 +5814,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="413" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="413" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="415" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="415" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69f0b96e4d8c59be97ee73aedafac0a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5847,7 +5830,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="414" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="414" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="416" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="416" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aadcee2efcbb11d2c1d284589ba12b8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -5863,7 +5846,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="415" column="1" declfile="faiss/utils/hamming_distance/generic-inl.h" declline="415" declcolumn="1"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="417" column="1" declfile="faiss/utils/hamming_distance/avx2-inl.h" declline="417" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a69337e23232a204be3e1464713fee62d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -5880,7 +5863,41 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/generic-inl.h" line="424" column="12" bodyfile="faiss/utils/hamming_distance/generic-inl.h" bodystart="424" bodyend="430"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="426" column="12" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="426" bodyend="432"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8af12986585c75db3a1dbb2b74b6111e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::popcount32</definition>
+        <argsstring>(uint32_t x)</argsstring>
+        <name>popcount32</name>
+        <param>
+          <type>uint32_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/common.h" line="20" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="20" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a7d2125afc95e3417b270cb9428f8e0ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::popcount64</definition>
+        <argsstring>(uint64_t x)</argsstring>
+        <name>popcount64</name>
+        <param>
+          <type>uint64_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/common.h" line="25" column="12" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="25" bodyend="27"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a1d40aec5723474516de576263cc03048" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

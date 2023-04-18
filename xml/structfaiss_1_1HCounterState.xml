@@ -180,6 +180,8 @@
         <link refid="structfaiss_1_1HammingComputer"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/utils/hamming-inl.h" line="75" column="1" bodyfile="faiss/utils/hamming-inl.h" bodystart="75" bodyend="117"/>

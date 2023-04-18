@@ -3,7 +3,7 @@
   <compounddef id="dir_c2dc665bb85977007db19edac984ae84" kind="dir">
     <compoundname>faiss/utils/approx_topk</compoundname>
     <innerfile refid="approx__topk_8h">approx_topk.h</innerfile>
-    <innerfile refid="avx2-inl_8h">avx2-inl.h</innerfile>
+    <innerfile refid="approx__topk_2avx2-inl_8h">avx2-inl.h</innerfile>
     <innerfile refid="generic_8h">generic.h</innerfile>
     <innerfile refid="mode_8h">mode.h</innerfile>
     <briefdescription>

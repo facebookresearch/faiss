@@ -178,12 +178,12 @@
 <codeline lineno="79"><highlight class="comment"><sp/>*<sp/>hamming()<sp/>functions<sp/>and<sp/>put<sp/>the<sp/>a0,<sp/>a1,<sp/>...<sp/>in<sp/>registers.</highlight></codeline>
 <codeline lineno="80"><highlight class="comment"><sp/>******************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
-<codeline lineno="82" refid="structfaiss_1_1HammingComputer4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer4" kindref="compound">HammingComputer4</ref><sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer4<sp/>{</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/>a0;</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer4" kindref="compound">HammingComputer4</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer4()<sp/>{}</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer4" kindref="compound">HammingComputer4</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer4(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a,<sp/>code_size);</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"></highlight></codeline>
@@ -201,12 +201,12 @@
 <codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="103"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="105" refid="structfaiss_1_1HammingComputer8" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer8" kindref="compound">HammingComputer8</ref><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer8<sp/>{</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0;</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer8" kindref="compound">HammingComputer8</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer8()<sp/>{}</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer8" kindref="compound">HammingComputer8</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer8(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a,<sp/>code_size);</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"></highlight></codeline>
@@ -224,12 +224,12 @@
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="126"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"></highlight></codeline>
-<codeline lineno="128" refid="structfaiss_1_1HammingComputer16" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer16" kindref="compound">HammingComputer16</ref><sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer16<sp/>{</highlight></codeline>
 <codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1;</highlight></codeline>
 <codeline lineno="130"><highlight class="normal"></highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer16" kindref="compound">HammingComputer16</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer16()<sp/>{}</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer16" kindref="compound">HammingComputer16</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer16(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"></highlight></codeline>
@@ -252,13 +252,13 @@
 <codeline lineno="153"><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment">//<sp/>when<sp/>applied<sp/>to<sp/>an<sp/>array,<sp/>1/2<sp/>of<sp/>the<sp/>64-bit<sp/>accesses<sp/>are<sp/>unaligned.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="155"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>incurs<sp/>a<sp/>penalty<sp/>of<sp/>~10%<sp/>wrt.<sp/>fully<sp/>aligned<sp/>accesses.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="156" refid="structfaiss_1_1HammingComputer20" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer20" kindref="compound">HammingComputer20</ref><sp/>{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer20<sp/>{</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1;</highlight></codeline>
 <codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/>a2;</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"></highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer20" kindref="compound">HammingComputer20</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer20()<sp/>{}</highlight></codeline>
 <codeline lineno="161"><highlight class="normal"></highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer20" kindref="compound">HammingComputer20</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer20(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"></highlight></codeline>
@@ -281,12 +281,12 @@
 <codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="183"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="184"><highlight class="normal"></highlight></codeline>
-<codeline lineno="185" refid="structfaiss_1_1HammingComputer32" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer32" kindref="compound">HammingComputer32</ref><sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer32<sp/>{</highlight></codeline>
 <codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1,<sp/>a2,<sp/>a3;</highlight></codeline>
 <codeline lineno="187"><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer32" kindref="compound">HammingComputer32</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer32()<sp/>{}</highlight></codeline>
 <codeline lineno="189"><highlight class="normal"></highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer32" kindref="compound">HammingComputer32</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer32(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="193"><highlight class="normal"></highlight></codeline>
@@ -310,12 +310,12 @@
 <codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="212"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="213"><highlight class="normal"></highlight></codeline>
-<codeline lineno="214" refid="structfaiss_1_1HammingComputer64" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer64" kindref="compound">HammingComputer64</ref><sp/>{</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer64<sp/>{</highlight></codeline>
 <codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1,<sp/>a2,<sp/>a3,<sp/>a4,<sp/>a5,<sp/>a6,<sp/>a7;</highlight></codeline>
 <codeline lineno="216"><highlight class="normal"></highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer64" kindref="compound">HammingComputer64</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer64()<sp/>{}</highlight></codeline>
 <codeline lineno="218"><highlight class="normal"></highlight></codeline>
-<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer64" kindref="compound">HammingComputer64</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer64(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"></highlight></codeline>
@@ -345,14 +345,14 @@
 <codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="247"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="248"><highlight class="normal"></highlight></codeline>
-<codeline lineno="249" refid="structfaiss_1_1HammingComputerDefault" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputerDefault" kindref="compound">HammingComputerDefault</ref><sp/>{</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputerDefault<sp/>{</highlight></codeline>
 <codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8;</highlight></codeline>
 <codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>quotient8;</highlight></codeline>
 <codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>remainder8;</highlight></codeline>
 <codeline lineno="253"><highlight class="normal"></highlight></codeline>
-<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerDefault" kindref="compound">HammingComputerDefault</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerDefault()<sp/>{}</highlight></codeline>
 <codeline lineno="255"><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerDefault" kindref="compound">HammingComputerDefault</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerDefault(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="259"><highlight class="normal"></highlight></codeline>
@@ -429,13 +429,13 @@
 <codeline lineno="330"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="331"><highlight class="normal"></highlight></codeline>
 <codeline lineno="332"><highlight class="normal"></highlight><highlight class="comment">//<sp/>more<sp/>inefficient<sp/>than<sp/>HammingComputerDefault<sp/>(obsolete)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="333" refid="structfaiss_1_1HammingComputerM8" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputerM8" kindref="compound">HammingComputerM8</ref><sp/>{</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputerM8<sp/>{</highlight></codeline>
 <codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>a;</highlight></codeline>
 <codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
 <codeline lineno="336"><highlight class="normal"></highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerM8" kindref="compound">HammingComputerM8</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerM8()<sp/>{}</highlight></codeline>
 <codeline lineno="338"><highlight class="normal"></highlight></codeline>
-<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerM8" kindref="compound">HammingComputerM8</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerM8(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a8,<sp/>code_size);</highlight></codeline>
 <codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="342"><highlight class="normal"></highlight></codeline>
@@ -459,13 +459,13 @@
 <codeline lineno="360"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="361"><highlight class="normal"></highlight></codeline>
 <codeline lineno="362"><highlight class="normal"></highlight><highlight class="comment">//<sp/>more<sp/>inefficient<sp/>than<sp/>HammingComputerDefault<sp/>(obsolete)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="363" refid="structfaiss_1_1HammingComputerM4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputerM4" kindref="compound">HammingComputerM4</ref><sp/>{</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputerM4<sp/>{</highlight></codeline>
 <codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint32_t*<sp/>a;</highlight></codeline>
 <codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
 <codeline lineno="366"><highlight class="normal"></highlight></codeline>
-<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerM4" kindref="compound">HammingComputerM4</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerM4()<sp/>{}</highlight></codeline>
 <codeline lineno="368"><highlight class="normal"></highlight></codeline>
-<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputerM4" kindref="compound">HammingComputerM4</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a4,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputerM4(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a4,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set(a4,<sp/>code_size);</highlight></codeline>
 <codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="372"><highlight class="normal"></highlight></codeline>
@@ -494,9 +494,9 @@
 <codeline lineno="395"><highlight class="normal"></highlight></codeline>
 <codeline lineno="396"><highlight class="normal"></highlight><highlight class="comment">//<sp/>default<sp/>template</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="397"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>CODE_SIZE&gt;</highlight></codeline>
-<codeline lineno="398" refid="structfaiss_1_1HammingComputer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HammingComputer" kindref="compound">HammingComputer</ref><sp/>:<sp/><ref refid="structfaiss_1_1HammingComputerDefault" kindref="compound">HammingComputerDefault</ref><sp/>{</highlight></codeline>
-<codeline lineno="399"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HammingComputer" kindref="compound">HammingComputer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)</highlight></codeline>
-<codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1HammingComputerDefault" kindref="compound">HammingComputerDefault</ref>(a,<sp/>code_size)<sp/>{}</highlight></codeline>
+<codeline lineno="398"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HammingComputer<sp/>:<sp/>HammingComputerDefault<sp/>{</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"><sp/><sp/><sp/><sp/>HammingComputer(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)</highlight></codeline>
+<codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>HammingComputerDefault(a,<sp/>code_size)<sp/>{}</highlight></codeline>
 <codeline lineno="401"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="402"><highlight class="normal"></highlight></codeline>
 <codeline lineno="403"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SPECIALIZED_HC(CODE_SIZE)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
@@ -528,10 +528,10 @@
 <codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>popcount64(a);</highlight></codeline>
 <codeline lineno="430"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="431"><highlight class="normal"></highlight></codeline>
-<codeline lineno="432" refid="structfaiss_1_1GenHammingComputer8" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1GenHammingComputer8" kindref="compound">GenHammingComputer8</ref><sp/>{</highlight></codeline>
+<codeline lineno="432"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">GenHammingComputer8<sp/>{</highlight></codeline>
 <codeline lineno="433"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0;</highlight></codeline>
 <codeline lineno="434"><highlight class="normal"></highlight></codeline>
-<codeline lineno="435"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1GenHammingComputer8" kindref="compound">GenHammingComputer8</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="435"><highlight class="normal"><sp/><sp/><sp/><sp/>GenHammingComputer8(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(code_size<sp/>==<sp/>8);</highlight></codeline>
 <codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a0<sp/>=<sp/>*(uint64_t*)a;</highlight></codeline>
 <codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -545,9 +545,9 @@
 <codeline lineno="446"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="447"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="448"><highlight class="normal"></highlight></codeline>
-<codeline lineno="449" refid="structfaiss_1_1GenHammingComputer16" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1GenHammingComputer16" kindref="compound">GenHammingComputer16</ref><sp/>{</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">GenHammingComputer16<sp/>{</highlight></codeline>
 <codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1;</highlight></codeline>
-<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1GenHammingComputer16" kindref="compound">GenHammingComputer16</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/>GenHammingComputer16(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(code_size<sp/>==<sp/>16);</highlight></codeline>
 <codeline lineno="453"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>a<sp/>=<sp/>(uint64_t*)a8;</highlight></codeline>
 <codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a0<sp/>=<sp/>a[0];</highlight></codeline>
@@ -565,10 +565,10 @@
 <codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="467"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="468"><highlight class="normal"></highlight></codeline>
-<codeline lineno="469" refid="structfaiss_1_1GenHammingComputer32" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1GenHammingComputer32" kindref="compound">GenHammingComputer32</ref><sp/>{</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">GenHammingComputer32<sp/>{</highlight></codeline>
 <codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>a0,<sp/>a1,<sp/>a2,<sp/>a3;</highlight></codeline>
 <codeline lineno="471"><highlight class="normal"></highlight></codeline>
-<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1GenHammingComputer32" kindref="compound">GenHammingComputer32</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/>GenHammingComputer32(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(code_size<sp/>==<sp/>32);</highlight></codeline>
 <codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>a<sp/>=<sp/>(uint64_t*)a8;</highlight></codeline>
 <codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a0<sp/>=<sp/>a[0];</highlight></codeline>
@@ -590,11 +590,11 @@
 <codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="492"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="493"><highlight class="normal"></highlight></codeline>
-<codeline lineno="494" refid="structfaiss_1_1GenHammingComputerM8" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1GenHammingComputerM8" kindref="compound">GenHammingComputerM8</ref><sp/>{</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">GenHammingComputerM8<sp/>{</highlight></codeline>
 <codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>a;</highlight></codeline>
 <codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
 <codeline lineno="497"><highlight class="normal"></highlight></codeline>
-<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1GenHammingComputerM8" kindref="compound">GenHammingComputerM8</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/>GenHammingComputerM8(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>a8,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_size)<sp/>{</highlight></codeline>
 <codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(code_size<sp/>%<sp/>8<sp/>==<sp/>0);</highlight></codeline>
 <codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a<sp/>=<sp/>(uint64_t*)a8;</highlight></codeline>
 <codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n<sp/>=<sp/>code_size<sp/>/<sp/>8;</highlight></codeline>

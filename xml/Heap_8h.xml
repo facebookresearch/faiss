@@ -19,7 +19,7 @@
     <includedby refid="IndexBinaryHash_8h" local="no">faiss/IndexBinaryHash.h</includedby>
     <includedby refid="IndexBinaryIVF_8h" local="no">faiss/IndexBinaryIVF.h</includedby>
     <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
-    <includedby refid="avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
+    <includedby refid="approx__topk_2avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
     <includedby refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includedby>
     <includedby refid="approx__topk__hamming_8h" local="no">faiss/utils/approx_topk_hamming/approx_topk_hamming.h</includedby>
     <includedby refid="distances_8h" local="no">faiss/utils/distances.h</includedby>
@@ -347,7 +347,7 @@
       </node>
       <node id="41">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
-        <link refid="avx2-inl_8h_source"/>
+        <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
       <node id="37">
         <label>faiss/IndexScalarQuantizer.h</label>
