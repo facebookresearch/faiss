@@ -17,6 +17,10 @@ using hamdis_t = int32_t;
 
 namespace faiss {
 
+inline int popcount32(uint32_t x) {
+    return __builtin_popcount(x);
+}
+
 // popcount
 inline int popcount64(uint64_t x) {
     return __builtin_popcountl(x);
