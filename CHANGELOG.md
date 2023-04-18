@@ -22,11 +22,12 @@ the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 - Approximate evaluation of top-k distances for ResidualQuantizer and IndexBinaryFlat
 - Added support for 12-bit PQ / IVFPQ fine quantizer decoders for standalone vector codecs (faiss/cppcontrib)
 - Conda packages for osx-arm64 (Apple M1) and linux-aarch64 (ARM64) architectures
-- Support for Python 3.10 
+- Support for Python 3.10
 
 ### Removed
-- CUDA 10 is no longer supported
-- Removed Python 3.7 support
+- CUDA 10 is no longer supported in precompiled packages
+- Removed Python 3.7 support for precompiled packages
+- Removed constraint for using fine quantizer with no greater than 8 bits for IVFPQ, for example, now it is possible to use IVF256,PQ10x12 for a CPU index
 
 ### Changed
 - Various performance optimizations for PQ / IVFPQ for AVX2 and ARM for training (fused distance+nearest kernel), search (faster kernels for distance_to_code() and scan_list_*()) and vector encoding
