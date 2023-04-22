@@ -31,6 +31,50 @@ Faiss is built around an index type that stores a set of vectors, and provides a
 
 The optional GPU implementation provides what is likely (as of March 2017) the fastest exact and approximate (compressed-domain) nearest neighbor search implementation for high-dimensional vectors, fastest Lloyd's k-means, and fastest small k-selection algorithm known. [The implementation is detailed here](https://arxiv.org/abs/1702.08734).
 
+## Using FAISS with LangChain
+
+See [LangChain Documentations - FAISS](https://python.langchain.com/en/latest/modules/indexes/vectorstores/examples/faiss.html) for latest info.
+
+Exmaple using FAISS via. LangChain:
+
+- **Goal:** search for similar documents based on a query document.
+- **How?** List of Documents **->** create a vector representation for each document using a pre-trained language model **->** store these vectors in a FAISS vector store and use it to search.  
+
+```python
+import langchain
+from langchain.vectorstores import FAISS
+
+# Initialize a pre-trained language model
+embedding_model = langchain.get_embedding_model("bert-base-uncased")
+
+# Initialize the FAISS vector store
+vectorstore = FAISS.from_texts(["_"], embedding_model)
+
+# Example documents
+documents = [
+    "The quick brown fox jumps over the lazy dog.",
+    "The five boxing wizards jump quickly.",
+    "How vexingly quick daft zebras jump!",
+    "Jackdaws love my big sphinx of quartz.",
+    "Pack my box with five dozen liquor jugs.",
+]
+
+# Convert documents to vectors using the language model
+vectors = embedding_model.encode(documents)
+
+# Add vectors to the FAISS vector store
+vectorstore.add(vectors)
+
+# Encode the query document
+query_vector = embedding_model.encode(["The quick brown fox jumps over the lazy dog."])[0]
+
+# Search the FAISS vector store for similar vectors
+similar_vectors, distances = vectorstore.search(query_vector, k=3)
+
+# Convert similar vectors back to documents
+similar_documents = [documents[i] for i in similar_vectors]
+```
+
 ## Full documentation of Faiss
 
 The following are entry points for documentation:
