@@ -31,27 +31,26 @@
 #include <sstream>
 #include <vector>
 
-
-void evaluate_bfknn(faiss::gpu::GpuDistanceParams &args,
-                    faiss::gpu::GpuResourcesProvider *res,
-                    std::vector<float> &cpuDistance,
-                    std::vector<faiss::idx_t> &cpuIndices,
-                    std::vector<float> &gpuDistance,
-                    std::vector<faiss::idx_t> &gpuIndices,
-                    int numQuery,
-                    int k,
-                    bool colMajorVecs,
-                    bool colMajorQueries,
-                    faiss::MetricType metric) {
-
+void evaluate_bfknn(
+        faiss::gpu::GpuDistanceParams& args,
+        faiss::gpu::GpuResourcesProvider* res,
+        std::vector<float>& cpuDistance,
+        std::vector<faiss::idx_t>& cpuIndices,
+        std::vector<float>& gpuDistance,
+        std::vector<faiss::idx_t>& gpuIndices,
+        int numQuery,
+        int k,
+        bool colMajorVecs,
+        bool colMajorQueries,
+        faiss::MetricType metric) {
     using namespace faiss::gpu;
 
     bfKnn(res, args);
 
     std::stringstream str;
-    str << "using raft " << args.use_raft << "metric " << metric <<
-            " colMajorVecs " << colMajorVecs << " colMajorQueries " <<
-            colMajorQueries;
+    str << "using raft " << args.use_raft << "metric " << metric
+        << " colMajorVecs " << colMajorVecs << " colMajorQueries "
+        << colMajorQueries;
 
     compareLists(
             cpuDistance.data(),
@@ -172,12 +171,23 @@ void testTransposition(
 #if defined USE_NVIDIA_RAFT
     args.use_raft = use_raft;
 #else
-    FAISS_THROW_IF_NOT_MSG(!use_raft, "RAFT has not been compiled into the current version so it cannot be used.");
+    FAISS_THROW_IF_NOT_MSG(
+            !use_raft,
+            "RAFT has not been compiled into the current version so it cannot be used.");
 #endif
 
-    evaluate_bfknn(args, &res,cpuDistance, cpuIndices,
-               gpuDistance, gpuIndices, numQuery,
-               k, colMajorVecs, colMajorQueries, metric);
+    evaluate_bfknn(
+            args,
+            &res,
+            cpuDistance,
+            cpuIndices,
+            gpuDistance,
+            gpuIndices,
+            numQuery,
+            k,
+            colMajorVecs,
+            colMajorQueries,
+            metric);
 }
 
 // Test different memory layouts for brute-force k-NN
@@ -189,7 +199,8 @@ TEST(TestGpuDistance, Transposition_RR) {
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuDistance, Transposition_RR) {
     testTransposition(false, false, faiss::MetricType::METRIC_L2, true);
-    testTransposition(false, false, faiss::MetricType::METRIC_INNER_PRODUCT, true);
+    testTransposition(
+            false, false, faiss::MetricType::METRIC_INNER_PRODUCT, true);
 }
 #endif
 
@@ -233,7 +244,6 @@ TEST(TestRaftGpuDistance, L1) {
 }
 #endif
 
-
 // Test other transpositions with the general distance kernel
 TEST(TestGpuDistance, L1_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L1);
@@ -245,7 +255,6 @@ TEST(TestRaftGpuDistance, L1_RC) {
     testTransposition(false, true, faiss::MetricType::METRIC_L1, true);
 }
 #endif
-
 
 TEST(TestGpuDistance, L1_CR) {
     testTransposition(true, false, faiss::MetricType::METRIC_L1);
@@ -303,14 +312,14 @@ TEST(TestGpuDistance, BrayCurtis) {
     testTransposition(false, false, faiss::MetricType::METRIC_BrayCurtis);
 }
 
-
 TEST(TestGpuDistance, JensenShannon) {
     testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuDistance, JensenShannon) {
-    testTransposition(false, false, faiss::MetricType::METRIC_JensenShannon, true);
+    testTransposition(
+            false, false, faiss::MetricType::METRIC_JensenShannon, true);
 }
 #endif
 

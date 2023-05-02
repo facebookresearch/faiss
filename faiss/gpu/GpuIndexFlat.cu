@@ -99,8 +99,9 @@ void GpuIndexFlat::resetIndex_(int dims) {
                 config_.memorySpace));
     } else
 #else
-    if(flatConfig_.use_raft) {
-        FAISS_THROW_MSG("RAFT has not been compiled into the current version so it cannot be used.");
+    if (flatConfig_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
     } else
 #endif
     {

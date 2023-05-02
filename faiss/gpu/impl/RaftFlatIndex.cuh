@@ -55,7 +55,6 @@ class RaftFlatIndex : public FlatIndex {
             Tensor<idx_t, 2, true>& outIndices,
             bool exactDistance) override;
 
-
     void query(
             Tensor<half, 2, true>& vecs,
             int k,

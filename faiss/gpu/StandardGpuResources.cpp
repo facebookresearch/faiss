@@ -99,11 +99,13 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl()
           pinnedMemSize_(kDefaultPinnedMemoryAllocation),
           allocLogging_(false)
 #if defined USE_NVIDIA_RAFT
-, cmr(new rmm::mr::cuda_memory_resource),
+          ,
+          cmr(new rmm::mr::cuda_memory_resource),
           mmr(new rmm::mr::managed_memory_resource),
           pmr(new rmm::mr::pinned_memory_resource)
 #endif
-{}
+{
+}
 
 StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
     // The temporary memory allocator has allocated memory through us, so clean
@@ -307,12 +309,11 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     // If this is the first device that we're initializing, create our
     // pinned memory allocation
     if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
-
 #if defined USE_NVIDIA_RAFT
         // If this is the first device that we're initializing, create our
         // pinned memory allocation
         if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
-            pinnedMemAlloc_     = pmr->allocate(pinnedMemSize_);
+            pinnedMemAlloc_ = pmr->allocate(pinnedMemSize_);
             pinnedMemAllocSize_ = pinnedMemSize_;
         }
 #else
@@ -577,9 +578,9 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_RAFT
-        if(req.space == MemorySpace::Device) {
+        if (req.space == MemorySpace::Device) {
             cmr->deallocate(p, req.size, req.stream);
-        } else if(req.space == MemorySpace::Unified) {
+        } else if (req.space == MemorySpace::Unified) {
             mmr->deallocate(p, req.size, req.stream);
         }
 #else

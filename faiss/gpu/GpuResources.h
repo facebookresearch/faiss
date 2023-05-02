@@ -30,7 +30,6 @@
 #include <utility>
 #include <vector>
 
-
 #if defined USE_NVIDIA_RAFT
 #include <raft/core/device_resources.hpp>
 #endif

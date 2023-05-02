@@ -77,7 +77,6 @@ void testFlat(const TestFlatOptions& opt) {
     config.useFloat16 = opt.useFloat16;
     config.use_raft = opt.use_raft;
 
-
     faiss::gpu::GpuIndexFlat gpuIndex(&res, dim, opt.metric, config);
     gpuIndex.metric_arg = opt.metricArg;
 
@@ -340,12 +339,12 @@ void testCopyFrom(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, CopyFrom) {
-        testCopyFrom(false);
+    testCopyFrom(false);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, CopyFrom) {
-        testCopyFrom(true);
+    testCopyFrom(true);
 }
 #endif
 
@@ -391,12 +390,12 @@ void testCopyTo(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, CopyTo) {
-        testCopyTo(false);
+    testCopyTo(false);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, CopyTo) {
-        testCopyTo(true);
+    testCopyTo(true);
 }
 #endif
 
@@ -449,15 +448,14 @@ void testUnifiedMemory(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, UnifiedMemory) {
-        testUnifiedMemory(false);
+    testUnifiedMemory(false);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, UnifiedMemory) {
-        testUnifiedMemory(true);
+    testUnifiedMemory(true);
 }
 #endif
-
 
 void testLargeIndex(bool use_raft) {
     // Construct on a random device to test multi-device, if we have
@@ -511,16 +509,14 @@ void testLargeIndex(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, LargeIndex) {
-        testLargeIndex(false);
+    testLargeIndex(false);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, LargeIndex) {
-        testLargeIndex(true);
+    testLargeIndex(true);
 }
 #endif
-
-
 
 void testResidual(bool use_raft) {
     // Construct on a random device to test multi-device, if we have
@@ -566,12 +562,12 @@ void testResidual(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, Residual) {
-        testResidual(false);
+    testResidual(false);
 }
 
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, Residual) {
-        testResidual(true);
+    testResidual(true);
 }
 #endif
 
@@ -658,11 +654,11 @@ void testReconstruct(bool use_raft) {
 }
 
 TEST(TestGpuIndexFlat, Reconstruct) {
-        testReconstruct(false);
+    testReconstruct(false);
 }
 #if defined USE_NVIDIA_RAFT
 TEST(TestRaftGpuIndexFlat, Reconstruct) {
-        testReconstruct(true);
+    testReconstruct(true);
 }
 #endif
 
