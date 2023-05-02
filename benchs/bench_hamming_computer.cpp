@@ -234,12 +234,21 @@ int main() {
     hamming_computer_test<faiss::HammingComputer64, 512>(
             x1.data(), x2.data(), n1, n2, sumx, xorx);
 
-    // evaluate various HammingDistanceComputerXX
+    // evaluate various GenHammingDistanceComputerXX
     hamming_computer_test<faiss::GenHammingComputer8, 64>(
             x1.data(), x2.data(), n1, n2, sumx, xorx);
     hamming_computer_test<faiss::GenHammingComputer16, 128>(
             x1.data(), x2.data(), n1, n2, sumx, xorx);
     hamming_computer_test<faiss::GenHammingComputer32, 256>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+
+    hamming_computer_test<faiss::GenHammingComputerM8, 64>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::GenHammingComputerM8, 128>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::GenHammingComputerM8, 256>(
+            x1.data(), x2.data(), n1, n2, sumx, xorx);
+    hamming_computer_test<faiss::GenHammingComputerM8, 512>(
             x1.data(), x2.data(), n1, n2, sumx, xorx);
 
     return 0;

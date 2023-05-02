@@ -269,11 +269,6 @@ workflows:
           name: Windows x86_64 (conda)
           exec: windows-x86_64-cpu
       - build_conda:
-          name: OSX arm64 (conda)
-          exec: macosx-arm64-cpu
-          requires:
-            - Linux arm64 (conda)
-      - build_conda:
           name: Linux arm64 (conda)
           exec: linux-arm64-cpu
       - build_conda:
