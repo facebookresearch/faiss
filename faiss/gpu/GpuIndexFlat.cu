@@ -12,6 +12,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
+#include <faiss/gpu/impl/RaftFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
@@ -67,11 +68,7 @@ GpuIndexFlat::GpuIndexFlat(
     this->is_trained = true;
 
     // Construct index
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            dims,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(dims);
 }
 
 GpuIndexFlat::GpuIndexFlat(
@@ -86,14 +83,35 @@ GpuIndexFlat::GpuIndexFlat(
     this->is_trained = true;
 
     // Construct index
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            dims,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(dims);
 }
 
 GpuIndexFlat::~GpuIndexFlat() {}
+
+void GpuIndexFlat::resetIndex_(int dims) {
+#if defined USE_NVIDIA_RAFT
+
+    if (flatConfig_.use_raft) {
+        data_.reset(new RaftFlatIndex(
+                resources_.get(),
+                dims,
+                flatConfig_.useFloat16,
+                config_.memorySpace));
+    } else
+#else
+    if (flatConfig_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
+        data_.reset(new FlatIndex(
+                resources_.get(),
+                dims,
+                flatConfig_.useFloat16,
+                config_.memorySpace));
+    }
+}
 
 void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
     DeviceScope scope(config_.device);
@@ -101,11 +119,7 @@ void GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
     GpuIndex::copyFrom(index);
 
     data_.reset();
-    data_.reset(new FlatIndex(
-            resources_.get(),
-            this->d,
-            flatConfig_.useFloat16,
-            config_.memorySpace));
+    resetIndex_(this->d);
 
     // The index could be empty
     if (index->ntotal > 0) {

@@ -4,6 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <faiss/gpu/GpuDistance.h>
 #include <faiss/gpu/GpuResources.h>
@@ -14,8 +29,26 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 
+#if defined USE_NVIDIA_RAFT
+#include <faiss/gpu/impl/RaftUtils.h>
+#include <raft/core/device_mdspan.hpp>
+#include <raft/core/device_resources.hpp>
+#include <raft/core/error.hpp>
+#include <raft/core/mdspan_types.hpp>
+#include <raft/core/operators.hpp>
+#include <raft/core/temporary_device_buffer.hpp>
+#include <raft/linalg/unary_op.cuh>
+#include <raft/neighbors/brute_force.cuh>
+#define RAFT_NAME "raft"
+#endif
+
 namespace faiss {
 namespace gpu {
+
+#if defined USE_NVIDIA_RAFT
+using namespace raft::distance;
+using namespace raft::neighbors;
+#endif
 
 template <typename T>
 void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
@@ -165,7 +198,6 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                 tOutDistances,
                 tIntIndices,
                 args.ignoreOutDistances);
-
         // Convert and copy int indices out
         auto tOutIntIndices = toDeviceTemporary<int, 2>(
                 res,
@@ -186,17 +218,153 @@ void bfKnnConvert(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     fromDevice<float, 2>(tOutDistances, args.outDistances, stream);
 }
 
-void bfKnn(GpuResourcesProvider* res, const GpuDistanceParams& args) {
+void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     // For now, both vectors and queries must be of the same data type
     FAISS_THROW_IF_NOT_MSG(
             args.vectorType == args.queryType,
             "limitation: both vectorType and queryType must currently "
             "be the same (F32 or F16");
 
-    if (args.vectorType == DistanceDataType::F32) {
-        bfKnnConvert<float>(res, args);
+#if defined USE_NVIDIA_RAFT
+    // Note: For now, RAFT bfknn requires queries and vectors to be same layout
+    if (args.use_raft && args.queriesRowMajor == args.vectorsRowMajor) {
+        DistanceType distance = faiss_to_raft(args.metric, false);
+
+        auto resImpl = prov->getResources();
+        auto res = resImpl.get();
+        raft::device_resources& handle = res->getRaftHandleCurrentDevice();
+        auto stream = res->getDefaultStreamCurrentDevice();
+
+        idx_t dims = args.dims;
+        idx_t num_vectors = args.numVectors;
+        idx_t num_queries = args.numQueries;
+        int k = args.k;
+        float metric_arg = args.metricArg;
+
+        auto inds = raft::make_writeback_temporary_device_buffer<idx_t, idx_t>(
+                handle,
+                reinterpret_cast<idx_t*>(args.outIndices),
+                raft::matrix_extent<idx_t>(num_queries, (idx_t)k));
+        auto dists = raft::make_writeback_temporary_device_buffer<float, idx_t>(
+                handle,
+                reinterpret_cast<float*>(args.outDistances),
+                raft::matrix_extent<idx_t>(num_queries, (idx_t)k));
+
+        if (args.queriesRowMajor) {
+            auto index = raft::make_readonly_temporary_device_buffer<
+                    const float,
+                    idx_t,
+                    raft::row_major>(
+                    handle,
+                    const_cast<float*>(
+                            reinterpret_cast<const float*>(args.vectors)),
+                    raft::matrix_extent<idx_t>(num_vectors, dims));
+
+            auto search = raft::make_readonly_temporary_device_buffer<
+                    const float,
+                    idx_t,
+                    raft::row_major>(
+                    handle,
+                    const_cast<float*>(
+                            reinterpret_cast<const float*>(args.queries)),
+                    raft::matrix_extent<idx_t>(num_queries, dims));
+
+            // For now, use RAFT's fused KNN when k <= 64 and L2 metric is used
+            if (args.k <= 64 && args.metric == MetricType::METRIC_L2 &&
+                args.numVectors > 0) {
+                RAFT_LOG_INFO("Invoking flat fused_l2_knn");
+                brute_force::fused_l2_knn(
+                        handle,
+                        index.view(),
+                        search.view(),
+                        inds.view(),
+                        dists.view(),
+                        distance);
+            } else {
+                std::vector<raft::device_matrix_view<
+                        const float,
+                        idx_t,
+                        raft::row_major>>
+                        index_vec = {index.view()};
+                RAFT_LOG_INFO("Invoking flat bfknn");
+                brute_force::knn(
+                        handle,
+                        index_vec,
+                        search.view(),
+                        inds.view(),
+                        dists.view(),
+                        k,
+                        distance,
+                        metric_arg);
+            }
+        } else {
+            auto index = raft::make_readonly_temporary_device_buffer<
+                    const float,
+                    idx_t,
+                    raft::col_major>(
+                    handle,
+                    const_cast<float*>(
+                            reinterpret_cast<const float*>(args.vectors)),
+                    raft::matrix_extent<idx_t>(num_vectors, dims));
+
+            auto search = raft::make_readonly_temporary_device_buffer<
+                    const float,
+                    idx_t,
+                    raft::col_major>(
+                    handle,
+                    const_cast<float*>(
+                            reinterpret_cast<const float*>(args.queries)),
+                    raft::matrix_extent<idx_t>(num_queries, dims));
+
+            std::vector<raft::device_matrix_view<
+                    const float,
+                    idx_t,
+                    raft::col_major>>
+                    index_vec = {index.view()};
+            RAFT_LOG_INFO("Invoking flat bfknn");
+            brute_force::knn(
+                    handle,
+                    index_vec,
+                    search.view(),
+                    inds.view(),
+                    dists.view(),
+                    k,
+                    distance,
+                    metric_arg);
+        }
+
+        if (args.metric == MetricType::METRIC_Lp) {
+            raft::linalg::unary_op(
+                    handle,
+                    raft::make_const_mdspan(dists.view()),
+                    dists.view(),
+                    [metric_arg] __device__(const float& a) {
+                        return powf(a, metric_arg);
+                    });
+        } else if (args.metric == MetricType::METRIC_JensenShannon) {
+            raft::linalg::unary_op(
+                    handle,
+                    raft::make_const_mdspan(dists.view()),
+                    dists.view(),
+                    [] __device__(const float& a) { return powf(a, 2); });
+        }
+
+        RAFT_LOG_INFO("Done.");
+
+        handle.sync_stream();
+        RAFT_LOG_INFO("All synced.");
+    } else
+#else
+    if (args.use_raft) {
+        FAISS_THROW_IF_NOT_MSG(
+                !args.use_raft,
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+            if (args.vectorType == DistanceDataType::F32) {
+        bfKnnConvert<float>(prov, args);
     } else if (args.vectorType == DistanceDataType::F16) {
-        bfKnnConvert<half>(res, args);
+        bfKnnConvert<half>(prov, args);
     } else {
         FAISS_THROW_MSG("unknown vectorType");
     }
