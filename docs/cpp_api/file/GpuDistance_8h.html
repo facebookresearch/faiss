@@ -195,6 +195,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -504,6 +506,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams6deviceE">
 <span id="_CPPv3N5faiss3gpu17GpuDistanceParams6deviceE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams6deviceE"></span><span id="faiss::gpu::GpuDistanceParams::device__i"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams6deviceE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>On which GPU device should the search run? -1 indicates that the current CUDA thread-local device (via cudaGetDevice/cudaSetDevice) is used Otherwise, an integer 0 &lt;= device &lt; numDevices indicates the device for execution </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE">
+<span id="_CPPv3N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="_CPPv2N5faiss3gpu17GpuDistanceParams8use_raftE"></span><span id="faiss::gpu::GpuDistanceParams::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu17GpuDistanceParams8use_raftE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Should the index dispatch down to RAFT? </p>
 </dd></dl>
 
 </div>

@@ -195,6 +195,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -382,6 +384,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu14GpuIndexConfig11memorySpaceE">
 <span id="_CPPv3N5faiss3gpu14GpuIndexConfig11memorySpaceE"></span><span id="_CPPv2N5faiss3gpu14GpuIndexConfig11memorySpaceE"></span><span id="faiss::gpu::GpuIndexConfig::memorySpace__MemorySpace"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e"></span><a class="reference internal" href="GpuResources_8h.html#_CPPv4N5faiss3gpu11MemorySpaceE" title="faiss::gpu::MemorySpace"><span class="n"><span class="pre">MemorySpace</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memorySpace</span></span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu14GpuIndexConfig11memorySpaceE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>What memory space to use for primary storage. On Pascal and above (CC 6+) architectures, allows GPUs to use more memory than is available on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu14GpuIndexConfig8use_raftE">
+<span id="_CPPv3N5faiss3gpu14GpuIndexConfig8use_raftE"></span><span id="_CPPv2N5faiss3gpu14GpuIndexConfig8use_raftE"></span><span id="faiss::gpu::GpuIndexConfig::use_raft__b"></span><span class="target" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_raft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N5faiss3gpu14GpuIndexConfig8use_raftE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Should the index dispatch down to RAFT? </p>
 </dd></dl>
 
 </div>

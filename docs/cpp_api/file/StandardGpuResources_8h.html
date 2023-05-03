@@ -195,6 +195,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ProductQuantizer_8h.html">File ProductQuantizer.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PtxUtils_8cuh.html">File PtxUtils.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Quantizer_8h.html">File Quantizer.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftFlatIndex_8cuh.html">File RaftFlatIndex.cuh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RaftUtils_8h.html">File RaftUtils.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReductionOperators_8cuh.html">File ReductionOperators.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Reductions_8cuh.html">File Reductions.cuh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="RemapIndices_8h.html">File RemapIndices.h</a></li>
@@ -460,7 +462,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi">
 <span id="_CPPv3NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi"></span><span id="_CPPv2NK5faiss3gpu24StandardGpuResourcesImpl13isInitializedEi"></span><span id="faiss::gpu::StandardGpuResourcesImpl::isInitialized__iC"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a55c7e84b0f56ea2c591fd14415a23dd2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isInitialized</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
@@ -469,7 +471,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl7allocs_E">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl7allocs_E"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl7allocs_E"></span><span id="faiss::gpu::StandardGpuResourcesImpl::allocs___std::unordered_map:i.std::unordered_map:voidP.AllocRequest::"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1aaf1d435773c0b0a0571fa397c9bfaa6a"></span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacestd.html#_CPPv4St" title="std"><span class="n"><span class="pre">std</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GpuResources_8h.html#_CPPv4N5faiss3gpu12AllocRequestE" title="faiss::gpu::AllocRequest"><span class="n"><span class="pre">AllocRequest</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocs_</span></span></span><br /></dt>
@@ -543,7 +545,7 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-static-functions">Private Static Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-static-functions">Protected Static Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t">
 <span id="_CPPv3N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t"></span><span id="_CPPv2N5faiss3gpu24StandardGpuResourcesImpl23getDefaultTempMemForGPUEi6size_t"></span><span id="faiss::gpu::StandardGpuResourcesImpl::getDefaultTempMemForGPU__i.s"></span><span class="target" id="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl_1a8ec365660c997441b2cf5faea71c36bb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDefaultTempMemForGPU</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">device</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">requested</span></span><span class="sig-paren">)</span><br /></dt>
