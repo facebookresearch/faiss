@@ -189,8 +189,6 @@ class StandardGpuResourcesImpl : public GpuResources {
 
     /// Whether or not we log every GPU memory allocation and deallocation
     bool allocLogging_;
-
-
 };
 
 /// Default implementation of GpuResources that allocates a cuBLAS
