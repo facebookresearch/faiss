@@ -217,7 +217,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="22" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="22" bodyend="60"/>
+        <location file="faiss/gpu/GpuResources.h" line="42" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="42" bodyend="80"/>
       </memberdef>
       <memberdef kind="enum" id="GpuResources_8h_1a308a493158ec240731ef7f87029fbd67" prot="public" static="no" strong="no">
         <type></type>
@@ -256,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="66" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="66" bodyend="78"/>
+        <location file="faiss/gpu/GpuResources.h" line="86" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="86" bodyend="98"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -361,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="141" column="6" declfile="faiss/gpu/GpuDistance.h" declline="141" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="144" column="6" declfile="faiss/gpu/GpuDistance.h" declline="144" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -423,7 +423,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="144" column="6" declfile="faiss/gpu/GpuDistance.h" declline="144" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="147" column="6" declfile="faiss/gpu/GpuDistance.h" declline="147" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
@@ -441,7 +441,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="170" column="10" declfile="faiss/gpu/GpuIndex.h" declline="170" declcolumn="10"/>
+        <location file="faiss/gpu/GpuIndex.h" line="188" column="10" declfile="faiss/gpu/GpuIndex.h" declline="188" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -459,7 +459,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="173" column="6" declfile="faiss/gpu/GpuIndex.h" declline="173" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="191" column="6" declfile="faiss/gpu/GpuIndex.h" declline="191" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a9a5eeb989c1d853a58aa65a8af310372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -477,7 +477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="176" column="6" declfile="faiss/gpu/GpuIndex.h" declline="176" declcolumn="6"/>
+        <location file="faiss/gpu/GpuIndex.h" line="194" column="6" declfile="faiss/gpu/GpuIndex.h" declline="194" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a01cfc3c8a312c3e60e1909eeb0941301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -495,7 +495,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="63" column="13" declfile="faiss/gpu/GpuResources.h" declline="63" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="83" column="13" declfile="faiss/gpu/GpuResources.h" declline="83" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a26325bc7abaa18271fbe76c2bfbf1c64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -513,7 +513,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="81" column="13" declfile="faiss/gpu/GpuResources.h" declline="81" declcolumn="13"/>
+        <location file="faiss/gpu/GpuResources.h" line="101" column="13" declfile="faiss/gpu/GpuResources.h" declline="101" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a899d29db52c5400a548baa534667f1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -535,7 +535,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="118" column="11" declfile="faiss/gpu/GpuResources.h" declline="118" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="138" column="11" declfile="faiss/gpu/GpuResources.h" declline="138" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1a25ba473fa8b757298399a9898435424a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -557,7 +557,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="121" column="11" declfile="faiss/gpu/GpuResources.h" declline="121" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="141" column="11" declfile="faiss/gpu/GpuResources.h" declline="141" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="GpuResources_8h_1acc39275d82143dd1663807a635e59cf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1gpu_1_1AllocInfo" kindref="compound">AllocInfo</ref></type>
@@ -583,7 +583,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="124" column="11" declfile="faiss/gpu/GpuResources.h" declline="124" declcolumn="11"/>
+        <location file="faiss/gpu/GpuResources.h" line="144" column="11" declfile="faiss/gpu/GpuResources.h" declline="144" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="IndexUtils_8h_1af43e39c84e5b12e107a71dfa5d840e60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -749,6 +749,27 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="50" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="50" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="RaftUtils_8h_1aac52425937fe60ea6a3fa57363ea5f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>raft::distance::DistanceType</type>
+        <definition>raft::distance::DistanceType faiss::gpu::faiss_to_raft</definition>
+        <argsstring>(MetricType metric, bool exactDistance)</argsstring>
+        <name>faiss_to_raft</name>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>exactDistance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/impl/RaftUtils.h" line="29" column="30" bodyfile="faiss/gpu/impl/RaftUtils.h" bodystart="29" bodyend="53"/>
       </memberdef>
       <memberdef kind="function" id="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

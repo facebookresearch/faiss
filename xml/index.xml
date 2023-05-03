@@ -678,6 +678,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1adff919837926113a0022b2889d931d27" kind="variable"><name>outIndicesType</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" kind="variable"><name>outIndices</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" kind="variable"><name>device</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" kind="function"><name>GpuDistanceParams</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kind="class"><name>faiss::gpu::GpuIcmEncoder</name>
@@ -784,10 +785,12 @@
   <compound refid="structfaiss_1_1gpu_1_1GpuIndexBinaryFlatConfig" kind="struct"><name>faiss::gpu::GpuIndexBinaryFlatConfig</name>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuIndexConfig" kind="struct"><name>faiss::gpu::GpuIndexConfig</name>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" kind="function"><name>GpuIndexConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kind="class"><name>faiss::gpu::GpuIndexFlat</name>
@@ -829,6 +832,7 @@
     <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1afb754c32a30a0152d2533bb9de3b098d" kind="function"><name>resetIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad42677502d391e88427b26da1ae9bd2d" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aa036d1ff8d0cfbf8ff81b53ea0a58781" kind="function"><name>addImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad9f05629fda68df95cb828f0a7721941" kind="function"><name>searchImpl_</name></member>
@@ -848,6 +852,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a39b32076b957bd2e1de93df3f5f5ea0b" kind="function"><name>GpuIndexFlatConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP" kind="class"><name>faiss::gpu::GpuIndexFlatIP</name>
@@ -892,6 +897,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" kind="variable"><name>minPagedSize_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1afb754c32a30a0152d2533bb9de3b098d" kind="function"><name>resetIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad42677502d391e88427b26da1ae9bd2d" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aa036d1ff8d0cfbf8ff81b53ea0a58781" kind="function"><name>addImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad9f05629fda68df95cb828f0a7721941" kind="function"><name>searchImpl_</name></member>
@@ -946,6 +952,7 @@
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a32a08664fc4dca2f9405e07ea5bc206f" kind="variable"><name>minPagedSize_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" kind="function"><name>copyFrom</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" kind="function"><name>copyTo</name></member>
+    <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1afb754c32a30a0152d2533bb9de3b098d" kind="function"><name>resetIndex_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad42677502d391e88427b26da1ae9bd2d" kind="function"><name>addImplRequiresIDs_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1aa036d1ff8d0cfbf8ff81b53ea0a58781" kind="function"><name>addImpl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ad9f05629fda68df95cb828f0a7721941" kind="function"><name>searchImpl_</name></member>
@@ -1035,6 +1042,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" kind="variable"><name>flatConfig</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1afdedee94ebe4faf9cdfcabc50128f948" kind="function"><name>GpuIndexIVFConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" kind="class"><name>faiss::gpu::GpuIndexIVFFlat</name>
@@ -1122,6 +1130,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" kind="variable"><name>flatConfig</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig_1adec18969ca176fe00f0a0691eb427793" kind="function"><name>GpuIndexIVFFlatConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kind="class"><name>faiss::gpu::GpuIndexIVFPQ</name>
@@ -1223,6 +1232,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" kind="variable"><name>flatConfig</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ab8173b4e53a49aa5c43f0b04a61f16fd" kind="function"><name>GpuIndexIVFPQConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" kind="class"><name>faiss::gpu::GpuIndexIVFScalarQuantizer</name>
@@ -1314,6 +1324,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" kind="variable"><name>flatConfig</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig_1a9f1d563c0024b897e62edd1800bae795" kind="function"><name>GpuIndexIVFScalarQuantizerConfig</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kind="struct"><name>faiss::gpu::GpuMemoryReservation</name>
@@ -8473,13 +8484,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d135" kind="namespace"><name>faiss::@135</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d150" kind="namespace"><name>faiss::@150</name>
+  <compound refid="namespacefaiss_1_1_0d136" kind="namespace"><name>faiss::@136</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d151" kind="namespace"><name>faiss::@151</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d152" kind="namespace"><name>faiss::@152</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -8577,6 +8588,7 @@
     <member refid="InterleavedCodes_8h_1aaf252105b63cae024ead79790da77591" kind="function"><name>unpackInterleaved</name></member>
     <member refid="InterleavedCodes_8h_1aa5fbf46e73968e7535eb83ef86cbcd16" kind="function"><name>packNonInterleaved</name></member>
     <member refid="InterleavedCodes_8h_1ac7600011e96df9221930dcdfa0c790f5" kind="function"><name>packInterleaved</name></member>
+    <member refid="RaftUtils_8h_1aac52425937fe60ea6a3fa57363ea5f33" kind="function"><name>faiss_to_raft</name></member>
     <member refid="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" kind="function"><name>ivfOffsetToUserIndex</name></member>
     <member refid="TestUtils_8h_1a6985d5edeae8143e4f1680b1428e55fc" kind="function"><name>newTestSeed</name></member>
     <member refid="TestUtils_8h_1a97a43b6f2ad18a336a6ffb7d182e70e3" kind="function"><name>setTestSeed</name></member>
@@ -8660,7 +8672,7 @@
   </compound>
   <compound refid="namespacefaiss_1_1simd__result__handlers" kind="namespace"><name>faiss::simd_result_handlers</name>
   </compound>
-  <compound refid="namespacefaiss_1_1simd__result__handlers_1_1_0d70" kind="namespace"><name>faiss::simd_result_handlers::@70</name>
+  <compound refid="namespacefaiss_1_1simd__result__handlers_1_1_0d71" kind="namespace"><name>faiss::simd_result_handlers::@71</name>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -8776,6 +8788,10 @@
   <compound refid="PQScanMultiPassNoPrecomputed_8cuh" kind="file"><name>PQScanMultiPassNoPrecomputed.cuh</name>
   </compound>
   <compound refid="PQScanMultiPassPrecomputed_8cuh" kind="file"><name>PQScanMultiPassPrecomputed.cuh</name>
+  </compound>
+  <compound refid="RaftFlatIndex_8cuh" kind="file"><name>RaftFlatIndex.cuh</name>
+  </compound>
+  <compound refid="RaftUtils_8h" kind="file"><name>RaftUtils.h</name>
   </compound>
   <compound refid="RemapIndices_8h" kind="file"><name>RemapIndices.h</name>
   </compound>

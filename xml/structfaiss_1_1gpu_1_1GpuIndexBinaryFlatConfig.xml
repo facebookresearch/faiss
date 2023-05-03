@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="20" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="20" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="35" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
@@ -30,7 +30,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="25" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="40" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuIndexConfig::use_raft</definition>
+        <argsstring></argsstring>
+        <name>use_raft</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Should the index dispatch down to RAFT? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuIndex.h" line="43" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -66,6 +81,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>GpuIndexConfig</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>memorySpace</name></member>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryFlatConfig</scope><name>use_raft</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
