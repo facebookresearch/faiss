@@ -312,7 +312,7 @@ void IndexHNSW::search(
             DistanceComputer* dis = storage_distance_computer(storage);
             ScopeDeleter1<DistanceComputer> del(dis);
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder)
+#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 idx_t* idxi = labels + i * k;
                 float* simi = distances + i * k;
