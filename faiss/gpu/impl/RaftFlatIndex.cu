@@ -109,7 +109,6 @@ void RaftFlatIndex::query(
                     search,
                     inds,
                     dists,
-                    k,
                     distance,
                     metricArg);
         }

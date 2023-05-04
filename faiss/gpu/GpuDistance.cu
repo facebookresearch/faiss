@@ -293,7 +293,6 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                         search.view(),
                         inds.view(),
                         dists.view(),
-                        k,
                         distance,
                         metric_arg);
             }
@@ -328,7 +327,6 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
                     search.view(),
                     inds.view(),
                     dists.view(),
-                    k,
                     distance,
                     metric_arg);
         }
