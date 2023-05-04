@@ -19,6 +19,7 @@
  * - memory usage
  * - cache-misses when dealing with large volumes of data (fewer bits is better)
  *
+ * hamdis_t is defined in utils/hamming_distance/common.h
  */
 
 #ifndef FAISS_hamming_h
@@ -29,8 +30,10 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
 
-/* The Hamming distance type */
-typedef int32_t hamdis_t;
+// Low-level Hamming distance computations and hamdis_t.
+#include <faiss/utils/hamming_distance/hamdis-inl.h>
+
+#include <faiss/utils/approx_topk/mode.h>
 
 namespace faiss {
 
@@ -99,10 +102,6 @@ struct BitstringReader {
 
 FAISS_API extern size_t hamming_batch_size;
 
-inline int popcount64(uint64_t x) {
-    return __builtin_popcountl(x);
-}
-
 /** Compute a set of Hamming distances between na and nb binary vectors
  *
  * @param  a             size na * nbytespercode
@@ -125,14 +124,18 @@ void hammings(
  * @param nb      number of database vectors
  * @param ncodes  size of the binary codes (bytes)
  * @param ordered if != 0: order the results by decreasing distance
- *                (may be bottleneck for k/n > 0.01) */
+ *                (may be bottleneck for k/n > 0.01)
+ * @param approx_topk_mode allows to use approximate top-k facilities
+ *                         to speedup heap
+ */
 void hammings_knn_hc(
         int_maxheap_array_t* ha,
         const uint8_t* a,
         const uint8_t* b,
         size_t nb,
         size_t ncodes,
-        int ordered);
+        int ordered,
+        ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK);
 
 /* Legacy alias to hammings_knn_hc. */
 void hammings_knn(
@@ -209,9 +212,17 @@ void crosshamming_count_thres(
 /* compute the Hamming distances between two codewords of nwords*64 bits */
 hamdis_t hamming(const uint64_t* bs1, const uint64_t* bs2, size_t nwords);
 
-} // namespace faiss
+/** generalized Hamming distances (= count number of code bytes that
+    are the same) */
+void generalized_hammings_knn_hc(
+        int_maxheap_array_t* ha,
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t nb,
+        size_t code_size,
+        int ordered = true);
 
-// inlined definitions of HammingComputerXX and GenHammingComputerXX
+} // namespace faiss
 
 #include <faiss/utils/hamming-inl.h>
 

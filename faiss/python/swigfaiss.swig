@@ -90,6 +90,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/impl/ThreadedIndex.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
@@ -147,6 +148,7 @@ typedef uint64_t size_t;
 #include <faiss/Clustering.h>
 
 #include <faiss/utils/hamming.h>
+#include <faiss/utils/hamming_distance/common.h>
 
 #include <faiss/AutoTune.h>
 #include <faiss/MatrixStats.h>
@@ -276,6 +278,7 @@ namespace std {
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>
+%include <faiss/utils/hamming_distance/common.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -484,6 +487,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexShards.h>
 %template(IndexShards) faiss::IndexShardsTemplate<faiss::Index>;
 %template(IndexBinaryShards) faiss::IndexShardsTemplate<faiss::IndexBinary>;
+%include  <faiss/IndexShardsIVF.h>
 
 %include  <faiss/IndexReplicas.h>
 %template(IndexReplicas) faiss::IndexReplicasTemplate<faiss::Index>;
@@ -509,7 +513,7 @@ void gpu_sync_all_devices()
 %include <faiss/impl/AuxIndexStructures.h>
 %include <faiss/impl/IDSelector.h>
 
-%include <faiss/utils/approx_topk/approx_topk.h>
+%include <faiss/utils/approx_topk/mode.h>
 
 #ifdef GPU_WRAPPER
 
@@ -578,6 +582,7 @@ void gpu_sync_all_devices()
 %typemap(out) faiss::Index * {
     DOWNCAST2 ( IndexIDMap2, IndexIDMap2TemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexIDMap, IndexIDMapTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
     DOWNCAST ( IndexIVFPQR )

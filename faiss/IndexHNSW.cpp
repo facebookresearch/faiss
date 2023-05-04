@@ -98,7 +98,7 @@ struct NegativeDistanceComputer : DistanceComputer {
 };
 
 DistanceComputer* storage_distance_computer(const Index* storage) {
-    if (storage->metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(storage->metric_type)) {
         return new NegativeDistanceComputer(storage->get_distance_computer());
     } else {
         return storage->get_distance_computer();
@@ -346,7 +346,7 @@ void IndexHNSW::search(
         InterruptCallback::check();
     }
 
-    if (metric_type == METRIC_INNER_PRODUCT) {
+    if (is_similarity_metric(metric_type)) {
         // we need to revert the negated distances
         for (size_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
@@ -612,6 +612,14 @@ void IndexHNSW::link_singletons() {
     for (int i = 0; i < singletons.size(); i++) {
         FAISS_ASSERT(!"not implemented");
     }
+}
+
+void IndexHNSW::permute_entries(const idx_t* perm) {
+    auto flat_storage = dynamic_cast<IndexFlatCodes*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_storage, "don't know how to permute this index");
+    flat_storage->permute_entries(perm);
+    hnsw.permute_entries(perm);
 }
 
 /**************************************************************

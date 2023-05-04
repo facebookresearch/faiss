@@ -25,9 +25,7 @@ function(find_and_configure_raft)
             SOURCE_SUBDIR  cpp
             OPTIONS
             "BUILD_TESTS OFF"
-            "BUILD_BENCH OFF"
-            "RAFT_COMPILE_LIBRARIES OFF"
-            "RAFT_ENABLE_NN_DEPENDENCIES OFF"
+            "RAFT_COMPILE_LIBRARY OFF"
             )
 endfunction()
 

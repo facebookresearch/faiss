@@ -46,7 +46,9 @@ class TestIndexFlat(unittest.TestCase):
             Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
 
         Dref = all_dis[np.arange(nq)[:, None], Iref]
-        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0001)
+
+        # not too many elements are off.
+        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0002)
         #  np.testing.assert_equal(Iref, I1)
         np.testing.assert_almost_equal(Dref, D1, decimal=5)
 

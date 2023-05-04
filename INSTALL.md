@@ -106,11 +106,13 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_RAFT=ON` in order to enable building the RAFT implementations
-    of the IVF-Flat and IVF-PQ GPU-accelerated indices (default is `OFF`, possible 
+    of the IVF-Flat and IVF-PQ GPU-accelerated indices (default is `OFF`, possible
     values are `ON` and `OFF`)
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),
+  - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
+    are `ON` and `OFF`), 
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),

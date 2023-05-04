@@ -532,7 +532,7 @@ def handle_Index(the_class):
         Returns
         -------
         lims: array_like
-            Startring index of the results for each query vector, size n+1.
+            Starting index of the results for each query vector, size n+1.
         D : array_like
             Distances of the nearest neighbors, shape `lims[n]`. The distances for
             query i are in `D[lims[i]:lims[i+1]]`.
@@ -654,6 +654,12 @@ def handle_Index(the_class):
             ids = swig_ptr(ids)
         self.add_sa_codes_c(n, swig_ptr(codes), ids)
 
+    def replacement_permute_entries(self, perm):
+        n, = perm.shape
+        assert n == self.ntotal
+        perm = np.ascontiguousarray(perm, dtype='int64')
+        self.permute_entries_c(faiss.swig_ptr(perm))
+
     replace_method(the_class, 'add', replacement_add)
     replace_method(the_class, 'add_with_ids', replacement_add_with_ids)
     replace_method(the_class, 'assign', replacement_assign)
@@ -674,6 +680,8 @@ def handle_Index(the_class):
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
     replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
+                   ignore_missing=True)
+    replace_method(the_class, 'permute_entries', replacement_permute_entries,
                    ignore_missing=True)
 
     # get/set state for pickle

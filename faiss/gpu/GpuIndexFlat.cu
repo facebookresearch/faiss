@@ -89,16 +89,22 @@ GpuIndexFlat::GpuIndexFlat(
 GpuIndexFlat::~GpuIndexFlat() {}
 
 void GpuIndexFlat::resetIndex_(int dims) {
-    if (config_.use_raft) {
-        printf("Should use raft!\n");
+#if defined USE_NVIDIA_RAFT
+
+    if (flatConfig_.use_raft) {
         data_.reset(new RaftFlatIndex(
                 resources_.get(),
                 dims,
                 flatConfig_.useFloat16,
                 config_.memorySpace));
-
-    } else {
-        printf("Not using raft :-(\n");
+    } else
+#else
+    if (flatConfig_.use_raft) {
+        FAISS_THROW_MSG(
+                "RAFT has not been compiled into the current version so it cannot be used.");
+    } else
+#endif
+    {
         data_.reset(new FlatIndex(
                 resources_.get(),
                 dims,

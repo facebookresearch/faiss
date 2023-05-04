@@ -26,10 +26,13 @@
 #include <cuda_runtime.h>
 #include <faiss/impl/FaissAssert.h>
 
-#include <raft/core/handle.hpp>
 #include <memory>
 #include <utility>
 #include <vector>
+
+#if defined USE_NVIDIA_RAFT
+#include <raft/core/device_resources.hpp>
+#endif
 
 namespace faiss {
 namespace gpu {
@@ -207,10 +210,12 @@ class GpuResources {
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
 
+#if defined USE_NVIDIA_RAFT
     /// Returns the raft handle for the given device which can be used to
     /// make calls to other raft primitives.
-    virtual raft::handle_t& getRaftHandle(int device) = 0;
-    raft::handle_t& getRaftHandleCurrentDevice();
+    virtual raft::device_resources& getRaftHandle(int device) = 0;
+    raft::device_resources& getRaftHandleCurrentDevice();
+#endif
 
     /// Overrides the default stream for a device to the user-supplied stream.
     /// The resources object does not own this stream (i.e., it will not destroy

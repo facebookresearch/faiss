@@ -9,6 +9,40 @@ We try to indicate most contributions here with the contributor names who are no
 the Facebook Faiss team.  Feel free to add entries here if you submit a PR.
 
 ## [Unreleased]
+## [1.7.4] - 2023-04-12
+### Added
+- Added big batch IVF search for conducting efficient search with big batches of queries
+- Checkpointing in big batch search support
+- Precomputed centroids support
+- Support for iterable inverted lists for eg. key value stores
+- 64-bit indexing arithmetic support in FAISS GPU
+- IndexIVFShards now handle IVF indexes with a common quantizer
+- Jaccard distance support
+- CodePacker for non-contiguous code layouts
+- Approximate evaluation of top-k distances for ResidualQuantizer and IndexBinaryFlat
+- Added support for 12-bit PQ / IVFPQ fine quantizer decoders for standalone vector codecs (faiss/cppcontrib)
+- Conda packages for osx-arm64 (Apple M1) and linux-aarch64 (ARM64) architectures
+- Support for Python 3.10
+
+### Removed
+- CUDA 10 is no longer supported in precompiled packages
+- Removed Python 3.7 support for precompiled packages
+- Removed constraint for using fine quantizer with no greater than 8 bits for IVFPQ, for example, now it is possible to use IVF256,PQ10x12 for a CPU index
+
+### Changed
+- Various performance optimizations for PQ / IVFPQ for AVX2 and ARM for training (fused distance+nearest kernel), search (faster kernels for distance_to_code() and scan_list_*()) and vector encoding
+- A magnitude faster CPU code for LSQ/PLSQ training and vector encoding (reworked code)
+- Performance improvements for Hamming Code computations for AVX2 and ARM (reworked code)
+- Improved auto-vectorization support for IP and L2 distance computations (better handling of pragmas)
+- Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
+
+### Fixed
+- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- Faiss GPU IVF large query batch fix
+- Faiss + Torch fixes, re-enable k = 2048
+- Fix the number of distance computations to match max_codes parameter
+- Fix decoding of large fast_scan blocks
+
 
 ## [1.7.3] - 2022-11-3
 ### Added
@@ -224,7 +258,8 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.2...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.7.4...HEAD
+[1.7.4]: https://github.com/facebookresearch/faiss/compare/v1.7.3...v1.7.4
 [1.7.3]: https://github.com/facebookresearch/faiss/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/facebookresearch/faiss/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/facebookresearch/faiss/compare/v1.7.0...v1.7.1

@@ -18,6 +18,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/IndexScalarQuantizer.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -226,8 +227,8 @@ ToGpuClonerMultiple::ToGpuClonerMultiple(
         std::vector<int>& devices,
         const GpuMultipleClonerOptions& options)
         : GpuMultipleClonerOptions(options) {
-    FAISS_ASSERT(provider.size() == devices.size());
-    for (int i = 0; i < provider.size(); i++) {
+    FAISS_THROW_IF_NOT(provider.size() == devices.size());
+    for (size_t i = 0; i < provider.size(); i++) {
         sub_cloners.push_back(ToGpuCloner(provider[i], devices[i], options));
     }
 }
@@ -240,11 +241,11 @@ ToGpuClonerMultiple::ToGpuClonerMultiple(
 void ToGpuClonerMultiple::copy_ivf_shard(
         const IndexIVF* index_ivf,
         IndexIVF* idx2,
-        long n,
-        long i) {
+        idx_t n,
+        idx_t i) {
     if (shard_type == 2) {
-        long i0 = i * index_ivf->ntotal / n;
-        long i1 = (i + 1) * index_ivf->ntotal / n;
+        idx_t i0 = i * index_ivf->ntotal / n;
+        idx_t i1 = (i + 1) * index_ivf->ntotal / n;
 
         if (verbose)
             printf("IndexShards shard %ld indices %ld:%ld\n", i, i0, i1);
@@ -256,14 +257,27 @@ void ToGpuClonerMultiple::copy_ivf_shard(
             printf("IndexShards shard %ld select modulo %ld = %ld\n", i, n, i);
         index_ivf->copy_subset_to(
                 *idx2, InvertedLists::SUBSET_TYPE_ID_MOD, n, i);
+    } else if (shard_type == 4) {
+        idx_t i0 = i * index_ivf->nlist / n;
+        idx_t i1 = (i + 1) * index_ivf->nlist / n;
+        if (verbose) {
+            printf("IndexShards %ld/%ld select lists %d:%d\n",
+                   i,
+                   n,
+                   int(i0),
+                   int(i1));
+        }
+        index_ivf->copy_subset_to(
+                *idx2, InvertedLists::SUBSET_TYPE_INVLIST, i0, i1);
     } else {
         FAISS_THROW_FMT("shard_type %d not implemented", shard_type);
     }
 }
 
 Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
-    long n = sub_cloners.size();
+    idx_t n = sub_cloners.size();
 
+    auto index_ivf = dynamic_cast<const faiss::IndexIVF*>(index);
     auto index_ivfpq = dynamic_cast<const faiss::IndexIVFPQ*>(index);
     auto index_ivfflat = dynamic_cast<const faiss::IndexIVFFlat*>(index);
     auto index_ivfsq =
@@ -275,16 +289,36 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             "IndexIVFFlat, IndexIVFScalarQuantizer, "
             "IndexFlat and IndexIVFPQ");
 
+    // decide what coarse quantizer the sub-indexes are going to have
+    const Index* quantizer = nullptr;
+    std::unique_ptr<Index> new_quantizer;
+    if (index_ivf) {
+        quantizer = index_ivf->quantizer;
+        if (common_ivf_quantizer &&
+            !dynamic_cast<const IndexFlat*>(quantizer)) {
+            // then we flatten the coarse quantizer so that everything remains
+            // on GPU
+            new_quantizer.reset(
+                    new IndexFlat(quantizer->d, quantizer->metric_type));
+            std::vector<float> centroids(quantizer->d * quantizer->ntotal);
+            quantizer->reconstruct_n(0, quantizer->ntotal, centroids.data());
+            new_quantizer->add(quantizer->ntotal, centroids.data());
+            quantizer = new_quantizer.get();
+        }
+    }
+
     std::vector<faiss::Index*> shards(n);
 
-    for (long i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         // make a shallow copy
-        if (reserveVecs)
+        if (reserveVecs) {
             sub_cloners[i].reserveVecs = (reserveVecs + n - 1) / n;
-
+        }
+        // note: const_casts here are harmless because the indexes build here
+        // are short-lived, translated immediately to GPU indexes.
         if (index_ivfpq) {
             faiss::IndexIVFPQ idx2(
-                    index_ivfpq->quantizer,
+                    const_cast<Index*>(quantizer),
                     index_ivfpq->d,
                     index_ivfpq->nlist,
                     index_ivfpq->code_size,
@@ -298,7 +332,7 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             shards[i] = sub_cloners[i].clone_Index(&idx2);
         } else if (index_ivfflat) {
             faiss::IndexIVFFlat idx2(
-                    index_ivfflat->quantizer,
+                    const_cast<Index*>(quantizer),
                     index->d,
                     index_ivfflat->nlist,
                     index_ivfflat->metric_type);
@@ -308,7 +342,7 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             shards[i] = sub_cloners[i].clone_Index(&idx2);
         } else if (index_ivfsq) {
             faiss::IndexIVFScalarQuantizer idx2(
-                    index_ivfsq->quantizer,
+                    const_cast<Index*>(quantizer),
                     index->d,
                     index_ivfsq->nlist,
                     index_ivfsq->sq.qtype,
@@ -324,40 +358,52 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
             faiss::IndexFlat idx2(index->d, index->metric_type);
             shards[i] = sub_cloners[i].clone_Index(&idx2);
             if (index->ntotal > 0) {
-                long i0 = index->ntotal * i / n;
-                long i1 = index->ntotal * (i + 1) / n;
+                idx_t i0 = index->ntotal * i / n;
+                idx_t i1 = index->ntotal * (i + 1) / n;
                 shards[i]->add(i1 - i0, index_flat->get_xb() + i0 * index->d);
             }
         }
     }
 
     bool successive_ids = index_flat != nullptr;
-    faiss::IndexShards* res =
-            new faiss::IndexShards(index->d, true, successive_ids);
+    faiss::IndexShards* res;
+    if (common_ivf_quantizer && index_ivf) {
+        this->shard = false;
+        Index* common_quantizer = clone_Index(index_ivf->quantizer);
+        this->shard = true;
+        IndexShardsIVF* idx = new faiss::IndexShardsIVF(
+                common_quantizer, index_ivf->nlist, true, false);
+        idx->own_fields = true;
+        idx->own_indices = true;
+        res = idx;
+    } else {
+        res = new faiss::IndexShards(index->d, true, successive_ids);
+        res->own_indices = true;
+    }
 
     for (int i = 0; i < n; i++) {
         res->add_shard(shards[i]);
     }
-    res->own_fields = true;
     FAISS_ASSERT(index->ntotal == res->ntotal);
     return res;
 }
 
 Index* ToGpuClonerMultiple::clone_Index(const Index* index) {
-    long n = sub_cloners.size();
-    if (n == 1)
+    idx_t n = sub_cloners.size();
+    if (n == 1) {
         return sub_cloners[0].clone_Index(index);
+    }
 
     if (dynamic_cast<const IndexFlat*>(index) ||
-        dynamic_cast<const faiss::IndexIVFFlat*>(index) ||
-        dynamic_cast<const faiss::IndexIVFScalarQuantizer*>(index) ||
-        dynamic_cast<const faiss::IndexIVFPQ*>(index)) {
+        dynamic_cast<const IndexIVFFlat*>(index) ||
+        dynamic_cast<const IndexIVFScalarQuantizer*>(index) ||
+        dynamic_cast<const IndexIVFPQ*>(index)) {
         if (!shard) {
             IndexReplicas* res = new IndexReplicas();
             for (auto& sub_cloner : sub_cloners) {
                 res->addIndex(sub_cloner.clone_Index(index));
             }
-            res->own_fields = true;
+            res->own_indices = true;
             return res;
         } else {
             return clone_Index_to_shards(index);
@@ -374,8 +420,8 @@ Index* ToGpuClonerMultiple::clone_Index(const Index* index) {
         for (int m = 0; m < pq.M; m++) {
             // which GPU(s) will be assigned to this sub-quantizer
 
-            long i0 = m * n / pq.M;
-            long i1 = pq.M <= n ? (m + 1) * n / pq.M : i0 + 1;
+            idx_t i0 = m * n / pq.M;
+            idx_t i1 = pq.M <= n ? (m + 1) * n / pq.M : i0 + 1;
             std::vector<ToGpuCloner> sub_cloners_2;
             sub_cloners_2.insert(
                     sub_cloners_2.begin(),

@@ -44,6 +44,7 @@ set(FAISS_SRC
   IndexRowwiseMinMax.cpp
   IndexScalarQuantizer.cpp
   IndexShards.cpp
+  IndexShardsIVF.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
   VectorTransform.cpp
@@ -133,6 +134,7 @@ set(FAISS_HEADERS
   IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
+  IndexShardsIVF.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -168,6 +170,9 @@ set(FAISS_HEADERS
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/simd_result_handlers.h
+  impl/code_distance/code_distance.h
+  impl/code_distance/code_distance-generic.h
+  impl/code_distance/code_distance-avx2.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
@@ -198,6 +203,14 @@ set(FAISS_HEADERS
   utils/approx_topk/approx_topk.h
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h
+  utils/approx_topk/mode.h
+  utils/approx_topk_hamming/approx_topk_hamming.h
+  utils/transpose/transpose-avx2-inl.h
+  utils/hamming_distance/common.h
+  utils/hamming_distance/generic-inl.h
+  utils/hamming_distance/hamdis-inl.h
+  utils/hamming_distance/neon-inl.h
+  utils/hamming_distance/avx2-inl.h
 )
 
 if(NOT WIN32)

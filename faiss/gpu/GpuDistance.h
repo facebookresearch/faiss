@@ -124,6 +124,9 @@ struct GpuDistanceParams {
     /// Otherwise, an integer 0 <= device < numDevices indicates the device for
     /// execution
     int device;
+
+    /// Should the index dispatch down to RAFT?
+    bool use_raft = false;
 };
 
 /// A wrapper for gpu/impl/Distance.cuh to expose direct brute-force k-nearest

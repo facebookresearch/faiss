@@ -34,6 +34,12 @@ typedef float faiss_distance_t; ///< all distances between vectors are this type
 #define FAISS_DECLARE_INDEX_DOWNCAST(clazz) \
     Faiss##clazz* faiss_##clazz##_cast(FaissIndex*);
 
+/// Declare a dynamic downcast operation from a base `FaissSearchParameters*`
+/// pointer type to a more specific search parameters type. The function returns
+/// the same pointer if the downcast is valid, and `NULL` otherwise.
+#define FAISS_DECLARE_SEARCH_PARAMETERS_DOWNCAST(clazz) \
+    Faiss##clazz* faiss_##clazz##_cast(FaissSearchParameters*);
+
 /// Declare a getter for the field `name` in class `clazz`,
 /// of return type `ty`
 #define FAISS_DECLARE_GETTER(clazz, ty, name) \

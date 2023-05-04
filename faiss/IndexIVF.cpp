@@ -160,7 +160,7 @@ IndexIVF::IndexIVF(
         size_t code_size,
         MetricType metric)
         : Index(d, metric),
-          Level1Quantizer(quantizer, nlist),
+          IndexIVFInterface(quantizer, nlist),
           invlists(new ArrayInvertedLists(nlist, code_size)),
           own_invlists(true),
           code_size(code_size) {
@@ -172,13 +172,7 @@ IndexIVF::IndexIVF(
     }
 }
 
-IndexIVF::IndexIVF()
-        : invlists(nullptr),
-          own_invlists(false),
-          code_size(0),
-          nprobe(1),
-          max_codes(0),
-          parallel_mode(0) {}
+IndexIVF::IndexIVF() {}
 
 void IndexIVF::add(idx_t n, const float* x) {
     add_with_ids(n, x, nullptr);
