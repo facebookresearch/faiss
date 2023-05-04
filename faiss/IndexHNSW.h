@@ -134,6 +134,8 @@ struct IndexHNSW : Index {
     void reorder_links();
 
     void link_singletons();
+
+    void permute_entries(const idx_t* perm);
 };
 
 /** Flat index topped with with a HNSW structure to access elements

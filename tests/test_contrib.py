@@ -15,6 +15,7 @@ from faiss.contrib import inspect_tools
 from faiss.contrib import evaluation
 from faiss.contrib import ivf_tools
 from faiss.contrib import clustering
+from faiss.contrib import big_batch_search
 
 from common_faiss_tests import get_dataset_2
 try:
@@ -497,7 +498,7 @@ class TestBigBatchSearch(unittest.TestCase):
         # faiss.omp_set_num_threads(1)
         for method in ("pairwise_distances", "knn_function", "index"):
             for threaded in 0, 1, 3, 8:
-                Dnew, Inew = ivf_tools.big_batch_search(
+                Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
                     threaded=threaded
@@ -526,12 +527,12 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
-        r = random.randrange(1<<60)
+        r = random.randrange(1 << 60)
         checkpoint = "/tmp/test_big_batch_checkpoint.%d" % r
         try:
             # First big batch search
             try:
-                Dnew, Inew = ivf_tools.big_batch_search(
+                Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method="knn_function",
                     threaded=4,
@@ -543,7 +544,7 @@ class TestBigBatchSearch(unittest.TestCase):
             else:
                 self.assertFalse("should have crashed")
             # Second big batch search
-            Dnew, Inew = ivf_tools.big_batch_search(
+            Dnew, Inew = big_batch_search.big_batch_search(
                 index, ds.get_queries(),
                 k, method="knn_function",
                 threaded=4,
@@ -554,3 +555,38 @@ class TestBigBatchSearch(unittest.TestCase):
         finally:
             if os.path.exists(checkpoint):
                 os.unlink(checkpoint)
+
+
+class TestInvlistSort(unittest.TestCase):
+
+    def test_sort(self):
+        """ make sure that the search results do not change
+        after sorting the inverted lists """
+        ds = datasets.SyntheticDataset(32, 2000, 200, 20)
+        index = faiss.index_factory(ds.d, "IVF50,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        Dref, Iref = index.search(ds.get_queries(), 5)
+
+        ivf_tools.sort_invlists_by_size(index)
+        list_sizes = ivf_tools.get_invlist_sizes(index.invlists)
+        assert np.all(list_sizes[1:] >= list_sizes[:-1])
+
+        Dnew, Inew = index.search(ds.get_queries(), 5)
+        np.testing.assert_equal(Dnew, Dref)
+        np.testing.assert_equal(Inew, Iref)
+
+    def test_hnsw_permute(self):
+        """ make sure HNSW permutation works (useful when used as coarse quantizer) """
+        ds = datasets.SyntheticDataset(32, 0, 1000, 50)
+        index = faiss.index_factory(ds.d, "HNSW32,Flat")
+        index.add(ds.get_database())
+        Dref, Iref = index.search(ds.get_queries(), 5)
+        rs = np.random.RandomState(1234)
+        perm = rs.permutation(index.ntotal)
+        index.permute_entries(perm)
+        Dnew, Inew = index.search(ds.get_queries(), 5)
+        np.testing.assert_equal(Dnew, Dref)
+        Inew_remap = perm[Inew]
+        np.testing.assert_equal(Inew_remap, Iref)
