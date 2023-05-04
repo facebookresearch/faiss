@@ -89,7 +89,13 @@ std::string allocsToString(const std::unordered_map<void*, AllocRequest>& map) {
 //
 
 StandardGpuResourcesImpl::StandardGpuResourcesImpl()
-        : pinnedMemAlloc_(nullptr),
+        :
+#if defined USE_NVIDIA_RAFT
+          cmr(new rmm::mr::cuda_memory_resource),
+          mmr(new rmm::mr::managed_memory_resource),
+          pmr(new rmm::mr::pinned_memory_resource),
+#endif
+          pinnedMemAlloc_(nullptr),
           pinnedMemAllocSize_(0),
           // let the adjustment function determine the memory size for us by
           // passing in a huge value that will then be adjusted
@@ -97,14 +103,7 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl()
                   -1,
                   std::numeric_limits<size_t>::max())),
           pinnedMemSize_(kDefaultPinnedMemoryAllocation),
-          allocLogging_(false)
-#if defined USE_NVIDIA_RAFT
-          ,
-          cmr(new rmm::mr::cuda_memory_resource),
-          mmr(new rmm::mr::managed_memory_resource),
-          pmr(new rmm::mr::pinned_memory_resource)
-#endif
-{
+          allocLogging_(false) {
 }
 
 StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
