@@ -226,6 +226,8 @@ struct HNSW {
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
             int max_size);
+
+    void permute_entries(const idx_t* map);
 };
 
 struct HNSWStats {

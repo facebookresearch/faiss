@@ -253,6 +253,9 @@ struct ArrayInvertedLists : InvertedLists {
 
     void resize(size_t list_no, size_t new_size) override;
 
+    /// permute the inverted lists, map maps new_id to old_id
+    void permute_invlists(const idx_t* map);
+
     ~ArrayInvertedLists() override;
 };
 

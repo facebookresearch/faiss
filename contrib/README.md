@@ -69,3 +69,8 @@ Contains:
 - a Python implementation of kmeans, that can be used for special datatypes (eg. sparse matrices).
 
 - a 2-level clustering routine and a function that can apply it to train an IndexIVF
+
+### big_batch_search.py
+
+Search IVF indexes with one centroid after another. Useful for large
+databases that do not fit in RAM *and* a large number of queries.

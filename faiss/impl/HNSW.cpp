@@ -823,6 +823,39 @@ void HNSW::search_level_0(
     }
 }
 
+void HNSW::permute_entries(const idx_t* map) {
+    // remap levels
+    storage_idx_t ntotal = levels.size();
+    std::vector<storage_idx_t> imap(ntotal); // inverse mapping
+    // map: new index -> old index
+    // imap: old index -> new index
+    for (int i = 0; i < ntotal; i++) {
+        assert(map[i] >= 0 && map[i] < ntotal);
+        imap[map[i]] = i;
+    }
+    if (entry_point != -1) {
+        entry_point = imap[entry_point];
+    }
+    std::vector<int> new_levels(ntotal);
+    std::vector<size_t> new_offsets(ntotal + 1);
+    std::vector<storage_idx_t> new_neighbors(neighbors.size());
+    size_t no = 0;
+    for (int i = 0; i < ntotal; i++) {
+        storage_idx_t o = map[i]; // corresponding "old" index
+        new_levels[i] = levels[o];
+        for (size_t j = offsets[o]; j < offsets[o + 1]; j++) {
+            storage_idx_t neigh = neighbors[j];
+            new_neighbors[no++] = neigh >= 0 ? imap[neigh] : neigh;
+        }
+        new_offsets[i + 1] = no;
+    }
+    assert(new_offsets[ntotal] == offsets[ntotal]);
+    // swap everyone
+    std::swap(levels, new_levels);
+    std::swap(offsets, new_offsets);
+    std::swap(neighbors, new_neighbors);
+}
+
 /**************************************************************
  * MinimaxHeap
  **************************************************************/

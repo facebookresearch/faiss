@@ -287,6 +287,20 @@ void ArrayInvertedLists::update_entries(
     memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
 }
 
+void ArrayInvertedLists::permute_invlists(const idx_t* map) {
+    std::vector<std::vector<uint8_t>> new_codes(nlist);
+    std::vector<std::vector<idx_t>> new_ids(nlist);
+
+    for (size_t i = 0; i < nlist; i++) {
+        size_t o = map[i];
+        FAISS_THROW_IF_NOT(o < nlist);
+        std::swap(new_codes[i], codes[o]);
+        std::swap(new_ids[i], ids[o]);
+    }
+    std::swap(codes, new_codes);
+    std::swap(ids, new_ids);
+}
+
 ArrayInvertedLists::~ArrayInvertedLists() {}
 
 /*****************************************************************

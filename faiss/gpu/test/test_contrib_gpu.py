@@ -10,7 +10,7 @@ import numpy as np
 
 from common_faiss_tests import get_dataset_2
 
-from faiss.contrib import datasets, evaluation, ivf_tools
+from faiss.contrib import datasets, evaluation, big_batch_search
 from faiss.contrib.exhaustive_search import knn_ground_truth, \
     range_ground_truth
 
@@ -83,7 +83,7 @@ class TestBigBatchSearch(unittest.TestCase):
             return faiss.knn_gpu(res, xq, xb, k, metric=faiss.METRIC_L2)
 
         for method in "pairwise_distances", "knn_function":
-            Dnew, Inew = ivf_tools.big_batch_search(
+            Dnew, Inew = big_batch_search.big_batch_search(
                 index, ds.get_queries(),
                 k, method=method,
                 pairwise_distances=pairwise_distances,
@@ -119,7 +119,7 @@ class TestBigBatchSearchMultiGPU(unittest.TestCase):
                 metric=faiss.METRIC_L2, device=thread_id
             )
 
-        Dnew, Inew = ivf_tools.big_batch_search(
+        Dnew, Inew = big_batch_search.big_batch_search(
             index, ds.get_queries(),
             k, method="knn_function",
             knn=knn_function,
