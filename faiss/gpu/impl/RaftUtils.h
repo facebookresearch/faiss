@@ -20,13 +20,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include <faiss/MetricType.h>
+#include <raft/core/error.hpp>
 #include <raft/distance/distance_types.hpp>
 
 namespace faiss {
 namespace gpu {
 
-raft::distance::DistanceType faiss_to_raft(
+inline raft::distance::DistanceType faiss_to_raft(
         MetricType metric,
         bool exactDistance) {
     switch (metric) {
