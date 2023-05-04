@@ -155,6 +155,7 @@
     <member refid="structfaiss_1_1ArrayInvertedLists_1a6b1f8d4cfe8413065c416d442bd4636b" kind="function"><name>add_entries</name></member>
     <member refid="structfaiss_1_1ArrayInvertedLists_1af4aa699d0fba82f2d6f755e0b33b49af" kind="function"><name>update_entries</name></member>
     <member refid="structfaiss_1_1ArrayInvertedLists_1a2077262cafd78d12534a6bf780bae148" kind="function"><name>resize</name></member>
+    <member refid="structfaiss_1_1ArrayInvertedLists_1afb5692a57b032056d3dd547042453996" kind="function"><name>permute_invlists</name></member>
     <member refid="structfaiss_1_1ArrayInvertedLists_1a2b7d89d03b5289edbcc8a88d77f0b221" kind="function"><name>~ArrayInvertedLists</name></member>
     <member refid="structfaiss_1_1InvertedLists_1afba013c7993209233977f2ad8cceb5b7" kind="function"><name>is_empty</name></member>
     <member refid="structfaiss_1_1InvertedLists_1a2d4440bffe71607a7d493408c8e34870" kind="function"><name>get_iterator</name></member>
@@ -1689,6 +1690,7 @@
     <member refid="structfaiss_1_1HNSW_1ab0455aedd431a165dea13bac2548066f" kind="function"><name>clear_neighbor_tables</name></member>
     <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" kind="function"><name>print_neighbor_stats</name></member>
     <member refid="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" kind="function"><name>prepare_level_tab</name></member>
+    <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1HNSW_1a43ba39d488c9bdb515e6e4437041c9ee" kind="function"><name>shrink_neighbor_list</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
@@ -1880,6 +1882,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -1946,6 +1949,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
@@ -2330,6 +2334,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2379,6 +2384,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2411,6 +2417,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a4bec1a04796e20ea0bfa24bad5b246e3" kind="function"><name>search</name></member>
@@ -2446,6 +2453,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2485,6 +2493,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2531,6 +2540,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2562,6 +2572,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2605,6 +2616,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2648,6 +2660,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -2691,6 +2704,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1ab9c75063090927f8f65d1896b6949af4" kind="function"><name>init_level_0_from_entry_points</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a949f66fe1ed3f6256d0d84cf532fade8" kind="function"><name>reorder_links</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a2c0277b782f0f16ae33e30a1450bd8d3" kind="function"><name>link_singletons</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -4407,6 +4421,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -4513,6 +4528,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -4847,6 +4863,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -5009,6 +5026,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -5109,6 +5127,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -5347,6 +5366,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
@@ -5552,6 +5572,7 @@
     <member refid="structfaiss_1_1IndexFlatCodes_1a26451b54b8a1c4c10f494d336ade1e21" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" kind="function"><name>permute_entries</name></member>
     <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
     <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>

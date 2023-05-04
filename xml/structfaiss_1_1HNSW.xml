@@ -623,6 +623,23 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="222" column="9"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::HNSW::permute_entries</definition>
+        <argsstring>(const idx_t *map)</argsstring>
+        <name>permute_entries</name>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>map</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="230" column="10"/>
+      </memberdef>
       </sectiondef>
       <sectiondef kind="public-static-func">
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a43ba39d488c9bdb515e6e4437041c9ee" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -672,7 +689,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/HNSW.h" line="53" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="53" bodyend="229"/>
+    <location file="faiss/impl/HNSW.h" line="53" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="53" bodyend="231"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HNSW_1a41a5d502f7b17a0fca8d1b0c02123a24" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>add_links_starting_from</name></member>
       <member refid="structfaiss_1_1HNSW_1a314b809de6f329662ab09f258b49afb3" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>add_with_locks</name></member>
@@ -693,6 +710,7 @@
       <member refid="structfaiss_1_1HNSW_1a27bd11ef9a651a94bcefa5291336fc58" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>neighbors</name></member>
       <member refid="structfaiss_1_1HNSW_1a7354bfe0fedc510d73071ebefd37dcb2" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>Node</name></member>
       <member refid="structfaiss_1_1HNSW_1a0b456c521194903b29ce7c157539d771" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>offsets</name></member>
+      <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>prepare_level_tab</name></member>
       <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>print_neighbor_stats</name></member>
       <member refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>random_level</name></member>

@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="144" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="146" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWFlat_1a3b87e5bddf34dcfc559fa601902050cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="145" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="147" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -354,6 +354,23 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="136" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexHNSW::permute_entries</definition>
+        <argsstring>(const idx_t *perm)</argsstring>
+        <name>permute_entries</name>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="138" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1283,7 +1300,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="143" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="143" bodyend="146"/>
+    <location file="faiss/IndexHNSW.h" line="145" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="145" bodyend="148"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlat</scope><name>add_with_ids</name></member>
@@ -1310,6 +1327,7 @@
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlat</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlat</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlat</scope><name>own_fields</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWFlat</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlat</scope><name>range_search</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlat</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexHNSWFlat</scope><name>reconstruct_batch</name></member>

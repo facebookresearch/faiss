@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="172" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="174" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW2Level_1ab9193d66b28fd4aeeb1bf7c7e8933d1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="173" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="175" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW2Level_1a257801d5c05bca5d46442824ed3834f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="175" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="177" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW2Level_1a0702820667ab98a90da866ec311f39aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="178" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="180" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -369,6 +369,23 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="136" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexHNSW::permute_entries</definition>
+        <argsstring>(const idx_t *perm)</argsstring>
+        <name>permute_entries</name>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexHNSW.h" line="138" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1298,7 +1315,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="171" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="171" bodyend="185"/>
+    <location file="faiss/IndexHNSW.h" line="173" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="173" bodyend="187"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>add_with_ids</name></member>
@@ -1326,6 +1343,7 @@
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>own_fields</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>range_search</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>reconstruct_batch</name></member>

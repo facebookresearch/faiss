@@ -639,6 +639,23 @@
         </inbodydescription>
         <location file="faiss/IndexFlatCodes.h" line="61" column="18"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::IndexFlatCodes::permute_entries</definition>
+        <argsstring>(const idx_t *perm)</argsstring>
+        <name>permute_entries</name>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>perm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexFlatCodes.h" line="64" column="10"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::Index::add_with_ids</definition>
@@ -1140,6 +1157,7 @@
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexScalarQuantizer</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexScalarQuantizer</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexScalarQuantizer</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a0bbb5ed1a7cbc15a42b1ef10f60193ba" prot="public" virt="non-virtual"><scope>faiss::IndexScalarQuantizer</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::IndexScalarQuantizer</scope><name>range_search</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afe96eb3293cc5428f9077648b23fcc4e" prot="public" virt="virtual"><scope>faiss::IndexScalarQuantizer</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexScalarQuantizer</scope><name>reconstruct_batch</name></member>
