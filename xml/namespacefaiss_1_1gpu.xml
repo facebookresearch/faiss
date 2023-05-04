@@ -750,7 +750,7 @@
         </inbodydescription>
         <location file="faiss/gpu/impl/InterleavedCodes.h" line="50" column="13" declfile="faiss/gpu/impl/InterleavedCodes.h" declline="50" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="RaftUtils_8h_1aac52425937fe60ea6a3fa57363ea5f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="RaftUtils_8h_1aac52425937fe60ea6a3fa57363ea5f33" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>raft::distance::DistanceType</type>
         <definition>raft::distance::DistanceType faiss::gpu::faiss_to_raft</definition>
         <argsstring>(MetricType metric, bool exactDistance)</argsstring>
@@ -769,7 +769,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/impl/RaftUtils.h" line="29" column="30" bodyfile="faiss/gpu/impl/RaftUtils.h" bodystart="29" bodyend="53"/>
+        <location file="faiss/gpu/impl/RaftUtils.h" line="32" column="37" bodyfile="faiss/gpu/impl/RaftUtils.h" bodystart="32" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="RemapIndices_8h_1ac3554d7eea7de9a418116374084dbb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
