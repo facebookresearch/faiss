@@ -96,7 +96,7 @@ void RaftIVFFlat::search(
     FAISS_ASSERT(n > 0);
     FAISS_THROW_IF_NOT(nprobe > 0 && nprobe <= numLists_);
 
-    const raft::handle_t& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     raft::neighbors::ivf_flat::search_params pams;
     pams.n_probes = nprobe;
@@ -109,12 +109,11 @@ void RaftIVFFlat::search(
             raft::make_device_matrix_view<float>(outDistances.data(), n, k_);
     raft::neighbors::ivf_flat::search<float, idx_t>(
             raft_handle,
+	    pams,
             *raft_knn_index,
             queries_view,
             out_inds_view,
-            out_dists_view,
-            pams,
-            k_);
+            out_dists_view);
 
     raft_handle.sync_stream();
 }
@@ -136,7 +135,7 @@ idx_t RaftIVFFlat::addVectors(
     auto inds_view = raft::make_device_vector_view<const idx_t, idx_t>(
             indices.data(), (idx_t)indices.getSize(0));
 
-    const raft::handle_t& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     printf("About to call extend on index\n");
@@ -145,11 +144,11 @@ idx_t RaftIVFFlat::addVectors(
     if (raft_knn_index.has_value()) {
         raft_knn_index.emplace(raft::neighbors::ivf_flat::extend(
                 raft_handle,
-                raft_knn_index.value(),
                 vecs_view,
                 std::make_optional<
                         raft::device_vector_view<const idx_t, idx_t>>(
-                        inds_view)));
+                        inds_view),
+	        raft_knn_index.value()));
 
     } else {
         printf("Index has not been trained!\n");
@@ -167,7 +166,7 @@ idx_t RaftIVFFlat::getListLength(idx_t listId) const {
     printf("Inside RaftIVFFlat getListLength\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
-    const raft::handle_t& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     uint32_t size;
@@ -185,17 +184,11 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     printf("Inside RaftIVFFlat getListIndices\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
-    const raft::handle_t& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    idx_t offset;
     uint32_t size;
 
-    raft::copy(
-            &offset,
-            raft_knn_index.value().list_offsets().data_handle() + listId,
-            1,
-            raft_handle.get_stream());
     raft::copy(
             &size,
             raft_knn_index.value().list_sizes().data_handle() + listId,
@@ -206,7 +199,7 @@ std::vector<idx_t> RaftIVFFlat::getListIndices(idx_t listId) const {
     std::vector<idx_t> vec(size);
     raft::copy(
             vec.data(),
-            raft_knn_index.value().indices().data_handle() + offset,
+            *(raft_knn_index.value().inds_ptrs().data_handle() + listId),
             size,
             raft_handle.get_stream());
     return vec;
@@ -218,31 +211,26 @@ std::vector<uint8_t> RaftIVFFlat::getListVectorData(idx_t listId, bool gpuFormat
     printf("Inside RaftIVFFlat getListVectorData\n");
 
     FAISS_ASSERT(raft_knn_index.has_value());
-    const raft::handle_t& raft_handle =
+    const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
     std::cout << "Calling getListVectorData for " << listId << std::endl;
 
-    using elem_t = decltype(raft_knn_index.value().data())::element_type;
+    using elem_t = decltype(raft_knn_index.value().data_ptrs())::element_type;
     size_t dim = raft_knn_index.value().dim();
-    idx_t offsets[2];
-    raft::copy(
-            offsets,
-            raft_knn_index.value().list_offsets().data_handle() + listId,
-            2,
-            raft_handle.get_stream());
+    uint32_t list_size;
+    
+    raft::copy(&list_size, raft_knn_index.value().list_sizes().data_handle() + listId, 1, raft_handle.get_stream());
 
-    raft_handle.sync_stream();
-    size_t byte_offset = offsets[0] * sizeof(elem_t) * dim;
+
     // the interleaved block can be slightly larger than the list size (it's
     // rounded up)
-    size_t byte_size = size_t(offsets[1]) * sizeof(elem_t) * dim - byte_offset;
+    size_t byte_size = size_t(list_size) * sizeof(elem_t) * dim;
     std::vector<uint8_t> vec(byte_size);
     raft::copy(
             vec.data(),
             reinterpret_cast<const uint8_t*>(
-                    raft_knn_index.value().data().data_handle()) +
-                    byte_offset,
+                    raft_knn_index.value().data_ptrs().data_handle()+listId),
             byte_size,
             raft_handle.get_stream());
     return vec;
@@ -269,14 +257,14 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 
     std::cout << "Calling RAFT updateQuantizer with trained index with "
               << quantizer_ntotal << " items" << std::endl;
-    const raft::handle_t& handle = resources_->getRaftHandleCurrentDevice();
+    const raft::device_resources& handle = resources_->getRaftHandleCurrentDevice();
     auto stream = handle.get_stream();
 
     auto total_elems = size_t(quantizer_ntotal) * size_t(quantizer->d);
 
     raft::logger::get().set_level(RAFT_LEVEL_TRACE);
 
-    raft::spatial::knn::ivf_flat::index_params pams;
+    raft::neighbors::ivf_flat::index_params pams;
     pams.add_data_on_build = false;
 
     switch (this->metric_) {
@@ -297,6 +285,7 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
             pams.metric,
             (uint32_t)this->numLists_,
             false,
+	    false,
             (uint32_t)this->dim_);
 
     printf("Reconstructing\n");
@@ -327,7 +316,7 @@ void RaftIVFFlat::updateQuantizer(Index* quantizer) {
 //    size_t ntotal = ivf ? ivf->compute_ntotal() : 0;
 //
 //    printf("Inside RAFT copyInvertedListsFrom\n");
-//    raft::handle_t &handle = resources_->getRaftHandleCurrentDevice();
+//    raft::device_resources &handle = resources_->getRaftHandleCurrentDevice();
 //    // We need to allocate the IVF
 //    printf("nlist=%ld, ntotal=%ld\n", nlist, ntotal);
 //

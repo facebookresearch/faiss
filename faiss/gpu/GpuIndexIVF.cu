@@ -449,7 +449,7 @@ void GpuIndexIVF::trainQuantizer_(idx_t n, const float* x) {
 
     if (config_.use_raft) {
         printf("Using raft to train quantizer for %d vectors\n", n);
-        const raft::handle_t& raft_handle =
+        const raft::device_resources& raft_handle =
                 resources_->getRaftHandleCurrentDevice();
 
         raft::neighbors::ivf_flat::index_params raft_idx_params;
