@@ -8289,10 +8289,10 @@
     <member refid="namespacefaiss_1a71dedb2a0d42fcaf8348a30112401069" kind="function"><name>clone_index</name></member>
     <member refid="namespacefaiss_1a9ff4e1ad31eab56be1b5b32642ff0660" kind="function"><name>clone_Quantizer</name></member>
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
-    <member refid="namespacefaiss_1acd060325c9467fde8cd2f29c1f7279f2" kind="function"><name>distance_single_code_generic</name></member>
-    <member refid="namespacefaiss_1aaf9deb5d5cfb5b1b8a79ac0e5b5d9714" kind="function"><name>distance_four_codes_generic</name></member>
-    <member refid="namespacefaiss_1aac24d2f278a1d1782d3e9fe2820a1ba9" kind="function"><name>distance_single_code</name></member>
-    <member refid="namespacefaiss_1a37d2354ddcb414267b76b9ff64a3d73c" kind="function"><name>distance_four_codes</name></member>
+    <member refid="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" kind="function"><name>distance_single_code_generic</name></member>
+    <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
+    <member refid="namespacefaiss_1a4f5a40d297ddf6822a9262a333f938a3" kind="function"><name>distance_single_code</name></member>
+    <member refid="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" kind="function"><name>distance_four_codes</name></member>
     <member refid="namespacefaiss_1a542cf4d499962a3d7a0db924424d8870" kind="function"><name>handleExceptions</name></member>
     <member refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kind="function"><name>demangle_cpp_symbol</name></member>
     <member refid="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" kind="function"><name>fourcc</name></member>
