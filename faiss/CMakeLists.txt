@@ -190,6 +190,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/prefetch.h
   utils/quantize_lut.h
   utils/random.h
   utils/simdlib.h
