@@ -872,7 +872,10 @@ IndexHNSWFlat::IndexHNSWFlat() {
 }
 
 IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
-        : IndexHNSW(new IndexFlat(d, metric), M) {
+        : IndexHNSW(
+                  (metric == METRIC_L2) ? new IndexFlatL2(d)
+                                        : new IndexFlat(d, metric),
+                  M) {
     own_fields = true;
     is_trained = true;
 }

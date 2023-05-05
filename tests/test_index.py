@@ -110,7 +110,39 @@ class TestIndexFlat(unittest.TestCase):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
 
+class TestIndexFlatL2(unittest.TestCase):
+    def test_indexflat_l2_sync_norms_1(self):
+        d = 32
+        nb = 10000
+        nt = 0
+        nq = 16
+        k = 10
 
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+
+        # instantiate IndexHNSWFlat
+        index = faiss.IndexHNSWFlat(d, 32)
+        index.hnsw.efConstruction = 40
+
+        index.add(xb)
+        D1, I1 = index.search(xq, k)
+
+        index_l2 = faiss.downcast_index(index.storage)
+        index_l2.sync_l2norms()
+        D2, I2 = index.search(xq, k)
+
+        index_l2.clear_l2norms()
+        D3, I3 = index.search(xq, k)
+
+        #  not too many elements are off.
+        self.assertLessEqual((I2 != I1).sum(), 1)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_almost_equal(D2, D1, decimal=5)
+
+        #  not too many elements are off.
+        self.assertLessEqual((I3 != I1).sum(), 0)
+        #  np.testing.assert_equal(Iref, I1)
+        np.testing.assert_equal(D3, D1)
 
 
 class EvalIVFPQAccuracy(unittest.TestCase):
