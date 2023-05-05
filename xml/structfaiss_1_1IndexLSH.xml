@@ -658,6 +658,7 @@
         <name>get_FlatCodesDistanceComputer</name>
         <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a3516b0ead9288dc9a5fd4d1e31925c5c">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexFlat_1a5396c3f2f2ee3a716ef2accb6d5d8e24">get_FlatCodesDistanceComputer</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexFlatL2_1a9b07dbca7210e61cef24efb7f65b89b5">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a9bcf315b2636e5c11c88df6e4f4ef013">get_FlatCodesDistanceComputer</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a6d92cd004fadda1a24389febd145f919">get_FlatCodesDistanceComputer</reimplementedby>
         <briefdescription>

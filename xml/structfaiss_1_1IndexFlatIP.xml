@@ -298,6 +298,7 @@
         <argsstring>() const override</argsstring>
         <name>get_FlatCodesDistanceComputer</name>
         <reimplements refid="structfaiss_1_1IndexFlatCodes_1a4c2192dacfb37f496d98261c796e509f">get_FlatCodesDistanceComputer</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatL2_1a9b07dbca7210e61cef24efb7f65b89b5">get_FlatCodesDistanceComputer</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
