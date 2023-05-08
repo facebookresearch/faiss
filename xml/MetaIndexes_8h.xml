@@ -20,14 +20,14 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="29">
+      <node id="31">
         <label>faiss/IndexShards.h</label>
         <link refid="IndexShards_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -53,8 +53,13 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+      </node>
+      <node id="19">
+        <label>unordered_set</label>
       </node>
       <node id="1">
         <label>faiss/MetaIndexes.h</label>
@@ -63,9 +68,9 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="29" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -73,7 +78,17 @@
       <node id="14">
         <label>exception</label>
       </node>
-      <node id="22">
+      <node id="18">
+        <label>faiss/impl/IDSelector.h</label>
+        <link refid="IDSelector_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
         <label>condition_variable</label>
       </node>
       <node id="9">
@@ -82,7 +97,7 @@
       <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="24">
+      <node id="26">
         <label>future</label>
       </node>
       <node id="16">
@@ -94,16 +109,16 @@
       <node id="7">
         <label>sstream</label>
       </node>
-      <node id="21">
+      <node id="23">
         <label>faiss/utils/WorkerThread.h</label>
         <link refid="WorkerThread_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
         <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -125,13 +140,13 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="28">
+      <node id="30">
         <label>iostream</label>
       </node>
-      <node id="23">
+      <node id="25">
         <label>deque</label>
       </node>
-      <node id="18">
+      <node id="20">
         <label>unordered_map</label>
       </node>
       <node id="2">
@@ -154,33 +169,33 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="27">
         <label>thread</label>
       </node>
-      <node id="20">
+      <node id="22">
         <label>faiss/impl/ThreadedIndex.h</label>
         <link refid="ThreadedIndex_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="21">
         <label>faiss/IndexReplicas.h</label>
         <link refid="IndexReplicas_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -197,17 +212,17 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="29">
         <label>faiss/impl/ThreadedIndex-inl.h</label>
         <link refid="ThreadedIndex-inl_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="28">
         <label>memory</label>
       </node>
     </incdepgraph>

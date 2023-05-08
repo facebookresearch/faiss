@@ -1813,6 +1813,14 @@
     <member refid="structfaiss_1_1IDSelectorRange_1a0bdbd8cca09fa9edc00813c48cdead4c" kind="function"><name>find_sorted_ids_bounds</name></member>
     <member refid="structfaiss_1_1IDSelectorRange_1a59148da9375ea066f83788ed1d890465" kind="function"><name>~IDSelectorRange</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IDSelectorTranslated" kind="struct"><name>faiss::IDSelectorTranslated</name>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1ab1ecd99ec40c20f014758b3d8b9e5bc8" kind="variable"><name>id_map</name></member>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1ac00f1cfc1cf23af49d6a800dba84619f" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1a1712a842f521227b38a176e0c835fb7b" kind="function"><name>IDSelectorTranslated</name></member>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1a076dbe63e9178b37a8e6bc0f96a1db09" kind="function"><name>IDSelectorTranslated</name></member>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1a479b6807c2f46db70aa8393090b8c2c1" kind="function"><name>IDSelectorTranslated</name></member>
+    <member refid="structfaiss_1_1IDSelectorTranslated_1ab5638224c8cda6f29a683b1876b65051" kind="function"><name>is_member</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IDSelectorXOr" kind="struct"><name>faiss::IDSelectorXOr</name>
     <member refid="structfaiss_1_1IDSelectorXOr_1ad87c3951bf5764695228ed472423bfcf" kind="variable"><name>lhs</name></member>
     <member refid="structfaiss_1_1IDSelectorXOr_1a87ede6785fbe4f5b7e63cdde0e4bb68e" kind="variable"><name>rhs</name></member>
