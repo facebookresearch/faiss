@@ -101,17 +101,17 @@ class TestSelector(unittest.TestCase):
             sel = faiss.IDSelectorNot(faiss.IDSelectorBatch(inverse_subset))
         elif id_selector_type == "or":
             sel = faiss.IDSelectorOr(
-                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(lhs_subset),
                 faiss.IDSelectorBatch(rhs_subset)
             )
         elif id_selector_type == "and":
             sel = faiss.IDSelectorAnd(
-                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(lhs_subset),
                 faiss.IDSelectorBatch(rhs_subset)
             )
         elif id_selector_type == "xor":
             sel = faiss.IDSelectorXOr(
-                faiss.IDSelectorBatch(lhs_subset), 
+                faiss.IDSelectorBatch(lhs_subset),
                 faiss.IDSelectorBatch(rhs_subset)
             )
         else:
@@ -181,7 +181,7 @@ class TestSelector(unittest.TestCase):
 
     def test_Flat_id_not(self):
         self.do_test_id_selector("Flat", id_selector_type="not")
-    
+
     def test_Flat_id_or(self):
         self.do_test_id_selector("Flat", id_selector_type="or")
 
@@ -219,6 +219,41 @@ class TestSelector(unittest.TestCase):
 
     def test_HSNW(self):
         self.do_test_id_selector_weak("HNSW")
+
+    def test_idmap(self):
+        ds = datasets.SyntheticDataset(32, 100, 100, 20)
+        rs = np.random.RandomState(123)
+        ids = rs.choice(10000, size=100, replace=False)
+        mask = ids % 2 == 0
+        index = faiss.index_factory(ds.d, "IDMap,SQ8")
+        index.train(ds.get_train())
+
+        # ref result
+        index.add_with_ids(ds.get_database()[mask], ids[mask])
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        # with selector
+        index.reset()
+        index.add_with_ids(ds.get_database(), ids)
+
+        valid_ids = ids[mask]
+        sel = faiss.IDSelectorTranslated(
+            index, faiss.IDSelectorBatch(valid_ids))
+
+        Dnew, Inew = index.search(
+            ds.get_queries(), 10,
+            params=faiss.SearchParameters(sel=sel)
+        )
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+
+        # let the IDMap::search add the translation...
+        Dnew, Inew = index.search(
+            ds.get_queries(), 10,
+            params=faiss.SearchParameters(sel=faiss.IDSelectorBatch(valid_ids))
+        )
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
 
 
 class TestSearchParams(unittest.TestCase):

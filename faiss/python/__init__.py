@@ -192,6 +192,7 @@ add_ref_in_constructor(IDSelectorNot, 0)
 add_ref_in_constructor(IDSelectorAnd, slice(2))
 add_ref_in_constructor(IDSelectorOr, slice(2))
 add_ref_in_constructor(IDSelectorXOr, slice(2))
+add_ref_in_constructor(IDSelectorTranslated, slice(2))
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
