@@ -37,7 +37,6 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
         - mkl-devel =2023
