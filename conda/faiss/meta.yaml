@@ -40,12 +40,12 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
+        - mkl =2021 # [x86_64]
         - mkl-devel =2021 # [x86_64]
         - openblas # [not x86_64]
-      host:
-        - mkl =2021 # [x86_64]
       run:
-        - mkl >=2021  # [win]
+        - mkl =2021  # [x86_64]
+        - openblas # [not x86_64]
     test:
       requires:
         - conda-build
@@ -82,7 +82,6 @@ outputs:
         - numpy
         - scipy
         - pytorch
-        - mkl =2021
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

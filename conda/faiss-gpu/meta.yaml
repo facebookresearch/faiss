@@ -40,17 +40,15 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl-devel =2021
-      host:
         - mkl =2021
+        - mkl-devel =2021
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl >=2021
+        - mkl =2021
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       requires:
         - conda-build
-        - mkl =2021
       commands:
         - test -f $PREFIX/lib/libfaiss.so              # [linux]
         - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
@@ -81,7 +79,6 @@ outputs:
         - numpy
         - scipy
         - pytorch
-        - mkl =2021
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
