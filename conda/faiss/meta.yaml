@@ -37,15 +37,15 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - sysroot_linux-64 =2.17 # [linux64]
-        - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl-devel =2021 # [x86_64]
-        - openblas # [not x86_64]
+        - mkl-devel =2023 # [x86_64]
       host:
-        - mkl =2021 # [x86_64]
+        - mkl =2023 # [x86_64]
+        - openblas # [not x86_64]
       run:
-        - mkl >=2021  # [win]
+        - mkl =2023  # [x86_64]
+        - openblas # [not x86_64]
     test:
       requires:
         - conda-build

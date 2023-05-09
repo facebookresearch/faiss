@@ -40,12 +40,12 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl-devel =2021
+        - mkl-devel =2023
       host:
-        - mkl =2021
+        - mkl =2023
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl >=2021
+        - mkl =2023
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       requires:
