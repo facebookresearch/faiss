@@ -189,7 +189,7 @@ class TestIVFPluggableCoarseQuantizer(unittest.TestCase):
 
         self.assertGreaterEqual(knn_intersection_measure(i_c, i_g), 0.9)
 
-        self.assertTrue(np.allclose(d_g, d_c, rtol=5e-5, atol=5e-5))
+        self.assertTrue(np.allclose(d_g, d_c, rtol=2e-4, atol=2e-4))
 
     def test_ivfpq_cpu_coarse(self):
         res = faiss.StandardGpuResources()

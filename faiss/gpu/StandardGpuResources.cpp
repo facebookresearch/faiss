@@ -312,7 +312,12 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
         // If this is the first device that we're initializing, create our
         // pinned memory allocation
         if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
-            pinnedMemAlloc_ = pmr->allocate(pinnedMemSize_);
+            try {
+                pinnedMemAlloc_ = pmr->allocate(pinnedMemSize_);
+            } catch (const std::bad_alloc& rmm_ex) {
+                FAISS_THROW_MSG("CUDA memory allocation error");
+            }
+
             pinnedMemAllocSize_ = pinnedMemSize_;
         }
 #else
@@ -490,7 +495,11 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 
     } else if (adjReq.space == MemorySpace::Device) {
 #if defined USE_NVIDIA_RAFT
-        p = cmr->allocate(adjReq.size, adjReq.stream);
+        try {
+            p = cmr->allocate(adjReq.size, adjReq.stream);
+        } catch (const std::bad_alloc& rmm_ex) {
+            FAISS_THROW_MSG("CUDA memory allocation error");
+        }
 #else
         auto err = cudaMalloc(&p, adjReq.size);
 
@@ -516,7 +525,11 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
 #endif
     } else if (adjReq.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_RAFT
-        p = mmr->allocate(adjReq.size, adjReq.stream);
+        try {
+            p = mmr->allocate(adjReq.size, adjReq.stream);
+        } catch (const std::bad_alloc& rmm_ex) {
+            FAISS_THROW_MSG("CUDA memory allocation error");
+        }
 #else
         auto err = cudaMallocManaged(&p, adjReq.size);
 
