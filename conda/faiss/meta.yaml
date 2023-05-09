@@ -49,6 +49,7 @@ outputs:
     test:
       requires:
         - conda-build
+        - mkl =2021
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
@@ -81,6 +82,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
+        - mkl =2021
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

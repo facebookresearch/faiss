@@ -50,6 +50,7 @@ outputs:
     test:
       requires:
         - conda-build
+        - mkl =2021
       commands:
         - test -f $PREFIX/lib/libfaiss.so              # [linux]
         - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
@@ -80,6 +81,7 @@ outputs:
         - numpy
         - scipy
         - pytorch
+        - mkl =2021
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
