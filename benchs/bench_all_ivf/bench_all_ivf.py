@@ -16,6 +16,93 @@ try:
 except ModuleNotFoundError:
     import datasets_oss as datasets
 
+from faiss.contrib.datasets import Dataset
+class DatasetRCQ(Dataset):
+    def __init__(self):
+        Dataset.__init__(self)
+        basedir = '/checkpoint/gsz/rcq/'
+        rcq_codec = faiss.read_index(basedir + "ssnpp_rcq_8_8_8_11052021.faiss")
+        self.xb = rcq_codec.reconstruct_n(0, rcq_codec.ntotal)
+        self.xq = np.load(basedir + "centroids_10M_500M_dedup.npy", mmap_mode="r")[:10_000].copy()
+        self.gt = np.load(basedir + "I_gt_rcq16M.npy")
+        self.d, self.nt, self.nb, self.nq = self.xb.shape[1], self.xb.shape[0], self.xb.shape[0], self.xq.shape[0]
+
+    def get_queries(self):
+        return self.xq
+
+    def get_train(self, maxtrain=None):
+        maxtrain = maxtrain if maxtrain is not None else self.nt
+        return self.xb[:maxtrain]
+
+    def get_database(self):
+        return self.xb
+    
+    def get_groundtruth(self, k=None):
+        if k is not None:
+            assert k <= self.gt.shape[1]
+            gt = self.gt[:self.nq, :k]
+        return gt
+
+class Dataset16M(Dataset):
+    def __init__(self):
+        Dataset.__init__(self)
+        basedir = '/checkpoint/gsz/rcq/'
+        self.xb = np.load(basedir + "centroids_16M.npy")
+        self.xq = np.load(basedir + "centroids_10M_500M_dedup.npy", mmap_mode="r")[:10_000].copy()
+        self.gt = np.load(basedir + "I_gt_flat16M.npy")
+        self.d, self.nt, self.nb, self.nq = self.xb.shape[1], self.xb.shape[0], self.xb.shape[0], self.xq.shape[0]
+
+    def get_queries(self):
+        return self.xq
+
+    def get_train(self, maxtrain=None):
+        maxtrain = maxtrain if maxtrain is not None else self.nt
+        return self.xb[:maxtrain]
+
+    def get_database(self):
+        return self.xb
+    
+    def get_groundtruth(self, k=None):
+        if k is not None:
+            assert k <= self.gt.shape[1]
+            gt = self.gt[:self.nq, :k]
+        return gt
+
+class Dataset10M(Dataset):
+    def __init__(self):
+        Dataset.__init__(self)
+        basedir = '/checkpoint/gsz/rcq/'
+        self.xb = np.load(basedir + "centroids_10M_500M_dedup.npy")
+        self.xq = np.load(basedir + "centroids_1M.npy", mmap_mode="r")[:10_000].copy()
+        self.gt = np.load(basedir + "I_gt_flat10M.npy")
+        self.d, self.nt, self.nb, self.nq = self.xb.shape[1], self.xb.shape[0], self.xb.shape[0], self.xq.shape[0]
+
+    def get_queries(self):
+        return self.xq
+
+    def get_train(self, maxtrain=None):
+        maxtrain = maxtrain if maxtrain is not None else self.nt
+        return self.xb[:maxtrain]
+
+    def get_database(self):
+        return self.xb
+    
+    def get_groundtruth(self, k=None):
+        if k is not None:
+            assert k <= self.gt.shape[1]
+            gt = self.gt[:self.nq, :k]
+        return gt
+
+def load_dataset(dataset):
+    if dataset == 'rcq_16777216':
+        return DatasetRCQ()
+    elif dataset == 'flat_16777216':
+        return Dataset16M()
+    elif dataset == 'flat_10000000':
+        return Dataset10M()
+    else:
+        assert False
+
 sanitize = datasets.sanitize
 
 
@@ -103,8 +190,9 @@ os.system('echo -n "nb processors "; '
 # Load dataset
 ######################################################
 
-ds = datasets.load_dataset(
-    dataset=args.db, compute_gt=args.compute_gt)
+#ds = datasets.load_dataset(
+#    dataset=args.db, compute_gt=args.compute_gt)
+ds = load_dataset(dataset=args.db)
 
 if args.force_IP:
     ds.metric = "IP"
@@ -210,6 +298,9 @@ else:
             print(quantizer.hnsw.efSearch)
 
     apply_AQ_options(index_ivf or index, args)
+
+    if isinstance(index, faiss.IndexHNSW):
+        index.hnsw.efConstruction = 128
 
     if index_ivf:
         index_ivf.verbose = True
@@ -417,6 +508,11 @@ if parametersets == ['autotune']:
     for kv in args.autotune_range:
         k, vals = kv.split(':')
         vals = np.fromstring(vals, sep=',')
+        if (k == 'efSearch' and not isinstance(index, faiss.IndexHNSW)) or \
+            (k == 'nprobe' and index_ivf is None) or \
+            (k == 'k_factor_rf' and not isinstance(index, faiss.IndexRefine)):
+            print("skip setting %s to %s" % (k, vals))
+            continue
         print("setting %s to %s" % (k, vals))
         pr = ps.add_range(k)
         faiss.copy_array_to_vector(vals, pr.values)

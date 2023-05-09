@@ -46,7 +46,7 @@ EOF
     echo -n "$logdir/$name.stdout "
     sbatch -n1 -J "$name" \
            $sys \
-            --comment='priority is the only one that works'  \
+            --comment='ivf benchmarks'  \
            --output="$logdir/$name.stdout" \
            "$script"
 
@@ -54,29 +54,29 @@ EOF
 
 
 function run_on_1machine {
-    run_on "--cpus-per-task=80 --gres=gpu:0 --mem=500G --time=70:00:00 --partition=priority" "$@"
+    run_on "--cpus-per-task=80 --gres=gpu:0 --mem=500G --time=70:00:00 --partition=scavenge" "$@"
 }
 
 function run_on_1machine_1h {
-    run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=1:00:00 --partition=priority" "$@"
+    run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=1:00:00 --partition=scavenge" "$@"
 }
 
 function run_on_1machine_3h {
-    run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=3:00:00 --partition=priority" "$@"
+    run_on "--cpus-per-task=80 --gres=gpu:2 --mem=100G --time=3:00:00 --partition=scavenge" "$@"
 }
 
 function run_on_4gpu_3h {
-    run_on "--cpus-per-task=40 --gres=gpu:4 --mem=100G --time=3:00:00 --partition=priority" "$@"
+    run_on "--cpus-per-task=40 --gres=gpu:4 --mem=100G --time=3:00:00 --partition=scavenge" "$@"
 }
 
 function run_on_8gpu () {
-    run_on "--cpus-per-task=80 --gres=gpu:8 --mem=100G --time=70:00:00 --partition=priority" "$@"
+    run_on "--cpus-per-task=80 --gres=gpu:8 --mem=100G --time=70:00:00 --partition=scavenge" "$@"
 }
 
 
 # prepare output directories
 # set to some directory where all indexes, can be written.
-basedir=/checkpoint/matthijs/bench_all_ivf
+basedir=/checkpoint/gsz/bench_all_ivf
 
 logdir=$basedir/logs
 indexdir=$basedir/indexes
@@ -229,7 +229,6 @@ done
 
 ############################### 1M experiments
 
-fi
 # for db in sift1M deep1M music-100 glove; do
 
 for db in glove music-100; do
@@ -325,8 +324,6 @@ for db in glove music-100; do
     done
 done
 
-if false; then
-
 ############################################
 # precompute centroids on GPU for large vocabularies
 
@@ -353,7 +350,7 @@ done
 ## coarse quantizer experiments on the centroids of deep1B
 
 
-for k in 4 8 16 64 256; do
+for k in 1 4 24; do
 
     for ncent in 65536 262144 1048576 4194304; do
         db=deep_centroids_$ncent
@@ -601,3 +598,45 @@ for db in deep1B bigann1B; do
 done
 
 fi
+
+###############################
+## coarse quantizer experiments on RCQ centroids of SSN++
+
+
+for k in 1 4 16 24 64; do
+
+    for db in flat_10000000 flat_16777216 rcq_16777216; do
+
+        indexkeys="
+            PQ256x4fs,RFlat
+            HNSW32
+            HNSW64
+            IVF2048,PQ256x4fs,RFlat
+            IVF4096,PQ256x4fs,RFlat
+            IVF8192,PQ256x4fs,RFlat
+            IVF16384,PQ256x4fs,RFlat
+        "
+#            RCQ_8_8_8
+
+        for indexkey in $indexkeys; do
+            key=autotune.db$db.k$k.${indexkey//,/_}
+            key="${key//(/_}"
+            key="${key//)/_}"
+            fn=autotune.db$db.${indexkey//,/_}
+            fn="${fn//(/_}"
+            fn="${fn//)/_}"
+            run_on_1machine_3h "$key.a" \
+                    python -u bench_all_ivf.py \
+                    --db $db \
+                    --indexkey "$indexkey" \
+                    --maxtrain 0  \
+                    --indexfile $indexdir/$fn.faissindex \
+                    --inter \
+                    --searchthreads 64 \
+                    --k $k \
+                    --autotune_range k_factor_rf:256,512,1024,2048,4096 \
+                    efSearch:1024,2048,4096,8192 \
+                    nprobe:128,256,512,1024,2048,4096
+        done
+    done
+done
