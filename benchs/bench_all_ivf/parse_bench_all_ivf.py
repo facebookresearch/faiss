@@ -111,7 +111,7 @@ def parse_result_file(fname):
     return indexkey, np.array(res), keys, stats
 
 # the directory used in run_on_cluster.bash
-basedir = "/checkpoint/matthijs/bench_all_ivf/"
+basedir = "/checkpoint/gsz/bench_all_ivf/"
 logdir = basedir + 'logs/'
 
 
@@ -402,7 +402,41 @@ if __name__ == "__main__xx":
     pyplot.savefig('../plots/deep1B_centroids_min99.png')
 
 
+if __name__ == "__main__":
+    # centroids plot per k
 
+    pyplot.gcf().set_size_inches(15, 10)
+
+    i=1
+    for ncent in ['rcq_16777216', 'flat_16777216', 'flat_10000000']:
+
+        xyd = defaultdict(list)
+
+        for k in [1, 4, 16, 24, 64]:
+
+            db = f'{ncent}.k{k}.'
+            allres, allstats = collect_results_for(db=db, prefix="autotune.")
+
+            for indexkey, res in allres.items():
+                idx, = np.where(res[:, 0] >= 0.99)
+                if idx.size > 0:
+                    xyd[indexkey].append((k, 1000 / res[idx[0], 1]))
+
+        pyplot.subplot(2, 2, i)
+        i += 1
+        for indexkey, xy in xyd.items():
+            xy = np.array(xy)
+            pyplot.loglog(xy[:, 0], xy[:, 1], 'o-', label=indexkey)
+
+        pyplot.title(f"{ncent} centroids")
+        pyplot.xlabel("k")
+        xt = 2**np.arange(9)
+        pyplot.xticks(xt, ["%d" % x for x in xt])
+        pyplot.ylabel("QPS (64 threads)")
+        pyplot.legend()
+        pyplot.grid()
+
+    pyplot.savefig('../plots/rcq_centroids_min99.png')
 
 
 if __name__ == "__main__xx":
@@ -428,7 +462,7 @@ if __name__ == "__main__xx":
                    db, cs))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__xx":
     # 1M indexes
     i = 0
     for db in "glove", "music-100":
