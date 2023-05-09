@@ -40,16 +40,16 @@ outputs:
         - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl =2021 # [x86_64]
-        - mkl-devel =2021 # [x86_64]
+        - mkl-devel =2023 # [x86_64]
         - openblas # [not x86_64]
+      host:
+        - mkl =2023 # [x86_64]
       run:
-        - mkl =2021  # [x86_64]
+        - mkl =2023  # [x86_64]
         - openblas # [not x86_64]
     test:
       requires:
         - conda-build
-        - mkl =2021
       commands:
         - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
         - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
