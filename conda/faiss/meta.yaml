@@ -26,7 +26,8 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh  # [x86_64 and not win]
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
     script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
