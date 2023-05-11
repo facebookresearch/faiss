@@ -17,7 +17,7 @@ cmake -B _build \
       -DBLA_VENDOR=Intel10_64lp \
       -DOpenMP_CXX_FLAGS=-fopenmp=libiomp5 \
       -DOpenMP_CXX_LIB_NAMES=libiomp5 \
-      -DOpenMP_libiomp5_LIBRARY=$CMAKE_PREFIX_PATH/lib/libiomp5.dylib
+      -DOpenMP_libiomp5_LIBRARY=$CMAKE_PREFIX_PATH/lib/libiomp5.dylib \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DCMAKE_BUILD_TYPE=Release .
 
