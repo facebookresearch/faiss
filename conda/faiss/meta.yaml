@@ -58,7 +58,8 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-cpu
-    script: build-pkg.sh  # [x86_64 and not win]
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
