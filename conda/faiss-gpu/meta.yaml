@@ -26,7 +26,9 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh
+    script: build-lib.sh  # [x86_64 and not win]
+    script: build-lib-arm64.sh  # [not x86_64]
+    script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
       run_exports:
@@ -36,28 +38,32 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - sysroot_linux-64 =2.17 # [linux64]
+        - sysroot_linux-64 =2.17  # [linux64]
         - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl-devel =2023
+        - mkl-devel =2023  # [x86_64]
       host:
-        - mkl =2023
+        - mkl =2023  # [x86_64]
+        - openblas  # [not x86_64]
         - cudatoolkit {{ cudatoolkit }}
       run:
-        - mkl =2023
+        - mkl =2023  # [x86_64]
+        - openblas  # [not x86_64]
         - {{ pin_compatible('cudatoolkit', max_pin='x.x') }}
     test:
       requires:
         - conda-build
       commands:
-        - test -f $PREFIX/lib/libfaiss.so              # [linux]
-        - test -f $PREFIX/lib/libfaiss.dylib           # [osx]
+        - test -f $PREFIX/lib/libfaiss$SHLIB_EXT       # [not win]
+        - test -f $PREFIX/lib/libfaiss_avx2$SHLIB_EXT  # [x86_64 and not win]
         - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-gpu
-    script: build-pkg.sh
+    script: build-pkg.sh  # [x86_64 and not win]
+    script: build-pkg-arm64.sh # [not x86_64]
+    script: build-pkg.bat  # [win]
     build:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
@@ -86,9 +92,9 @@ outputs:
         - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
-        - sh test_cpu_dispatch.sh  # [linux]
+        - sh test_cpu_dispatch.sh  # [linux64]
       files:
-        - test_cpu_dispatch.sh  # [linux]
+        - test_cpu_dispatch.sh  # [linux64]
       source_files:
         - tests/
         - faiss/gpu/test/

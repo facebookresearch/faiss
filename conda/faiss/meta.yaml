@@ -26,8 +26,9 @@ source:
 
 outputs:
   - name: libfaiss
-    script: build-lib.sh   # [x86_64 and not win]
-    script: build-lib-arm64.sh # [not x86_64]
+    script: build-lib.sh  # [x86_64 and not win and not osx]
+    script: build-lib-osx.sh  # [x86_64 and osx]
+    script: build-lib-arm64.sh  # [not x86_64]
     script: build-lib.bat  # [win]
     build:
       string: "h{{ PKG_HASH }}_{{ number }}_cpu{{ suffix }}"
@@ -36,16 +37,17 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
-        - sysroot_linux-64 =2.17 # [linux64]
+        - sysroot_linux-64 =2.17  # [linux64]
+        - llvm-openmp  # [osx]
         - cmake =3.23.1
         - make  # [not win]
-        - mkl-devel =2023 # [x86_64]
+        - mkl-devel =2023  # [x86_64]
       host:
-        - mkl =2023 # [x86_64]
-        - openblas # [not x86_64]
+        - mkl =2023  # [x86_64]
+        - openblas  # [not x86_64]
       run:
         - mkl =2023  # [x86_64]
-        - openblas # [not x86_64]
+        - openblas  # [not x86_64]
     test:
       requires:
         - conda-build
@@ -56,7 +58,8 @@ outputs:
         - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
 
   - name: faiss-cpu
-    script: build-pkg.sh   # [x86_64 and not win]
+    script: build-pkg.sh  # [x86_64 and not win and not osx]
+    script: build-pkg-osx.sh  # [x86_64 and osx]
     script: build-pkg-arm64.sh # [not x86_64]
     script: build-pkg.bat  # [win]
     build:
