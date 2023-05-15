@@ -298,6 +298,34 @@ def merge_knn_results(Dall, Iall, keep_max=False):
     return Dnew, Inew
 
 ######################################################
+# Efficient ID to ID map
+######################################################
+
+class MapInt64ToInt64:
+
+    def __init__(self, capacity):
+        self.log2_capacity = int(np.log2(capacity))
+        assert capacity == 2 ** self.log2_capacity, "need power of 2 capacity"
+        self.capacity = capacity
+        self.tab = np.empty((capacity, 2), dtype='int64')
+        faiss.hashtable_int64_to_int64_init(self.log2_capacity, swig_ptr(self.tab))
+
+    def add(self, keys, vals):
+        n, = keys.shape
+        assert vals.shape == (n,)
+        faiss.hashtable_int64_to_int64_add(
+            self.log2_capacity, swig_ptr(self.tab),
+            n, swig_ptr(keys), swig_ptr(vals))
+
+    def lookup(self, keys):
+        n, = keys.shape
+        vals = np.empty((n,), dtype='int64')
+        faiss.hashtable_int64_to_int64_lookup(
+            self.log2_capacity, swig_ptr(self.tab),
+            n, swig_ptr(keys), swig_ptr(vals))
+        return vals
+
+######################################################
 # KNN function
 ######################################################
 

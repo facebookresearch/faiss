@@ -689,4 +689,144 @@ void matrix_bucket_sort_inplace(
     }
 }
 
+/** Hashtable implementation for int64 -> int64 with external storage
+ * implemented for speed and parallel processing.
+ */
+
+namespace {
+
+int log2_capacity_to_log2_nbucket(int log2_capacity) {
+    return log2_capacity < 12    ? 0
+            : log2_capacity < 20 ? log2_capacity - 12
+                                 : 10;
+}
+
+// https://bigprimes.org/
+int64_t bigprime = 8955327411143;
+
+inline int64_t hash_function(int64_t x) {
+    return (x * 1000003) % bigprime;
+}
+
+} // anonymous namespace
+
+void hashtable_int64_to_int64_init(int log2_capacity, int64_t* tab) {
+    size_t capacity = (size_t)1 << log2_capacity;
+#pragma omp parallel for
+    for (int64_t i = 0; i < capacity; i++) {
+        tab[2 * i] = -1;
+        tab[2 * i + 1] = -1;
+    }
+}
+
+void hashtable_int64_to_int64_add(
+        int log2_capacity,
+        int64_t* tab,
+        size_t n,
+        const int64_t* keys,
+        const int64_t* vals) {
+    size_t capacity = (size_t)1 << log2_capacity;
+    std::vector<int64_t> hk(n);
+    std::vector<uint64_t> bucket_no(n);
+    int64_t mask = capacity - 1;
+    int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
+    size_t nbucket = (size_t)1 << log2_nbucket;
+
+#pragma omp parallel for
+    for (int64_t i = 0; i < n; i++) {
+        hk[i] = hash_function(keys[i]) & mask;
+        bucket_no[i] = hk[i] >> (log2_capacity - log2_nbucket);
+    }
+
+    std::vector<int64_t> lims(nbucket + 1);
+    std::vector<int64_t> perm(n);
+    bucket_sort(
+            n,
+            bucket_no.data(),
+            nbucket,
+            lims.data(),
+            perm.data(),
+            omp_get_max_threads());
+
+    int num_errors = 0;
+#pragma omp parallel for reduction(+ : num_errors)
+    for (int64_t bucket = 0; bucket < nbucket; bucket++) {
+        size_t k0 = bucket << (log2_capacity - log2_nbucket);
+        size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
+
+        for (size_t i = lims[bucket]; i < lims[bucket + 1]; i++) {
+            int64_t j = perm[i];
+            assert(bucket_no[j] == bucket);
+            assert(hk[j] >= k0 && hk[j] < k1);
+            size_t slot = hk[j];
+            for (;;) {
+                if (tab[slot * 2] == -1) { // found!
+                    tab[slot * 2] = keys[j];
+                    tab[slot * 2 + 1] = vals[j];
+                    break;
+                } else if (tab[slot * 2] == keys[j]) { // overwrite!
+                    tab[slot * 2 + 1] = vals[j];
+                    break;
+                }
+                slot++;
+                if (slot == k1) {
+                    slot = k0;
+                }
+                if (slot == hk[j]) { // no free slot left in bucket
+                    num_errors++;
+                    break;
+                }
+            }
+            if (num_errors > 0) {
+                break;
+            }
+        }
+    }
+    FAISS_THROW_IF_NOT_MSG(num_errors == 0, "hashtable capacity exhausted");
+}
+
+void hashtable_int64_to_int64_lookup(
+        int log2_capacity,
+        const int64_t* tab,
+        size_t n,
+        const int64_t* keys,
+        int64_t* vals) {
+    size_t capacity = (size_t)1 << log2_capacity;
+    std::vector<int64_t> hk(n), bucket_no(n);
+    int64_t mask = capacity - 1;
+    int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
+    size_t nbucket = (size_t)1 << log2_nbucket;
+
+#pragma omp parallel for
+    for (int64_t i = 0; i < n; i++) {
+        int64_t k = keys[i];
+        int64_t hk = hash_function(k) & mask;
+        size_t slot = hk;
+
+        if (tab[2 * slot] == -1) { // not in table
+            vals[i] = -1;
+        } else if (tab[2 * slot] == k) { // found!
+            vals[i] = tab[2 * slot + 1];
+        } else { // need to search in [k0, k1)
+            size_t bucket = hk >> (log2_capacity - log2_nbucket);
+            size_t k0 = bucket << (log2_capacity - log2_nbucket);
+            size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
+            for (;;) {
+                if (tab[slot * 2] == k) { // found!
+                    vals[i] = tab[2 * slot + 1];
+                    break;
+                }
+                slot++;
+                if (slot == k1) {
+                    slot = k0;
+                }
+                if (slot == hk) { // bucket is full and not found
+                    vals[i] = -1;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 } // namespace faiss

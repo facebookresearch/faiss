@@ -130,7 +130,7 @@ class TestExhaustiveSearch(unittest.TestCase):
             xq, ds.database_iterator(bs=100), threshold, ngpu=0,
             metric_type=metric)
 
-        evaluation.test_ref_range_results(
+        evaluation.check_ref_range_results(
             ref_lims, ref_D, ref_I,
             new_lims, new_D, new_I
         )
@@ -161,7 +161,7 @@ class TestExhaustiveSearch(unittest.TestCase):
         _, new_lims, new_D, new_I = range_search_max_results(
             index, matrix_iterator(xq, 100), threshold, max_results=1e10)
 
-        evaluation.test_ref_range_results(
+        evaluation.check_ref_range_results(
             ref_lims, ref_D, ref_I,
             new_lims, new_D, new_I
         )
@@ -175,7 +175,7 @@ class TestExhaustiveSearch(unittest.TestCase):
 
         ref_lims, ref_D, ref_I = index.range_search(xq, new_threshold)
 
-        evaluation.test_ref_range_results(
+        evaluation.check_ref_range_results(
             ref_lims, ref_D, ref_I,
             new_lims, new_D, new_I
         )
@@ -435,7 +435,7 @@ class TestRangeSearchMaxResults(unittest.TestCase):
             min_results=Dref.size, clip_to_min=True
         )
 
-        evaluation.test_ref_range_results(
+        evaluation.check_ref_range_results(
             lims_ref, Dref, Iref,
             lims_new, Dnew, Inew
         )

@@ -1112,9 +1112,6 @@ class TestReconsHash(unittest.TestCase):
     def test_IVFPQ(self):
         self.do_test("IVF5,PQ4x4np")
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class TestValidIndexParams(unittest.TestCase):
 

@@ -528,4 +528,66 @@ bool check_openmp() {
     return true;
 }
 
+namespace {
+
+int64_t count_lt(int64_t n, const float* row, float threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] < threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+int64_t count_gt(int64_t n, const float* row, float threshold) {
+    for (int64_t i = 0; i < n; i++) {
+        if (!(row[i] > threshold)) {
+            return i;
+        }
+    }
+    return n;
+}
+
+} // namespace
+
+void CombinerRangeKNN::compute_sizes(int64_t* L_res) {
+    this->L_res = L_res;
+    L_res[0] = 0;
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in;
+        if (!mask || !mask[i]) {
+            const float* row = D + i * k;
+            n_in = keep_max ? count_gt(k, row, r2)
+                            : count_lt(k, row, r2);
+        } else {
+            n_in = lim_remain[j + 1] - lim_remain[j];
+            j++;
+        }
+        L_res[i + 1] = n_in; // L_res[i] + n_in;
+    }
+    // cumsum
+    for (int64_t i = 0; i < nq; i++) {
+        L_res[i + 1] += L_res[i];
+    }
+}
+
+void CombinerRangeKNN::write_result(float* D_res, int64_t* I_res) {
+    FAISS_THROW_IF_NOT(L_res);
+    int64_t j = 0;
+    for (int64_t i = 0; i < nq; i++) {
+        int64_t n_in = L_res[i + 1] - L_res[i];
+        float* D_row = D_res + L_res[i];
+        int64_t* I_row = I_res + L_res[i];
+        if (!mask || !mask[i]) {
+            memcpy(D_row, D + i * k, n_in * sizeof(*D_row));
+            memcpy(I_row, I + i * k, n_in * sizeof(*I_row));
+        } else {
+            memcpy(D_row, D_remain + lim_remain[j], n_in * sizeof(*D_row));
+            memcpy(I_row, I_remain + lim_remain[j], n_in * sizeof(*I_row));
+            j++;
+        }
+    }
+}
+
 } // namespace faiss

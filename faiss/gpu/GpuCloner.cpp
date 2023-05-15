@@ -309,6 +309,7 @@ Index* ToGpuClonerMultiple::clone_Index_to_shards(const Index* index) {
 
     std::vector<faiss::Index*> shards(n);
 
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         // make a shallow copy
         if (reserveVecs) {
