@@ -11,13 +11,17 @@ namespace faiss {
 namespace gpu {
 
 #if defined(USE_ROCM)
-#if __AMDGCN_WAVEFRONT_SIZE == 32u
+// #if __AMDGCN_WAVEFRONT_SIZE == 32u
+// WARP_SELECT_IMPL(float, true, 32, 2);
+// WARP_SELECT_IMPL(float, false, 32, 2);
+// #else
+// WARP_SELECT_IMPL_DUMMY(float, true, 32, 2);
+// WARP_SELECT_IMPL_DUMMY(float, false, 32, 2);
+// #endif
+
+// Assume Navi 2x/3x, for now.
 WARP_SELECT_IMPL(float, true, 32, 2);
 WARP_SELECT_IMPL(float, false, 32, 2);
-#else
-WARP_SELECT_IMPL_DUMMY(float, true, 32, 2);
-WARP_SELECT_IMPL_DUMMY(float, false, 32, 2);
-#endif
 #else
 WARP_SELECT_IMPL(float, true, 32, 2);
 WARP_SELECT_IMPL(float, false, 32, 2);

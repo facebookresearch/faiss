@@ -11,11 +11,14 @@ namespace faiss {
 namespace gpu {
 
 #if defined(USE_ROCM)
-#if __AMDGCN_WAVEFRONT_SIZE == 32u
+// #if __AMDGCN_WAVEFRONT_SIZE == 32u
+// IVF_INTERLEAVED_IMPL(128, KWARPSIZE, 2)
+// #else
+// IVF_INTERLEAVED_IMPL_DUMMY(128, KWARPSIZE, 2)
+// #endif
+
+// Assume Navi 2x/3x, for now
 IVF_INTERLEAVED_IMPL(128, KWARPSIZE, 2)
-#else
-IVF_INTERLEAVED_IMPL_DUMMY(128, KWARPSIZE, 2)
-#endif
 #else
 IVF_INTERLEAVED_IMPL(128, 32, 2)
 #endif
