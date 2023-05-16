@@ -77,7 +77,7 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     res = faiss.RangeSearchResult(n)
     sp = faiss.swig_ptr
 
-    index_ivf.range_search_preassigned(
+    index_ivf.range_search_preassigned_c(
         n, sp(x), radius,
         sp(list_nos), sp(coarse_dis),
         res

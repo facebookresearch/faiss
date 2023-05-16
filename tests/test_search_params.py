@@ -9,7 +9,7 @@ import faiss
 import unittest
 
 from faiss.contrib import datasets
-from faiss.contrib.evaluation import sort_range_res_2
+from faiss.contrib.evaluation import sort_range_res_2, check_ref_range_results
 
 faiss.omp_set_num_threads(4)
 
@@ -416,3 +416,28 @@ class TestSortedIDSelectorRange(unittest.TestCase):
             len(ids), sp(ids), sp(j01[:1]), sp(j01[1:]))
         print(j01)
         assert j01[0] >= j01[1]
+
+class TestPrecomputed(unittest.TestCase):
+
+    def test_knn_and_range(self):
+        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
+        index = faiss.index_factory(ds.d, "IVF32,Flat")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 5
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        Dq, Iq = index.quantizer.search(ds.get_queries(), index.nprobe)
+        Dnew, Inew = index.search_preassigned(ds.get_queries(), 10, Iq, Dq)
+        np.testing.assert_equal(Iref, Inew)
+        np.testing.assert_equal(Dref, Dnew)
+
+        r2 = float(np.median(Dref[:, 5]))
+        Lref, Dref, Iref = index.range_search(ds.get_queries(), r2)
+        assert Lref.size > 10   # make sure there is something to test...
+
+        Lnew, Dnew, Inew = index.range_search_preassigned(ds.get_queries(), r2, Iq, Dq)
+        check_ref_range_results(
+            Lref, Dref, Iref,
+            Lnew, Dnew, Inew
+        )

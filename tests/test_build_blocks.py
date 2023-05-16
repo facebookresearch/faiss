@@ -693,3 +693,35 @@ class TestMergeKNNResults(unittest.TestCase):
 
     def test_max_float(self):
         self.do_test(ismax=True, dtype='float32')
+
+
+class TestMapInt64ToInt64(unittest.TestCase):
+
+    def do_test(self, capacity, n):
+        """ test that we are able to lookup """
+        rs = np.random.RandomState(123)
+        # make sure we have unique values
+        keys = np.unique(rs.choice(2 ** 29, size=n))
+        rs.shuffle(keys)
+        n = keys.size
+        vals = rs.choice(2 ** 30, size=n).astype('int64')
+        tab = faiss.MapInt64ToInt64(capacity)
+        tab.add(keys, vals)
+
+        # lookup and check
+        vals2 = tab.lookup(keys)
+        np.testing.assert_array_equal(vals, vals2)
+
+        # make a few keys that we know are not there
+        mask = rs.rand(n) < 0.3
+        keys[mask] = rs.choice(2 ** 29, size=n)[mask] + 2 ** 29
+        vals2 = tab.lookup(keys)
+        np.testing.assert_array_equal(-1, vals2[mask])
+        np.testing.assert_array_equal(vals[~mask], vals2[~mask])
+
+    def test_small(self):
+        self.do_test(16384, 10000)
+
+    def xx_test_large(self):
+        # don't run by default because it's slow
+        self.do_test(2 ** 21, 10 ** 6)

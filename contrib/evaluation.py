@@ -226,7 +226,7 @@ def range_PR_multiple_thresholds(
 # Functions that compare search results with a reference result.
 # They are intended for use in tests
 
-def test_ref_knn_with_draws(Dref, Iref, Dnew, Inew):
+def check_ref_knn_with_draws(Dref, Iref, Dnew, Inew):
     """ test that knn search results are identical, raise if not """
     np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
     # here we have to be careful because of draws
@@ -243,14 +243,14 @@ def test_ref_knn_with_draws(Dref, Iref, Dnew, Inew):
             testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
 
-def test_ref_range_results(lims_ref, Dref, Iref,
-                           lims_new, Dnew, Inew):
+def check_ref_range_results(Lref, Dref, Iref,
+                            Lnew, Dnew, Inew):
     """ compare range search results wrt. a reference result,
     throw if it fails """
-    np.testing.assert_array_equal(lims_ref, lims_new)
-    nq = len(lims_ref) - 1
+    np.testing.assert_array_equal(Lref, Lnew)
+    nq = len(Lref) - 1
     for i in range(nq):
-        l0, l1 = lims_ref[i], lims_ref[i + 1]
+        l0, l1 = Lref[i], Lref[i + 1]
         Ii_ref = Iref[l0:l1]
         Ii_new = Inew[l0:l1]
         Di_ref = Dref[l0:l1]

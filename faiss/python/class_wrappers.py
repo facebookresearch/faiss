@@ -544,6 +544,7 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype='float32')
+        thresh = float(thresh)
 
         res = RangeSearchResult(n)
         self.range_search_c(n, swig_ptr(x), thresh, res, params)
@@ -618,6 +619,64 @@ def handle_Index(the_class):
         )
         return D, I
 
+    def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
+        """Search vectors that are within a distance of the query vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Query vectors, shape (n, d) where d is appropriate for the index.
+            `dtype` must be float32.
+        thresh : float
+            Threshold to select neighbors. All elements within this radius are returned,
+            except for maximum inner product indexes, where the elements above the
+            threshold are returned
+        Iq : array_like, optional
+            Nearest centroids, size (n, nprobe)
+        Dq : array_like, optional
+            Distance array to the centroids, size (n, nprobe)
+        params : SearchParameters
+            Search parameters of the current search (overrides the class-level params)
+
+
+        Returns
+        -------
+        lims: array_like
+            Starting index of the results for each query vector, size n+1.
+        D : array_like
+            Distances of the nearest neighbors, shape `lims[n]`. The distances for
+            query i are in `D[lims[i]:lims[i+1]]`.
+        I : array_like
+            Labels of nearest neighbors, shape `lims[n]`. The labels for query i
+            are in `I[lims[i]:lims[i+1]]`.
+
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+
+        Iq = np.ascontiguousarray(Iq, dtype='int64')
+        assert params is None, "params not supported"
+        assert Iq.shape == (n, self.nprobe)
+
+        if Dq is not None:
+            Dq = np.ascontiguousarray(Dq, dtype='float32')
+            assert Dq.shape == Iq.shape
+
+        thresh = float(thresh)
+        res = RangeSearchResult(n)
+        self.range_search_preassigned_c(
+            n, swig_ptr(x), thresh,
+            swig_ptr(Iq), swig_ptr(Dq),
+            res
+        )
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
     def replacement_sa_encode(self, x, codes=None):
         n, d = x.shape
         assert d == self.d
@@ -675,8 +734,12 @@ def handle_Index(the_class):
                    ignore_missing=True)
     replace_method(the_class, 'search_and_reconstruct',
                    replacement_search_and_reconstruct, ignore_missing=True)
+
+    # these ones are IVF-specific
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)
+    replace_method(the_class, 'range_search_preassigned',
+                   replacement_range_search_preassigned, ignore_missing=True)
     replace_method(the_class, 'sa_encode', replacement_sa_encode)
     replace_method(the_class, 'sa_decode', replacement_sa_decode)
     replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes,
@@ -776,6 +839,36 @@ def handle_IndexBinary(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
+    def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d * 8 == self.d
+
+        Iq = np.ascontiguousarray(Iq, dtype='int64')
+        assert params is None, "params not supported"
+        assert Iq.shape == (n, self.nprobe)
+
+        if Dq is not None:
+            Dq = np.ascontiguousarray(Dq, dtype='int32')
+            assert Dq.shape == Iq.shape
+
+        thresh = int(thresh)
+        res = RangeSearchResult(n)
+        self.range_search_preassigned_c(
+            n, swig_ptr(x), thresh,
+            swig_ptr(Iq), swig_ptr(Dq),
+            res
+        )
+        # get pointers and copy them
+        lims = rev_swig_ptr(res.lims, n + 1).copy()
+        nd = int(lims[-1])
+        D = rev_swig_ptr(res.distances, nd).copy()
+        I = rev_swig_ptr(res.labels, nd).copy()
+        return lims, D, I
+
+
+
+
     def replacement_remove_ids(self, x):
         if isinstance(x, IDSelector):
             sel = x
@@ -794,6 +887,8 @@ def handle_IndexBinary(the_class):
     replace_method(the_class, 'remove_ids', replacement_remove_ids)
     replace_method(the_class, 'search_preassigned',
                    replacement_search_preassigned, ignore_missing=True)
+    replace_method(the_class, 'range_search_preassigned',
+                   replacement_range_search_preassigned, ignore_missing=True)
 
 
 def handle_VectorTransform(the_class):
@@ -937,7 +1032,7 @@ def handle_MapLong2Long(the_class):
 
     def replacement_map_add(self, keys, vals):
         n, = keys.shape
-        assert (n,) == keys.shape
+        assert (n,) == vals.shape
         self.add_c(n, swig_ptr(keys), swig_ptr(vals))
 
     def replacement_map_search_multiple(self, keys):

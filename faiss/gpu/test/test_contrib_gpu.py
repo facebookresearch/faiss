@@ -12,7 +12,7 @@ from common_faiss_tests import get_dataset_2
 
 from faiss.contrib import datasets, evaluation, big_batch_search
 from faiss.contrib.exhaustive_search import knn_ground_truth, \
-    range_ground_truth
+    range_ground_truth, range_search_gpu
 
 
 class TestComputeGT(unittest.TestCase):
@@ -51,7 +51,7 @@ class TestComputeGT(unittest.TestCase):
             xq, ds.database_iterator(bs=100), threshold,
             metric_type=metric)
 
-        evaluation.test_ref_range_results(
+        evaluation.check_ref_range_results(
             ref_lims, ref_D, ref_I,
             new_lims, new_D, new_I
         )
@@ -130,4 +130,50 @@ class TestBigBatchSearchMultiGPU(unittest.TestCase):
         np.testing.assert_almost_equal(Dnew, Dref, decimal=4)
 
     def test_Flat(self):
+        self.do_test("IVF64,Flat")
+
+
+class TestRangeSearchGpu(unittest.TestCase):
+
+    def do_test(self, factory_string):
+        ds = datasets.SyntheticDataset(32, 2000, 4000, 1000)
+        k = 10
+        index_gpu = faiss.index_cpu_to_all_gpus(
+            faiss.index_factory(ds.d, factory_string)
+        )
+        index_gpu.train(ds.get_train())
+        index_gpu.add(ds.get_database())
+        # just to find a reasonable threshold
+        D, _ = index_gpu.search(ds.get_queries(), k)
+        threshold = np.median(D[:, 5])
+
+        # ref run
+        index_cpu = faiss.index_gpu_to_cpu(index_gpu)
+        Lref, Dref, Iref = index_cpu.range_search(ds.get_queries(), threshold)
+        nres_per_query = Lref[1:] - Lref[:-1]
+        # make sure some entries were computed by CPU and some by GPU
+        assert np.any(nres_per_query > 4) and not np.all(nres_per_query > 4)
+
+        # mixed GPU / CPU run
+        Lnew, Dnew, Inew = range_search_gpu(
+            ds.get_queries(), threshold, index_gpu, index_cpu, gpu_k=4)
+        evaluation.check_ref_range_results(
+            Lref, Dref, Iref,
+            Lnew, Dnew, Inew
+        )
+
+        # also test the version without CPU search
+        Lnew2, Dnew2, Inew2 = range_search_gpu(
+            ds.get_queries(), threshold, index_gpu, None, gpu_k=4)
+        for q in range(ds.nq):
+            ref = Iref[Lref[q]:Lref[q+1]]
+            new = Inew2[Lnew2[q]:Lnew2[q+1]]
+            if nres_per_query[q] <= 4:
+                self.assertEqual(set(ref), set(new))
+            else:
+                ref = set(ref)
+                for v in new:
+                    self.assertIn(v, ref)
+
+    def test_ivf(self):
         self.do_test("IVF64,Flat")

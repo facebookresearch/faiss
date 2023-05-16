@@ -794,14 +794,138 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 #endif
 
 
+/*******************************************************************
+ * How should the template objects appear in the scripting language?
+ *******************************************************************/
 
-// Python-specific: do not release GIL any more, as functions below
-// use the Python/C API
+// answer: the same as the C++ typedefs, but we still have to redefine them
+
+%template() faiss::CMin<float, int64_t>;
+%template() faiss::CMin<int, int64_t>;
+%template() faiss::CMax<float, int64_t>;
+%template() faiss::CMax<int, int64_t>;
+
+%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
+%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
+%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
+%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
+
+%template(CMin_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
+%template(CMax_float_partition_fuzzy)
+    faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
+
+%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
+%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
+%template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+
+// SWIG seems to have some trouble resolving function template types here, so
+// declare explicitly
+
+%define INSTANTIATE_uint16_partition_fuzzy(C, id_t)
+
+%inline %{
+
+uint16_t C ## _uint16_partition_fuzzy(
+        uint16_t *vals, id_t *ids, size_t n,
+        size_t q_min, size_t q_max, size_t * q_out)
+{
+    return faiss::partition_fuzzy<faiss::C<unsigned short, id_t> >(
+        vals, ids, n, q_min, q_max, q_out);
+}
+
+%}
+
+%enddef
+
+INSTANTIATE_uint16_partition_fuzzy(CMin, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int64_t)
+INSTANTIATE_uint16_partition_fuzzy(CMin, int)
+INSTANTIATE_uint16_partition_fuzzy(CMax, int)
+
+// Same for merge_knn_results
+
+// same define as explicit instanciation in Heap.cpp
+%define INSTANTIATE_merge_knn_results(C, distance_t)
+
+%inline %{
+void merge_knn_results_ ## C(
+    size_t n, size_t k, int nshard,
+    const distance_t *all_distances, const faiss::idx_t *all_labels,
+    distance_t *distances, faiss::idx_t *labels)
+{
+    faiss::merge_knn_results<faiss::idx_t, faiss::C<distance_t, int>>(
+        n, k, nshard, all_distances, all_labels, distances, labels);
+}
+%}
+
+%enddef
+
+INSTANTIATE_merge_knn_results(CMin, float);
+INSTANTIATE_merge_knn_results(CMax, float);
+INSTANTIATE_merge_knn_results(CMin, int32_t);
+INSTANTIATE_merge_knn_results(CMax, int32_t);
+
+
+
+%inline %{
+
+/*******************************************************************
+ * numpy misses a hash table implementation, hence this class. It
+ * represents not found values as -1 like in the Index implementation
+ *******************************************************************/
+
+
+struct MapLong2Long {
+    std::unordered_map<int64_t, int64_t> map;
+
+    void add(size_t n, const int64_t *keys, const int64_t *vals) {
+        map.reserve(map.size() + n);
+        for (size_t i = 0; i < n; i++) {
+            map[keys[i]] = vals[i];
+        }
+    }
+
+    int64_t search(int64_t key) const {
+        auto ptr = map.find(key);
+        if (ptr == map.end()) {
+            return -1;
+        } else {
+            return ptr->second;
+        }
+    }
+
+    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
+        for (size_t i = 0; i < n; i++) {
+            vals[i] = search(keys[i]);
+        }
+    }
+};
+
+%}
+
+
+/*******************************************************************
+ * Expose a few basic functions
+ *******************************************************************/
+
+
+void omp_set_num_threads (int num_threads);
+int omp_get_max_threads ();
+void *memcpy(void *dest, const void *src, size_t n);
+
+
+
+
+/*******************************************************************
+ * Python-specific: do not release GIL any more, as functions below
+ * use the Python/C API
+ *******************************************************************/
+
 #ifdef SWIGPYTHON
 %exception;
 #endif
-
-
 
 
 
@@ -858,6 +982,9 @@ PyObject *swig_ptr (PyObject *a)
     }
     if(PyArray_TYPE(ao) == NPY_INT32) {
         return SWIG_NewPointerObj(data, SWIGTYPE_p_int, 0);
+    }
+    if(PyArray_TYPE(ao) == NPY_BOOL) {
+        return SWIG_NewPointerObj(data, SWIGTYPE_p_bool, 0);
     }
     if(PyArray_TYPE(ao) == NPY_UINT64) {
 #ifdef SWIGWORDSIZE64
@@ -936,90 +1063,6 @@ REV_SWIG_PTR(uint64_t, NPY_UINT64);
 
 
 /*******************************************************************
- * How should the template objects appear in the scripting language?
- *******************************************************************/
-
-// answer: the same as the C++ typedefs, but we still have to redefine them
-
-%template() faiss::CMin<float, int64_t>;
-%template() faiss::CMin<int, int64_t>;
-%template() faiss::CMax<float, int64_t>;
-%template() faiss::CMax<int, int64_t>;
-
-%template(float_minheap_array_t) faiss::HeapArray<faiss::CMin<float, int64_t> >;
-%template(int_minheap_array_t) faiss::HeapArray<faiss::CMin<int, int64_t> >;
-%template(float_maxheap_array_t) faiss::HeapArray<faiss::CMax<float, int64_t> >;
-%template(int_maxheap_array_t) faiss::HeapArray<faiss::CMax<int, int64_t> >;
-
-%template(CMin_float_partition_fuzzy)
-    faiss::partition_fuzzy<faiss::CMin<float, int64_t> >;
-%template(CMax_float_partition_fuzzy)
-    faiss::partition_fuzzy<faiss::CMax<float, int64_t> >;
-
-%template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
-%template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
-%template(AlignedTableFloat32) faiss::AlignedTable<float>;
-
-
-// SWIG seems to have some trouble resolving function template types here, so
-// declare explicitly
-
-%define INSTANTIATE_uint16_partition_fuzzy(C, id_t)
-
-%inline %{
-
-uint16_t C ## _uint16_partition_fuzzy(
-        uint16_t *vals, id_t *ids, size_t n,
-        size_t q_min, size_t q_max, size_t * q_out)
-{
-    return faiss::partition_fuzzy<faiss::C<unsigned short, id_t> >(
-        vals, ids, n, q_min, q_max, q_out);
-}
-
-%}
-
-%enddef
-
-INSTANTIATE_uint16_partition_fuzzy(CMin, int64_t)
-INSTANTIATE_uint16_partition_fuzzy(CMax, int64_t)
-INSTANTIATE_uint16_partition_fuzzy(CMin, int)
-INSTANTIATE_uint16_partition_fuzzy(CMax, int)
-
-// Same for merge_knn_results
-
-// same define as explicit instanciation in Heap.cpp
-%define INSTANTIATE_merge_knn_results(C, distance_t)
-
-%inline %{
-void merge_knn_results_ ## C(
-    size_t n, size_t k, int nshard,
-    const distance_t *all_distances, const faiss::idx_t *all_labels,
-    distance_t *distances, faiss::idx_t *labels)
-{
-    faiss::merge_knn_results<faiss::idx_t, faiss::C<distance_t, int>>(
-        n, k, nshard, all_distances, all_labels, distances, labels);
-}
-%}
-
-%enddef
-
-INSTANTIATE_merge_knn_results(CMin, float);
-INSTANTIATE_merge_knn_results(CMax, float);
-INSTANTIATE_merge_knn_results(CMin, int32_t);
-INSTANTIATE_merge_knn_results(CMax, int32_t);
-
-
-/*******************************************************************
- * Expose a few basic functions
- *******************************************************************/
-
-
-void omp_set_num_threads (int num_threads);
-int omp_get_max_threads ();
-void *memcpy(void *dest, const void *src, size_t n);
-
-
-/*******************************************************************
  * For Faiss/Pytorch interop via pointers encoded as longs
  *******************************************************************/
 
@@ -1047,42 +1090,6 @@ void * cast_integer_to_void_ptr (int64_t x) {
 %}
 
 
-/*******************************************************************
- * Range search interface
- *******************************************************************/
-
-
-%inline %{
-
-// numpy misses a hash table implementation, hence this class. It
-// represents not found values as -1 like in the Index implementation
-
-struct MapLong2Long {
-    std::unordered_map<int64_t, int64_t> map;
-
-    void add(size_t n, const int64_t *keys, const int64_t *vals) {
-        map.reserve(map.size() + n);
-        for (size_t i = 0; i < n; i++) {
-            map[keys[i]] = vals[i];
-        }
-    }
-
-    int64_t search(int64_t key) {
-        if (map.count(key) == 0) {
-            return -1;
-        } else {
-            return map[key];
-        }
-    }
-
-    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
-        for (size_t i = 0; i < n; i++) {
-            vals[i] = search(keys[i]);
-        }
-    }
-};
-
-%}
 
 
 
