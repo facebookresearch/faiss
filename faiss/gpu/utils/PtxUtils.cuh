@@ -7,30 +7,41 @@
 
 #pragma once
 
-#include <cuda.h>
-#include <device_functions.h>
+#include <hip/hip_runtime.h>
+#include <hip/device_functions.h>
 
 namespace faiss {
 namespace gpu {
 
 #ifdef USE_ROCM
 
-#define GET_BITFIELD_U32(OUT, VAL, POS, LEN)
+#define GET_BITFIELD_U32(OUT, VAL, POS, LEN)  \
+        do {                                  \
+            OUT = getBitfield((uint32_t)VAL, POS, LEN); \
+        } while (0)
 
-#define GET_BITFIELD_U64(OUT, VAL, POS, LEN)
+#define GET_BITFIELD_U64(OUT, VAL, POS, LEN)  \
+        do {                                  \
+            OUT = getBitfield((uint64_t)VAL, POS, LEN); \
+        } while (0)
 
-__device__ __forceinline__ unsigned int getBitfield(
-        unsigned int val,
-        int pos,
-        int len) {
-    unsigned int ret{0};
-    return ret;
+// Taken from https://github.com/GPUOpen-ProfessionalCompute-Libraries/MIVisionX/blob/rocm-5.5.0/amd_openvx/openvx/ago/ago_util_opencl.cpp#L1563
+__device__ __forceinline__ uint32_t
+getBitfield(uint32_t val, int pos, int len) {
+    if (len == 0)
+        return 0;
+    if (pos + len < 32)
+        return (val << (32 - pos - len)) >> (32 - len);
+    return val >> pos;
 }
 
 __device__ __forceinline__ uint64_t
 getBitfield(uint64_t val, int pos, int len) {
-    uint64_t ret{0};
-    return ret;
+    if (len == 0)
+        return 0;
+    if (pos + len < 64)
+        return (val << (64 - pos - len)) >> (64 - len);
+    return val >> pos;
 }
 
 __device__ __forceinline__ unsigned int setBitfield(
@@ -39,6 +50,7 @@ __device__ __forceinline__ unsigned int setBitfield(
         int pos,
         int len) {
     unsigned int ret{0};
+    printf("Runtime Error of %s: Unimplemented\n", __PRETTY_FUNCTION__);
     return ret;
 }
 
