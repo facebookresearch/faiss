@@ -47,11 +47,22 @@ inline __device__ unsigned int getByte(uint64_t v, int pos, int width) {
     return getBitfield(v, pos, width);
 }
 
-template <int NumSubQuantizers>
-struct LoadCode32 {};
+// template <int NumSubQuantizers>
+// struct LoadCode32 {};
 
 #ifdef USE_ROCM
 
+template <int NumSubQuantizers>
+struct LoadCode32 {
+    static inline __device__ void load(
+            unsigned int code32[1],
+            uint8_t* p,
+            int offset) {
+        printf("Runtime Error of LoadCode32 with NumSubQuantizers = %d\n", NumSubQuantizers);
+    }
+};
+
+#if 0
 // TODO
 template <>
 struct LoadCode32<1> {
@@ -274,6 +285,7 @@ struct LoadCode32<48> {
         code32[11] = __ldg((const unsigned int*) p[44]);
     }
 };
+#endif
 
 template <>
 struct LoadCode32<56> {
@@ -284,23 +296,24 @@ struct LoadCode32<56> {
         p += offset * 56;
         // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
-        code32[8] = __ldg((const unsigned int*) p[32]);
-        code32[9] = __ldg((const unsigned int*) p[36]);
-        code32[10] = __ldg((const unsigned int*) p[40]);
-        code32[11] = __ldg((const unsigned int*) p[44]);
-        code32[12] = __ldg((const unsigned int*) p[48]);
-        code32[13] = __ldg((const unsigned int*) p[52]);
+        code32[ 0] = __ldg((const unsigned int*) (p +  0));
+        code32[ 1] = __ldg((const unsigned int*) (p +  4));
+        code32[ 2] = __ldg((const unsigned int*) (p +  8));
+        code32[ 3] = __ldg((const unsigned int*) (p + 12));
+        code32[ 4] = __ldg((const unsigned int*) (p + 16));
+        code32[ 5] = __ldg((const unsigned int*) (p + 20));
+        code32[ 6] = __ldg((const unsigned int*) (p + 24));
+        code32[ 7] = __ldg((const unsigned int*) (p + 28));
+        code32[ 8] = __ldg((const unsigned int*) (p + 32));
+        code32[ 9] = __ldg((const unsigned int*) (p + 36));
+        code32[10] = __ldg((const unsigned int*) (p + 40));
+        code32[11] = __ldg((const unsigned int*) (p + 44));
+        code32[12] = __ldg((const unsigned int*) (p + 48));
+        code32[13] = __ldg((const unsigned int*) (p + 52));
     }
 };
 
+#if 0
 template <>
 struct LoadCode32<64> {
     static inline __device__ void load(
@@ -365,6 +378,7 @@ struct LoadCode32<96> {
 
     }
 };
+#endif
 
 #else // USE_ROCM
 
