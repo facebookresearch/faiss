@@ -537,6 +537,104 @@
 </dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNNE">
+<span id="_CPPv3N5faiss16CombinerRangeKNNE"></span><span id="_CPPv2N5faiss16CombinerRangeKNNE"></span><span id="faiss::CombinerRangeKNN"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CombinerRangeKNN</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNNE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;utils.h&gt;</em></div>
+<p>This class is used to combine range and knn search results in contrib.exhaustive_search.range_search_gpu </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN16CombinerRangeKNNE7int64_t6size_tfb">
+<span id="_CPPv3N5faiss16CombinerRangeKNN16CombinerRangeKNNE7int64_t6size_tfb"></span><span id="_CPPv2N5faiss16CombinerRangeKNN16CombinerRangeKNNE7int64_t6size_tfb"></span><span id="faiss::CombinerRangeKNN::CombinerRangeKNN__int64_t.s.float.b"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1ab1261e0d586c0b3bdfee636961aa1e81"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CombinerRangeKNN</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nq</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">r2</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keep_max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN16CombinerRangeKNNE7int64_t6size_tfb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>whether to keep max values instead of min. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN13compute_sizesEP7int64_t">
+<span id="_CPPv3N5faiss16CombinerRangeKNN13compute_sizesEP7int64_t"></span><span id="_CPPv2N5faiss16CombinerRangeKNN13compute_sizesEP7int64_t"></span><span id="faiss::CombinerRangeKNN::compute_sizes__int64_tP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a3487826b2d2849a65798ed09755d1ff3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compute_sizes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">L_res</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN13compute_sizesEP7int64_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size nq + 1 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN12write_resultEPfP7int64_t">
+<span id="_CPPv3N5faiss16CombinerRangeKNN12write_resultEPfP7int64_t"></span><span id="_CPPv2N5faiss16CombinerRangeKNN12write_resultEPfP7int64_t"></span><span id="faiss::CombinerRangeKNN::write_result__floatP.int64_tP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1ac576d33d57432e5b4c1d493ea09442a0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write_result</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">D_res</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">I_res</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN12write_resultEPfP7int64_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Phase 2: caller allocates D_res and I_res (size L_res[nq]) Phase 3: fill in D_res and I_res </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN2nqE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN2nqE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN2nqE"></span><span id="faiss::CombinerRangeKNN::nq__int64_t"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a6e963a30d4930e979a74f069b492ae99"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nq</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN2nqE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN1kE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN1kE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN1kE"></span><span id="faiss::CombinerRangeKNN::k__s"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a5bcb66ad5b474f52622e366f64e90b89"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN1kE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>nb of queries </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN2r2E">
+<span id="_CPPv3N5faiss16CombinerRangeKNN2r2E"></span><span id="_CPPv2N5faiss16CombinerRangeKNN2r2E"></span><span id="faiss::CombinerRangeKNN::r2__float"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a4b9f30973b6b953b6550f60f261ad0c0"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">r2</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN2r2E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>number of neighbors for the knn search part </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN8keep_maxE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN8keep_maxE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN8keep_maxE"></span><span id="faiss::CombinerRangeKNN::keep_max__b"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a9651daa7c3e886e62162343ca543a6a5"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">keep_max</span></span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN8keep_maxE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>range search radius </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN1IE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN1IE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN1IE"></span><span id="faiss::CombinerRangeKNN::I__int64_tCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a08f58c52e9bf8228da8c4e2fb49afe28"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN1IE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Knn search results. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN1DE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN1DE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN1DE"></span><span id="faiss::CombinerRangeKNN::D__floatCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a21dc45a5d9b41d2e6bd06cea10dde104"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">D</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN1DE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size nq * k </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN4maskE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN4maskE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN4maskE"></span><span id="faiss::CombinerRangeKNN::mask__bCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1ad606113a585e0bb7481ab8c8293a92b7"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mask</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN4maskE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size nq * k </p>
+<p>optional: range search results (ignored if mask is NULL) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN10lim_remainE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN10lim_remainE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN10lim_remainE"></span><span id="faiss::CombinerRangeKNN::lim_remain__int64_tCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a12d557a790a43a51fbfd5c0fc701369d"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">lim_remain</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN10lim_remainE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>mask for where knn results are valid, size nq </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN8D_remainE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN8D_remainE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN8D_remainE"></span><span id="faiss::CombinerRangeKNN::D_remain__floatCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1aa4edd2fe071ee15b6ad979c8565db712"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">D_remain</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN8D_remainE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size nrange + 1 </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN8I_remainE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN8I_remainE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN8I_remainE"></span><span id="faiss::CombinerRangeKNN::I_remain__int64_tCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1acd017c4b0a67d51f095a86f73aaa4647"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">I_remain</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN8I_remainE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size lim_remain[nrange] </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss16CombinerRangeKNN5L_resE">
+<span id="_CPPv3N5faiss16CombinerRangeKNN5L_resE"></span><span id="_CPPv2N5faiss16CombinerRangeKNN5L_resE"></span><span id="faiss::CombinerRangeKNN::L_res__int64_tCP"></span><span class="target" id="structfaiss_1_1CombinerRangeKNN_1a92f44d2aea8b30a9d3f25b89b46e2ac8"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">L_res</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N5faiss16CombinerRangeKNN5L_resE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>size lim_remain[nrange] </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
