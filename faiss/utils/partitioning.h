@@ -71,5 +71,4 @@ struct PartitionStats {
 // global var that collects them all
 FAISS_API extern PartitionStats partition_stats;
 
-
 } // namespace faiss

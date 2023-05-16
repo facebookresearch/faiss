@@ -558,8 +558,7 @@ void CombinerRangeKNN::compute_sizes(int64_t* L_res) {
         int64_t n_in;
         if (!mask || !mask[i]) {
             const float* row = D + i * k;
-            n_in = keep_max ? count_gt(k, row, r2)
-                            : count_lt(k, row, r2);
+            n_in = keep_max ? count_gt(k, row, r2) : count_lt(k, row, r2);
         } else {
             n_in = lim_remain[j + 1] - lim_remain[j];
             j++;
