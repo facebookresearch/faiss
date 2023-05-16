@@ -239,6 +239,7 @@
     <innerclass refid="structfaiss_1_1simd32uint8" prot="public">faiss::simd32uint8</innerclass>
     <innerclass refid="structfaiss_1_1simd8uint32" prot="public">faiss::simd8uint32</innerclass>
     <innerclass refid="structfaiss_1_1simd8float32" prot="public">faiss::simd8float32</innerclass>
+    <innerclass refid="structfaiss_1_1CombinerRangeKNN" prot="public">faiss::CombinerRangeKNN</innerclass>
     <innerclass refid="classfaiss_1_1WorkerThread" prot="public">faiss::WorkerThread</innerclass>
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
     <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
@@ -8265,6 +8266,96 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/sorting.h" line="63" column="6" declfile="faiss/utils/sorting.h" declline="63" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a23ad4ba1ce30a52a3f1479a3dc9b6503" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::hashtable_int64_to_int64_init</definition>
+        <argsstring>(int log2_capacity, int64_t *tab)</argsstring>
+        <name>hashtable_int64_to_int64_init</name>
+        <param>
+          <type>int</type>
+          <declname>log2_capacity</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>tab</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Hashtable implementation for int64 -&gt; int64 with external storage implemented for fast batch add and lookup.</para>
+<para>tab is of size 2 * (1 &lt;&lt; log2_capacity) n is the number of elements to add or search</para>
+<para>adding several values in a same batch: an arbitrary one gets added in different batches: the newer batch overwrites. raises an exception if capacity is exhausted. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="82" column="6" declfile="faiss/utils/sorting.h" declline="82" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a619e1b624d0c6b0a5f833a4744f325a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::hashtable_int64_to_int64_add</definition>
+        <argsstring>(int log2_capacity, int64_t *tab, size_t n, const int64_t *keys, const int64_t *vals)</argsstring>
+        <name>hashtable_int64_to_int64_add</name>
+        <param>
+          <type>int</type>
+          <declname>log2_capacity</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>vals</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="84" column="6" declfile="faiss/utils/sorting.h" declline="84" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8e9fac1f36f69b1b18b64cc3e4147101" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::hashtable_int64_to_int64_lookup</definition>
+        <argsstring>(int log2_capacity, const int64_t *tab, size_t n, const int64_t *keys, int64_t *vals)</argsstring>
+        <name>hashtable_int64_to_int64_lookup</name>
+        <param>
+          <type>int</type>
+          <declname>log2_capacity</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>tab</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>vals</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/sorting.h" line="91" column="6" declfile="faiss/utils/sorting.h" declline="91" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>

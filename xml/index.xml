@@ -469,6 +469,22 @@
     <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" kind="function"><name>encode</name></member>
     <member refid="structfaiss_1_1Repeats_1a9dbe2642c42de9547d4f134575b7a18f" kind="function"><name>decode</name></member>
   </compound>
+  <compound refid="structfaiss_1_1CombinerRangeKNN" kind="struct"><name>faiss::CombinerRangeKNN</name>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a6e963a30d4930e979a74f069b492ae99" kind="variable"><name>nq</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a5bcb66ad5b474f52622e366f64e90b89" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a4b9f30973b6b953b6550f60f261ad0c0" kind="variable"><name>r2</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a9651daa7c3e886e62162343ca543a6a5" kind="variable"><name>keep_max</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a08f58c52e9bf8228da8c4e2fb49afe28" kind="variable"><name>I</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a21dc45a5d9b41d2e6bd06cea10dde104" kind="variable"><name>D</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1ad606113a585e0bb7481ab8c8293a92b7" kind="variable"><name>mask</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a12d557a790a43a51fbfd5c0fc701369d" kind="variable"><name>lim_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1aa4edd2fe071ee15b6ad979c8565db712" kind="variable"><name>D_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1acd017c4b0a67d51f095a86f73aaa4647" kind="variable"><name>I_remain</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a92f44d2aea8b30a9d3f25b89b46e2ac8" kind="variable"><name>L_res</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1ab1261e0d586c0b3bdfee636961aa1e81" kind="function"><name>CombinerRangeKNN</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1a3487826b2d2849a65798ed09755d1ff3" kind="function"><name>compute_sizes</name></member>
+    <member refid="structfaiss_1_1CombinerRangeKNN_1ac576d33d57432e5b4c1d493ea09442a0" kind="function"><name>write_result</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1CpuTimer" kind="class"><name>faiss::gpu::CpuTimer</name>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1a6714256dcd528ad4c33d7c9eb6969ac4" kind="variable"><name>start_</name></member>
     <member refid="classfaiss_1_1gpu_1_1CpuTimer_1af2f8e832b4c5425e152834ae7aa2af49" kind="function"><name>CpuTimer</name></member>
@@ -8502,6 +8518,9 @@
     <member refid="namespacefaiss_1ac3b63b77f8bb7620bf2be5e9f42f12ba" kind="function"><name>bucket_sort</name></member>
     <member refid="namespacefaiss_1a1bd7216cbe1e5e6d441088e6f3c979e9" kind="function"><name>matrix_bucket_sort_inplace</name></member>
     <member refid="namespacefaiss_1a5374d7faee70e3977c0293ee0997b964" kind="function"><name>matrix_bucket_sort_inplace</name></member>
+    <member refid="namespacefaiss_1a23ad4ba1ce30a52a3f1479a3dc9b6503" kind="function"><name>hashtable_int64_to_int64_init</name></member>
+    <member refid="namespacefaiss_1a619e1b624d0c6b0a5f833a4744f325a1" kind="function"><name>hashtable_int64_to_int64_add</name></member>
+    <member refid="namespacefaiss_1a8e9fac1f36f69b1b18b64cc3e4147101" kind="function"><name>hashtable_int64_to_int64_lookup</name></member>
     <member refid="namespacefaiss_1a2356cfad1b4e1bd20c31fdf97e6429d9" kind="function"><name>get_compile_options</name></member>
     <member refid="namespacefaiss_1af2a71f7d5402ae02ce169a4cc83020eb" kind="function"><name>getmillisecs</name></member>
     <member refid="namespacefaiss_1aa3af5769b0b649f112332a874c64d361" kind="function"><name>get_mem_usage_kb</name></member>

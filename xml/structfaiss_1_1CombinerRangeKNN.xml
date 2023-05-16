@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1CombinerRangeKNN" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::CombinerRangeKNN</compoundname>
+    <includes refid="utils_8h" local="no">utils.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a6e963a30d4930e979a74f069b492ae99" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::CombinerRangeKNN::nq</definition>
+        <argsstring></argsstring>
+        <name>nq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="170" column="13" bodyfile="faiss/utils/utils.h" bodystart="170" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a5bcb66ad5b474f52622e366f64e90b89" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CombinerRangeKNN::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+<para>nb of queries </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="171" column="12" bodyfile="faiss/utils/utils.h" bodystart="171" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a4b9f30973b6b953b6550f60f261ad0c0" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::CombinerRangeKNN::r2</definition>
+        <argsstring></argsstring>
+        <name>r2</name>
+        <briefdescription>
+<para>number of neighbors for the knn search part </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="172" column="11" bodyfile="faiss/utils/utils.h" bodystart="172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a9651daa7c3e886e62162343ca543a6a5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::CombinerRangeKNN::keep_max</definition>
+        <argsstring></argsstring>
+        <name>keep_max</name>
+        <briefdescription>
+<para>range search radius </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="173" column="10" bodyfile="faiss/utils/utils.h" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a08f58c52e9bf8228da8c4e2fb49afe28" prot="public" static="no" mutable="no">
+        <type>const int64_t *</type>
+        <definition>const int64_t* faiss::CombinerRangeKNN::I</definition>
+        <argsstring></argsstring>
+        <name>I</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>Knn search results. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="179" column="19" bodyfile="faiss/utils/utils.h" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a21dc45a5d9b41d2e6bd06cea10dde104" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::CombinerRangeKNN::D</definition>
+        <argsstring></argsstring>
+        <name>D</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>size nq * k </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="180" column="17" bodyfile="faiss/utils/utils.h" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1ad606113a585e0bb7481ab8c8293a92b7" prot="public" static="no" mutable="no">
+        <type>const bool *</type>
+        <definition>const bool* faiss::CombinerRangeKNN::mask</definition>
+        <argsstring></argsstring>
+        <name>mask</name>
+        <initializer>=
+            nullptr</initializer>
+        <briefdescription>
+<para>size nq * k </para>
+        </briefdescription>
+        <detaileddescription>
+<para>optional: range search results (ignored if mask is NULL) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="183" column="16" bodyfile="faiss/utils/utils.h" bodystart="183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a12d557a790a43a51fbfd5c0fc701369d" prot="public" static="no" mutable="no">
+        <type>const int64_t *</type>
+        <definition>const int64_t* faiss::CombinerRangeKNN::lim_remain</definition>
+        <argsstring></argsstring>
+        <name>lim_remain</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>mask for where knn results are valid, size nq </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="186" column="19" bodyfile="faiss/utils/utils.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1aa4edd2fe071ee15b6ad979c8565db712" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::CombinerRangeKNN::D_remain</definition>
+        <argsstring></argsstring>
+        <name>D_remain</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>size nrange + 1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="187" column="17" bodyfile="faiss/utils/utils.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1acd017c4b0a67d51f095a86f73aaa4647" prot="public" static="no" mutable="no">
+        <type>const int64_t *</type>
+        <definition>const int64_t* faiss::CombinerRangeKNN::I_remain</definition>
+        <argsstring></argsstring>
+        <name>I_remain</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>size lim_remain[nrange] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="188" column="19" bodyfile="faiss/utils/utils.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CombinerRangeKNN_1a92f44d2aea8b30a9d3f25b89b46e2ac8" prot="public" static="no" mutable="no">
+        <type>const int64_t *</type>
+        <definition>const int64_t* faiss::CombinerRangeKNN::L_res</definition>
+        <argsstring></argsstring>
+        <name>L_res</name>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>size lim_remain[nrange] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="190" column="19" bodyfile="faiss/utils/utils.h" bodystart="190" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1ab1261e0d586c0b3bdfee636961aa1e81" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::CombinerRangeKNN::CombinerRangeKNN</definition>
+        <argsstring>(int64_t nq, size_t k, float r2, bool keep_max)</argsstring>
+        <name>CombinerRangeKNN</name>
+        <param>
+          <type>int64_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>r2</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>keep_max</declname>
+        </param>
+        <briefdescription>
+<para>whether to keep max values instead of min. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="175" column="5" bodyfile="faiss/utils/utils.h" bodystart="175" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1a3487826b2d2849a65798ed09755d1ff3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::CombinerRangeKNN::compute_sizes</definition>
+        <argsstring>(int64_t *L_res)</argsstring>
+        <name>compute_sizes</name>
+        <param>
+          <type>int64_t *</type>
+          <declname>L_res</declname>
+        </param>
+        <briefdescription>
+<para>size nq + 1 </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="192" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1ac576d33d57432e5b4c1d493ea09442a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::CombinerRangeKNN::write_result</definition>
+        <argsstring>(float *D_res, int64_t *I_res)</argsstring>
+        <name>write_result</name>
+        <param>
+          <type>float *</type>
+          <declname>D_res</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>I_res</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Phase 2: caller allocates D_res and I_res (size L_res[nq]) Phase 3: fill in D_res and I_res </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="196" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This class is used to combine range and knn search results in contrib.exhaustive_search.range_search_gpu </para>
+    </detaileddescription>
+    <location file="faiss/utils/utils.h" line="169" column="1" bodyfile="faiss/utils/utils.h" bodystart="169" bodyend="197"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1ab1261e0d586c0b3bdfee636961aa1e81" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>CombinerRangeKNN</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a3487826b2d2849a65798ed09755d1ff3" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>compute_sizes</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a21dc45a5d9b41d2e6bd06cea10dde104" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>D</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1aa4edd2fe071ee15b6ad979c8565db712" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>D_remain</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a08f58c52e9bf8228da8c4e2fb49afe28" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>I</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1acd017c4b0a67d51f095a86f73aaa4647" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>I_remain</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a5bcb66ad5b474f52622e366f64e90b89" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>k</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a9651daa7c3e886e62162343ca543a6a5" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>keep_max</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a92f44d2aea8b30a9d3f25b89b46e2ac8" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>L_res</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a12d557a790a43a51fbfd5c0fc701369d" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>lim_remain</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1ad606113a585e0bb7481ab8c8293a92b7" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>mask</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a6e963a30d4930e979a74f069b492ae99" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>nq</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a4b9f30973b6b953b6550f60f261ad0c0" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>r2</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1ac576d33d57432e5b4c1d493ea09442a0" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>write_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
