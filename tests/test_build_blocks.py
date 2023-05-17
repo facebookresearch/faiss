@@ -701,7 +701,7 @@ class TestMapInt64ToInt64(unittest.TestCase):
         """ test that we are able to lookup """
         rs = np.random.RandomState(123)
         # make sure we have unique values
-        keys = np.unique(rs.choice(2 ** 29, size=n))
+        keys = np.unique(rs.choice(2 ** 29, size=n).astype("int64"))
         rs.shuffle(keys)
         n = keys.size
         vals = rs.choice(2 ** 30, size=n).astype('int64')
