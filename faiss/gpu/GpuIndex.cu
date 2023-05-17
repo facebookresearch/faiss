@@ -514,4 +514,21 @@ bool isGpuIndexImplemented(faiss::Index* index) {
 }
 
 } // namespace gpu
+
+// This is the one defined in utils.cpp
+// Crossing fingers that the InitGpuOptions_instance will
+// be instanciated after this global variable
+extern std::string gpu_options;
+
+struct InitGpuOptions {
+    InitGpuOptions() {
+        gpu_options = "GPU ";
+#ifdef USE_NVIDIA_RAFT
+        gpu_options += "NVIDIA_RAFT ";
+#endif
+    }
+};
+
+InitGpuOptions InitGpuOptions_instance;
+
 } // namespace faiss

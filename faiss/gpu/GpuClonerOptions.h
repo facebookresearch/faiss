@@ -36,6 +36,9 @@ struct GpuClonerOptions {
 
     /// Set verbose options on the index
     bool verbose = false;
+
+    /// use the RAFT implementation
+    bool use_raft = false;
 };
 
 struct GpuMultipleClonerOptions : public GpuClonerOptions {
