@@ -58,12 +58,10 @@ struct LoadCode32 {
             unsigned int code32[1],
             uint8_t* p,
             int offset) {
-        printf("Runtime Error of LoadCode32 with NumSubQuantizers = %d\n", NumSubQuantizers);
+        printf("Runtime Error: Unimplemented LoadCode32 with NumSubQuantizers = %d\n", NumSubQuantizers);
     }
 };
 
-#if 0
-// TODO
 template <>
 struct LoadCode32<1> {
     static inline __device__ void load(
@@ -72,7 +70,7 @@ struct LoadCode32<1> {
             int offset) {
         p += offset * 1;
         // asm("ld.global.cs.u8 {%0}, [%1];" : "=r"(code32[0]) : "l"(p));
-        code32[0] = __ldg((const unsigned int*) p);
+        code32[0] = __ldg((const uint8_t*) p);
     }
 };
 
@@ -84,7 +82,7 @@ struct LoadCode32<2> {
             int offset) {
         p += offset * 2;
         // asm("ld.global.cs.u16 {%0}, [%1];" : "=r"(code32[0]) : "l"(p));
-        code32[0] = __ldg((const unsigned int*) p);
+        code32[0] = __ldg((const uint16_t*) p);
     }
 };
 
@@ -101,9 +99,9 @@ struct LoadCode32<3> {
 
         // FIXME: this is a non-coalesced, unaligned, non-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        a = __ldg((const unsigned int*) p[0]);
-        b = __ldg((const unsigned int*) p[1]);
-        c = __ldg((const unsigned int*) p[2]);
+        a = __ldg((const uint8_t*) (p + 0));
+        b = __ldg((const uint8_t*) (p + 1));
+        c = __ldg((const uint8_t*) (p + 2));
 
         // FIXME: this is also slow, since we have to recover the
         // individual bytes loaded
@@ -145,10 +143,9 @@ struct LoadCode32<12> {
         p += offset * 12;
         // FIXME: this is a non-coalesced, unaligned, non-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-
+        code32[0] = __ldg((const unsigned int*) (p + 0));
+        code32[1] = __ldg((const unsigned int*) (p + 4));
+        code32[2] = __ldg((const unsigned int*) (p + 8));
     }
 };
 
@@ -159,10 +156,15 @@ struct LoadCode32<16> {
             uint8_t* p,
             int offset) {
         p += offset * 16;
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
+        int4 tmp = __ldg((const int4*) p);
+        code32[0] = tmp.x;
+        code32[1] = tmp.y;
+        code32[2] = tmp.z;
+        code32[3] = tmp.w;
+        // code32[0] = __ldg((const unsigned int*) p[0]);
+        // code32[1] = __ldg((const unsigned int*) p[4]);
+        // code32[2] = __ldg((const unsigned int*) p[8]);
+        // code32[3] = __ldg((const unsigned int*) p[12]);
     }
 };
 
@@ -175,11 +177,11 @@ struct LoadCode32<20> {
         p += offset * 20;
         // FIXME: this is a non-coalesced, unaligned, non-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
+        code32[0] = __ldg((const unsigned int*) (p +  0));
+        code32[1] = __ldg((const unsigned int*) (p +  4));
+        code32[2] = __ldg((const unsigned int*) (p +  8));
+        code32[3] = __ldg((const unsigned int*) (p + 12));
+        code32[4] = __ldg((const unsigned int*) (p + 16));
     }
 };
 
@@ -192,12 +194,12 @@ struct LoadCode32<24> {
         p += offset * 24;
         // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
+        code32[0] = __ldg((const unsigned int*) (p +  0));
+        code32[1] = __ldg((const unsigned int*) (p +  4));
+        code32[2] = __ldg((const unsigned int*) (p +  8));
+        code32[3] = __ldg((const unsigned int*) (p + 12));
+        code32[4] = __ldg((const unsigned int*) (p + 16));
+        code32[5] = __ldg((const unsigned int*) (p + 20));
     }
 };
 
@@ -210,13 +212,13 @@ struct LoadCode32<28> {
         p += offset * 28;
         // FIXME: this is a non-coalesced, unaligned, non-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
+        code32[0] = __ldg((const unsigned int*) (p +  0));
+        code32[1] = __ldg((const unsigned int*) (p +  4));
+        code32[2] = __ldg((const unsigned int*) (p +  8));
+        code32[3] = __ldg((const unsigned int*) (p + 12));
+        code32[4] = __ldg((const unsigned int*) (p + 16));
+        code32[5] = __ldg((const unsigned int*) (p + 20));
+        code32[6] = __ldg((const unsigned int*) (p + 24));
     }
 };
 
@@ -229,14 +231,14 @@ struct LoadCode32<32> {
         p += offset * 32;
         // FIXME: this is a non-coalesced load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
+        code32[0] = __ldg((const unsigned int*) (p +  0));
+        code32[1] = __ldg((const unsigned int*) (p +  4));
+        code32[2] = __ldg((const unsigned int*) (p +  8));
+        code32[3] = __ldg((const unsigned int*) (p + 12));
+        code32[4] = __ldg((const unsigned int*) (p + 16));
+        code32[5] = __ldg((const unsigned int*) (p + 20));
+        code32[6] = __ldg((const unsigned int*) (p + 24));
+        code32[7] = __ldg((const unsigned int*) (p + 28));
     }
 };
 
@@ -249,16 +251,16 @@ struct LoadCode32<40> {
         p += offset * 40;
         // FIXME: this is a non-coalesced, unaligned, 2-vectorized load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
-        code32[8] = __ldg((const unsigned int*) p[32]);
-        code32[9] = __ldg((const unsigned int*) p[36]);
+        code32[0] = __ldg((const unsigned int*) (p +  0));
+        code32[1] = __ldg((const unsigned int*) (p +  4));
+        code32[2] = __ldg((const unsigned int*) (p +  8));
+        code32[3] = __ldg((const unsigned int*) (p + 12));
+        code32[4] = __ldg((const unsigned int*) (p + 16));
+        code32[5] = __ldg((const unsigned int*) (p + 20));
+        code32[6] = __ldg((const unsigned int*) (p + 24));
+        code32[7] = __ldg((const unsigned int*) (p + 28));
+        code32[8] = __ldg((const unsigned int*) (p + 32));
+        code32[9] = __ldg((const unsigned int*) (p + 36));
     }
 };
 
@@ -271,21 +273,20 @@ struct LoadCode32<48> {
         p += offset * 48;
         // FIXME: this is a non-coalesced load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
-        code32[8] = __ldg((const unsigned int*) p[32]);
-        code32[9] = __ldg((const unsigned int*) p[36]);
-        code32[10] = __ldg((const unsigned int*) p[40]);
-        code32[11] = __ldg((const unsigned int*) p[44]);
+        code32[ 0] = __ldg((const unsigned int*) (p +  0));
+        code32[ 1] = __ldg((const unsigned int*) (p +  4));
+        code32[ 2] = __ldg((const unsigned int*) (p +  8));
+        code32[ 3] = __ldg((const unsigned int*) (p + 12));
+        code32[ 4] = __ldg((const unsigned int*) (p + 16));
+        code32[ 5] = __ldg((const unsigned int*) (p + 20));
+        code32[ 6] = __ldg((const unsigned int*) (p + 24));
+        code32[ 7] = __ldg((const unsigned int*) (p + 28));
+        code32[ 8] = __ldg((const unsigned int*) (p + 32));
+        code32[ 9] = __ldg((const unsigned int*) (p + 36));
+        code32[10] = __ldg((const unsigned int*) (p + 40));
+        code32[11] = __ldg((const unsigned int*) (p + 44));
     }
 };
-#endif
 
 template <>
 struct LoadCode32<56> {
@@ -313,7 +314,6 @@ struct LoadCode32<56> {
     }
 };
 
-#if 0
 template <>
 struct LoadCode32<64> {
     static inline __device__ void load(
@@ -323,22 +323,22 @@ struct LoadCode32<64> {
         p += offset * 64;
         // FIXME: this is a non-coalesced load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
-        code32[8] = __ldg((const unsigned int*) p[32]);
-        code32[9] = __ldg((const unsigned int*) p[36]);
-        code32[10] = __ldg((const unsigned int*) p[40]);
-        code32[11] = __ldg((const unsigned int*) p[44]);
-        code32[12] = __ldg((const unsigned int*) p[48]);
-        code32[13] = __ldg((const unsigned int*) p[52]);
-        code32[14] = __ldg((const unsigned int*) p[56]);
-        code32[15] = __ldg((const unsigned int*) p[60]);
+        code32[ 0] = __ldg((const unsigned int*) (p +  0));
+        code32[ 1] = __ldg((const unsigned int*) (p +  4));
+        code32[ 2] = __ldg((const unsigned int*) (p +  8));
+        code32[ 3] = __ldg((const unsigned int*) (p + 12));
+        code32[ 4] = __ldg((const unsigned int*) (p + 16));
+        code32[ 5] = __ldg((const unsigned int*) (p + 20));
+        code32[ 6] = __ldg((const unsigned int*) (p + 24));
+        code32[ 7] = __ldg((const unsigned int*) (p + 28));
+        code32[ 8] = __ldg((const unsigned int*) (p + 32));
+        code32[ 9] = __ldg((const unsigned int*) (p + 36));
+        code32[10] = __ldg((const unsigned int*) (p + 40));
+        code32[11] = __ldg((const unsigned int*) (p + 44));
+        code32[12] = __ldg((const unsigned int*) (p + 48));
+        code32[13] = __ldg((const unsigned int*) (p + 52));
+        code32[14] = __ldg((const unsigned int*) (p + 56));
+        code32[15] = __ldg((const unsigned int*) (p + 60));
     }
 };
 
@@ -351,34 +351,33 @@ struct LoadCode32<96> {
         p += offset * 96;
         // FIXME: this is a non-coalesced load
         // unfortunately need to reorganize memory layout by warp
-        code32[0] = __ldg((const unsigned int*) p[0]);
-        code32[1] = __ldg((const unsigned int*) p[4]);
-        code32[2] = __ldg((const unsigned int*) p[8]);
-        code32[3] = __ldg((const unsigned int*) p[12]);
-        code32[4] = __ldg((const unsigned int*) p[16]);
-        code32[5] = __ldg((const unsigned int*) p[20]);
-        code32[6] = __ldg((const unsigned int*) p[24]);
-        code32[7] = __ldg((const unsigned int*) p[28]);
-        code32[8] = __ldg((const unsigned int*) p[32]);
-        code32[9] = __ldg((const unsigned int*) p[36]);
-        code32[10] = __ldg((const unsigned int*) p[40]);
-        code32[11] = __ldg((const unsigned int*) p[44]);
-        code32[12] = __ldg((const unsigned int*) p[48]);
-        code32[13] = __ldg((const unsigned int*) p[52]);
-        code32[14] = __ldg((const unsigned int*) p[56]);
-        code32[15] = __ldg((const unsigned int*) p[60]);
-        code32[16] = __ldg((const unsigned int*) p[64]);
-        code32[17] = __ldg((const unsigned int*) p[68]);
-        code32[18] = __ldg((const unsigned int*) p[72]);
-        code32[19] = __ldg((const unsigned int*) p[76]);
-        code32[20] = __ldg((const unsigned int*) p[80]);
-        code32[21] = __ldg((const unsigned int*) p[84]);
-        code32[22] = __ldg((const unsigned int*) p[88]);
-        code32[23] = __ldg((const unsigned int*) p[92]);
-
+        code32[ 0] = __ldg((const unsigned int*) (p +  0));
+        code32[ 1] = __ldg((const unsigned int*) (p +  4));
+        code32[ 2] = __ldg((const unsigned int*) (p +  8));
+        code32[ 3] = __ldg((const unsigned int*) (p + 12));
+        code32[ 4] = __ldg((const unsigned int*) (p + 16));
+        code32[ 5] = __ldg((const unsigned int*) (p + 20));
+        code32[ 6] = __ldg((const unsigned int*) (p + 24));
+        code32[ 7] = __ldg((const unsigned int*) (p + 28));
+        code32[ 8] = __ldg((const unsigned int*) (p + 32));
+        code32[ 9] = __ldg((const unsigned int*) (p + 36));
+        code32[10] = __ldg((const unsigned int*) (p + 40));
+        code32[11] = __ldg((const unsigned int*) (p + 44));
+        code32[12] = __ldg((const unsigned int*) (p + 48));
+        code32[13] = __ldg((const unsigned int*) (p + 52));
+        code32[14] = __ldg((const unsigned int*) (p + 56));
+        code32[15] = __ldg((const unsigned int*) (p + 60));
+        code32[16] = __ldg((const unsigned int*) (p + 64));
+        code32[17] = __ldg((const unsigned int*) (p + 68));
+        code32[18] = __ldg((const unsigned int*) (p + 72));
+        code32[19] = __ldg((const unsigned int*) (p + 76));
+        code32[20] = __ldg((const unsigned int*) (p + 80));
+        code32[21] = __ldg((const unsigned int*) (p + 84));
+        code32[22] = __ldg((const unsigned int*) (p + 88));
+        code32[23] = __ldg((const unsigned int*) (p + 92));
     }
 };
-#endif
+
 
 #else // USE_ROCM
 

@@ -39,54 +39,57 @@ struct LoadStore {
 template <>
 struct LoadStore<Half4> {
     static inline __device__ Half4 load(void* p) {
-        Half4 out;
-        // TODO
-        // 64 bytes containing 4 half (float16) values, Half4 {half2 a, half2 b}
-        const half* half_ptr = reinterpret_cast<const half*>(p);
-        out.a.x = half_ptr[0];
-        out.a.y = half_ptr[1];
-        out.b.x = half_ptr[2];
-        out.b.y = half_ptr[3];
-        return out;
+        Half4 ret;
+        // Direct memory copy
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(p);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(&ret);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        return ret;
     }
 
     static inline __device__ void store(void* p, Half4& v) {
         // TODO
-        half* half_ptr = reinterpret_cast<half*>(p);
-        half_ptr[0] = v.a.x;
-        half_ptr[1] = v.a.y;
-        half_ptr[2] = v.b.x;
-        half_ptr[3] = v.b.y;
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(&v);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(p);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
     }
 };
 
 template <>
 struct LoadStore<Half8> {
     static inline __device__ Half8 load(void* p) {
-        Half8 out;
-        // TODO
-        // 128 bytes containing 8 half (float16) values, Half8 {Half4 a, Half4 b}
-        // 1st Half4 out.a, 2nd Half4 out.b
-        const half* half_ptr = reinterpret_cast<const half*>(p);
-        out.b.a.x = half_ptr[4];
-        out.b.a.y = half_ptr[5];
-        out.b.b.x = half_ptr[6];
-        out.b.b.y = half_ptr[7];
-        return out;
+        Half8 ret;
+        // Direct memory copy
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(p);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(&ret);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        ou[4] = in[4];
+        ou[5] = in[5];
+        ou[6] = in[6];
+        ou[7] = in[7];
+        return ret;
     }
 
     static inline __device__ void store(void* p, Half8& v) {
-        // TODO
-	half* half_ptr = reinterpret_cast<half*>(p);
-        half_ptr[0] = v.a.a.x;
-        half_ptr[1] = v.a.a.y;
-        half_ptr[2] = v.a.b.x;
-        half_ptr[3] = v.a.b.y;
-
-        half_ptr[4] = v.b.a.x;
-        half_ptr[5] = v.b.a.y;
-        half_ptr[6] = v.b.b.x;
-        half_ptr[7] = v.b.b.y;
+        const uint16_t* in = reinterpret_cast<const uint16_t*>(&v);
+        uint16_t* ou = reinterpret_cast<uint16_t*>(p);
+        ou[0] = in[0];
+        ou[1] = in[1];
+        ou[2] = in[2];
+        ou[3] = in[3];
+        ou[4] = in[4];
+        ou[5] = in[5];
+        ou[6] = in[6];
+        ou[7] = in[7];
     }
 };
 
