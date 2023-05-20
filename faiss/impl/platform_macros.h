@@ -92,9 +92,13 @@ inline int __builtin_clzll(uint64_t x) {
 
 // aligned should be *in front* of the declaration, for compatibility with
 // windows
+#ifdef SWIG
+#define ALIGNED(x)
+#else
 #define ALIGNED(x) __attribute__((aligned(x)))
+#endif
 
-#endif // _MSC_VER
+#endif
 
 #if defined(__GNUC__) || defined(__clang__)
 #define FAISS_DEPRECATED(msg) __attribute__((deprecated(msg)))

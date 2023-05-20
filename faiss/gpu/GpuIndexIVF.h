@@ -21,10 +21,8 @@ class GpuIndexFlat;
 class IVFBase;
 
 struct GpuIndexIVFConfig : public GpuIndexConfig {
-    inline GpuIndexIVFConfig() : indicesOptions(INDICES_64_BIT) {}
-
     /// Index storage options for the GPU
-    IndicesOptions indicesOptions;
+    IndicesOptions indicesOptions = INDICES_64_BIT;
 
     /// Configuration for the coarse quantizer object
     GpuIndexFlatConfig flatConfig;

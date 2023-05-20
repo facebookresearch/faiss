@@ -426,3 +426,9 @@ class TestResidualQuantizer(unittest.TestCase):
         self.assertTrue(0.9 * err_rq0 < err_rq1 < 1.1 * err_rq0)
 
         # np.testing.assert_array_equal(codes0, codes1)
+
+
+class TestGpuFlags(unittest.TestCase):
+
+    def test_gpu_flag(self):
+        assert "GPU" in faiss.get_compile_options().split()

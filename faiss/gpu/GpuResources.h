@@ -102,11 +102,7 @@ std::string memorySpaceToString(MemorySpace s);
 
 /// Information on what/where an allocation is
 struct AllocInfo {
-    inline AllocInfo()
-            : type(AllocType::Other),
-              device(0),
-              space(MemorySpace::Device),
-              stream(nullptr) {}
+    inline AllocInfo() {}
 
     inline AllocInfo(AllocType at, int dev, MemorySpace sp, cudaStream_t st)
             : type(at), device(dev), space(sp), stream(st) {}
@@ -115,13 +111,13 @@ struct AllocInfo {
     std::string toString() const;
 
     /// The internal category of the allocation
-    AllocType type;
+    AllocType type = AllocType::Other;
 
     /// The device on which the allocation is happening
-    int device;
+    int device = 0;
 
     /// The memory space of the allocation
-    MemorySpace space;
+    MemorySpace space = MemorySpace::Device;
 
     /// The stream on which new work on the memory will be ordered (e.g., if a
     /// piece of memory cached and to be returned for this call was last used on
@@ -131,7 +127,7 @@ struct AllocInfo {
     ///
     /// The memory manager guarantees that the returned memory is free to use
     /// without data races on this stream specified.
-    cudaStream_t stream;
+    cudaStream_t stream = nullptr;
 };
 
 /// Create an AllocInfo for the current device with MemorySpace::Device
@@ -145,7 +141,7 @@ AllocInfo makeSpaceAlloc(AllocType at, MemorySpace sp, cudaStream_t st);
 
 /// Information on what/where an allocation is, along with how big it should be
 struct AllocRequest : public AllocInfo {
-    inline AllocRequest() : AllocInfo(), size(0) {}
+    inline AllocRequest() {}
 
     inline AllocRequest(const AllocInfo& info, size_t sz)
             : AllocInfo(info), size(sz) {}
@@ -162,7 +158,7 @@ struct AllocRequest : public AllocInfo {
     std::string toString() const;
 
     /// The size in bytes of the allocation
-    size_t size;
+    size_t size = 0;
 };
 
 /// A RAII object that manages a temporary memory request

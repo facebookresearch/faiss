@@ -28,44 +28,24 @@ enum class IndicesDataType {
 
 /// Arguments to brute-force GPU k-nearest neighbor searching
 struct GpuDistanceParams {
-    GpuDistanceParams()
-            : metric(faiss::MetricType::METRIC_L2),
-              metricArg(0),
-              k(0),
-              dims(0),
-              vectors(nullptr),
-              vectorType(DistanceDataType::F32),
-              vectorsRowMajor(true),
-              numVectors(0),
-              vectorNorms(nullptr),
-              queries(nullptr),
-              queryType(DistanceDataType::F32),
-              queriesRowMajor(true),
-              numQueries(0),
-              outDistances(nullptr),
-              ignoreOutDistances(false),
-              outIndicesType(IndicesDataType::I64),
-              outIndices(nullptr),
-              device(-1) {}
-
     //
     // Search parameters
     //
 
     /// Search parameter: distance metric
-    faiss::MetricType metric;
+    faiss::MetricType metric = METRIC_L2;
 
     /// Search parameter: distance metric argument (if applicable)
     /// For metric == METRIC_Lp, this is the p-value
-    float metricArg;
+    float metricArg = 0;
 
     /// Search parameter: return k nearest neighbors
     /// If the value provided is -1, then we report all pairwise distances
     /// without top-k filtering
-    int k;
+    int k = 0;
 
     /// Vector dimensionality
-    int dims;
+    int dims = 0;
 
     //
     // Vectors being queried
@@ -74,14 +54,14 @@ struct GpuDistanceParams {
     /// If vectorsRowMajor is true, this is
     /// numVectors x dims, with dims innermost; otherwise,
     /// dims x numVectors, with numVectors innermost
-    const void* vectors;
-    DistanceDataType vectorType;
-    bool vectorsRowMajor;
-    idx_t numVectors;
+    const void* vectors = nullptr;
+    DistanceDataType vectorType = DistanceDataType::F32;
+    bool vectorsRowMajor = true;
+    idx_t numVectors = 0;
 
     /// Precomputed L2 norms for each vector in `vectors`, which can be
     /// optionally provided in advance to speed computation for METRIC_L2
-    const float* vectorNorms;
+    const float* vectorNorms = nullptr;
 
     //
     // The query vectors (i.e., find k-nearest neighbors in `vectors` for each
@@ -91,10 +71,10 @@ struct GpuDistanceParams {
     /// If queriesRowMajor is true, this is
     /// numQueries x dims, with dims innermost; otherwise,
     /// dims x numQueries, with numQueries innermost
-    const void* queries;
-    DistanceDataType queryType;
-    bool queriesRowMajor;
-    idx_t numQueries;
+    const void* queries = nullptr;
+    DistanceDataType queryType = DistanceDataType::F32;
+    bool queriesRowMajor = true;
+    idx_t numQueries = 0;
 
     //
     // Output results
@@ -103,16 +83,16 @@ struct GpuDistanceParams {
     /// A region of memory size numQueries x k, with k
     /// innermost (row major) if k > 0, or if k == -1, a region of memory of
     /// size numQueries x numVectors
-    float* outDistances;
+    float* outDistances = nullptr;
 
     /// Do we only care about the indices reported, rather than the output
     /// distances? Not used if k == -1 (all pairwise distances)
-    bool ignoreOutDistances;
+    bool ignoreOutDistances = false;
 
     /// A region of memory size numQueries x k, with k
     /// innermost (row major). Not used if k == -1 (all pairwise distances)
-    IndicesDataType outIndicesType;
-    void* outIndices;
+    IndicesDataType outIndicesType = IndicesDataType::I64;
+    void* outIndices = nullptr;
 
     //
     // Execution information
@@ -123,7 +103,7 @@ struct GpuDistanceParams {
     /// (via cudaGetDevice/cudaSetDevice) is used
     /// Otherwise, an integer 0 <= device < numDevices indicates the device for
     /// execution
-    int device;
+    int device = -1;
 
     /// Should the index dispatch down to RAFT?
     bool use_raft = false;

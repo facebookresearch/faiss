@@ -21,11 +21,9 @@ class IVFFlat;
 class GpuIndexFlat;
 
 struct GpuIndexIVFFlatConfig : public GpuIndexIVFConfig {
-    inline GpuIndexIVFFlatConfig() : interleavedLayout(true) {}
-
     /// Use the alternative memory layout for the IVF lists
     /// (currently the default)
-    bool interleavedLayout;
+    bool interleavedLayout = true;
 };
 
 /// Wrapper around the GPU implementation that looks like
