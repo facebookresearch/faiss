@@ -10,6 +10,7 @@
         <definition>AllocType faiss::gpu::AllocInfo::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <initializer>= AllocType::Other</initializer>
         <briefdescription>
 <para>The internal category of the allocation. </para>
         </briefdescription>
@@ -17,13 +18,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="118" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="118" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="114" column="15" bodyfile="faiss/gpu/GpuResources.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1aa1417147ce3c9b88c2600d7b2618f719" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::AllocInfo::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <initializer>= 0</initializer>
         <briefdescription>
 <para>The device on which the allocation is happening. </para>
         </briefdescription>
@@ -31,13 +33,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="121" column="9" bodyfile="faiss/gpu/GpuResources.h" bodystart="121" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="117" column="9" bodyfile="faiss/gpu/GpuResources.h" bodystart="117" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1a5be5f0b54e3fe97ceca73df4799b87ee" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
         <definition>MemorySpace faiss::gpu::AllocInfo::space</definition>
         <argsstring></argsstring>
         <name>space</name>
+        <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
 <para>The memory space of the allocation. </para>
         </briefdescription>
@@ -45,13 +48,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="124" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="124" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="120" column="17" bodyfile="faiss/gpu/GpuResources.h" bodystart="120" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1AllocInfo_1aa84beb46d87edf606343beefeb882bd0" prot="public" static="no" mutable="no">
         <type>cudaStream_t</type>
         <definition>cudaStream_t faiss::gpu::AllocInfo::stream</definition>
         <argsstring></argsstring>
         <name>stream</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="134" column="18" bodyfile="faiss/gpu/GpuResources.h" bodystart="134" bodyend="-1"/>
+        <location file="faiss/gpu/GpuResources.h" line="130" column="18" bodyfile="faiss/gpu/GpuResources.h" bodystart="130" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -75,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="105" column="12" bodyfile="faiss/gpu/GpuResources.h" bodystart="105" bodyend="109"/>
+        <location file="faiss/gpu/GpuResources.h" line="105" column="12" bodyfile="faiss/gpu/GpuResources.h" bodystart="105" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a37c06c3cfa2bd56b6f93a4e7d732ace5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -104,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="111" column="12" bodyfile="faiss/gpu/GpuResources.h" bodystart="111" bodyend="112"/>
+        <location file="faiss/gpu/GpuResources.h" line="107" column="12" bodyfile="faiss/gpu/GpuResources.h" bodystart="107" bodyend="108"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1gpu_1_1AllocInfo_1a977c06dfb2bb29e7997712508ebd9e36" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -118,7 +122,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuResources.h" line="115" column="17"/>
+        <location file="faiss/gpu/GpuResources.h" line="111" column="17"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -138,7 +142,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/gpu/GpuResources.h" line="104" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="104" bodyend="135"/>
+    <location file="faiss/gpu/GpuResources.h" line="104" column="1" bodyfile="faiss/gpu/GpuResources.h" bodystart="104" bodyend="131"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a9f0952aebd52122e8c9a304653a6c321" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>
       <member refid="structfaiss_1_1gpu_1_1AllocInfo_1a37c06c3cfa2bd56b6f93a4e7d732ace5" prot="public" virt="non-virtual"><scope>faiss::gpu::AllocInfo</scope><name>AllocInfo</name></member>

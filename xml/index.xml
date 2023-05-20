@@ -677,6 +677,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" kind="variable"><name>reserveVecs</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" kind="variable"><name>use_raft</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuDistanceParams" kind="struct"><name>faiss::gpu::GpuDistanceParams</name>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a4427235f12999619094246d7e5cdaafa" kind="variable"><name>metric</name></member>
@@ -698,7 +699,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1a2b44c3fec85b2fa6f9b52894a11242b2" kind="variable"><name>outIndices</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1ae574f97043749c8dd9464c39c9d6e7c4" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1aa826c25b4d2055e0ea8334d559ac677b" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuDistanceParams_1acc642fa3dfb2bd4d4c595dde12d83c88" kind="function"><name>GpuDistanceParams</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIcmEncoder" kind="class"><name>faiss::gpu::GpuIcmEncoder</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIcmEncoder_1ab67b2bfa44f208c7ef1818340f6ead82" kind="variable"><name>shards</name></member>
@@ -810,7 +810,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" kind="function"><name>GpuIndexConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexFlat" kind="class"><name>faiss::gpu::GpuIndexFlat</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1a5e40e91c68ff4821f8e34bc0aec4357a" kind="variable"><name>flatConfig_</name></member>
@@ -867,12 +866,11 @@
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kind="struct"><name>faiss::gpu::GpuIndexFlatConfig</name>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1afd694186c87751937a646f3db2c8ba3d" kind="variable"><name>useFloat16</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a39b32076b957bd2e1de93df3f5f5ea0b" kind="function"><name>GpuIndexFlatConfig</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a1cca9ef7780ca94522dd9aa7221fa07d" kind="function"><name>ALIGNED</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP" kind="class"><name>faiss::gpu::GpuIndexFlatIP</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexFlatIP_1ad7b2961b0df53aa9ad88ebd3eebaebc1" kind="function"><name>GpuIndexFlatIP</name></member>
@@ -1062,7 +1060,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1afdedee94ebe4faf9cdfcabc50128f948" kind="function"><name>GpuIndexIVFConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat" kind="class"><name>faiss::gpu::GpuIndexIVFFlat</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFFlat_1a71f9ce7e5fb21c46f1cd8271b166f894" kind="variable"><name>ivfFlatConfig_</name></member>
@@ -1150,7 +1147,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFFlatConfig_1adec18969ca176fe00f0a0691eb427793" kind="function"><name>GpuIndexIVFFlatConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ" kind="class"><name>faiss::gpu::GpuIndexIVFPQ</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1aba0cf4b463ba5869bcdf9ddcac47187d" kind="variable"><name>pq</name></member>
@@ -1252,7 +1248,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFPQConfig_1ab8173b4e53a49aa5c43f0b04a61f16fd" kind="function"><name>GpuIndexIVFPQConfig</name></member>
   </compound>
   <compound refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer" kind="class"><name>faiss::gpu::GpuIndexIVFScalarQuantizer</name>
     <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1aa692a5a002bf93908018535d6a1cdf26" kind="variable"><name>sq</name></member>
@@ -1344,7 +1339,6 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" kind="variable"><name>device</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" kind="variable"><name>memorySpace</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" kind="variable"><name>use_raft</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig_1a9f1d563c0024b897e62edd1800bae795" kind="function"><name>GpuIndexIVFScalarQuantizerConfig</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuMemoryReservation" kind="struct"><name>faiss::gpu::GpuMemoryReservation</name>
     <member refid="structfaiss_1_1gpu_1_1GpuMemoryReservation_1a211012d3090fce8c79f7b7404c4b749c" kind="variable"><name>res</name></member>
@@ -1371,6 +1365,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" kind="variable"><name>reserveVecs</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" kind="variable"><name>use_raft</name></member>
   </compound>
   <compound refid="structfaiss_1_1gpu_1_1GpuParameterSpace" kind="struct"><name>faiss::gpu::GpuParameterSpace</name>
     <member refid="structfaiss_1_1gpu_1_1GpuParameterSpace_1ab2bf33a6f1579c3d42f656ded1df3398" kind="function"><name>initialize</name></member>
@@ -8060,6 +8055,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" kind="variable"><name>reserveVecs</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1a75c697e6c9678764e5fcd17e18f23867" kind="function"><name>ToGpuCloner</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuCloner_1afd01f5d062a04d0ea3b2342cfac066bb" kind="function"><name>clone_Index</name></member>
     <member refid="structfaiss_1_1Cloner_1a6d0153062dcfde3da36a7ee845f0378e" kind="function"><name>clone_VectorTransform</name></member>
@@ -8077,6 +8073,7 @@
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1ab60dd87e51af59373a48d73852573f04" kind="variable"><name>reserveVecs</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a5f2470ec5b2a8fe7aae0542f113b781d" kind="variable"><name>storeTransposed</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1abc7d0451773e0f2f640338533abc1397" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuClonerOptions_1a2b122581d7bd84da484fb7c4902052ef" kind="variable"><name>use_raft</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1ac99efd0c009e45cc2ae23951697e13b9" kind="function"><name>ToGpuClonerMultiple</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1aadb501df2f2cd16d4a09cba558f239e1" kind="function"><name>ToGpuClonerMultiple</name></member>
     <member refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple_1ae11bb3439c0cc4c09c406db839b01610" kind="function"><name>copy_ivf_shard</name></member>

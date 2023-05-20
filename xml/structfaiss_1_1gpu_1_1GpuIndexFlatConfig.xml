@@ -4,25 +4,12 @@
     <compoundname>faiss::gpu::GpuIndexFlatConfig</compoundname>
     <basecompoundref refid="structfaiss_1_1gpu_1_1GpuIndexConfig" prot="public" virt="non-virtual">faiss::gpu::GpuIndexConfig</basecompoundref>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1afd694186c87751937a646f3db2c8ba3d" prot="public" static="no" mutable="no">
-        <type>bool</type>
-        <definition>bool faiss::gpu::GpuIndexFlatConfig::useFloat16</definition>
-        <argsstring></argsstring>
-        <name>useFloat16</name>
-        <briefdescription>
-<para>Whether or not data is stored as float16. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="30" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="30" bodyend="-1"/>
-      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::gpu::GpuIndexFlatConfig::storeTransposed</definition>
         <argsstring></argsstring>
         <name>storeTransposed</name>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -30,13 +17,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="35" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="34" column="10" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::GpuIndexConfig::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <initializer>= 0</initializer>
         <briefdescription>
 <para>GPU device on which the index is resident. </para>
         </briefdescription>
@@ -44,13 +32,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="35" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="33" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
+        <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -58,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="40" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="38" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -73,22 +62,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="43" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="41" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a39b32076b957bd2e1de93df3f5f5ea0b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type></type>
-        <definition>faiss::gpu::GpuIndexFlatConfig::GpuIndexFlatConfig</definition>
-        <argsstring>()</argsstring>
-        <name>GpuIndexFlatConfig</name>
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a1cca9ef7780ca94522dd9aa7221fa07d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::gpu::GpuIndexFlatConfig::ALIGNED</definition>
+        <argsstring>(8) useFloat16</argsstring>
+        <name>ALIGNED</name>
+        <param>
+          <type>8</type>
+        </param>
         <briefdescription>
+<para>Whether or not data is stored as float16. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexFlat.h" line="27" column="12" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="27" bodyend="27"/>
+        <location file="faiss/gpu/GpuIndexFlat.h" line="29" column="10"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -119,15 +112,13 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexFlat.h" line="26" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="26" bodyend="36"/>
+    <location file="faiss/gpu/GpuIndexFlat.h" line="27" column="1" bodyfile="faiss/gpu/GpuIndexFlat.h" bodystart="27" bodyend="35"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a1cca9ef7780ca94522dd9aa7221fa07d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>ALIGNED</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>device</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>GpuIndexConfig</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a39b32076b957bd2e1de93df3f5f5ea0b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>GpuIndexFlatConfig</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>memorySpace</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1a0342a26f5e59563bfe04f3f80e3b27f0" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>storeTransposed</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>use_raft</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig_1afd694186c87751937a646f3db2c8ba3d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlatConfig</scope><name>useFloat16</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

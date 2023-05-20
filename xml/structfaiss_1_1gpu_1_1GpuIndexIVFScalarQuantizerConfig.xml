@@ -9,6 +9,7 @@
         <definition>bool faiss::gpu::GpuIndexIVFScalarQuantizerConfig::interleavedLayout</definition>
         <argsstring></argsstring>
         <name>interleavedLayout</name>
+        <initializer>= true</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -16,13 +17,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="25" column="10" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="25" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="23" column="10" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1af432221761d48e4753f501208a60264d" prot="public" static="no" mutable="no">
         <type>IndicesOptions</type>
         <definition>IndicesOptions faiss::gpu::GpuIndexIVFConfig::indicesOptions</definition>
         <argsstring></argsstring>
         <name>indicesOptions</name>
+        <initializer>= INDICES_64_BIT</initializer>
         <briefdescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> storage options for the GPU. </para>
         </briefdescription>
@@ -30,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="27" column="20" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="25" column="20" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1gpu_1_1GpuIndexFlatConfig" kindref="compound">GpuIndexFlatConfig</ref></type>
@@ -44,13 +46,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVF.h" line="30" column="24" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndexIVF.h" line="28" column="24" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int faiss::gpu::GpuIndexConfig::device</definition>
         <argsstring></argsstring>
         <name>device</name>
+        <initializer>= 0</initializer>
         <briefdescription>
 <para>GPU device on which the index is resident. </para>
         </briefdescription>
@@ -58,13 +61,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="35" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="33" column="9" bodyfile="faiss/gpu/GpuIndex.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" static="no" mutable="no">
         <type>MemorySpace</type>
         <definition>MemorySpace faiss::gpu::GpuIndexConfig::memorySpace</definition>
         <argsstring></argsstring>
         <name>memorySpace</name>
+        <initializer>= MemorySpace::Device</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -72,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="40" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/gpu/GpuIndex.h" line="38" column="17" bodyfile="faiss/gpu/GpuIndex.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1gpu_1_1GpuIndexConfig_1a05798a3f679d7273e4cf99a1468c8336" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -87,22 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndex.h" line="43" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="43" bodyend="-1"/>
-      </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig_1a9f1d563c0024b897e62edd1800bae795" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type></type>
-        <definition>faiss::gpu::GpuIndexIVFScalarQuantizerConfig::GpuIndexIVFScalarQuantizerConfig</definition>
-        <argsstring>()</argsstring>
-        <name>GpuIndexIVFScalarQuantizerConfig</name>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="21" column="12" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="21" bodyend="21"/>
+        <location file="faiss/gpu/GpuIndex.h" line="41" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -154,13 +143,10 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="20" column="1" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="20" bodyend="26"/>
+    <location file="faiss/gpu/GpuIndexIVFScalarQuantizer.h" line="20" column="1" bodyfile="faiss/gpu/GpuIndexIVFScalarQuantizer.h" bodystart="20" bodyend="24"/>
     <listofallmembers>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1aab05a0aa7b42feae7df4e556a52ead57" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>device</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1a6d357a9a67a2fed9c8e7b139712d30f6" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>flatConfig</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adabe0f431b8dec6968ef0abe91b17189" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>GpuIndexConfig</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1afdedee94ebe4faf9cdfcabc50128f948" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>GpuIndexIVFConfig</name></member>
-      <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig_1a9f1d563c0024b897e62edd1800bae795" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>GpuIndexIVFScalarQuantizerConfig</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFConfig_1af432221761d48e4753f501208a60264d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>indicesOptions</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizerConfig_1a37a76f2a5f746906d167fbe915e87da1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>interleavedLayout</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexConfig_1adf7c9461009108a9a433a077ab322d2e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizerConfig</scope><name>memorySpace</name></member>
