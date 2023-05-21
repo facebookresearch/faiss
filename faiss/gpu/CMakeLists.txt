@@ -3,6 +3,19 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
+# =============================================================================
+# Copyright (c) 2023, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+# =============================================================================
 
 set(FAISS_GPU_SRC
   GpuAutoTune.cpp
@@ -163,6 +176,16 @@ set(FAISS_GPU_HEADERS
   utils/warpselect/WarpSelectImpl.cuh
 )
 
+if(FAISS_ENABLE_RAFT)
+  list(APPEND FAISS_GPU_HEADERS
+          impl/RaftFlatIndex.cuh)
+  list(APPEND FAISS_GPU_SRC
+          impl/RaftFlatIndex.cu)
+
+  target_compile_definitions(faiss PUBLIC USE_NVIDIA_RAFT=1)
+  target_compile_definitions(faiss_avx2 PUBLIC USE_NVIDIA_RAFT=1)
+endif()
+
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
@@ -177,7 +200,7 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 find_package(CUDAToolkit REQUIRED)
-target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas)
-target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas)
-target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
-target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all>)
+target_link_libraries(faiss PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+target_link_libraries(faiss_avx2 PRIVATE CUDA::cudart CUDA::cublas $<$<BOOL:${FAISS_ENABLE_RAFT}>:raft::raft> $<$<BOOL:${FAISS_ENABLE_RAFT}>:nvidia::cutlass::cutlass>)
+target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)
+target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all --expt-extended-lambda --expt-relaxed-constexpr>)

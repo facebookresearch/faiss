@@ -312,7 +312,7 @@ void IndexHNSW::search(
             DistanceComputer* dis = storage_distance_computer(storage);
             ScopeDeleter1<DistanceComputer> del(dis);
 
-#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder)
+#pragma omp for reduction(+ : n1, n2, n3, ndis, nreorder) schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 idx_t* idxi = labels + i * k;
                 float* simi = distances + i * k;
@@ -614,6 +614,14 @@ void IndexHNSW::link_singletons() {
     }
 }
 
+void IndexHNSW::permute_entries(const idx_t* perm) {
+    auto flat_storage = dynamic_cast<IndexFlatCodes*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_storage, "don't know how to permute this index");
+    flat_storage->permute_entries(perm);
+    hnsw.permute_entries(perm);
+}
+
 /**************************************************************
  * ReconstructFromNeighbors implementation
  **************************************************************/
@@ -864,7 +872,10 @@ IndexHNSWFlat::IndexHNSWFlat() {
 }
 
 IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
-        : IndexHNSW(new IndexFlat(d, metric), M) {
+        : IndexHNSW(
+                  (metric == METRIC_L2) ? new IndexFlatL2(d)
+                                        : new IndexFlat(d, metric),
+                  M) {
     own_fields = true;
     is_trained = true;
 }

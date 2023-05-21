@@ -59,6 +59,9 @@ struct IndexFlatCodes : Index {
     void check_compatible_for_merge(const Index& otherIndex) const override;
 
     virtual void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
+    // permute_entries. perm of size ntotal maps new to old positions
+    void permute_entries(const idx_t* perm);
 };
 
 } // namespace faiss

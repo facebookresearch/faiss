@@ -31,13 +31,12 @@ $ conda install -c pytorch/label/nightly faiss-cpu
 $ conda install -c pytorch/label/nightly faiss-gpu
 ```
 
-A combination of versions that works with Pytorch (as of 2022-11-23):
+A combination of versions that installs GPU Faiss with CUDA 11.4 and Pytorch (as of 2023-05-08):
 ```
-conda create -n faiss_1.7.3 python=3.8
-conda activate faiss_1.7.3
-conda install pytorch==1.11.0 cudatoolkit=11.3 -c pytorch
-conda install numpy
-conda install -c pytorch faiss-gpu=1.7.3 cudatoolkit=11.3
+conda create --name faiss_1.7.4 python=3.10
+conda activate faiss_1.7.4
+conda install faiss-gpu=1.7.4 -c pytorch -c nvidia
+conda install faiss-gpu pytorch pytorch-cuda -c pytorch -c nvidia
 conda install -c conda-forge notebook
 conda install -y matplotlib
 ```
@@ -105,6 +104,9 @@ Several options can be passed to CMake, among which:
   values are `ON` and `OFF`),
   - `-DFAISS_ENABLE_PYTHON=OFF` in order to disable building python bindings
   (possible values are `ON` and `OFF`),
+  - `-DFAISS_ENABLE_RAFT=ON` in order to enable building the RAFT implementations
+    of the IVF-Flat and IVF-PQ GPU-accelerated indices (default is `OFF`, possible
+    values are `ON` and `OFF`)
   - `-DBUILD_TESTING=OFF` in order to disable building C++ tests,
   - `-DBUILD_SHARED_LIBS=ON` in order to build a shared library (possible values
   are `ON` and `OFF`),

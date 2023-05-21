@@ -509,15 +509,18 @@ inline int generalized_hamming_64(uint64_t a) {
 }
 
 struct GenHammingComputer8 {
-    uint64_t a0;
+    uint8x8_t a0;
 
-    GenHammingComputer8(const uint8_t* a, int code_size) {
+    GenHammingComputer8(const uint8_t* a8, int code_size) {
         assert(code_size == 8);
-        a0 = *(uint64_t*)a;
+        a0 = vld1_u8(a8);
     }
 
-    inline int hamming(const uint8_t* b) const {
-        return generalized_hamming_64(*(uint64_t*)b ^ a0);
+    inline int hamming(const uint8_t* b8) const {
+        uint8x8_t b0 = vld1_u8(b8);
+        uint8x8_t reg = vceq_u8(a0, b0);
+        uint8x8_t c0 = vcnt_u8(reg);
+        return 8 - vaddv_u8(c0) / 8;
     }
 
     inline static constexpr int get_code_size() {
@@ -526,18 +529,18 @@ struct GenHammingComputer8 {
 };
 
 struct GenHammingComputer16 {
-    uint64_t a0, a1;
+    uint8x16_t a0;
+
     GenHammingComputer16(const uint8_t* a8, int code_size) {
         assert(code_size == 16);
-        const uint64_t* a = (uint64_t*)a8;
-        a0 = a[0];
-        a1 = a[1];
+        a0 = vld1q_u8(a8);
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
-        return generalized_hamming_64(b[0] ^ a0) +
-                generalized_hamming_64(b[1] ^ a1);
+        uint8x16_t b0 = vld1q_u8(b8);
+        uint8x16_t reg = vceqq_u8(a0, b0);
+        uint8x16_t c0 = vcntq_u8(reg);
+        return 16 - vaddvq_u8(c0) / 8;
     }
 
     inline static constexpr int get_code_size() {
@@ -546,23 +549,15 @@ struct GenHammingComputer16 {
 };
 
 struct GenHammingComputer32 {
-    uint64_t a0, a1, a2, a3;
+    GenHammingComputer16 a0, a1;
 
-    GenHammingComputer32(const uint8_t* a8, int code_size) {
+    GenHammingComputer32(const uint8_t* a8, int code_size)
+            : a0(a8, 16), a1(a8 + 16, 16) {
         assert(code_size == 32);
-        const uint64_t* a = (uint64_t*)a8;
-        a0 = a[0];
-        a1 = a[1];
-        a2 = a[2];
-        a3 = a[3];
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
-        return generalized_hamming_64(b[0] ^ a0) +
-                generalized_hamming_64(b[1] ^ a1) +
-                generalized_hamming_64(b[2] ^ a2) +
-                generalized_hamming_64(b[3] ^ a3);
+        return a0.hamming(b8) + a1.hamming(b8 + 16);
     }
 
     inline static constexpr int get_code_size() {
@@ -583,8 +578,27 @@ struct GenHammingComputerM8 {
     int hamming(const uint8_t* b8) const {
         const uint64_t* b = (uint64_t*)b8;
         int accu = 0;
-        for (int i = 0; i < n; i++)
-            accu += generalized_hamming_64(a[i] ^ b[i]);
+
+        int n2 = (n / 2) * 2;
+        int i = 0;
+        for (; i < n2; i += 2) {
+            uint8x16_t a0 = vld1q_u8((const uint8_t*)(a + i));
+            uint8x16_t b0 = vld1q_u8((const uint8_t*)(b + i));
+            uint8x16_t reg = vceqq_u8(a0, b0);
+            uint8x16_t c0 = vcntq_u8(reg);
+            auto dis = 16 - vaddvq_u8(c0) / 8;
+            accu += dis;
+        }
+
+        for (; i < n; i++) {
+            uint8x8_t a0 = vld1_u8((const uint8_t*)(a + i));
+            uint8x8_t b0 = vld1_u8((const uint8_t*)(b + i));
+            uint8x8_t reg = vceq_u8(a0, b0);
+            uint8x8_t c0 = vcnt_u8(reg);
+            auto dis = 8 - vaddv_u8(c0) / 8;
+            accu += dis;
+        }
+
         return accu;
     }
 

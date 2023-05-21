@@ -86,7 +86,7 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
         ndis++;
 
         float dis = distance_single_code<PQDecoder>(
-                pq, precomputed_table.data(), code);
+                pq.M, pq.nbits, precomputed_table.data(), code);
         return dis;
     }
 

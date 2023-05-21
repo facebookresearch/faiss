@@ -93,7 +93,7 @@ void HeapArray<C>::addn_query_subset_with_ids(
     }
 #pragma omp parallel for if (nsubset * nj > 100000)
     for (int64_t si = 0; si < nsubset; si++) {
-        T i = subset[si];
+        TI i = subset[si];
         T* __restrict simi = get_val(i);
         TI* __restrict idxi = get_ids(i);
         const T* ip_line = vin + si * nj;

@@ -4,15 +4,35 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/*
+ * Copyright (c) 2023, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <faiss/impl/FaissAssert.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
+
+#if defined USE_NVIDIA_RAFT
+#include <raft/core/device_resources.hpp>
+#endif
 
 namespace faiss {
 namespace gpu {
@@ -189,6 +209,13 @@ class GpuResources {
     /// Returns the stream that we order all computation on for the
     /// given device
     virtual cudaStream_t getDefaultStream(int device) = 0;
+
+#if defined USE_NVIDIA_RAFT
+    /// Returns the raft handle for the given device which can be used to
+    /// make calls to other raft primitives.
+    virtual raft::device_resources& getRaftHandle(int device) = 0;
+    raft::device_resources& getRaftHandleCurrentDevice();
+#endif
 
     /// Overrides the default stream for a device to the user-supplied stream.
     /// The resources object does not own this stream (i.e., it will not destroy

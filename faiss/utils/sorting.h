@@ -68,4 +68,31 @@ void matrix_bucket_sort_inplace(
         int64_t* lims,
         int nt = 0);
 
+/** Hashtable implementation for int64 -> int64 with external storage
+ * implemented for fast batch add and lookup.
+ *
+ * tab is of size  2 * (1 << log2_capacity)
+ * n is the number of elements to add or search
+ *
+ * adding several values in a same batch: an arbitrary one gets added
+ * in different batches: the newer batch overwrites.
+ * raises an exception if capacity is exhausted.
+ */
+
+void hashtable_int64_to_int64_init(int log2_capacity, int64_t* tab);
+
+void hashtable_int64_to_int64_add(
+        int log2_capacity,
+        int64_t* tab,
+        size_t n,
+        const int64_t* keys,
+        const int64_t* vals);
+
+void hashtable_int64_to_int64_lookup(
+        int log2_capacity,
+        const int64_t* tab,
+        size_t n,
+        const int64_t* keys,
+        int64_t* vals);
+
 } // namespace faiss

@@ -76,8 +76,22 @@ struct IndexFlatIP : IndexFlat {
 };
 
 struct IndexFlatL2 : IndexFlat {
+    // Special cache for L2 norms.
+    // If this cache is set, then get_distance_computer() returns
+    // a special version that computes the distance using dot products
+    // and l2 norms.
+    std::vector<float> cached_l2norms;
+
     explicit IndexFlatL2(idx_t d) : IndexFlat(d, METRIC_L2) {}
     IndexFlatL2() {}
+
+    // override for l2 norms cache.
+    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
+
+    // compute L2 norms
+    void sync_l2norms();
+    // clear L2 norms
+    void clear_l2norms();
 };
 
 /// optimized version for 1D "vectors".

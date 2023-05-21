@@ -190,6 +190,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/prefetch.h
   utils/quantize_lut.h
   utils/random.h
   utils/simdlib.h
@@ -210,6 +211,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/generic-inl.h
   utils/hamming_distance/hamdis-inl.h
   utils/hamming_distance/neon-inl.h
+  utils/hamming_distance/avx2-inl.h
 )
 
 if(NOT WIN32)

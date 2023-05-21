@@ -11,7 +11,6 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-
 def knn_ground_truth(xq, db_iterator, k, metric_type=faiss.METRIC_L2):
     """Computes the exact KNN search results for a dataset that possibly
     does not fit in RAM but for which we have an iterator that
@@ -51,47 +50,82 @@ knn = faiss.knn
 
 
 
-def range_search_gpu(xq, r2, index_gpu, index_cpu):
+def range_search_gpu(xq, r2, index_gpu, index_cpu, gpu_k=1024):
     """GPU does not support range search, so we emulate it with
     knn search + fallback to CPU index.
 
-    The index_cpu can either be a CPU index or a numpy table that will
-    be used to construct a Flat index if needed.
+    The index_cpu can either be:
+    - a CPU index that supports range search
+    - a numpy table, that will be used to construct a Flat index if needed.
+    - None. In that case, at most gpu_k results will be returned
     """
     nq, d = xq.shape
-    LOG.debug("GPU search %d queries" % nq)
-    k = min(index_gpu.ntotal, 1024)
+    k = min(index_gpu.ntotal, gpu_k)
+    keep_max = faiss.is_similarity_metric(index_gpu.metric_type)
+    LOG.debug(f"GPU search {nq} queries with {k=:}")
+    t0 = time.time()
     D, I = index_gpu.search(xq, k)
-    if index_gpu.metric_type == faiss.METRIC_L2:
-        mask = D[:, k - 1] < r2
-    else:
-        mask = D[:, k - 1] > r2
-    if mask.sum() > 0:
-        LOG.debug("CPU search remain %d" % mask.sum())
-        if isinstance(index_cpu, np.ndarray):
-            # then it in fact an array that we have to make flat
-            xb = index_cpu
-            index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
-            index_cpu.add(xb)
-        lim_remain, D_remain, I_remain = index_cpu.range_search(xq[mask], r2)
-    LOG.debug("combine")
-    D_res, I_res = [], []
-    nr = 0
-    for i in range(nq):
-        if not mask[i]:
-            if index_gpu.metric_type == faiss.METRIC_L2:
-                nv = (D[i, :] < r2).sum()
-            else:
-                nv = (D[i, :] > r2).sum()
-            D_res.append(D[i, :nv])
-            I_res.append(I[i, :nv])
+    t1 = time.time() - t0
+    t2 = 0
+    lim_remain = None
+    if index_cpu is not None:
+        if not keep_max:
+            mask = D[:, k - 1] < r2
         else:
-            l0, l1 = lim_remain[nr], lim_remain[nr + 1]
-            D_res.append(D_remain[l0:l1])
-            I_res.append(I_remain[l0:l1])
-            nr += 1
-    lims = np.cumsum([0] + [len(di) for di in D_res])
-    return lims, np.hstack(D_res), np.hstack(I_res)
+            mask = D[:, k - 1] > r2
+        if mask.sum() > 0:
+            LOG.debug("CPU search remain %d" % mask.sum())
+            t0 = time.time()
+            if isinstance(index_cpu, np.ndarray):
+                # then it in fact an array that we have to make flat
+                xb = index_cpu
+                index_cpu = faiss.IndexFlat(d, index_gpu.metric_type)
+                index_cpu.add(xb)
+            lim_remain, D_remain, I_remain = index_cpu.range_search(xq[mask], r2)
+            t2 = time.time() - t0
+    LOG.debug("combine")
+    t0 = time.time()
+
+    combiner = faiss.CombinerRangeKNN(nq, k, float(r2), keep_max)
+    if True:
+        sp = faiss.swig_ptr
+        combiner.I = sp(I)
+        combiner.D = sp(D)
+        # combiner.set_knn_result(sp(I), sp(D))
+        if lim_remain is not None:
+            combiner.mask = sp(mask)
+            combiner.D_remain = sp(D_remain)
+            combiner.lim_remain = sp(lim_remain.view("int64"))
+            combiner.I_remain = sp(I_remain)
+            # combiner.set_range_result(sp(mask), sp(lim_remain.view("int64")), sp(D_remain), sp(I_remain))
+        L_res = np.empty(nq + 1, dtype='int64')
+        combiner.compute_sizes(sp(L_res))
+        nres = L_res[-1]
+        D_res = np.empty(nres, dtype='float32')
+        I_res = np.empty(nres, dtype='int64')
+        combiner.write_result(sp(D_res), sp(I_res))
+    else:
+        D_res, I_res = [], []
+        nr = 0
+        for i in range(nq):
+            if not mask[i]:
+                if index_gpu.metric_type == faiss.METRIC_L2:
+                    nv = (D[i, :] < r2).sum()
+                else:
+                    nv = (D[i, :] > r2).sum()
+                D_res.append(D[i, :nv])
+                I_res.append(I[i, :nv])
+            else:
+                l0, l1 = lim_remain[nr], lim_remain[nr + 1]
+                D_res.append(D_remain[l0:l1])
+                I_res.append(I_remain[l0:l1])
+                nr += 1
+        L_res = np.cumsum([0] + [len(di) for di in D_res])
+        D_res = np.hstack(D_res)
+        I_res = np.hstack(I_res)
+    t3 = time.time() - t0
+    LOG.debug(f"times {t1:.3f}s {t2:.3f}s {t3:.3f}s")
+    return L_res, D_res, I_res
 
 
 def range_ground_truth(xq, db_iterator, threshold, metric_type=faiss.METRIC_L2,
