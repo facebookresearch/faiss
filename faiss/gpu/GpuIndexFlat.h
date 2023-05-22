@@ -23,7 +23,6 @@ namespace gpu {
 
 class FlatIndex;
 
-
 struct GpuIndexFlatConfig : public GpuIndexConfig {
     /// Whether or not data is stored as float16
     bool ALIGNED(8) useFloat16 = false;
