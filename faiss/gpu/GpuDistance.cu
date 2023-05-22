@@ -24,6 +24,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/Heap.h>
 #include <faiss/gpu/impl/Distance.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
@@ -365,6 +366,155 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
         bfKnnConvert<half>(prov, args);
     } else {
         FAISS_THROW_MSG("unknown vectorType");
+    }
+}
+
+template <class C>
+void bfKnn_shard_database(
+        GpuResourcesProvider* prov,
+        const GpuDistanceParams& args,
+        size_t shard_size,
+        size_t distance_size) {
+    std::vector<typename C::T> heaps_distances;
+    if (args.ignoreOutDistances) {
+        heaps_distances.resize(args.numQueries * args.k, 0);
+    }
+    HeapArray<C> heaps = {
+            (size_t)args.numQueries,
+            (size_t)args.k,
+            (typename C::TI*)args.outIndices,
+            args.ignoreOutDistances ? heaps_distances.data()
+                                    : args.outDistances};
+    heaps.heapify();
+    std::vector<typename C::TI> labels(args.numQueries * args.k);
+    std::vector<typename C::T> distances(args.numQueries * args.k);
+    GpuDistanceParams args_batch = args;
+    args_batch.outDistances = distances.data();
+    args_batch.ignoreOutDistances = false;
+    args_batch.outIndices = labels.data();
+    for (idx_t i = 0; i < args.numVectors; i += shard_size) {
+        args_batch.numVectors = min(shard_size, args.numVectors - i);
+        args_batch.vectors =
+                (char*)args.vectors + distance_size * args.dims * i;
+        args_batch.vectorNorms =
+                args.vectorNorms ? args.vectorNorms + i : nullptr;
+        bfKnn(prov, args_batch);
+        for (auto& label : labels) {
+            label += i;
+        }
+        heaps.addn_with_ids(args.k, distances.data(), labels.data(), args.k);
+    }
+    heaps.reorder();
+}
+
+void bfKnn_single_query_shard(
+        GpuResourcesProvider* prov,
+        const GpuDistanceParams& args,
+        size_t vectorsMemoryLimit) {
+    if (vectorsMemoryLimit == 0) {
+        bfKnn(prov, args);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            args.numVectors > 0, "bfKnn_tiling: numVectors must be > 0");
+    FAISS_THROW_IF_NOT_MSG(
+            args.vectors,
+            "bfKnn_tiling: vectors must be provided (passed null)");
+    FAISS_THROW_IF_NOT_MSG(
+            getDeviceForAddress(args.vectors) == -1,
+            "bfKnn_tiling: vectors should be in CPU memory when vectorsMemoryLimit > 0");
+    FAISS_THROW_IF_NOT_MSG(
+            args.vectorsRowMajor,
+            "bfKnn_tiling: tiling vectors is only supported in row major mode");
+    FAISS_THROW_IF_NOT_MSG(
+            args.k > 0,
+            "bfKnn_tiling: tiling vectors is only supported for k > 0");
+    size_t distance_size = args.vectorType == DistanceDataType::F32 ? 4
+            : args.vectorType == DistanceDataType::F16              ? 2
+                                                                    : 0;
+    FAISS_THROW_IF_NOT_MSG(
+            distance_size > 0, "bfKnn_tiling: unknown vectorType");
+    size_t shard_size = vectorsMemoryLimit / (args.dims * distance_size);
+    FAISS_THROW_IF_NOT_MSG(
+            shard_size > 0, "bfKnn_tiling: vectorsMemoryLimit is too low");
+    if (args.numVectors <= shard_size) {
+        bfKnn(prov, args);
+        return;
+    }
+    if (is_similarity_metric(args.metric)) {
+        if (args.outIndicesType == IndicesDataType::I64) {
+            bfKnn_shard_database<CMin<float, int64_t>>(
+                    prov, args, shard_size, distance_size);
+        } else if (args.outIndicesType == IndicesDataType::I32) {
+            bfKnn_shard_database<CMin<float, int32_t>>(
+                    prov, args, shard_size, distance_size);
+        } else {
+            FAISS_THROW_MSG("bfKnn_tiling: unknown outIndicesType");
+        }
+    } else {
+        if (args.outIndicesType == IndicesDataType::I64) {
+            bfKnn_shard_database<CMax<float, int64_t>>(
+                    prov, args, shard_size, distance_size);
+        } else if (args.outIndicesType == IndicesDataType::I32) {
+            bfKnn_shard_database<CMax<float, int32_t>>(
+                    prov, args, shard_size, distance_size);
+        } else {
+            FAISS_THROW_MSG("bfKnn_tiling: unknown outIndicesType");
+        }
+    }
+}
+
+void bfKnn_tiling(
+        GpuResourcesProvider* prov,
+        const GpuDistanceParams& args,
+        size_t vectorsMemoryLimit,
+        size_t queriesMemoryLimit) {
+    if (queriesMemoryLimit == 0) {
+        bfKnn_single_query_shard(prov, args, vectorsMemoryLimit);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            args.numQueries > 0, "bfKnn_tiling: numQueries must be > 0");
+    FAISS_THROW_IF_NOT_MSG(
+            args.queries,
+            "bfKnn_tiling: queries must be provided (passed null)");
+    FAISS_THROW_IF_NOT_MSG(
+            getDeviceForAddress(args.queries) == -1,
+            "bfKnn_tiling: queries should be in CPU memory when queriesMemoryLimit > 0");
+    FAISS_THROW_IF_NOT_MSG(
+            args.queriesRowMajor,
+            "bfKnn_tiling: tiling queries is only supported in row major mode");
+    FAISS_THROW_IF_NOT_MSG(
+            args.k > 0,
+            "bfKnn_tiling: tiling queries is only supported for k > 0");
+    size_t distance_size = args.queryType == DistanceDataType::F32 ? 4
+            : args.queryType == DistanceDataType::F16              ? 2
+                                                                   : 0;
+    FAISS_THROW_IF_NOT_MSG(
+            distance_size > 0, "bfKnn_tiling: unknown queryType");
+    size_t label_size = args.outIndicesType == IndicesDataType::I64 ? 8
+            : args.outIndicesType == IndicesDataType::I32           ? 4
+                                                                    : 0;
+    FAISS_THROW_IF_NOT_MSG(
+            distance_size > 0, "bfKnn_tiling: unknown outIndicesType");
+    size_t shard_size = queriesMemoryLimit /
+            (args.k * (distance_size + label_size) + args.dims * distance_size);
+    FAISS_THROW_IF_NOT_MSG(
+            shard_size > 0, "bfKnn_tiling: queriesMemoryLimit is too low");
+    FAISS_THROW_IF_NOT_MSG(
+            args.outIndices,
+            "bfKnn: outIndices must be provided (passed null)");
+    for (idx_t i = 0; i < args.numQueries; i += shard_size) {
+        GpuDistanceParams args_batch = args;
+        args_batch.numQueries = min(shard_size, args.numQueries - i);
+        args_batch.queries =
+                (char*)args.queries + distance_size * args.dims * i;
+        if (!args_batch.ignoreOutDistances) {
+            args_batch.outDistances = args.outDistances + args.k * i;
+        }
+        args_batch.outIndices =
+                (char*)args.outIndices + args.k * label_size * i;
+        bfKnn_single_query_shard(prov, args_batch, vectorsMemoryLimit);
     }
 }
 
