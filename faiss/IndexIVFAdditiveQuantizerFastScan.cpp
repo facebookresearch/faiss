@@ -131,45 +131,20 @@ IndexIVFAdditiveQuantizerFastScan::~IndexIVFAdditiveQuantizerFastScan() {}
  * Training
  *********************************************************/
 
-void IndexIVFAdditiveQuantizerFastScan::train_residual(
+idx_t IndexIVFAdditiveQuantizerFastScan::train_encoder_num_vectors() const {
+    return max_train_points;
+}
+
+void IndexIVFAdditiveQuantizerFastScan::train_encoder(
         idx_t n,
-        const float* x_in) {
+        const float* x,
+        const idx_t* assign) {
     if (aq->is_trained) {
         return;
     }
 
-    const int seed = 0x12345;
-    size_t nt = n;
-    const float* x = fvecs_maybe_subsample(
-            d, &nt, max_train_points, x_in, verbose, seed);
-    n = nt;
     if (verbose) {
-        printf("training additive quantizer on %zd vectors\n", nt);
-    }
-    aq->verbose = verbose;
-
-    std::unique_ptr<float[]> del_x;
-    if (x != x_in) {
-        del_x.reset((float*)x);
-    }
-
-    const float* trainset;
-    std::vector<float> residuals(n * d);
-    std::vector<idx_t> assign(n);
-
-    if (by_residual) {
-        if (verbose) {
-            printf("computing residuals\n");
-        }
-        quantizer->assign(n, x, assign.data());
-        residuals.resize(n * d);
-        for (idx_t i = 0; i < n; i++) {
-            quantizer->compute_residual(
-                    x + i * d, residuals.data() + i * d, assign[i]);
-        }
-        trainset = residuals.data();
-    } else {
-        trainset = x;
+        printf("training additive quantizer on %d vectors\n", int(n));
     }
 
     if (verbose) {
@@ -181,17 +156,16 @@ void IndexIVFAdditiveQuantizerFastScan::train_residual(
                d);
     }
     aq->verbose = verbose;
-    aq->train(n, trainset);
+    aq->train(n, x);
 
     // train norm quantizer
     if (by_residual && metric_type == METRIC_L2) {
         std::vector<float> decoded_x(n * d);
         std::vector<uint8_t> x_codes(n * aq->code_size);
-        aq->compute_codes(residuals.data(), x_codes.data(), n);
+        aq->compute_codes(x, x_codes.data(), n);
         aq->decode(x_codes.data(), decoded_x.data(), n);
 
         // add coarse centroids
-        FAISS_THROW_IF_NOT(assign.size() == n);
         std::vector<float> centroid(d);
         for (idx_t i = 0; i < n; i++) {
             auto xi = decoded_x.data() + i * d;

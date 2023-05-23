@@ -385,6 +385,8 @@ static void write_ivf_header(const IndexIVF* ivf, IOWriter* f) {
     write_index_header(ivf, f);
     WRITE1(ivf->nlist);
     WRITE1(ivf->nprobe);
+    // subclasses write by_residual (some of them support only one setting of
+    // by_residual).
     write_index(ivf->quantizer, f);
     write_direct_map(&ivf->direct_map, f);
 }

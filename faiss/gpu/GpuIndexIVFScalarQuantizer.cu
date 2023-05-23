@@ -219,7 +219,17 @@ void GpuIndexIVFScalarQuantizer::reset() {
 
 void GpuIndexIVFScalarQuantizer::trainResiduals_(idx_t n, const float* x) {
     // The input is already guaranteed to be on the CPU
-    sq.train_residual(n, x, quantizer, by_residual, verbose);
+    if (!by_residual) {
+        sq.train(n, x);
+    } else {
+        std::vector<idx_t> assign(n);
+        quantizer->assign(n, x, assign.data());
+
+        std::vector<float> residuals(n * d);
+        quantizer->compute_residual_n(n, x, residuals.data(), assign.data());
+
+        sq.train(n, residuals.data());
+    }
 }
 
 void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {

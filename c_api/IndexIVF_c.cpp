@@ -165,6 +165,17 @@ void faiss_IndexIVF_invlists_get_ids(
     memcpy(invlist, list, list_size * sizeof(idx_t));
 }
 
+int faiss_IndexIVF_train_encoder(
+        FaissIndexIVF* index,
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
+    try {
+        reinterpret_cast<IndexIVF*>(index)->train_encoder(n, x, assign);
+    }
+    CATCH_AND_HANDLE
+}
+
 void faiss_IndexIVFStats_reset(FaissIndexIVFStats* stats) {
     reinterpret_cast<IndexIVFStats*>(stats)->reset();
 }

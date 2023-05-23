@@ -35,10 +35,12 @@ IndexIVFPQR::IndexIVFPQR(
           refine_pq(d, M_refine, nbits_per_idx_refine),
           k_factor(4) {
     by_residual = true;
+    refine_pq.cp.max_points_per_centroid = 1000;
 }
 
 IndexIVFPQR::IndexIVFPQR() : k_factor(1) {
     by_residual = true;
+    refine_pq.cp.max_points_per_centroid = 1000;
 }
 
 void IndexIVFPQR::reset() {
@@ -46,24 +48,39 @@ void IndexIVFPQR::reset() {
     refine_codes.clear();
 }
 
-void IndexIVFPQR::train_residual(idx_t n, const float* x) {
-    float* residual_2 = new float[n * d];
-    ScopeDeleter<float> del(residual_2);
-
-    train_residual_o(n, x, residual_2);
-
-    if (verbose)
+void IndexIVFPQR::train_encoder(idx_t n, const float* x, const idx_t* assign) {
+    IndexIVFPQ::train_encoder(n, x, assign);
+    if (verbose) {
         printf("training %zdx%zd 2nd level PQ quantizer on %" PRId64
                " %dD-vectors\n",
                refine_pq.M,
                refine_pq.ksub,
                n,
                d);
-
-    refine_pq.cp.max_points_per_centroid = 1000;
+    }
     refine_pq.cp.verbose = verbose;
 
-    refine_pq.train(n, residual_2);
+    // 2nd level residual
+    std::vector<float> residual_2(n * d);
+    std::vector<uint8_t> train_codes(pq.code_size * n);
+    pq.compute_codes(x, train_codes.data(), n);
+
+    for (idx_t i = 0; i < n; i++) {
+        const float* xx = x + i * d;
+        float* res = residual_2.data() + i * d;
+        pq.decode(train_codes.data() + i * pq.code_size, res);
+        for (int j = 0; j < d; j++) {
+            res[j] = xx[j] - res[j];
+        }
+    }
+
+    refine_pq.train(n, residual_2.data());
+}
+
+idx_t IndexIVFPQR::train_encoder_num_vectors() const {
+    return std::max(
+            pq.cp.max_points_per_centroid * pq.ksub,
+            refine_pq.cp.max_points_per_centroid * refine_pq.ksub);
 }
 
 void IndexIVFPQR::add_with_ids(idx_t n, const float* x, const idx_t* xids) {

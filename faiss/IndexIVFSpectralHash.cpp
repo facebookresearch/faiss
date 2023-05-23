@@ -31,22 +31,17 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
         float period)
         : IndexIVF(quantizer, d, nlist, (nbit + 7) / 8, METRIC_L2),
           nbit(nbit),
-          period(period),
-          threshold_type(Thresh_global) {
+          period(period) {
     RandomRotationMatrix* rr = new RandomRotationMatrix(d, nbit);
     rr->init(1234);
     vt = rr;
-    own_fields = true;
     is_trained = false;
+    by_residual = false;
 }
 
-IndexIVFSpectralHash::IndexIVFSpectralHash()
-        : IndexIVF(),
-          vt(nullptr),
-          own_fields(false),
-          nbit(0),
-          period(0),
-          threshold_type(Thresh_global) {}
+IndexIVFSpectralHash::IndexIVFSpectralHash() : IndexIVF() {
+    by_residual = false;
+}
 
 IndexIVFSpectralHash::~IndexIVFSpectralHash() {
     if (own_fields) {
@@ -67,10 +62,14 @@ float median(size_t n, float* x) {
 
 } // namespace
 
-void IndexIVFSpectralHash::train_residual(idx_t n, const float* x) {
+void IndexIVFSpectralHash::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
     if (!vt->is_trained) {
         vt->train(n, x);
     }
+    FAISS_THROW_IF_NOT(!by_residual);
 
     if (threshold_type == Thresh_global) {
         // nothing to do
@@ -167,6 +166,7 @@ void IndexIVFSpectralHash::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(!by_residual);
     float freq = 2.0 / period;
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
 
