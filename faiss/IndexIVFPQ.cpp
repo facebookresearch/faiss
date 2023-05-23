@@ -64,79 +64,25 @@ IndexIVFPQ::IndexIVFPQ(
 /****************************************************************
  * training                                                     */
 
-void IndexIVFPQ::train_residual(idx_t n, const float* x) {
-    train_residual_o(n, x, nullptr);
-}
-
-void IndexIVFPQ::train_residual_o(idx_t n, const float* x, float* residuals_2) {
-    const float* x_in = x;
-
-    x = fvecs_maybe_subsample(
-            d,
-            (size_t*)&n,
-            pq.cp.max_points_per_centroid * pq.ksub,
-            x,
-            verbose,
-            pq.cp.seed);
-
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
-
-    const float* trainset;
-    ScopeDeleter<float> del_residuals;
-    if (by_residual) {
-        if (verbose)
-            printf("computing residuals\n");
-        idx_t* assign = new idx_t[n]; // assignement to coarse centroids
-        ScopeDeleter<idx_t> del(assign);
-        quantizer->assign(n, x, assign);
-        float* residuals = new float[n * d];
-        del_residuals.set(residuals);
-        for (idx_t i = 0; i < n; i++)
-            quantizer->compute_residual(
-                    x + i * d, residuals + i * d, assign[i]);
-
-        trainset = residuals;
-    } else {
-        trainset = x;
-    }
-    if (verbose)
-        printf("training %zdx%zd product quantizer on %" PRId64
-               " vectors in %dD\n",
-               pq.M,
-               pq.ksub,
-               n,
-               d);
-    pq.verbose = verbose;
-    pq.train(n, trainset);
+void IndexIVFPQ::train_encoder(idx_t n, const float* x, const idx_t* assign) {
+    pq.train(n, x);
 
     if (do_polysemous_training) {
         if (verbose)
             printf("doing polysemous training for PQ\n");
         PolysemousTraining default_pt;
-        PolysemousTraining* pt = polysemous_training;
-        if (!pt)
-            pt = &default_pt;
-        pt->optimize_pq_for_hamming(pq, n, trainset);
-    }
-
-    // prepare second-level residuals for refine PQ
-    if (residuals_2) {
-        uint8_t* train_codes = new uint8_t[pq.code_size * n];
-        ScopeDeleter<uint8_t> del(train_codes);
-        pq.compute_codes(trainset, train_codes, n);
-
-        for (idx_t i = 0; i < n; i++) {
-            const float* xx = trainset + i * d;
-            float* res = residuals_2 + i * d;
-            pq.decode(train_codes + i * pq.code_size, res);
-            for (int j = 0; j < d; j++)
-                res[j] = xx[j] - res[j];
-        }
+        PolysemousTraining* pt =
+                polysemous_training ? polysemous_training : &default_pt;
+        pt->optimize_pq_for_hamming(pq, n, x);
     }
 
     if (by_residual) {
         precompute_table();
     }
+}
+
+idx_t IndexIVFPQ::train_encoder_num_vectors() const {
+    return pq.cp.max_points_per_centroid * pq.ksub;
 }
 
 /****************************************************************

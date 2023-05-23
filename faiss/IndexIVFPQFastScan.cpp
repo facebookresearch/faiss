@@ -44,7 +44,7 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(
         MetricType metric,
         int bbs)
         : IndexIVFFastScan(quantizer, d, nlist, 0, metric), pq(d, M, nbits) {
-    by_residual = false; // set to false by default because it's much faster
+    by_residual = false; // set to false by default because it's faster
 
     init_fastscan(M, nbits, nlist, metric, bbs);
 }
@@ -106,52 +106,20 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs)
  * Training
  *********************************************************/
 
-void IndexIVFPQFastScan::train_residual(idx_t n, const float* x_in) {
-    const float* x = fvecs_maybe_subsample(
-            d,
-            (size_t*)&n,
-            pq.cp.max_points_per_centroid * pq.ksub,
-            x_in,
-            verbose,
-            pq.cp.seed);
-
-    std::unique_ptr<float[]> del_x;
-    if (x != x_in) {
-        del_x.reset((float*)x);
-    }
-
-    const float* trainset;
-    AlignedTable<float> residuals;
-
-    if (by_residual) {
-        if (verbose)
-            printf("computing residuals\n");
-        std::vector<idx_t> assign(n);
-        quantizer->assign(n, x, assign.data());
-        residuals.resize(n * d);
-        for (idx_t i = 0; i < n; i++) {
-            quantizer->compute_residual(
-                    x + i * d, residuals.data() + i * d, assign[i]);
-        }
-        trainset = residuals.data();
-    } else {
-        trainset = x;
-    }
-
-    if (verbose) {
-        printf("training %zdx%zd product quantizer on "
-               "%" PRId64 " vectors in %dD\n",
-               pq.M,
-               pq.ksub,
-               n,
-               d);
-    }
+void IndexIVFPQFastScan::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
     pq.verbose = verbose;
-    pq.train(n, trainset);
+    pq.train(n, x);
 
     if (by_residual && metric_type == METRIC_L2) {
         precompute_table();
     }
+}
+
+idx_t IndexIVFPQFastScan::train_encoder_num_vectors() const {
+    return pq.cp.max_points_per_centroid * pq.ksub;
 }
 
 void IndexIVFPQFastScan::precompute_table() {

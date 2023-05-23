@@ -1115,32 +1115,6 @@ void ScalarQuantizer::train(size_t n, const float* x) {
     }
 }
 
-void ScalarQuantizer::train_residual(
-        size_t n,
-        const float* x,
-        Index* quantizer,
-        bool by_residual,
-        bool verbose) {
-    const float* x_in = x;
-
-    // 100k points more than enough
-    x = fvecs_maybe_subsample(d, (size_t*)&n, 100000, x, verbose, 1234);
-
-    ScopeDeleter<float> del_x(x_in == x ? nullptr : x);
-
-    if (by_residual) {
-        std::vector<idx_t> idx(n);
-        quantizer->assign(n, x, idx.data());
-
-        std::vector<float> residuals(n * d);
-        quantizer->compute_residual_n(n, x, residuals.data(), idx.data());
-
-        train(n, residuals.data());
-    } else {
-        train(n, x);
-    }
-}
-
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #ifdef USE_F16C
     if (d % 8 == 0) {

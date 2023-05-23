@@ -32,8 +32,6 @@ FAISS_API extern size_t precomputed_table_max_bytes;
  * vector is encoded as a product quantizer code.
  */
 struct IndexIVFPQ : IndexIVF {
-    bool by_residual; ///< Encode residual or plain vector?
-
     ProductQuantizer pq; ///< produces the codes
 
     bool do_polysemous_training; ///< reorder PQ centroids after training?
@@ -86,10 +84,9 @@ struct IndexIVFPQ : IndexIVF {
             const idx_t* precomputed_idx = nullptr);
 
     /// trains the product quantizer
-    void train_residual(idx_t n, const float* x) override;
+    void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
-    /// same as train_residual, also output 2nd level residuals
-    void train_residual_o(idx_t n, const float* x, float* residuals_2);
+    idx_t train_encoder_num_vectors() const override;
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
