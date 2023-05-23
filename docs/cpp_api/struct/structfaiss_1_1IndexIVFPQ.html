@@ -13,6 +13,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -302,6 +304,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SingleBestResultHandler_1_1SingleResultHandler.html">Struct faiss::SingleBestResultHandler::SingleResultHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1SliceInvertedLists.html">Struct faiss::SliceInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1StopWordsInvertedLists.html">Struct faiss::StopWordsInvertedLists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1TransformedVectors.html">Struct faiss::TransformedVectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VStackInvertedLists.html">Struct faiss::VStackInvertedLists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorDistance.html">Struct faiss::VectorDistance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structfaiss_1_1VectorIOReader.html">Struct faiss::VectorIOReader</a></li>
@@ -476,15 +479,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ14train_residualE5idx_tPKf">
-<span id="_CPPv3N5faiss10IndexIVFPQ14train_residualE5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ14train_residualE5idx_tPKf"></span><span id="faiss::IndexIVFPQ::train_residual__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1af6565a5d8bab7be3df19c50d235bd662"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_residual</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ13train_encoderE5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss10IndexIVFPQ13train_encoderE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss10IndexIVFPQ13train_encoderE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexIVFPQ::train_encoder__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a7a151fadd969c807d538364c1aeadd1e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_encoder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">assign</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
 <dd><p>trains the product quantizer </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf">
-<span id="_CPPv3N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf"></span><span id="_CPPv2N5faiss10IndexIVFPQ16train_residual_oE5idx_tPKfPf"></span><span id="faiss::IndexIVFPQ::train_residual_o__idx_t.floatCP.floatP"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a4e06f04853dcb424dc393de5f641e917"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_residual_o</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">residuals_2</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>same as train_residual, also output 2nd level residuals </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss10IndexIVFPQ25train_encoder_num_vectorsEv">
+<span id="_CPPv3NK5faiss10IndexIVFPQ25train_encoder_num_vectorsEv"></span><span id="_CPPv2NK5faiss10IndexIVFPQ25train_encoder_num_vectorsEv"></span><span id="faiss::IndexIVFPQ::train_encoder_num_vectorsC"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a8f817c4ba25f81e13c8d4fcbc838a1d0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_encoder_num_vectors</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd><p>can be redefined by subclasses to indicate how many training vectors they need </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -567,7 +570,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ5trainE5idx_tPKf">
 <span id="_CPPv3N5faiss10IndexIVFPQ5trainE5idx_tPKf"></span><span id="_CPPv2N5faiss10IndexIVFPQ5trainE5idx_tPKf"></span><span id="faiss::IndexIVFPQ::train__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd><p>Trains the quantizer and calls train_residual to train sub-quantizers. </p>
+<dd><p>Trains the quantizer and calls train_encoder to train sub-quantizers. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -889,12 +892,6 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ11by_residualE">
-<span id="_CPPv3N5faiss10IndexIVFPQ11by_residualE"></span><span id="_CPPv2N5faiss10IndexIVFPQ11by_residualE"></span><span id="faiss::IndexIVFPQ::by_residual__b"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1afd13b471df293ae5a6e895704c69a4c3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">by_residual</span></span></span><br /></dt>
-<dd><p>Encode residual or plain vector? </p>
-</dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ2pqE">
 <span id="_CPPv3N5faiss10IndexIVFPQ2pqE"></span><span id="_CPPv2N5faiss10IndexIVFPQ2pqE"></span><span id="faiss::IndexIVFPQ::pq__ProductQuantizer"></span><span class="target" id="structfaiss_1_1IndexIVFPQ_1a007303be116c8da65b6d058e3fc77d16"></span><a class="reference internal" href="../file/ProductQuantizer_8h.html#_CPPv4N5faiss16ProductQuantizerE" title="faiss::ProductQuantizer"><span class="n"><span class="pre">ProductQuantizer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pq</span></span></span><br /></dt>
 <dd><p>produces the codes </p>
@@ -970,6 +967,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ10direct_mapE">
 <span id="_CPPv3N5faiss10IndexIVFPQ10direct_mapE"></span><span id="_CPPv2N5faiss10IndexIVFPQ10direct_mapE"></span><span id="faiss::IndexIVFPQ::direct_map__DirectMap"></span><span class="target" id="structfaiss_1_1IndexIVF_1ae1267a1770ef6c8fa111891110e6fa69"></span><a class="reference internal" href="../file/DirectMap_8h.html#_CPPv4N5faiss9DirectMapE" title="faiss::DirectMap"><span class="n"><span class="pre">DirectMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">direct_map</span></span></span><br /></dt>
 <dd><p>optional map that maps back ids to invlist entries. This enables <a class="reference internal" href="structfaiss_1_1IndexIVFSpectralHash.html#structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39"><span class="std std-ref">reconstruct()</span></a></p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss10IndexIVFPQ11by_residualE">
+<span id="_CPPv3N5faiss10IndexIVFPQ11by_residualE"></span><span id="_CPPv2N5faiss10IndexIVFPQ11by_residualE"></span><span id="faiss::IndexIVFPQ::by_residual__b"></span><span class="target" id="structfaiss_1_1IndexIVF_1acb4c54db659b15a5471102ccc2cd2b43"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">by_residual</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><br /></dt>
+<dd><p>do the codes in the invlists encode the vectors relative to the centroids? </p>
 </dd></dl>
 
 <dl class="cpp var">

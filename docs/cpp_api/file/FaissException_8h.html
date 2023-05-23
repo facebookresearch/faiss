@@ -13,6 +13,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -470,6 +472,40 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13ScopeDeleter13ptrE">
 <span id="_CPPv3N5faiss13ScopeDeleter13ptrE"></span><span id="_CPPv2N5faiss13ScopeDeleter13ptrE"></span><span id="faiss::ScopeDeleter1::ptr__TCP"></span><span class="target" id="structfaiss_1_1ScopeDeleter1_1a89310af9c6c124db990add708ab075ff"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5faiss13ScopeDeleter1E" title="faiss::ScopeDeleter1::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ptr</span></span></span><a class="headerlink" href="#_CPPv4N5faiss13ScopeDeleter13ptrE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss18TransformedVectorsE">
+<span id="_CPPv3N5faiss18TransformedVectorsE"></span><span id="_CPPv2N5faiss18TransformedVectorsE"></span><span id="faiss::TransformedVectors"></span><span class="target" id="structfaiss_1_1TransformedVectors"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransformedVectors</span></span></span><a class="headerlink" href="#_CPPv4N5faiss18TransformedVectorsE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;FaissException.h&gt;</em></div>
+<p>RAII object for a set of possibly transformed vectors (deallocated only if they are indeed transformed) </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss18TransformedVectors18TransformedVectorsEPKfPKf">
+<span id="_CPPv3N5faiss18TransformedVectors18TransformedVectorsEPKfPKf"></span><span id="_CPPv2N5faiss18TransformedVectors18TransformedVectorsEPKfPKf"></span><span id="faiss::TransformedVectors::TransformedVectors__floatCP.floatCP"></span><span class="target" id="structfaiss_1_1TransformedVectors_1ae9dfe9f6ff89c627513f7e31635c515e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransformedVectors</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x_orig</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss18TransformedVectors18TransformedVectorsEPKfPKf" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss18TransformedVectorsD0Ev">
+<span id="_CPPv3N5faiss18TransformedVectorsD0Ev"></span><span id="_CPPv2N5faiss18TransformedVectorsD0Ev"></span><span id="faiss::TransformedVectors::~TransformedVectors"></span><span class="target" id="structfaiss_1_1TransformedVectors_1a1167e5c815fefbeb66a4223ca7ce452d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~TransformedVectors</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss18TransformedVectorsD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss18TransformedVectors1xE">
+<span id="_CPPv3N5faiss18TransformedVectors1xE"></span><span id="_CPPv2N5faiss18TransformedVectors1xE"></span><span id="faiss::TransformedVectors::x__floatCP"></span><span class="target" id="structfaiss_1_1TransformedVectors_1ab05ac89f6d03cbff6493253d91bb9038"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N5faiss18TransformedVectors1xE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss18TransformedVectors5own_xE">
+<span id="_CPPv3N5faiss18TransformedVectors5own_xE"></span><span id="_CPPv2N5faiss18TransformedVectors5own_xE"></span><span id="faiss::TransformedVectors::own_x__b"></span><span class="target" id="structfaiss_1_1TransformedVectors_1ae552cef59d3d89e9ce87592a98b26024"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">own_x</span></span></span><a class="headerlink" href="#_CPPv4N5faiss18TransformedVectors5own_xE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

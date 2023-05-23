@@ -13,6 +13,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -363,9 +365,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexIVFPQR14train_residualE5idx_tPKf">
-<span id="_CPPv3N5faiss11IndexIVFPQR14train_residualE5idx_tPKf"></span><span id="_CPPv2N5faiss11IndexIVFPQR14train_residualE5idx_tPKf"></span><span id="faiss::IndexIVFPQR::train_residual__idx_t.floatCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQR_1a68ed7cae5bec89fcdcb6a1d2addbd5a8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_residual</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexIVFPQR14train_residualE5idx_tPKf" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss11IndexIVFPQR13train_encoderE5idx_tPKfPK5idx_t">
+<span id="_CPPv3N5faiss11IndexIVFPQR13train_encoderE5idx_tPKfPK5idx_t"></span><span id="_CPPv2N5faiss11IndexIVFPQR13train_encoderE5idx_tPKfPK5idx_t"></span><span id="faiss::IndexIVFPQR::train_encoder__idx_t.floatCP.idx_tCP"></span><span class="target" id="structfaiss_1_1IndexIVFPQR_1a4a0b0ca0d89bafe1b9fdd56673d0b064"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_encoder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">assign</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5faiss11IndexIVFPQR13train_encoderE5idx_tPKfPK5idx_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>trains the two product quantizers </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5faiss11IndexIVFPQR25train_encoder_num_vectorsEv">
+<span id="_CPPv3NK5faiss11IndexIVFPQR25train_encoder_num_vectorsEv"></span><span id="_CPPv2NK5faiss11IndexIVFPQR25train_encoder_num_vectorsEv"></span><span id="faiss::IndexIVFPQR::train_encoder_num_vectorsC"></span><span class="target" id="structfaiss_1_1IndexIVFPQR_1a8efda8561d55c7afb40bccaf1f174880"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="MetricType_8h.html#_CPPv4N5faiss5idx_tE" title="faiss::idx_t"><span class="n"><span class="pre">idx_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">train_encoder_num_vectors</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK5faiss11IndexIVFPQR25train_encoder_num_vectorsEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>can be redefined by subclasses to indicate how many training vectors they need </p>
 </dd></dl>
 
 <dl class="cpp function">
