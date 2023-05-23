@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1TransformedVectors" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::TransformedVectors</compoundname>
+    <includes refid="FaissException_8h" local="no">FaissException.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1TransformedVectors_1ab05ac89f6d03cbff6493253d91bb9038" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::TransformedVectors::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="87" column="17" bodyfile="faiss/impl/FaissException.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1TransformedVectors_1ae552cef59d3d89e9ce87592a98b26024" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::TransformedVectors::own_x</definition>
+        <argsstring></argsstring>
+        <name>own_x</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="88" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1TransformedVectors_1ae9dfe9f6ff89c627513f7e31635c515e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::TransformedVectors::TransformedVectors</definition>
+        <argsstring>(const float *x_orig, const float *x)</argsstring>
+        <name>TransformedVectors</name>
+        <param>
+          <type>const float *</type>
+          <declname>x_orig</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="89" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="89" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1TransformedVectors_1a1167e5c815fefbeb66a4223ca7ce452d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::TransformedVectors::~TransformedVectors</definition>
+        <argsstring>()</argsstring>
+        <name>~TransformedVectors</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="93" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="93" bodyend="97"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>RAII object for a set of possibly transformed vectors (deallocated only if they are indeed transformed) </para>
+    </detaileddescription>
+    <location file="faiss/impl/FaissException.h" line="86" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="86" bodyend="98"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1TransformedVectors_1ae552cef59d3d89e9ce87592a98b26024" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>own_x</name></member>
+      <member refid="structfaiss_1_1TransformedVectors_1ae9dfe9f6ff89c627513f7e31635c515e" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>TransformedVectors</name></member>
+      <member refid="structfaiss_1_1TransformedVectors_1ab05ac89f6d03cbff6493253d91bb9038" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>x</name></member>
+      <member refid="structfaiss_1_1TransformedVectors_1a1167e5c815fefbeb66a4223ca7ce452d" prot="public" virt="non-virtual"><scope>faiss::TransformedVectors</scope><name>~TransformedVectors</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

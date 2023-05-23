@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="66" column="13" bodyfile="faiss/impl/FaissException.h" bodystart="66" bodyend="-1"/>
+        <location file="faiss/impl/FaissException.h" line="67" column="13" bodyfile="faiss/impl/FaissException.h" bodystart="67" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="67" column="14" bodyfile="faiss/impl/FaissException.h" bodystart="67" bodyend="67"/>
+        <location file="faiss/impl/FaissException.h" line="68" column="14" bodyfile="faiss/impl/FaissException.h" bodystart="68" bodyend="68"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScopeDeleter1_1aa76f1d2d54a1ea073655103425450049" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="68" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="68" bodyend="70"/>
+        <location file="faiss/impl/FaissException.h" line="69" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="69" bodyend="71"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScopeDeleter1_1a8e721cf801d4244dad727481801c3c57" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="71" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="71" bodyend="73"/>
+        <location file="faiss/impl/FaissException.h" line="72" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="72" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScopeDeleter1_1a0e188652a54129a3dff37b995228e2bb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="74" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="74" bodyend="76"/>
+        <location file="faiss/impl/FaissException.h" line="75" column="10" bodyfile="faiss/impl/FaissException.h" bodystart="75" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScopeDeleter1_1a81d0d20118a295ca65e82411abb2ddc5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -100,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissException.h" line="77" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="77" bodyend="79"/>
+        <location file="faiss/impl/FaissException.h" line="78" column="5" bodyfile="faiss/impl/FaissException.h" bodystart="78" bodyend="80"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -108,7 +108,7 @@
     <detaileddescription>
 <para>same but deletes with the simple delete (least common case) </para>
     </detaileddescription>
-    <location file="faiss/impl/FaissException.h" line="65" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="65" bodyend="80"/>
+    <location file="faiss/impl/FaissException.h" line="66" column="1" bodyfile="faiss/impl/FaissException.h" bodystart="66" bodyend="81"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScopeDeleter1_1a89310af9c6c124db990add708ab075ff" prot="public" virt="non-virtual"><scope>faiss::ScopeDeleter1</scope><name>ptr</name></member>
       <member refid="structfaiss_1_1ScopeDeleter1_1aa76f1d2d54a1ea073655103425450049" prot="public" virt="non-virtual"><scope>faiss::ScopeDeleter1</scope><name>release</name></member>
