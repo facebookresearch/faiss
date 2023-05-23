@@ -8628,6 +8628,7 @@
     <member refid="GpuCloner_8h_1a05cb0b5db1ebcd508cb0a259d4b536ab" kind="function"><name>index_cpu_to_gpu</name></member>
     <member refid="GpuCloner_8h_1a70e1ea3a49957b88b2de70f21b588735" kind="function"><name>index_cpu_to_gpu_multiple</name></member>
     <member refid="GpuDistance_8h_1a29928698b9b3bae60ff6f7e7d79e0354" kind="function"><name>bfKnn</name></member>
+    <member refid="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" kind="function"><name>bfKnn_tiling</name></member>
     <member refid="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" kind="function"><name>bruteForceKnn</name></member>
     <member refid="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" kind="function"><name>tryCastGpuIndex</name></member>
     <member refid="GpuIndex_8h_1a0a59a854dc33533d84251c97ce2e16e0" kind="function"><name>isGpuIndex</name></member>

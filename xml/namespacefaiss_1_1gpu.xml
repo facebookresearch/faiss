@@ -363,6 +363,35 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuDistance.h" line="124" column="6" declfile="faiss/gpu/GpuDistance.h" declline="124" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="GpuDistance_8h_1ac7e9ee53cc7034bf2f4b2c1902ca2571" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::bfKnn_tiling</definition>
+        <argsstring>(GpuResourcesProvider *resources, const GpuDistanceParams &amp;args, size_t vectorsMemoryLimit, size_t queriesMemoryLimit)</argsstring>
+        <name>bfKnn_tiling</name>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResourcesProvider" kindref="compound">GpuResourcesProvider</ref> *</type>
+          <declname>resources</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu_1_1GpuDistanceParams" kindref="compound">GpuDistanceParams</ref> &amp;</type>
+          <declname>args</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vectorsMemoryLimit</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>queriesMemoryLimit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/GpuDistance.h" line="138" column="6" declfile="faiss/gpu/GpuDistance.h" declline="138" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="GpuDistance_8h_1ae2b4be0946d7ca9dbac7a03dbc6fd908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::bruteForceKnn</definition>
@@ -423,7 +452,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuDistance.h" line="127" column="6" declfile="faiss/gpu/GpuDistance.h" declline="127" declcolumn="6"/>
+        <location file="faiss/gpu/GpuDistance.h" line="145" column="6" declfile="faiss/gpu/GpuDistance.h" declline="145" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="GpuIndex_8h_1a71050b5bacaf9b140ffd8feebf6369aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1GpuIndex" kindref="compound">GpuIndex</ref> *</type>
