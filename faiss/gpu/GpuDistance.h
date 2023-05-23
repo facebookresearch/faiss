@@ -123,6 +123,24 @@ struct GpuDistanceParams {
 /// nearest neighbors with respect to the given metric
 void bfKnn(GpuResourcesProvider* resources, const GpuDistanceParams& args);
 
+// bfKnn which takes two extra parameters to control the maximum GPU
+// memory allowed for vectors and queries, the latter including the
+// memory required for the results.
+// If 0, the corresponding input must fit into GPU memory.
+// If greater than 0, the function will use at most this much GPU
+// memory (in bytes) for vectors and queries respectively.
+// Vectors are broken up into chunks of size vectorsMemoryLimit,
+// and queries are broken up into chunks of size queriesMemoryLimit.
+// The tiles resulting from the product of the query and vector
+// chunks are processed sequentially on the GPU.
+// Only supported for row major matrices and k > 0. The input that
+// needs sharding must reside on the CPU.
+void bfKnn_tiling(
+        GpuResourcesProvider* resources,
+        const GpuDistanceParams& args,
+        size_t vectorsMemoryLimit,
+        size_t queriesMemoryLimit);
+
 /// Deprecated legacy implementation
 void bruteForceKnn(
         GpuResourcesProvider* resources,
