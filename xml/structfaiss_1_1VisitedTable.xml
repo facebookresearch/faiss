@@ -17,9 +17,9 @@
         </inbodydescription>
         <location file="faiss/impl/AuxIndexStructures.h" line="167" column="17" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="167" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1VisitedTable_1a4216e18314be09ef43d0d8f434f45d17" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::VisitedTable::visno</definition>
+      <memberdef kind="variable" id="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::VisitedTable::visno</definition>
         <argsstring></argsstring>
         <name>visno</name>
         <briefdescription>
@@ -28,7 +28,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/AuxIndexStructures.h" line="168" column="9" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="168" bodyend="-1"/>
+        <location file="faiss/impl/AuxIndexStructures.h" line="168" column="13" bodyfile="faiss/impl/AuxIndexStructures.h" bodystart="168" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -112,7 +112,7 @@
       <member refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>set</name></member>
       <member refid="structfaiss_1_1VisitedTable_1ac2343f3d7f81c2cf046c3ee20ce2c5ec" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>visited</name></member>
       <member refid="structfaiss_1_1VisitedTable_1a0cc8846371feddc08cdc6294f3a0e79a" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>VisitedTable</name></member>
-      <member refid="structfaiss_1_1VisitedTable_1a4216e18314be09ef43d0d8f434f45d17" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>visno</name></member>
+      <member refid="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" prot="public" virt="non-virtual"><scope>faiss::VisitedTable</scope><name>visno</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

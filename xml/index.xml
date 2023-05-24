@@ -8157,7 +8157,7 @@
   </compound>
   <compound refid="structfaiss_1_1VisitedTable" kind="struct"><name>faiss::VisitedTable</name>
     <member refid="structfaiss_1_1VisitedTable_1ac2343f3d7f81c2cf046c3ee20ce2c5ec" kind="variable"><name>visited</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a4216e18314be09ef43d0d8f434f45d17" kind="variable"><name>visno</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" kind="variable"><name>visno</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a0cc8846371feddc08cdc6294f3a0e79a" kind="function"><name>VisitedTable</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" kind="function"><name>get</name></member>

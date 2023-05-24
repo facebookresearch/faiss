@@ -315,7 +315,7 @@
 <codeline lineno="165"><highlight class="comment">///<sp/>set<sp/>implementation<sp/>optimized<sp/>for<sp/>fast<sp/>access.</highlight></codeline>
 <codeline lineno="166" refid="structfaiss_1_1VisitedTable" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref><sp/>{</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>visited;</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>visno;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>visno;</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"></highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size)<sp/>:<sp/>visited(size),<sp/>visno(1)<sp/>{}</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
