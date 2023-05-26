@@ -68,6 +68,20 @@ def get_LinearTransform_matrix(pca):
     return A, b
 
 
+def make_LinearTransform_matrix(A, b=None):
+    """ make a linear transform from a matrix and a bias term (optional)"""
+    d_out, d_in = A.shape
+    if b is not None:
+        assert b.shape == (d_out, )
+    lt = faiss.LinearTransform(d_in, d_out, b is not None)
+    faiss.copy_array_to_vector(A.ravel(), lt.A)
+    if b is not None:
+        faiss.copy_array_to_vector(b, lt.b)
+    lt.is_trained = True
+    lt.set_is_orthonormal()
+    return lt
+
+
 def get_additive_quantizer_codebooks(aq):
     """ return to codebooks of an additive quantizer """
     codebooks = faiss.vector_to_array(aq.codebooks).reshape(-1, aq.d)

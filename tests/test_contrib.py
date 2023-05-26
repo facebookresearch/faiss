@@ -208,6 +208,16 @@ class TestInspect(unittest.TestCase):
             xb, inspect_tools.get_flat_data(index)
         )
 
+    def test_make_LT(self):
+        rs = np.random.RandomState(123)
+        X = rs.rand(13, 20).astype('float32')
+        A = rs.rand(5, 20).astype('float32')
+        b = rs.rand(5).astype('float32')
+        Yref = X @ A.T + b
+        lt = inspect_tools.make_LinearTransform_matrix(A, b)
+        Ynew = lt.apply(X)
+        np.testing.assert_equal(Yref, Ynew)
+
 
 class TestRangeEval(unittest.TestCase):
 

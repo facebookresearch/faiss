@@ -12,6 +12,7 @@
 
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
+#include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/impl/FaissAssert.h>
@@ -66,6 +67,10 @@ const IndexIVF* try_extract_index_ivf(const Index* index) {
     }
     if (auto* idmap = dynamic_cast<const IndexIDMap2*>(index)) {
         index = idmap->index;
+    }
+    if (auto* indep =
+                dynamic_cast<const IndexIVFIndependentQuantizer*>(index)) {
+        index = indep->index_ivf;
     }
 
     auto* ivf = dynamic_cast<const IndexIVF*>(index);

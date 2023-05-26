@@ -194,6 +194,9 @@ add_ref_in_constructor(IDSelectorOr, slice(2))
 add_ref_in_constructor(IDSelectorXOr, slice(2))
 add_ref_in_constructor(IDSelectorTranslated, slice(2))
 
+add_ref_in_constructor(IDSelectorXOr, slice(2))
+add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
+
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)
 

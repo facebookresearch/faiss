@@ -15,6 +15,8 @@ import tempfile
 import platform
 
 from common_faiss_tests import get_dataset_2
+from faiss.contrib.datasets import SyntheticDataset
+from faiss.contrib.inspect_tools import make_LinearTransform_matrix
 
 
 class TestRemoveFastScan(unittest.TestCase):
@@ -721,3 +723,117 @@ class TestSplitMerge(unittest.TestCase):
 
     def test_Flat_subset_type_4(self):
         self.do_test("IVF30,Flat", subset_type=4)
+
+
+class TestIndependentQuantizer(unittest.TestCase):
+
+    def test_sidebyside(self):
+        """ provide double-sized vectors to the index, where each vector
+        is the concatenation of twice the same vector """
+        ds = SyntheticDataset(32, 1000, 500, 50)
+
+        index = faiss.index_factory(ds.d, "IVF32,SQ8")
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        index.nprobe = 4
+        Dref, Iref = index.search(ds.get_queries(), 10)
+
+        select32first = make_LinearTransform_matrix(
+            np.eye(64, dtype='float32')[:32])
+
+        select32last = make_LinearTransform_matrix(
+            np.eye(64, dtype='float32')[32:])
+
+        quantizer = faiss.IndexPreTransform(
+            select32first,
+            index.quantizer
+        )
+
+        index2 = faiss.IndexIVFIndependentQuantizer(
+            quantizer,
+            index, select32last
+        )
+
+        xq2 = np.hstack([ds.get_queries()] * 2)
+        quantizer.search(xq2, 30)
+        Dnew, Inew = index2.search(xq2, 10)
+
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
+
+        # test add
+        index2.reset()
+        xb2 = np.hstack([ds.get_database()] * 2)
+        index2.add(xb2)
+        Dnew, Inew = index2.search(xq2, 10)
+
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
+
+    def test_half_store(self):
+        """ the index stores only the first half of each vector
+        but the coarse quantizer sees them entirely """
+        ds = SyntheticDataset(32, 1000, 500, 50)
+        gt = ds.get_groundtruth(10)
+
+        select32first = make_LinearTransform_matrix(
+            np.eye(32, dtype='float32')[:16])
+
+        index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
+        index_ivf.nprobe = 4
+        index = faiss.IndexPreTransform(select32first, index_ivf)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        perf_ref = faiss.eval_intersection(Iref, gt)
+
+        index_ivf = faiss.index_factory(ds.d // 2, "IVF32,Flat")
+        index_ivf.nprobe = 4
+        index = faiss.IndexIVFIndependentQuantizer(
+            faiss.IndexFlatL2(ds.d),
+            index_ivf, select32first
+        )
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        perf_new = faiss.eval_intersection(Inew, gt)
+
+        self.assertLess(perf_ref, perf_new)
+
+    def test_precomputed_tables(self):
+        """ see how precomputed tables behave with centroid distance estimates from a mismatching
+        coarse quantizer """
+        ds = SyntheticDataset(48, 2000, 500, 250)
+        gt = ds.get_groundtruth(10)
+
+        index = faiss.IndexIVFIndependentQuantizer(
+            faiss.IndexFlatL2(48),
+            faiss.index_factory(16, "IVF64,PQ4np"),
+            faiss.PCAMatrix(48, 16)
+        )
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
+        index_ivf.nprobe = 4
+
+        Dref, Iref = index.search(ds.get_queries(), 10)
+        perf_ref = faiss.eval_intersection(Iref, gt)
+
+        index_ivf.use_precomputed_table = 1
+        index_ivf.precompute_table()
+
+        Dnew, Inew = index.search(ds.get_queries(), 10)
+        perf_new = faiss.eval_intersection(Inew, gt)
+
+        # to be honest, it is not clear which one is better...
+        self.assertNotEqual(perf_ref, perf_new)
+
+        # check IO while we are at it
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 10)
+
+        np.testing.assert_array_equal(Dnew, D2)
+        np.testing.assert_array_equal(Inew, I2)

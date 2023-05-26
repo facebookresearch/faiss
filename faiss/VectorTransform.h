@@ -230,18 +230,18 @@ struct ProductQuantizer;
  *
  */
 struct OPQMatrix : LinearTransform {
-    int M;          ///< nb of subquantizers
-    int niter;      ///< Number of outer training iterations
-    int niter_pq;   ///< Number of training iterations for the PQ
-    int niter_pq_0; ///< same, for the first outer iteration
+    int M;               ///< nb of subquantizers
+    int niter = 50;      ///< Number of outer training iterations
+    int niter_pq = 4;    ///< Number of training iterations for the PQ
+    int niter_pq_0 = 40; ///< same, for the first outer iteration
 
     /// if there are too many training points, resample
-    size_t max_train_points;
-    bool verbose;
+    size_t max_train_points = 256 * 256;
+    bool verbose = false;
 
     /// if non-NULL, use this product quantizer for training
     /// should be constructed with (d_out, M, _)
-    ProductQuantizer* pq;
+    ProductQuantizer* pq = nullptr;
 
     /// if d2 != -1, output vectors of this dimension
     explicit OPQMatrix(int d = 0, int M = 1, int d2 = -1);
