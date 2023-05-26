@@ -486,7 +486,7 @@ void train_Uniform(
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        // TODO just do a qucikselect
+        // TODO just do a quickselect
         std::sort(x_copy.begin(), x_copy.end());
         int o = int(rs_arg * n);
         if (o < 0)
