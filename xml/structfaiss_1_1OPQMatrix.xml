@@ -24,6 +24,7 @@
         <definition>int faiss::OPQMatrix::niter</definition>
         <argsstring></argsstring>
         <name>niter</name>
+        <initializer>= 50</initializer>
         <briefdescription>
 <para>Number of outer training iterations. </para>
         </briefdescription>
@@ -38,6 +39,7 @@
         <definition>int faiss::OPQMatrix::niter_pq</definition>
         <argsstring></argsstring>
         <name>niter_pq</name>
+        <initializer>= 4</initializer>
         <briefdescription>
 <para>Number of training iterations for the PQ. </para>
         </briefdescription>
@@ -52,6 +54,7 @@
         <definition>int faiss::OPQMatrix::niter_pq_0</definition>
         <argsstring></argsstring>
         <name>niter_pq_0</name>
+        <initializer>= 40</initializer>
         <briefdescription>
 <para>same, for the first outer iteration </para>
         </briefdescription>
@@ -66,6 +69,7 @@
         <definition>size_t faiss::OPQMatrix::max_train_points</definition>
         <argsstring></argsstring>
         <name>max_train_points</name>
+        <initializer>= 256 * 256</initializer>
         <briefdescription>
 <para>if there are too many training points, resample </para>
         </briefdescription>
@@ -80,6 +84,7 @@
         <definition>bool faiss::OPQMatrix::verbose</definition>
         <argsstring></argsstring>
         <name>verbose</name>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -93,6 +98,7 @@
         <definition>ProductQuantizer* faiss::OPQMatrix::pq</definition>
         <argsstring></argsstring>
         <name>pq</name>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

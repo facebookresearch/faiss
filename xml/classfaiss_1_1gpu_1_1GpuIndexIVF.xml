@@ -859,6 +859,7 @@
         <reimplementedby refid="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a24002a8c3f12aa2784833c14b13b427e">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a49b9e45f584db588148707889a9c96c1">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a19a6d0136b34d904d147f16922a64b93">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1a01f569a16a812aa3945b8a0b64eaff06">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1a11e65f02f9edb9c09fc0152486b96aff">train</reimplementedby>
@@ -991,6 +992,7 @@
         <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1afedfd72f57bcbc7d3a94fda7cb90c88b">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f">reset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a18da229a36d189bb971ed4d220542bd3">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1ae0e979a014a9defe2254e9543657b075">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLattice_1a5282d7f60eecbd5f552f184944a36b06">reset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1ad2111361ac164b69f4658be446845f88">reset</reimplementedby>

@@ -152,6 +152,7 @@
     <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlat" prot="public">faiss::IndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlatDedup" prot="public">faiss::IndexIVFFlatDedup</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFIndependentQuantizer" prot="public">faiss::IndexIVFIndependentQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IVFPQSearchParameters" prot="public">faiss::IVFPQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQ" prot="public">faiss::IndexIVFPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFPQStats" prot="public">faiss::IndexIVFPQStats</innerclass>

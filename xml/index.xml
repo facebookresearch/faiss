@@ -3271,6 +3271,43 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IndexIVFIndependentQuantizer" kind="struct"><name>faiss::IndexIVFIndependentQuantizer</name>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a6da59b74d33ca2dbd272824f7cafe318" kind="variable"><name>quantizer</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a68bb9f52d19a4b53b57147ad3c5aa014" kind="variable"><name>vt</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1ab936e17bd16c172cabc3f68320eec4e1" kind="variable"><name>index_ivf</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a32281768eb30c54098064fcdd5b86863" kind="variable"><name>own_fields</name></member>
+    <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1aaafed47dee3f022bca76578f0d6bdce3" kind="function"><name>IndexIVFIndependentQuantizer</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1aec4a589849b5a37a484d7209b33b4acc" kind="function"><name>IndexIVFIndependentQuantizer</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a49b9e45f584db588148707889a9c96c1" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1ae394f9a7dba1fa1dea3318c67a05d777" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a2b390b220fdcc2fb2cbe7289d5bd2a4d" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a18da229a36d189bb971ed4d220542bd3" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a278ddac51c928f79de0f1f9f55bc1cce" kind="function"><name>~IndexIVFIndependentQuantizer</name></member>
+    <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
+    <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
+    <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
+    <member refid="structfaiss_1_1Index_1ab53ef983521567c3dc3fee4543546e6a" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" kind="function"><name>sa_encode</name></member>
+    <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IndexIVFInterface" kind="struct"><name>faiss::IndexIVFInterface</name>
     <member refid="structfaiss_1_1IndexIVFInterface_1a04b49a4e8a7bce73757905062cf3e2d2" kind="variable"><name>nprobe</name></member>
     <member refid="structfaiss_1_1IndexIVFInterface_1a205287f5e7fa7e1d5c5f98e19074c636" kind="variable"><name>max_codes</name></member>
@@ -8566,13 +8603,13 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d136" kind="namespace"><name>faiss::@136</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d152" kind="namespace"><name>faiss::@152</name>
+  <compound refid="namespacefaiss_1_1_0d137" kind="namespace"><name>faiss::@137</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d154" kind="namespace"><name>faiss::@154</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d155" kind="namespace"><name>faiss::@155</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
   </compound>
@@ -9106,6 +9143,8 @@
   <compound refid="IndexIVFFastScan_8h" kind="file"><name>IndexIVFFastScan.h</name>
   </compound>
   <compound refid="IndexIVFFlat_8h" kind="file"><name>IndexIVFFlat.h</name>
+  </compound>
+  <compound refid="IndexIVFIndependentQuantizer_8h" kind="file"><name>IndexIVFIndependentQuantizer.h</name>
   </compound>
   <compound refid="IndexIVFPQ_8h" kind="file"><name>IndexIVFPQ.h</name>
   </compound>

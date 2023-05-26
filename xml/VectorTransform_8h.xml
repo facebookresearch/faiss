@@ -5,6 +5,7 @@
     <includes local="no">stdint.h</includes>
     <includes local="no">vector</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includedby refid="IndexIVFIndependentQuantizer_8h" local="no">faiss/IndexIVFIndependentQuantizer.h</includedby>
     <includedby refid="IndexLSH_8h" local="no">faiss/IndexLSH.h</includedby>
     <includedby refid="IndexPreTransform_8h" local="no">faiss/IndexPreTransform.h</includedby>
     <incdepgraph>
@@ -76,12 +77,18 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h_source"/>
       </node>
       <node id="2">
+        <label>faiss/IndexIVFIndependentQuantizer.h</label>
+        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
+      </node>
+      <node id="3">
         <label>faiss/IndexLSH.h</label>
         <link refid="IndexLSH_8h_source"/>
       </node>
@@ -334,18 +341,18 @@
 <codeline lineno="230"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="231"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="232" refid="structfaiss_1_1OPQMatrix" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1OPQMatrix" kindref="compound">OPQMatrix</ref><sp/>:<sp/><ref refid="structfaiss_1_1LinearTransform" kindref="compound">LinearTransform</ref><sp/>{</highlight></codeline>
-<codeline lineno="233" refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" kindref="member">M</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>nb<sp/>of<sp/>subquantizers</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="234" refid="structfaiss_1_1OPQMatrix_1a12cb3e05989dee37592b682070c31000" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a12cb3e05989dee37592b682070c31000" kindref="member">niter</ref>;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Number<sp/>of<sp/>outer<sp/>training<sp/>iterations</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="235" refid="structfaiss_1_1OPQMatrix_1ab88c87a3931ec356904abf5f1f797a83" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1ab88c87a3931ec356904abf5f1f797a83" kindref="member">niter_pq</ref>;<sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Number<sp/>of<sp/>training<sp/>iterations<sp/>for<sp/>the<sp/>PQ</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="236" refid="structfaiss_1_1OPQMatrix_1a6406e97b05c831cc19b9343be3b43a1f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a6406e97b05c831cc19b9343be3b43a1f" kindref="member">niter_pq_0</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>same,<sp/>for<sp/>the<sp/>first<sp/>outer<sp/>iteration</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="233" refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" kindref="member">M</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>nb<sp/>of<sp/>subquantizers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="234" refid="structfaiss_1_1OPQMatrix_1a12cb3e05989dee37592b682070c31000" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a12cb3e05989dee37592b682070c31000" kindref="member">niter</ref><sp/>=<sp/>50;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Number<sp/>of<sp/>outer<sp/>training<sp/>iterations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="235" refid="structfaiss_1_1OPQMatrix_1ab88c87a3931ec356904abf5f1f797a83" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1ab88c87a3931ec356904abf5f1f797a83" kindref="member">niter_pq</ref><sp/>=<sp/>4;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>Number<sp/>of<sp/>training<sp/>iterations<sp/>for<sp/>the<sp/>PQ</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="236" refid="structfaiss_1_1OPQMatrix_1a6406e97b05c831cc19b9343be3b43a1f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a6406e97b05c831cc19b9343be3b43a1f" kindref="member">niter_pq_0</ref><sp/>=<sp/>40;<sp/></highlight><highlight class="comment">///&lt;<sp/>same,<sp/>for<sp/>the<sp/>first<sp/>outer<sp/>iteration</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="237"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="238"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>there<sp/>are<sp/>too<sp/>many<sp/>training<sp/>points,<sp/>resample</highlight></codeline>
-<codeline lineno="239" refid="structfaiss_1_1OPQMatrix_1afdd5b2c74d19ccc5c7a6e0199333321a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1afdd5b2c74d19ccc5c7a6e0199333321a" kindref="member">max_train_points</ref>;</highlight></codeline>
-<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose;</highlight></codeline>
+<codeline lineno="239" refid="structfaiss_1_1OPQMatrix_1afdd5b2c74d19ccc5c7a6e0199333321a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1afdd5b2c74d19ccc5c7a6e0199333321a" kindref="member">max_train_points</ref><sp/>=<sp/>256<sp/>*<sp/>256;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="241"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="242"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>non-NULL,<sp/>use<sp/>this<sp/>product<sp/>quantizer<sp/>for<sp/>training</highlight></codeline>
 <codeline lineno="243"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>should<sp/>be<sp/>constructed<sp/>with<sp/>(d_out,<sp/>M,<sp/>_)</highlight></codeline>
-<codeline lineno="244" refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>*<sp/><ref refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" kindref="member">pq</ref>;</highlight></codeline>
+<codeline lineno="244" refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref>*<sp/><ref refid="structfaiss_1_1OPQMatrix_1a01d3736c8e725f596b99440324544a59" kindref="member">pq</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="245"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="246"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>if<sp/>d2<sp/>!=<sp/>-1,<sp/>output<sp/>vectors<sp/>of<sp/>this<sp/>dimension</highlight></codeline>
 <codeline lineno="247" refid="structfaiss_1_1OPQMatrix_1a377b53c090c7ab05814aaf9d6ec58fcf" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a377b53c090c7ab05814aaf9d6ec58fcf" kindref="member">OPQMatrix</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1OPQMatrix_1a07ad0c0c84f96a6880c1c8eaf09596e3" kindref="member">M</ref><sp/>=<sp/>1,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d2<sp/>=<sp/>-1);</highlight></codeline>
