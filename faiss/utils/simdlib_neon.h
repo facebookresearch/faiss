@@ -954,15 +954,18 @@ struct simd8uint32 {
         return *this;
     }
 
-    bool operator==(simd8uint32 other) const {
-        const auto equals = detail::simdlib::binary_func(data, other.data)
-                                    .call<&vceqq_u32>();
-        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
-        return vminvq_u32(equal) == 0xffffffff;
+    simd8uint32 operator==(simd8uint32 other) const {
+        return simd8uint32{detail::simdlib::binary_func(data, other.data)
+                                   .call<&vceqq_u32>()};
     }
 
-    bool operator!=(simd8uint32 other) const {
-        return !(*this == other);
+    simd8uint32 operator~() const {
+        return simd8uint32{
+                detail::simdlib::unary_func(data).call<&vmvnq_u32>()};
+    }
+
+    simd8uint32 operator!=(simd8uint32 other) const {
+        return ~(*this == other);
     }
 
     // Checks whether the other holds exactly the same bytes.
@@ -1157,16 +1160,14 @@ struct simd8float32 {
         return *this;
     }
 
-    bool operator==(simd8float32 other) const {
-        const auto equals =
+    simd8uint32 operator==(simd8float32 other) const {
+        return simd8uint32{
                 detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
-                        .call<&vceqq_f32>();
-        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
-        return vminvq_u32(equal) == 0xffffffff;
+                        .call<&vceqq_f32>()};
     }
 
-    bool operator!=(simd8float32 other) const {
-        return !(*this == other);
+    simd8uint32 operator!=(simd8float32 other) const {
+        return ~(*this == other);
     }
 
     // Checks whether the other holds exactly the same bytes.
