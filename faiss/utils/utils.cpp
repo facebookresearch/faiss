@@ -428,13 +428,28 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     }
 }
 
-size_t ivec_checksum(size_t n, const int32_t* asigned) {
+uint64_t ivec_checksum(size_t n, const int32_t* asigned) {
     const uint32_t* a = reinterpret_cast<const uint32_t*>(asigned);
-    size_t cs = 112909;
+    uint64_t cs = 112909;
     while (n--) {
         cs = cs * 65713 + a[n] * 1686049;
     }
     return cs;
+}
+
+uint64_t bvec_checksum(size_t n, const uint8_t* a) {
+    uint64_t cs = ivec_checksum(n / 4, (const int32_t*)a);
+    for (size_t i = n / 4 * 4; i < n; i++) {
+        cs = cs * 65713 + a[n] * 1686049;
+    }
+    return cs;
+}
+
+void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
+#pragma omp parallel for if (n > 1000)
+    for (size_t i = 0; i < n; i++) {
+        cs[i] = bvec_checksum(d, a + i * d);
+    }
 }
 
 const float* fvecs_maybe_subsample(

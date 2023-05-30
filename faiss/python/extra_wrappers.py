@@ -107,16 +107,14 @@ def randn(n, seed=12345):
 def checksum(a):
     """ compute a checksum for quick-and-dirty comparisons of arrays """
     a = a.view('uint8')
-    n = a.size
-    n4 = n & ~3
-    cs = ivec_checksum(int(n4 / 4), swig_ptr(a[:n4].view('int32')))
-    for i in range(n4, n):
-        cs += x[i] * 33657
+    if a.ndim == 1:
+        return bvec_checksum(s.size, swig_ptr(a))
+    n, d = a.shape
+    cs = np.zeros(n, dtype='uint64')
+    bvecs_checksum(n, d, swig_ptr(a), swig_ptr(cs))
     return cs
 
-
 rand_smooth_vectors_c = rand_smooth_vectors
-
 
 def rand_smooth_vectors(n, d, seed=1234):
     res = np.empty((n, d), dtype='float32')
@@ -422,7 +420,7 @@ class Kmeans:
          including niter=25, verbose=False, spherical = False
         """
         self.d = d
-        self.k = k
+        self.reset(k)
         self.gpu = False
         if "progressive_dim_steps" in kwargs:
             self.cp = ProgressiveDimClusteringParameters()
@@ -437,7 +435,32 @@ class Kmeans:
                 # if this raises an exception, it means that it is a non-existent field
                 getattr(self.cp, k)
                 setattr(self.cp, k, v)
+        self.set_index()
+
+    def set_index(self):
+        d = self.d
+        if self.cp.__class__ == ClusteringParameters:
+            if self.cp.spherical:
+                self.index = IndexFlatIP(d)
+            else:
+                self.index = IndexFlatL2(d)
+            if self.gpu:
+                self.index = faiss.index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
+        else:
+            if self.gpu:
+                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
+            else:
+                fac = ProgressiveDimIndexFactory()
+            self.fac = fac
+
+    def reset(self, k=None):
+        """ prepare k-means object to perform a new clustering, possibly
+        with another number of centroids """
+        if k is not None:
+            self.k = int(k)
         self.centroids = None
+        self.obj = None
+        self.iteration_stats = None
 
     def train(self, x, weights=None, init_centroids=None):
         """ Perform k-means clustering.
@@ -476,12 +499,6 @@ class Kmeans:
                 nc, d2 = init_centroids.shape
                 assert d2 == d
                 faiss.copy_array_to_vector(init_centroids.ravel(), clus.centroids)
-            if self.cp.spherical:
-                self.index = IndexFlatIP(d)
-            else:
-                self.index = IndexFlatL2(d)
-            if self.gpu:
-                self.index = faiss.index_cpu_to_all_gpus(self.index, ngpu=self.gpu)
             clus.train(x, self.index, weights)
         else:
             # not supported for progressive dim
@@ -489,11 +506,7 @@ class Kmeans:
             assert init_centroids is None
             assert not self.cp.spherical
             clus = ProgressiveDimClustering(d, self.k, self.cp)
-            if self.gpu:
-                fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
-            else:
-                fac = ProgressiveDimIndexFactory()
-            clus.train(n, swig_ptr(x), fac)
+            clus.train(n, swig_ptr(x), self.fac)
 
         centroids = faiss.vector_float_to_array(clus.centroids)
 
