@@ -560,14 +560,10 @@ struct simd16uint16 {
 
     // Checks whether the other holds exactly the same bytes.
     bool is_same_as(simd16uint16 other) const {
-        const bool equal0 =
-                (vminvq_u16(vceqq_u16(data.val[0], other.data.val[0])) ==
-                 0xffff);
-        const bool equal1 =
-                (vminvq_u16(vceqq_u16(data.val[1], other.data.val[1])) ==
-                 0xffff);
-
-        return equal0 && equal1;
+        const auto equals = detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u16>();
+        const auto equal = vandq_u16(equals.val[0], equals.val[1]);
+        return vminvq_u16(equal) == 0xffffu;
     }
 
     simd16uint16 operator~() const {
@@ -870,12 +866,10 @@ struct simd32uint8 {
 
     // Checks whether the other holds exactly the same bytes.
     bool is_same_as(simd32uint8 other) const {
-        const bool equal0 =
-                (vminvq_u8(vceqq_u8(data.val[0], other.data.val[0])) == 0xff);
-        const bool equal1 =
-                (vminvq_u8(vceqq_u8(data.val[1], other.data.val[1])) == 0xff);
-
-        return equal0 && equal1;
+        const auto equals = detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u8>();
+        const auto equal = vandq_u8(equals.val[0], equals.val[1]);
+        return vminvq_u8(equal) == 0xffu;
     }
 };
 
@@ -973,14 +967,10 @@ struct simd8uint32 {
 
     // Checks whether the other holds exactly the same bytes.
     bool is_same_as(simd8uint32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_u32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_u32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equals = detail::simdlib::binary_func(data, other.data)
+                                    .call<&vceqq_u32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
+        return vminvq_u32(equal) == 0xffffffffu;
     }
 
     void clear() {
@@ -1181,14 +1171,11 @@ struct simd8float32 {
 
     // Checks whether the other holds exactly the same bytes.
     bool is_same_as(simd8float32 other) const {
-        const bool equal0 =
-                (vminvq_u32(vceqq_f32(data.val[0], other.data.val[0])) ==
-                 0xffffffff);
-        const bool equal1 =
-                (vminvq_u32(vceqq_f32(data.val[1], other.data.val[1])) ==
-                 0xffffffff);
-
-        return equal0 && equal1;
+        const auto equals =
+                detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
+                        .call<&vceqq_f32>();
+        const auto equal = vandq_u32(equals.val[0], equals.val[1]);
+        return vminvq_u32(equal) == 0xffffffffu;
     }
 
     std::string tostring() const {
