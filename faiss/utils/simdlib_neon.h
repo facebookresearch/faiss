@@ -685,13 +685,12 @@ inline void cmplt_min_max_fast(
         simd16uint16& minIndices,
         simd16uint16& maxValues,
         simd16uint16& maxIndices) {
-    const uint16x8x2_t comparison = uint16x8x2_t{
-            vcltq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
-            vcltq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+    const uint16x8x2_t comparison =
+            detail::simdlib::binary_func(
+                    candidateValues.data, currentValues.data)
+                    .call<&vcltq_u16>();
 
-    minValues.data = uint16x8x2_t{
-            vminq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
-            vminq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+    minValues = min(candidateValues, currentValues);
     minIndices.data = uint16x8x2_t{
             vbslq_u16(
                     comparison.val[0],
@@ -702,9 +701,7 @@ inline void cmplt_min_max_fast(
                     candidateIndices.data.val[1],
                     currentIndices.data.val[1])};
 
-    maxValues.data = uint16x8x2_t{
-            vmaxq_u16(candidateValues.data.val[0], currentValues.data.val[0]),
-            vmaxq_u16(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxValues = max(candidateValues, currentValues);
     maxIndices.data = uint16x8x2_t{
             vbslq_u16(
                     comparison.val[0],
@@ -1046,13 +1043,14 @@ inline void cmplt_min_max_fast(
         simd8uint32& minIndices,
         simd8uint32& maxValues,
         simd8uint32& maxIndices) {
-    const uint32x4x2_t comparison = uint32x4x2_t{
-            vcltq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vcltq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+    const uint32x4x2_t comparison =
+            detail::simdlib::binary_func(
+                    candidateValues.data, currentValues.data)
+                    .call<&vcltq_u32>();
 
-    minValues.data = uint32x4x2_t{
-            vminq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vminq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+    minValues.data = detail::simdlib::binary_func(
+                             candidateValues.data, currentValues.data)
+                             .call<&vminq_u32>();
     minIndices.data = uint32x4x2_t{
             vbslq_u32(
                     comparison.val[0],
@@ -1063,9 +1061,9 @@ inline void cmplt_min_max_fast(
                     candidateIndices.data.val[1],
                     currentIndices.data.val[1])};
 
-    maxValues.data = uint32x4x2_t{
-            vmaxq_u32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vmaxq_u32(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxValues.data = detail::simdlib::binary_func(
+                             candidateValues.data, currentValues.data)
+                             .call<&vmaxq_u32>();
     maxIndices.data = uint32x4x2_t{
             vbslq_u32(
                     comparison.val[0],
@@ -1290,13 +1288,14 @@ inline void cmplt_min_max_fast(
         simd8uint32& minIndices,
         simd8float32& maxValues,
         simd8uint32& maxIndices) {
-    const uint32x4x2_t comparison = uint32x4x2_t{
-            vcltq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vcltq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+    const uint32x4x2_t comparison =
+            detail::simdlib::binary_func<::uint32x4x2_t>(
+                    candidateValues.data, currentValues.data)
+                    .call<&vcltq_f32>();
 
-    minValues.data = float32x4x2_t{
-            vminq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vminq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+    minValues.data = detail::simdlib::binary_func(
+                             candidateValues.data, currentValues.data)
+                             .call<&vminq_f32>();
     minIndices.data = uint32x4x2_t{
             vbslq_u32(
                     comparison.val[0],
@@ -1307,9 +1306,9 @@ inline void cmplt_min_max_fast(
                     candidateIndices.data.val[1],
                     currentIndices.data.val[1])};
 
-    maxValues.data = float32x4x2_t{
-            vmaxq_f32(candidateValues.data.val[0], currentValues.data.val[0]),
-            vmaxq_f32(candidateValues.data.val[1], currentValues.data.val[1])};
+    maxValues.data = detail::simdlib::binary_func(
+                             candidateValues.data, currentValues.data)
+                             .call<&vmaxq_f32>();
     maxIndices.data = uint32x4x2_t{
             vbslq_u32(
                     comparison.val[0],
