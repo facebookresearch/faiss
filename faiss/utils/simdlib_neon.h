@@ -559,9 +559,11 @@ struct simd16uint16 {
     }
 
     // Checks whether the other holds exactly the same bytes.
-    bool is_same_as(simd16uint16 other) const {
-        const auto equals = detail::simdlib::binary_func(data, other.data)
-                                    .call<&vceqq_u16>();
+    template <typename T>
+    bool is_same_as(T other) const {
+        const auto o = detail::simdlib::reinterpret_u16(other.data);
+        const auto equals = detail::simdlib::binary_func(data, o)
+                                    .template call<&vceqq_u16>();
         const auto equal = vandq_u16(equals.val[0], equals.val[1]);
         return vminvq_u16(equal) == 0xffffu;
     }
@@ -862,9 +864,11 @@ struct simd32uint8 {
     }
 
     // Checks whether the other holds exactly the same bytes.
-    bool is_same_as(simd32uint8 other) const {
-        const auto equals = detail::simdlib::binary_func(data, other.data)
-                                    .call<&vceqq_u8>();
+    template <typename T>
+    bool is_same_as(T other) const {
+        const auto o = detail::simdlib::reinterpret_u8(other.data);
+        const auto equals = detail::simdlib::binary_func(data, o)
+                                    .template call<&vceqq_u8>();
         const auto equal = vandq_u8(equals.val[0], equals.val[1]);
         return vminvq_u8(equal) == 0xffu;
     }
@@ -966,9 +970,11 @@ struct simd8uint32 {
     }
 
     // Checks whether the other holds exactly the same bytes.
-    bool is_same_as(simd8uint32 other) const {
-        const auto equals = detail::simdlib::binary_func(data, other.data)
-                                    .call<&vceqq_u32>();
+    template <typename T>
+    bool is_same_as(T other) const {
+        const auto o = detail::simdlib::reinterpret_u32(other.data);
+        const auto equals = detail::simdlib::binary_func(data, o)
+                                    .template call<&vceqq_u32>();
         const auto equal = vandq_u32(equals.val[0], equals.val[1]);
         return vminvq_u32(equal) == 0xffffffffu;
     }
@@ -1169,10 +1175,12 @@ struct simd8float32 {
     }
 
     // Checks whether the other holds exactly the same bytes.
-    bool is_same_as(simd8float32 other) const {
+    template <typename T>
+    bool is_same_as(T other) const {
+        const auto o = detail::simdlib::reinterpret_f32(other.data);
         const auto equals =
-                detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
-                        .call<&vceqq_f32>();
+                detail::simdlib::binary_func<::uint32x4x2_t>(data, o)
+                        .template call<&vceqq_f32>();
         const auto equal = vandq_u32(equals.val[0], equals.val[1]);
         return vminvq_u32(equal) == 0xffffffffu;
     }
