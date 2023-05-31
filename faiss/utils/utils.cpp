@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <type_traits>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -447,7 +448,10 @@ uint64_t bvec_checksum(size_t n, const uint8_t* a) {
 
 void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (std::make_signed<std::size_t>::type i_ = 0;
+         static_cast<std::size_t>(i_) < n;
+         i_++) {
+        const auto i = static_cast<std::size_t>(i_);
         cs[i] = bvec_checksum(d, a + i * d);
     }
 }
