@@ -28,6 +28,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <type_traits>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -446,8 +447,13 @@ uint64_t bvec_checksum(size_t n, const uint8_t* a) {
 }
 
 void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
-#pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    // MSVC can't accept unsigned index for #pragma omp parallel for
+    // so below codes only accept n <= std::numeric_limits<ssize_t>::max()
+    using ssize_t = std::make_signed<std::size_t>::type;
+    const ssize_t size = n;
+#pragma omp parallel for if (size > 1000)
+    for (ssize_t i_ = 0; i_ < size; i_++) {
+        const auto i = static_cast<std::size_t>(i_);
         cs[i] = bvec_checksum(d, a + i * d);
     }
 }
