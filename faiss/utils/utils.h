@@ -121,7 +121,19 @@ int ivec_hist(size_t n, const int* v, int vmax, int* hist);
 void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist);
 
 /// compute a checksum on a table.
-size_t ivec_checksum(size_t n, const int32_t* a);
+uint64_t ivec_checksum(size_t n, const int32_t* a);
+
+/// compute a checksum on a table.
+uint64_t bvec_checksum(size_t n, const uint8_t* a);
+
+/** compute checksums for the rows of a matrix
+ *
+ * @param n   number of rows
+ * @param d   size per row
+ * @param a   matrix to handle, size n * d
+ * @param cs  output checksums, size n
+ */
+void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs);
 
 /** random subsamples a set of vectors if there are too many of them
  *
