@@ -202,12 +202,6 @@ struct simd16uint16 : simd256bit {
         return simd16uint16(_mm256_cmpeq_epi16(lhs.i, rhs.i));
     }
 
-    bool is_same(simd16uint16 other) const {
-        const __m256i pcmp = _mm256_cmpeq_epi16(i, other.i);
-        unsigned bitmask = _mm256_movemask_epi8(pcmp);
-        return (bitmask == 0xffffffffU);
-    }
-
     simd16uint16 operator~() const {
         return simd16uint16(_mm256_xor_si256(i, _mm256_set1_epi32(-1)));
     }
