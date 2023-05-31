@@ -8854,9 +8854,9 @@
         </inbodydescription>
         <location file="faiss/utils/utils.h" line="121" column="6" declfile="faiss/utils/utils.h" declline="121" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>size_t</type>
-        <definition>size_t faiss::ivec_checksum</definition>
+      <memberdef kind="function" id="namespacefaiss_1a9961a06bc9beb19366bb0437e11ac962" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::ivec_checksum</definition>
         <argsstring>(size_t n, const int32_t *a)</argsstring>
         <name>ivec_checksum</name>
         <param>
@@ -8874,7 +8874,93 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="124" column="8" declfile="faiss/utils/utils.h" declline="124" declcolumn="8"/>
+        <location file="faiss/utils/utils.h" line="124" column="10" declfile="faiss/utils/utils.h" declline="124" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ade786759a9b5dbd0b2329966756c0b77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::bvec_checksum</definition>
+        <argsstring>(size_t n, const uint8_t *a)</argsstring>
+        <name>bvec_checksum</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+<para>compute a checksum on a table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="127" column="10" declfile="faiss/utils/utils.h" declline="127" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a2de355ba1527a128fdd6895a4a9cdd7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::bvecs_checksum</definition>
+        <argsstring>(size_t n, size_t d, const uint8_t *a, uint64_t *cs)</argsstring>
+        <name>bvecs_checksum</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>uint64_t *</type>
+          <declname>cs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute checksums for the rows of a matrix</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of rows </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size per row </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>a</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>matrix to handle, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output checksums, size n </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/utils.h" line="136" column="6" declfile="faiss/utils/utils.h" declline="136" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af851590d865ea2eae8dae3ae72406bfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const float *</type>
@@ -8958,7 +9044,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="135" column="13" declfile="faiss/utils/utils.h" declline="135" declcolumn="13"/>
+        <location file="faiss/utils/utils.h" line="147" column="13" declfile="faiss/utils/utils.h" declline="147" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -9010,7 +9096,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="149" column="6" declfile="faiss/utils/utils.h" declline="149" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="161" column="6" declfile="faiss/utils/utils.h" declline="161" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -9062,7 +9148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="158" column="6" declfile="faiss/utils/utils.h" declline="158" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="170" column="6" declfile="faiss/utils/utils.h" declline="170" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint64_t</type>
@@ -9084,7 +9170,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="161" column="10" declfile="faiss/utils/utils.h" declline="161" declcolumn="10"/>
+        <location file="faiss/utils/utils.h" line="173" column="10" declfile="faiss/utils/utils.h" declline="173" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -9098,7 +9184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/utils.h" line="164" column="6" declfile="faiss/utils/utils.h" declline="164" declcolumn="6"/>
+        <location file="faiss/utils/utils.h" line="176" column="6" declfile="faiss/utils/utils.h" declline="176" declcolumn="6"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

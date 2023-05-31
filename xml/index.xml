@@ -8596,7 +8596,9 @@
     <member refid="namespacefaiss_1a94c1d99ac39d22e362aa27ce7c7ff714" kind="function"><name>imbalance_factor</name></member>
     <member refid="namespacefaiss_1a7bea462108bee98d8d5859b51ec4db8e" kind="function"><name>ivec_hist</name></member>
     <member refid="namespacefaiss_1a154a47857ed321b9db91122770a16e09" kind="function"><name>bincode_hist</name></member>
-    <member refid="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6" kind="function"><name>ivec_checksum</name></member>
+    <member refid="namespacefaiss_1a9961a06bc9beb19366bb0437e11ac962" kind="function"><name>ivec_checksum</name></member>
+    <member refid="namespacefaiss_1ade786759a9b5dbd0b2329966756c0b77" kind="function"><name>bvec_checksum</name></member>
+    <member refid="namespacefaiss_1a2de355ba1527a128fdd6895a4a9cdd7a" kind="function"><name>bvecs_checksum</name></member>
     <member refid="namespacefaiss_1af851590d865ea2eae8dae3ae72406bfb" kind="function"><name>fvecs_maybe_subsample</name></member>
     <member refid="namespacefaiss_1ac8260e10cfeed08a4344b85845773e16" kind="function"><name>binary_to_real</name></member>
     <member refid="namespacefaiss_1ab491c9e2f77a750c9f0324bfe00e3e57" kind="function"><name>real_to_binary</name></member>
