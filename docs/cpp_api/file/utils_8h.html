@@ -473,8 +473,30 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5faiss13ivec_checksumE6size_tPK7int32_t">
-<span id="_CPPv3N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="_CPPv2N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="faiss::ivec_checksum__s.int32_tCP"></span><span class="target" id="namespacefaiss_1a01d5fb5edbbe0ef2ad943f98e3a6bbc6"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivec_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13ivec_checksumE6size_tPK7int32_t" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="_CPPv2N5faiss13ivec_checksumE6size_tPK7int32_t"></span><span id="faiss::ivec_checksum__s.int32_tCP"></span><span class="target" id="namespacefaiss_1a9961a06bc9beb19366bb0437e11ac962"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivec_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13ivec_checksumE6size_tPK7int32_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>compute a checksum on a table. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss13bvec_checksumE6size_tPK7uint8_t">
+<span id="_CPPv3N5faiss13bvec_checksumE6size_tPK7uint8_t"></span><span id="_CPPv2N5faiss13bvec_checksumE6size_tPK7uint8_t"></span><span id="faiss::bvec_checksum__s.uint8_tCP"></span><span class="target" id="namespacefaiss_1ade786759a9b5dbd0b2329966756c0b77"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bvec_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss13bvec_checksumE6size_tPK7uint8_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>compute a checksum on a table. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5faiss14bvecs_checksumE6size_t6size_tPK7uint8_tP8uint64_t">
+<span id="_CPPv3N5faiss14bvecs_checksumE6size_t6size_tPK7uint8_tP8uint64_t"></span><span id="_CPPv2N5faiss14bvecs_checksumE6size_t6size_tPK7uint8_tP8uint64_t"></span><span id="faiss::bvecs_checksum__s.s.uint8_tCP.uint64_tP"></span><span class="target" id="namespacefaiss_1a2de355ba1527a128fdd6895a4a9cdd7a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bvecs_checksum</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5faiss14bvecs_checksumE6size_t6size_tPK7uint8_tP8uint64_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>compute checksums for the rows of a matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – number of rows </p></li>
+<li><p><strong>d</strong> – size per row </p></li>
+<li><p><strong>a</strong> – matrix to handle, size n * d </p></li>
+<li><p><strong>cs</strong> – output checksums, size n </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
